@@ -1,11 +1,10 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
+import { Navigation } from './features/navigation';
 
 function App() {
   return (
-    <div className=" ml-10 m-20">
-      Test
-    </div>
+    <Navigation />
   );
 }
 

@@ -1,4 +1,4 @@
 function Button(props:any) {
-    return(<button className="h-8 mx-auto text-white bg-yellow-200 " />)
+    return(<button className="text-black btn-primary bg-slate-200 transition delay-300  ">Test</button>)
 }
 export { Button }
