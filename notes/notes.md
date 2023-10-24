@@ -13,3 +13,14 @@
 - tailwind
 	- headlessui
 	- clsx
+
+## UI libraries may consider
+- rsuitejs
+
+- daisyUI for tw
+- tw-elements
+- flowbite datepicker
+- for layouts: https://layoutsfortailwind.lalokalabs.dev/
+- Sira: https://www.sira-design.party/
+- RippleUI: good: https://www.ripple-ui.com/
+- 
