@@ -5,7 +5,7 @@ function Home() {
     return (<div className="m-10 prose">
         <h1> This is home</h1>
         <div className="flex gap-2">
-            <button onClick={handleOnClickNav} className="px-3 rounded-md bg-slate-300">Navigate</button>
+            <button onClick={handleOnClickCommon} className="px-3 rounded-md bg-orange-600 bg-gradient-to-r">Common</button>
             <button onClick={handleOnClickBlogs} className="px-3 bg-orange-500 rounded-md"> Blogs</button>
             <button onClick={handleOnClickResponsive} className="px-3 rounded-md bg-slate-400"> Responsive</button>
             <button onClick={handleOnClickAppMain} className="px-3 rounded-md bg-zinc-400"> App main</button>
@@ -13,8 +13,8 @@ function Home() {
         </div>
     </div>)
 
-    function handleOnClickNav() {
-        navigate('navigation')
+    function handleOnClickCommon() {
+        navigate('common')
     }
 
     function handleOnClickBlogs() {
@@ -26,7 +26,7 @@ function Home() {
     }
 
     function handleOnClickAppMain() {
-        navigate('app-main')
+        navigate('app-main/my-comp')
     }
 
     function handleOnClickSignals() {

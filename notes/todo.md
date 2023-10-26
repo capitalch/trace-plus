@@ -1,11 +1,16 @@
 ## For Navigation
-- Check showing components inside the Content control using Outlet of ract router
-- Implement login / layouts
-- Size and margins of Nav, sideBar and content based on 2XL size
-- Design of sideBar with top header showing left slide icon button
-- After menu slide or slideMenu click, the nav should show menu button visible and menu should close
-- Try out some delay in menu close
-- Clicking the menu button in Nav should slideIn the sideNav with delay
+- Colors primary, Secondary etc. management
+	- links
+		- Good color generator: https://www.tints.dev/
+		- Good: https://uicolors.app/create
+																			- Check showing components inside the Content control using Outlet of react router
+																			- Implement login / layouts
+																			- Size and margins of Nav, sideBar and content based on 2XL size
+																			- Design of sideBar with top header showing left slide icon button
+																			- After menu slide or slideMenu click, the nav should show menu button visible and menu should close
+- Implement transition
+- Implement drawer for mobile devices
+
 ## Research
 																			- Tailwind start
 - Redux implementation and strategy

@@ -1,11 +1,12 @@
 import { Route } from "react-router-dom"
 import { Blogs } from "../features/blogs"
 import { Home } from "../features/home"
-import { Navigation } from "../features/navigation"
+import { Common } from "../features/common"
 import { Responsive } from "../features/responsive"
 import { Layout } from "../features/layout"
 import { AppSignals } from "../features/app-signals"
 import { AppMain } from "../features/app-main"
+import { MyComp } from "../features/my-comp"
 
 function useAppRoutes() {
     const routes: any[] = [
@@ -14,8 +15,8 @@ function useAppRoutes() {
             component: Home
         },
         {
-            path: 'navigation',
-            component: Navigation
+            path: 'common',
+            component: Common
         },
         {
             path: 'blogs',
@@ -36,11 +37,19 @@ function useAppRoutes() {
     ]
 
     function getRoutes() {
-        const rs = routes.map((r: any, index: number) => {
-            return (
-                <Route key={index} path={r.path} Component={r.component} />
-            )
+        const rs: any = routes.map((r: any, index: number) => {
+            if (r.path === 'app-main') {
+                return (<Route key={index} path={r.path} Component={r.component}>
+                    <Route key={index} path='my-comp' Component={MyComp} />
+                </Route>)
+            } else {
+                return (
+                    <Route key={index} path={r.path} Component={r.component} />
+                )
+            }
+
         })
+        // rs[4]
         return (rs)
     }
 

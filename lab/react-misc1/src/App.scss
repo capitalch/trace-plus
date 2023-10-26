@@ -3,9 +3,6 @@
 @tailwind utilities;
 
 @layer components {
-  .btn-primary {
-    @apply px-4  font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
-  }
 
   .full-width {
     @apply w-[100vw] h-10 ml-0
