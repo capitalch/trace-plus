@@ -7,11 +7,19 @@
     @apply px-4  font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
   }
 
-  
-}
+  .full-width {
+    @apply w-[100vw] h-10 ml-0
+  }
 
-@layer components {
-  .md-header{
-    @apply  2xl:w-[calc(100vw_-_360px)] w-10
+  .less-width {
+    @apply w-[calc(100vw_-_200px)] ml-[200px]
+  }
+
+  .zero-width {
+    @apply w-0 hidden
+  }
+
+  .side-bar-width {
+    @apply w-[200px]
   }
 }

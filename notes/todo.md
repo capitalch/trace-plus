@@ -1,3 +1,11 @@
+## For Navigation
+- Check showing components inside the Content control using Outlet of ract router
+- Implement login / layouts
+- Size and margins of Nav, sideBar and content based on 2XL size
+- Design of sideBar with top header showing left slide icon button
+- After menu slide or slideMenu click, the nav should show menu button visible and menu should close
+- Try out some delay in menu close
+- Clicking the menu button in Nav should slideIn the sideNav with delay
 ## Research
 																			- Tailwind start
 - Redux implementation and strategy
