@@ -1,11 +1,12 @@
-import './App.css';
+import './App.css'
 
 function App() {
+
   return (
-    <div className="m-24">
-      Test
-    </div>
-  );
+    <>
+      Start
+    </>
+  )
 }
 
-export default App;
+export default App

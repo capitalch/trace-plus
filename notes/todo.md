@@ -1,8 +1,8 @@
 ## For Navigation
 - Colors primary, Secondary etc. management
 	- links
-		- Good color generator: https://www.tints.dev/
-		- Good: https://uicolors.app/create
+		
+		
 																			- Check showing components inside the Content control using Outlet of react router
 																			- Implement login / layouts
 																			- Size and margins of Nav, sideBar and content based on 2XL size
