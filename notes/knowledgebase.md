@@ -1,6 +1,16 @@
 ## Typescript tailwind
 - With typescript the tailwind.config.js file must have: content: [{html,js,jsx,ts,tsx}]
 
+## Eslint
+- Error "require is not defined" when adding a plugin in vite tailwind project
+	- in file .eslintrc.cjs
+		  {
+		  "env": {
+		    "amd": true
+		  }
+		}
+		- 
+
 ## Signals from @preact/signals-react
 ```
 const SignalsStore: SignalsStoreType = {
