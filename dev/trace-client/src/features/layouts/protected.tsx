@@ -9,6 +9,6 @@ function Protected({ children }: any) {
     } else {
         return children
     }
-
 }
+
 export { Protected }
