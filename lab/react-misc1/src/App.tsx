@@ -12,9 +12,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         {getRoutes()}
-        {/* <Route path='/' Component={Home} />
-        <Route path='navigation' element={<Navigation />} />
-        <Route path='blogs' element={<Blogs />} /> */}
       </Routes>
     </BrowserRouter>
   );

@@ -8,6 +8,8 @@
 	- Tailwindcss cheatsheet by umeshmek: https://umeshmk.github.io/Tailwindcss-cheatsheet/
 - Many Items together
 	- https://github.com/aniftyco/awesome-tailwindcss
+- Icons svg
+	- https://reactsvgicons.com/react-svg-iconsets
 	
 ## UI libraries to use
 - tailwind

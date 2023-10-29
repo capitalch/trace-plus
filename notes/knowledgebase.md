@@ -1,5 +1,7 @@
 ## Typescript tailwind
 - With typescript the tailwind.config.js file must have: content: [{html,js,jsx,ts,tsx}]
+- Headwind for class sorting: On save the sorting takes place. To disable this
+	- Click settings icon -> extension settings -> disable run on save 
 
 ## Eslint
 - Error "require is not defined" when adding a plugin in vite tailwind project

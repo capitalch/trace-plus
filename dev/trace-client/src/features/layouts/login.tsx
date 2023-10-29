@@ -1,6 +1,12 @@
+// import { useNavigate } from "react-router-dom"
+// import {useLayoutEffect} from 'react'
 import { Astrix } from "../../components/controls/astrix"
+import { SignalsStore } from "../../app/signals-store"
+import { useNavigate } from 'react-router-dom'
 
 function Login() {
+    const navigate = useNavigate()
+    
     return (
         <div className='w-[100vw] '>
             <div className="flex flex-col p-5 ml-14 prose shadow-xl border-[3px] rounded-xl sm:mx-auto border-primary-400 h-96 w-96">
@@ -20,19 +26,27 @@ function Login() {
                     </div>
                     <input type="password" className="border-[1px] border-primary-200 px-2 rounded-md" />
                     <label className="text-xs text-slate-500">At least 8 characters long | 1 digit | 1 special char</label>
-                    <button className="flex items-center h-6 px-2 ml-auto text-xs font-bold text-pink-400" type="button">
-                        Forgot password</button>
+                    <span onClick={handleForgotPassword} className="px-2 py-1 ml-auto text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Forgot password</span>
+                </div>
+                <div className="flex flex-col mt-3">
+                    <button onClick={handleSignIn} className="w-full h-10 py-1 text-xl text-white bg-primary-400 hover:bg-primary-600 hover:border-2 hover:border-primary-300">Sign in</button>
+                    <div className="flex justify-start ">
+                        <span onClick={handleForgotPassword} className="py-1 text-xs  text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Super admin</span>
+                        <span onClick={handleForgotPassword} className="py-1 ml-auto text-xs  text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Admin</span>
+                        <span onClick={handleForgotPassword} className="py-1 ml-auto text-xs  text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Business user</span>
+                    </div>
                 </div>
             </div>
-            
         </div>
     )
+
+    function handleForgotPassword() {
+
+    }
+
+    function handleSignIn() {
+        SignalsStore.login.isLoggedIn.value = true
+        navigate('/test', {replace: true})
+    }
 }
 export { Login }
-
-{/* <div className='w-[100vw]'>
-<div className="flex flex-col p-4 ml-14 prose shadow-xl border-[3px] rounded-xl sm:mx-auto border-primary-400 h-96 w-96">
-    <label className="mx-auto text-3xl font-bold text-primary-500 ">Login</label>
-    <label  className="mt-2">User id / Email</label>
-</div>
-</div> */}

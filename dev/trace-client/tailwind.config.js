@@ -1,11 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 import colors from "tailwindcss/colors";
-
+import defaultTheme from "tailwindcss/defaultTheme";
 export default {
   content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
   theme: {
+
     extend: {
-      colors: {
+      fontFamily:{
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+      }
+      , colors: {
         primary: {
           // Royal blue
           50: "#E6EFF9",

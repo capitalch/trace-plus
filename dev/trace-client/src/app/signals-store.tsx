@@ -5,10 +5,10 @@ const SignalsStoreT: SignalsStoreType = {
     main: {
         hideSideBarClicked: false,
         showSidBarClicked: false,
-        login: {
-            isLoggedIn: signal(false),
-        }
     },
+    login: {
+        isLoggedIn: signal(false),
+    }
 }
 
 const SignalsStore: SignalsStoreType = _.cloneDeep(SignalsStoreT)
@@ -17,10 +17,10 @@ type SignalsStoreType = {
     main: {
         hideSideBarClicked: boolean
         showSidBarClicked: boolean
-        login: {
-            isLoggedIn: Signal<boolean>
-        }
     },
+    login: {
+        isLoggedIn: Signal<boolean>
+    }
 
 }
 

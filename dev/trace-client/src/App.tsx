@@ -1,15 +1,25 @@
+import { BrowserRouter, Route, Routes, } from 'react-router-dom'
 import './App.css'
-import { SignalsStore } from './app/signals-store'
 import { Layouts } from './features/layouts/layouts'
 import { Login } from './features/layouts/login'
+import { Protected } from './features/layouts/protected'
+import { Test } from './features/layouts/test'
 
 function App() {
 
   return (
-    <div id='app' className=''>
-      {/* <Login /> */}
-      {SignalsStore.main.login.isLoggedIn.value ? <Layouts /> : <Login />}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={
+          <Protected>
+            <Layouts />
+          </Protected>
+        }>
+          <Route path='test' element={<Test />} />
+        </Route>
+        <Route path='/login' element={<Login />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
