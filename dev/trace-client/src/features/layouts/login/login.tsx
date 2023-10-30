@@ -1,15 +1,12 @@
-// import { useNavigate } from "react-router-dom"
-// import {useLayoutEffect} from 'react'
-import { Astrix } from "../../components/controls/astrix"
-import { SignalsStore } from "../../app/signals-store"
-import { useNavigate } from 'react-router-dom'
+import { Astrix } from "../../../components/controls/astrix"
+import { useLogin } from "./login-hook"
 
 function Login() {
-    const navigate = useNavigate()
-    
+    const { handleForgotPassword, handleSignIn, handleTestSignIn } = useLogin()
+
     return (
         <div className='w-[100vw] '>
-            <div className="flex flex-col p-5 ml-14 prose shadow-xl border-[3px] rounded-xl sm:mx-auto border-primary-400 h-96 w-96">
+            <div className="flex flex-col p-5 ml-14 prose shadow-xl border-[3px] rounded-xl sm:mx-auto border-primary-400 h-auto w-96">
                 <h2 className="mx-auto text-primary-400">Login</h2>
                 <div className="flex flex-col gap-1">
                     <div>
@@ -30,23 +27,14 @@ function Login() {
                 </div>
                 <div className="flex flex-col mt-3">
                     <button onClick={handleSignIn} className="w-full h-10 py-1 text-xl text-white bg-primary-400 hover:bg-primary-600 hover:border-2 hover:border-primary-300">Sign in</button>
-                    <div className="flex justify-start ">
-                        <span onClick={handleForgotPassword} className="py-1 text-xs  text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Super admin</span>
-                        <span onClick={handleForgotPassword} className="py-1 ml-auto text-xs  text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Admin</span>
-                        <span onClick={handleForgotPassword} className="py-1 ml-auto text-xs  text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Business user</span>
+                    <div className="flex justify-start mt-2 ">
+                        <span onClick={() => handleTestSignIn('superAdmin')} className="py-1 text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Super admin</span>
+                        <span onClick={() => handleTestSignIn('admin')} className="py-1 ml-auto text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Admin</span>
+                        <span onClick={() => handleTestSignIn('businessUser')} className="py-1 ml-auto text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Business user</span>
                     </div>
                 </div>
             </div>
         </div>
     )
-
-    function handleForgotPassword() {
-
-    }
-
-    function handleSignIn() {
-        SignalsStore.login.isLoggedIn.value = true
-        navigate('/test', {replace: true})
-    }
 }
 export { Login }

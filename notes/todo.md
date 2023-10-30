@@ -1,3 +1,20 @@
+## Design to do
+- Separate out Navbar and SideBar as independent components
+- Implement logout in SignalsStore
+- Implement temporary login as Super admin, admin, business user
+- Show footer in sidebar as user type
+- Navbar: Right side dropdown menu: If SuperAdmin then LogOut. If Admin / Bus user then change UID, change password
+- Change UID, Change password not as modal. But as content through router
+- Mechanism to show hierarchical menu in sidebar
+- Navbar: 
+	- If superAdmin: Show Administration | Highlight it and set sidebarMenu in SignalsStore as super admin menu values
+		- Show menu items in sidebar against super admin
+	- If admin: Show Accounts, Administration | Highlight Accounts and set sidebarMenu in SignalsStore as admin accounts menu values. On click of Administration highlight it and push corresponding value in SignalsStore, so that it gets displayed in sidebarMenu
+	- If Bus user: Show Accounts and push accounts menu values
+
+## Research
+- Finalize modal component
+
 ## For Navigation
 - Colors primary, Secondary etc. management
 	- links
