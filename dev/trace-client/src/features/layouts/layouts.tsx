@@ -47,7 +47,6 @@ function Layouts() {
                 </div>
                 {/* navbar and content container */}
                 <div className="flex flex-col w-full">
-                    {/* navbar */}
                     {/* <Navbar /> */}
                     <div className="flex items-center justify-between h-10 bg-primary-500">
                         <div className="flex items-center">
