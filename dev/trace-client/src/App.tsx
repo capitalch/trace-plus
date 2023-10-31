@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes, } from 'react-router-dom'
 import './App.css'
-import { Layouts } from './features/layouts/layouts'
-import { Login } from './features/layouts/login/login'
-import { Protected } from './features/layouts/protected'
-import { Test } from './features/layouts/test'
+import { Layouts } from './features/navigation/layouts'
+import { Login } from './features/login/login'
+import { Protected } from './features/login/protected'
+import { Test } from './features/login/test'
 
 function App() {
 
@@ -16,7 +16,7 @@ function App() {
           </Protected>
         }>
           {/* Nested route */}
-          <Route path='test' element={<Test />} /> 
+          <Route path='test' element={<Test />} />
         </Route>
         <Route path='/login' element={<Login />} />
       </Routes>

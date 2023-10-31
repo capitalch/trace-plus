@@ -4,8 +4,11 @@ import _ from 'lodash'
 const SignalsStoreT: SignalsStoreType = {
 
     layouts: {
-        hideSideBarClicked: false,
-        showSidBarClicked: false,
+        isSideBarOpen: signal(undefined),
+
+        // hideSideBarClicked: false,
+        // showSidBarClicked: false,
+        // showHideClass: signal('')
     },
 
     login: {
@@ -16,13 +19,16 @@ const SignalsStoreT: SignalsStoreType = {
     }
 }
 
-const SignalsStore: SignalsStoreType = _.cloneDeep(SignalsStoreT)
+let SignalsStore: SignalsStoreType = _.cloneDeep(SignalsStoreT)
 
 type SignalsStoreType = {
 
     layouts: {
-        hideSideBarClicked: boolean
-        showSidBarClicked: boolean
+        isSideBarOpen: Signal<boolean | undefined>,
+
+        // hideSideBarClicked: boolean
+        // showSidBarClicked: boolean
+        // showHideClass: Signal<'block' | 'hidden' | ''>
     },
 
     login: {
@@ -34,4 +40,10 @@ type SignalsStoreType = {
 
 }
 
-export { SignalsStore }
+function doLogout() {
+    SignalsStore.login.isLoggedIn.value = false
+    SignalsStore = _.cloneDeep(SignalsStoreT)
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { doLogout, SignalsStore }

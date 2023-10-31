@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { MenuFold } from "../components/icons/menu-fold"
+import { MenuFold } from "../icons/menu-fold"
 
 function ButtonDropdown1() {
 
@@ -15,7 +15,7 @@ function ButtonDropdown1() {
 
         {isOpen && (
             <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-gray-50 right-0 border-[1px]">
-                <div className="divide-y divide-primary-200" role="menu"  aria-orientation="vertical" aria-labelledby="options-menu">
+                <div className="divide-y divide-primary-100" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                     <span className="flex items-center text-sm cursor-pointer hover:bg-gray-200">
                         <MenuFold className='w-4 h-4 mx-4 my-2 text-red-500' />
                         <label>Menu items</label>

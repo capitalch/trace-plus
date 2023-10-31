@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { Button } from "../components/controls/buttons"
 import clsx from "clsx"
-import { ButtonDropdown } from "./button-dropdown"
-import { ButtonDropdown1 } from "./button-dropdown1"
+import { ButtonDropdown } from "../components/controls/button-dropdown"
+import { ButtonDropdown1 } from "../components/controls/button-dropdown1"
 
 function Common() {
 

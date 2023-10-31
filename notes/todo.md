@@ -1,5 +1,5 @@
 ## Design to do
-- Separate out Navbar and SideBar as independent components
+																			- Separate out Navbar and SideBar as independent components
 - Implement logout in SignalsStore
 - Implement temporary login as Super admin, admin, business user
 - Show footer in sidebar as user type

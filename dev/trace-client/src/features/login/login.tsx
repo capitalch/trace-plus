@@ -1,4 +1,4 @@
-import { Astrix } from "../../../components/controls/astrix"
+import { Astrix } from "../../components/controls/astrix"
 import { useLogin } from "./login-hook"
 
 function Login() {
