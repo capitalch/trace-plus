@@ -1,8 +1,8 @@
 import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 import { SignalsStore } from "../../app/signals-store"
-import { Sidebar } from "./sidebar"
-import { NavbarContent } from "./navbar-content"
+import { Sidebar } from "./sidebar/sidebar"
+import { NavbarContent } from "./navbar-content/navbar-content"
 
 function Layouts() {
     const isBigScreen = useMediaQuery({ query: '(min-width: 1536px)' })
@@ -18,7 +18,9 @@ function Layouts() {
     return (
         <div className="prose">
             {/* Container full screen width and height */}
-            <div className="flex h-[100vh] w-[100vw]">
+            <div onClick={() => {
+                SignalsStore.layouts.navbar.toShowDropdownMenu.value = false // Sort of clickAway implementation
+            }} className="flex h-[100vh] w-[100vw]">
                 <Sidebar />
                 {/* navbar and content container */}
                 <NavbarContent />

@@ -4,6 +4,7 @@ import { Layouts } from './features/navigation/layouts'
 import { Login } from './features/login/login'
 import { Protected } from './features/login/protected'
 import { Test } from './features/login/test'
+import { Purchase } from './features/purchase/purchase'
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
         }>
           {/* Nested route */}
           <Route path='test' element={<Test />} />
+          <Route path='purchase' element={<Purchase />} />
         </Route>
         <Route path='/login' element={<Login />} />
       </Routes>

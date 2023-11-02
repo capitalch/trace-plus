@@ -1,4 +1,4 @@
-function MenuUnfold(props: any) {
+function MenuUnfoldIcon(props: any) {
     return (
         <svg
             viewBox="0 0 1024 1024"
@@ -12,5 +12,5 @@ function MenuUnfold(props: any) {
     );
 }
 
-export default MenuUnfold;
+export { MenuUnfoldIcon };
 

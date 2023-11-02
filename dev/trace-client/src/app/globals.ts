@@ -15,4 +15,7 @@ function getUserTypeName (): string {
   return userTypes[SignalsStore.login.userType.value]
 }
 
-export { getUserTypeName, UserTypesEnum }
+type NavbarMenuItemType = 'accounts' | 'admin' | 'superAdmin' | ''
+// const NavbarMenuItems:string[] = ['accounts', 'admin', 'superAdmin']
+
+export { getUserTypeName,type NavbarMenuItemType, UserTypesEnum }

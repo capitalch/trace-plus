@@ -1,14 +1,22 @@
 import { Signal, signal } from '@preact/signals-react'
 import _ from 'lodash'
+import { NavbarMenuItemType } from './globals'
 
 const SignalsStoreT: SignalsStoreType = {
 
     layouts: {
         isSideBarOpen: signal(undefined),
+        navbar: {
+            toShowAdminMenuItem: signal(false),
+            toShowAccountsMenuItem: signal(false),
+            toShowSuperAdminMenuItem: signal(false),
+            activeMenuItem: signal(''),
 
-        // hideSideBarClicked: false,
-        // showSidBarClicked: false,
-        // showHideClass: signal('')
+            toShowDropdownMenu: signal(false)
+        },
+        sidebar:{
+            currentMenuComponent: signal(<></>)
+        }
     },
 
     login: {
@@ -25,10 +33,17 @@ type SignalsStoreType = {
 
     layouts: {
         isSideBarOpen: Signal<boolean | undefined>,
+        navbar: {
+            toShowAdminMenuItem: Signal<boolean>
+            toShowAccountsMenuItem: Signal<boolean>
+            toShowSuperAdminMenuItem: Signal<boolean>
+            activeMenuItem: Signal<NavbarMenuItemType>
 
-        // hideSideBarClicked: boolean
-        // showSidBarClicked: boolean
-        // showHideClass: Signal<'block' | 'hidden' | ''>
+            toShowDropdownMenu: Signal<boolean>
+        },
+        sidebar:{
+            currentMenuComponent: Signal<any>
+        }
     },
 
     login: {
