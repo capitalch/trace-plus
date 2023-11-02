@@ -1,15 +1,13 @@
 import { useEffect } from "react"
 import { UserTypesEnum } from "../../../app/globals"
 import { SignalsStore, doLogout } from "../../../app/signals-store"
-import ChangePasswordIcon from "../../../components/icons/change-password-icon"
-import ChangeUidIcon from "../../../components/icons/change-uid-icon"
+import { ChangePasswordIcon } from "../../../components/icons/change-password-icon"
+import { ChangeUidIcon } from "../../../components/icons/change-uid-icon"
 import { LogoutIcon } from "../../../components/icons/logout-icon"
 import { AccountsMenu } from "../menus/accounts-menu"
-// import { useMenuData } from "./menu-data-hook"
 
 function useNavbarContent() {
     const userType = SignalsStore.login.userType.value
-    // const { accountsMenu } = useMenuData()
     useEffect(() => {
         showMenuItems()
     })

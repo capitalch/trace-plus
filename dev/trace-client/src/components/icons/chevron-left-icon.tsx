@@ -16,4 +16,4 @@ function ChevronsLeftIcon(props:any) {
   );
 }
 
-export default ChevronsLeftIcon;
+export {ChevronsLeftIcon};

@@ -1,6 +1,6 @@
 // icon:card-list | Bootstrap https://icons.getbootstrap.com/ | Bootstrap
 
-function VoucherIcon(props:any) {
+function VoucherIcon(props: any) {
   return (
     <svg
       fill="currentColor"
@@ -15,4 +15,4 @@ function VoucherIcon(props:any) {
   );
 }
 
-export default VoucherIcon;
+export { VoucherIcon };

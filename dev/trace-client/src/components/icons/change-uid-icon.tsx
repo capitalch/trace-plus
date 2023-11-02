@@ -12,4 +12,4 @@ function ChangeUidIcon(props: any) {
     );
 }
 
-export default ChangeUidIcon;
+export { ChangeUidIcon };

@@ -12,4 +12,4 @@ function ChangePasswordIcon(props: any) {
     );
 }
 
-export default ChangePasswordIcon;
+export { ChangePasswordIcon }
