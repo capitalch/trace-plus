@@ -14,9 +14,9 @@ function Sidebar() {
 
     return (
         <div className={getSidebarClassName()}>
-            <div className="h-full  bg-neutral-100  w-[200px] flex flex-col">
+            <div className="h-full    w-[200px] flex flex-col bg-neutral-100">
                 {/* SideBar Header */}
-                <div className="flex items-center h-12 pl-2 w-max border-b-[1px] border-primary-100">
+                <div className="flex items-center h-12 pl-2 w-max border-b-[1px] border-primary-100 ">
                     <img src="trace-logo.png" className="" />
                     <span onClick={handleHideSideBar}
                         className="ml-5 bg-transparent rounded-lg cursor-pointer text-primary-500 hover:bg-primary-100 hover:ring-1 hover:ring-primary-200">

@@ -5,6 +5,7 @@ import { ChangePasswordIcon } from "../../../components/icons/change-password-ic
 import { ChangeUidIcon } from "../../../components/icons/change-uid-icon"
 import { LogoutIcon } from "../../../components/icons/logout-icon"
 import { AccountsMenu } from "../menus/accounts-menu"
+import { TMenu } from "../menus/tmenu"
 
 function useNavbarContent() {
     const userType = SignalsStore.login.userType.value
@@ -63,7 +64,8 @@ function useNavbarContent() {
             SignalsStore.layouts.navbar.toShowSuperAdminMenuItem.value = false
 
             SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
-            SignalsStore.layouts.sidebar.currentMenuComponent.value = <AccountsMenu />
+            // SignalsStore.layouts.sidebar.currentMenuComponent.value = <AccountsMenu />
+            SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu />
         }
         if (userType === UserTypesEnum.SUPER_ADMIN) {
             SignalsStore.layouts.navbar.toShowAccountsMenuItem.value = false

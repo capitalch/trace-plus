@@ -1,56 +1,108 @@
-import { Link, } from "react-router-dom"
+import { useNavigate, } from "react-router-dom"
 import { VoucherIcon } from "../../../components/icons/voucher-icon"
 import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
-import { useSignal } from "@preact/signals-react"
+import { Signal, useSignal } from "@preact/signals-react"
 import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
+import clsx from "clsx"
+// import { TMenu } from "./tmenu"
 
 function AccountsMenu() {
-
-    const menuMeta: any = {
-        expandedId: useSignal('1'),
-        voucherToggle: useSignal(true)
+    const navigate = useNavigate()
+    const menuMeta: MenuMetaType = {
+        isExpanded: useSignal(false),
+        activeParentId: useSignal(''),
+        selectedChildId: useSignal(''),
     }
-    // const expandedId: string = menuMeta.expandedId.value
-    const voucherToggle = menuMeta.voucherToggle.value
+    const childClass = 'mr-1 flex rounded-lg py-2 no-underline pl-9 hover:cursor-pointer hover:bg-slate-300 border-none focus:outline-none'
+    const parentClass = 'mr-1 flex items-center gap-3 px-2 py-2 rounded-lg hover:cursor-pointer hover:bg-slate-300  border-none focus:outline-none'
+    
     return (
         <div className="flex flex-col text-sm font-semibold prose text-black md:text-base">
-            <span onClick={handleOnClick} id='1' className="flex items-center gap-3 py-1 pl-2 hover:cursor-pointer hover:bg-secondary-100 active:bg-secondary-200"><VoucherIcon /><span className="">Vouchers</span><CheveronDownIcon className={`ml-auto mr-2 ${(voucherToggle) ? 'block' : 'hidden'}`} /><CheveronUpIcon className={`ml-auto mr-2 ${(voucherToggle) ? 'hidden' : 'block'}`} /></span>
-            <div className={`flex flex-col ${voucherToggle ? 'hidden' : 'block'}`}>
-                <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Journals</Link>
-                <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Payments</Link>
-                <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Receipts</Link>
-                <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Contra</Link>
+            <div className="flex flex-col">
+                <button id='1' onClick={handleOnClickParent} className={parentClass}><VoucherIcon /><span className="mr-auto">Vouchers</span><CheveronUpIcon className={getParentClass('1')} /> <CheveronDownIcon className={getParentOppositeClass('1')} /></button>
+                <div className={clsx(getParentClass('1'), "flex flex-col gap-1")}>
+                    <button id='11' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('11'), childClass,)}>Journals</button>
+                    <button id='12' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('12'), childClass)}>Payments</button>
+                    <button id='13' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('13'), childClass)}>Receipts</button>
+                    <button id='14' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('14'), childClass)}>Contra</button>
+                </div>
             </div>
 
-            <span className="flex items-center gap-3 py-1 pl-2 mt-2 hover:cursor-pointer hover:bg-secondary-100 active:bg-secondary-200"><VoucherIcon /><span className="">Purchase / sales</span><CheveronDownIcon className='ml-auto mr-2' /></span>
+            <div className="flex flex-col">
+                <button id='2' onClick={handleOnClickParent} className={parentClass}><VoucherIcon /><span className="mr-auto">Purch / sales</span><CheveronUpIcon className={getParentClass('2')} /> <CheveronDownIcon className={getParentOppositeClass('2')} /></button>
+                <div className={clsx(getParentClass('2'), "flex flex-col gap-1")}>
+                    <button id='21' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('21'), childClass)}>Purchases</button>
+                    <button id='22' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('22'), childClass)}>Purchase returns</button>
+                    <button id='23' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('23'), childClass)}>Sales</button>
+                    <button id='24' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('24'), childClass)}>Sales returns</button>
+                    <button id='25' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('25'), childClass)}>Debit notes</button>
+                    <button id='26' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('26'), childClass)}>Credit notes</button>
+                </div>
+            </div>
 
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Purchases</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Purchase returns</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Sales</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Sales returns</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Debit notes</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Credit notes</Link>
-            {/* <span onClick={handlePurchaseClicked} className="pl-4 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100">Purchase</span> */}
-            <span className="flex items-center gap-3 py-1 pl-2 mt-2 hover:cursor-pointer hover:bg-secondary-100 active:bg-secondary-200"><VoucherIcon /><span className="">Masters</span><CheveronDownIcon className='ml-auto mr-2' /></span>
-
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Purchases</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Company info</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">General settings</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Accounts</Link>
-            <Link to='purchase' className="py-1 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100 active:bg-tertiary-200">Opening balances</Link>
-            {/* <Link to='payments' className="py-2 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100">Branches</Link>
-            <Link to='payments' className="py-2 no-underline pl-9 hover:cursor-pointer hover:text-primary-500 hover:bg-tertiary-100">financial years</Link> */}
-
+            <div className="flex flex-col">
+                <button id='3' onClick={handleOnClickParent} className={parentClass}><VoucherIcon /><span className="mr-auto">Masters</span><CheveronUpIcon className={getParentClass('3')} /> <CheveronDownIcon className={getParentOppositeClass('3')} /></button>
+                <div className={clsx(getParentClass('3'), "flex flex-col gap-1")}>
+                    <button id='31' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('31'), childClass)}>Purchases</button>
+                    <button id='32' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('32'), childClass)}>Company info</button>
+                    <button id='33' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('33'), childClass)}>General settings</button>
+                    <button id='34' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('34'), childClass)}>Accounts</button>
+                    <button id='35' onClick={handleOnClickChild} className={clsx(getSelectedChildClass('35'), childClass)}>Opening balances</button>
+                </div>
+            </div>
+            {/* <TMenu /> */}
         </div>
     )
 
-    function handleOnClick() {
-        menuMeta.voucherToggle.value = !menuMeta.voucherToggle.value
+    function getParentClass(id: string) {
+        let cls = 'hidden'
+        if (id === menuMeta.activeParentId.value) {
+            if (menuMeta.isExpanded.value) {
+                cls = 'block'
+            }
+        }
+        return (cls)
     }
 
-    // function handlePurchaseClicked() {
-    //     navigate('purchase')
-    // }
+    function getParentOppositeClass(id: string) {
+        let cls = getParentClass(id)
+        if (cls === 'block') {
+            cls = 'hidden'
+        } else {
+            cls = 'block'
+        }
+        return (cls)
+    }
+
+    function getSelectedChildClass(id: string) {
+        let aClass = ''
+        if (id === menuMeta.selectedChildId.value) {
+            aClass = 'bg-slate-300'
+        }
+        return (aClass)
+    }
+
+    function handleOnClickChild(e: any) {
+        const id = e.currentTarget.id
+        menuMeta.selectedChildId.value = id
+        navigate('purchase')
+    }
+
+    function handleOnClickParent(e: any) {
+        const id = e.currentTarget.id
+        if (id === menuMeta.activeParentId.value) {
+            menuMeta.isExpanded.value = !menuMeta.isExpanded.value
+        } else {
+            menuMeta.activeParentId.value = id
+            menuMeta.isExpanded.value = true
+        }
+    }
 
 }
 export { AccountsMenu }
+
+type MenuMetaType = {
+    isExpanded: Signal<boolean>
+    activeParentId: Signal<string>
+    selectedChildId: Signal<string>
+}

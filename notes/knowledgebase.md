@@ -2,7 +2,10 @@
 - With typescript the tailwind.config.js file must have: content: [{html,js,jsx,ts,tsx}]
 - Headwind for class sorting: On save the sorting takes place. To disable this
 	- Click settings icon -> extension settings -> disable run on save 
-
+	- You can use ctrl + alt + T to do sorting
+- To enable tailwind intellisense in variables
+	- In Tailwind intellisense extension settings -> **Tailwind CSS: Class Attributes** add .*Class and .*Styles. Now all variables with aClass or bStyles will have intellisense
+	- Also you can directly modify .vscode.settings.json file as adding  ".*Styles", ".*Class" in it
 ## Eslint
 - Error "require is not defined" when adding a plugin in vite tailwind project
 	- in file .eslintrc.cjs

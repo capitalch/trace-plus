@@ -4,7 +4,7 @@ import { Layouts } from './features/navigation/layouts'
 import { Login } from './features/login/login'
 import { Protected } from './features/login/protected'
 import { Test } from './features/login/test'
-import { Purchase } from './features/purchase/purchase'
+import { Purchase } from './features/accounts/purchase/purchase'
 
 function App() {
 

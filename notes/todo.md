@@ -1,10 +1,12 @@
 ## Design to do
-																			- Navbar height increase
-																			- Redo primary, secondary, tertialy as per teams
-																			- Remove underline											
+- Generic side menu
+- Transitions and animations	
 - implement Change uid, change password
 - Change UID, Change password not as modal. But as content through router
-- Mechanism to show hierarchical menu in sidebar
+																			- Navbar height increase
+																			- Redo primary, secondary, tertialy as per teams
+																			- Remove underline	
+																			- Mechanism to show hierarchical menu in sidebar
 																			- Separate out Navbar and SideBar as independent components
 																			- Implement logout in SignalsStore
 																			- Implement temporary login as Super admin, admin, business user

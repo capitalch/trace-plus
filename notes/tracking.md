@@ -16,8 +16,14 @@
 
 ## History
 
-# 27-10-2023
-- Started Trace-plus
+# 28-10-2023 - 03-10-2023
+- Navigation completed
+- Control system completed
+- Left menu implementation
+- Router implementation
+- Login screen
+- Logout
+- Signals global state
 
 # 27-10-2023
 - Started on trace-client
