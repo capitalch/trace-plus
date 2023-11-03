@@ -5,6 +5,7 @@ import { Login } from './features/login/login'
 import { Protected } from './features/login/protected'
 import { Test } from './features/login/test'
 import { Purchase } from './features/accounts/purchase/purchase'
+import { Sales } from './features/accounts/sales/sales'
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
           {/* Nested route */}
           <Route path='test' element={<Test />} />
           <Route path='purchase' element={<Purchase />} />
+          <Route path='sales' element={<Sales />} />
         </Route>
         <Route path='/login' element={<Login />} />
       </Routes>

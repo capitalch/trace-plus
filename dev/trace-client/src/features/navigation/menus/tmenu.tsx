@@ -1,5 +1,5 @@
 import { useNavigate, } from "react-router-dom"
-import { VoucherIcon } from "../../../components/icons/voucher-icon"
+// import { VoucherIcon } from "../../../components/icons/voucher-icon"
 import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
 import { Signal, useSignal } from "@preact/signals-react"
 import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
@@ -36,7 +36,7 @@ function TMenu({ menuData }: { menuData: MenuItemType[] }) {
     function getParentWithChildren(item: ParentMenuItemType) {
         return (
             <div className="flex flex-col">
-                <button id={item.id} onClick={handleOnClickParent} className={parentClass}><VoucherIcon /><span className="mr-auto">{item.title}</span><CheveronUpIcon className={getParentClass(item.id)} /> <CheveronDownIcon className={getParentOppositeClass(item.id)} /></button>
+                <button id={item.id} onClick={handleOnClickParent} className={parentClass}><item.icon className='text-primary-400' /><span className="mr-auto">{item.title}</span><CheveronUpIcon className={getParentClass(item.id)} /> <CheveronDownIcon className={getParentOppositeClass(item.id)} /></button>
                 {getChildren(item)}
             </div>
         )
@@ -45,7 +45,7 @@ function TMenu({ menuData }: { menuData: MenuItemType[] }) {
     function getChildren(item: ParentMenuItemType) {
         const children = item.children.map((child: ChildMenuItemType, index: number) => {
             return (
-                <button key={index} id={child.id} onClick={handleOnClickChild} className={clsx(getSelectedChildClass(child.id), childClass)}>{child.title}</button>
+                <button key={index} id={child.id} onClick={(e:any)=>handleOnClickChild(e,child.path)} className={clsx(getSelectedChildClass(child.id), childClass)}>{child.title}</button>
             )
         })
         return (
@@ -83,10 +83,10 @@ function TMenu({ menuData }: { menuData: MenuItemType[] }) {
         return (aClass)
     }
 
-    function handleOnClickChild(e: any) {
+    function handleOnClickChild(e: any, path: string) {
         const id = e.currentTarget.id
         menuMeta.selectedChildId.value = id
-        navigate('purchase')
+        navigate(path)
     }
 
     function handleOnClickParent(e: any) {
@@ -108,105 +108,6 @@ type MenuMetaType = {
     selectedChildId: Signal<string>
 }
 
-// const menuItems: ParentMenuItemType[] = [
-//     {
-//         id: '1',
-//         title: 'Vouchers',
-//         icon: <VoucherIcon />,
-//         children: [
-//             {
-//                 id: '11',
-//                 title: 'Journals',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '12',
-//                 title: 'Payments',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '13',
-//                 title: 'Receipts',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '14',
-//                 title: 'Contra',
-//                 path: 'purchase'
-//             },
-//         ]
-//     },
-//     {
-//         id: '2',
-//         title: 'Purch / Sales',
-//         icon: <VoucherIcon />,
-//         children: [
-//             {
-//                 id: '21',
-//                 title: 'Purchase',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '22',
-//                 title: 'Purchase returns',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '23',
-//                 title: 'Sales',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '24',
-//                 title: 'Sales returns',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '25',
-//                 title: 'Debit notes',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '26',
-//                 title: 'Credit notes',
-//                 path: 'purchase'
-//             }
-//         ]
-//     },
-//     {
-//         id: '3',
-//         title: 'Masters',
-//         icon: <VoucherIcon />,
-//         children: [
-//             {
-//                 id: '31',
-//                 title: 'Purchases',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '32',
-//                 title: 'Company info',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '33',
-//                 title: 'General settings',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '34',
-//                 title: 'Accounts',
-//                 path: 'purchase'
-//             },
-//             {
-//                 id: '35',
-//                 title: 'Opening balances',
-//                 path: 'purchase'
-//             },
-//         ]
-//     }
-
-// ]
 
 type ParentMenuItemType = {
     id: string

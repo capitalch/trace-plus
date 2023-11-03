@@ -1,10 +1,11 @@
-## Design to do
-																			- Generic side menu
+## Design to do																			
+- Naming convention etc for navigation
 - Implement admin menu
 - Implement super admin menu
 - Transitions and animations	
 - implement Change uid, change password
 - Change UID, Change password not as modal. But as content through router
+																			- Generic side menu
 																			- Navbar height increase
 																			- Redo primary, secondary, tertialy as per teams
 																			- Remove underline	
