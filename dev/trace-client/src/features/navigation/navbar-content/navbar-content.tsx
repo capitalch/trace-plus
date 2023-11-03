@@ -5,7 +5,9 @@ import { ButtonDropdown } from "../../../components/widgets/button-dropdown"
 import { SignalsStore } from "../../../app/signals-store"
 import { useNavbarContent } from "./navbar-content-hook"
 import { NavbarMenuItemType, } from '../../../app/globals'
-import { AccountsMenu } from "../menus/accounts-menu"
+// import { AccountsMenu } from "../menus/accounts-menu"
+import { TMenu } from "../menus/tmenu"
+import { accountsMenuData } from "../menus/accounts-menu-data"
 
 function NavbarContent() {
     const { getDropdownChildren, getMenuShowHideClass, handleShowSideBar } = useNavbarContent()
@@ -47,7 +49,8 @@ function AccountsMenuButton({ className }: { className?: string }) {
     </span>)
     function handleClick() {
         SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
-        SignalsStore.layouts.sidebar.currentMenuComponent.value= <AccountsMenu />
+        // SignalsStore.layouts.sidebar.currentMenuComponent.value= <AccountsMenu />
+        SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu menuData={accountsMenuData} />
     }
 }
 export { AccountsMenuButton }

@@ -4,8 +4,9 @@ import { SignalsStore, doLogout } from "../../../app/signals-store"
 import { ChangePasswordIcon } from "../../../components/icons/change-password-icon"
 import { ChangeUidIcon } from "../../../components/icons/change-uid-icon"
 import { LogoutIcon } from "../../../components/icons/logout-icon"
-import { AccountsMenu } from "../menus/accounts-menu"
+// import { AccountsMenu } from "../menus/accounts-menu"
 import { TMenu } from "../menus/tmenu"
+import { accountsMenuData } from "../menus/accounts-menu-data"
 
 function useNavbarContent() {
     const userType = SignalsStore.login.userType.value
@@ -65,7 +66,7 @@ function useNavbarContent() {
 
             SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
             // SignalsStore.layouts.sidebar.currentMenuComponent.value = <AccountsMenu />
-            SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu />
+            SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu menuData={accountsMenuData} />
         }
         if (userType === UserTypesEnum.SUPER_ADMIN) {
             SignalsStore.layouts.navbar.toShowAccountsMenuItem.value = false
@@ -80,7 +81,8 @@ function useNavbarContent() {
             SignalsStore.layouts.navbar.toShowSuperAdminMenuItem.value = false
 
             SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
-            SignalsStore.layouts.sidebar.currentMenuComponent.value = <AccountsMenu />
+            // SignalsStore.layouts.sidebar.currentMenuComponent.value = <AccountsMenu />
+            SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu menuData={accountsMenuData} />
         }
     }
 

@@ -1,5 +1,7 @@
 ## Design to do
-- Generic side menu
+																			- Generic side menu
+- Implement admin menu
+- Implement super admin menu
 - Transitions and animations	
 - implement Change uid, change password
 - Change UID, Change password not as modal. But as content through router
