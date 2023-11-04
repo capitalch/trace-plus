@@ -3,20 +3,28 @@
 @tailwind utilities;
 
 @layer components {
-
   .full-width {
-    @apply w-[100vw] h-10 ml-0
+    @apply ml-0 h-10 w-[100vw];
   }
 
   .less-width {
-    @apply w-[calc(100vw_-_200px)] ml-[200px]
+    @apply ml-[200px] w-[calc(100vw_-_200px)];
   }
 
   .zero-width {
-    @apply w-0 hidden
+    @apply hidden w-0;
   }
 
   .side-bar-width {
-    @apply w-[200px]
+    @apply w-[200px];
   }
+
+  .target {
+    @apply w-20 transition-[width] duration-[3s] ease-in-out
+  }
+
+  // .target:hover {
+  //   width: 200px;
+  //   color: red;
+  // }
 }

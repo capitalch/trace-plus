@@ -1,3 +1,4 @@
+// This file is not used. This is only for visualization and testing purpose
 import { FinalAccountsIcon } from "../../../components/icons/final-accounts-icon"
 import { InventoryIcon } from "../../../components/icons/inventory-icon"
 import { MastersIcon } from "../../../components/icons/masters-icon"
@@ -5,9 +6,9 @@ import { OptionsIcon } from "../../../components/icons/options-icon"
 import { PurchaseSalesIcon } from "../../../components/icons/purchase-sales-icon"
 import { ReportsIcon } from "../../../components/icons/reports-icon"
 import { VoucherIcon } from "../../../components/icons/voucher-icon"
-import { MenuItemType } from "./menu-items-type"
+import { NodeMenuItemType } from "./menu-items-type"
 
-const accountsMenuData: MenuItemType[] = [
+const accountsMenuData: NodeMenuItemType[] = [
     {
         id: '1',
         title: 'Vouchers',

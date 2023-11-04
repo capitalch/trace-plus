@@ -6,7 +6,7 @@ import { SignalsStore } from "../../../app/signals-store"
 import { useNavbarContent } from "./navbar-content-hook"
 import { NavbarMenuItemType, } from '../../../app/globals'
 // import { AccountsMenu } from "../menus/accounts-menu"
-import { TMenu } from "../menus/tmenu"
+import { SideMenu } from "../menus/side-menu"
 import { accountsMenuData } from "../menus/accounts-menu-data"
 
 function NavbarContent() {
@@ -50,7 +50,7 @@ function AccountsMenuButton({ className }: { className?: string }) {
     function handleClick() {
         SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
         // SignalsStore.layouts.sidebar.currentMenuComponent.value= <AccountsMenu />
-        SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu menuData={accountsMenuData} />
+        SignalsStore.layouts.sidebar.currentMenuComponent.value = <SideMenu menuData={accountsMenuData} />
     }
 }
 export { AccountsMenuButton }

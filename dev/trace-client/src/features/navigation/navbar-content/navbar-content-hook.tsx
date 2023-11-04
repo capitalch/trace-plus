@@ -5,7 +5,7 @@ import { ChangePasswordIcon } from "../../../components/icons/change-password-ic
 import { ChangeUidIcon } from "../../../components/icons/change-uid-icon"
 import { LogoutIcon } from "../../../components/icons/logout-icon"
 // import { AccountsMenu } from "../menus/accounts-menu"
-import { TMenu } from "../menus/tmenu"
+import { SideMenu } from "../menus/side-menu"
 import { accountsMenuData } from "../menus/accounts-menu-data"
 
 function useNavbarContent() {
@@ -66,7 +66,7 @@ function useNavbarContent() {
 
             SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
             // SignalsStore.layouts.sidebar.currentMenuComponent.value = <AccountsMenu />
-            SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu menuData={accountsMenuData} />
+            SignalsStore.layouts.sidebar.currentMenuComponent.value = <SideMenu menuData={accountsMenuData} />
         }
         if (userType === UserTypesEnum.SUPER_ADMIN) {
             SignalsStore.layouts.navbar.toShowAccountsMenuItem.value = false
@@ -82,7 +82,7 @@ function useNavbarContent() {
 
             SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
             // SignalsStore.layouts.sidebar.currentMenuComponent.value = <AccountsMenu />
-            SignalsStore.layouts.sidebar.currentMenuComponent.value = <TMenu menuData={accountsMenuData} />
+            SignalsStore.layouts.sidebar.currentMenuComponent.value = <SideMenu menuData={accountsMenuData} />
         }
     }
 

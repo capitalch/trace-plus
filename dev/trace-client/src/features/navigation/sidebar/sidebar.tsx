@@ -1,20 +1,13 @@
-import { useEffect } from "react"
+import clsx from "clsx"
 import { getUserTypeName } from "../../../app/globals"
 import { SignalsStore } from "../../../app/signals-store"
 import { MenuFoldIcon } from "../../../components/icons/menu-fold-icon"
-// import { useSidebar } from "./sidbar-hook"
-// import { AccountsMenu } from "./accounts-menu"
 
 function Sidebar() {
 
-    // const { getMenu } = useSidebar()
-    useEffect(() => {
-
-    })
-
     return (
-        <div className={getSidebarClassName()}>
-            <div className="h-full    w-[200px] flex flex-col bg-neutral-100">
+        <div className={clsx(getSidebarClassName(),'transition-[width] duration-500 ease-in-out')}>
+            <div className="h-full w-[200px] flex flex-col bg-neutral-100">
                 {/* SideBar Header */}
                 <div className="flex items-center h-12 pl-2 w-max border-b-[1px] border-primary-100 ">
                     <img src="trace-logo.png" className="" />
@@ -36,16 +29,13 @@ function Sidebar() {
         </div>
     )
 
-    // function getSideMenu(){
-
-    // }
-
     function handleHideSideBar() {
         SignalsStore.layouts.isSideBarOpen.value = false
     }
 
     function getSidebarClassName() {
-        return SignalsStore.layouts.isSideBarOpen.value === true ? 'block' : 'hidden'
+        // return SignalsStore.layouts.isSideBarOpen.value === true ? 'block' : 'hidden'
+        return SignalsStore.layouts.isSideBarOpen.value === true ? 'w-[200px]' : 'w-0'
     }
 }
 export { Sidebar }
