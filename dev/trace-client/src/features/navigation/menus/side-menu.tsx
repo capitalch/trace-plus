@@ -12,11 +12,12 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         activeNodeId: useSignal(''),
         selectedChildId: useSignal(''),
     }
-    const childClass = 'mr-1 flex rounded-lg py-2 no-underline pl-9 hover:cursor-pointer hover:bg-slate-300 border-none focus:outline-none'
-    const nodeClass = 'mr-1 flex items-center gap-3 px-2 py-2 rounded-lg hover:cursor-pointer hover:bg-slate-300  border-none focus:outline-none'
+    const childClass = clsx('bg-lime-50 mr-1 flex rounded-lg py-2 pl-9 hover:cursor-pointer hover:bg-slate-300 border-none focus:outline-none',)
+    const nodeClass = 'mr-1 mb-1 flex items-center gap-3 px-2 py-2 rounded-lg hover:cursor-pointer hover:bg-slate-300  border-none focus:outline-none'
     const rootClass = 'flex flex-col text-sm font-semibold prose text-black md:text-base'
+    const transitionClass = 'flex flex-col gap-1 transform-gpu origin-top transition-all duration-300 ease-out'
     return (
-        <div className={rootClass}>
+        <div className={clsx(rootClass, '')}>
             {getAllNodessWithChildren()}
         </div>
     )
@@ -24,7 +25,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getAllNodessWithChildren() {
         const items: any[] = menuData.map((item: NodeMenuItemType, index: number) => {
             return (
-                <div key={index} className="flex flex-col">
+                <div key={index} className="flex flex-col bg bg">
                     {getNodeWithChildren(item)}
                 </div>
             )
@@ -35,7 +36,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getNodeWithChildren(item: NodeMenuItemType) {
         return (
             <div className="flex flex-col">
-                <button id={item.id} onClick={handleOnClickNode} className={nodeClass}><item.icon className='text-primary-400' /><span className="mr-auto">{item.title}</span><CheveronUpIcon className={getNodeClass(item.id)} /> <CheveronDownIcon className={getNodeOppositeClass(item.id)} /></button>
+                <button id={item.id} onClick={handleOnClickNode} className={nodeClass}><item.icon className='text-primary-400' /><span className="mr-auto">{item.title}</span><CheveronUpIcon className={getArrowUpClass(item.id)} /> <CheveronDownIcon className={getArrowDownClass(item.id)} /></button>
                 {getChildren(item)}
             </div>
         )
@@ -44,17 +45,17 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getChildren(item: NodeMenuItemType) {
         const children = item.children.map((child: ChildMenuItemType, index: number) => {
             return (
-                <button key={index} id={child.id} onClick={(e:any)=>handleOnClickChild(e,child.path)} className={clsx(getSelectedChildClass(child.id), childClass)}>{child.title}</button>
+                <button key={index} id={child.id} onClick={(e:any)=>handleOnClickChild(e,child.path)} className={clsx(childClass, getSelectedChildClass(child.id), )}>{child.title}</button>
             )
         })
         return (
-            <div className={clsx(getNodeClass(item.id), "flex flex-col gap-1")}>
+            <div className={clsx(getNodeVisibleClass(item.id), transitionClass)}>
                 {children}
             </div>
         )
     }
 
-    function getNodeClass(id: string) {
+    function getArrowUpClass(id: string) {
         let cls = 'hidden'
         if (id === menuMeta.activeNodeId.value) {
             if (menuMeta.isExpanded.value) {
@@ -64,8 +65,8 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         return (cls)
     }
 
-    function getNodeOppositeClass(id: string) {
-        let cls = getNodeClass(id)
+    function getArrowDownClass(id: string) {
+        let cls = getArrowUpClass(id)
         if (cls === 'block') {
             cls = 'hidden'
         } else {
@@ -74,10 +75,22 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         return (cls)
     }
 
+    function getNodeVisibleClass(id: string) {
+        // let cls = 'hidden'
+        let cls = 'scale-y-0 h-0'
+        if (id === menuMeta.activeNodeId.value) {
+            if (menuMeta.isExpanded.value) {
+                // cls = 'block'
+                cls = 'scale-y-1 h-auto'
+            }
+        }
+        return (cls)
+    }
+
     function getSelectedChildClass(id: string) {
         let aClass = ''
         if (id === menuMeta.selectedChildId.value) {
-            aClass = 'bg-slate-300'
+            aClass = '!bg-slate-300'
         }
         return (aClass)
     }

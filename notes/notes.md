@@ -10,6 +10,9 @@
 	- https://github.com/aniftyco/awesome-tailwindcss
 - Icons svg
 	- https://reactsvgicons.com/react-svg-iconsets
+- Modals
+	- Flowbite is good: Pure TW implementation from scratch
+		https://flowbite.com/docs/components/modal/
 	
 ## UI libraries to use
 - tailwind

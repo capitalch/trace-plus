@@ -1,4 +1,3 @@
-// This file is not used. This is only for visualization and testing purpose
 import { FinalAccountsIcon } from "../../../components/icons/final-accounts-icon"
 import { InventoryIcon } from "../../../components/icons/inventory-icon"
 import { MastersIcon } from "../../../components/icons/masters-icon"
@@ -95,7 +94,7 @@ const accountsMenuData: NodeMenuItemType[] = [
             },
             {
                 id: '34',
-                title: 'Opening balances',
+                title: 'Opening balance',
                 path: 'purchase'
             },
             {

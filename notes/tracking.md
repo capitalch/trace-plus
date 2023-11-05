@@ -16,6 +16,10 @@
 
 ## History
 
+# 04-10-2023 - 05-10-2023
+- Transition and transformation in navigation completed
+- Side menu, nav bar completed
+
 # 28-10-2023 - 03-10-2023
 - Navigation completed
 - Control system completed

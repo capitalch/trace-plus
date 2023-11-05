@@ -4,8 +4,7 @@
 - Lazy loading
 - Implement admin menu
 - Implement super admin menu
-- Transitions and animations
-- Implement transition
+																			- Transitions and animations
 - Implement drawer for mobile devices
 - implement Change uid, change password
 - Change UID, Change password not as modal. But as content through router

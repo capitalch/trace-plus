@@ -6,6 +6,7 @@
 - To enable tailwind intellisense in variables
 	- In Tailwind intellisense extension settings -> **Tailwind CSS: Class Attributes** add .*Class and .*Styles. Now all variables with aClass or bStyles will have intellisense
 	- Also you can directly modify .vscode.settings.json file as adding  ".*Styles", ".*Class" in it
+- The transition does not work with h-max, h-auto. For transition to work the height should be fixed like h-4, h-8 etc.
 ## Eslint
 - Error "require is not defined" when adding a plugin in vite tailwind project
 	- in file .eslintrc.cjs

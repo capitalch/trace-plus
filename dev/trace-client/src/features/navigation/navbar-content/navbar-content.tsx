@@ -5,7 +5,6 @@ import { ButtonDropdown } from "../../../components/widgets/button-dropdown"
 import { SignalsStore } from "../../../app/signals-store"
 import { useNavbarContent } from "./navbar-content-hook"
 import { NavbarMenuItemType, } from '../../../app/globals'
-// import { AccountsMenu } from "../menus/accounts-menu"
 import { SideMenu } from "../menus/side-menu"
 import { accountsMenuData } from "../menus/accounts-menu-data"
 
@@ -20,7 +19,7 @@ function NavbarContent() {
                 <span onClick={handleShowSideBar} className={clsx(getMenuShowHideClass(),
                     'text-white mx-2 bg-transparent cursor-pointer hover:bg-primary-600  hover:ring-white hover:ring-1 rounded-lg'
                 )}>
-                    <MenuUnfoldIcon className='' />
+                    <MenuUnfoldIcon className='h-6' />
                 </span>
                 <div className="flex gap-[1px]">
                     {SignalsStore.layouts.navbar.toShowAccountsMenuItem.value ? <AccountsMenuButton /> : ''}
