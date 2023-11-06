@@ -3,7 +3,7 @@ import { Button } from "../components/controls/buttons"
 import clsx from "clsx"
 import { ButtonDropdown1 } from "../components/controls/button-dropdown1"
 import { useSignal } from "@preact/signals-react"
-
+import { Modal } from "./modal"
 function Common() {
     const meta: any = {
         toggleClass: useSignal('h-max scale-y-1')
@@ -36,6 +36,7 @@ function Common() {
 
                 </div>
             </div>
+            <Modal />
         </div>
     )
 

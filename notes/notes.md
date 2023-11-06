@@ -11,17 +11,16 @@
 - Icons svg
 	- https://reactsvgicons.com/react-svg-iconsets
 - Modals
-	- Flowbite is good: Pure TW implementation from scratch
-		https://flowbite.com/docs/components/modal/
 	
 ## UI libraries to use
 - tailwind
-	- headlessui
-	- clsx
+	- Good library from base implementations of controls
+		- https://www.creative-tim.com/learning-lab/tailwind-starter-kit
+	
 
 ## UI libraries may consider
 - rsuitejs
-
+- headlessui: considering
 - daisyUI for tw
 - tw-elements
 - flowbite datepicker

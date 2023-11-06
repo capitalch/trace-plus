@@ -14,7 +14,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     }
     const childClass = clsx('bg-lime-50 mr-1 flex rounded-lg py-2 pl-9 hover:cursor-pointer hover:bg-slate-300 border-none focus:outline-none',)
     const nodeClass = 'mr-1 mb-1 flex items-center gap-3 px-2 py-2 rounded-lg hover:cursor-pointer hover:bg-slate-300  border-none focus:outline-none'
-    const rootClass = 'flex flex-col text-sm font-semibold prose text-black md:text-base'
+    const rootClass = 'flex flex-col  font-semibold text-xs text-black md:text-sm'
     const transitionClass = 'flex flex-col gap-1 transform-gpu origin-top transition-all duration-300 ease-out'
     return (
         <div className={clsx(rootClass, '')}>
@@ -25,7 +25,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getAllNodessWithChildren() {
         const items: any[] = menuData.map((item: NodeMenuItemType, index: number) => {
             return (
-                <div key={index} className="flex flex-col bg bg">
+                <div key={index} className="flex flex-col bg">
                     {getNodeWithChildren(item)}
                 </div>
             )
@@ -45,7 +45,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getChildren(item: NodeMenuItemType) {
         const children = item.children.map((child: ChildMenuItemType, index: number) => {
             return (
-                <button key={index} id={child.id} onClick={(e:any)=>handleOnClickChild(e,child.path)} className={clsx(childClass, getSelectedChildClass(child.id), )}>{child.title}</button>
+                <button key={index} id={child.id} onClick={(e: any) => handleOnClickChild(e, child.path)} className={clsx(childClass, getSelectedChildClass(child.id),)}>{child.title}</button>
             )
         })
         return (

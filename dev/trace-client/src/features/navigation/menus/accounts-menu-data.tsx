@@ -94,7 +94,7 @@ const accountsMenuData: NodeMenuItemType[] = [
             },
             {
                 id: '34',
-                title: 'Opening balance',
+                title: 'Opening balances',
                 path: 'purchase'
             },
             {

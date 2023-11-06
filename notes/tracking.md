@@ -14,6 +14,9 @@
 	- Coding
 - Create GraphQL query in Redux
 
+## Bugs
+- Error happening at side menu while small screen sizes
+
 ## History
 
 # 04-10-2023 - 05-10-2023
