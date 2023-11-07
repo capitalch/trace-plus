@@ -4,8 +4,8 @@
 																								- Folder structure
 																								- Identify colors
 - Redux
-- Signals store
-- Routing
+																								- Signals store
+																								- Routing
 - Login
 																								- UI
 	- Coding
@@ -15,7 +15,8 @@
 - Create GraphQL query in Redux
 
 ## Bugs
-- Error happening at side menu while small screen sizes
+																								- Side menu matter not collapsing
+																								- Error happening at side menu while small screen sizes
 
 ## History
 

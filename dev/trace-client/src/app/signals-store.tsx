@@ -1,6 +1,7 @@
 import { Signal, signal } from '@preact/signals-react'
 import _ from 'lodash'
 import { NavbarMenuItemType } from './globals'
+import { FC } from 'react'
 
 const SignalsStoreT: SignalsStoreType = {
 
@@ -14,7 +15,7 @@ const SignalsStoreT: SignalsStoreType = {
 
             toShowDropdownMenu: signal(false)
         },
-        sidebar:{
+        sidebar: {
             currentMenuComponent: signal(<></>)
         }
     },
@@ -24,7 +25,27 @@ const SignalsStoreT: SignalsStoreType = {
         uid: signal(''),
         email: signal(''),
         userType: signal(0)
-    }
+    },
+
+    modalDialogA: {
+        body: signal(() => <></>),
+        defaultData: signal(undefined),
+        isOpen: signal(false),
+        isCentered: false,
+        size: signal('md'),
+        title: signal(''),
+        toShowCloseButton: signal(false),
+    },
+
+    modalDialogB: {
+        body: signal(() => <></>),
+        defaultData: signal(undefined),
+        isOpen: signal(false),
+        isCentered: false,
+        size: signal('md'),
+        title: signal(''),
+        toShowCloseButton: signal(false),
+    },
 }
 
 let SignalsStore: SignalsStoreType = _.cloneDeep(SignalsStoreT)
@@ -41,7 +62,7 @@ type SignalsStoreType = {
 
             toShowDropdownMenu: Signal<boolean>
         },
-        sidebar:{
+        sidebar: {
             currentMenuComponent: Signal<any>
         }
     },
@@ -51,7 +72,27 @@ type SignalsStoreType = {
         uid: Signal<string>
         email: Signal<string>
         userType: Signal<number>
-    }
+    },
+
+    modalDialogA: {
+        body: Signal<FC>
+        defaultData: Signal<any>
+        isOpen: Signal<boolean>
+        isCentered?: boolean
+        size: Signal<'md' | 'sm' | 'lg'>
+        title: Signal<string>
+        toShowCloseButton: Signal<boolean>
+    },
+
+    modalDialogB: {
+        body: Signal<FC>,
+        defaultData: Signal<any>,
+        isOpen: Signal<boolean>,
+        isCentered?: boolean,
+        size: Signal<'md' | 'sm' | 'lg' | 'md'>,
+        title: Signal<string>,
+        toShowCloseButton: Signal<boolean>,
+    },
 
 }
 
