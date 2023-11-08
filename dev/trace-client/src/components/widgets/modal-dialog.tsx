@@ -1,55 +1,42 @@
-// import { SignalsStore } from "../../app/signals-store"
+import clsx from "clsx"
 
-import { SignalsStore } from "../../app/signals-store"
-
-function ModalDialog({ isOpen, size = 'sm' }: ModalDialogType) {
-    // const isOpen = SignalsStore.modalDialogA.isOpen.value
-    // const sizeLogic = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-4xl' }
+function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowCloseButton = false }: ModalDialogType) {
+    
+    const sizeLogic = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-4xl' }
+    const footerClassName = toShowCloseButton ? 'flex' : 'hidden'
     return (
         <>
-            {isOpen ? (
+            {isOpen.value ? (
                 <>
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-                        <div className="relative w-auto max-w-4xl mx-auto my-6">
+                        <div className={clsx("relative w-auto max-w-4xl mx-auto", sizeLogic[size])}>
 
                             {/*content*/}
-                            <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
+                            <div className="relative flex flex-col w-full bg-white rounded-lg shadow-lg outline-none focus:outline-none">
 
                                 {/*header*/}
-                                <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-blueGray-200">
-                                    <label className="text-2xl font-semibold">
-                                        Modal Title
+                                <div className="flex items-center justify-between p-5 ">
+                                    <label className="text-2xl font-semibold text-primary-500">
+                                        {title}
                                     </label>
-                                    <button className="w-6 h-6 px-0 py-0 font-semibold bg-transparent border-0 outline-none focus:outline-none">
+                                    <button onClick={onClickClose} className="w-6 h-6 px-0 py-0 font-semibold bg-transparent border-0 outline-none focus:outline-none">
                                         X
                                     </button>
                                 </div>
 
                                 {/*body*/}
-                                <div className="relative flex-auto p-6">
-                                    <p className="my-4 text-lg leading-relaxed text-blueGray-500">
-                                        I always felt like I could do anything. That’s the main
-                                        thing people are controlled by! Thoughts- their perception
-                                        of themselves! They're slowed down by their perception of
-                                        themselves. If you're taught you can’t do anything, you
-                                        won’t do anything. I was taught I could do everything.
-                                    </p>
+                                <div className="relative flex-auto p-6 pt-0">
+                                    {body({defaultData})}
                                 </div>
 
                                 {/*footer*/}
-                                <div className="flex items-center justify-end p-6 border-t border-solid rounded-b border-blueGray-200">
+                                <div className={clsx("flex ml-auto mr-6 mb-6 ", footerClassName)} >
                                     <button
-                                        className="px-6 py-2 mb-1 mr-1 text-sm font-bold text-red-500 uppercase transition-all duration-150 ease-linear outline-none background-transparent focus:outline-none"
+                                        className="px-6 py-2 text-sm font-bold text-white uppercase border-[1px] bg-primary-400 hover:bg-primary-500 active:bg-primary-600"
                                         type="button"
-                                        onClick={() => SignalsStore.modalDialogA.isOpen.value = false}>
+                                        onClick={onClickClose}>
                                         Close
-                                    </button>
-                                    <button
-                                        className="px-6 py-3 mb-1 mr-1 text-sm font-bold text-white uppercase transition-all duration-150 ease-linear rounded shadow outline-none bg-emerald-500 active:bg-emerald-600 hover:shadow-lg focus:outline-none"
-                                        type="button"
-                                        onClick={() => SignalsStore.modalDialogA.isOpen.value = false}>
-                                        Save Changes
                                     </button>
                                 </div>
                             </div>
@@ -60,11 +47,19 @@ function ModalDialog({ isOpen, size = 'sm' }: ModalDialogType) {
             ) : null}
         </>
     )
+
+    function onClickClose() {
+        isOpen.value = false
+    }
 }
 
 export { ModalDialog }
 
 type ModalDialogType = {
-    isOpen: boolean
+    body: any
+    defaultData?: any
+    isOpen: any
     size?: 'sm' | 'md' | 'lg'
+    title: string
+    toShowCloseButton?: boolean
 }

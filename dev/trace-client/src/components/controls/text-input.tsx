@@ -1,12 +1,13 @@
 import clsx from 'clsx'
-function TextInput({ className = '', size = 'small' }: TextInput) {
-    const sizeLogic = { small: 'h-8', medium: 'h-10', large: 'h-12' }
+function TextInput({ className = '', size = 'sm', type = 'text' }: TextInput) {
+    const sizeLogic = { sm: 'h-8', md: 'h-10', lg: 'h-12' }
     const internalClass = sizeLogic[size]
-    return (<input type="text" className={clsx(className, internalClass, 'px-2 border-[1px]')} />)
+    return (<input type={type} className={clsx(className, internalClass, 'px-2 border-[1px]')} />)
 }
 export { TextInput }
 
 type TextInput = {
     className?: string
-    size?: 'small' | 'medium' | 'large'
+    size?: 'sm' | 'md' | 'lg'
+    type?: 'text' | 'password'
 }

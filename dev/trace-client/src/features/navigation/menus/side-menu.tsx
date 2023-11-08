@@ -4,6 +4,7 @@ import { Signal, useSignal } from "@preact/signals-react"
 import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
 import clsx from "clsx"
 import { ChildMenuItemType, NodeMenuItemType } from "./menu-items-type"
+import _ from "lodash"
 
 function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     const navigate = useNavigate()
@@ -11,6 +12,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         isExpanded: useSignal(false),
         activeNodeId: useSignal(''),
         selectedChildId: useSignal(''),
+        selectedNodeId: useSignal(''),
     }
     const childClass = clsx('bg-lime-50 mr-1 flex rounded-lg py-2 pl-9 hover:cursor-pointer hover:bg-slate-300 border-none focus:outline-none',)
     const nodeClass = 'mr-1 mb-1 flex items-center gap-3 px-2 py-2 rounded-lg hover:cursor-pointer hover:bg-slate-300  border-none focus:outline-none'
@@ -18,11 +20,11 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     const transitionClass = 'flex flex-col gap-1 transform-gpu origin-top transition-all duration-300 ease-out'
     return (
         <div className={clsx(rootClass, '')}>
-            {getAllNodessWithChildren()}
+            {getAllNodesWithChildren()}
         </div>
     )
 
-    function getAllNodessWithChildren() {
+    function getAllNodesWithChildren() {
         const items: any[] = menuData.map((item: NodeMenuItemType, index: number) => {
             return (
                 <div key={index} className="flex flex-col bg">
@@ -36,7 +38,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getNodeWithChildren(item: NodeMenuItemType) {
         return (
             <div className="flex flex-col">
-                <button id={item.id} onClick={handleOnClickNode} className={nodeClass}><item.icon className='text-primary-400' /><span className="mr-auto">{item.title}</span><CheveronUpIcon className={getArrowUpClass(item.id)} /> <CheveronDownIcon className={getArrowDownClass(item.id)} /></button>
+                <button id={item.id} onClick={() => handleOnClickNode(item)} className={nodeClass}><item.icon className='text-primary-400' /><span className="mr-auto">{item.title}</span><CheveronUpIcon className={getArrowUpClass(item)} /> <CheveronDownIcon className={getArrowDownClass(item)} /></button>
                 {getChildren(item)}
             </div>
         )
@@ -55,9 +57,12 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         )
     }
 
-    function getArrowUpClass(id: string) {
+    function getArrowUpClass(item: NodeMenuItemType) {
         let cls = 'hidden'
-        if (id === menuMeta.activeNodeId.value) {
+        if (_.isEmpty(item.children)) {
+            return (cls)
+        }
+        if (item.id === menuMeta.activeNodeId.value) {
             if (menuMeta.isExpanded.value) {
                 cls = 'block'
             }
@@ -65,8 +70,11 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         return (cls)
     }
 
-    function getArrowDownClass(id: string) {
-        let cls = getArrowUpClass(id)
+    function getArrowDownClass(item: NodeMenuItemType) {
+        if (_.isEmpty(item.children)) {
+            return ('hidden')
+        }
+        let cls = getArrowUpClass(item)
         if (cls === 'block') {
             cls = 'hidden'
         } else {
@@ -95,20 +103,40 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         return (aClass)
     }
 
+    // function getSelectedNodeClass(id: string){
+    //     let aClass = ''
+    //     if (id === menuMeta.selectedNodeId.value) {
+    //         aClass = '!bg-slate-300'
+    //     }
+    //     return (aClass)
+    // }
+
     function handleOnClickChild(e: any, path: string) {
         const id = e.currentTarget.id
         menuMeta.selectedChildId.value = id
         navigate(path)
     }
 
-    function handleOnClickNode(e: any) {
-        const id = e.currentTarget.id
-        if (id === menuMeta.activeNodeId.value) {
-            menuMeta.isExpanded.value = !menuMeta.isExpanded.value
+    function handleOnClickNode(item: NodeMenuItemType) {
+        // const id = e.currentTarget.id
+        if (_.isEmpty(item.children)) {
+            menuMeta.selectedChildId.value = ''
+            menuMeta.activeNodeId.value = item.id
+            menuMeta.selectedNodeId.value = item.id
+            if (item.path) {
+                navigate(item.path)
+            }
         } else {
-            menuMeta.activeNodeId.value = id
-            menuMeta.isExpanded.value = true
+            const id = item.id
+            menuMeta.selectedNodeId.value = ''
+            if (id === menuMeta.activeNodeId.value) {
+                menuMeta.isExpanded.value = !menuMeta.isExpanded.value
+            } else {
+                menuMeta.activeNodeId.value = id
+                menuMeta.isExpanded.value = true
+            }
         }
+
     }
 
 }
@@ -118,4 +146,5 @@ type MenuMetaType = {
     isExpanded: Signal<boolean>
     activeNodeId: Signal<string>
     selectedChildId: Signal<string>
+    selectedNodeId: Signal<string>
 }

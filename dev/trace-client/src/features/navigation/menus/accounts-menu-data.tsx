@@ -207,7 +207,13 @@ const accountsMenuData: NodeMenuItemType[] = [
             },
         ]
     },
-
+    {
+        id: '8',
+        title: 'Final accounts',
+        icon: FinalAccountsIcon,
+        path:'purchase',
+        children:[]
+    }
 ]
 
 export {accountsMenuData}

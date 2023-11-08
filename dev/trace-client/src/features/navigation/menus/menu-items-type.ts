@@ -3,6 +3,7 @@ export type NodeMenuItemType = {
     title: string
     icon: any
     children: Array<ChildMenuItemType>
+    path?: string
 }
 
 export type ChildMenuItemType = {

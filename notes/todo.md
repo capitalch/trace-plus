@@ -1,7 +1,11 @@
 ## Modal to do
-- Accommodate parameters in modal
+																			- Accommodate parameters in modal
 - Navbar put modalA and ModalB
-- call from sources uid and password
+																			- call from sources uid and password
+
+																			- Close button color
+																			- implment top right close
+																			- body proper implementation
 
 ## Design to do																			
 																			- Naming convention etc for navigation

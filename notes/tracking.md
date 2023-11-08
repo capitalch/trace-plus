@@ -20,7 +20,12 @@
 
 ## History
 
-# 04-10-2023 - 05-10-2023
+# 06-11-2023 - 07-11-2023
+- ModalA implementation
+- Uid and Password modals
+- Accomodation of Modal in navbar extras
+
+# 04-11-2023 - 05-11-2023
 - Transition and transformation in navigation completed
 - Side menu, nav bar completed
 

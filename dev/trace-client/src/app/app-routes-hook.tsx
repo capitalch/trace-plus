@@ -1,4 +1,0 @@
-function useAppRoutes(){
-
-}
-export {useAppRoutes}

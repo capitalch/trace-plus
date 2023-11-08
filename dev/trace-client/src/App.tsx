@@ -3,9 +3,7 @@ import './App.css'
 import { Layouts } from './features/navigation/layouts'
 import { Login } from './features/login/login'
 import { Protected } from './features/login/protected'
-import { Test } from './features/login/test'
-import { Purchase } from './features/accounts/purchase/purchase'
-import { Sales } from './features/accounts/sales/sales'
+import { getAppRoutes } from './app/app-routes'
 
 function App() {
 
@@ -17,10 +15,9 @@ function App() {
             <Layouts />
           </Protected>
         }>
-          {/* Nested route */}
-          <Route path='test' element={<Test />} />
-          <Route path='purchase' element={<Purchase />} />
-          <Route path='sales' element={<Sales />} />
+          {/* Nested routes */}
+          {getAppRoutes()}
+          
         </Route>
         <Route path='/login' element={<Login />} />
       </Routes>

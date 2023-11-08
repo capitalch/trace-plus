@@ -1,4 +1,5 @@
 import { Astrix } from "../../components/controls/astrix"
+import { ButtonSubmitFullWidth } from "../../components/controls/button-submit-full-width"
 import { useLogin } from "./login-hook"
 
 function Login() {
@@ -26,7 +27,8 @@ function Login() {
                     <span onClick={handleForgotPassword} className="px-2 py-1 ml-auto text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Forgot password</span>
                 </div>
                 <div className="flex flex-col mt-3">
-                    <button onClick={handleSignIn} className="w-full h-10 py-1 text-xl text-white bg-primary-400 hover:bg-primary-600 hover:border-2 hover:border-primary-300">Sign in</button>
+                    {/* <button onClick={handleSignIn} className="w-full h-10 py-1 text-xl text-white bg-primary-400 hover:bg-primary-600 hover:border-2 hover:border-primary-300">Sign in</button> */}
+                    <ButtonSubmitFullWidth label="Sign in" onClick={handleSignIn} />
                     <div className="flex justify-start mt-2 ">
                         <span onClick={() => handleTestSignIn('superAdmin')} className="py-1 text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Super admin</span>
                         <span onClick={() => handleTestSignIn('admin')} className="py-1 ml-auto text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Admin</span>

@@ -6,6 +6,9 @@ import { ChangeUidIcon } from "../../../components/icons/change-uid-icon"
 import { LogoutIcon } from "../../../components/icons/logout-icon"
 import { SideMenu } from "../menus/side-menu"
 import { accountsMenuData } from "../menus/accounts-menu-data"
+import { ChangeUid } from "./change-uid"
+import { ChangePassword } from "./change-password"
+// import { AccountsMenu } from "../menus/accounts-menu"
 
 function useNavbarContent() {
     const userType = SignalsStore.login.userType.value
@@ -45,12 +48,18 @@ function useNavbarContent() {
         }
     }
 
-    function handleChangeUid(){
+    function handleChangeUid() {
+        SignalsStore.modalDialogA.title.value = 'Change uid'
         SignalsStore.modalDialogA.isOpen.value = true
+        SignalsStore.modalDialogA.body.value = () => <ChangeUid />
+        // SignalsStore.modalDialogA.toShowCloseButton.value = true
     }
 
-    function handleChangePassword(){
+    function handleChangePassword() {
+        SignalsStore.modalDialogA.title.value = 'Change password'
         SignalsStore.modalDialogA.isOpen.value = true
+        SignalsStore.modalDialogA.body.value = () => <ChangePassword />
+        // SignalsStore.modalDialogA.toShowCloseButton.value = true
     }
 
     function getMenuShowHideClass() {
