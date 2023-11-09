@@ -20,6 +20,12 @@
 
 ## History
 
+# 09-11-2023
+- 
+# 08-11-2023
+- Allow childless menu items for admin and super admin
+- Change uid and change password modal UI
+
 # 06-11-2023 - 07-11-2023
 - ModalA implementation
 - Uid and Password modals

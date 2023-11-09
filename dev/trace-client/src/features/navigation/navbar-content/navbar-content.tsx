@@ -4,9 +4,9 @@ import { MenuUnfoldIcon } from "../../../components/icons/menu-unfold-icon"
 import { ButtonDropdown } from "../../../components/widgets/button-dropdown"
 import { SignalsStore } from "../../../app/signals-store"
 import { useNavbarContent } from "./navbar-content-hook"
-import { NavbarMenuItemType, } from '../../../app/globals'
-import { SideMenu } from "../menus/side-menu"
-import { accountsMenuData } from "../menus/accounts-menu-data"
+import { AccountsMenuButton } from "./accounts-menu-button"
+import { SuperAdminMenuButton } from "./super-admin-menu-button"
+import { AdminMenuButton } from "./admin-menu-button"
 
 function NavbarContent() {
     const { getDropdownChildren, getMenuShowHideClass, handleShowSideBar } = useNavbarContent()
@@ -40,41 +40,3 @@ function NavbarContent() {
 
 export { NavbarContent }
 
-function AccountsMenuButton({ className }: { className?: string }) {
-    const activeMenuItem: NavbarMenuItemType = SignalsStore.layouts.navbar.activeMenuItem.value
-    const cls: string = (activeMenuItem === 'accounts') ? 'bg-primary-600' : 'bg-primary-500'
-    return (<span onClick={handleClick} className={clsx(className, cls, "px-10 py-3 text-gray-200 hover:text-white hover:bg-primary-600 hover:cursor-pointer active:bg-primary-400")}>
-        Accounts
-    </span>)
-    function handleClick() {
-        SignalsStore.layouts.navbar.activeMenuItem.value = 'accounts'
-        // SignalsStore.layouts.sidebar.currentMenuComponent.value= <AccountsMenu />
-        SignalsStore.layouts.sidebar.currentMenuComponent.value = <SideMenu menuData={accountsMenuData} />
-    }
-}
-export { AccountsMenuButton }
-
-function AdminMenuButton({ className }: { className?: string }) {
-    const activeMenuItem: NavbarMenuItemType = SignalsStore.layouts.navbar.activeMenuItem.value
-    const cls: string = (activeMenuItem === 'admin') ? 'bg-primary-600' : 'bg-primary-500'
-    return (<span onClick={handleClick} className={clsx(className, cls, "px-10 py-3  text-gray-200 hover:text-white hover:bg-primary-600 hover:cursor-pointer active:bg-primary-400")}>
-        Administration
-    </span>)
-
-    function handleClick() {
-        SignalsStore.layouts.navbar.activeMenuItem.value = 'admin'
-    }
-}
-
-function SuperAdminMenuButton({ className }: { className?: string }) {
-    const activeMenuItem: NavbarMenuItemType = SignalsStore.layouts.navbar.activeMenuItem.value
-    const cls: string = (activeMenuItem === 'superAdmin') ? 'bg-primary-600' : 'bg-primary-500'
-    return (<span onClick={handleClick} className={clsx(className, cls, "px-10 py-3   text-gray-200 hover:text-white hover:bg-primary-600 hover:cursor-pointer active:bg-primary-400")}>
-        Super administration
-    </span>)
-
-    function handleClick() {
-        SignalsStore.layouts.navbar.activeMenuItem.value = 'superAdmin'
-    }
-}
-export { SuperAdminMenuButton }

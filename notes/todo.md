@@ -1,25 +1,26 @@
-## Modal to do
+- Implement drawer for mobile devices
+- Server side authentication work update
+- Implement authentication at client side
+- implement Redux
+
+																			## Modal to do
 																			- Accommodate parameters in modal
-- Navbar put modalA and ModalB
+																			- Navbar put modalA
 																			- call from sources uid and password
 
 																			- Close button color
 																			- implment top right close
 																			- body proper implementation
 
-## Design to do																			
+																			## Design to do																			
 																			- Naming convention etc for navigation
-- Implement routes separately
-- Lazy loading
-- Implement admin menu
-- Implement super admin menu
+																			- Implement routes separately
+																			- Implement admin menu
+																			- Implement super admin menu
 																			- Transitions and animations
-- Implement drawer for mobile devices
-- implement Change uid, change password
-- Change UID, Change password not as modal. But as content through router
-- Server side authentication work update
-- Implement authentication at client side
-- implement Redux
+
+																			- implement Change uid, change password
+
 																			- Generic side menu
 																			- Navbar height increase
 																			- Redo primary, secondary, tertialy as per teams

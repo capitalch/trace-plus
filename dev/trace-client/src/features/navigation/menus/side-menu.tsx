@@ -38,7 +38,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getNodeWithChildren(item: NodeMenuItemType) {
         return (
             <div className="flex flex-col">
-                <button id={item.id} onClick={() => handleOnClickNode(item)} className={nodeClass}><item.icon className='text-primary-400' /><span className="mr-auto">{item.title}</span><CheveronUpIcon className={getArrowUpClass(item)} /> <CheveronDownIcon className={getArrowDownClass(item)} /></button>
+                <button id={item.id} onClick={() => handleOnClickNode(item)} className={clsx(nodeClass, getSelectedNodeClass(item.id))}><item.icon className='text-primary-400' /><span className="mr-auto">{item.label}</span><CheveronUpIcon className={getArrowUpClass(item)} /> <CheveronDownIcon className={getArrowDownClass(item)} /></button>
                 {getChildren(item)}
             </div>
         )
@@ -47,7 +47,7 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     function getChildren(item: NodeMenuItemType) {
         const children = item.children.map((child: ChildMenuItemType, index: number) => {
             return (
-                <button key={index} id={child.id} onClick={(e: any) => handleOnClickChild(e, child.path)} className={clsx(childClass, getSelectedChildClass(child.id),)}>{child.title}</button>
+                <button key={index} id={child.id} onClick={(e: any) => handleOnClickChild(e, child.path)} className={clsx(childClass, getSelectedChildClass(child.id),)}>{child.label}</button>
             )
         })
         return (
@@ -84,11 +84,9 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     }
 
     function getNodeVisibleClass(id: string) {
-        // let cls = 'hidden'
         let cls = 'scale-y-0 h-0'
         if (id === menuMeta.activeNodeId.value) {
             if (menuMeta.isExpanded.value) {
-                // cls = 'block'
                 cls = 'scale-y-1 h-auto'
             }
         }
@@ -103,13 +101,13 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
         return (aClass)
     }
 
-    // function getSelectedNodeClass(id: string){
-    //     let aClass = ''
-    //     if (id === menuMeta.selectedNodeId.value) {
-    //         aClass = '!bg-slate-300'
-    //     }
-    //     return (aClass)
-    // }
+    function getSelectedNodeClass(id: string){
+        let aClass = ''
+        if (id === menuMeta.selectedNodeId.value) {
+            aClass = '!bg-slate-300'
+        }
+        return (aClass)
+    }
 
     function handleOnClickChild(e: any, path: string) {
         const id = e.currentTarget.id
@@ -118,7 +116,6 @@ function SideMenu({ menuData }: { menuData: NodeMenuItemType[] }) {
     }
 
     function handleOnClickNode(item: NodeMenuItemType) {
-        // const id = e.currentTarget.id
         if (_.isEmpty(item.children)) {
             menuMeta.selectedChildId.value = ''
             menuMeta.activeNodeId.value = item.id

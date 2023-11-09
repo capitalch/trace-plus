@@ -10,210 +10,203 @@ import { NodeMenuItemType } from "./menu-items-type"
 const accountsMenuData: NodeMenuItemType[] = [
     {
         id: '1',
-        title: 'Vouchers',
+        label: 'Vouchers',
         icon: VoucherIcon,
         children: [
             {
                 id: '11',
-                title: 'Journals',
+                label: 'Journals',
                 path: 'purchase'
             },
             {
                 id: '12',
-                title: 'Payments',
+                label: 'Payments',
                 path: 'purchase'
             },
             {
                 id: '13',
-                title: 'Receipts',
+                label: 'Receipts',
                 path: 'purchase'
             },
             {
                 id: '14',
-                title: 'Contra',
+                label: 'Contra',
                 path: 'purchase'
             },
         ]
     },
     {
         id: '2',
-        title: 'Purch / Sales',
+        label: 'Purch / Sales',
         icon: PurchaseSalesIcon,
         children: [
             {
                 id: '21',
-                title: 'Purchase',
+                label: 'Purchase',
                 path: 'purchase'
             },
             {
                 id: '22',
-                title: 'Purchase returns',
+                label: 'Purchase returns',
                 path: 'purchase'
             },
             {
                 id: '23',
-                title: 'Sales',
+                label: 'Sales',
                 path: 'sales'
             },
             {
                 id: '24',
-                title: 'Sales returns',
+                label: 'Sales returns',
                 path: 'purchase'
             },
             {
                 id: '25',
-                title: 'Debit notes',
+                label: 'Debit notes',
                 path: 'purchase'
             },
             {
                 id: '26',
-                title: 'Credit notes',
+                label: 'Credit notes',
                 path: 'purchase'
             }
         ]
     },
     {
         id: '3',
-        title: 'Masters',
+        label: 'Masters',
         icon: MastersIcon,
         children: [
             {
                 id: '31',
-                title: 'Company info',
+                label: 'Company info',
                 path: 'purchase'
             },
             {
                 id: '32',
-                title: 'General settings',
+                label: 'General settings',
                 path: 'purchase'
             },
             {
                 id: '33',
-                title: 'Accounts',
+                label: 'Accounts',
                 path: 'purchase'
             },
             {
                 id: '34',
-                title: 'Opening balances',
+                label: 'Opening balances',
                 path: 'purchase'
             },
             {
                 id: '35',
-                title: 'Branches',
+                label: 'Branches',
                 path: 'purchase'
             },
             {
                 id: '36',
-                title: 'Financial years',
+                label: 'Financial years',
                 path: 'purchase'
             },
         ]
     },
     {
         id: '4',
-        title: 'Final accounts',
+        label: 'Final accounts',
         icon: FinalAccountsIcon,
         children: [
             {
                 id: '41',
-                title: 'Trial balance',
+                label: 'Trial balance',
                 path: 'purchase'
             },
             {
                 id: '42',
-                title: 'Balance sheet',
+                label: 'Balance sheet',
                 path: 'purchase'
             },
             {
                 id: '43',
-                title: 'PL account',
+                label: 'PL account',
                 path: 'purchase'
             },
             {
                 id: '44',
-                title: 'General ledger',
+                label: 'General ledger',
                 path: 'purchase'
             },
         ]
     },
     {
         id: '5',
-        title: 'Options',
+        label: 'Options',
         icon: OptionsIcon,
         children: [
             {
                 id: '51',
-                title: 'Bank recon',
+                label: 'Bank recon',
                 path: 'purchase'
             },
             {
                 id: '52',
-                title: 'Common utilities',
+                label: 'Common utilities',
                 path: 'purchase'
             },
             {
                 id: '53',
-                title: 'Exports',
+                label: 'Exports',
                 path: 'purchase'
             },
         ]
     },
     {
         id: '6',
-        title: 'Reports',
+        label: 'Reports',
         icon: ReportsIcon,
         children: [
             {
                 id: '61',
-                title: 'All transactions',
+                label: 'All transactions',
                 path: 'purchase'
             },
         ]
     },
     {
         id: '7',
-        title: 'Inventory',
+        label: 'Inventory',
         icon: InventoryIcon,
         children: [
             {
                 id: '71',
-                title: 'Categories',
+                label: 'Categories',
                 path: 'purchase'
             },
             {
                 id: '72',
-                title: 'Brands',
+                label: 'Brands',
                 path: 'purchase'
             },
             {
                 id: '73',
-                title: 'Products',
+                label: 'Products',
                 path: 'purchase'
             },
             {
                 id: '74',
-                title: 'Opening stock',
+                label: 'Opening stock',
                 path: 'purchase'
             },
             {
                 id: '75',
-                title: 'Reports',
+                label: 'Reports',
                 path: 'purchase'
             },
             {
                 id: '76',
-                title: 'Stock journal',
+                label: 'Stock journal',
                 path: 'purchase'
             },
         ]
     },
-    {
-        id: '8',
-        title: 'Final accounts',
-        icon: FinalAccountsIcon,
-        path:'purchase',
-        children:[]
-    }
 ]
 
 export {accountsMenuData}

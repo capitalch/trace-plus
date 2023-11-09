@@ -8,6 +8,7 @@ import { SideMenu } from "../menus/side-menu"
 import { accountsMenuData } from "../menus/accounts-menu-data"
 import { ChangeUid } from "./change-uid"
 import { ChangePassword } from "./change-password"
+import { superAdminMenuData } from "../menus/super-admin-menu-data"
 // import { AccountsMenu } from "../menus/accounts-menu"
 
 function useNavbarContent() {
@@ -90,6 +91,7 @@ function useNavbarContent() {
             SignalsStore.layouts.navbar.toShowSuperAdminMenuItem.value = true
 
             SignalsStore.layouts.navbar.activeMenuItem.value = 'superAdmin'
+            SignalsStore.layouts.sidebar.currentMenuComponent.value = <SideMenu menuData={superAdminMenuData} />
         }
         if (userType === UserTypesEnum.BUSINESS_USER) {
             SignalsStore.layouts.navbar.toShowAccountsMenuItem.value = true
