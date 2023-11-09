@@ -1,7 +1,10 @@
-- Implement drawer for mobile devices
-- Server side authentication work update
+- react query
+- Redux
+- GraphQL
 - Implement authentication at client side
-- implement Redux
+- Server side authentication work update
+- Integrate client and server for authentication
+- Implement drawer for mobile devices
 
 																			## Modal to do
 																			- Accommodate parameters in modal

@@ -1,18 +1,3 @@
-## To implement
-																								- Create app
-																								- Create libs
-																								- Folder structure
-																								- Identify colors
-- Redux
-																								- Signals store
-																								- Routing
-- Login
-																								- UI
-	- Coding
-- Create Layouts
-	- UI
-	- Coding
-- Create GraphQL query in Redux
 
 ## Bugs
 																								- Side menu matter not collapsing
@@ -21,7 +6,7 @@
 ## History
 
 # 09-11-2023
-- 
+- Implemented admin, super admin menu items with icons
 # 08-11-2023
 - Allow childless menu items for admin and super admin
 - Change uid and change password modal UI
