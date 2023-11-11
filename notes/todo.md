@@ -1,3 +1,10 @@
+## Server side
+- jekyll in github. Documentation
+- premier with python
+- psycopg
+- fastapi
+- initiate traceServer
+## Client side
 - react query
 - Redux
 - GraphQL
