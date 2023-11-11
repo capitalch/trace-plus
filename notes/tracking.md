@@ -4,7 +4,8 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
-
+# 10-11-2023
+- Refreshed redux and implemented in project
 # 09-11-2023
 - Implemented admin, super admin menu items with icons
 # 08-11-2023

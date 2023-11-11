@@ -1,3 +1,12 @@
+## Redux steps
+# Step 1: Create store
+# Step 2: Create slice and export reducer and actions
+- One slice has multiple actions
+# Step 3: Assign reducer to store
+# Step 4: Create Provider at index.tsx and set the store
+# Step 5: use actions
+- In components make use of useSelectors and dispath
+
 ## Typescript tailwind
 - With typescript the tailwind.config.js file must have: content: [{html,js,jsx,ts,tsx}]
 - Headwind for class sorting: On save the sorting takes place. To disable this

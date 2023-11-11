@@ -3,10 +3,10 @@ import { Blogs } from "../features/blogs"
 import { Home } from "../features/home"
 import { Common } from "../features/common"
 import { Responsive } from "../features/responsive"
-import { Layout } from "../features/layout"
 import { AppSignals } from "../features/app-signals"
 import { AppMain } from "../features/app-main"
 import { MyComp } from "../features/my-comp"
+import { ReduxComponent } from "../features/redux-discrete/redux-component"
 
 function useAppRoutes() {
     const routes: any[] = [
@@ -33,6 +33,10 @@ function useAppRoutes() {
         {
             path: 'signals',
             component: AppSignals
+        },
+        {
+            path:'redux-counter',
+            component: ReduxComponent
         }
     ]
 
