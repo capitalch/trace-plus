@@ -2,6 +2,7 @@
 - uninstall all python and delete python installations from c://program files
 - install python custom, for all users and include in path. At this time it was 3.12
 - Now on typing python on terminal it shows python 3.12
+
 ## Virtual environment
 - python -m venv env // creates env environment
 - The -m flag: Searches sys.path for the module named after the flag, and then executes its contents as the __main__ module. 
@@ -64,3 +65,14 @@
 - strings are immutable
 - to make changes in string, convert to List by list() func, make chages then convert back by join() func
 - a "r" or "R" before a string makes it raw string and it does not interpret the escape chars
+
+## Fast api
+- Create virtual env and pip install fastapi uvicorn[standard]
+	from typing import Union
+	from fastapi import FastAPI
+
+	app = FastAPI()
+
+	@app.get('/')
+	def read_root():
+	    return('Hello world')
