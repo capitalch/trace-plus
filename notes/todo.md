@@ -7,7 +7,7 @@
 																			- response and status code
 - dependencies
 - authorization
-- corcs
+- corcrs
 - graphql
 																			- middlewares
 																			- Request body
