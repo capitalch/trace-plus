@@ -1,9 +1,29 @@
 ## Server side
-- jekyll in github. Documentation
-- premier with python
-- psycopg
 - fastapi
-- initiate traceServer
+																			- Querystring
+																			- path
+																			- body
+																			- header
+																			- response and status code
+- dependencies
+- authorization
+- corcs
+- graphql
+																			- middlewares
+																			- Request body
+																			- Header parameters
+																			- Response Model
+																			- Response status code
+																			- Handling errors
+
+																			- Python annotations and typing
+																			- pydentic
+																			- apiRouter and routing
+																			- understanding __init__.py
+- psycopg, psyopg2 etc.
+
+- jekyll in github. Documentation
+			
 ## Client side
 - react query
 - Redux

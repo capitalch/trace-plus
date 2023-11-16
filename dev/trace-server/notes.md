@@ -76,3 +76,6 @@
 	@app.get('/')
 	def read_root():
 	    return('Hello world')
+- For using Routes from another file use ApiRouter of fastApi
+- When doing Post request and using Pydantic, use Content-Type: application/json. This is important. Wasted my lot of time.
+- fastapi status.200_ok like gives all status codes. No need to remember.
