@@ -1,5 +1,5 @@
 from typing import Union, Any
-from fastapi import FastAPI, Body, Request, Header, status, HTTPException
+from fastapi import FastAPI, Body, Request, Header, status, HTTPException, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
@@ -32,9 +32,7 @@ app.middleware("http")(catch_exceptions_middleware)
 
 @app.get("/")
 def read_root():
-    a = {}
-    x = a.x
-    raise AppHttpException(detail="abcd", status_code=401)
+    # raise AppHttpException(detail="abcd", status_code=401)
     return "Hello world"
 
 
@@ -70,13 +68,27 @@ async def post_item(item: Item):
 
 
 @app.get("/user", status_code=status.HTTP_200_OK)
-def user_agent(user_agent=Header(None)):
+def user_agent(user_agent=Header()):
     return user_agent
 
 
 @app.get("/check-error")
 def check_error():
     raise HTTPException(status_code=506, detail="item not found")
+
+
+@app.get("/check-dependency1")
+def check_dependency(id: str = 1, name: str = "sushant"):
+    return {"id": id, "name": name}
+
+
+def my_dependency(id: str = 1, name: str = "sushant"):
+    return {"id": id, "name": name}
+
+
+@app.get("/check-dependency")
+def check_dependency(ret=Depends(my_dependency)):
+    return ret
 
 
 # @app.exception_handler(Exception)

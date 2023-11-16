@@ -5,9 +5,9 @@
 																			- body
 																			- header
 																			- response and status code
-- dependencies
+																			- dependencies
 - authorization
-- corcrs
+																			- corcs
 - graphql
 																			- middlewares
 																			- Request body
