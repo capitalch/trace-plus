@@ -3,7 +3,7 @@ from fastapi import FastAPI, Body, Request, Header, status, HTTPException, Depen
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from utils import router, LineItem, AppHttpException
+from utils import router, LineItem, AppHttpException, securityRouter
 
 
 class Item(BaseModel):
@@ -14,6 +14,7 @@ class Item(BaseModel):
 
 app = FastAPI()
 app.include_router(router)
+app.include_router(securityRouter)
 
 
 async def catch_exceptions_middleware(request: Request, call_next):
