@@ -1,6 +1,12 @@
+## GraphQL
+# Schema
 type Query {
     genericQuery(value: Generic): Generic
 }
 
 scalar Generic
-scalar OutputType
+
+# Query
+query {
+  genericQuery(value:"sss")
+}

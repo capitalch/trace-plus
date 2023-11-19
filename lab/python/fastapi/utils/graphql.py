@@ -7,7 +7,7 @@ query = QueryType()
 
 @query.field('genericQuery')
 async def generic_query(_, info, value = ''):
-    return('Success graphql')
+    return({'status': 'Success graphql'})
 
 schema = make_executable_schema(type_defs, query)
 

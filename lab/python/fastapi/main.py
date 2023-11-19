@@ -37,9 +37,9 @@ def read_root():
     return "Hello world"
 
 
-@app.get("/query")
-def get_query(q: str):
-    return {"q": q}
+# @app.get("/query")
+# def get_query(q: str):
+#     return {"q": q}
 
 
 @app.get("/items/{item_id}")
