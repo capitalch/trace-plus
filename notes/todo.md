@@ -1,4 +1,20 @@
-## Server side
+## To do on 19-11-2023
+- GraphQL premier 
+- Implementation in the project
+- Jekyll documentation merge
+
+## Server side implementation
+- Implement authorization
+- graphql
+- Research and implement psycopg/2
+- logs
+- config
+																			- messages
+																			- Project container
+																			- Hello world
+																			- Corcr
+																			- Exception handling
+## Server side warmup
 - fastapi
 																			- Querystring
 																			- path

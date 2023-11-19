@@ -4,6 +4,10 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 18-11-2023
+- Started implementing fastapi
+# 11-11-2023 - 17-11-2023
+- Refreshed FastAPI
 # 10-11-2023
 - Refreshed redux and implemented in project
 # 09-11-2023

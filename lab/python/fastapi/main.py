@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from utils import router, LineItem, AppHttpException, securityRouter
-
+from utils.graphql import GraphQLApp
 
 class Item(BaseModel):
     name: str = "abc"
@@ -30,7 +30,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
 
 app.middleware("http")(catch_exceptions_middleware)
 
-
+app.add_route('/graphql/', GraphQLApp)
 @app.get("/")
 def read_root():
     # raise AppHttpException(detail="abcd", status_code=401)
@@ -90,9 +90,3 @@ def my_dependency(id: str = 1, name: str = "sushant"):
 @app.get("/check-dependency")
 def check_dependency(ret=Depends(my_dependency)):
     return ret
-
-
-# @app.exception_handler(Exception)
-# async def custom_exception_handler(request, ex: Exception):
-#     return(JSONResponse(status_code=200, content='abcd'))
-#     return(JSONResponse(status_code=500, content={'detail': 'custom message'}))
