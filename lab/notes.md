@@ -2,9 +2,9 @@
 																- Tailwind
 																- Redux counter
 																- Redux thunk
-- GraphQL client
+																- GraphQL client
 - Type safety in GraphQL server Ariadne
-- Connectivity
+																- Connectivity
 
 ## Libs
 - url-join @apollo/client graphql
