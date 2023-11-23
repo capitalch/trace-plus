@@ -1,5 +1,10 @@
 type Query {
     genericQuery(value: Generic): Generic
+    hello: Generic
+}
+
+type MyObj {
+    status: String
 }
 
 scalar Generic
