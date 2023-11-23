@@ -21,6 +21,6 @@ app.add_middleware(
 @app.get("/api")
 async def get_api():
     # x = 1/0
-    await raise_exception()
+    # await raise_exception()
     # raise HTTPException(status_code=401, detail='abcd')
     return {"api": "trace-plus server"}
