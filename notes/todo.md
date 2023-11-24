@@ -1,30 +1,42 @@
+## Implementation To Do
+# Server
+- Authentication
+- GraphQL implementation
+- Exception management
+
+# Client
+- FastAPI framework
+- Exception management
+- React query
+
+# Documentation
+- jekyll
+
+## Research to do
+- Documentation using jekyll
+- Fastapi authentication
+- psycopg, psycopg2
+
+
 ## To do on 19-11-2023
 - GraphQL premier 
 - Implementation in the project
 - Jekyll documentation merge
 
 ## Server side implementation
-- Implement authorization
-- graphql
-- Research and implement psycopg/2
-- logs
-- config
+
 																			- messages
 																			- Project container
 																			- Hello world
 																			- Corcr
 																			- Exception handling
-## Server side warmup
-- fastapi
 																			- Querystring
 																			- path
 																			- body
 																			- header
 																			- response and status code
 																			- dependencies
-- authorization
 																			- corcs
-- graphql
 																			- middlewares
 																			- Request body
 																			- Header parameters
@@ -98,7 +110,7 @@
 
 ## Research
 																			- Tailwind start
-- Redux implementation and strategy
+																			- Redux implementation and strategy
 																			- Redux based modal window in tailwind: @headlessui/react
 - Context API
 																			- React routers

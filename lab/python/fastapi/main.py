@@ -13,7 +13,7 @@ class Item(BaseModel):
 
 
 app = FastAPI()
-app.include_router(router)
+# app.include_router(router)
 app.include_router(securityRouter)
 
 
@@ -31,6 +31,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
 app.middleware("http")(catch_exceptions_middleware)
 
 app.add_route('/graphql/', GraphQLApp)
+
 @app.get("/")
 def read_root():
     # raise AppHttpException(detail="abcd", status_code=401)

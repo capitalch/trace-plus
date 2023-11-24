@@ -1,11 +1,18 @@
 type Query {
     genericQuery(value: Generic): Generic
     hello: Generic
+    hello1: String
+    hello2(value: MyArgsInput): MyObj
+    
 }
 
 type MyObj {
     status: String
+    name: String
+}
+
+input MyArgsInput {
+    sqlId: String
 }
 
 scalar Generic
-scalar OutputType

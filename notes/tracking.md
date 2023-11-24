@@ -1,9 +1,16 @@
-
 ## Bugs
 																								- Side menu matter not collapsing
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 24-11-2023
+- 
+# 23-11-2023
+- Worked on lab GraphQL implementation
+										# 20-11-2023 - 22-11-2023
+										- Worked on other project
+# 19-11-2023
+- Worked on fast api warmup
 # 18-11-2023
 - Started implementing fastapi
 # 11-11-2023 - 17-11-2023

@@ -38,48 +38,34 @@
 - to enforce only keyword or named arguments, put an astrix before the keyword arguments. #def intr(amt,*, rate)#. Here rate is now keyword argument. Should be called as interest = intr(1000, rate=10)
 - def intr(amt, rate, /). We make both the arguments of intr() function as positional-only by putting "/" at the end.
 - arbitrary arguments (variable length)
-	- An argument prefixed with a single asterisk * is for arbitrary positional arguments.
-	- An argument prefixed with two asterisks ** is for arbitrary keyword or named arguments.
-	# sum of numbers: Below the args becomes a tuple and stores all the values
-		def add(*args):
-		   s=0
-		   for x in args:
-		      s=s+x
-		   return s
--		   
-		result = add(10,20,30,40)
-		print (result)
+  - An argument prefixed with a single asterisk * is for arbitrary positional arguments.
+  - An argument prefixed with two asterisks ** is for arbitrary keyword or named arguments.
+  # sum of numbers: Below the args becomes a tuple and stores all the values
+    def add(*args):
+       s=0
+       for x in args:
+          s=s+x
+       return s
+-      
+    result = add(10,20,30,40)
+    print (result)
 
-		result = add(1,2,3)
-		print (result)
+    result = add(1,2,3)
+    print (result)
 # Annotations or type
 - def myfunction(a: int, b: int) -> int:
-	c = a+b
-	return c
+  c = a+b
+  return c
 - Annotations are mentioned by : after a value. Annotation is ignored by interpreter. So you can put and value as annotation
 
 # modules
 - modules are used through **import** statement
-	- import myModule
-	- from myModule import myFunc
-	- How do you find that the current file is used as module or entry point file?
-		- if __name__ == "__main__":
-		- Here you find out that the current file is the main file and not the module or imported file
+  - import myModule
+  - from myModule import myFunc
+  - How do you find that the current file is used as module or entry point file?
+    - if __name__ == "__main__":
+    - Here you find out that the current file is the main file and not the module or imported file
 # string
 - strings are immutable
 - to make changes in string, convert to List by list() func, make chages then convert back by join() func
 - a "r" or "R" before a string makes it raw string and it does not interpret the escape chars
-
-## Fast api
-- Create virtual env and pip install fastapi uvicorn[standard]
-	from typing import Union
-	from fastapi import FastAPI
-
-	app = FastAPI()
-
-	@app.get('/')
-	def read_root():
-	    return('Hello world')
-- For using Routes from another file use ApiRouter of fastApi
-- When doing Post request and using Pydantic, use Content-Type: application/json. This is important. Wasted my lot of time.
-- fastapi status.200_ok like gives all status codes. No need to remember.

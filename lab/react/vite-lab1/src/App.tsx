@@ -1,5 +1,5 @@
 import './App.css'
-import { Counter } from './features/counter/counter'
+// import { Counter } from './features/counter/counter'
 import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
 
@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div className=''>
-      <Counter />
+      {/* <Counter /> */}
       <ReactQueryComp />
     </div>
   )
