@@ -10,5 +10,5 @@ export { ButtonSubmitFullWidth }
 type ButtonSubmitFullWidthType = {
     className?: string
     label: string
-    onClick: () => void
+    onClick?: () => void
 }

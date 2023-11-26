@@ -2,6 +2,7 @@ from typing import Union, Any
 from fastapi import FastAPI, Body, Request, Header, status, HTTPException, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from utils import router, LineItem, AppHttpException, securityRouter
 from utils.graphql import GraphQLApp
@@ -13,6 +14,21 @@ class Item(BaseModel):
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        # "http://localhost:3000",
+        # "http://127.0.0.1:3000",
+        # "http://localhost:3001",
+        # "http://127.0.0.1:3001",
+        '*'
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # app.include_router(router)
 app.include_router(securityRouter)
 

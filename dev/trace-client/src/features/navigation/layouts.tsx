@@ -26,7 +26,6 @@ function Layouts() {
 
                 {/* navbar and content container */}
                 <NavbarContent />
-
                 <NavbarExtras />
             </div>
         </div>

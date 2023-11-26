@@ -1,4 +1,4 @@
-from app.vendors import CORSMiddleware, FastAPI, HTTPException
+from app.vendors import CORSMiddleware, FastAPI, HTTPException, JSONResponse
 from app.dependencies import catch_exceptions_middleware, raise_exception
 
 app = FastAPI()
@@ -24,3 +24,7 @@ async def get_api():
     # await raise_exception()
     # raise HTTPException(status_code=401, detail='abcd')
     return {"api": "trace-plus server"}
+
+@app.exception_handler(404)
+async def custom_404_handler(_, __):
+    return(JSONResponse(status_code=404, content={'detail': 'URL Not found'}))

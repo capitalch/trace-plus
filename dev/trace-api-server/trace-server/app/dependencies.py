@@ -1,7 +1,6 @@
 from app.vendors import HTTPException, JSONResponse, Request, status
 from app.messages import Messages
 
-
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)

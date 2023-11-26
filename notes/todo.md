@@ -1,3 +1,13 @@
+## To do for authentication
+- Configure Logger at server
+- Login screen at client
+- login endpoint at server
+- verifyToken endpoint at server
+- createAccessToken at server
+- Implement GraphQL api and secure it
+- implement forgot password
+- Mechanism to keep token at localstorage
+- Complete the flow
 ## Implementation To Do
 # Server
 - Authentication
