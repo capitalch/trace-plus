@@ -49,10 +49,8 @@ function Login() {
                         </label>
                         <span onClick={handleForgotPassword} className="px-2 py-1 mt-1 ml-auto text-xs text-primary-400 hover:text-error-600 hover:cursor-pointer hover:font-semibold hover:underline">Forgot password</span>
                     </div>
-
                 </div>
-                <div className="flex flex-col mt-3">
-                    {/* <button onClick={handleSignIn} className="w-full h-10 py-1 text-xl text-white bg-primary-400 hover:bg-primary-600 hover:border-2 hover:border-primary-300">Sign in</button> */}
+                <div className="flex flex-col mt-3">                    
                     <ButtonSubmitFullWidth label="Sign in"  />
                     <div className="flex justify-start mt-2 ">
                         <span onClick={() => handleTestSignIn('superAdmin')} className="py-1 text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Super admin</span>

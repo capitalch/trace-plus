@@ -32,6 +32,7 @@ function useLogin() {
             const accessToken = ret.data.accessToken
             if (accessToken) {
                 SignalsStore.login.isLoggedIn.value = true
+                navigate('/test', { replace: true })
             }
         } catch (e: any) {
             console.log(e)

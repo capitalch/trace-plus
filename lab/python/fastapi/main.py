@@ -7,14 +7,25 @@ from pydantic import BaseModel
 from utils import router, LineItem, AppHttpException, securityRouter
 from utils.graphql import GraphQLApp
 
+
 class Item(BaseModel):
     name: str = "abc"
     price: float
     is_offer: bool = True
 
 
-app = FastAPI()
+class AppHttpException(HTTPException):
+    def __init__(self, error_code: str, message: str, status_code: int= 404):
+        self.error_code = error_code
+        self.message = message
+        self.status_code = status_code
 
+
+async def app_http_exception_handler(request: Request, exc: AppHttpException):
+    return (JSONResponse(status_code=exc.status_code, content={'error_code': exc.error_code, 'message': exc.message}))
+
+app = FastAPI()
+app.add_exception_handler(AppHttpException, app_http_exception_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -41,12 +52,13 @@ async def catch_exceptions_middleware(request: Request, call_next):
         mess = "abcd"
         if ex.args[0]:
             mess = ex.args[0]
-        return JSONResponse(status_code=500, content=mess)
+        return JSONResponse(status_code=500, content={'error_code': 'e1001', 'message': mess})
 
 
 app.middleware("http")(catch_exceptions_middleware)
 
 app.add_route('/graphql/', GraphQLApp)
+
 
 @app.get("/")
 def read_root():
@@ -54,10 +66,18 @@ def read_root():
     return "Hello world"
 
 
-# @app.get("/query")
-# def get_query(q: str):
-#     return {"q": q}
+@app.get("/query")
+def get_query():
+    x = 1
+    # raise HTTPException(
+    # status_code=512, detail='A custom exception from inside of code')
+    raise AppHttpException(
+        error_code='e1002', message='A custom exception from inside of code has occured',)
+    return {"result": 'Testing exceptions'}
 
+@app.exception_handler(404)
+async def custom_404_handler(_, __):
+    return (JSONResponse(status_code=404, content={'error_code': 'e1001', 'message': 'Direct 404 handle'}))
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
