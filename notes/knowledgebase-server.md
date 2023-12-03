@@ -1,4 +1,4 @@
-## Fast api
+## **Fast api**
 - Create virtual env and pip install fastapi uvicorn[standard]
   from typing import Union
   from fastapi import FastAPI
@@ -12,14 +12,18 @@
 - When doing Post request and using Pydantic, use Content-Type: application/json. This is important. Wasted my lot of time.
 - fastapi status.200_ok like gives all status codes. No need to remember.
 
-## Notes on universal exception handling in fastapi
+## **Hashing using bcrypt**
+- Used a library named passlib to create and verify bcrypt based hashes
+- https://www.fastapitutorial.com/blog/password-hashing-fastapi/
+
+## **Notes on universal exception handling in fastapi**
 # Through middleware
 - app.middleware("http")(catch_exceptions_middleware)
   - This line enables all http calls to pass through the call_next(request) method of catch_exception_middleware
   - if anywhere in the code uncaught exception occurs then "except exception" part of this method is executed
   - This takes care of all unknown and accidental exceptions in code when any http call is made
 # Raised exceptions
-- If any hattp call is made and in this call a exception is raised through AppHttpException then this exception is handled directly
+- If any http call is made and in this call a exception is raised through AppHttpException then this exception is handled directly
 - for example if you write at any point
   ```
     raise AppHttpException(

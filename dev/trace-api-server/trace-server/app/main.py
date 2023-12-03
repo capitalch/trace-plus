@@ -1,5 +1,5 @@
 from app.vendors import CORSMiddleware, FastAPI, HTTPException, JSONResponse, status
-from app.dependencies import AppHttpException, app_http_exception_handler, catch_exceptions_middleware, raise_exception
+from app.dependencies import AppHttpException, app_http_exception_handler, catch_exceptions_middleware
 from app.messages import Messages
 from app.security import securityRouter
 

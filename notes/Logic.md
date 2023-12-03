@@ -1,8 +1,8 @@
 ## **Authentication mechanism**
 - isLogin is false by default, so login screen is displayed; Otherwise based on type of user, the menu screen will be displayed
 - Login screen submit button sends username and password to server /login endpoint
-- At fastApi /login endpoint, request is send to **OAuth2PasswordRequestForm** fastapi method; It just provides out username and password from data which is used to create bundle for SuperAdmin(S) or Admin(A) or business user(B). Bundle is sent to client along with accessToken JWT generated
-- We do not generate refresh token for simplicity and more security so as to provide frequent login
+- At fastApi /login endpoint, request is send to **OAuth2PasswordRequestForm** fastapi method; It just provides out username and password as "formdata". The "formdata" is used to create bundle for SuperAdmin(S) or Admin(A) or business user(B). Bundle is sent to client along with accessToken JWT generated
+- We do not generate refresh token for simplicity and more security. This will enable frequent login
 - Client sets isLogin true and sets accessToken in SignalsStore
 - Now due to refresh nature of SignalsStore the menu screen is shown based on logged in user type for SuperAdmin(S), Admin(A), Business user(B)
 - At client every request to GraphQL api is secured and accessToken is auto inserted in header as Bearer

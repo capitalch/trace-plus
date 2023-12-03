@@ -1,3 +1,5 @@
+## Pip install pydantic fastapi uvicorn[standard] typing ariadne passlib[bcrypt] pyjwt[crypto]
+- superadmin@123
 ## VSCode extensions
 - Tailwind CSS Intellisense
 - HeadWind: class sorter: Works great
