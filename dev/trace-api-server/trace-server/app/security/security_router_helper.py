@@ -19,6 +19,8 @@ def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
         if(bundle is None):
             raise AppHttpException(status_code=status.HTTP_401_UNAUTHORIZED, error_code='e1004',message=Messages.err_invalid_username_or_password )
         return(bundle)
+    except AppHttpException:
+        raise
     except Exception as e:
         print(e)
         raise AppHttpException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, error_code='', message=str(e))

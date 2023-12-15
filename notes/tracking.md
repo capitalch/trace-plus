@@ -3,8 +3,10 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
-# 24-11-2023
-- 
+# 04-12-2023
+- Implemented supeAdmin authentication JWT creation, username and password verification
+# 24-11-2023 - 26-12-2023
+- Server side authentication with fastapi
 # 23-11-2023
 - Worked on lab GraphQL implementation
 										# 20-11-2023 - 22-11-2023

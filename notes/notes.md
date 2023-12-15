@@ -1,4 +1,4 @@
-## Pip install pydantic fastapi uvicorn[standard] typing ariadne passlib[bcrypt] pyjwt[crypto]
+## Pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto]
 - superadmin@123
 ## VSCode extensions
 - Tailwind CSS Intellisense
