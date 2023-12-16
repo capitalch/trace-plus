@@ -12,9 +12,6 @@
 - When doing Post request and using Pydantic, use Content-Type: application/json. This is important. Wasted my lot of time.
 - fastapi status.200_ok like gives all status codes. No need to remember.
 
-## **Hashing using bcrypt**
-- Used a library named passlib to create and verify bcrypt based hashes
-- https://www.fastapitutorial.com/blog/password-hashing-fastapi/
 
 ## **Notes on universal exception handling in fastapi**
 # Through middleware

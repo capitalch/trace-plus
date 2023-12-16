@@ -8,7 +8,6 @@ class Config:
     # super admin
     SUPER_ADMIN_USERNAME = 'superAdmin'
     SUPER_ADMIN_EMAIL = 'capitalch@gmail.com'
-    # SUPER_ADMIN_HASH = '$2a$12$vFDWBBMF8AlpLxec7yptK.VC/942A0OPLLMWF1NG.0Hat3vatsEBi'
     SUPER_ADMIN_HASH = '$2b$12$M.YYKJlGHC.WmahbmNSiweftqXXvi/oy13vMTZ.8zEXEeyIAA1DCe'
     SUPER_ADMIN_MOBILE_NO = '98888888888'
 
