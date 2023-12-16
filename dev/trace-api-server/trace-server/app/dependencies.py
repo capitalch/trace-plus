@@ -20,7 +20,6 @@ async def catch_exceptions_middleware(request: Request, call_next):
         statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
         if len(ex.args) > 0:
             mess = ex.args[0]
-            # statusCode = 500
         return JSONResponse(status_code=statusCode, content={
             'error_code': 'e1000',
             'message': mess})
@@ -67,8 +66,3 @@ class UserClass:
     id: int
     fullName: str
     userType: str
-
-
-# async def raise_exception(status_code: int = 452, detail: str = Messages.err_unknown):
-#     # Provide logging here
-#     raise HTTPException(status_code=status_code, detail=detail, )
