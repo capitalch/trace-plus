@@ -1,0 +1,5 @@
+type Query {
+    genericQuery(value: String): Generic
+    hello: Generic
+}
+scalar Generic

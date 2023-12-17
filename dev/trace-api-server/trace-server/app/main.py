@@ -2,7 +2,7 @@ from app.vendors import CORSMiddleware, FastAPI, HTTPException, JSONResponse, st
 from app.dependencies import AppHttpException, app_http_exception_handler, catch_exceptions_middleware
 from app.messages import Messages
 from app.security import securityRouter
-
+from app.graphql.graphql import GraphQLApp
 app = FastAPI()
 
 app.add_middleware(
@@ -23,7 +23,7 @@ app.middleware("http")(catch_exceptions_middleware)
 # Add custom exception handler to app. If you raise an exception of type AppHttpException, it will come here
 app.add_exception_handler(AppHttpException, app_http_exception_handler)
 app.include_router(securityRouter)
-
+app.add_route('/graphql/', GraphQLApp)
 
 @app.get("/api")
 async def get_api():

@@ -4,6 +4,13 @@ class Config:
     
     # Crypto
     CRYPTO_KEY = ''
+
+    # DB connection
+    DB_USER = 'webadmin'
+    DB_PASSWORD = 'NAFacr72163'
+    DB_HOST = 'node41766-chisel.cloudjiffy.net'
+    DB_PORT = '11107'
+    DB_SECURITY_DATABASE = 'traceAuth'
     
     # super admin
     SUPER_ADMIN_USERNAME = 'superAdmin'
