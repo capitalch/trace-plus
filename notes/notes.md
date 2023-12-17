@@ -1,4 +1,4 @@
-## Pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto]
+## Pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool]
 - superadmin@123
 ## VSCode extensions
 - Tailwind CSS Intellisense
