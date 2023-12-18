@@ -1,5 +1,4 @@
 from fastapi.encoders import jsonable_encoder
-# from psycopg import AsyncConnection, AsyncCursor
 from psycopg_pool import AsyncConnectionPool
 from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
@@ -70,5 +69,5 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
 
         await acur.close()
         await aconn.commit()
-        await aconn.close()
+        # await aconn.close()
         return records

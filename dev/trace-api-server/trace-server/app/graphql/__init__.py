@@ -1,0 +1,1 @@
+from .graphql_router import GraphQLApp

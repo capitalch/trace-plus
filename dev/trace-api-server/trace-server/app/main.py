@@ -2,7 +2,7 @@ from app.vendors import CORSMiddleware, FastAPI, HTTPException, JSONResponse, st
 from app.dependencies import AppHttpException, app_http_exception_handler, catch_exceptions_middleware
 from app.messages import Messages
 from app.security import securityRouter
-from app.graphql.graphql import GraphQLApp
+from app.graphql import GraphQLApp
 app = FastAPI()
 
 app.add_middleware(

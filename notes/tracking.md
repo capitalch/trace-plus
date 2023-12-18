@@ -3,6 +3,12 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 12-12-2023
+- Implemented GraphQL at server
+- Compared psycopg2 and psycopg3
+- decided on psycopg3
+- Psycopg3 is slightly faster for larger rush
+- Need to test asyncpg also
 # 04-12-2023
 - Implemented supeAdmin authentication JWT creation, username and password verification
 # 24-11-2023 - 26-12-2023
