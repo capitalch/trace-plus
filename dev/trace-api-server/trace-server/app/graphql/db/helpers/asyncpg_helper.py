@@ -30,12 +30,14 @@ async def exec_sql(dbName: str = Config.DB_SECURITY_DATABASE,
     records = None
     sql1, valuesTuple = to_native_sql(sql, sqlArgs)
     
-    async with create_pool(**db_params) as pool:
-        async with pool.acquire() as conn:
-            async with conn.transaction():
-                await conn.execute(f'set search_path to {schema}')
-                records = await conn.fetch(sql1, *valuesTuple)
-            # await conn.close()
+    # async with create_pool(**db_params) as pool:
+    # async with get_connection_pool(db_params, dbName) as pool:
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            await conn.execute(f'set search_path to {schema}')
+            records = await conn.fetch(sql1, *valuesTuple)
+            # records = await conn.fetch(f'set search_path to {schema}; {sql1}', *valuesTuple)
+        # await conn.close()
     return(jsonable_encoder(records))
     
 
