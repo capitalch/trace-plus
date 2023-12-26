@@ -57,13 +57,13 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
     records = []
     async with apool.connection() as aconn:
         async with aconn.cursor(row_factory=dict_row) as acur:
-            records = await acur.nextset()
+            # records = await acur.nextset()
             try:
-                await acur.execute(f"set search_path to {schema}; {sql}", sqlArgs)
-                # await acur.execute(sql, sqlArgs)
+                await acur.execute(f"set search_path to {schema}")
+                await acur.execute(sql, sqlArgs)
                 if acur.rowcount > 0:
                     records = await acur.fetchall()
-                    records = await acur.nextset()
+                    # records = await acur.nextset()
             except Exception as e:
                 if aconn.closed:
                     poolStore[dbName] = None
