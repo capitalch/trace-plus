@@ -1,5 +1,5 @@
 from .db import exec_sql_psycopg2, exec_sql_psycopg_async, exec_sql_asyncpg
-from .db.sqls import allSqls
+from .db.sql_security import allSqls
 from datetime import datetime
 
 

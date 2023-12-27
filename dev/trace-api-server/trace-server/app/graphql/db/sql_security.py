@@ -1,3 +1,44 @@
+class SqlSerurity:
+    does_user_email_exist = '''
+        with "email" as (values(%(email)s))
+            --with "email" as (values('capitalch@gmail.com'))
+        select exists(select 1
+            from "UserM"
+                where "userEmail" = (table "email"))
+    '''
+    
+    get_user_details = '''
+            with "uidOrEmail" as (values(%(uidOrEmail)s))
+            --with "uidOrEmail" as (values('cap@gmail.com'))
+            , cte1 as ( -- user details
+                select u.id as "userId", "uid", "userEmail", "hash", "userName"
+                    , "branchIds", "lastUsedBuId", "lastUsedBranchId", u."clientId", "mobileNo", u."isActive" as "isUserActive", u."roleId"
+					, c."clientCode", c."clientName", c."isActive" as "isClientActive", c."isExternalDb", c."dbName", c."dbParams"
+                , CASE when ("roleId" is null) THEN 'A' ELSE 'B' END as "userType"	
+                from "UserM" u
+					join "ClientM" c
+						on c."id" = u."clientId"
+                where (("uid" = (table "uidOrEmail") or ("userEmail" = (table "uidOrEmail")))))
+            , cte2 as ( -- get bu's associated with user
+                select b.id as "buId", "buCode", "buName"
+                    from "BuM" b
+                        join "UserBuX" x
+                            on b.id = x."buId"
+                        join "UserM" u
+                            on u."id" = x."userId"
+                where b."isActive" and (("uid" = (table "uidOrEmail") or ("userEmail" = (table "uidOrEmail")))))
+            , cte3 as ( -- role
+                    select r.id as "roleId", r."roleName", r."clientId" 
+                    from cte1 u
+                        left join "RoleM" r
+                            on r.id = u."roleId"
+            )
+            select json_build_object(
+                'userDetails',(select row_to_json(a) from cte1 a)
+                , 'businessUnits', (select json_agg(row_to_json(b)) from cte2 b)
+                , 'role', (select row_to_json(c) from cte3 c)
+            ) as "jsonResult"
+        '''
 allSqls = {
     "sql1": """with cte1 as (
             select * from "TranD" where "id" <> %(id)s
