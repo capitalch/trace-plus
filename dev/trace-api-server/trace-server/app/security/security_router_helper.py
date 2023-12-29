@@ -3,10 +3,10 @@ from app.dependencies import AppHttpException, UserClass
 from app.messages import Messages
 from app.config import Config
 from app.security.security_utils import create_access_token, verify_password
-from app.graphql.db import exec_sql_asyncpg as exec_sql
 from app.graphql.db.sql_security import SqlSerurity
+# from app.graphql.db import exec_sql_asyncpg as exec_sql
 # from app.graphql.db import exec_sql_psycopg2 as exec_sql
-# from app.graphql.db import exec_sql_psycopg_async as exec_sql
+from app.graphql.db import exec_sql_psycopg_async as exec_sql
 
 
 async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
@@ -47,8 +47,16 @@ def get_bundle(user: UserClass):
 async def get_other_user_bundle(uidOrEmail: str, password: str):
     details: list = await exec_sql(sql=SqlSerurity.get_user_details, sqlArgs={
                              'uidOrEmail': uidOrEmail},)
-    if(details):
-        jsonResultDict = details[0]['jsonResult']
+    try:
+        if(details):
+            jsonResultDict = details[0]['jsonResult']
+            userDetails = jsonResultDict.get('userDetails')
+            businessUnits = jsonResultDict.get('businessUnits')
+            role = jsonResultDict.get('role')
+            if(userDetails is None):
+                pass
+    except Exception as e:
+        print(e)
     
     return('abcd')
 

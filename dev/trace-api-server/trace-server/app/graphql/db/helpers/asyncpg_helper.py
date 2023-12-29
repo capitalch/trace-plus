@@ -1,5 +1,7 @@
 from fastapi.encoders import jsonable_encoder
+from fastapi import status
 from asyncpg import create_pool, Pool
+from app.dependencies import AppHttpException
 from app.config import Config
 from typing import Any
 
@@ -30,9 +32,12 @@ async def exec_sql(dbName: str = Config.DB_SECURITY_DATABASE,
         pool: Pool = await get_connection_pool(db_params, dbName)
         records = None
         sql1, valuesTuple = to_native_sql(sql, sqlArgs)
-    
+    except Exception as e:
+        # print(e)
+        raise AppHttpException(error_code='e1005', message=str(e),status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     # async with create_pool(**db_params) as pool:
     # async with get_connection_pool(db_params, dbName) as pool:
+    try:
         async with pool.acquire() as conn:
             async with conn.transaction():
                 await conn.execute(f'set search_path to {schema}')
@@ -40,10 +45,10 @@ async def exec_sql(dbName: str = Config.DB_SECURITY_DATABASE,
                 # records = await conn.fetch(f'set search_path to {schema}; {sql1}', *valuesTuple)
             # await conn.close()
     except Exception as e:
-        print(e)
-        raise e
-        
-    return(jsonable_encoder(records))
+        raise AppHttpException(error_code='e1006', status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e))
+    
+    return(records)
+    # return(jsonable_encoder(records))
     
 
 def to_native_sql(sql: str, params: dict):

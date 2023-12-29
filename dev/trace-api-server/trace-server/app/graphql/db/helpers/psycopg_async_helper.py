@@ -1,7 +1,9 @@
 from fastapi.encoders import jsonable_encoder
+from fastapi import status
 from psycopg_pool import AsyncConnectionPool
 from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
+from app.dependencies import AppHttpException
 
 from app.config import Config
 
@@ -50,26 +52,26 @@ async def exec_sql(
 
 
 async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
-    apool: AsyncConnectionPool = get_connection_pool(
-        connInfo,
-        dbName,
-    )
+    try:
+        apool: AsyncConnectionPool = get_connection_pool(
+            connInfo,
+            dbName,
+        )
+    except Exception as e:
+        raise AppHttpException(error_code='e1005', message=str(e),status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     records = []
-    async with apool.connection() as aconn:
-        async with aconn.cursor(row_factory=dict_row) as acur:
-            # records = await acur.nextset()
-            try:
+    try:
+        async with apool.connection() as aconn:
+            async with aconn.cursor(row_factory=dict_row) as acur:
+                # records = await acur.nextset()
                 await acur.execute(f"set search_path to {schema}")
                 await acur.execute(sql, sqlArgs)
                 if acur.rowcount > 0:
                     records = await acur.fetchall()
                     # records = await acur.nextset()
-            except Exception as e:
-                if aconn.closed:
-                    poolStore[dbName] = None
-                    raise e
-
-        await acur.close()
-        await aconn.commit()
-        # await aconn.close()
-        return records
+            await acur.close()
+            await aconn.commit()
+            # await aconn.close()
+    except Exception as e:
+        raise AppHttpException(error_code='e1006', status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e))
+    return(records)
