@@ -47,8 +47,8 @@ async def exec_sql(dbName: str = Config.DB_SECURITY_DATABASE,
     except Exception as e:
         raise AppHttpException(error_code='e1006', status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e))
     
-    return(records)
-    # return(jsonable_encoder(records))
+    # return(records)
+    return(jsonable_encoder(records))
     
 
 def to_native_sql(sql: str, params: dict):
