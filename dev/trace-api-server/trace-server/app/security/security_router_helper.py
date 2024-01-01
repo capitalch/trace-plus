@@ -100,7 +100,7 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
         isValidSuperAdmin = verify_password(
             password=password, hash=superAdminHash)
         if (isValidSuperAdmin):
-            user = UserClass(userName=superAdminUserName, email=superAdminEmail,
+            user = UserClass(name=superAdminUserName, email=superAdminEmail,
                              mobileNo=superAdminMobile, userType='S')
             bundle = get_bundle(user)
     return (bundle)
