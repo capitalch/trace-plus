@@ -26,7 +26,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
 
 class UserClass:
     def __init__(self,
-                 userType, businessUnits=None, clientCode=None, clientId=None, clientName=None, dbName=None, dbParams=None,  email=None, isClientActive=False, isUserActive=False, isExternalDb=False, lastUsedBuId=None, lastUsedBranchId=None, mobileNo=None, userName=None, id=None, fullName=None, role=None,
+                 userType, businessUnits=None, clientCode=None, clientId=None, clientName=None, dbName=None, dbParams=None,  email=None, isClientActive=False, isUserActive=False, isExternalDb=False, lastUsedBuId=None, lastUsedBranchId=None, mobileNo=None, uid=None, id=None, name=None, role=None,
                  ):
 
         self.businessUnits = businessUnits
@@ -44,8 +44,8 @@ class UserClass:
         self.mobileNo = mobileNo
         self.role = role
         self.userType = userType
-        self.userName = userName
-        self.fullName = fullName
+        self.uid = uid
+        self.name = name
         self.id = id
 
     businessUnits: Any
@@ -62,7 +62,7 @@ class UserClass:
     lastUsedBuId: int
     mobileNo: str
     role: dict
-    userName: str
+    uid: str
     id: int
-    fullName: str
+    name: str
     userType: str

@@ -38,7 +38,7 @@ async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
 
 
 def get_bundle(user: UserClass):
-    accessToken = create_access_token({'userName': user.userName})
+    accessToken = create_access_token({'name': user.name})
     return ({
         'accessToken': accessToken,
         'payload': user
@@ -86,8 +86,8 @@ async def get_other_user_bundle(uidOrEmail: str, password: str):
             mobileNo=userDetails['mobileNo'],
             role=role,
             uid=userDetails['uid'],
-            userName=userDetails['userName'],
-            userId=userDetails['userId'],
+            name=userDetails['name'],
+            id=userDetails['id'],
         )
         bundle = get_bundle(user)
     return(bundle)
