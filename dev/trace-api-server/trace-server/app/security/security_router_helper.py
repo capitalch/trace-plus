@@ -5,6 +5,7 @@ from app.config import Config
 from app.security.security_utils import create_access_token, verify_password
 from app.graphql.db.sql_security import SqlSerurity
 # from app.graphql.db import exec_sql_asyncpg as exec_sql
+import json
 # from app.graphql.db import exec_sql_psycopg2 as exec_sql
 from app.graphql.db import exec_sql_psycopg_async as exec_sql
 
@@ -37,7 +38,7 @@ async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
 
 
 def get_bundle(user: UserClass):
-    accessToken = create_access_token({'userName': user.userName})
+    accessToken = create_access_token({'name': user.name})
     return ({
         'accessToken': accessToken,
         'payload': user
@@ -45,20 +46,51 @@ def get_bundle(user: UserClass):
 
 
 async def get_other_user_bundle(uidOrEmail: str, password: str):
+    bundle = None
+    
     details: list = await exec_sql(sql=SqlSerurity.get_user_details, sqlArgs={
                              'uidOrEmail': uidOrEmail},)
-    try:
-        if(details):
-            jsonResultDict = details[0]['jsonResult']
-            userDetails = jsonResultDict.get('userDetails')
-            businessUnits = jsonResultDict.get('businessUnits')
-            role = jsonResultDict.get('role')
-            if(userDetails is None):
-                pass
-    except Exception as e:
-        print(e)
     
-    return('abcd')
+    if(details):
+        jsonResultDict = details[0]['jsonResult']
+        # jsonResultDict = json.loads(jsonResult) // in case of asyncpg
+        userDetails = jsonResultDict.get('userDetails')
+        businessUnits = jsonResultDict.get('businessUnits')
+        role = jsonResultDict.get('role')
+        if(userDetails is None):
+            raise AppHttpException(status_code=status.HTTP_401_UNAUTHORIZED,error_code='e1007', message=Messages.err_invalid_username_or_email)
+        
+        userType = userDetails.get('userType')
+        isActive = userDetails.get('isUserActive')
+        if(not isActive):
+            raise AppHttpException(status_code=status.HTTP_401_UNAUTHORIZED, error_code='e1008', message=Messages.err_inactive_user)
+        hash = userDetails.get('hash')
+        isPwdVerified = verify_password(password, hash)
+        if(not isPwdVerified):
+            raise AppHttpException(status_code=status.HTTP_401_UNAUTHORIZED,error_code='e1009', message=Messages.err_invalid_password)
+    
+        user = UserClass(
+            userType=userType,
+            businessUnits=businessUnits,
+            clientCode=userDetails['clientCode'],
+            clientName=userDetails['clientName'],
+            clientId=userDetails['clientId'],
+            dbName=userDetails['dbName'],
+            dbParams=userDetails['dbParams'],
+            email=userDetails['userEmail'],
+            isClientActive=userDetails['isClientActive'],
+            isUserActive=userDetails['isUserActive'],
+            isExternalDb=userDetails['isExternalDb'],
+            lastUsedBranchId=userDetails['lastUsedBranchId'],
+            lastUsedBuId=userDetails['lastUsedBuId'],
+            mobileNo=userDetails['mobileNo'],
+            role=role,
+            uid=userDetails['uid'],
+            name=userDetails['name'],
+            id=userDetails['id'],
+        )
+        bundle = get_bundle(user)
+    return(bundle)
 
 
 def get_super_admin_bundle(uidOrEmail: str, password: str):
@@ -68,7 +100,7 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
         isValidSuperAdmin = verify_password(
             password=password, hash=superAdminHash)
         if (isValidSuperAdmin):
-            user = UserClass(userName=superAdminUserName, email=superAdminEmail,
+            user = UserClass(name=superAdminUserName, email=superAdminEmail,
                              mobileNo=superAdminMobile, userType='S')
             bundle = get_bundle(user)
     return (bundle)
