@@ -1,6 +1,7 @@
 import './App.css'
-import { LoginForm } from './features/login-form/login-form'
-// import { Counter } from './features/counter/counter'
+import { Counter } from './features/redux-counter/counter'
+import { SignalsCounter } from './features/signals-counter/signals-counter'
+// import { LoginForm } from './features/login-form/login-form'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
 
@@ -8,8 +9,9 @@ function App() {
 
   return (
     <div className=''>
-      {/* <Counter /> */}
-      <LoginForm />
+      <Counter />
+      <SignalsCounter />
+      {/* <LoginForm /> */}
       {/* <ReactQueryComp /> */}
     </div>
   )

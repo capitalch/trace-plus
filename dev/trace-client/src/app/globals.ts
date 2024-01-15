@@ -1,9 +1,9 @@
 import { SignalsStore } from './signals-store'
 
 enum UserTypesEnum {
-  'SUPER_ADMIN',
-  'ADMIN',
-  'BUSINESS_USER'
+  'SUPER_ADMIN' = 'S',
+  'ADMIN' = 'A',
+  'BUSINESS_USER' = 'B'
 }
 
 function getUserTypeName (): string {

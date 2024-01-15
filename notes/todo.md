@@ -1,3 +1,9 @@
+## Recap
+# Client side
+- React router
+- Signals: value, effect, computed
+- React hook form
+- 
 ## To do for authentication
 - Configure Logger at server
 - Login screen at client

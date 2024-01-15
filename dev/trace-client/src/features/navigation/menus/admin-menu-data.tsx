@@ -2,7 +2,7 @@ import { BusinessUnitsIcon } from "../../../components/icons/business-units-icon
 import { DashboardIcon } from "../../../components/icons/dashboard-icon";
 import { RolesIcon } from "../../../components/icons/roles-icon";
 import { NodeMenuItemType } from "./menu-items-type";
-import { UsersIcon } from "./users-icon";
+import { UsersIcon } from "../../../components/icons/users-icon";
 
 const adminMenuData: NodeMenuItemType[] = [
     {

@@ -24,7 +24,7 @@ const SignalsStoreT: SignalsStoreType = {
         isLoggedIn: signal(false),
         uid: signal(''),
         email: signal(''),
-        userType: signal(0)
+        userType: signal('')
     },
 
     modalDialogA: {
@@ -71,7 +71,7 @@ type SignalsStoreType = {
         isLoggedIn: Signal<boolean>
         uid: Signal<string>
         email: Signal<string>
-        userType: Signal<number>
+        userType: Signal<string>
     },
 
     modalDialogA: {
