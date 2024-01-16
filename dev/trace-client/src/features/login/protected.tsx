@@ -2,8 +2,6 @@ import { Navigate } from "react-router-dom"
 import { SignalsStore } from "../../app/signals-store"
 
 function Protected({ children }: any) {
-    // const pr: any = {}
-    // console.log(pr)
     if (!SignalsStore.login.isLoggedIn.value) {
         return (<Navigate to='/login' replace />)
     } else {
