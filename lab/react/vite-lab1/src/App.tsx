@@ -1,4 +1,5 @@
 import './App.css'
+import { ArrayTrick } from './features/array-trick/array-trick'
 import { Counter } from './features/redux-counter/counter'
 import { SignalsCounter } from './features/signals-counter/signals-counter'
 // import { LoginForm } from './features/login-form/login-form'
@@ -11,6 +12,7 @@ function App() {
     <div className=''>
       <Counter />
       <SignalsCounter />
+      <ArrayTrick />
       {/* <LoginForm /> */}
       {/* <ReactQueryComp /> */}
     </div>
