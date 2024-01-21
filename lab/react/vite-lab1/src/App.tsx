@@ -1,6 +1,7 @@
 import './App.css'
-import { ArrayTrick } from './features/array-trick/array-trick'
-import { Counter } from './features/redux-counter/counter'
+import { Layouts } from './features/navigation/layouts/layouts'
+// import { ArrayTrick } from './features/array-trick/array-trick'
+// import { Counter } from './features/redux-counter/counter'
 import { SignalsCounter } from './features/signals-counter/signals-counter'
 // import { LoginForm } from './features/login-form/login-form'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
@@ -10,9 +11,10 @@ function App() {
 
   return (
     <div className=''>
-      <Counter />
+      <Layouts />
+      {/* <Counter /> */}
       <SignalsCounter />
-      <ArrayTrick />
+      {/* <ArrayTrick /> */}
       {/* <LoginForm /> */}
       {/* <ReactQueryComp /> */}
     </div>

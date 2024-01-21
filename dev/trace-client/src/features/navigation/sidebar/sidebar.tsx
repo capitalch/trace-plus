@@ -4,7 +4,6 @@ import { SignalsStore } from "../../../app/signals-store"
 import { MenuFoldIcon } from "../../../components/icons/menu-fold-icon"
 
 function Sidebar() {
-
     return (
         <div className={clsx(getSidebarClassName(), 'flex flex-col transition-[width] duration-500 ease-linear bg-neutral-100')}>
             <div className={'overflow-clip'}>
@@ -21,7 +20,6 @@ function Sidebar() {
                     <div className='py-4'>
                         {SignalsStore.layouts.sidebar.currentMenuComponent.value}
                     </div>
-
                 </div>
             </div>
 
@@ -35,6 +33,7 @@ function Sidebar() {
     }
 
     function getSidebarClassName() {
+        console.log(SignalsStore.layouts.isSideBarOpen.value)
         return SignalsStore.layouts.isSideBarOpen.value === true ? 'w-[220px]' : 'w-0'
     }
 

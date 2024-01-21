@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect} from "react"
 import { useMediaQuery } from "react-responsive"
 import { SignalsStore } from "../../app/signals-store"
 import { Sidebar } from "./sidebar/sidebar"
@@ -15,6 +15,13 @@ function Layouts() {
             SignalsStore.layouts.isSideBarOpen.value = false
         }
     })
+
+
+    // if (isBigScreen) {
+    //     SignalsStore.layouts.isSideBarOpen.value = true
+    // } else {
+    //     SignalsStore.layouts.isSideBarOpen.value = false
+    // }
 
     return (
         <div className="prose">
