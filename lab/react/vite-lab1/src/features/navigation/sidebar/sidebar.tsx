@@ -1,11 +1,15 @@
 import clsx from "clsx"
-import { SignalsStore } from "../../../app/signals-store"
+import { useSelector } from "react-redux"
+import { sidebarSelectorFn } from "../navigation-slice"
+import { useContext } from "react"
+import { GlobalContext } from "../../../App"
 
 function Sidebar() {
-    // const x = SignalsStore.layouts.isSideBarOpen.value
-    // console.log(x)
+    const isSidebarOpen = useSelector(sidebarSelectorFn)
+    const { profile}: any = useContext(GlobalContext)
+    console.log(profile.name, profile.address)
     return (
-        <div className={clsx(SignalsStore.layouts.isSideBarOpen.value == true ? 'w-[220px]' : 'w-0', "overflow-clip flex flex-col m-2 bg-red-300 text-orange-600")}>
+        <div className={clsx(getClassName(), "overflow-clip flex flex-col m-2 bg-red-300 text-orange-600")}>
             {/* Header  */}
             <div>
                 Header
@@ -20,8 +24,9 @@ function Sidebar() {
             </div>
         </div>)
 
-    // function getClassName() {
-    //     return (SignalsStore.layouts.isSideBarOpen.value == true) ? 'w-[220px]' : 'w-0'
-    // }
+    function getClassName() {
+
+        return (isSidebarOpen ? 'w-[220px]' : 'w-0')
+    }
 }
 export { Sidebar }

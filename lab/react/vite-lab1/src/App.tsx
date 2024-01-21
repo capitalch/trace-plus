@@ -1,3 +1,4 @@
+import { createContext } from 'react'
 import './App.css'
 import { Layouts } from './features/navigation/layouts/layouts'
 // import { ArrayTrick } from './features/array-trick/array-trick'
@@ -7,17 +8,20 @@ import { SignalsCounter } from './features/signals-counter/signals-counter'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
 
+export const GlobalContext: any = createContext({})
 function App() {
 
   return (
-    <div className=''>
-      <Layouts />
-      {/* <Counter /> */}
-      <SignalsCounter />
-      {/* <ArrayTrick /> */}
-      {/* <LoginForm /> */}
-      {/* <ReactQueryComp /> */}
-    </div>
+    <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
+      <div className=''>
+        <Layouts />
+        {/* <Counter /> */}
+        <SignalsCounter />
+        {/* <ArrayTrick /> */}
+        {/* <LoginForm /> */}
+        {/* <ReactQueryComp /> */}
+      </div>
+    </GlobalContext.Provider>
   )
 }
 
