@@ -7,5 +7,3 @@ export const appSlice = createSlice({
 });
 
 export const appReducer = appSlice.reducer;
-// const { reducer } = appSlice;
-// export { reducer as appReducer };

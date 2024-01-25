@@ -6,10 +6,6 @@ function useAppUtils() {
         } else {
             url =  window.location.href
         }
-        // const url: any =
-        //     process.env.NODE_ENV === 'development'
-        //         ? process.env.REACT_APP_LOCAL_SERVER_URL
-        //         : window.location.href
         return (url)
     }
 

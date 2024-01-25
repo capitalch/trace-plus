@@ -1,3 +1,17 @@
+## New project with redux-toolkit
+																									- Vite setup
+																										- npm start
+																										- port 3000
+- Router setup
+																									- Tailwind setup
+- Redux toolkit
+- Icons
+- Folder structure
+- Navigation
+	- Login
+	- Layouts
+	- top bar
+	- drop downs
 ## Recap
 # Client side
 - React router

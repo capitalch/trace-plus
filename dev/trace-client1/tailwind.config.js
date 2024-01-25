@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import colors from "tailwindcss/colors";
 import defaultTheme from "tailwindcss/defaultTheme";
-
 export default {
   content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
   theme: {
@@ -69,6 +68,5 @@ export default {
       },
     },
   },
-  plugins: [],
-}
-
+  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
+};
