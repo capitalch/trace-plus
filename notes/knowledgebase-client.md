@@ -7,6 +7,50 @@
 # Step 5: use actions
 - In components make use of useSelectors and dispath
 
+## TypeScript with redux
+# Step 1: In store.ts include types AppDispatchType, RootStateType
+	export type RootStateType = ReturnType<typeof store.getState>
+	export type AppDispatchType = typeof store.dispatch
+# Step 2: In counterSlice.ts include types for actions and initialstate
+	type DoIncrementType = {
+	    step: number
+	}
+
+	type DoDecrementType = {
+	    step: number
+	}
+
+	type InitialStateType = {
+    	count: number
+	}
+# Step 3: In counterSlice.ts  inside reducers provide action type
+	reducers: {
+
+        doIncrement: (state: InitialStateType, action: PayloadAction<DoIncrementType>) => {
+            const step = action.payload.step
+            state.count = state.count + step
+        },
+        doDecrement: (state: InitialStateType, action: PayloadAction<DoDecrementType>) => {
+            const step = action.payload.step
+            state.count = state.count - step
+        }
+    }
+
+# Step 4: in Counter.tsx make use of dispatch and useSelector as follows. You will get intellisence
+	const dispatch: AppDispatchType = useDispatch()
+    const count = useSelector((state: RootStateType) => {
+        const count = state.counter.count
+        return (count)
+    })
+
+    function handleIncrement() {
+        dispatch(doIncrement({step:1}))
+        
+    }
+
+    function handleDecrement() {
+        dispatch(doDecrement({step:1}))
+    }
 ## Typescript tailwind
 - With typescript the tailwind.config.js file must have: content: [{html,js,jsx,ts,tsx}]
 - Headwind for class sorting: On save the sorting takes place. To disable this

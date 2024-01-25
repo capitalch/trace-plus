@@ -1,19 +1,13 @@
 import { useDispatch, useSelector } from "react-redux"
 import { doDecrement, doIncrement } from "./counter-slice"
-import { useEffect } from "react"
-// import { fetchData } from "../../app/app-slice"
+import { AppDispatchType, RootStateType} from "../../app/store"
 
 function Counter() {
-    const dispatch: any = useDispatch()
-    const count = useSelector((state: any) => {
+    const dispatch: AppDispatchType = useDispatch()
+    const count = useSelector((state: RootStateType) => {
         const count = state.counter.count
         return (count)
     })
-
-    useEffect(() => {
-        // const args: any = { a: 1 }
-        // dispatch(fetchData(args))
-    }, [dispatch])
 
     return (<div className="flex flex-col gap-2 m-2">
         <span>Counter:{count}</span>
@@ -24,13 +18,12 @@ function Counter() {
     </div>)
 
     function handleIncrement() {
-        const args: any = { step: 1 }
-        dispatch(doIncrement(args))
+        dispatch(doIncrement({step:1}))
+        
     }
 
     function handleDecrement() {
-        const args: any = { step: 1 }
-        dispatch(doDecrement(args))
+        dispatch(doDecrement({step:1}))
     }
 }
 export { Counter }

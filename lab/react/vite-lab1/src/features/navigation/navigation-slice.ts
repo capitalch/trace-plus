@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
+import { RootStateType } from "../../app/store";
 
 const initialState: { isSidebarOpen: boolean } = {
   isSidebarOpen: false,
@@ -19,4 +19,4 @@ export const navigationReducer = navigationSlice.reducer;
 const { setSidebarOpen } = navigationSlice.actions;
 export { setSidebarOpen };
 
-export const sidebarSelectorFn = (state: RootState) => state.navigation.isSidebarOpen;
+export const sidebarSelectorFn = (state: RootStateType) => state.navigation.isSidebarOpen;
