@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux"
-import { isLoggedInSelectorFn } from "../../app/app-slice"
+import { isLoggedInSelectorFn } from "../../../app/app-slice"
 import { Navigate } from "react-router-dom"
 
-function Protected({ children }: ProtectedType) {
+function Protected({ children }: { children: any }) {
     const isLoggedInSelector = useSelector(isLoggedInSelectorFn)
     if (isLoggedInSelector) {
         return (children)
@@ -11,7 +11,3 @@ function Protected({ children }: ProtectedType) {
     }
 }
 export { Protected }
-
-type ProtectedType = {
-    children: any
-}

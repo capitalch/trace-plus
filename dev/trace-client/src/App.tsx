@@ -1,35 +1,10 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { RouterProvider} from 'react-router-dom'
 import './App.css'
-// import { useSelector } from 'react-redux'
-// import { isLoggedInSelectorFn } from './app/app-slice'
-import { Layouts } from './features/layouts/layouts'
-// import { Login } from './features/login/login'
-import { Protected } from './features/layouts/protected'
-import { Login } from './features/login/login'
+import { appRouter} from './app/app-router'
 function App() {
-  // const isLoggedInSelector: boolean = useSelector(isLoggedInSelectorFn)
-  // const Comp = getComponent()
-  const router = createBrowserRouter([
-    {
-      path: '/',
-      element: <Protected>
-        <Layouts />
-      </Protected>
-    },
-    {
-      path: '/login',
-      element: <Login />
-    }
-  ])
-
   return (
-    <RouterProvider router={router} />
+    <RouterProvider router={appRouter} />
   )
-
-  // function getComponent() {
-  //   const Ret = isLoggedInSelector ? Layouts : Login
-  //   return (Ret)
-  // }
 }
 
 export default App

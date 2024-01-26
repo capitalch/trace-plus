@@ -1,10 +1,12 @@
 import { createContext } from 'react'
 import './App.css'
-import { Layouts } from './features/navigation/layouts/layouts'
+// import { Layouts } from './features/navigation/layouts/layouts'
 // import { ArrayTrick } from './features/array-trick/array-trick'
 // import { Counter } from './features/redux-counter/counter'
 // import { SignalsCounter } from './features/signals-counter/signals-counter'
-import { Counter } from './features/redux-counter/counter'
+// import { Counter } from './features/redux-counter/counter'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './features/react-router/react-router'
 // import { LoginForm } from './features/login-form/login-form'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
@@ -14,14 +16,15 @@ function App() {
 
   return (
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
-      <div className=''>
-        <Layouts />
-        <Counter />
+      <RouterProvider router={router} />
+      {/* <div className=''> */}
+        {/* <Layouts />
+        <Counter /> */}
         {/* <SignalsCounter /> */}
         {/* <ArrayTrick /> */}
         {/* <LoginForm /> */}
         {/* <ReactQueryComp /> */}
-      </div>
+      {/* </div> */}
     </GlobalContext.Provider>
   )
 }
