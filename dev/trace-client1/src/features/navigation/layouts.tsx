@@ -16,13 +16,6 @@ function Layouts() {
         }
     })
 
-
-    // if (isBigScreen) {
-    //     SignalsStore.layouts.isSideBarOpen.value = true
-    // } else {
-    //     SignalsStore.layouts.isSideBarOpen.value = false
-    // }
-
     return (
         <div className="prose">
             {/* Container full screen width and height */}
