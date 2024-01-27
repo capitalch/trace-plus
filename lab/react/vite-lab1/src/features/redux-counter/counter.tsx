@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { doDecrement, doIncrement } from "./counter-slice"
-import { AppDispatchType, RootStateType} from "../../app/store"
+import { AppDispatchType, RootStateType } from "../../app/store"
 
 function Counter() {
     const dispatch: AppDispatchType = useDispatch()
@@ -18,12 +18,12 @@ function Counter() {
     </div>)
 
     function handleIncrement() {
-        dispatch(doIncrement({step:1}))
-        
+        dispatch(doIncrement({ step: 1}))
+
     }
 
     function handleDecrement() {
-        dispatch(doDecrement({step:1}))
+        dispatch(doDecrement({ step: 1 }))
     }
 }
 export { Counter }

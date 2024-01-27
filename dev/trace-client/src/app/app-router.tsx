@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Protected } from "../components/controls/protected/protected";
-import { Layouts } from "../components/controls/layouts/layouts";
+import { Protected } from "../features/layouts/protected";
+import { Layouts } from "../features/layouts/layouts";
 import { Blogs } from "../features/blogs/blogs";
-import { Login } from "../components/controls/login/login";
+import { Login } from "../features/login/login";
 
 
 export const appRouter = createBrowserRouter([

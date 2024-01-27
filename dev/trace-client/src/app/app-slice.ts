@@ -3,7 +3,7 @@ import { RootStateType } from './store'
 
 const initialState: InitialStateType = {
   login: {
-    isLoggedIn: true,
+    isLoggedIn: false,
     uid: '',
     email: '',
     userType: ''

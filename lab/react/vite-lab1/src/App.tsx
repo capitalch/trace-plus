@@ -4,7 +4,7 @@ import './App.css'
 // import { ArrayTrick } from './features/array-trick/array-trick'
 // import { Counter } from './features/redux-counter/counter'
 // import { SignalsCounter } from './features/signals-counter/signals-counter'
-// import { Counter } from './features/redux-counter/counter'
+import { Counter } from './features/redux-counter/counter'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './features/react-router/react-router'
 // import { LoginForm } from './features/login-form/login-form'
@@ -17,9 +17,10 @@ function App() {
   return (
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
       <RouterProvider router={router} />
+      <Counter />
       {/* <div className=''> */}
         {/* <Layouts />
-        <Counter /> */}
+         */}
         {/* <SignalsCounter /> */}
         {/* <ArrayTrick /> */}
         {/* <LoginForm /> */}
