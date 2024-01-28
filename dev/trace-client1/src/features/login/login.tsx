@@ -30,7 +30,7 @@ function Login() {
                 <div className="flex flex-col gap-1">
                     <label className="flex flex-col font-medium text-primary-400">
                         <span>User name / Email <Astrix /></span>
-                        <input autoFocus autoComplete="username" placeholder="accounts@gmail.com" type="text" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerUserName} />
+                        <input autoFocus autoComplete="username" placeholder="accounts@gmail.com" type="text" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerUserName} />                        
                         {(errors.username)
                             ? <FormErrorMessage errorMessage={Messages.errInvalidUserNameOrEmail} />
                             : <FormHelperText helperText={Messages.messUserNameEmailHelper} />}
