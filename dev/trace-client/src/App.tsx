@@ -1,15 +1,19 @@
-import { RouterProvider} from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom'
 import './App.css'
-import { appRouter} from './app/app-router'
-import { Comp1 } from './components/controls/comp1'
+import { appRouter } from './app/app-router'
+// import { Comp1 } from './components/controls/comp1'
+import { createContext } from 'react'
+import { AppGlobalContextType, appContext } from './app/app-global-context'
 
+export const AppGlobalContext = createContext<AppGlobalContextType>({})
 function App() {
+
   return (
-    <div id='app-root' className=''>
-      <Comp1 />
+    <AppGlobalContext.Provider value={appContext}>
       <RouterProvider router={appRouter} />
-    </div>
-    
+      {/* <Comp1 /> */}
+    </AppGlobalContext.Provider>
+
   )
 }
 

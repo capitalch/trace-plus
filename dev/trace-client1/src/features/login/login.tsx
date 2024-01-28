@@ -24,13 +24,13 @@ function Login() {
         minLength: { value: 8, message: Messages.errAtLeast8Chars}
     })
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className='w-[100vw] '>
-            <div className="flex flex-col p-5 ml-14 prose shadow-xl border-[3px] rounded-xl sm:mx-auto border-primary-400 h-auto w-96">
+        <form onSubmit={handleSubmit(onSubmit)} className='w-[100vw]'>
+            <div className="prose ml-14 flex w-96 flex-col rounded-xl border-[3px] border-primary-400 p-5 shadow-xl sm:mx-auto">
                 <h2 className="mx-auto text-primary-400">Login</h2>
                 <div className="flex flex-col gap-1">
                     <label className="flex flex-col font-medium text-primary-400">
                         <span>User name / Email <Astrix /></span>
-                        <input autoFocus autoComplete="username" placeholder="accounts@gmail.com" type="text" className="border-[1px] border-primary-200 px-2 rounded-md placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerUserName} />
+                        <input autoFocus autoComplete="username" placeholder="accounts@gmail.com" type="text" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerUserName} />
                         {(errors.username)
                             ? <FormErrorMessage errorMessage={Messages.errInvalidUserNameOrEmail} />
                             : <FormHelperText helperText={Messages.messUserNameEmailHelper} />}
@@ -38,24 +38,24 @@ function Login() {
                     </label>
                 </div>
 
-                <div className="flex flex-col gap-1 mt-3">
+                <div className="mt-3 flex flex-col gap-1">
                     <div className="flex flex-col gap-1" >
                         <label className="flex flex-col font-medium text-primary-400">
                             <span>Password <Astrix /></span>
-                            <input type="password" placeholder="*****" autoComplete='current-password' className="border-[1px] border-primary-200 px-2 rounded-md placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
+                            <input type="password" placeholder="*****" autoComplete='current-password' className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
                             {(errors.password ?
                                 <FormErrorMessage errorMessage={errors.password.message} /> : <FormHelperText helperText={Messages.messPasswordHelper} />)}
 
                         </label>
-                        <span onClick={handleForgotPassword} className="px-2 py-1 mt-1 ml-auto text-xs text-primary-400 hover:text-error-600 hover:cursor-pointer hover:font-semibold hover:underline">Forgot password</span>
+                        <span onClick={handleForgotPassword} className="ml-auto mt-1 px-2 py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-error-600 hover:underline">Forgot password</span>
                     </div>
                 </div>
-                <div className="flex flex-col mt-3">                    
+                <div className="mt-3 flex flex-col">                    
                     <ButtonSubmitFullWidth label="Sign in"  />
-                    <div className="flex justify-start mt-2 ">
-                        <span onClick={() => handleTestSignIn('superAdmin')} className="py-1 text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Super admin</span>
-                        <span onClick={() => handleTestSignIn('admin')} className="py-1 ml-auto text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Admin</span>
-                        <span onClick={() => handleTestSignIn('businessUser')} className="py-1 ml-auto text-xs text-primary-400 hover:text-primary-600 hover:cursor-pointer hover:font-semibold hover:underline">Business user</span>
+                    <div className="mt-2 flex justify-start">
+                        <span onClick={() => handleTestSignIn('superAdmin')} className="py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Super admin</span>
+                        <span onClick={() => handleTestSignIn('admin')} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Admin</span>
+                        <span onClick={() => handleTestSignIn('businessUser')} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Business user</span>
                     </div>
                 </div>
             </div>

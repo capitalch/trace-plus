@@ -4,10 +4,10 @@ import { Navigate } from "react-router-dom"
 
 function Protected({ children }: { children: any }) {
     const isLoggedInSelector = useSelector(isLoggedInSelectorFn)
-    if (isLoggedInSelector) {
-        return (children)
-    } else {
-        return (<Navigate to='/login' />)
-    }
+    return(<div className="">
+        {
+            isLoggedInSelector ? children: <Navigate to='/login' />
+        }
+    </div>)
 }
 export { Protected }
