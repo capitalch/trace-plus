@@ -37,9 +37,10 @@ export const appReducer = appSlice.reducer
 export const { doLogin, doLogout} = appSlice.actions
 
 type DoLoginType = {
-    email: string;
-    uid: string;
+    email: string
+    uid: string
     userType: string
+    isLoggedIn: boolean
 }
 
 type InitialStateType = {
