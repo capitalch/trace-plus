@@ -6,6 +6,7 @@ import { FormHelperText } from "../../components/widgets/form-helper-text"
 import { useLogin } from "./login-hook"
 import { ButtonSubmitFullWidth } from "../../components/widgets/button-submit-full-width"
 import { useValidators } from "../../utils/validators-hook"
+import { UserTypesEnum } from "../../utils/global-types-interfaces-enums"
 
 function Login() {
     const { handleSubmit, register, formState: { errors } } = useForm({ mode: 'onTouched' })
@@ -48,9 +49,9 @@ function Login() {
                 <div className="mt-2 flex flex-col">
                     <ButtonSubmitFullWidth label="Sign in" />
                     <div className="mt-2 flex justify-start">
-                        <span onClick={() => handleTestSignIn('S')} className="py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Super admin</span>
-                        <span onClick={() => handleTestSignIn('A')} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Admin</span>
-                        <span onClick={() => handleTestSignIn('B')} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Business user</span>
+                        <span onClick={() => handleTestSignIn(UserTypesEnum.SuperAdmin)} className="py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Super admin</span>
+                        <span onClick={() => handleTestSignIn(UserTypesEnum.Admin)} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Admin</span>
+                        <span onClick={() => handleTestSignIn(UserTypesEnum.BusinessUser)} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Business user</span>
                     </div>
                 </div>
             </div>

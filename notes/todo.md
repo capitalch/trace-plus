@@ -6,7 +6,7 @@
 																									- Tailwind setup
 - Redux toolkit
 - Icons
-- Folder structure
+																									- Folder structure
 - Navigation
 	- Login
 	- Layouts
