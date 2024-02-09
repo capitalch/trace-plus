@@ -1,6 +1,7 @@
-## trace-plus client side
-- Global error handling
-- Revisit routing, protected and outlet
+## trace-plus
+																									- Check fastAPI error handling. It's not proper at present for superAdmin
+- SweetAlert2 for error handling
+																									- Revisit routing, protected and outlet
 Revsit 
 ## New project with redux-toolkit
 																									- Vite setup

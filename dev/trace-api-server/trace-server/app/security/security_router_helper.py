@@ -27,12 +27,12 @@ async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
             raise AppHttpException(status_code=status.HTTP_401_UNAUTHORIZED,
                                    error_code='e1004', message=Messages.err_invalid_username_or_password)
         return (bundle)
-    except AppHttpException:
-        raise
+    except AppHttpException as e:
+        raise e
     except Exception as e:
         print(e)
         raise AppHttpException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, error_code='', message=str(e))
+            status_code=status.HTTP_401_UNAUTHORIZED, error_code='e1004', message=str(e))
 
 # Helper support functions
 

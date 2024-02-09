@@ -7,6 +7,7 @@ import './App.css'
 import { Counter } from './features/redux-counter/counter'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './features/react-router/react-router'
+import { ToastError } from './features/sweetalert2/toast-error'
 // import { LoginForm } from './features/login-form/login-form'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
@@ -18,6 +19,7 @@ function App() {
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
       <RouterProvider router={router} />
       <Counter />
+      <ToastError />
       {/* <div className=''> */}
         {/* <Layouts />
          */}

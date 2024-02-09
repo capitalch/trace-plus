@@ -6,11 +6,12 @@ import { useUtils } from "../../utils/utils-hook"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
+// import { useEffect } from "react"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
-    const {getHostUrl} = useUtils()
+    const { getHostUrl } = useUtils()
     function handleForgotPassword() {
 
     }
@@ -20,27 +21,36 @@ function useLogin() {
         navigate('/', { replace: true })
     }
 
-    async function onSubmit(data:any) {
+    // useEffect(() => {throw new Error('Failed to login')},[])
+
+    async function onSubmit(data: any) {
         const hostUrl = getHostUrl()
         const loginUrl = urlJoin(hostUrl, 'login')
-        const ret: any = await axios({
-            method: 'post',
-            url: loginUrl,
-            data: qs.stringify({
-                username: data.username,
-                password: data.password
-            }),
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-            },
-        })
-        const accessToken: string = ret.data.accessToken
-        if (accessToken) {
-            dispatch(doLogin({ email: '', uid: '', userType: '', isLoggedIn: true }))
-            navigate('/', { replace: true })
+        // throw new Error('Failed to login')
+        try {
+            const ret: any = await axios({
+                method: 'post',
+                url: loginUrl,
+                data: qs.stringify({
+                    username: data.username,
+                    password: data.password
+                }),
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                },
+            })
+            const accessToken: string = ret?.data?.accessToken
+            if (accessToken) {
+                dispatch(doLogin({ email: '', uid: '', userType: '', isLoggedIn: true }))
+                navigate('/', { replace: true })
+            }
+        } catch (error) {
+            alert('failed to login')
+            // throw new Error('Failed to login')
         }
     }
 
     return ({ handleForgotPassword, handleTestSignIn, onSubmit })
+
 }
 export { useLogin }
