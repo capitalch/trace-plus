@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { isLoggedInSelectorFn } from "../../app/app-slice"
+import { isLoggedInSelectorFn } from "../../app/store/app-slice"
 import { Navigate } from "react-router-dom"
 
 function Protected({ children }: { children: any }) {

@@ -1,3 +1,7 @@
+## trace-plus client side
+- Global error handling
+- Revisit routing, protected and outlet
+Revsit 
 ## New project with redux-toolkit
 																									- Vite setup
 																										- npm start

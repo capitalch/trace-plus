@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
-import { AppDispatchType } from "../../app/store"
-import { doLogin } from "../../app/app-slice"
+import { AppDispatchType } from "../../app/store/store"
+import { doLogin } from "../../app/store/app-slice"
 import { useNavigate } from "react-router-dom"
 import { useUtils } from "../../utils/utils-hook"
 import urlJoin from "url-join"
