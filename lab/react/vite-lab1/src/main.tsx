@@ -4,6 +4,7 @@ import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { PrimeReactProvider } from 'primereact/api';
 // import { RouterProvider } from 'react-router-dom'
 // import { router } from './features/react-router/react-router.tsx'
 
@@ -28,7 +29,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     {/* <RouterProvider router={router} /> */}
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <App />
+        <PrimeReactProvider value={{ unstyled: true }}>
+          <App />
+        </PrimeReactProvider  >
       </Provider>
     </QueryClientProvider>
   </>

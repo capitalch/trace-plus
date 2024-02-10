@@ -11,23 +11,25 @@ import { ToastError } from './features/sweetalert2/toast-error'
 // import { LoginForm } from './features/login-form/login-form'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
+import 'primeicons/primeicons.css';
 
 export const GlobalContext: any = createContext({})
+
 function App() {
 
   return (
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
-      <RouterProvider router={router} />
-      <Counter />
-      <ToastError />
-      {/* <div className=''> */}
+        <RouterProvider router={router} />
+        <Counter />
+        <ToastError />
+        {/* <div className=''> */}
         {/* <Layouts />
          */}
         {/* <SignalsCounter /> */}
         {/* <ArrayTrick /> */}
         {/* <LoginForm /> */}
         {/* <ReactQueryComp /> */}
-      {/* </div> */}
+        {/* </div> */}
     </GlobalContext.Provider>
   )
 }
