@@ -6,14 +6,20 @@ import { useUtils } from "../../utils/utils-hook"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-// import { useEffect } from "react"
+import { showSaveMessage } from "../../utils/util-methods/show-save-message"
+import { showErrorMessage } from "../../utils/util-methods/show-error-message"
+import { AppGlobalContextType } from "../../app/global-context/app-global-context"
+import { useContext } from "react"
+import { AppGlobalContext } from "../../App"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
+    const globalContext: AppGlobalContextType = useContext(AppGlobalContext)
     const navigate = useNavigate()
     const { getHostUrl } = useUtils()
-    function handleForgotPassword() {
 
+    function handleForgotPassword() {
+        showSaveMessage()
     }
 
     function handleTestSignIn(userType: string) {
@@ -21,12 +27,9 @@ function useLogin() {
         navigate('/', { replace: true })
     }
 
-    // useEffect(() => {throw new Error('Failed to login')},[])
-
     async function onSubmit(data: any) {
         const hostUrl = getHostUrl()
         const loginUrl = urlJoin(hostUrl, 'login')
-        // throw new Error('Failed to login')
         try {
             const ret: any = await axios({
                 method: 'post',
@@ -42,15 +45,15 @@ function useLogin() {
             const accessToken: string = ret?.data?.accessToken
             if (accessToken) {
                 dispatch(doLogin({ email: '', uid: '', userType: '', isLoggedIn: true }))
+
+                globalContext.accessToken = accessToken
+
                 navigate('/', { replace: true })
             }
-        } catch (error) {
-            alert('failed to login')
-            // throw new Error('Failed to login')
+        } catch (error: any) {
+            showErrorMessage(error)
         }
     }
-
     return ({ handleForgotPassword, handleTestSignIn, onSubmit })
-
 }
 export { useLogin }

@@ -10,7 +10,7 @@ import { UserTypesEnum } from "../../utils/global-types-interfaces-enums"
 
 function Login() {
     const { handleSubmit, register, formState: { errors } } = useForm({ mode: 'onTouched' })
-    const { handleForgotPassword, handleTestSignIn, onSubmit } = useLogin()
+    const { handleForgotPassword,  handleTestSignIn, onSubmit } = useLogin()
     const { checkPassword, checkUserNameOrEmail }: any = useValidators()
 
     const registerUserName = register('username', {
@@ -46,8 +46,10 @@ function Login() {
                     <FormHelperText helperText={Messages.messPasswordHelper} />
                 </label>
                 <span onClick={handleForgotPassword} className="ml-auto px-2 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-blue-400 hover:underline">Forgot password</span>
+                {/* <span onClick={handleForgotPassword1} className="ml-auto px-2 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-blue-400 hover:underline">Forgot password1</span> */}
+                
                 <div className="mt-2 flex flex-col">
-                    <ButtonSubmitFullWidth label="Sign in" />
+                    <ButtonSubmitFullWidth label="Sign in"  />
                     <div className="mt-2 flex justify-start">
                         <span onClick={() => handleTestSignIn(UserTypesEnum.SuperAdmin)} className="py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Super admin</span>
                         <span onClick={() => handleTestSignIn(UserTypesEnum.Admin)} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Admin</span>

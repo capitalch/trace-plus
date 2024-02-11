@@ -6,7 +6,7 @@ class Messages:
     err_invalid_username_or_email = "Invalid username or email"
     err_invalid_username_or_password = "Invalid username or password"
     err_missing_username_password = "Missing username or password"
-    err_super_admin_user_config_data_missing = "Config data for super admin user is not found from configuration file at server"
+    # err_super_admin_user_config_data_missing = "Config data for super admin user is not found in configuration file at server"
     err_unknown = "Unknown error"
     err_url_not_found = "Specified url not found"
 

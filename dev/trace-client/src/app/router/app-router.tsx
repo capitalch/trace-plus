@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Protected } from "../../features/layouts/protected";
+import { Protected } from "../../features/protected";
 import { Layouts } from "../../features/layouts/layouts";
 import { Blogs } from "../../features/pages/blogs";
 import { Login } from "../../features/login/login";
@@ -29,6 +29,7 @@ export const appRouter = createBrowserRouter([
         path: '/login',
         element: <Login />,
         errorElement: <ErrorPage />,
+
     }
 ])
 

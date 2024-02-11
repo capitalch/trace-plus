@@ -108,11 +108,11 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
 
 def get_super_admin_details_from_config():
     try:
-        superAdminUserName = Config.SUPER_ADMIN_USERNAME
+        superAdminUserName = Config.SUPER_ADMIN_UID
         superAdminEmail = Config.SUPER_ADMIN_EMAIL
         superAdminMobile = Config.SUPER_ADMIN_MOBILE_NO
         superAdminHash = Config.SUPER_ADMIN_HASH
         return superAdminUserName, superAdminEmail, superAdminMobile, superAdminHash
     except Exception:
         raise AppHttpException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                               error_code='e1004', message=Messages.err_super_admin_user_config_data_missing)
+                               error_code='e1004', message=Messages.err_internal_server_error)

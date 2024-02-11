@@ -4,6 +4,12 @@
 
 @layer components {
 
+/* For sweet alert2 text font size */
+/* h2#swal2-title
+      {
+         font-size: 18px;
+         color: green;
+      } */
   /* .full-width {
     @apply w-[100vw] h-10 ml-0
   } */

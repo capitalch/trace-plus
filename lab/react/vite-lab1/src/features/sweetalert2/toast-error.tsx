@@ -10,17 +10,23 @@ function ToastError() {
 
     function handleOnClick() {
         Swal.fire({
+            allowOutsideClick:true,
             toast: true,
             position: "bottom-right",
             color: "white",
             background:'red',
-            // timer: 5000,
-            // timerProgressBar: true,
+            timer: 5000,
+            timerProgressBar: true,
             title: 'This is an error. Please try again to overcome this error',
+            padding: '5px',
             showConfirmButton: false,
             icon: 'error',
-            customClass:{
-                
+            iconColor:'white',
+            // grow:'column',
+            // heightAuto:false,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
         })
     }
