@@ -3,6 +3,11 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 12-02-2024
+- Client side working on sidebar, top navigation
+- Adjusted sever side work for login
+- Client side login completed
+
 # 12-12-2023
 - Implemented GraphQL at server
 - Compared psycopg2 and psycopg3

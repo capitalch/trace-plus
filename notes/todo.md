@@ -1,8 +1,14 @@
+
 ## trace-plus
+- Top navigation bar
+	- log out
+	- drop down menu
+- Side bar
+	- side menu
+
 																									- Check fastAPI error handling. It's not proper at present for superAdmin
-- SweetAlert2 for error handling
+																									- SweetAlert2 for error handling
 																									- Revisit routing, protected and outlet
-Revsit 
 ## New project with redux-toolkit
 																									- Vite setup
 																										- npm start
