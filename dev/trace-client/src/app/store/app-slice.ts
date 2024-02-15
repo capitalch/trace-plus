@@ -1,5 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootStateType } from "./store";
+import {
+  TopNavBarSelectedMenuItemNameEnum,
+  UserTypesEnum,
+} from "../../utils/global-types-interfaces-enums";
 
 const initialState: InitialStateType = {
   // accessToken:undefined,
@@ -10,7 +14,12 @@ const initialState: InitialStateType = {
     userType: "",
   },
   layouts: {
-    isSideBarOpen: false,
+    sideBar: {
+      isSideBarOpen: false,
+    },
+    topNavBar: {
+      selectedMenuItemName: "",
+    },
   },
   count: 0,
 };
@@ -23,10 +32,21 @@ export const appSlice = createSlice({
       action: PayloadAction<DoLoginActionType>
     ) => {
       // state.accessToken = action?.payload?.accesstoken
+      const userType = action?.payload?.userType;
       state.login.isLoggedIn = true;
       state.login.email = action?.payload?.email;
       state.login.uid = action?.payload?.uid;
-      state.login.userType = action?.payload?.userType;
+      state.login.userType = userType;
+      if (userType === UserTypesEnum.Admin) {
+        state.layouts.topNavBar.selectedMenuItemName =
+          TopNavBarSelectedMenuItemNameEnum.Accounts;
+      } else if (userType === UserTypesEnum.BusinessUser) {
+        state.layouts.topNavBar.selectedMenuItemName =
+          TopNavBarSelectedMenuItemNameEnum.Accounts;
+      } else {
+        state.layouts.topNavBar.selectedMenuItemName =
+          TopNavBarSelectedMenuItemNameEnum.SuperAdmin;
+      }
     },
 
     doLogout: (state: InitialStateType) => {
@@ -40,8 +60,10 @@ export const appSlice = createSlice({
       state: InitialStateType,
       action: PayloadAction<IsSideBarOpenActionType>
     ) => {
-      state.layouts.isSideBarOpen = action.payload.isSideBarOpen;
+      state.layouts.sideBar.isSideBarOpen = action.payload.isSideBarOpen;
     },
+
+    // setTopNavBarActiveMenuIte
   },
 });
 
@@ -53,7 +75,6 @@ type IsSideBarOpenActionType = {
 };
 
 type DoLoginActionType = {
-  // accesstoken: string | undefined
   email: string;
   uid: string;
   userType: string;
@@ -69,18 +90,25 @@ type InitialStateType = {
     userType: string;
   };
   layouts: {
-    isSideBarOpen: boolean;
+    sideBar: {
+      isSideBarOpen: boolean;
+    };
+    topNavBar: {
+      selectedMenuItemName: string;
+    };
   };
   count: number;
 };
-
-// type SetIsLoggedInType = {
-//   isLoggedIn: boolean
-// }
 
 // Selector functions
 export const isLoggedInSelectorFn = (state: RootStateType) =>
   state.app.login.isLoggedIn;
 
 export const isSideBarOpenSelectorFn = (state: RootStateType) =>
-  state.app.layouts.isSideBarOpen;
+  state.app.layouts.sideBar.isSideBarOpen;
+
+export const userTypeSelectorFn = (state: RootStateType) =>
+  state.app.login.userType;
+
+export const topNavBarSelectedMenuItemNameSelectorFn = (state: RootStateType) =>
+  state.app.layouts.topNavBar.selectedMenuItemName;

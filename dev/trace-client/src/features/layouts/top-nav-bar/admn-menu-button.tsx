@@ -1,0 +1,4 @@
+function AdminMenuButton(){
+
+}
+export {AdminMenuButton}
