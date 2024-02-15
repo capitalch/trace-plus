@@ -1,4 +1,0 @@
-function AdminMenuButton(){
-
-}
-export {AdminMenuButton}

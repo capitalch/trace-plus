@@ -9,7 +9,7 @@ function SideBar() {
     const dispatch: AppDispatchType = useDispatch()
 
     // sidebar
-    return (<div className={clsx(getSideBarClassName(), 'bg-neutral-50 flex flex-col transition-[width] duration-500 ease-linear')}>
+    return (<div className={clsx(getSideBarClassName(), 'bg-neutral-100 flex flex-col transition-[width] duration-500 ease-linear')}>
 
         {/* SideBar header */}
         <div className="flex h-12 w-max items-center border-b-[1px] border-primary-100 pl-2">
