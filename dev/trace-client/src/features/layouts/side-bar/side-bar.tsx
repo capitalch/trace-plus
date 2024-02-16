@@ -4,6 +4,7 @@ import clsx from "clsx"
 import { AppDispatchType } from "../../../app/store/store"
 import { MenuFoldIcon } from "../../../components/icons/menu-fold-icon"
 import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../layouts-slice"
+import { SideMenu } from "./side-menu"
 
 function SideBar() {
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
@@ -19,6 +20,8 @@ function SideBar() {
                 <MenuFoldIcon className='h-6 text-primary-500' />
             </button>
         </div>
+
+        <SideMenu />
     </div>)
 
     function getSideBarClassName() {
