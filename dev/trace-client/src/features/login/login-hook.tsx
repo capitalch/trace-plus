@@ -1,6 +1,5 @@
 import { useDispatch } from "react-redux"
 import { AppDispatchType } from "../../app/store/store"
-import { doLogin } from "../../app/store/app-slice"
 import { useNavigate } from "react-router-dom"
 import { useUtils } from "../../utils/utils-hook"
 import urlJoin from "url-join"
@@ -11,6 +10,7 @@ import { showErrorMessage } from "../../utils/util-methods/show-error-message"
 import { AppGlobalContextType } from "../../app/global-context/app-global-context"
 import { useContext } from "react"
 import { AppGlobalContext } from "../../App"
+import { doLogin } from "./login-slice"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()

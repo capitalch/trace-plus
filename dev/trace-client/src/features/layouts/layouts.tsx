@@ -1,11 +1,12 @@
 import { Outlet } from "react-router-dom"
 import { SideBar } from "./side-bar/side-bar"
-import { TopNavBar } from "./top-nav-bar/top-nav-bar"
+import { NavBar } from "./nav-bar/nav-bar"
 import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 import { AppDispatchType } from "../../app/store/store"
 import { useDispatch } from "react-redux"
-import { setIsSideBarOpen } from "../../app/store/app-slice"
+import { setIsSideBarOpen } from "./layouts-slice"
+// import { setIsSideBarOpen } from "../../app/store/app-slice"
 
 function Layouts() {
 
@@ -24,7 +25,7 @@ function Layouts() {
         <div className="flex h-screen w-screen bg-white">
             <SideBar />
             <div className="flex flex-col w-full">
-                <TopNavBar />
+                <NavBar />
                 <Outlet />
             </div>
         </div>

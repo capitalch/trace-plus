@@ -4,8 +4,8 @@ export enum UserTypesEnum {
    BusinessUser = 'B'
 }
 
-export enum TopNavBarSelectedMenuItemNameEnum {
-   Admin = 'admin',
-   SuperAdmin = 'superAdmin',
-   Accounts = 'accounts'
-}
+// export enum TopNavBarSelectedMenuItemNameEnum {
+//    Admin = 'admin',
+//    SuperAdmin = 'superAdmin',
+//    Accounts = 'accounts'
+// }

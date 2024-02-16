@@ -1,10 +1,9 @@
 import clsx from "clsx"
 import { MenuUnfoldIcon } from "../../../components/icons/menu-unfold-icon"
-import { useTopNavBar } from "./top-nav-bar-hook"
-// import { AccountsMenuButton } from "./accounts-menu-button"
+import { useNavBar } from "./nav-bar-hook"
 
-function TopNavBar() {
-    const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useTopNavBar()
+function NavBar() {
+    const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
     return (
         // Top Nav bar
         <div className="flex h-12 items-center justify-between bg-primary-500">
@@ -19,4 +18,4 @@ function TopNavBar() {
 
         </div>)
 }
-export { TopNavBar }
+export { NavBar }

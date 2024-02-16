@@ -1,15 +1,14 @@
 import { useDispatch, useSelector } from "react-redux"
-import { isSideBarOpenSelectorFn, setIsSideBarOpen, userTypeSelectorFn, } from "../../../app/store/app-slice"
+// import { isSideBarOpenSelectorFn, setIsSideBarOpen, userTypeSelectorFn, } from "../../../app/store/app-slice"
 import { AppDispatchType } from "../../../app/store/store"
 import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums"
 import { SuperAdminMenuButton } from "./super-admin-menu-button"
 import { AccountsMenuButton } from "./accounts-menu-button"
 import { AdminMenuButton } from "./admin-menu-button"
-// import { AdminMenuButton } from "./admn-menu-button"
-// import { useEffect } from "react"
-// import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums"
+import { isSideBarOpenSelectorFn, setIsSideBarOpen, } from "../layouts-slice"
+import { userTypeSelectorFn } from "../../login/login-slice"
 
-export function useTopNavBar() {
+export function useNavBar() {
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
     const userTypeSelector: string = useSelector(userTypeSelectorFn)
     const dispatch: AppDispatchType = useDispatch()

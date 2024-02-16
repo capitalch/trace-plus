@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from "react-redux"
-import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../../../app/store/app-slice"
+// import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../../../app/store/app-slice"
 import clsx from "clsx"
 import { AppDispatchType } from "../../../app/store/store"
 import { MenuFoldIcon } from "../../../components/icons/menu-fold-icon"
+import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../layouts-slice"
 
 function SideBar() {
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)

@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux"
-import { isLoggedInSelectorFn } from "../app/store/app-slice"
+// import { isLoggedInSelectorFn } from "../../app/store/app-slice"
 import { Navigate } from "react-router-dom"
+import { isLoggedInSelectorFn } from "../login/login-slice"
+// import { isLoggedInSelectorFn } from "./layouts-slice"
 
 function Protected({ children }: { children: any }) {
     const isLoggedInSelector = useSelector(isLoggedInSelectorFn)
