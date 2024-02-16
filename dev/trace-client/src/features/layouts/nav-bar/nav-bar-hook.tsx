@@ -5,7 +5,7 @@ import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums"
 import { SuperAdminMenuButton } from "./super-admin-menu-button"
 import { AccountsMenuButton } from "./accounts-menu-button"
 import { AdminMenuButton } from "./admin-menu-button"
-import { isSideBarOpenSelectorFn, setIsSideBarOpen, } from "../layouts-slice"
+import { isSideBarOpenSelectorFn, setIsSideBarOpen, setMenuItem, } from "../layouts-slice"
 import { userTypeSelectorFn } from "../../login/login-slice"
 
 export function useNavBar() {
@@ -19,15 +19,18 @@ export function useNavBar() {
 
     function getMenuButtons() {
         if (userTypeSelector === UserTypesEnum.SuperAdmin) {
+            dispatch(setMenuItem({ menuItem: 'superAdmin' }))
             return (<div>
                 <SuperAdminMenuButton />
             </div>)
         } else if (userTypeSelector === UserTypesEnum.Admin) {
+            dispatch(setMenuItem({ menuItem: "accounts" }))
             return (<div className="flex">
                 <AccountsMenuButton />
                 <AdminMenuButton />
             </div>)
         } else {
+            dispatch(setMenuItem({ menuItem: "accounts" }))
             return (<div>
                 <AccountsMenuButton />
             </div>)

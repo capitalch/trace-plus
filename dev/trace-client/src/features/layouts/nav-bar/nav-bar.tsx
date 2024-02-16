@@ -11,11 +11,8 @@ function NavBar() {
                 <button onClick={handleShowSideBar} className={clsx(getMenuShowHideClass(), 'mx-2')}>
                     <MenuUnfoldIcon className='h-6' />
                 </button>
-
                 {getMenuButtons()}
-
             </div>
-
         </div>)
 }
 export { NavBar }
