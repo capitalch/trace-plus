@@ -14,7 +14,7 @@ function SideMenu() {
             <CheveronDownIcon className='ml-auto' />
         </button>
         <div>
-            <button id='11' className="flex items-center w-full pl-9 h-10 rounded-md bg-emerald-50 hover:bg-slate-300  border-none focus:outline-none">Journals</button>
+            <button id='11' className="flex items-center w-full pl-9 h-10 rounded-md bg-lime-50 hover:bg-slate-300  border-none focus:outline-none">Journals</button>
         </div>
     </div>)
 }
