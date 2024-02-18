@@ -1,6 +1,4 @@
-// import { VoucherIcon } from "../../../components/icons/voucher-icon"
 import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
-// import { PurchaseSalesIcon } from "../../../components/icons/purchase-sales-icon"
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
@@ -15,7 +13,7 @@ function SideMenu() {
     const dispatch: AppDispatchType = useDispatch()
 
     const menuData = MasterMenuData[menuItemSelector]
-    // console.log(menuData)
+    
     const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
     const parentClass = "flex h-10 px-2 border-b-[1px] items-center gap-3 rounded-md  font-bold hover:bg-primary-50 focus:outline-none"
     const childClass = "flex h-10 w-full border-b-[1px]  items-center rounded-md  pl-9 hover:bg-primary-100 focus:outline-none "
@@ -60,8 +58,11 @@ function SideMenu() {
         })
         return (
             <div className={clsx(getParentExpandedClass(item.id), transitionClass)}>
-                {children}
-                
+                {/* {children} */}
+                <button onClick={handleChildClick} id='21' className={clsx(childClass, getSelectedChildClass('21'))}>Purchase</button>
+                    <button onClick={handleChildClick} id='22' className={clsx(childClass, getSelectedChildClass('22'))}>Purchase return</button>
+                    <button onClick={handleChildClick} id='23' className={clsx(childClass, getSelectedChildClass('23'))}>Sales</button>
+                    <button onClick={handleChildClick} id='24' className={clsx(childClass, getSelectedChildClass('24'))}>Sales return</button>
             </div>
         )
     }
@@ -107,7 +108,7 @@ function SideMenu() {
         }
     }
 
-    function handleChildClick(e: any, path: string) {
+    function handleChildClick(e: any, path?: string) {
         console.log(path)
         const id = e.currentTarget.id
         dispatch(setSideBarSelectedChildId({ id: id }))

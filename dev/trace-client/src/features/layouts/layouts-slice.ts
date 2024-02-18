@@ -1,6 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { RootStateType } from '../../app/store/store'
-// import { MenuItemType } from "../../utils/global-types-interfaces-enums";
 
 const initialState: InitialStateType = {
   sideBar: {
@@ -103,11 +102,6 @@ export const isSideBarOpenSelectorFn = (state: RootStateType) =>
 
 export const menuItemSelectorFn = (state: RootStateType) =>
   state.layouts.navBar.menuItem
-
-// export const sideBarSelectedParentChildIdsFn = (state: RootStateType) => ({
-//   parentId: state.layouts.sideBar.selectedParentId,
-//   childId: state.layouts.sideBar.selectedChildId
-// })
 
 export const sideBarSelectedParentIdFn = (state: RootStateType) =>
   state.layouts.sideBar.selectedParentId
