@@ -1,70 +1,59 @@
-// import { VoucherIcon } from "../../../components/icons/voucher-icon"
+import { VoucherIcon } from "../../../components/icons/voucher-icon"
 import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
-// import { PurchaseSalesIcon } from "../../../components/icons/purchase-sales-icon"
+import { PurchaseSalesIcon } from "../../../components/icons/purchase-sales-icon"
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
 import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
-import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../menus/master-menu-data"
+import { MasterMenuData } from "../menus/master-menu-data"
 
-function SideMenu() {
+function SideMenuTemp() {
     const menuItemSelector: MenuItemType = useSelector(menuItemSelectorFn)
     const sideBarSelectedParentIdSelector = useSelector(sideBarSelectedParentIdFn)
     const sideBarSelectedChildIdSelector = useSelector(sideBarSelectedChildIdFn)
     const dispatch: AppDispatchType = useDispatch()
 
     const menuData = MasterMenuData[menuItemSelector]
-    // console.log(menuData)
+    console.log(menuData)
     const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
     const parentClass = "flex h-10 px-2 border-b-[1px] items-center gap-3 rounded-md  font-bold hover:bg-primary-50 focus:outline-none"
     const childClass = "flex h-10 w-full border-b-[1px]  items-center rounded-md  pl-9 hover:bg-primary-100 focus:outline-none "
-    const transitionClass = 'flex flex-col gap-1 transform-gpu origin-top transition-all duration-300 ease-out'
-
     return (
+        // root
         <div className={rootClass}>
-            {getAllParentsWithChildren()}
-        </div>)
-
-    function getAllParentsWithChildren() {
-        const items: any[] = menuData.map((item: MenuDataItemType, index: number) => {
-            return (
-                <div key={index} className="flex flex-col">
-                    {getParentWithChildren(item)}
-                </div>
-            )
-        })
-        return (items)
-    }
-
-    function getParentWithChildren(item: MenuDataItemType) {
-        return (
+            {/* parent with children */}
             <div className="flex flex-col">
-                <button id={item.id} onClick={() => handleParentClick(item)}
-                    className={clsx(parentClass, getParentExpandedClass(item.id))}>
-                    <item.icon className='text-primary-400' /><span className="mr-auto">{item.label}</span><CheveronUpIcon className={getArrowUpClass(item.id)} /> <CheveronDownIcon className={getArrowDownClass(item.id)} />
+                {/* parent */}
+                <button id='1' onClick={handleParentClick} className={parentClass}>
+                    <VoucherIcon className='text-blue-500' />
+                    <span>Vouchers</span>
+                    <CheveronDownIcon className={clsx('ml-auto', getArrowDownClass('1'))} />
+                    <CheveronUpIcon className={clsx('ml-auto', getArrowUpClass('1'))} />
                 </button>
-                {getChildren(item)}
+                {/* children */}
+                <div className={getParentExpandedClass('1')}>
+                    <button onClick={handleChildClick} id='11' className={clsx(childClass, getSelectedChildClass('11'))}>Journals</button>
+                    <button onClick={handleChildClick} id='12' className={clsx(childClass, getSelectedChildClass('12'))}>Payments</button>
+                    <button onClick={handleChildClick} id='13' className={clsx(childClass, getSelectedChildClass('13'))}>Receipts</button>
+                    <button onClick={handleChildClick} id='14' className={clsx(childClass, getSelectedChildClass('14'))}>Contra</button>
+                </div>
             </div>
-        )
-    }
-
-    function getChildren(item: MenuDataItemType) {
-        const children = item.children.map((child: ChildMenuItemType, index: number) => {
-            return (
-                <button key={index} id={child.id} onClick={(e: any) => handleChildClick(e, child.path)}
-                    className={clsx(childClass, getSelectedChildClass(child.id))}>
-                    {child.label}
+            <div className="flex flex-col">
+                <button id='2' onClick={handleParentClick} className={parentClass}>
+                    <PurchaseSalesIcon className='text-orange-500' />
+                    <span>Purch / sales</span>
+                    <CheveronDownIcon className={clsx('ml-auto', getArrowDownClass('2'))} />
+                    <CheveronUpIcon className={clsx('ml-auto', getArrowUpClass('2'))} />
                 </button>
-            )
-        })
-        return (
-            <div className={clsx(getParentExpandedClass(item.id), transitionClass)}>
-                {children}
-                
+                <div className={getParentExpandedClass('2')}>
+                    <button onClick={handleChildClick} id='21' className={clsx(childClass, getSelectedChildClass('21'))}>Purchase</button>
+                    <button onClick={handleChildClick} id='22' className={clsx(childClass, getSelectedChildClass('22'))}>Purchase return</button>
+                    <button onClick={handleChildClick} id='23' className={clsx(childClass, getSelectedChildClass('23'))}>Sales</button>
+                    <button onClick={handleChildClick} id='24' className={clsx(childClass, getSelectedChildClass('24'))}>Sales return</button>
+                </div>
             </div>
-        )
-    }
+        </div>)
 
     function getArrowUpDown(parentId: string): 'up' | 'down' {
         let ret: any = 'down'
@@ -97,9 +86,8 @@ function SideMenu() {
         return ((sideBarSelectedChildIdSelector === childId) ? 'bg-primary-100' : 'bg-slate-50')
     }
 
-    function handleParentClick(item: MenuDataItemType) {
-        // const id = e.currentTarget.id
-        const id = item.id
+    function handleParentClick(e: any) {
+        const id = e.currentTarget.id
         if (id === sideBarSelectedParentIdSelector) {
             dispatch(setSideBarSelectedParentChildIds({ parentId: '', childId: '' }))
         } else {
@@ -107,10 +95,9 @@ function SideMenu() {
         }
     }
 
-    function handleChildClick(e: any, path: string) {
-        console.log(path)
+    function handleChildClick(e: any) {
         const id = e.currentTarget.id
         dispatch(setSideBarSelectedChildId({ id: id }))
     }
 }
-export { SideMenu }
+export { SideMenuTemp }

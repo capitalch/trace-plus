@@ -1,60 +1,116 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { RootStateType } from "../../app/store/store";
+import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { RootStateType } from '../../app/store/store'
 // import { MenuItemType } from "../../utils/global-types-interfaces-enums";
 
 const initialState: InitialStateType = {
   sideBar: {
     isSideBarOpen: false,
+    selectedChildId: '',
+    selectedParentId: ''
   },
   navBar: {
-    menuItem: "accounts",
-  },
-};
+    menuItem: 'accounts'
+  }
+}
 
 export const layoutsSlice = createSlice({
-  name: "layouts",
+  name: 'layouts',
   initialState: initialState,
   reducers: {
     setIsSideBarOpen: (
       state: InitialStateType,
       action: PayloadAction<IsSideBarOpenActionType>
     ) => {
-      state.sideBar.isSideBarOpen = action.payload.isSideBarOpen;
+      state.sideBar.isSideBarOpen = action.payload.isSideBarOpen
     },
 
     setMenuItem: (
       state: InitialStateType,
       action: PayloadAction<MenuItemActionType>
     ) => {
-      state.navBar.menuItem = action.payload.menuItem;
+      state.navBar.menuItem = action.payload.menuItem
     },
-  },
-});
 
-export const layoutsReducer = layoutsSlice.reducer;
-export const { setIsSideBarOpen, setMenuItem } = layoutsSlice.actions;
+    setSideBarSelectedParentId: (
+      state: InitialStateType,
+      action: PayloadAction<SideBarSelectedParentIdType>
+    ) => {
+      state.sideBar.selectedParentId = action.payload.id
+    },
+
+    setSideBarSelectedChildId: (
+      state: InitialStateType,
+      action: PayloadAction<SideBarSelectedChildIdType>
+    ) => {
+      state.sideBar.selectedChildId = action.payload.id
+    },
+
+    setSideBarSelectedParentChildIds: (
+      state: InitialStateType,
+      action: PayloadAction<SideBarSelectedParentChildIdsType>
+    ) => {
+      state.sideBar.selectedParentId = action.payload.parentId
+      state.sideBar.selectedChildId = action.payload.childId
+    }
+  }
+})
+
+export const layoutsReducer = layoutsSlice.reducer
+export const {
+  setIsSideBarOpen,
+  setMenuItem,
+  setSideBarSelectedChildId,
+  setSideBarSelectedParentId,
+  setSideBarSelectedParentChildIds
+} = layoutsSlice.actions
 
 type IsSideBarOpenActionType = {
-  isSideBarOpen: boolean;
-};
+  isSideBarOpen: boolean
+}
 
-export type MenuItemType = "accounts" | "superAdmin" | "admin";
+type SideBarSelectedParentIdType = {
+  id: string
+}
+
+type SideBarSelectedChildIdType = {
+  id: string
+}
+
+type SideBarSelectedParentChildIdsType = {
+  parentId: string
+  childId: string
+}
+
+export type MenuItemType = 'accounts' | 'superAdmin' | 'admin'
 type MenuItemActionType = {
-  menuItem: MenuItemType;
-};
+  menuItem: MenuItemType
+}
 
 type InitialStateType = {
   sideBar: {
-    isSideBarOpen: boolean;
-  };
+    isSideBarOpen: boolean
+    selectedChildId: string
+    selectedParentId: string
+  }
   navBar: {
-    menuItem: MenuItemType;
-  };
-};
+    menuItem: MenuItemType
+  }
+}
 
 // Selector functions
 export const isSideBarOpenSelectorFn = (state: RootStateType) =>
-  state.layouts.sideBar.isSideBarOpen;
+  state.layouts.sideBar.isSideBarOpen
 
 export const menuItemSelectorFn = (state: RootStateType) =>
-  state.layouts.navBar.menuItem;
+  state.layouts.navBar.menuItem
+
+// export const sideBarSelectedParentChildIdsFn = (state: RootStateType) => ({
+//   parentId: state.layouts.sideBar.selectedParentId,
+//   childId: state.layouts.sideBar.selectedChildId
+// })
+
+export const sideBarSelectedParentIdFn = (state: RootStateType) =>
+  state.layouts.sideBar.selectedParentId
+
+export const sideBarSelectedChildIdFn = (state: RootStateType) =>
+  state.layouts.sideBar.selectedChildId

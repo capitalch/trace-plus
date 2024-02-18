@@ -3,6 +3,8 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 17-02-2024 - 18-02-2024
+- Navigation side bar
 # 12-02-2024
 - Client side working on sidebar, top navigation
 - Adjusted sever side work for login
