@@ -13,7 +13,7 @@ function SideMenu() {
     const dispatch: AppDispatchType = useDispatch()
 
     const menuData = MasterMenuData[menuItemSelector]
-    
+
     const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
     const parentClass = "flex h-10 px-2 border-b-[1px] items-center gap-3 rounded-md  font-bold hover:bg-primary-50 focus:outline-none"
     const childClass = "flex h-10 w-full border-b-[1px]  items-center rounded-md  pl-9 hover:bg-primary-100 focus:outline-none "
@@ -39,8 +39,9 @@ function SideMenu() {
         return (
             <div className="flex flex-col">
                 <button id={item.id} onClick={() => handleParentClick(item)}
-                    className={clsx(parentClass, getParentExpandedClass(item.id))}>
-                    <item.icon className='text-primary-400' /><span className="mr-auto">{item.label}</span><CheveronUpIcon className={getArrowUpClass(item.id)} /> <CheveronDownIcon className={getArrowDownClass(item.id)} />
+                    // getParentExpandedClass(item.id)
+                    className={clsx(parentClass,)}>
+                    <item.icon className={item.iconColorClass} /><span className="mr-auto">{item.label}</span><CheveronUpIcon className={clsx(getArrowUpClass(item.id), getHiddenClassWhenNochildren(item))} /> <CheveronDownIcon className={clsx(getArrowDownClass(item.id), getHiddenClassWhenNochildren(item))} />
                 </button>
                 {getChildren(item)}
             </div>
@@ -58,11 +59,7 @@ function SideMenu() {
         })
         return (
             <div className={clsx(getParentExpandedClass(item.id), transitionClass)}>
-                {/* {children} */}
-                <button onClick={handleChildClick} id='21' className={clsx(childClass, getSelectedChildClass('21'))}>Purchase</button>
-                    <button onClick={handleChildClick} id='22' className={clsx(childClass, getSelectedChildClass('22'))}>Purchase return</button>
-                    <button onClick={handleChildClick} id='23' className={clsx(childClass, getSelectedChildClass('23'))}>Sales</button>
-                    <button onClick={handleChildClick} id='24' className={clsx(childClass, getSelectedChildClass('24'))}>Sales return</button>
+                {children}
             </div>
         )
     }
@@ -88,18 +85,33 @@ function SideMenu() {
         return ((upDown === 'up') ? 'block' : 'hidden')
     }
 
+    function getHiddenClassWhenNochildren(item: any) {
+        let ret: string = 'hidden'
+        if (item.children && (item.children.length > 0)) {
+            ret = 'block'
+        }
+        return (ret)
+    }
+
     function getParentExpandedClass(parentId: string) {
         return (
             (sideBarSelectedParentIdSelector === parentId) ? 'block' : 'hidden'
         )
     }
 
+    // function getParentSelectedClassWhenNoChildren(item: any){
+    //     let ret = 'bg-primary-50'
+    //     if(item.children && (item.children.length > 0)){
+    //         ret = ''
+    //     }
+    //     return(ret)
+    // }
+
     function getSelectedChildClass(childId: string) {
         return ((sideBarSelectedChildIdSelector === childId) ? 'bg-primary-100' : 'bg-slate-50')
     }
 
     function handleParentClick(item: MenuDataItemType) {
-        // const id = e.currentTarget.id
         const id = item.id
         if (id === sideBarSelectedParentIdSelector) {
             dispatch(setSideBarSelectedParentChildIds({ parentId: '', childId: '' }))

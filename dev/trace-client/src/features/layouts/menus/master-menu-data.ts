@@ -19,19 +19,22 @@ export const MasterMenuData: MenuDataType = {
       id: '1',
       label: 'Dashboard',
       icon: DashboardIcon,
+      iconColorClass: 'text-primary-500',
       children: []
     },
     {
       id: '2',
       label: 'Business units',
       icon: BusinessUnitsIcon,
-      children: [],
-      path: 'purchase'
+      iconColorClass: 'text-teal-500',
+      children: []
+      // path: 'purchase'
     },
     {
       id: '3',
       label: 'Roles',
       icon: RolesIcon,
+      iconColorClass: 'text-red-500',
       children: [],
       path: 'purchase'
     },
@@ -39,6 +42,7 @@ export const MasterMenuData: MenuDataType = {
       id: '4',
       label: 'Business users',
       icon: UsersIcon,
+      iconColorClass: 'text-amber-500',
       children: [],
       path: 'purchase'
     }
@@ -48,12 +52,14 @@ export const MasterMenuData: MenuDataType = {
       id: '1',
       label: 'Dashboard',
       icon: DashboardIcon,
+      iconColorClass: 'text-primary-500',
       children: []
     },
     {
       id: '2',
       label: 'Clients',
       icon: ClientsIcon,
+      iconColorClass: 'text-teal-500',
       children: [],
       path: 'purchase'
     },
@@ -61,6 +67,7 @@ export const MasterMenuData: MenuDataType = {
       id: '3',
       label: 'Roles',
       icon: RolesIcon,
+      iconColorClass: 'text-amber-500',
       children: [],
       path: 'purchase'
     },
@@ -68,6 +75,7 @@ export const MasterMenuData: MenuDataType = {
       id: '4',
       label: 'Secured controls',
       icon: SecuredControlsIcon,
+      iconColorClass: 'text-red-500',
       children: [],
       path: 'purchase'
     },
@@ -75,6 +83,7 @@ export const MasterMenuData: MenuDataType = {
       id: '5',
       label: 'Admin users',
       icon: AdminUsersIcon,
+      iconColorClass: 'text-red-500',
       children: [],
       path: 'purchase'
     }
@@ -84,6 +93,7 @@ export const MasterMenuData: MenuDataType = {
       id: '1',
       label: 'Vouchers',
       icon: VoucherIcon,
+      iconColorClass: 'text-primary-500',
       children: [
         {
           id: '11',
@@ -111,6 +121,7 @@ export const MasterMenuData: MenuDataType = {
       id: '2',
       label: 'Purch / Sales',
       icon: PurchaseSalesIcon,
+      iconColorClass: 'text-secondary-500',
       children: [
         {
           id: '21',
@@ -148,6 +159,7 @@ export const MasterMenuData: MenuDataType = {
       id: '3',
       label: 'Masters',
       icon: MastersIcon,
+      iconColorClass: 'text-red-500',
       children: [
         {
           id: '31',
@@ -185,6 +197,7 @@ export const MasterMenuData: MenuDataType = {
       id: '4',
       label: 'Final accounts',
       icon: FinalAccountsIcon,
+      iconColorClass: 'text-orange-500',
       children: [
         {
           id: '41',
@@ -212,6 +225,7 @@ export const MasterMenuData: MenuDataType = {
       id: '5',
       label: 'Options',
       icon: OptionsIcon,
+      iconColorClass: 'text-amber-500',
       children: [
         {
           id: '51',
@@ -234,6 +248,7 @@ export const MasterMenuData: MenuDataType = {
       id: '6',
       label: 'Reports',
       icon: ReportsIcon,
+      iconColorClass: 'text-yellow-500',
       children: [
         {
           id: '61',
@@ -246,6 +261,7 @@ export const MasterMenuData: MenuDataType = {
       id: '7',
       label: 'Inventory',
       icon: InventoryIcon,
+      iconColorClass: 'text-teal-500',
       children: [
         {
           id: '71',
@@ -286,6 +302,7 @@ export type MenuDataItemType = {
   id: string
   label: string
   icon: any
+  iconColorClass: string
   children: Array<ChildMenuItemType>
   path?: string
 }

@@ -1,3 +1,7 @@
+## Client side side menu
+- In SideMenu.tsx find current menuItem from redux selector and get corresponding menu data from master-menu-data.ts
+- 
+
 ## **Authentication mechanism**
 - isLogin is false by default, so login screen is displayed; Otherwise based on type of user, the menu screen will be displayed
 - Login screen submit button sends username and password to server /login endpoint

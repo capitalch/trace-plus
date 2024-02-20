@@ -4,7 +4,14 @@
 	- log out
 	- drop down menu
 - Side bar
-	- side menu
+	- Side menu
+																									- Not to show Up / Down arrow when there are no children
+																									- Provision for color in the masterMenuData
+		- Navigation in children
+		- Navigation in parents when there are no children
+		- Transition when drop down in menu items
+		- When no children then parent should be selectable and its color would change
+		- When change menu item in navbar then all parents should be made unexpanded or reset
 
 																									- Check fastAPI error handling. It's not proper at present for superAdmin
 																									- SweetAlert2 for error handling
