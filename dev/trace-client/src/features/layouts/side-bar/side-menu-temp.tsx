@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
 import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
-import { MasterMenuData } from "../menus/master-menu-data"
+import { MasterMenuData } from "../master-menu-data"
 
 function SideMenuTemp() {
     const menuItemSelector: MenuItemType = useSelector(menuItemSelectorFn)

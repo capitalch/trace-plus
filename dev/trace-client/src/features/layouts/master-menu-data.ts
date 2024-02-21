@@ -1,93 +1,19 @@
-import { AdminUsersIcon } from '../../../components/icons/admin-users-icon'
-import { BusinessUnitsIcon } from '../../../components/icons/business-units-icon'
-import { ClientsIcon } from '../../../components/icons/clients-icon'
-import { DashboardIcon } from '../../../components/icons/dashboard-icon'
-import { FinalAccountsIcon } from '../../../components/icons/final-accounts-icon'
-import { InventoryIcon } from '../../../components/icons/inventory-icon'
-import { MastersIcon } from '../../../components/icons/masters-icon'
-import { OptionsIcon } from '../../../components/icons/options-icon'
-import { PurchaseSalesIcon } from '../../../components/icons/purchase-sales-icon'
-import { ReportsIcon } from '../../../components/icons/reports-icon'
-import { RolesIcon } from '../../../components/icons/roles-icon'
-import { SecuredControlsIcon } from '../../../components/icons/secured-controls-icon'
-import { UsersIcon } from '../../../components/icons/users-icon'
-import { VoucherIcon } from '../../../components/icons/voucher-icon'
+import { AdminUsersIcon } from '../../components/icons/admin-users-icon'
+import { BusinessUnitsIcon } from '../../components/icons/business-units-icon'
+import { ClientsIcon } from '../../components/icons/clients-icon'
+import { DashboardIcon } from '../../components/icons/dashboard-icon'
+import { FinalAccountsIcon } from '../../components/icons/final-accounts-icon'
+import { InventoryIcon } from '../../components/icons/inventory-icon'
+import { MastersIcon } from '../../components/icons/masters-icon'
+import { OptionsIcon } from '../../components/icons/options-icon'
+import { PurchaseSalesIcon } from '../../components/icons/purchase-sales-icon'
+import { ReportsIcon } from '../../components/icons/reports-icon'
+import { RolesIcon } from '../../components/icons/roles-icon'
+import { SecuredControlsIcon } from '../../components/icons/secured-controls-icon'
+import { UsersIcon } from '../../components/icons/users-icon'
+import { VoucherIcon } from '../../components/icons/voucher-icon'
 
 export const MasterMenuData: MenuDataType = {
-  admin: [
-    {
-      id: '1',
-      label: 'Dashboard',
-      icon: DashboardIcon,
-      iconColorClass: 'text-primary-500',
-      children: []
-    },
-    {
-      id: '2',
-      label: 'Business units',
-      icon: BusinessUnitsIcon,
-      iconColorClass: 'text-teal-500',
-      children: []
-      // path: 'purchase'
-    },
-    {
-      id: '3',
-      label: 'Roles',
-      icon: RolesIcon,
-      iconColorClass: 'text-red-500',
-      children: [],
-      path: 'purchase'
-    },
-    {
-      id: '4',
-      label: 'Business users',
-      icon: UsersIcon,
-      iconColorClass: 'text-amber-500',
-      children: [],
-      path: 'purchase'
-    }
-  ],
-  superAdmin: [
-    {
-      id: '1',
-      label: 'Dashboard',
-      icon: DashboardIcon,
-      iconColorClass: 'text-primary-500',
-      children: []
-    },
-    {
-      id: '2',
-      label: 'Clients',
-      icon: ClientsIcon,
-      iconColorClass: 'text-teal-500',
-      children: [],
-      path: 'purchase'
-    },
-    {
-      id: '3',
-      label: 'Roles',
-      icon: RolesIcon,
-      iconColorClass: 'text-amber-500',
-      children: [],
-      path: 'purchase'
-    },
-    {
-      id: '4',
-      label: 'Secured controls',
-      icon: SecuredControlsIcon,
-      iconColorClass: 'text-red-500',
-      children: [],
-      path: 'purchase'
-    },
-    {
-      id: '5',
-      label: 'Admin users',
-      icon: AdminUsersIcon,
-      iconColorClass: 'text-red-500',
-      children: [],
-      path: 'purchase'
-    }
-  ],
   accounts: [
     {
       id: '1',
@@ -98,22 +24,22 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '11',
           label: 'Journals',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '12',
           label: 'Payments',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '13',
           label: 'Receipts',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '14',
           label: 'Contra',
-          path: 'purchase'
+          path: '/blogs'
         }
       ]
     },
@@ -126,12 +52,12 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '21',
           label: 'Purchase',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '22',
           label: 'Purchase returns',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '23',
@@ -141,17 +67,17 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '24',
           label: 'Sales returns',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '25',
           label: 'Debit notes',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '26',
           label: 'Credit notes',
-          path: 'purchase'
+          path: '/blogs'
         }
       ]
     },
@@ -164,32 +90,32 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '31',
           label: 'Company info',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '32',
           label: 'General settings',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '33',
           label: 'Accounts',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '34',
           label: 'Opening balances',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '35',
           label: 'Branches',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '36',
           label: 'Financial years',
-          path: 'purchase'
+          path: '/blogs'
         }
       ]
     },
@@ -202,22 +128,22 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '41',
           label: 'Trial balance',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '42',
           label: 'Balance sheet',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '43',
           label: 'PL account',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '44',
           label: 'General ledger',
-          path: 'purchase'
+          path: '/blogs'
         }
       ]
     },
@@ -230,17 +156,17 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '51',
           label: 'Bank recon',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '52',
           label: 'Common utilities',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '53',
           label: 'Exports',
-          path: 'purchase'
+          path: '/blogs'
         }
       ]
     },
@@ -253,7 +179,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '61',
           label: 'All transactions',
-          path: 'purchase'
+          path: '/blogs'
         }
       ]
     },
@@ -266,36 +192,110 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '71',
           label: 'Categories',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '72',
           label: 'Brands',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '73',
           label: 'Products',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '74',
           label: 'Opening stock',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '75',
           label: 'Reports',
-          path: 'purchase'
+          path: '/blogs'
         },
         {
           id: '76',
           label: 'Stock journal',
-          path: 'purchase'
+          path: '/blogs'
         }
       ]
     }
-  ]
+  ],
+  admin: [
+    {
+      id: '8',
+      label: 'Dashboard',
+      icon: DashboardIcon,
+      iconColorClass: 'text-primary-500',
+      children: []
+    },
+    {
+      id: '9',
+      label: 'Business units',
+      icon: BusinessUnitsIcon,
+      iconColorClass: 'text-teal-500',
+      children: []
+      // path: 'purchase'
+    },
+    {
+      id: '10',
+      label: 'Roles',
+      icon: RolesIcon,
+      iconColorClass: 'text-red-500',
+      children: [],
+      path: '/blogs'
+    },
+    {
+      id: '11',
+      label: 'Business users',
+      icon: UsersIcon,
+      iconColorClass: 'text-amber-500',
+      children: [],
+      path: '/blogs'
+    }
+  ],
+  superAdmin: [
+    {
+      id: '12',
+      label: 'Dashboard',
+      icon: DashboardIcon,
+      iconColorClass: 'text-primary-500',
+      children: []
+    },
+    {
+      id: '13',
+      label: 'Clients',
+      icon: ClientsIcon,
+      iconColorClass: 'text-teal-500',
+      children: [],
+      path: '/blogs'
+    },
+    {
+      id: '14',
+      label: 'Roles',
+      icon: RolesIcon,
+      iconColorClass: 'text-amber-500',
+      children: [],
+      path: '/blogs'
+    },
+    {
+      id: '15',
+      label: 'Secured controls',
+      icon: SecuredControlsIcon,
+      iconColorClass: 'text-red-500',
+      children: [],
+      path: '/blogs'
+    },
+    {
+      id: '16',
+      label: 'Admin users',
+      icon: AdminUsersIcon,
+      iconColorClass: 'text-red-500',
+      children: [],
+      path: '/blogs'
+    }
+  ],
 }
 
 export type MenuDataItemType = {
