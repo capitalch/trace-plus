@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { UserIcon } from "../../../components/icons/user-icon";
-import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon";
 import { LogoutIcon } from "../../../components/icons/logout-icon";
 import { useState } from "react";
 import { ChangeUidIcon } from "../../../components/icons/change-uid-icon";
 import { ChangePasswordIcon } from "../../../components/icons/change-password-icon";
+import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const [isShowDropdown, showDropDown] = useState(false)

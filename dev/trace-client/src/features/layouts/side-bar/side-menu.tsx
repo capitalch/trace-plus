@@ -1,4 +1,4 @@
-import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
+// import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
@@ -6,6 +6,7 @@ import { AppDispatchType } from "../../../app/store/store"
 import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
 import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../master-menu-data"
 import { useNavigate } from "react-router-dom"
+import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
 
 function SideMenu() {
     const navigate = useNavigate()
@@ -103,16 +104,16 @@ function SideMenu() {
         )
     }
 
-    function getParentSelectedClass(item: any){
+    function getParentSelectedClass(item: any) {
         let ret = ''
         // if((!item.children || (item.children.length === 0)) && (item.id === sideBarSelectedParentIdSelector)){
         //     // ret = 'bg-primary-50'
         //     ret = 'font-semibold'
         // }
-        if(item.id === sideBarSelectedParentIdSelector){
+        if (item.id === sideBarSelectedParentIdSelector) {
             ret = 'font-bold'
         }
-        return(ret)
+        return (ret)
     }
 
     function getSelectedChildClass(childId: string) {
@@ -127,7 +128,7 @@ function SideMenu() {
         } else {
             dispatch(setSideBarSelectedParentChildIds({ parentId: id, childId: '' }))
         }
-        if(item.path){
+        if (item.path) {
             navigate(item.path)
         }
     }
@@ -136,7 +137,7 @@ function SideMenu() {
         console.log(path)
         const id = e.currentTarget.id
         dispatch(setSideBarSelectedChildId({ id: id }))
-        if(path){
+        if (path) {
             navigate(path)
         }
     }
