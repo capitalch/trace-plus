@@ -7,7 +7,7 @@ import axios from "axios"
 import qs from 'qs'
 import { showSaveMessage } from "../../utils/util-methods/show-save-message"
 import { showErrorMessage } from "../../utils/util-methods/show-error-message"
-import { AppGlobalContextType } from "../../app/global-context/app-global-context"
+import { AppGlobalContextType } from "../../app/app-global-context"
 import { useContext } from "react"
 import { AppGlobalContext } from "../../App"
 import { doLogin } from "./login-slice"

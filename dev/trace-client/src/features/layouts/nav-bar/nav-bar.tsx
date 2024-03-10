@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import { MenuUnfoldIcon } from "../../../components/icons/menu-unfold-icon"
 import { useNavBar } from "./nav-bar-hook"
+import { LogoutMenuButton } from "./logout-menu-button"
 
 function NavBar() {
     const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
@@ -13,6 +14,7 @@ function NavBar() {
                 </button>
                 {getMenuButtons()}
             </div>
+            <LogoutMenuButton />
         </div>)
 }
 export { NavBar }
