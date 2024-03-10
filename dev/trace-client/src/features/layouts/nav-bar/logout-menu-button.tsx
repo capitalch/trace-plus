@@ -19,12 +19,12 @@ export function LogoutMenuButton({ className }: { className?: string }) {
             {isShowDropdown &&
                 <div className="absolute z-10 mt-2 rounded-md shadow-lg bg-gray-50 right-0 border-[1px] text-gray-500 font-semibold">
                     <div className="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                        <button onClick={handleOnClickLogout} className="h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
-                            <ChangeUidIcon className='w-4 h-4 my-2 text-secondary-700' />
-                            <span>Change uid</span>
+                        <button onClick={handleOnClickLogout} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
+                            <ChangeUidIcon className='w-4 h-4 my-2 text-primary-500' />
+                            <span className="text-secondary-500">Change uid</span>
                         </button>
-                        <button onClick={handleOnClickLogout} className=" h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
-                            <ChangePasswordIcon className='w-4 h-4 my-2 text-secondary-700' />
+                        <button onClick={handleOnClickLogout} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
+                            <ChangePasswordIcon className='w-4 h-4 my-2 text-red-700' />
                             <span>Change password</span>
                         </button>
                         <button onClick={handleOnClickLogout} className=" h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
