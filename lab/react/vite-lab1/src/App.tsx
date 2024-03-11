@@ -7,11 +7,12 @@ import './App.css'
 import { Counter } from './features/redux-counter/counter'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './features/react-router/react-router'
-import { ToastError } from './features/sweetalert2/toast-error'
+// import { ToastError } from './features/sweetalert2/toast-error'
 // import { LoginForm } from './features/login-form/login-form'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
 import 'primeicons/primeicons.css';
+// import { DeepObjectReset } from './features/deep-object-reset/deep-object-reset'
 
 export const GlobalContext: any = createContext({})
 
@@ -21,7 +22,8 @@ function App() {
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
         <RouterProvider router={router} />
         <Counter />
-        <ToastError />
+        {/* <ToastError /> */}
+        {/* <DeepObjectReset /> */}
         {/* <div className=''> */}
         {/* <Layouts />
          */}
