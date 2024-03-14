@@ -12,6 +12,8 @@ import { router } from './features/react-router/react-router'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
 // import { Test } from './features/test'
 import 'primeicons/primeicons.css';
+import { Office } from './features/react-context/office'
+import { OfficeContext } from './features/react-context/office-context'
 // import { DeepObjectReset } from './features/deep-object-reset/deep-object-reset'
 
 export const GlobalContext: any = createContext({})
@@ -20,18 +22,21 @@ function App() {
 
   return (
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
-        <RouterProvider router={router} />
-        <Counter />
-        {/* <ToastError /> */}
-        {/* <DeepObjectReset /> */}
-        {/* <div className=''> */}
-        {/* <Layouts />
+      <RouterProvider router={router} />
+      <Counter />
+      <OfficeContext.Provider value={{ standardSelect: { brandID: () => { } } }}>
+        <Office />
+      </OfficeContext.Provider>
+      {/* <ToastError /> */}
+      {/* <DeepObjectReset /> */}
+      {/* <div className=''> */}
+      {/* <Layouts />
          */}
-        {/* <SignalsCounter /> */}
-        {/* <ArrayTrick /> */}
-        {/* <LoginForm /> */}
-        {/* <ReactQueryComp /> */}
-        {/* </div> */}
+      {/* <SignalsCounter /> */}
+      {/* <ArrayTrick /> */}
+      {/* <LoginForm /> */}
+      {/* <ReactQueryComp /> */}
+      {/* </div> */}
     </GlobalContext.Provider>
   )
 }
