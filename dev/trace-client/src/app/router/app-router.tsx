@@ -5,7 +5,7 @@ import { Blogs } from "../../features/pages/blogs";
 import { Login } from "../../features/login/login";
 import { ErrorPage } from "./error-page";
 import { Comp1 } from "../../features/pages/comp1";
-
+// import { ChangeUid } from "../../features/pages/change-uid";
 
 export const appRouter = createBrowserRouter([
     {
@@ -22,14 +22,17 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'comp1',
                 element: <Comp1 />
-            }
+            },
+            // {
+            //     path: 'change-uid',
+            //     element: <ChangeUid />
+            // }
         ]
     },
     {
         path: '/login',
         element: <Login />,
         errorElement: <ErrorPage />,
-
     }
 ])
 

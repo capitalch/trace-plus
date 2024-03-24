@@ -14,6 +14,7 @@ import { router } from './features/react-router/react-router'
 import 'primeicons/primeicons.css';
 import { Office } from './features/react-context/office'
 import { OfficeContext } from './features/react-context/office-context'
+import { ClickAwayComp1 } from './features/click-away/click-away-comp1'
 // import { DeepObjectReset } from './features/deep-object-reset/deep-object-reset'
 
 export const GlobalContext: any = createContext({})
@@ -27,6 +28,7 @@ function App() {
       <OfficeContext.Provider value={{ standardSelect: { brandID: () => { } } }}>
         <Office />
       </OfficeContext.Provider>
+      <ClickAwayComp1 />
       {/* <ToastError /> */}
       {/* <DeepObjectReset /> */}
       {/* <div className=''> */}

@@ -1,6 +1,6 @@
 import Swal from "sweetalert2"
 
-function showSaveMessage() {
+export function showSaveMessage() {
     Swal.fire({
         toast: true,
         position: "top-right",
@@ -20,5 +20,3 @@ function showSaveMessage() {
         width:'20rem'
     })
 }
-
-export { showSaveMessage }

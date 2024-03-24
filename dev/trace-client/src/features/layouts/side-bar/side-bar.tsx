@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import clsx from "clsx"
 import { AppDispatchType } from "../../../app/store/store"
 import { MenuFoldIcon } from "../../../components/icons/menu-fold-icon"
-import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../layouts-slice"
+import { isSideBarOpenSelectorFn, setIsSideBarOpenR } from "../layouts-slice"
 import { SideMenu } from "./side-menu"
 // import { SideMenuTemp } from "./side-menu-temp"
 
@@ -29,7 +29,7 @@ function SideBar() {
     }
 
     function handleHideSideBar() {
-        dispatch(setIsSideBarOpen({ isSideBarOpen: false }))
+        dispatch(setIsSideBarOpenR({ isSideBarOpen: false }))
     }
 }
 export { SideBar }
