@@ -2,14 +2,14 @@ import { RouterProvider } from 'react-router-dom'
 import './App.css'
 import { appRouter } from './app/router/app-router'
 import { createContext } from 'react'
-import { AppGlobalContextType, appContext } from './app/app-global-context'
+import { GlobalContextType, defaultGlobalContext } from './app/global-context'
 
-export const AppGlobalContext = createContext<AppGlobalContextType>({ accessToken: undefined })
+export const GlobalContext = createContext<GlobalContextType>(defaultGlobalContext)
 function App() {
   return (
-    <AppGlobalContext.Provider value={appContext}>
+    <GlobalContext.Provider value={defaultGlobalContext}>
       <RouterProvider router={appRouter} />
-    </AppGlobalContext.Provider>
+    </GlobalContext.Provider>
   )
 }
 

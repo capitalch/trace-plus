@@ -5,16 +5,12 @@ import { useUtils } from "../../utils/utils-hook"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-import { showSaveMessage } from "../../utils/util-methods/show-save-message"
-import { showErrorMessage } from "../../utils/util-methods/show-error-message"
-import { AppGlobalContextType } from "../../app/app-global-context"
-import { useContext } from "react"
-import { AppGlobalContext } from "../../App"
-import { doLogin } from "./login-slice"
+import { showSaveMessage } from "../../utils/utils-methods/show-save-message"
+import { showErrorMessage } from "../../utils/utils-methods/show-error-message"
+import { doLoginR } from "./login-slice"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
-    const globalContext: AppGlobalContextType = useContext(AppGlobalContext)
     const navigate = useNavigate()
     const { getHostUrl } = useUtils()
 
@@ -23,7 +19,7 @@ function useLogin() {
     }
 
     function handleTestSignIn(userType: string) {
-        dispatch(doLogin({ email: '', uid: '', userType: userType, isLoggedIn: true }))
+        dispatch(doLoginR({ email: '', uid: '', userType: userType, isLoggedIn: true, token: '' }))
         navigate('/', { replace: true })
     }
 
@@ -44,10 +40,7 @@ function useLogin() {
             })
             const accessToken: string = ret?.data?.accessToken
             if (accessToken) {
-                dispatch(doLogin({ email: '', uid: '', userType: '', isLoggedIn: true }))
-
-                globalContext.accessToken = accessToken
-
+                dispatch(doLoginR({ email: '', uid: '', userType: '', isLoggedIn: true, token: accessToken }))
                 navigate('/', { replace: true })
             }
         } catch (error: any) {

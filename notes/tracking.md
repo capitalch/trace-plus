@@ -3,6 +3,8 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 24-03-2024
+- Clickaway listener in navbar dropdown
 # 17-02-2024 - 18-02-2024
 - Navigation side bar
 # 12-02-2024

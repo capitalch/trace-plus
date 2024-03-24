@@ -3,7 +3,7 @@ import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
 import { PurchaseSalesIcon } from "../../../components/icons/purchase-sales-icon"
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
-import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
+import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
 import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
 import { MasterMenuData } from "../master-menu-data"
@@ -89,15 +89,15 @@ function SideMenuTemp() {
     function handleParentClick(e: any) {
         const id = e.currentTarget.id
         if (id === sideBarSelectedParentIdSelector) {
-            dispatch(setSideBarSelectedParentChildIds({ parentId: '', childId: '' }))
+            dispatch(setSideBarSelectedParentChildIdsR({ parentId: '', childId: '' }))
         } else {
-            dispatch(setSideBarSelectedParentChildIds({ parentId: id, childId: '' }))
+            dispatch(setSideBarSelectedParentChildIdsR({ parentId: id, childId: '' }))
         }
     }
 
     function handleChildClick(e: any) {
         const id = e.currentTarget.id
-        dispatch(setSideBarSelectedChildId({ id: id }))
+        dispatch(setSideBarSelectedChildIdR({ id: id }))
     }
 }
 export { SideMenuTemp }

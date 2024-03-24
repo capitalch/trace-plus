@@ -1,11 +1,16 @@
 
 ## trace-plus
+- Server login
+	- Create token
+	- Change password
+	- Change uid
 - Top navigation bar
-	- log out
-	- drop down menu
-	- Create a default page for each top nav. This will be selected when changed top nav
-- Side bar
-	- Side menu
+																								- log out
+																								- drop down menu
+- Change uid screen
+- Change password screen
+																								- Side bar
+																									- Side menu
 																									- Consider highlighting the text instead of background when selecting or hovering a menu item
 																									- Not to show Up / Down arrow when there are no children
 																									- Provision for color in the masterMenuData

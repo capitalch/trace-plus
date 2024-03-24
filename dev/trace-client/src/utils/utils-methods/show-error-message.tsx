@@ -1,7 +1,7 @@
 import Swal from "sweetalert2"
 import { Messages } from "../messages"
 
-function showErrorMessage(error?: ErrorType, errorCode?: string, errorMessage?: string): void {
+export function showErrorMessage(error?: ErrorType, errorCode?: string, errorMessage?: string): void {
     const errCode = error?.response?.data?.error_code || errorCode || ''
     const errMessage = error?.response?.data?.message || errorMessage || Messages.errUnknown
     const status = error?.response?.status || 500
@@ -28,8 +28,6 @@ function showErrorMessage(error?: ErrorType, errorCode?: string, errorMessage?: 
             // allowOutsideClick: true,
         })
 }
-
-export { showErrorMessage }
 
 export type ErrorType = {
     message: string

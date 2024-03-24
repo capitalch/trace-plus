@@ -4,7 +4,7 @@ import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums"
 import { SuperAdminMenuButton } from "./super-admin-menu-button"
 import { AccountsMenuButton } from "./accounts-menu-button"
 import { AdminMenuButton } from "./admin-menu-button"
-import { isSideBarOpenSelectorFn, setIsSideBarOpen, setMenuItem, } from "../layouts-slice"
+import { isSideBarOpenSelectorFn, setIsSideBarOpenR, setMenuItemR, } from "../layouts-slice"
 import { userTypeSelectorFn } from "../../login/login-slice"
 import { useEffect } from "react"
 
@@ -17,11 +17,11 @@ export function useNavBar() {
         // used the following code so that SideBar component is drawn at the end of this component render
         // If dispatch is used inside the render block then react warning appears. Always try to use dispath in useFeect hook, because it can render another component
         if (userTypeSelector === UserTypesEnum.SuperAdmin) {
-            dispatch(setMenuItem({ menuItem: 'superAdmin' }))
+            dispatch(setMenuItemR({ menuItem: 'superAdmin' }))
         } else if (userTypeSelector === UserTypesEnum.Admin) {
-            dispatch(setMenuItem({ menuItem: "accounts" }))
+            dispatch(setMenuItemR({ menuItem: "accounts" }))
         } else {
-            dispatch(setMenuItem({ menuItem: "accounts" }))
+            dispatch(setMenuItemR({ menuItem: "accounts" }))
         }
     }, [dispatch, userTypeSelector])
 
@@ -42,7 +42,6 @@ export function useNavBar() {
                 <AdminMenuButton />
             </div>)
         } else {
-            // dispatch(setMenuItem({ menuItem: "accounts" }))
             return (<div>
                 <AccountsMenuButton />
             </div>)
@@ -50,7 +49,7 @@ export function useNavBar() {
     }
 
     function handleShowSideBar() {
-        dispatch(setIsSideBarOpen({ isSideBarOpen: true }))
+        dispatch(setIsSideBarOpenR({ isSideBarOpen: true }))
     }
     return ({ getMenuButtons, getMenuShowHideClass, handleShowSideBar })
 }
