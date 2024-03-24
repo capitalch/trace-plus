@@ -16,4 +16,5 @@ export function AdminMenuButton() {
     function handleOnClick() {
         dispatch(setMenuItem({ menuItem: 'admin' }))
     }
+
 }
