@@ -1,14 +1,36 @@
-import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
 import { ModalDialog } from "../../../components/widgets/modal-dialog";
-import { isOpenModalDialogAFn } from "../layouts-slice";
+import { ibukiFilterOn } from "../../../utils/ibuki";
+import { IbukiMessages } from "../../../utils/ibukiMessages";
 
-export function ModalDialogA({ title, }: ModalDialogType) {
-    const isOpenModalDialogASelector: boolean = useSelector(isOpenModalDialogAFn)
+export function ModalDialogA() {
+    const instanceName: string = 'A'
+    const meta = useRef<ModalDialogMetaType>({
+        isOpen: false,
+        title: '',
+        element: <></>
+    })
+    const [, setRefresh] = useState({})
+
+    useEffect(() => {
+        const subsA: any = ibukiFilterOn(IbukiMessages["SHOW-MODAL-DIALOG-"] + instanceName).subscribe((d) => {
+            meta.current.title = d.data.title
+            meta.current.isOpen = d.data.isOpen
+            meta.current.element = d.data.element
+            setRefresh({})
+        })
+        return (() => {
+            subsA.unsubscribe()
+        })
+    }, [])
+
     return (
-        <ModalDialog title={title} isOpen={isOpenModalDialogASelector} />
+        <ModalDialog body={meta.current.element} title={meta.current.title} isOpen={meta.current.isOpen} instanceName={instanceName} />
     )
 }
 
-export type ModalDialogType = {
+type ModalDialogMetaType = {
+    isOpen: boolean
     title: string
+    element: any
 }

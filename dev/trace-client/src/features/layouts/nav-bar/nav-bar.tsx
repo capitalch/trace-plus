@@ -18,7 +18,7 @@ function NavBar() {
                 {getMenuButtons()}
             </div>
             <LogoutMenuButton />
-            <ModalDialogA title="Modal Dialog A" />
+            <ModalDialogA />
         </div>)
 }
 export { NavBar }

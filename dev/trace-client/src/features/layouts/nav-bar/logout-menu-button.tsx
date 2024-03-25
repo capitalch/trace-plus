@@ -11,12 +11,14 @@ import { setShowNavBarDropDownR, showNavBarDropDownFn } from "../layouts-slice";
 import { AppDispatchType, } from "../../../app/store/store";
 import { doLogoutR } from "../../login/login-slice";
 import { useNavigate } from "react-router-dom";
-import { useUtils } from "../../../utils/utils-hook";
+import { showHideModalDialogA } from "../../../utils/util-methods/show-hide-modal-dialoges";
+import { ChangeUid } from "./change-uid";
+// import { useUtils } from "../../../utils/util-hook";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
-    const { showModalDialogA } = useUtils()
+    // const { showModalDialogA } = useUtils()
     const toShowNavBarDropDownSelector: boolean = useSelector(showNavBarDropDownFn)
     return (
         // <div>
@@ -54,7 +56,11 @@ export function LogoutMenuButton({ className }: { className?: string }) {
 
     function handleOnChangeUid() {
         // navigate('/change-uid')
-        showModalDialogA({})
+        showHideModalDialogA({
+            title: 'Change UID',
+            element: <ChangeUid />,
+            isOpen: true
+        })
     }
     function handleOnChangePassword() {
         navigate('/change-password')

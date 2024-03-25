@@ -1,7 +1,9 @@
 import clsx from "clsx"
+import { ReactElement } from "react"
+import { ibukiEmit } from "../../utils/ibuki"
+import { IbukiMessages } from "../../utils/ibukiMessages"
 
-function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowCloseButton = false }: ModalDialogType) {
-
+function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowCloseButton = false, instanceName }: ModalDialogType) {
     const sizeLogic = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-4xl' }
     const footerClassName = toShowCloseButton ? 'flex' : 'hidden'
     return (
@@ -28,6 +30,7 @@ function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowClos
                                 {/*body*/}
                                 <div className="relative flex-auto p-6 pt-0">
                                     {/* {body({ defaultData })} */}
+                                    {body}
                                 </div>
 
                                 {/*footer*/}
@@ -50,16 +53,18 @@ function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowClos
 
     function onClickClose() {
         // isOpen.value = false
+        ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-"] + instanceName, { isOpen: false, title: undefined, element: <></> })
     }
 }
 
 export { ModalDialog }
 
 type ModalDialogType = {
-    body?: any
+    body?: ReactElement
     defaultData?: any
     isOpen: boolean
     size?: 'sm' | 'md' | 'lg'
     title: string
     toShowCloseButton?: boolean
+    instanceName: string
 }

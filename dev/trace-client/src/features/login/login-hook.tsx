@@ -1,12 +1,12 @@
 import { useDispatch } from "react-redux"
 import { AppDispatchType } from "../../app/store/store"
 import { useNavigate } from "react-router-dom"
-import { useUtils } from "../../utils/utils-hook"
+import { useUtils } from "../../utils/util-hook"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-import { showSaveMessage } from "../../utils/utils-methods/show-save-message"
-import { showErrorMessage } from "../../utils/utils-methods/show-error-message"
+import { showSaveMessage } from "../../utils/util-methods/show-save-message"
+import { showErrorMessage } from "../../utils/util-methods/show-error-message"
 import { doLoginR } from "./login-slice"
 
 function useLogin() {
