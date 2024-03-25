@@ -1,19 +1,17 @@
-import { FC } from 'react'
+// import { FC } from 'react'
 
 export const defaultGlobalContext: GlobalContextType = {
-  layouts: {
-    navBar: {
-      modalDialogA: () => <></>,
-      modalDialogB: () => <></>,
-    }
-  }
+  // layouts: {
+  //   navBar: {
+      
+  //   }
+  // }
 }
 
 export type GlobalContextType = {
-  layouts: {
-    navBar: {
-      modalDialogA: FC
-      modalDialogB: FC
-    }
-  }
+  // layouts: {
+  //   navBar: {
+      
+  //   }
+  // }
 }

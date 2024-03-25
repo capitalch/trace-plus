@@ -8,8 +8,8 @@ import { showModalDialogAR, showModalDialogBR } from "../features/layouts/layout
 export function useUtils() {
     const globalContext: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
-    function showModalDialogA({ element }: { element: FC }) {
-        globalContext.layouts.navBar.modalDialogA = element
+    function showModalDialogA({ element }: { element?: FC }) {
+        // globalContext.layouts.navBar.modalDialogA = element
         dispatch(showModalDialogAR({ isOpen: true }))
     }
     function hideModalDialogA() {

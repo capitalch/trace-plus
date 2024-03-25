@@ -2,9 +2,12 @@ import clsx from "clsx"
 import { MenuUnfoldIcon } from "../../../components/icons/menu-unfold-icon"
 import { useNavBar } from "./nav-bar-hook"
 import { LogoutMenuButton } from "./logout-menu-button"
+import { ModalDialogA } from "./modal-dialogA"
+// import { useUtils } from "../../../utils/utils-hook"
 
 function NavBar() {
     const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
+    
     return (
         // Top Nav bar
         <div className="flex h-12 items-center justify-between bg-primary-500">
@@ -15,6 +18,7 @@ function NavBar() {
                 {getMenuButtons()}
             </div>
             <LogoutMenuButton />
+            <ModalDialogA title="Modal Dialog A" />
         </div>)
 }
 export { NavBar }

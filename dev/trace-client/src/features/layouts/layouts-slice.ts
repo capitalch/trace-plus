@@ -156,3 +156,9 @@ export const sideBarSelectedChildIdFn = (state: RootStateType) =>
 
 export const showNavBarDropDownFn = (state: RootStateType) =>
   state.layouts.navBar.toShowNavBarDropDown
+
+export const isOpenModalDialogAFn = (state: RootStateType) => 
+  state.layouts.navBar.isOpenModalDialogA
+
+export const isOpenModalDialogBFn = (state: RootStateType) => 
+  state.layouts.navBar.isOpenModalDialogB

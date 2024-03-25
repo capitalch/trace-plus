@@ -1,12 +1,12 @@
 import clsx from "clsx"
 
 function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowCloseButton = false }: ModalDialogType) {
-    
+
     const sizeLogic = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-4xl' }
     const footerClassName = toShowCloseButton ? 'flex' : 'hidden'
     return (
         <>
-            {isOpen.value ? (
+            {isOpen ? (
                 <>
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
@@ -27,7 +27,7 @@ function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowClos
 
                                 {/*body*/}
                                 <div className="relative flex-auto p-6 pt-0">
-                                    {body({defaultData})}
+                                    {/* {body({ defaultData })} */}
                                 </div>
 
                                 {/*footer*/}
@@ -49,16 +49,16 @@ function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowClos
     )
 
     function onClickClose() {
-        isOpen.value = false
+        // isOpen.value = false
     }
 }
 
 export { ModalDialog }
 
 type ModalDialogType = {
-    body: any
+    body?: any
     defaultData?: any
-    isOpen: any
+    isOpen: boolean
     size?: 'sm' | 'md' | 'lg'
     title: string
     toShowCloseButton?: boolean
