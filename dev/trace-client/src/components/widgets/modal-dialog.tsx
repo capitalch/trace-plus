@@ -53,7 +53,6 @@ function ModalDialog({ body, defaultData = {}, isOpen, size = 'sm', title, toSho
     )
 
     function onClickClose() {
-        // isOpen.value = false
         ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName], { isOpen: false, title: undefined, element: <></> })
     }
 }

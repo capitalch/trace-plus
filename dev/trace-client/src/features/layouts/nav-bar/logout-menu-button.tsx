@@ -2,7 +2,6 @@ import clsx from "clsx";
 import ClickAwayListener from "react-click-away-listener"
 import { UserIcon } from "../../../components/icons/user-icon";
 import { LogoutIcon } from "../../../components/icons/logout-icon";
-// import { useState } from "react";
 import { ChangeUidIcon } from "../../../components/icons/change-uid-icon";
 import { ChangePasswordIcon } from "../../../components/icons/change-password-icon";
 import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon";
@@ -10,18 +9,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDownR, showNavBarDropDownFn } from "../layouts-slice";
 import { AppDispatchType, } from "../../../app/store/store";
 import { doLogoutR } from "../../login/login-slice";
-import { useNavigate } from "react-router-dom";
 import { showHideModalDialogA } from "../../../utils/util-methods/show-hide-modal-dialoges";
 import { ChangeUid } from "./change-uid";
-// import { useUtils } from "../../../utils/util-hook";
+import { ChangePassword } from "./change-password";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
-    const navigate = useNavigate()
-    // const { showModalDialogA } = useUtils()
     const toShowNavBarDropDownSelector: boolean = useSelector(showNavBarDropDownFn)
     return (
-        // <div>
         <ClickAwayListener onClickAway={handleOnClickAway} >
             <div>
                 <button onClick={handleShowDropdown}
@@ -29,7 +24,6 @@ export function LogoutMenuButton({ className }: { className?: string }) {
                     <UserIcon />
                     <CheveronDownIcon />
                 </button>
-
 
                 {toShowNavBarDropDownSelector &&
                     <div className="absolute z-10 mt-2 rounded-md shadow-lg bg-gray-50 right-0 border-[1px] text-gray-500 font-semibold">
@@ -51,11 +45,9 @@ export function LogoutMenuButton({ className }: { className?: string }) {
                 }
             </div>
         </ClickAwayListener>
-        // </div>
     )
 
     function handleOnChangeUid() {
-        // navigate('/change-uid')
         showHideModalDialogA({
             title: 'Change UID',
             element: <ChangeUid />,
@@ -63,7 +55,11 @@ export function LogoutMenuButton({ className }: { className?: string }) {
         })
     }
     function handleOnChangePassword() {
-        navigate('/change-password')
+        showHideModalDialogA({
+            title: 'Change Password',
+            element: <ChangePassword />,
+            isOpen: true
+        })
     }
     function handleOnClickAway(e: any) {
         console.log(e)
