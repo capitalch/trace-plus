@@ -13,7 +13,7 @@ export function ModalDialogA() {
     const [, setRefresh] = useState({})
 
     useEffect(() => {
-        const subsA: any = ibukiFilterOn(IbukiMessages["SHOW-MODAL-DIALOG-"] + instanceName).subscribe((d) => {
+        const subsA: any = ibukiFilterOn(IbukiMessages["SHOW-MODAL-DIALOG-A"] ).subscribe((d) => {
             meta.current.title = d.data.title
             meta.current.isOpen = d.data.isOpen
             meta.current.element = d.data.element

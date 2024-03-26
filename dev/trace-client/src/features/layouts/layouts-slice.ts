@@ -10,8 +10,6 @@ const initialState: InitialStateType = {
   navBar: {
     menuItem: 'accounts',
     toShowNavBarDropDown: false,
-    isOpenModalDialogA: false,
-    isOpenModalDialogB: false
   }
 }
 
@@ -66,22 +64,6 @@ export const layoutsSlice = createSlice({
       state.sideBar.selectedParentId = action.payload.parentId
       state.sideBar.selectedChildId = action.payload.childId
     },
-
-    // ModalDialogA
-    showModalDialogAR: (
-      state: InitialStateType,
-      action: PayloadAction<NavBarIsOpenModalDialogType>
-    ) => {
-      state.navBar.isOpenModalDialogA = action.payload.isOpen
-    },
-
-    // ModalDialogB
-    showModalDialogBR: (
-      state: InitialStateType,
-      action: PayloadAction<NavBarIsOpenModalDialogType>
-    ) => {
-      state.navBar.isOpenModalDialogB = action.payload.isOpen
-    }
   }
 })
 
@@ -93,8 +75,6 @@ export const {
   setSideBarSelectedChildIdR,
   setSideBarSelectedParentIdR,
   setSideBarSelectedParentChildIdsR,
-  showModalDialogAR,
-  showModalDialogBR
 } = layoutsSlice.actions
 
 type IsSideBarOpenActionType = {
@@ -123,10 +103,6 @@ type MenuItemActionType = {
   menuItem: MenuItemType
 }
 
-type NavBarIsOpenModalDialogType = {
-  isOpen: boolean
-}
-
 type InitialStateType = {
   sideBar: {
     isSideBarOpen: boolean
@@ -136,8 +112,6 @@ type InitialStateType = {
   navBar: {
     menuItem: MenuItemType
     toShowNavBarDropDown: boolean
-    isOpenModalDialogA: boolean
-    isOpenModalDialogB: boolean
   }
 }
 
@@ -156,9 +130,3 @@ export const sideBarSelectedChildIdFn = (state: RootStateType) =>
 
 export const showNavBarDropDownFn = (state: RootStateType) =>
   state.layouts.navBar.toShowNavBarDropDown
-
-export const isOpenModalDialogAFn = (state: RootStateType) => 
-  state.layouts.navBar.isOpenModalDialogA
-
-export const isOpenModalDialogBFn = (state: RootStateType) => 
-  state.layouts.navBar.isOpenModalDialogB

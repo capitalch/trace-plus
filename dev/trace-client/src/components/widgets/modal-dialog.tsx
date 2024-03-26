@@ -3,9 +3,10 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "../../utils/ibuki"
 import { IbukiMessages } from "../../utils/ibukiMessages"
 
-function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowCloseButton = false, instanceName }: ModalDialogType) {
+function ModalDialog({ body, defaultData = {}, isOpen, size = 'sm', title, toShowCloseButton = false, instanceName }: ModalDialogType) {
     const sizeLogic = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-4xl' }
     const footerClassName = toShowCloseButton ? 'flex' : 'hidden'
+    console.log(defaultData)
     return (
         <>
             {isOpen ? (
@@ -53,7 +54,7 @@ function ModalDialog({ body, defaultData, isOpen, size = 'sm', title, toShowClos
 
     function onClickClose() {
         // isOpen.value = false
-        ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-"] + instanceName, { isOpen: false, title: undefined, element: <></> })
+        ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName], { isOpen: false, title: undefined, element: <></> })
     }
 }
 

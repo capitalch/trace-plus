@@ -10,7 +10,7 @@ export function showHideModalDialogA({ isOpen, title, element }: ShowHideModalDi
         element: element,
         instanceName: instanceName
     }
-    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-"] + instanceName, args)
+    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName] , args)
 }
 
 export function showHideModalDialogB({ isOpen, title, element }: ShowHideModalDialogType) {
@@ -21,7 +21,7 @@ export function showHideModalDialogB({ isOpen, title, element }: ShowHideModalDi
         element: element,
         instanceName: instanceName
     }
-    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-"] + instanceName, args)
+    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName] , args)
 }
 
 type ShowHideModalDialogType = {
