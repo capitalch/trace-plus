@@ -18,8 +18,24 @@ function useLogin() {
         showSaveMessage()
     }
 
-    function handleTestSignIn(userType: string) {
-        dispatch(doLoginR({ email: '', uid: '', userType: userType, isLoggedIn: true, token: '' }))
+    function handleTestSignIn(userType: any) {
+        dispatch(doLoginR({
+            isLoggedIn: true,
+            businessUnits: [],
+            clientCode: undefined,
+            clientId: undefined,
+            clientName: undefined,
+            email: undefined,
+            isClentActive: false,
+            isUserActive: false,
+            lastUsedBranchId: undefined,
+            lastUsedBuId: undefined,
+            mobileNo: undefined,
+            name: undefined,
+            token: undefined,
+            uid: undefined,
+            userType: userType
+        }))
         navigate('/', { replace: true })
     }
 
@@ -39,8 +55,25 @@ function useLogin() {
                 },
             })
             const accessToken: string = ret?.data?.accessToken
+            const payloadData: any = ret?.data?.payload
             if (accessToken) {
-                dispatch(doLoginR({ email: '', uid: '', userType: '', isLoggedIn: true, token: accessToken }))
+                dispatch(doLoginR({
+                    isLoggedIn: true,
+                    businessUnits: payloadData?.businessUnits,
+                    clientCode: payloadData?.clientCode,
+                    clientId: payloadData?.clientId,
+                    clientName: payloadData?.clientName,
+                    email: payloadData?.email,
+                    isClentActive: payloadData?.isClentActive,
+                    isUserActive: payloadData?.isUserActive,
+                    lastUsedBranchId: payloadData?.lastUsedBrandId,
+                    lastUsedBuId: payloadData?.lastUsedBuId,
+                    mobileNo: payloadData?.mobileNo,
+                    name: payloadData?.name,
+                    token: accessToken,
+                    uid: payloadData?.uid,
+                    userType: payloadData?.userType
+                }))
                 navigate('/', { replace: true })
             }
         } catch (error: any) {
@@ -50,3 +83,19 @@ function useLogin() {
     return ({ handleForgotPassword, handleTestSignIn, onSubmit })
 }
 export { useLogin }
+
+export type UserLoginPayloadType = {
+    businessUnits: string[]
+    clientCode: string
+    clientId: string
+    clientName: string
+    email: string
+    isClentActive: boolean
+    isUserActive: boolean
+    lastUsedBrandId: string
+    lastUsedBuId: string
+    mobileNo: string
+    name: string
+    uid: string
+    userType: string
+}

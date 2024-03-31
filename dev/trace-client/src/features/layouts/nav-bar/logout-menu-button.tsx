@@ -61,11 +61,11 @@ export function LogoutMenuButton({ className }: { className?: string }) {
             isOpen: true
         })
     }
-    function handleOnClickAway(e: any) {
-        console.log(e)
+    function handleOnClickAway() {
         dispatch(setShowNavBarDropDownR({ toShowNavBarDropDown: false }))
     }
     function handleOnLogout() {
+        handleOnClickAway() // Otherwise the menu remains open
         dispatch(doLogoutR())
     }
     function handleShowDropdown() {

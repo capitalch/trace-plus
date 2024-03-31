@@ -1,17 +1,14 @@
 import { useDispatch, useSelector } from "react-redux"
-// import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../../../app/store/app-slice"
 import clsx from "clsx"
-import { AppDispatchType } from "../../../app/store/store"
+import { AppDispatchType, store } from "../../../app/store/store"
 import { MenuFoldIcon } from "../../../components/icons/menu-fold-icon"
 import { isSideBarOpenSelectorFn, setIsSideBarOpenR } from "../layouts-slice"
 import { SideMenu } from "./side-menu"
-// import { SideMenuTemp } from "./side-menu-temp"
 
 function SideBar() {
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
     const dispatch: AppDispatchType = useDispatch()
 
-    // sidebar; overflow-x-hidden and whitespace-nowrap classes are important for smooth hiding of contents of sidebar
     return (<div className={clsx(getSideBarClassName(), 'bg-neutral-100 overflow-hidden whitespace-nowrap flex flex-col transition-[width] duration-500 ease-linear')}>
 
         {/* SideBar header */}
@@ -22,14 +19,26 @@ function SideBar() {
             </button>
         </div>
         <SideMenu />
+        <span className="mt-auto px-2 text-success-500 font-semibold bg-amber-100">{getUserType()}</span>
     </div>)
+
 
     function getSideBarClassName() {
         return (isSideBarOpenSelector ? 'w-[220px]' : 'w-0')
     }
 
+    function getUserType(): string {
+        const uType: string = store.getState().login.userType || ''
+        const logic: any = {
+            B: 'Business user'
+            , S: 'Super admin user'
+            , A: 'Admin user'
+        }
+        return (logic[uType] || 'Unknown')
+    }
     function handleHideSideBar() {
         dispatch(setIsSideBarOpenR({ isSideBarOpen: false }))
     }
+
 }
 export { SideBar }
