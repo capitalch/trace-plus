@@ -43,7 +43,7 @@ function Login() {
                 </label>
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Password <Astrix /></span>
-                    <input type="password" placeholder="*********" autoComplete='current-password' className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
+                    <input type="password"  className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
                     {(errors.password
                         ? <FormErrorMessage errorMessage={errors.password.message} />
                         : <FormHelperText helperText='&nbsp;' />)}
