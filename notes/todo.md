@@ -1,3 +1,8 @@
+## Super Admin
+- lab: Syncfusion grid
+- lab: form validation with ...
+- lab: Data retrieval: React query
+- lab: GraphQL client
 ## Bugs
 																								- When login the drop down menu is open automatically
 																								- Show the user type logged in
