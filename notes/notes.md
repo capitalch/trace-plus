@@ -1,3 +1,20 @@
+## Bug
+- Stock reports problem
+- Stock transaction report not working
+## New features to include
+- Print preview of purchase invoice
+- Salesperson management descriptive
+- Audit feature
+- User management at branch level
+- Multiple mobile number not available print preview
+- Print bill at different location
+- E Bill and GST integration
+- Subtitle provision in sale bill
+- Product price lock for sales
+
+## syncfusion key for 25.x
+ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
+
 ## Pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg
 - superadmin@123
 ## VSCode extensions
