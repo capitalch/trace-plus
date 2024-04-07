@@ -12,6 +12,15 @@
 - When doing Post request and using Pydantic, use Content-Type: application/json. This is important. Wasted my lot of time.
 - fastapi status.200_ok like gives all status codes. No need to remember.
 
+## **Creating and activating virtual env in windows in context of Trace**
+Download and Install Python from installer
+cd c:\projects\trace-plus
+1. python -m pip install virtualenv
+2. python -m venv env
+3. env\Scripts\activate
+4. pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg
+# This was used in case of Trace
+4. pip install flask demjson simplejson psycopg2 requests ariadne pandas flask_cors nested_lookup flask_mail pyjwt datetime bcrypt autopep8 xlsxwriter flask_scss flask_weasyprint babel
 
 ## **Notes on universal exception handling in fastapi**
 # Through middleware

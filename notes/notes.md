@@ -1,7 +1,8 @@
-## Bug
-- Stock reports problem
-- Stock transaction report not working
+																									## Bug
+																									- Stock reports problem
+																									- Stock transaction report not working
 ## New features to include
+- No duplicate entries should be achievable in purchase
 - Print preview of purchase invoice
 - Salesperson management descriptive
 - Audit feature
