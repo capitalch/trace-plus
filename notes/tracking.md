@@ -3,6 +3,9 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 31-03-2024
+- Client side login completed
+- Nav bar completed
 # 24-03-2024
 - Clickaway listener in navbar dropdown
 # 17-02-2024 - 18-02-2024

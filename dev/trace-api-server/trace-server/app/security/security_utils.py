@@ -1,4 +1,4 @@
-from app.vendors import bcrypt, jwt
+import bcrypt, jwt
 from app.config import Config
 from datetime import datetime, timedelta
 

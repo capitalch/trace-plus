@@ -1,3 +1,16 @@
+## Super Admin
+- Upgrade the server with latest libs
+- Brief learning of GraphQL client and server
+- lab
+	- Syncfusion grid
+	- form validation with ...
+	- Data retrieval: React query
+	- GraphQL client
+	- React query with GraphQL
+- implement node.env
+- implement react query and graphql in login
+- Set graphQL framework at client side and server side
+
 ## Bugs
 																								- When login the drop down menu is open automatically
 																								- Show the user type logged in
