@@ -1,5 +1,5 @@
 ## Super Admin
-- Upgrade the server with latest libs
+																								- Upgrade the server with latest libs
 - Brief learning of GraphQL client and server
 - lab
 	- Syncfusion grid
@@ -11,6 +11,15 @@
 - implement react query and graphql in login
 - Set graphQL framework at client side and server side
 
+- Super admin UI
+	- Dashboard
+		- Connections	: Active, Idle, Total
+		- Clients		: Active, Inactive, Total
+		- Admin users	: Active, Inactive, Total
+
+
+		- Client details: Grid with columns
+			- index, client code, client name, BU's, All users, Roles, Is active
 ## Bugs
 																								- When login the drop down menu is open automatically
 																								- Show the user type logged in

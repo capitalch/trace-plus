@@ -1,6 +1,6 @@
 import bcrypt, jwt
 from app.config import Config
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # passwordContext = CryptContext(schemes=['bcrypt'], deprecated='auto')
 ACCESS_TOKEN_EXPIRE_HOURS = Config.ACCESS_TOKEN_EXPIRE_HOURS
@@ -10,7 +10,8 @@ ACCESS_TOKEN_EXPIRE_SECONDS_TEST = Config.ACCESS_TOKEN_EXPIRE_SECONDS_TEST
 
 
 def create_access_token(subject: dict) -> str:
-    expiresDelta = datetime.utcnow() + timedelta(hours=int(ACCESS_TOKEN_EXPIRE_HOURS))
+    expiresDelta1 = datetime.utcnow() + timedelta(hours=int(ACCESS_TOKEN_EXPIRE_HOURS)) # deprecated
+    expiresDelta = datetime.now(timezone.utc) + timedelta(hours=int(ACCESS_TOKEN_EXPIRE_HOURS))
     toEncode = {
         "exp": expiresDelta,
         "sub": subject

@@ -5,7 +5,7 @@ from ariadne import (
     MutationType,
 )
 from ariadne.asgi import graphql, GraphQL
-from fastapi.middleware.cors import CORSMiddleware
+from app.vendors import CORSMiddleware
 from app.graphql.graphql_helper import generic_query_helper
 
 type_defs = load_schema_from_path(".")

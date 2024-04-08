@@ -16,7 +16,7 @@
 ## syncfusion key for 25.x
 ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
 
-## Pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg
+## pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg python-multipart
 - superadmin@123
 ## VSCode extensions
 - Tailwind CSS Intellisense

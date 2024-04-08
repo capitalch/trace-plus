@@ -1,4 +1,4 @@
-from app.vendors import CORSMiddleware, FastAPI, HTTPException, JSONResponse, status
+from app.vendors import CORSMiddleware, FastAPI, JSONResponse
 from app.dependencies import AppHttpException, app_http_exception_handler, catch_exceptions_middleware
 from app.messages import Messages
 from app.security import securityRouter

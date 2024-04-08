@@ -261,7 +261,8 @@ export const MasterMenuData: MenuDataType = {
       label: 'Dashboard',
       icon: DashboardIcon,
       iconColorClass: 'text-primary-500',
-      children: []
+      children: [],
+      path: '/super-admin-dashboard'
     },
     {
       id: '13',

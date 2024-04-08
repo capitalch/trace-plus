@@ -17,7 +17,7 @@ class customErrorCodes:
     e1002 = "An error was raised while running the server code"
     e1003 = "Either username or password was found missing"
     e1004 = "Super admin configuration details are missing. Please check the Config.py file at server"
-    e1004 = "Either username or password is invalid. JWT verification failed for provided username and password. Could not generate access token"
+    e1004 = "Either username or the password is invalid. JWT verification failed for provided username and password. Could not generate access token"
     e1005 = "Database connection error at server. Check the connection params of database in Config file"
     e1006 = "Sql execution error. Maybe badly formed SQL query"
     e1007 = "Invalid user name or email"
