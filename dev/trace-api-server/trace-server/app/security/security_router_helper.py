@@ -128,7 +128,6 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
                 mobileNo=superAdminMobile,
                 userType="S",
             )
-            # For super admin user the access token is not required
             bundle = get_bundle(user)
     return bundle
 
