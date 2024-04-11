@@ -3,8 +3,10 @@ import App from './App.tsx'
 import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
-import { QueryClient, QueryClientProvider } from 'react-query'
+// import { QueryClient, QueryClientProvider } from 'react-query'
 import { PrimeReactProvider } from 'primereact/api';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 // import { RouterProvider } from 'react-router-dom'
 // import { router } from './features/react-router/react-router.tsx'
 
@@ -23,17 +25,24 @@ const queryClient = new QueryClient(
   }
 )
 
+const apolloClient = new ApolloClient({
+  uri: 'https://graphqlzero.almansi.me/api', // Mock server for GraphQL API requests
+  cache: new InMemoryCache()
+})
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
   <>
     {/* <RouterProvider router={router} /> */}
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <PrimeReactProvider value={{ unstyled: true }}>
-          <App />
-        </PrimeReactProvider  >
-      </Provider>
-    </QueryClientProvider>
+    <ApolloProvider client={apolloClient}>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <PrimeReactProvider value={{ unstyled: true }}>
+            <App />
+          </PrimeReactProvider  >
+        </Provider>
+      </QueryClientProvider>
+    </ApolloProvider>
   </>
   // </React.StrictMode>,
 )
