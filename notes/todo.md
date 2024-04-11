@@ -1,3 +1,6 @@
+## GraphQL
+- store hostUrl in Global context
+- implement GraphQL with token
 ## Super Admin
 																								- Upgrade the server with latest libs
 - Brief learning of GraphQL client and server

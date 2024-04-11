@@ -15,15 +15,15 @@
 //     }
 //   }
 
-import { useQuery } from "@apollo/client"
-import { GET_ALBUMS } from "./apollo-graphql-queries"
+import { useQuery, } from "@apollo/client"
+import { GET_ALL_TODOS } from "./apollo-graphql-queries"
 
 // }
 export function ApolloGraphQLComp1() {
   const { data, error, loading, refetch, client } = useQuery(
-    GET_ALBUMS, {
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
+    GET_ALL_TODOS, {
+    fetchPolicy: 'cache-first',
+    // notifyOnNetworkStatusChange: true,
     onCompleted: () => {
       console.log('completed')
     }
@@ -37,13 +37,13 @@ export function ApolloGraphQLComp1() {
         // client.refetchQueries({})
 
         refetch()
-      }}>Get albums</button>
+      }}>Get TODOs</button>
       <button onClick={() => {
         client.clearStore()
       }
       }>Clear store</button>
-      {data && data.albums && data.albums.data && data.albums.data.map((album: any) => (
-        <div key={album.id}>{album.title}</div>
+      {data && data.allTodos && data.allTodos.map((todo: any) => (
+        <div key={todo.id}>{todo.status} {todo.title}</div>
       ))}
     </div>)
 }

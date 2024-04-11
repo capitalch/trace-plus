@@ -15,3 +15,13 @@ query getAlbums {
     }
   }
 }`
+
+export const GET_ALL_TODOS = gql`
+{
+  allTodos {
+    id,
+    title,
+    status
+  }
+}
+`

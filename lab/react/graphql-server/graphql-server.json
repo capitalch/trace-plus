@@ -2,12 +2,12 @@
     "todo": [
       {
         "id": 1,
-        "title": "Lorem Ipsum",
-        "status":"open"
+        "title": "TT table1",
+        "status":"closed"
       },
       {
         "id": 2,
-        "title": "Sic Dolor amet",
+        "title": "Sic Dolor amet1",
         "status":"open"
       }
     ],
