@@ -5,7 +5,6 @@ import { loginReducer } from "../../features/login/login-slice";
 
 export const store = configureStore({
     reducer: {
-      // app: appReducer,
       layouts: layoutsReducer,
       login: loginReducer,
     },

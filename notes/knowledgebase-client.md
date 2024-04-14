@@ -1,3 +1,11 @@
+## GraphQL Apollo
+- Create apollo client through exported getApolloClient() method in app/graphql folder
+- In main.tsx make use of ApolloProvider and set client
+- Make use of useQuery hook for running GraphQL query at component load
+- Make use of useLazyQuery hook if you want to run the query on some event like button click event
+- Graphql maintains an internal cache. The reload of a component only occurs when the newly loaded data is different than existing cache.
+- Use refetch() method got from useQuery() hook to fetch the data on button click. The component will reload only when the fetched data is deifferent than internal cache. Otherwise the api call will be 	made but component will not refresh
+
 ## Redux steps
 # Step 1: Create store
 # Step 2: Create slice and export reducer and actions
@@ -51,6 +59,7 @@
     function handleDecrement() {
         dispatch(doDecrement({step:1}))
     }
+
 ## Typescript tailwind
 - With typescript the tailwind.config.js file must have: content: [{html,js,jsx,ts,tsx}]
 - Headwind for class sorting: On save the sorting takes place. To disable this
@@ -93,7 +102,7 @@
 		}
 		- 
 
-## Signals from @preact/signals-react
+## Signals from @preact/signals-react :: Deprecated
 ```
 const SignalsStore: SignalsStoreType = {
     main: {

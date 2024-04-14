@@ -1,18 +1,19 @@
 import { useDispatch } from "react-redux"
 import { AppDispatchType } from "../../app/store/store"
 import { useNavigate } from "react-router-dom"
-import { useUtils } from "../../utils/util-hook"
+// import { useUtils } from "../../utils/util-hook"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
 import { showSaveMessage } from "../../utils/util-methods/show-save-message"
 import { showErrorMessage } from "../../utils/util-methods/show-error-message"
 import { doLoginR } from "./login-slice"
+import { getHostUrl } from "../../utils/util-methods/misc-methods"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
-    const { getHostUrl } = useUtils()
+    // const { getHostUrl } = useUtils()
 
     function handleForgotPassword() {
         showSaveMessage()
