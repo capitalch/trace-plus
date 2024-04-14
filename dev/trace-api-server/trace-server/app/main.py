@@ -3,6 +3,7 @@ from app.dependencies import AppHttpException, app_http_exception_handler, catch
 from app.messages import Messages
 from app.security import securityRouter
 from app.graphql import GraphQLApp
+
 app = FastAPI()
 
 app.add_middleware(

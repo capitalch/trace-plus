@@ -10,6 +10,10 @@ export function getHostUrl() {
     return (url)
 }
 
+export function getReduxState(): RootStateType{
+    return(store.getState())
+}
+
 export function getToken(){
     const state: RootStateType = store.getState();
     return(state.login.token)

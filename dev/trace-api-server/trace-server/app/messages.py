@@ -5,6 +5,7 @@ class Messages:
     err_invalid_password = "Invalid password"
     err_invalid_username_or_email = "Invalid username or email"
     err_invalid_username_or_password = "Invalid username or password"
+    err_missing_sql_id = "SqlId not found in the client request"
     err_missing_username_password = "Missing username or password"
     # err_super_admin_user_config_data_missing = "Config data for super admin user is not found in configuration file at server"
     err_unknown = "Unknown error"
@@ -23,3 +24,4 @@ class customErrorCodes:
     e1007 = "Invalid user name or email"
     e1008 = "User is not active"
     e1009 = "Password is incorrect"
+    e1010 = "SqlId is not found in the query sent to server. This is badly formed graphQL query"

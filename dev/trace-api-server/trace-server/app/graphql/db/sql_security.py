@@ -128,8 +128,6 @@ allSqls = {
         ) , cte27 as (
             select * from "TranD" where "id" <> %(id)s
         ) 
-        
-        
         select * from cte1 union
         select * from cte2 union
         select * from cte3 union

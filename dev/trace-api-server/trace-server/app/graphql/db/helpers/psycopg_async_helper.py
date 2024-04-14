@@ -11,9 +11,9 @@ from app.config import Config
 poolStore = {}
 dbParams: dict = {
     "user": Config.DB_USER,
-    "password": Config.DB_PASSWORD,
-    "port": Config.DB_PORT,
-    "host": Config.DB_HOST,
+    "password": Config.DB_PASSWORD2,
+    "port": Config.DB_PORT2,
+    "host": Config.DB_HOST2,
 }
 
 
@@ -35,7 +35,7 @@ def get_conn_info(
     db_params.update({"dbName": dbName})
     # connInfo = make_conninfo("", **db_params)
     connInfo = f'''
-        host = {Config.DB_HOST} password = {Config.DB_PASSWORD} port = {Config.DB_PORT} user = {Config.DB_USER} dbname = {dbName}
+        host = {Config.DB_HOST2} password = {Config.DB_PASSWORD2} port = {Config.DB_PORT2} user = {Config.DB_USER} dbname = {dbName}
     '''
     return connInfo
 

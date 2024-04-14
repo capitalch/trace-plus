@@ -2,19 +2,12 @@
 
 export const defaultGlobalContext: GlobalContextType = {
   app: {
-    name: 'Trace+'
-    , version: '0.1.0'
+    // name: 'Trace+'
   }
 }
 
 export type GlobalContextType = {
   app: {
-    name: string
-    version: string
+    // name: string
   }
-  // layouts: {
-  //   navBar: {
-
-  //   }
-  // }
 }

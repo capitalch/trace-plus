@@ -1,5 +1,5 @@
 ## GraphQL Apollo
-- Create apollo client through exported getApolloClient() method in app/graphql folder
+- Create apollo client and get the apolloClient instance through exported getApolloClient() method in app/graphql folder
 - In main.tsx make use of ApolloProvider and set client
 - Make use of useQuery hook for running GraphQL query at component load
 - Make use of useLazyQuery hook if you want to run the query on some event like button click event
