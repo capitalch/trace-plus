@@ -8,27 +8,27 @@ from .db.sql_security import allSqls
 async def generic_query_helper(info, value: str):
     error = {}
     data = {}
-    try:
-        valueString = unquote(value)
-        valueDict = json.loads(valueString)
-        dbParams = valueDict.get("dbParams", None)
-        schema = valueDict.get("buCode", None)
-        toReconnect = valueDict.get("toReconnect", False)
-        sqlId = valueDict.get("sqlId1", None) # Test line to generate error
-        request = info.context.get("request", None)
-        requestJson = await request.json()
-        operationName = requestJson.get("operationName", None)
-        if not sqlId:
-            raise AppHttpException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                error_code="e1010",
-                message=Messages.err_missing_sql_id,
-            )
+    # try:
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    toReconnect = valueDict.get("toReconnect", False)
+    sqlId = valueDict.get("sqlId1", None) # Test line to generate error
+    request = info.context.get("request", None)
+    requestJson = await request.json()
+    operationName = requestJson.get("operationName", None)
+    if not sqlId:
+        raise AppHttpException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            error_code="e1010",
+            message=Messages.err_missing_sql_id,
+        )
 
-    except Exception as e:
-        # print(e)
-        raise e
-    return data
+    # except Exception as e:
+    #     # print(e)
+    #     raise e
+    # return data
 
 
 async def generic_query_helper1():
