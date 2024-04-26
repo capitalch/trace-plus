@@ -11,9 +11,9 @@ from app.config import Config
 poolStore = {}
 dbParams: dict = {
     "user": Config.DB_USER,
-    "password": Config.DB_PASSWORD2,
-    "port": Config.DB_PORT2,
-    "host": Config.DB_HOST2,
+    "password": Config.DB_PASSWORD,
+    "port": Config.DB_PORT,
+    "host": Config.DB_HOST,
 }
 
 

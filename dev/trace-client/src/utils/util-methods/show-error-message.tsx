@@ -11,8 +11,9 @@ export function showErrorMessage(error?: ErrorType, errorCode?: string, errorMes
             position: "bottom-right",
             color: "white",
             background: 'red',
-            // timer: 3000,
-            // timerProgressBar: true,
+            timer: 10000,
+            timerProgressBar: true,
+            
             // title: `Error ${errorCode || ''}`,
             // titleText:'Error details is here',
             title: `Error ${status}: ${errCode}: ${errMessage}`,

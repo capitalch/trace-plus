@@ -1,6 +1,8 @@
 																									## Bug
 																									- Stock reports problem
 																									- Stock transaction report not working
+## Bugs
+- Purchase entry then sales then back to purchase entry shows product of sales
 ## New features to include
 - No duplicate entries should be achievable in purchase
 - Print preview of purchase invoice

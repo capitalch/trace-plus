@@ -22,7 +22,7 @@ app.add_middleware(
 app.middleware("http")(catch_exceptions_middleware)
 
 # Add custom exception handler to app. If you raise an exception of type AppHttpException, it will come here
-app.add_exception_handler(AppHttpException, app_http_exception_handler)
+# app.add_exception_handler(AppHttpException, app_http_exception_handler)
 app.include_router(securityRouter)
 app.add_route('/graphql/', GraphQLApp)
 
