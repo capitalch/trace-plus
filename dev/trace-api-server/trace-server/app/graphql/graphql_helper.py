@@ -1,67 +1,80 @@
-from app.vendors import datetime, json, status, unquote
+# from app.vendors1 import datetime, json, status, unquote, JSONResponse
+import datetime
+import json
+from fastapi import status
+from urllib.parse import unquote
 from app.dependencies import AppHttpException
 from app.messages import Messages
-from .db import exec_sql_psycopg2, exec_sql_psycopg_async, exec_sql_asyncpg
+# from .db.helpers.psycopg_async_helper import  exec_sql_psycopg_async
 from .db.sql_security import allSqls
-
+# exec_sql_psycopg2, exec_sql_asyncpg
 
 async def generic_query_helper(info, value: str):
     error = {}
     data = {}
-    # try:
-    valueString = unquote(value)
-    valueDict = json.loads(valueString)
-    dbParams = valueDict.get("dbParams", None)
-    schema = valueDict.get("buCode", None)
-    toReconnect = valueDict.get("toReconnect", False)
-    sqlId = valueDict.get("sqlId1", None) # Test line to generate error
-    request = info.context.get("request", None)
-    requestJson = await request.json()
-    operationName = requestJson.get("operationName", None)
-    if not sqlId:
-        raise AppHttpException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            error_code="e1010",
-            message=Messages.err_missing_sql_id,
-        )
-
-    # except Exception as e:
-    #     # print(e)
-    #     raise e
-    # return data
-
-
-async def generic_query_helper1():
-    # sql = 'select * from "TranD" where "id" <> %(id)s'
-    sql = allSqls.get("sql1")
-    sqlArgs = {"id": 1}
-    data = []
     try:
-        start_time = datetime.now()
-        for i in range(1):
-            data = exec_sql_psycopg2(
-                dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs={"id": 1}
+        valueString = unquote(value)
+        valueDict = json.loads(valueString)
+        dbParams = valueDict.get("dbParams", None)
+        schema = valueDict.get("buCode", None)
+        toReconnect = valueDict.get("toReconnect", False)
+        sqlId = valueDict.get("sqlId1", None)  # Test line to generate error
+        request = info.context.get("request", None)
+        requestJson = await request.json()
+        operationName = requestJson.get("operationName", None)
+        if not sqlId:
+            raise AppHttpException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                error_code="e1010",
+                message=Messages.err_missing_sql_id,
             )
-        end_time = datetime.now()
-        print(f"Duration1: {end_time - start_time}")
-
-        start_time = datetime.now()
-        for i in range(1):
-            data = await exec_sql_psycopg_async(
-                dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs={"id": 1}
-            )
-        end_time = datetime.now()
-        print(f"Duration2: {end_time - start_time}")
-
-        start_time = datetime.now()
-        for i in range(1):
-            data = await exec_sql_asyncpg(
-                dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs=sqlArgs
-            )
-        end_time = datetime.now()
-        print(f"Duration3: {end_time - start_time}")
 
     except Exception as e:
         print(e)
-
+        # raise e
+        return {
+            "error": {
+                "content": {
+                    "error_code": "e1041",
+                    "message": "Graphql error",
+                    "detail": e.message,
+                }
+            }
+        }
     return data
+
+
+# async def generic_query_helper1():
+#     # sql = 'select * from "TranD" where "id" <> %(id)s'
+#     sql = allSqls.get("sql1")
+#     sqlArgs = {"id": 1}
+#     data = []
+#     try:
+#         start_time = datetime.now()
+#         for i in range(1):
+#             data = exec_sql_psycopg2(
+#                 dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs={"id": 1}
+#             )
+#         end_time = datetime.now()
+#         print(f"Duration1: {end_time - start_time}")
+
+#         start_time = datetime.now()
+#         for i in range(1):
+#             data = await exec_sql_psycopg_async(
+#                 dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs={"id": 1}
+#             )
+#         end_time = datetime.now()
+#         print(f"Duration2: {end_time - start_time}")
+
+#         start_time = datetime.now()
+#         for i in range(1):
+#             data = await exec_sql_asyncpg(
+#                 dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs=sqlArgs
+#             )
+#         end_time = datetime.now()
+#         print(f"Duration3: {end_time - start_time}")
+
+#     except Exception as e:
+#         print(e)
+
+#     return data

@@ -7,14 +7,13 @@ class Messages:
     err_invalid_username_or_password = "Invalid username or password"
     err_missing_sql_id = "SqlId not found in the client request"
     err_missing_username_password = "Missing username or password"
-    # err_super_admin_user_config_data_missing = "Config data for super admin user is not found in configuration file at server"
     err_unknown = "Unknown error"
-    err_url_not_found = "Specified url not found"
+    err_url_not_found = "Specified api endpoint or url not found"
 
 
 class customErrorCodes:
     e1000 = "An uncaught run time error has occured at server"
-    e1001 = "API end point not found"
+    e1001 = "API end point not found. The end point queried by the client is not found in the server code"
     e1002 = "An error was raised while running the server code"
     e1003 = "Either username or password was found missing"
     e1004 = "Super admin configuration details are missing. Please check the Config.py file at server"

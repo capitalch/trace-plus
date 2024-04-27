@@ -1,17 +1,21 @@
-from app.vendors import Any, HTTPException, JSONResponse, Request, status
+# from app.vendors import Any, HTTPException, JSONResponse, Request, status
+from typing import Any
+from fastapi import HTTPException, status, Request
+from fastapi.responses import JSONResponse
 from app.messages import Messages
 
 class AppHttpException(HTTPException):
-    def __init__(self, error_code: str, message: str, status_code: int= 404):
+    def __init__(self, error_code: str, message: str, status_code: int= 404, detail: str = ''):
         self.error_code = error_code
         self.message = message
         self.status_code = status_code
+        self.detail = detail
 
 async def app_http_exception_handler(request: Request, exc: AppHttpException):
-    return (JSONResponse(status_code=exc.status_code, content={'error_code': exc.error_code, 'message': exc.message}))
+    return (JSONResponse(status_code=exc.status_code, content={'error_code': exc.error_code, 'message': exc.message, 'detail': exc.detail}))
 
 
-async def catch_exceptions_middleware(request: Request, call_next):
+async def exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as ex:

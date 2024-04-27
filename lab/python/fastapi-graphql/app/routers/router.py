@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from typing import Union, Any, Annotated
 
@@ -11,5 +11,6 @@ async def do_login(token=Annotated[str, Depends(oauth2_scheme)]):
 
 @security_router.get('/test')
 async def do_test():
-    raise ValueError("An error occurred")
+    raise HTTPException(status_code=400, detail="An error occurred as HTTPException")
+    # raise ValueError("An error occurred1")
     # return {"test": "test"}

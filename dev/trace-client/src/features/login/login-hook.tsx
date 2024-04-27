@@ -42,7 +42,8 @@ function useLogin() {
 
     async function onSubmit(data: any) {
         const hostUrl = getHostUrl()
-        const loginUrl = urlJoin(hostUrl, 'login')
+        // const loginUrl = urlJoin(hostUrl, 'login')
+        const loginUrl = urlJoin(hostUrl, 'test')
         try {
             const ret: any = await axios({
                 method: 'post',

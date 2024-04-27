@@ -23,12 +23,15 @@ cd c:\projects\trace-plus
 4. pip install flask demjson simplejson psycopg2 requests ariadne pandas flask_cors nested_lookup flask_mail pyjwt datetime bcrypt autopep8 xlsxwriter flask_scss flask_weasyprint babel
 
 ## **Notes on universal exception handling in fastapi**
-# Through middleware
-- app.middleware("http")(catch_exceptions_middleware)
-  - This line enables all http calls to pass through the call_next(request) method of catch_exception_middleware
-  - if anywhere in the code uncaught exception occurs then "except exception" part of this method is executed
-  - This takes care of all unknown and accidental exceptions in code when any http call is made
-# Raised exceptions
+There are two types of exceptions:
+# Caught exceptions: 
+- When you are able to catch some exception in your code and you raise that exception with your own context information. This raised exception is now caught by a custom method with HTTPException as argument.
+  
+  @app.exception_handler(HttpException)
+  async def handle_http_exception(request,ex):
+    return JSONResponse(status_code=exc.status_code, content={"message": exc.detail})
+
+- You can also create a subclass of HTTPException say AppHTTPException to add more attributes and work in similar manner.
 - If any http call is made and in this call a exception is raised through AppHttpException then this exception is handled directly
 - for example if you write at any point
   ```
@@ -36,7 +39,28 @@ cd c:\projects\trace-plus
         error_code='e1002', message='A custom exception from inside of code has occured',)
   ```
 - This is executed directly and does not pass through the exception handler of middleware
-# Raising 404 exception when end point is not found
+
+# Uncaught exceptions handled through http middleware: 
+When due to some error in program, somewhere some exception is generated and it is uncaught. It spits lot of stack info in terminal. This uncaught exception is handled through http middleware. Basically all calls are routed through this middleware function surrounded by a try catch. If any error happens in the calll execution, that is caught by try catch and properly handled.
+- app.middleware("http")(catch_exceptions_middleware)
+  - This line enables all http calls to pass through the call_next(request) method of catch_exception_middleware
+  - if anywhere in your software uncaught exception occurs then catch block or except block is executed
+  - This takes care of all unknown and accidental exceptions in code when any http call is made
+  - At first you define the handle function with request and call_next parameters. Then you attach the handler function to the app
+```
+  async def handle_exceptions(request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"message": e.args[0]})
+
+  app.middleware('http')(
+      handle_exceptions
+  )
+```
+- You can also handle specific exception such as 404 exception in following manner
+- There can be any number of app.exception_handler in the software
+# handling 404 exception when end point is not found
 - This is done like this:
   ```
     app.exception_handler(404)
