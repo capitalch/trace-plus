@@ -4,7 +4,8 @@
 - Make use of useQuery hook for running GraphQL query at component load
 - Make use of useLazyQuery hook if you want to run the query on some event like button click event
 - Graphql maintains an internal cache. The reload of a component only occurs when the newly loaded data is different than existing cache.
-- Use refetch() method got from useQuery() hook to fetch the data on button click. The component will reload only when the fetched data is deifferent than internal cache. Otherwise the api call will be 	made but component will not refresh
+- Use refetch() method got from useQuery() hook to fetch the data on button click. The component will reload only when the fetched data is deifferent than internal cache. Otherwise the api call will be made but component will not refresh
+- In useQuery hook pass {notifyOnNetworkStatusChange: true} options for each time rerender of component when a query is made. Otherwise rerender of component will only happen when query result is changed
 
 ## Redux steps
 # Step 1: Create store

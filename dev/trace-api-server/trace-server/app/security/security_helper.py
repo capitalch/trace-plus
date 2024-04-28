@@ -1,4 +1,3 @@
-# from app.vendors import Depends, OAuth2PasswordBearer, OAuth2PasswordRequestForm, status
 from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.dependencies import AppHttpException, UserClass
@@ -6,12 +5,8 @@ from app.messages import Messages
 from app.config import Config
 from app.security.security_utils import create_access_token, verify_password
 from app.graphql.db.sql_security import SqlSerurity
-
-# from app.graphql.db import exec_sql_asyncpg as exec_sql
 import json
-
-# from app.graphql.db import exec_sql_psycopg2 as exec_sql
-from app.graphql.db.helpers.psycopg_async_helper import  exec_sql
+from app.graphql.db.helpers.psycopg_async_helper import exec_sql
 
 
 async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
@@ -40,7 +35,7 @@ async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
     except AppHttpException as e:
         raise e
     except Exception as e:
-        print(e)
+        # print(e)
         raise AppHttpException(
             status_code=status.HTTP_401_UNAUTHORIZED, error_code="e1004", message=str(e)
         )

@@ -2,10 +2,10 @@ import { gql } from '@apollo/client'
 import _ from 'lodash'
 
 export const GraphQLQueries = {
-  genericQuery: GENERIC_QUERY
+  genericQuery: genericQuery
 }
 
-function GENERIC_QUERY (dbName: string, val: any) {
+function genericQuery (dbName: string, val: any) {
   const value = encodeObj(val)
   return gql`
         query ${dbName} {

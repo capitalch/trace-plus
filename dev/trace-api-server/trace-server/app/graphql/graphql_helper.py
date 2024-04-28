@@ -1,13 +1,10 @@
-# from app.vendors1 import datetime, json, status, unquote, JSONResponse
 import datetime
 import json
 from fastapi import status
 from urllib.parse import unquote
 from app.dependencies import AppHttpException
 from app.messages import Messages
-# from .db.helpers.psycopg_async_helper import  exec_sql_psycopg_async
 from .db.sql_security import allSqls
-# exec_sql_psycopg2, exec_sql_asyncpg
 
 async def generic_query_helper(info, value: str):
     error = {}
@@ -30,13 +27,16 @@ async def generic_query_helper(info, value: str):
             )
 
     except Exception as e:
-        print(e)
+        # print(e)
         # raise e
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
         return {
             "error": {
                 "content": {
                     "error_code": "e1041",
                     "message": "Graphql error",
+                    "status_code": "400",
                     "detail": e.message,
                 }
             }

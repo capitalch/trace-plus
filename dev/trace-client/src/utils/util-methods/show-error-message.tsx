@@ -6,31 +6,23 @@ export function showErrorMessage(error?: ErrorType, errorCode?: string, errorMes
     const errMessage = error?.response?.data?.message || errorMessage || Messages.errUnknown
     const status = error?.response?.status || 500
 
-        Swal.fire({
-            toast: true,
-            position: "bottom-right",
-            color: "white",
-            background: 'red',
-            timer: 10000,
-            timerProgressBar: true,
-            
-            // title: `Error ${errorCode || ''}`,
-            // titleText:'Error details is here',
-            title: `Error ${status}: ${errCode}: ${errMessage}`,
-            padding: '10px',
-            showConfirmButton: false,
-            icon: 'error',
-            iconColor: 'white',
-            width: 'auto',
-            // allowEscapeKey: true,
-            // showCloseButton: true,
-            // onOutsideClick:(e: any) =>{},
-            // showCancelButton: true,
-            // allowOutsideClick: true,
-        })
+    Swal.fire({
+        toast: true,
+        position: "bottom-right",
+        color: "white",
+        background: 'red',
+        timer: 10000,
+        timerProgressBar: true,
+        title: `Error ${status}: ${errCode}: ${errMessage}`,
+        padding: '10px',
+        showConfirmButton: false,
+        icon: 'error',
+        iconColor: 'white',
+        width: 'auto',
+    })
 }
 
-export type ErrorType = {
+type ErrorType = {
     message: string
     response: {
         status: number
@@ -40,3 +32,11 @@ export type ErrorType = {
         }
     }
 }
+
+// allowEscapeKey: true,
+// showCloseButton: true,
+// onOutsideClick:(e: any) =>{},
+// showCancelButton: true,
+// allowOutsideClick: true,
+// title: `Error ${errorCode || ''}`,
+// titleText:'Error details is here',

@@ -1,5 +1,4 @@
-# from app.vendors import CORSMiddleware, FastAPI, JSONResponse
-from fastapi import FastAPI, Request, HTTPException, status
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.dependencies import AppHttpException, app_http_exception_handler, exceptions_middleware
@@ -22,10 +21,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.middleware("http")(exceptions_middleware) # Uncatched exceptions will come here
+app.include_router(securityRouter)
+# Uncatched exceptions will come here
+app.middleware("http")(exceptions_middleware)
 
-# Add custom exception handler to app. If you raise an exception of type AppHttpException, it will come here
+# Add custom exception handler to app
+# If you raise an exception of type AppHttpException, it will come here
 app.add_exception_handler(AppHttpException, app_http_exception_handler)
+
 @app.route("/graphql/", methods=["POST","GET"])
 async def graphql(request:Request):
     return await GraphQLApp.handle_request(request)
@@ -41,5 +44,4 @@ async def custom_404_handler(_, __):
 
 
 # app.mount('/graphql/', GraphQLApp)
-# app.include_router(securityRouter)
 # app.add_route('/graphql/', GraphQLApp)

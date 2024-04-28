@@ -1,28 +1,29 @@
-import { GraphQLQueryType, GraphQLQueries } from "../../../app/graphql/graphql-queries"
-import { useQuery } from "@apollo/client"
-import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants"
-import { SqlIds } from "../../../app/graphql/sqlIds"
+// import { GraphQLQueryType, GraphQLQueries } from "../../../app/graphql/graphql-queries"
+// import { useQuery } from "@apollo/client"
+// import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants"
+// import { SqlIds } from "../../../app/graphql/sqlIds"
+import { useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
 
 export function SuperAdminDashboard() {
+    const { refetch } = useSuperAdminDashBoard()
+    // const args: GraphQLQueryType = {
+    //     sqlId: SqlIds.getSuperAdminDashBoard
+    // }
+    // const { data, error, loading, refetch } =
+    //     useQuery(GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME,
+    //         args))
 
-    const args: GraphQLQueryType = {
-        sqlId: SqlIds.getSuperAdminDashBoard
-    }
-    const { data, error, loading, refetch } =
-        useQuery(GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME,
-            args))
+    // if (loading) {
+    //     console.log('Loading')
+    // }
 
-    if (loading) {
-        console.log('Loading')
-    }
-
-    if (error) {
-        console.log(error)
-    }
+    // if (error) {
+    //     console.log(error)
+    // }
 
     const dbConnActive = 10, dbConnIdle = 5, dbConnTotal = 15
 
-    console.log(data)
+    // console.log(data)
     return (<div id='super-admin-top' className="flex flex-col px-8">
         <h4 className="text-gray-500">Super Admin Dashboard</h4>
         <div className="mt-4 flex flex-wrap gap-8">
@@ -57,8 +58,9 @@ export function SuperAdminDashboard() {
             </div>
 
             <div>
-                {/* {JSON.stringify(data || {})} */}
-                <button className="rounded-md bg-slate-200 px-2" onClick={() => refetch()}>Re fetch</button>
+                <button className="rounded-md bg-slate-200 px-2" onClick={() => {
+                    refetch()
+                }}>Re fetch</button>
             </div>
         </div>
     </div>)
