@@ -8,7 +8,7 @@ export function showGraphQlErrorMessage(error: GraphQlErrorType){
         background: 'red',
         timer: 10000,
         timerProgressBar: true,
-        title: `Error ${error?.status_code}: ${error?.error_code}: ${error?.message}`,
+        title: `Error ${error?.status_code}: ${error?.error_code}: ${error?.message}: ${error?.detail}`,
         padding: '10px',
         showConfirmButton: false,
         icon: 'error',
@@ -18,6 +18,7 @@ export function showGraphQlErrorMessage(error: GraphQlErrorType){
 }
 
 type GraphQlErrorType = {
+    detail: string
     error_code: string
     status_code: number
     message: string

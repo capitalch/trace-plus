@@ -22,7 +22,7 @@ function encodeObj (obj: any) {
   return ret
 }
 
-export type GraphQLQueryType = {
+export type GraphQLQueryArgsType = {
   sqlId: string
   [key: string]: any
 }

@@ -24,7 +24,7 @@ export function showErrorMessage(error?: ErrorType, errorCode?: string, errorMes
 
 type ErrorType = {
     message: string
-    response: {
+    response?: {
         status: number
         data: {
             error_code: string

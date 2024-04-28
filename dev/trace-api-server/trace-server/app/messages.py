@@ -24,3 +24,5 @@ class customErrorCodes:
     e1008 = "User is not active"
     e1009 = "Password is incorrect"
     e1010 = "SqlId is not found in the query sent to server. This is badly formed graphQL query"
+    
+    e2000 = "Error occurred while executing GraphQL query in file graphql_helper"

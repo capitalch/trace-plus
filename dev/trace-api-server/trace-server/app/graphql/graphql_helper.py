@@ -19,23 +19,21 @@ async def generic_query_helper(info, value: str):
         request = info.context.get("request", None)
         requestJson = await request.json()
         operationName = requestJson.get("operationName", None)
-        if not sqlId:
-            raise AppHttpException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                error_code="e1010",
-                message=Messages.err_missing_sql_id,
-            )
+        # if not sqlId:
+        #     raise AppHttpException(
+        #         status_code=status.HTTP_400_BAD_REQUEST,
+        #         error_code="e1010",
+        #         message=Messages.err_missing_sql_id,
+        #     )
 
     except Exception as e:
-        # print(e)
-        # raise e
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
         return {
             "error": {
                 "content": {
-                    "error_code": "e1041",
-                    "message": "Graphql error",
+                    "error_code": "e2000",
+                    "message": "Graphql error occured",
                     "status_code": "400",
                     "detail": e.message,
                 }

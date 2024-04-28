@@ -1,29 +1,15 @@
-// import { GraphQLQueryType, GraphQLQueries } from "../../../app/graphql/graphql-queries"
-// import { useQuery } from "@apollo/client"
-// import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants"
-// import { SqlIds } from "../../../app/graphql/sqlIds"
+import { LoadingIndicator } from "../../../components/widgets/loading-indicator"
 import { useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
 
 export function SuperAdminDashboard() {
-    const { refetch } = useSuperAdminDashBoard()
-    // const args: GraphQLQueryType = {
-    //     sqlId: SqlIds.getSuperAdminDashBoard
-    // }
-    // const { data, error, loading, refetch } =
-    //     useQuery(GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME,
-    //         args))
+    const { loading, refetch } = useSuperAdminDashBoard()
 
-    // if (loading) {
-    //     console.log('Loading')
-    // }
-
-    // if (error) {
-    //     console.log(error)
-    // }
+    if (loading) {
+        return (<LoadingIndicator />)
+    }
 
     const dbConnActive = 10, dbConnIdle = 5, dbConnTotal = 15
 
-    // console.log(data)
     return (<div id='super-admin-top' className="flex flex-col px-8">
         <h4 className="text-gray-500">Super Admin Dashboard</h4>
         <div className="mt-4 flex flex-wrap gap-8">
