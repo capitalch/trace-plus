@@ -5,7 +5,8 @@ from urllib.parse import unquote
 from app.dependencies import AppHttpException
 from app.messages import Messages
 from .db.sql_security import allSqls
-
+from .db.helpers.psycopg_async_helper import exec_sql
+from .db.sql_security import SqlSerurity
 async def generic_query_helper(info, value: str):
     error = {}
     data = {}
@@ -15,10 +16,12 @@ async def generic_query_helper(info, value: str):
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
         toReconnect = valueDict.get("toReconnect", False)
-        sqlId = valueDict.get("sqlId1", None)  # Test line to generate error
+        sqlId = valueDict.get("sqlId", None)
         request = info.context.get("request", None)
         requestJson = await request.json()
         operationName = requestJson.get("operationName", None)
+        sql = SqlSerurity.get_super_admin_dashboard
+        data = await exec_sql(sql=sql, sqlArgs=valueDict)
         # if not sqlId:
         #     raise AppHttpException(
         #         status_code=status.HTTP_400_BAD_REQUEST,
