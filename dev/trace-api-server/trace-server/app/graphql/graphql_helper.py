@@ -21,6 +21,7 @@ async def generic_query_helper(info, value: str):
         requestJson = await request.json()
         operationName = requestJson.get("operationName", None)
         sql = SqlSerurity.get_super_admin_dashboard
+        sqlArgs = valueDict.get('sqlArgs',{})
         data = await exec_sql(sql=sql, sqlArgs=valueDict)
         # if not sqlId:
         #     raise AppHttpException(

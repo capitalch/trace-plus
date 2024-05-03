@@ -59,7 +59,6 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
         dbName,
     )
     records = []
-    
     try:
         async with apool.connection() as aconn:
             await aconn.execute(f"set search_path to {schema}")
