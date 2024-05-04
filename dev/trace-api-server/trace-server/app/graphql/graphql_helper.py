@@ -6,7 +6,11 @@ from app.dependencies import AppHttpException
 from app.messages import Messages
 from .db.sql_security import allSqls
 from .db.helpers.psycopg_async_helper import exec_sql
-from .db.sql_security import SqlSerurity
+
+# from .db.sql_security import SqlSecurity
+from app.utils import getSqlQueryObject
+
+
 async def generic_query_helper(info, value: str):
     error = {}
     data = {}
@@ -15,14 +19,21 @@ async def generic_query_helper(info, value: str):
         valueDict = json.loads(valueString)
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
-        toReconnect = valueDict.get("toReconnect", False)
+        # toReconnect = valueDict.get("toReconnect", False)
         sqlId = valueDict.get("sqlId", None)
         request = info.context.get("request", None)
         requestJson = await request.json()
         operationName = requestJson.get("operationName", None)
-        sql = SqlSerurity.get_super_admin_dashboard
-        sqlArgs = valueDict.get('sqlArgs',{})
-        data = await exec_sql(sql=sql, sqlArgs=valueDict)
+        sqlQueryObject = getSqlQueryObject(operationName)
+        sql = getattr(sqlQueryObject, sqlId, None)
+        sqlArgs = valueDict.get("sqlArgs", {})
+        data = await exec_sql(
+            dbName=operationName,
+            db_params=dbParams,
+            schema=schema,
+            sql=sql,
+            sqlArgs=sqlArgs,
+        )
         # if not sqlId:
         #     raise AppHttpException(
         #         status_code=status.HTTP_400_BAD_REQUEST,
@@ -33,13 +44,16 @@ async def generic_query_helper(info, value: str):
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
+        mess = ""
+        if (e.args) is not None:
+            mess = e.args[0]
         return {
             "error": {
                 "content": {
                     "error_code": "e2000",
                     "message": "Graphql error occured",
                     "status_code": "400",
-                    "detail": e.message,
+                    "detail": mess,
                 }
             }
         }

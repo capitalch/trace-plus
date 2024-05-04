@@ -32,11 +32,13 @@ def get_connection_pool(
 def get_conn_info(
     dbName: str = Config.DB_SECURITY_DATABASE, db_params: dict[str, str] = dbParams
 ) -> str:
-    db_params.update({"dbName": dbName})
-    # connInfo = make_conninfo("", **db_params)
-    connInfo = f'''
-        host = {Config.DB_HOST} password = {Config.DB_PASSWORD} port = {Config.DB_PORT} user = {Config.DB_USER} dbname = {dbName}
-    '''
+    dbName = Config.DB_SECURITY_DATABASE if dbName is None else dbName
+    db_params = dbParams if db_params is None else db_params
+    db_params.update({'dbname': dbName})
+    connInfo = make_conninfo("", **db_params)
+    # connInfo = f'''
+    #     host = {Config.DB_HOST} password = {Config.DB_PASSWORD} port = {Config.DB_PORT} user = {Config.DB_USER} dbname = {dbName}
+    # '''
     return connInfo
 
 
@@ -61,7 +63,7 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
     records = []
     try:
         async with apool.connection() as aconn:
-            await aconn.execute(f"set search_path to {schema}")
+            await aconn.execute(f"set search_path to {schema or 'public'}")
     except OperationalError as e:
         raise AppHttpException(error_code='e1005', message=str(e),status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     try:

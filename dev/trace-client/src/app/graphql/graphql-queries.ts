@@ -23,6 +23,8 @@ function encodeObj (obj: any) {
 }
 
 export type GraphQLQueryArgsType = {
-  sqlId: string
+  dbParams?: string
   [key: string]: any
+  sqlId: string
+  sqlArgs?: { [key: string]: string }
 }

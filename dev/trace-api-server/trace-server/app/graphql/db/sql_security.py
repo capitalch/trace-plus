@@ -1,4 +1,4 @@
-class SqlSerurity:
+class SqlSecurity:
     get_super_admin_dashboard = '''
         with "dbName" as (values(%(dbName)s))
         -- with "dbName" as (values('traceAuth'))

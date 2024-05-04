@@ -4,7 +4,7 @@ from app.dependencies import AppHttpException, UserClass
 from app.messages import Messages
 from app.config import Config
 from app.security.security_utils import create_access_token, verify_password
-from app.graphql.db.sql_security import SqlSerurity
+# from app.graphql.db.sql_security import SqlSerurity
 import json
 from app.graphql.db.helpers.psycopg_async_helper import exec_sql
 

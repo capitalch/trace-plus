@@ -7,7 +7,9 @@ import { showErrorMessage } from "../../../utils/util-methods/show-error-message
 export function useSuperAdminDashBoard() {
     const args: GraphQLQueryArgsType = {
         sqlId: 'get_super_admin_dashboard',
-        dbName: 'traceAuth'
+        sqlArgs: {
+            dbName: 'traceAuth'
+        }
     }
     const { client, data, error, loading, refetch } = useQuery(
         GraphQLQueries.genericQuery(
