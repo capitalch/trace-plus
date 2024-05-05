@@ -65,7 +65,7 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
         async with apool.connection() as aconn:
             await aconn.execute(f"set search_path to {schema or 'public'}")
     except OperationalError as e:
-        raise AppHttpException(error_code='e1005', message=str(e),status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        raise e
     try:
         async with aconn.cursor(row_factory=dict_row) as acur:
             await acur.execute(sql, sqlArgs)
@@ -74,7 +74,5 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
         await acur.close()
         await aconn.commit()
     except Exception as e:
-        raise AppHttpException(
-        error_code='e1006', status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=str(e))
-        
+        raise e
     return (records)

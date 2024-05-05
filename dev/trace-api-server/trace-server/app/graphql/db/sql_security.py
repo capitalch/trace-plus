@@ -1,7 +1,7 @@
 class SqlSecurity:
     get_super_admin_dashboard = '''
         with "dbName" as (values(%(dbName)s))
-        -- with "dbName" as (values('traceAuth'))
+         --with "dbName" as (values('traceAuth'))
         , cte1 as(
             SELECT count(*) as count, state FROM pg_stat_activity 
                 where datname = (table "dbName") and state in('active', 'idle')
@@ -17,23 +17,21 @@ class SqlSecurity:
 		, cte4 as (
 			SELECT count(*) as count
 				from "SecuredControlM")
-		, cte5 as (
-			SELECT count(*) as count
-				from "UserM"
-					where "roleId" is null)
-		, cte6 as (
-			SELECT count(*) as count
-				from "RoleM"
-					where "clientId" is null)
+		, cte5 as ( -- Admin user when roleId is null, normal user when roleId is not null
+			SELECT count(*) as count, "roleId"
+				from "UserM" group by "roleId")
+		, cte6 as ( -- Super admin role if clientId is null, client role otherwise
+			SELECT count(*) as count, "clientId"
+				from "RoleM" group by "clientId")
+  
             select json_build_object(
                 'connections',(select json_agg(row_to_json(a)) from cte1 a)
 				, 'clients', (select json_agg(row_to_json(b)) from cte2 b)
 				, 'dbCount', (select count from cte3)
 				, 'securedControlsCount', (select count from cte4)
-				, 'adminUsersCount', (select count from cte5)
-				, 'adminRolesCount', (select count from cte6)
+				, 'users', (select json_agg(row_to_json(c)) from cte5 c)
+				, 'roles', (select json_agg(row_to_json(d)) from cte6 d)
             ) as "jsonResult"
-
     '''
     does_user_email_exist = '''
         with "email" as (values(%(email)s))

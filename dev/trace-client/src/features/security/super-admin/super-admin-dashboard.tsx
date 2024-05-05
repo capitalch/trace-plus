@@ -2,7 +2,7 @@ import { LoadingIndicator } from "../../../components/widgets/loading-indicator"
 import { useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
 
 export function SuperAdminDashboard() {
-    const { loading, refetch } = useSuperAdminDashBoard()
+    const { loading, superAdminDashboard, refetch } = useSuperAdminDashBoard()
 
     if (loading) {
         return (<LoadingIndicator />)
