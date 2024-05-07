@@ -1,8 +1,10 @@
-## To DO: server
-- Remove vendors
-- remove __init__.py
-- Correct error handling
-- GraphQL error handling
+## To do
+
+																							## To DO: server
+																								- Remove vendors
+																								- remove __init__.py
+																								- Correct error handling
+																								- GraphQL error handling
 ## GraphQL
 - store hostUrl in Global context
 - implement GraphQL with token
