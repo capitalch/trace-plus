@@ -1,47 +1,119 @@
 import { LoadingIndicator } from "../../../components/widgets/loading-indicator"
-import { useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
+import { SuperAdminDashBoardType, useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
 
 export function SuperAdminDashboard() {
-    const { loading, superAdminDashboard, refetch } = useSuperAdminDashBoard()
-
+    const { loading, refetch, superAdminDashBoard }: { loading: boolean, refetch: any, superAdminDashBoard: SuperAdminDashBoardType } = useSuperAdminDashBoard()
     if (loading) {
         return (<LoadingIndicator />)
     }
+    // if (error || isCustomError) {
+    //     return (<div>Error</div>)
+    // }
 
-    const dbConnActive = 10, dbConnIdle = 5, dbConnTotal = 15
+    // const dbConnActive = 10, dbConnIdle = 5, dbConnTotal = 15
 
     return (<div id='super-admin-top' className="flex flex-col px-8">
         <h4 className="text-gray-500">Super Admin Dashboard</h4>
         <div className="mt-4 flex flex-wrap gap-8">
+
+            {/* Database connections */}
             <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
                 <label className="text-lg font-bold">Database connections</label>
                 <span className="flex justify-between">
                     <label className="">Active</label>
-                    <label>{dbConnActive}</label>
+                    <label>{superAdminDashBoard.dbConnections.active}</label>
                 </span>
                 <span className="flex justify-between">
                     <label className="text-sm font-normal">Idle</label>
-                    <label>{dbConnIdle}</label>
+                    <label>{superAdminDashBoard.dbConnections.idle}</label>
                 </span>
                 <span className="flex justify-between">
                     <label className="text-sm font-normal">Total</label>
-                    <label>{dbConnTotal}</label>
+                    <label>{superAdminDashBoard.dbConnections.total}</label>
                 </span>
             </div>
 
-            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-lg font-bold text-black">
-                <label className="">Clients</label>
-                <label className="text-sm font-normal">Active</label>
-                <label className="text-sm font-normal">Idle</label>
-                <label className="text-sm font-normal">Total</label>
+            {/* Clients */}
+            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
+                <label className="text-lg font-bold">Clients</label>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Active</label>
+                    <label>{superAdminDashBoard.clients.active}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Inactive</label>
+                    <label>{superAdminDashBoard.clients.inactive}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Total</label>
+                    <label>{superAdminDashBoard.clients.total}</label>
+                </span>
             </div>
 
-            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-lg font-bold text-black">
-                <label className="">Admin users</label>
-                <label className="text-sm font-normal">Active</label>
-                <label className="text-sm font-normal">Idle</label>
-                <label className="text-sm font-normal">Total</label>
+            {/* Admin users */}
+            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
+                <label className="text-lg font-bold">Admin users</label>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Active</label>
+                    <label>{superAdminDashBoard.adminUsers.active}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Inactive</label>
+                    <label>{superAdminDashBoard.adminUsers.inactive}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Total</label>
+                    <label>{superAdminDashBoard.adminUsers.total}</label>
+                </span>
             </div>
+
+            {/*Non  Admin users */}
+            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
+                <label className="text-lg font-bold">Non admin users</label>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Active</label>
+                    <label>{superAdminDashBoard.nonAdminUsers.active}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Inactive</label>
+                    <label>{superAdminDashBoard.nonAdminUsers.inactive}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Total</label>
+                    <label>{superAdminDashBoard.nonAdminUsers.total}</label>
+                </span>
+            </div>
+
+            {/* Roles */}
+            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
+                <label className="text-lg font-bold">Roles</label>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Admin</label>
+                    <label>{superAdminDashBoard.roles.admin}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Super admin</label>
+                    <label>{superAdminDashBoard.roles.superAdmin}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Total</label>
+                    <label>{superAdminDashBoard.roles.total}</label>
+                </span>
+            </div>
+
+            {/* Misc */}
+            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
+                <label className="text-lg font-bold">Misc</label>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Databases</label>
+                    <label>{superAdminDashBoard.misc.databasesCount}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Secured controls</label>
+                    <label>{superAdminDashBoard.misc.securedControlsCount}</label>
+                </span>
+            </div>
+
 
             <div>
                 <button className="rounded-md bg-slate-200 px-2" onClick={() => {

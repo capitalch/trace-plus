@@ -12,6 +12,8 @@ export function useSuperAdminDashBoard() {
             dbName: 'traceAuth'
         }
     }
+    let isCustomError: boolean = false
+
     const { client, data, error, loading, refetch } = useQuery(
         GraphQLQueries.genericQuery(
             GLOBAL_SECURITY_DATABASE_NAME
@@ -24,10 +26,10 @@ export function useSuperAdminDashBoard() {
 
     if (data?.genericQuery?.error?.content) {
         showGraphQlErrorMessage(data.genericQuery.error.content)
-        return
+        isCustomError = true
     }
 
-    const superAdminDashboard: SuperAdminDashBoardType = getSuperAdminDashBoard()
+    const superAdminDashBoard: SuperAdminDashBoardType = getSuperAdminDashBoard()
 
     function getSuperAdminDashBoard(): SuperAdminDashBoardType {
         const dashBoard: SuperAdminDashBoardType = {
@@ -65,7 +67,7 @@ export function useSuperAdminDashBoard() {
         let jsonResult: any = {}
 
         if (data) {
-            jsonResult = data.genericQuery[0].jsonResult
+            jsonResult = data?.genericQuery[0]?.jsonResult
             if (!_.isEmpty(jsonResult)) {
                 populateDashBoard(dashBoard, jsonResult)
             }
@@ -103,8 +105,8 @@ export function useSuperAdminDashBoard() {
         )
         const nonAdminUsers: any[] = jsonResult.users.filter((user: any) => user.roleId)
 
-        for (const user of adminUsers){
-            if(user.isActive){
+        for (const user of adminUsers) {
+            if (user.isActive) {
                 dashBoard.adminUsers.active = user.count
             } else {
                 dashBoard.adminUsers.inactive = user.count
@@ -112,8 +114,8 @@ export function useSuperAdminDashBoard() {
         }
         dashBoard.adminUsers.total = (dashBoard.adminUsers.active || 0) + (dashBoard.adminUsers.inactive || 0)
 
-        for (const user of nonAdminUsers){
-            if(user.isActive){
+        for (const user of nonAdminUsers) {
+            if (user.isActive) {
                 dashBoard.nonAdminUsers.active = user.count
             } else {
                 dashBoard.nonAdminUsers.inactive = user.count
@@ -122,9 +124,9 @@ export function useSuperAdminDashBoard() {
         dashBoard.nonAdminUsers.total = (dashBoard.nonAdminUsers.active || 0) + (dashBoard.nonAdminUsers.inactive || 0)
     }
 
-    function setRoles(dashBoard:SuperAdminDashBoardType, jsonResult: any){
-        for (const role of jsonResult.roles){
-            if(role.clientId){
+    function setRoles(dashBoard: SuperAdminDashBoardType, jsonResult: any) {
+        for (const role of jsonResult.roles) {
+            if (role.clientId) {
                 dashBoard.roles.admin = role.count
             } else {
                 dashBoard.roles.superAdmin = role.count
@@ -133,12 +135,15 @@ export function useSuperAdminDashBoard() {
         dashBoard.roles.total = (dashBoard.roles.admin || 0) + (dashBoard.roles.superAdmin)
     }
 
-    function setMisc(dashBoard: SuperAdminDashBoardType, jsonResult: any){
+    function setMisc(dashBoard: SuperAdminDashBoardType, jsonResult: any) {
         dashBoard.misc.databasesCount = jsonResult.dbCount
         dashBoard.misc.securedControlsCount = jsonResult.securedControlsCount || 0
     }
 
     function populateDashBoard(dashBoard: SuperAdminDashBoardType, jsonResult: any) {
+        if(_.isEmpty(jsonResult)){
+            return
+        }
         setDbConnections(dashBoard, jsonResult)
         setClients(dashBoard, jsonResult)
         setUsers(dashBoard, jsonResult)
@@ -146,10 +151,10 @@ export function useSuperAdminDashBoard() {
         setMisc(dashBoard, jsonResult)
     }
 
-    return ({ client, data, error, superAdminDashboard, loading, refetch })
+    return ({ client, data, error, isCustomError, superAdminDashBoard, loading, refetch })
 }
 
-type SuperAdminDashBoardType = {
+export type SuperAdminDashBoardType = {
     dbConnections: {
         active: number
         idle: number

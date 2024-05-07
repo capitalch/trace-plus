@@ -3,6 +3,14 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 06-05-2024
+- Client side error page design
+- Client side error handling
+- Superadmin dashboard
+# 05-05-2024
+- Server side genericQuery complete
+- Server side error handling
+- Client side superadmin dashboard
 # 31-03-2024
 - Client side login completed
 - Nav bar completed

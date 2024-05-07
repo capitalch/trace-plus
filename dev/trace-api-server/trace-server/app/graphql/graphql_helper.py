@@ -34,12 +34,6 @@ async def generic_query_helper(info, value: str):
             sql=sql,
             sqlArgs=sqlArgs,
         )
-        # if not sqlId:
-        #     raise AppHttpException(
-        #         status_code=status.HTTP_400_BAD_REQUEST,
-        #         error_code="e1010",
-        #         message=Messages.err_missing_sql_id,
-        #     )
 
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL

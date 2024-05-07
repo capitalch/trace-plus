@@ -4,6 +4,9 @@
 ## Bugs
 - Purchase entry then sales then back to purchase entry shows product of sales
 ## New features to include
+- Inter branch transfer
+- Branches same bank account provision
+
 - No duplicate entries should be achievable in purchase
 - Print preview of purchase invoice
 - Salesperson management descriptive
@@ -25,6 +28,9 @@ ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
 ## VSCode extensions
 - Tailwind CSS Intellisense
 - HeadWind: class sorter: Works great
+
+## React icons svg
+https://reactsvgicons.com/react-svg-iconsets
 
 ## Tailwind 
 - CheatSheet

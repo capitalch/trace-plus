@@ -1,4 +1,3 @@
-// import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
@@ -16,9 +15,6 @@ function SideMenu() {
     const dispatch: AppDispatchType = useDispatch()
 
     const menuData = MasterMenuData[menuItemSelector]
-
-    // const parentClass = "flex h-10 items-center gap-3 rounded-md border-b-[1px] px-2 font-semibold hover:bg-primary-50 focus:outline-none"
-    // const childClass = "flex h-10 w-full items-center rounded-md border-b-[1px] pl-9 hover:bg-primary-100 focus:outline-none"
     const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
     const parentClass = "flex h-10 items-center gap-3 rounded-md border-b-[1px] px-2 hover:font-bold focus:outline-none text-primary-500"
     const childClass = "flex h-10 w-full items-center rounded-md border-b-[1px] pl-9 hover:font-bold focus:outline-none text-primary-400"
@@ -44,7 +40,6 @@ function SideMenu() {
         return (
             <div className="flex flex-col">
                 <button id={item.id} onClick={() => handleParentClick(item)}
-                    // getParentExpandedClass(item.id)
                     className={clsx(parentClass, getParentSelectedClass(item))}>
                     <item.icon className={item.iconColorClass} /><span className="mr-auto">{item.label}</span><CheveronUpIcon className={clsx(getArrowUpClass(item.id), getHiddenClassWhenNochildren(item))} /> <CheveronDownIcon className={clsx(getArrowDownClass(item.id), getHiddenClassWhenNochildren(item))} />
                 </button>
