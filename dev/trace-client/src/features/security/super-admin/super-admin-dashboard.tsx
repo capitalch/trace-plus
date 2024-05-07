@@ -88,12 +88,12 @@ export function SuperAdminDashboard() {
             <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
                 <label className="text-lg font-bold">Roles</label>
                 <span className="flex justify-between">
-                    <label className="text-sm font-normal">Admin</label>
-                    <label>{superAdminDashBoard.roles.admin}</label>
-                </span>
-                <span className="flex justify-between">
                     <label className="text-sm font-normal">Super admin</label>
                     <label>{superAdminDashBoard.roles.superAdmin}</label>
+                </span>
+                <span className="flex justify-between">
+                    <label className="text-sm font-normal">Admin</label>
+                    <label>{superAdminDashBoard.roles.admin}</label>
                 </span>
                 <span className="flex justify-between">
                     <label className="text-sm font-normal">Total</label>

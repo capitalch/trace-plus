@@ -106,7 +106,7 @@ export function useSuperAdminDashBoard() {
         const nonAdminUsers: any[] = jsonResult.users.filter((user: any) => user.roleId)
 
         for (const user of adminUsers) {
-            if (user.isActive) {
+            if (!user.roleId) {
                 dashBoard.adminUsers.active = user.count
             } else {
                 dashBoard.adminUsers.inactive = user.count
@@ -115,7 +115,7 @@ export function useSuperAdminDashBoard() {
         dashBoard.adminUsers.total = (dashBoard.adminUsers.active || 0) + (dashBoard.adminUsers.inactive || 0)
 
         for (const user of nonAdminUsers) {
-            if (user.isActive) {
+            if (user.roleId) {
                 dashBoard.nonAdminUsers.active = user.count
             } else {
                 dashBoard.nonAdminUsers.inactive = user.count
