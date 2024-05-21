@@ -4,7 +4,7 @@ import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
 // import { QueryClient, QueryClientProvider } from 'react-query'
-import { PrimeReactProvider } from 'primereact/api';
+// import { PrimeReactProvider } from 'primereact/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 // import { RouterProvider } from 'react-router-dom'
@@ -38,9 +38,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ApolloProvider client={apolloClient}>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
-          <PrimeReactProvider value={{ unstyled: true }}>
+          {/* <PrimeReactProvider value={{ unstyled: true }}> */}
             <App />
-          </PrimeReactProvider  >
+          {/* </PrimeReactProvider  > */}
         </Provider>
       </QueryClientProvider>
     </ApolloProvider>
