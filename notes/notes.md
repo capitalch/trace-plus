@@ -19,6 +19,7 @@
 - Product price lock for sales
 - Product merge
 - Back / forward to see last next entries
+- Sales return would notify the original invoice that it is returned
 
 ## syncfusion key for 25.x
 ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
