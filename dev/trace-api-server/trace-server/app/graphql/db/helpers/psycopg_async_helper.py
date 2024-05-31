@@ -16,6 +16,11 @@ dbParams: dict = {
     "host": Config.DB_HOST,
 }
 
+async def disconnect_pool_store():
+    global poolStore
+    for pool in poolStore.values():
+        await pool.close()
+    poolStore = {}
 
 def get_connection_pool(
     connInfo: str,
@@ -63,24 +68,17 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
     )
     records = []
     try:
-        async with apool.connection() as aconn:
-            await aconn.execute(f"set search_path to {schema or 'public'}")
-            
-            async with aconn.cursor(row_factory=dict_row) as acur:
-                await acur.execute(sql, sqlArgs)
-                if acur.rowcount > 0:
-                    records = await acur.fetchall()
-            await acur.close()
-            await aconn.commit()
+        async with poolStore[dbName] as apool:
+            async with apool.connection() as aconn:
+                await aconn.execute(f"set search_path to {schema or 'public'}")
+                async with aconn.cursor(row_factory=dict_row) as acur:
+                    await acur.execute(sql, sqlArgs)
+                    if acur.rowcount > 0:
+                        records = await acur.fetchall()
+                await acur.close()
+                await aconn.commit()
     except OperationalError as e:
         raise e
-    # try:
-    #     async with aconn.cursor(row_factory=dict_row) as acur:
-    #         await acur.execute(sql, sqlArgs)
-    #         if acur.rowcount > 0:
-    #             records = await acur.fetchall()
-    #     await acur.close()
-    #     await aconn.commit()
     except Exception as e:
         raise e
     return (records)

@@ -12,12 +12,13 @@ from app.graphql.graphql_router import GraphQLApp
 
 from contextlib import asynccontextmanager
 from psycopg_pool import AsyncConnectionPool
-
+from app.graphql.db.helpers.psycopg_async_helper import disconnect_pool_store
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print('Starting')
-    yield
+    print('Starting the application')
+    yield    
+    await disconnect_pool_store()
     # pass
     # app.test = 'a'
     # if (getattr(app,'test', None)):
