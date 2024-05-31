@@ -1,6 +1,6 @@
 import datetime
 import json
-from fastapi import status
+from fastapi import status, Request
 from urllib.parse import unquote
 from app.dependencies import AppHttpException
 from app.messages import Messages
@@ -11,7 +11,7 @@ from .db.helpers.psycopg_async_helper import exec_sql
 from app.utils import getSqlQueryObject
 
 
-async def generic_query_helper(info, value: str):
+async def generic_query_helper(info, value: str, request: Request):
     error = {}
     data = {}
     try:
@@ -28,6 +28,7 @@ async def generic_query_helper(info, value: str):
         sql = getattr(sqlQueryObject, sqlId, None)
         sqlArgs = valueDict.get("sqlArgs", {})
         data = await exec_sql(
+            request,
             dbName=operationName,
             db_params=dbParams,
             schema=schema,

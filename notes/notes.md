@@ -20,6 +20,8 @@
 - Product merge
 - Back / forward to see last next entries
 - Sales return would notify the original invoice that it is returned
+## fastapi with async psycopg connection pool
+https://medium.com/@benshearlaw/asynchronous-postgres-with-python-fastapi-and-psycopg-3-fafa5faa2c08
 
 ## syncfusion key for 25.x
 ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
