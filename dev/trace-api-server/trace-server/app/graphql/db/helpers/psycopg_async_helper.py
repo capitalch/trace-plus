@@ -77,7 +77,7 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
                         records = await acur.fetchall()
                 await acur.close()
                 await aconn.commit()
-                await aconn.close()
+                # await aconn.close()
     except OperationalError as e:
         raise e
     except Exception as e:
