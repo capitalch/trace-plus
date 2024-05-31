@@ -43,6 +43,7 @@ def get_conn_info(
 
 
 async def exec_sql(
+    request,
     dbName: str = Config.DB_SECURITY_DATABASE,
     db_params: dict[str, str] = dbParams,
     schema: str = "public",
@@ -64,15 +65,22 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
     try:
         async with apool.connection() as aconn:
             await aconn.execute(f"set search_path to {schema or 'public'}")
+            
+            async with aconn.cursor(row_factory=dict_row) as acur:
+                await acur.execute(sql, sqlArgs)
+                if acur.rowcount > 0:
+                    records = await acur.fetchall()
+            await acur.close()
+            await aconn.commit()
     except OperationalError as e:
         raise e
-    try:
-        async with aconn.cursor(row_factory=dict_row) as acur:
-            await acur.execute(sql, sqlArgs)
-            if acur.rowcount > 0:
-                records = await acur.fetchall()
-        await acur.close()
-        await aconn.commit()
+    # try:
+    #     async with aconn.cursor(row_factory=dict_row) as acur:
+    #         await acur.execute(sql, sqlArgs)
+    #         if acur.rowcount > 0:
+    #             records = await acur.fetchall()
+    #     await acur.close()
+    #     await aconn.commit()
     except Exception as e:
         raise e
     return (records)

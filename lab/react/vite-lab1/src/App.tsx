@@ -18,9 +18,13 @@ import 'primeicons/primeicons.css';
 // import { ReactPassHtmlPtops } from './features/react-pass-props/react-pass-html-props'
 // import { ReactQueryComp1 } from './features/react-query/react-query-comp1'
 // import { ReactQueryComp2 } from './features/react-query/react-query-comp2';
-import { ApolloGraphQLComp1 } from './features/apollo-graphql/apollo-graphql-comp1';
-import { ApolloGraphQLComp2 } from './features/apollo-graphql/apollo-graphql-comp2';
+// import { ApolloGraphQLComp1 } from './features/apollo-graphql/apollo-graphql-comp1';
+// import { ApolloGraphQLComp2 } from './features/apollo-graphql/apollo-graphql-comp2';
+import { PrimeReact } from './features/prime-react/PrimeReact';
 // import { DeepObjectReset } from './features/deep-object-reset/deep-object-reset'
+import 'primereact/resources/themes/nova/theme.css'
+import 'primereact/resources/primereact.min.css'
+import 'primeicons/primeicons.css'
 
 export const GlobalContext: any = createContext({})
 
@@ -47,10 +51,11 @@ function App() {
       {/* <LoginForm /> */}
       {/* <ReactQueryComp /> */}
       {/* </div> */}
-      <div className='flex'>
-      <ApolloGraphQLComp1 />
-      <ApolloGraphQLComp2 />
-      </div>
+      {/* <div className='flex'>
+        <ApolloGraphQLComp1 />
+        <ApolloGraphQLComp2 />
+      </div> */}
+      <PrimeReact />
     </GlobalContext.Provider>
   )
 }
