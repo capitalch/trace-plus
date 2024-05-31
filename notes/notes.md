@@ -1,14 +1,17 @@
 																									## Bug
 																									- Stock reports problem
 																									- Stock transaction report not working
-## Bugs
-- Purchase entry then sales then back to purchase entry shows product of sales
+																									## Bugs
+																									- Purchase entry then sales then back to purchase entry shows product of sales
+- Purchase price variation report error
+- Stock transactions op balance error
+- Sales report does not show sales return
 ## New features to include
-- Inter branch transfer
+	- Inter branch transfer
 - Branches same bank account provision
 
 - No duplicate entries should be achievable in purchase
-- Print preview of purchase invoice
+																									- Print preview of purchase invoice
 - Salesperson management descriptive
 - Audit feature
 - User management at branch level
@@ -19,7 +22,9 @@
 - Product price lock for sales
 - Product merge
 - Back / forward to see last next entries
-
+- Voucher delete control
+- TCS entry
+- Purchase sale rewind
 ## syncfusion key for 25.x
 ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
 
