@@ -17,7 +17,7 @@ from app.graphql.db.helpers.psycopg_async_helper import disconnect_pool_store
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print('Starting the application')
-    yield    
+    yield # When server shuts down then disconnect pool
     await disconnect_pool_store()
     # pass
     # app.test = 'a'
