@@ -1,11 +1,11 @@
-import { VoucherIcon } from "../../../components/icons/voucher-icon"
-import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
-import { PurchaseSalesIcon } from "../../../components/icons/purchase-sales-icon"
+import { IconVoucher } from "../../../components/icons/icon-voucher"
+import { IconCheveronDown } from "../../../components/icons/icon-cheveron-down"
+import { IconPurchaseSales } from "../../../components/icons/icon-purchase-sales"
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
-import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
+import { IconCheveronUp } from "../../../components/icons/icon-cheveron-up"
 import { MasterMenuData } from "../master-menu-data"
 
 function SideMenuTemp() {
@@ -26,10 +26,10 @@ function SideMenuTemp() {
             <div className="flex flex-col">
                 {/* parent */}
                 <button id='1' onClick={handleParentClick} className={parentClass}>
-                    <VoucherIcon className='text-blue-500' />
+                    <IconVoucher className='text-blue-500' />
                     <span>Vouchers</span>
-                    <CheveronDownIcon className={clsx('ml-auto', getArrowDownClass('1'))} />
-                    <CheveronUpIcon className={clsx('ml-auto', getArrowUpClass('1'))} />
+                    <IconCheveronDown className={clsx('ml-auto', getArrowDownClass('1'))} />
+                    <IconCheveronUp className={clsx('ml-auto', getArrowUpClass('1'))} />
                 </button>
                 {/* children */}
                 <div className={getParentExpandedClass('1')}>
@@ -41,10 +41,10 @@ function SideMenuTemp() {
             </div>
             <div className="flex flex-col">
                 <button id='2' onClick={handleParentClick} className={parentClass}>
-                    <PurchaseSalesIcon className='text-orange-500' />
+                    <IconPurchaseSales className='text-orange-500' />
                     <span>Purch / sales</span>
-                    <CheveronDownIcon className={clsx('ml-auto', getArrowDownClass('2'))} />
-                    <CheveronUpIcon className={clsx('ml-auto', getArrowUpClass('2'))} />
+                    <IconCheveronDown className={clsx('ml-auto', getArrowDownClass('2'))} />
+                    <IconCheveronUp className={clsx('ml-auto', getArrowUpClass('2'))} />
                 </button>
                 <div className={getParentExpandedClass('2')}>
                     <button onClick={handleChildClick} id='21' className={clsx(childClass, getSelectedChildClass('21'))}>Purchase</button>

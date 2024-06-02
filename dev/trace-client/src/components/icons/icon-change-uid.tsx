@@ -1,4 +1,4 @@
-function ChangeUidIcon(props: any) {
+function IconChangeUid(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -12,4 +12,4 @@ function ChangeUidIcon(props: any) {
     );
 }
 
-export { ChangeUidIcon };
+export { IconChangeUid };

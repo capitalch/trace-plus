@@ -1,6 +1,4 @@
-// icon:icon-news | Heroicons UI https://github.com/sschoger/heroicons-ui | Steve Schoger
-
-function InventoryIcon(props: any) {
+export function IconInventory(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -13,5 +11,3 @@ function InventoryIcon(props: any) {
         </svg>
     );
 }
-
-export { InventoryIcon };

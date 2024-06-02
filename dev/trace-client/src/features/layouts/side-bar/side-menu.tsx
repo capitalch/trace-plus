@@ -2,10 +2,10 @@ import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
-import { CheveronUpIcon } from "../../../components/icons/cheveron-up-icon"
+import { IconCheveronUp } from "../../../components/icons/icon-cheveron-up"
 import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../master-menu-data"
 import { useNavigate } from "react-router-dom"
-import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon"
+import { IconCheveronDown } from "../../../components/icons/icon-cheveron-down"
 
 function SideMenu() {
     const navigate = useNavigate()
@@ -41,7 +41,7 @@ function SideMenu() {
             <div className="flex flex-col">
                 <button id={item.id} onClick={() => handleParentClick(item)}
                     className={clsx(parentClass, getParentSelectedClass(item))}>
-                    <item.icon className={item.iconColorClass} /><span className="mr-auto">{item.label}</span><CheveronUpIcon className={clsx(getArrowUpClass(item.id), getHiddenClassWhenNochildren(item))} /> <CheveronDownIcon className={clsx(getArrowDownClass(item.id), getHiddenClassWhenNochildren(item))} />
+                    <item.icon className={item.iconColorClass} /><span className="mr-auto">{item.label}</span><IconCheveronUp className={clsx(getArrowUpClass(item.id), getHiddenClassWhenNochildren(item))} /> <IconCheveronDown className={clsx(getArrowDownClass(item.id), getHiddenClassWhenNochildren(item))} />
                 </button>
                 {getChildren(item)}
             </div>

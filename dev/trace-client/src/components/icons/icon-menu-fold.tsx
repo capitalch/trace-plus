@@ -1,4 +1,4 @@
-function MenuFoldIcon(props:any) {
+export function IconMenuFold(props:any) {
   return (
     <svg
       viewBox="0 0 1024 1024"
@@ -11,5 +11,3 @@ function MenuFoldIcon(props:any) {
     </svg>
   );
 }
-
-export {MenuFoldIcon}

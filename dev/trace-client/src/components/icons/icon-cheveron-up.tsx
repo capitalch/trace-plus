@@ -1,6 +1,6 @@
 // icon:icon-cheveron-up | Heroicons UI https://github.com/sschoger/heroicons-ui | Steve Schoger
 
-function CheveronUpIcon(props: any) {
+export function IconCheveronUp(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -13,5 +13,3 @@ function CheveronUpIcon(props: any) {
         </svg>
     );
 }
-
-export { CheveronUpIcon };

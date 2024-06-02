@@ -1,6 +1,6 @@
 // icon:icon-graph-bar | Heroicons UI https://github.com/sschoger/heroicons-ui | Steve Schoger
 
-function ReportsIcon(props: any) {
+export function IconDashboard(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -13,5 +13,3 @@ function ReportsIcon(props: any) {
         </svg>
     );
 }
-
-export { ReportsIcon };

@@ -1,4 +1,4 @@
-export function CheveronDownIcon(props: any) {
+export function IconCheveronDown(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -11,5 +11,3 @@ export function CheveronDownIcon(props: any) {
         </svg>
     );
 }
-
-// export { CheveronDownIcon };

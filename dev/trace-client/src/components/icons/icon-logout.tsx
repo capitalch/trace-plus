@@ -1,4 +1,4 @@
-export function LogoutIcon(props: any){
+export function IconLogout(props: any){
     return (
         <svg
           viewBox="0 0 24 24"

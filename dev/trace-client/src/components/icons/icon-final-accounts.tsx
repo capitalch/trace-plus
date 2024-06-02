@@ -1,6 +1,6 @@
 // icon:money-bill-trend-up | Fontawesome https://fontawesome.com/ | Fontawesome
 
-function FinalAccountsIcon(props: any) {
+export function IconFinalAccounts(props: any) {
   return (
     <svg
       viewBox="0 0 512 512"
@@ -13,5 +13,3 @@ function FinalAccountsIcon(props: any) {
     </svg>
   );
 }
-
-export {FinalAccountsIcon};

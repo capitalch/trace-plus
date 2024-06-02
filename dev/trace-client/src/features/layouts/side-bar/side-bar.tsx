@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import clsx from "clsx"
 import { AppDispatchType, store } from "../../../app/store/store"
-import { MenuFoldIcon } from "../../../components/icons/menu-fold-icon"
+import { IconMenuFold } from "../../../components/icons/icon-menu-fold"
 import { isSideBarOpenSelectorFn, setIsSideBarOpenR } from "../layouts-slice"
 import { SideMenu } from "./side-menu"
 
@@ -15,7 +15,7 @@ function SideBar() {
         <div className="flex h-12 w-max items-center border-b-[1px] border-primary-100 pl-2">
             <img src="trace-logo.png" className="mr-5" alt='' />
             <button onClick={handleHideSideBar}>
-                <MenuFoldIcon className='h-6 text-primary-500' />
+                <IconMenuFold className='h-6 text-primary-500' />
             </button>
         </div>
         <SideMenu />

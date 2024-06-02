@@ -1,4 +1,4 @@
-function RolesIcon(props: any) {
+export function IconRoles(props: any) {
     return (
         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg"  height="1em"
         width="1em" fill="none" viewBox="0 0 20 16"  { ...props }>
@@ -6,4 +6,3 @@ function RolesIcon(props: any) {
         </svg>
     )
 }
-export { RolesIcon }

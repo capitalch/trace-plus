@@ -1,6 +1,6 @@
 // icon:24px | Material Design Icons https://material.io/resources/icons/ | Google
 
-function MastersIcon(props: any) {
+export function IconMasters(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -17,5 +17,3 @@ function MastersIcon(props: any) {
         </svg>
     );
 }
-
-export { MastersIcon };

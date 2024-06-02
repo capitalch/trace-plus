@@ -1,24 +1,24 @@
 import { IconAdminUsers } from '../../components/icons/icon-admin-users'
 import { IconBusinessUnits } from '../../components/icons/icon-business-units'
-import { ClientsIcon } from '../../components/icons/clients-icon'
-import { DashboardIcon } from '../../components/icons/dashboard-icon'
-import { FinalAccountsIcon } from '../../components/icons/final-accounts-icon'
-import { InventoryIcon } from '../../components/icons/inventory-icon'
-import { MastersIcon } from '../../components/icons/masters-icon'
-import { OptionsIcon } from '../../components/icons/options-icon'
-import { PurchaseSalesIcon } from '../../components/icons/purchase-sales-icon'
-import { ReportsIcon } from '../../components/icons/reports-icon'
-import { RolesIcon } from '../../components/icons/roles-icon'
-import { SecuredControlsIcon } from '../../components/icons/secured-controls-icon'
-import { UsersIcon } from '../../components/icons/users-icon'
-import { VoucherIcon } from '../../components/icons/voucher-icon'
+import { IconClients } from '../../components/icons/icon-clients'
+import { IconDashboard } from '../../components/icons/icon-dashboard'
+import { IconFinalAccounts } from '../../components/icons/icon-final-accounts'
+import { IconInventory } from '../../components/icons/icon-inventory'
+import { IconMasters } from '../../components/icons/icon-masters'
+import { IconOptions } from '../../components/icons/icon-options'
+import { IconPurchaseSales } from '../../components/icons/icon-purchase-sales'
+import { IconReports } from '../../components/icons/icon-reports'
+import { IconRoles } from '../../components/icons/icon-roles'
+import { IconSecuredControls } from '../../components/icons/icon-secured-controls'
+import { IconUsers } from '../../components/icons/icon-users'
+import { IconVoucher } from '../../components/icons/icon-voucher'
 
 export const MasterMenuData: MenuDataType = {
   accounts: [
     {
       id: '1',
       label: 'Vouchers',
-      icon: VoucherIcon,
+      icon: IconVoucher,
       iconColorClass: 'text-primary-500',
       children: [
         {
@@ -46,7 +46,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '2',
       label: 'Purch / Sales',
-      icon: PurchaseSalesIcon,
+      icon: IconPurchaseSales,
       iconColorClass: 'text-secondary-500',
       children: [
         {
@@ -84,7 +84,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '3',
       label: 'Masters',
-      icon: MastersIcon,
+      icon: IconMasters,
       iconColorClass: 'text-red-500',
       children: [
         {
@@ -122,7 +122,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '4',
       label: 'Final accounts',
-      icon: FinalAccountsIcon,
+      icon: IconFinalAccounts,
       iconColorClass: 'text-orange-500',
       children: [
         {
@@ -150,7 +150,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '5',
       label: 'Options',
-      icon: OptionsIcon,
+      icon: IconOptions,
       iconColorClass: 'text-amber-500',
       children: [
         {
@@ -173,7 +173,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '6',
       label: 'Reports',
-      icon: ReportsIcon,
+      icon: IconReports,
       iconColorClass: 'text-yellow-500',
       children: [
         {
@@ -186,7 +186,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '7',
       label: 'Inventory',
-      icon: InventoryIcon,
+      icon: IconInventory,
       iconColorClass: 'text-teal-500',
       children: [
         {
@@ -226,7 +226,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '8',
       label: 'Dashboard',
-      icon: DashboardIcon,
+      icon: IconDashboard,
       iconColorClass: 'text-primary-500',
       children: []
     },
@@ -241,7 +241,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '10',
       label: 'Roles',
-      icon: RolesIcon,
+      icon: IconRoles,
       iconColorClass: 'text-red-500',
       children: [],
       path: '/blogs'
@@ -249,7 +249,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '11',
       label: 'Business users',
-      icon: UsersIcon,
+      icon: IconUsers,
       iconColorClass: 'text-amber-500',
       children: [],
       path: '/blogs'
@@ -259,7 +259,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '12',
       label: 'Dashboard',
-      icon: DashboardIcon,
+      icon: IconDashboard,
       iconColorClass: 'text-primary-500',
       children: [],
       path: '/super-admin-dashboard'
@@ -267,7 +267,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '13',
       label: 'Clients',
-      icon: ClientsIcon,
+      icon: IconClients,
       iconColorClass: 'text-teal-500',
       children: [],
       path: '/super-admin-clients'
@@ -275,7 +275,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '14',
       label: 'Roles',
-      icon: RolesIcon,
+      icon: IconRoles,
       iconColorClass: 'text-amber-500',
       children: [],
       path: '/blogs'
@@ -283,7 +283,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '15',
       label: 'Secured controls',
-      icon: SecuredControlsIcon,
+      icon: IconSecuredControls,
       iconColorClass: 'text-red-500',
       children: [],
       path: '/blogs'

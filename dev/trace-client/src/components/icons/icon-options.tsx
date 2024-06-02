@@ -1,6 +1,6 @@
 // icon:icon-more-horiz | Heroicons UI https://github.com/sschoger/heroicons-ui | Steve Schoger
 
-function OptionsIcon(props: any) {
+export function IconOptions(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -13,6 +13,4 @@ function OptionsIcon(props: any) {
         </svg>
     );
 }
-
-export { OptionsIcon };
 

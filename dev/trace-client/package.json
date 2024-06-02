@@ -12,6 +12,8 @@
   "dependencies": {
     "@apollo/client": "^3.10.1",
     "@reduxjs/toolkit": "^2.2.3",
+    "@syncfusion/ej2-base": "^25.2.5",
+    "@syncfusion/ej2-react-grids": "^25.2.6",
     "@types/lodash": "^4.17.0",
     "@types/qs": "^6.9.15",
     "axios": "^1.6.8",
