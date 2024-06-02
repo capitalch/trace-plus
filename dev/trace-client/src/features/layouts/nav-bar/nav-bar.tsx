@@ -3,7 +3,6 @@ import { MenuUnfoldIcon } from "../../../components/icons/menu-unfold-icon"
 import { useNavBar } from "./nav-bar-hook"
 import { LogoutMenuButton } from "./logout-menu-button"
 import { ModalDialogA } from "./modal-dialogA"
-// import { useUtils } from "../../../utils/utils-hook"
 
 function NavBar() {
     const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()

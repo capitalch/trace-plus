@@ -1,6 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi import status
-from psycopg import OperationalError
+from psycopg import OperationalError, AsyncConnection, connect
 from psycopg_pool import AsyncConnectionPool
 from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
@@ -30,7 +30,7 @@ def get_connection_pool(
     pool: AsyncConnectionPool = poolStore.get(dbName)
     if (pool is None) or (pool.closed):
         poolStore[dbName] = AsyncConnectionPool(
-            conninfo=connInfo, timeout=3, reconnect_timeout=2,)
+            conninfo=connInfo, timeout=3, reconnect_timeout=2,open=False)
     return poolStore[dbName]
 
 
@@ -60,15 +60,32 @@ async def exec_sql(
     records = await doProcess(connInfo, schema, dbName, sql, sqlArgs)
     return jsonable_encoder(records)
 
+async def doProcess(connInfo, schema, dbName, sql, sqlArgs): # Implementation without AsyncConnectionPool
+    records = []
+    try:
+        async with await AsyncConnection.connect(connInfo) as aconn:
+            await aconn.execute(f"set search_path to {schema or 'public'}")
+            async with aconn.cursor(row_factory=dict_row) as acur:
+                await acur.execute(sql, sqlArgs)
+                if acur.rowcount > 0:
+                    records = await acur.fetchall()
+            await acur.close()
+            await aconn.commit()
+            await aconn.close()
+    except OperationalError as e:
+        raise e
+    except Exception as e:
+        raise e
+    return (records)
 
-async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
+async def doProcess1(connInfo, schema, dbName, sql, sqlArgs): # Implementation with AsyncConnectionPool. I discarded iit because it uses 3 extra connections
     apool: AsyncConnectionPool = get_connection_pool(
         connInfo,
         dbName,
     )
     records = []
     try:
-        async with poolStore[dbName] as apool:
+        async with apool:
             async with apool.connection() as aconn:
                 await aconn.execute(f"set search_path to {schema or 'public'}")
                 async with aconn.cursor(row_factory=dict_row) as acur:
@@ -77,7 +94,6 @@ async def doProcess(connInfo, schema, dbName, sql, sqlArgs):
                         records = await acur.fetchall()
                 await acur.close()
                 await aconn.commit()
-                # await aconn.close()
     except OperationalError as e:
         raise e
     except Exception as e:

@@ -1,10 +1,12 @@
 ## To do
+- Syncfusion latest version grid
+- Modal
+- react-toastify for error toast
+- Clients
+	- New client
+	- New client with external database
+	- Header report with Export csv, last rows, global search, refresh
 
-																							## To DO: server
-																								- Remove vendors
-																								- remove __init__.py
-																								- Correct error handling
-																								- GraphQL error handling
 ## GraphQL
 - store hostUrl in Global context
 - implement GraphQL with token

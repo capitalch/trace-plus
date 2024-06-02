@@ -6,11 +6,6 @@ export function SuperAdminDashboard() {
     if (loading) {
         return (<LoadingIndicator />)
     }
-    // if (error || isCustomError) {
-    //     return (<div>Error</div>)
-    // }
-
-    // const dbConnActive = 10, dbConnIdle = 5, dbConnTotal = 15
 
     return (<div id='super-admin-top' className="flex flex-col px-8">
         <h4 className="text-gray-500">Super Admin Dashboard</h4>
