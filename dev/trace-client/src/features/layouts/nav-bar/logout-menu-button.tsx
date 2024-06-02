@@ -3,15 +3,15 @@ import ClickAwayListener from "react-click-away-listener"
 import { UserIcon } from "../../../components/icons/user-icon";
 import { LogoutIcon } from "../../../components/icons/logout-icon";
 import { ChangeUidIcon } from "../../../components/icons/change-uid-icon";
-import { ChangePasswordIcon } from "../../../components/icons/change-password-icon";
+import { IconChangePassword } from "../../../components/icons/icon-change-password";
 import { CheveronDownIcon } from "../../../components/icons/cheveron-down-icon";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDownR, showNavBarDropDownFn } from "../layouts-slice";
 import { AppDispatchType, } from "../../../app/store/store";
 import { doLogoutR } from "../../login/login-slice";
-import { showHideModalDialogA } from "../../../utils/util-methods/show-hide-modal-dialoges";
 import { ChangeUid } from "./change-uid";
 import { ChangePassword } from "./change-password";
+import { Utils } from "../../../utils/utils";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -33,7 +33,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
                                 <span className="text-secondary-500">Change uid</span>
                             </button>
                             <button onClick={handleOnChangePassword} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
-                                <ChangePasswordIcon className='w-4 h-4 my-2 text-red-700' />
+                                <IconChangePassword className='w-4 h-4 my-2 text-red-700' />
                                 <span>Change password</span>
                             </button>
                             <button onClick={handleOnLogout} className=" h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
@@ -48,14 +48,14 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     )
 
     function handleOnChangeUid() {
-        showHideModalDialogA({
+        Utils.showHideModalDialogA({
             title: 'Change UID',
             element: <ChangeUid />,
             isOpen: true
         })
     }
     function handleOnChangePassword() {
-        showHideModalDialogA({
+        Utils.showHideModalDialogA({
             title: 'Change Password',
             element: <ChangePassword />,
             isOpen: true

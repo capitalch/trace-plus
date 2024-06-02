@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client"
-import { GraphQLQueries, GraphQLQueryArgsType } from "../../../app/graphql/graphql-queries"
-import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants"
-import { showGraphQlErrorMessage } from "../../../utils/util-methods/show-graphql-error-message"
-import { showErrorMessage } from "../../../utils/util-methods/show-error-message"
+import { GraphQLQueries, GraphQLQueryArgsType } from "../../../../app/graphql/graphql-queries"
+import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
+
 import _ from "lodash"
+import { Utils } from "../../../../utils/utils"
 
 export function useSuperAdminDashBoard() {
     const args: GraphQLQueryArgsType = {
@@ -21,11 +21,11 @@ export function useSuperAdminDashBoard() {
         , { notifyOnNetworkStatusChange: true }) // for each api call refresh client component
 
     if (error) {
-        showErrorMessage(error)
+        Utils.showErrorMessage(error)
     }
 
     if (data?.genericQuery?.error?.content) {
-        showGraphQlErrorMessage(data.genericQuery.error.content)
+        Utils.showGraphQlErrorMessage(data.genericQuery.error.content)
         isCustomError = true
     }
 
@@ -141,7 +141,7 @@ export function useSuperAdminDashBoard() {
     }
 
     function populateDashBoard(dashBoard: SuperAdminDashBoardType, jsonResult: any) {
-        if(_.isEmpty(jsonResult)){
+        if (_.isEmpty(jsonResult)) {
             return
         }
         setDbConnections(dashBoard, jsonResult)

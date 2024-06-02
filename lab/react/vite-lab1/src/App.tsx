@@ -20,12 +20,14 @@ import 'primeicons/primeicons.css';
 // import { ReactQueryComp2 } from './features/react-query/react-query-comp2';
 // import { ApolloGraphQLComp1 } from './features/apollo-graphql/apollo-graphql-comp1';
 // import { ApolloGraphQLComp2 } from './features/apollo-graphql/apollo-graphql-comp2';
-import { PrimeReact } from './features/prime-react/PrimeReact';
+// import { PrimeReact } from './features/prime-react/PrimeReact';
 // import { DeepObjectReset } from './features/deep-object-reset/deep-object-reset'
 import 'primereact/resources/themes/nova/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
-
+import { ToastContainer } from 'react-toastify'
+import { ReactToastify } from './features/react-toastify/ReactToastify';
+import 'react-toastify/dist/ReactToastify.css';
 export const GlobalContext: any = createContext({})
 
 function App() {
@@ -55,7 +57,9 @@ function App() {
         <ApolloGraphQLComp1 />
         <ApolloGraphQLComp2 />
       </div> */}
-      <PrimeReact />
+      {/* <PrimeReact /> */}
+      <ToastContainer />
+      <ReactToastify />
     </GlobalContext.Provider>
   )
 }

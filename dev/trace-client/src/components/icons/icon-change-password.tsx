@@ -1,4 +1,4 @@
-function ChangePasswordIcon(props: any) {
+export function IconChangePassword(props: any) {
     return (
         <svg
             viewBox="0 0 24 24"
@@ -11,5 +11,3 @@ function ChangePasswordIcon(props: any) {
         </svg>
     );
 }
-
-export { ChangePasswordIcon }

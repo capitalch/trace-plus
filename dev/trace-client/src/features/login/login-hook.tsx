@@ -1,22 +1,18 @@
 import { useDispatch } from "react-redux"
 import { AppDispatchType } from "../../app/store/store"
 import { useNavigate } from "react-router-dom"
-// import { useUtils } from "../../utils/util-hook"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-import { showSaveMessage } from "../../utils/util-methods/show-save-message"
-import { showErrorMessage } from "../../utils/util-methods/show-error-message"
 import { doLoginR } from "./login-slice"
-import { getHostUrl } from "../../utils/util-methods/misc-methods"
+import { Utils } from "../../utils/utils"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
-    // const { getHostUrl } = useUtils()
 
     function handleForgotPassword() {
-        showSaveMessage()
+        Utils.showSaveMessage()
     }
 
     function handleTestSignIn(userType: any) {
@@ -41,7 +37,7 @@ function useLogin() {
     }
 
     async function onSubmit(data: any) {
-        const hostUrl = getHostUrl()
+        const hostUrl = Utils.getHostUrl()
         const loginUrl = urlJoin(hostUrl, 'login')
         // const loginUrl = urlJoin(hostUrl, 'test')
         try {
@@ -79,7 +75,7 @@ function useLogin() {
                 navigate('/', { replace: true })
             }
         } catch (error: any) {
-            showErrorMessage(error)
+            Utils.showErrorMessage(error)
         }
     }
     return ({ handleForgotPassword, handleTestSignIn, onSubmit })

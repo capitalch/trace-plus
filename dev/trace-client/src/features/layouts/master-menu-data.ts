@@ -1,5 +1,5 @@
-import { AdminUsersIcon } from '../../components/icons/admin-users-icon'
-import { BusinessUnitsIcon } from '../../components/icons/business-units-icon'
+import { IconAdminUsers } from '../../components/icons/icon-admin-users'
+import { IconBusinessUnits } from '../../components/icons/icon-business-units'
 import { ClientsIcon } from '../../components/icons/clients-icon'
 import { DashboardIcon } from '../../components/icons/dashboard-icon'
 import { FinalAccountsIcon } from '../../components/icons/final-accounts-icon'
@@ -233,7 +233,7 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '9',
       label: 'Business units',
-      icon: BusinessUnitsIcon,
+      icon: IconBusinessUnits,
       iconColorClass: 'text-teal-500',
       children: []
       // path: 'purchase'
@@ -270,7 +270,7 @@ export const MasterMenuData: MenuDataType = {
       icon: ClientsIcon,
       iconColorClass: 'text-teal-500',
       children: [],
-      path: '/blogs'
+      path: '/super-admin-clients'
     },
     {
       id: '14',
@@ -291,12 +291,12 @@ export const MasterMenuData: MenuDataType = {
     {
       id: '16',
       label: 'Admin users',
-      icon: AdminUsersIcon,
+      icon: IconAdminUsers,
       iconColorClass: 'text-red-500',
       children: [],
       path: '/blogs'
     }
-  ],
+  ]
 }
 
 export type MenuDataItemType = {
