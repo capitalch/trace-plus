@@ -1,6 +1,8 @@
+// import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids"
 import { ContentContainer } from "../../../../components/widgets/content-container"
 import { LoadingIndicator } from "../../../../components/widgets/loading-indicator"
 import { SuperAdminDashBoardType, useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
+// import { testData } from "../../../../test-data/test-data"
 
 export function SuperAdminDashboard() {
     const { loading, refetch, superAdminDashBoard }: { loading: boolean, refetch: any, superAdminDashBoard: SuperAdminDashBoardType } = useSuperAdminDashBoard()
@@ -11,7 +13,7 @@ export function SuperAdminDashboard() {
     return (
         <ContentContainer title='Super admin dashboard' className="">
             <div className="flex flex-wrap gap-8">
-                
+
                 {/* Database connections */}
                 <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
                     <label className="text-lg font-bold">Database connections</label>
@@ -117,6 +119,5 @@ export function SuperAdminDashboard() {
                 </div>
             </div>
         </ContentContainer>
-
     )
 }

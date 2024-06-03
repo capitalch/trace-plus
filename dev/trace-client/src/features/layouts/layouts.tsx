@@ -20,7 +20,7 @@ function Layouts() {
         }
     })
 
-    return (<div className="prose">
+    return (<div className="">
         <div className="flex h-screen w-screen bg-white">
             <SideBar />
             <div className="flex flex-col w-full">

@@ -4,7 +4,7 @@ import { IconIconRefresh } from "../icons/icon-icon-refresh"
 
 export function AppGridToolbar({ CustomControl = undefined, isLastNoOfRows = false, title }: AppGridToolbarType) {
     return (<div className="flex justify-between items-center">
-        <h3 className="mt-0 text-primary-500">{title}</h3>
+        <h2 className="mt-0 text-primary-500 text-lg font-medium">{title}</h2>
         <div className="flex gap-2 items-center" >
             {CustomControl && <CustomControl />}
             {isLastNoOfRows && <select className="h-8 border border-none bg-slate-200  text-sm rounded-xs focus:outline-none focus:border-none">

@@ -28,6 +28,7 @@ import 'primeicons/primeicons.css'
 import { ToastContainer } from 'react-toastify'
 import { ReactToastify } from './features/react-toastify/ReactToastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
 export const GlobalContext: any = createContext({})
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
       {/* <PrimeReact /> */}
       <ToastContainer />
       <ReactToastify />
+      <SyncfusionGrid />
     </GlobalContext.Provider>
   )
 }
