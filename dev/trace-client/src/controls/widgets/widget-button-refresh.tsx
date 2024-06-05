@@ -10,3 +10,6 @@ export function WidgetButtonRefresh({ handleRefresh }: WidgetButtonRefreshType) 
 type WidgetButtonRefreshType = {
     handleRefresh: (args?: any) => void
 }
+// type ArgsType = {
+//     [item: string]: string | undefined
+// }
