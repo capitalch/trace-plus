@@ -1,8 +1,8 @@
 import clsx from "clsx"
-import { IconMenuUnfold } from "../../../components/icons/icon-menu-unfold"
 import { useNavBar } from "./nav-bar-hook"
 import { LogoutMenuButton } from "./logout-menu-button"
 import { ModalDialogA } from "./modal-dialogA"
+import { IconMenuUnfold } from "../../../controls/icons/icon-menu-unfold"
 
 function NavBar() {
     const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()

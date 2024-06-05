@@ -1,4 +1,4 @@
-export function AppGridSearchBox(){
+export function CompAppGridSearchBox(){
     return(
         <div className="flex">
             <input type="text" placeholder="Search" className="border-2 border-gray-300 rounded-lg w-1/2" />

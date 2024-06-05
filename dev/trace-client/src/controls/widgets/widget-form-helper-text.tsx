@@ -1,13 +1,12 @@
 import clsx from "clsx"
 
-function FormHelperText({className='', helperText }: FormHelperText) {
+export function WidgetFormHelperText({className='', helperText }: WidgetFormHelperText) {
     return (
         <span className={clsx(className,"mt-0.5 text-xs text-slate-400")}>{helperText}</span>
     )
 }
-export { FormHelperText }
 
-type FormHelperText = {
+type WidgetFormHelperText = {
     className?: string
     helperText: string
 }

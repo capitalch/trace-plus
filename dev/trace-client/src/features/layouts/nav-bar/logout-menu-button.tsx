@@ -1,10 +1,5 @@
 import clsx from "clsx";
 import ClickAwayListener from "react-click-away-listener"
-import { IconUser } from "../../../components/icons/icon-user";
-import { IconLogout } from "../../../components/icons/icon-logout";
-import { IconChangeUid } from "../../../components/icons/icon-change-uid";
-import { IconChangePassword } from "../../../components/icons/icon-change-password";
-import { IconCheveronDown } from "../../../components/icons/icon-cheveron-down";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDownR, showNavBarDropDownFn } from "../layouts-slice";
 import { AppDispatchType, } from "../../../app/store/store";
@@ -12,6 +7,11 @@ import { doLogoutR } from "../../login/login-slice";
 import { ChangeUid } from "./change-uid";
 import { ChangePassword } from "./change-password";
 import { Utils } from "../../../utils/utils";
+import { IconUser } from "../../../controls/icons/icon-user";
+import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down";
+import { IconChangeUid } from "../../../controls/icons/icon-change-uid";
+import { IconChangePassword } from "../../../controls/icons/icon-change-password";
+import { IconLogout } from "../../../controls/icons/icon-logout";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()

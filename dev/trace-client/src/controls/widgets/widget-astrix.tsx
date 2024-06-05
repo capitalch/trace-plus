@@ -1,4 +1,3 @@
-function Astrix(){
+export function WidgetAstrix(){
 return(<span className="text-red-500">*</span>)
 }
-export {Astrix}

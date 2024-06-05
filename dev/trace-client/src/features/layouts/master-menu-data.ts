@@ -1,17 +1,32 @@
-import { IconAdminUsers } from '../../components/icons/icon-admin-users'
-import { IconBusinessUnits } from '../../components/icons/icon-business-units'
-import { IconClients } from '../../components/icons/icon-clients'
-import { IconDashboard } from '../../components/icons/icon-dashboard'
-import { IconFinalAccounts } from '../../components/icons/icon-final-accounts'
-import { IconInventory } from '../../components/icons/icon-inventory'
-import { IconMasters } from '../../components/icons/icon-masters'
-import { IconOptions } from '../../components/icons/icon-options'
-import { IconPurchaseSales } from '../../components/icons/icon-purchase-sales'
-import { IconReports } from '../../components/icons/icon-reports'
-import { IconRoles } from '../../components/icons/icon-roles'
-import { IconSecuredControls } from '../../components/icons/icon-secured-controls'
-import { IconUsers } from '../../components/icons/icon-users'
-import { IconVoucher } from '../../components/icons/icon-voucher'
+// import { IconAdminUsers } from '../../components/icons/icon-admin-users'
+// import { IconBusinessUnits } from '../../components/icons/icon-business-units'
+// import { IconClients } from '../../components/icons/icon-clients'
+// import { IconDashboard } from '../../components/icons/icon-dashboard'
+// import { IconFinalAccounts } from '../../components/icons/icon-final-accounts'
+// import { IconInventory } from '../../components/icons/icon-inventory'
+// import { IconMasters } from '../../components/icons/icon-masters'
+// import { IconOptions } from '../../components/icons/icon-options'
+// import { IconPurchaseSales } from '../../components/icons/icon-purchase-sales'
+// import { IconReports } from '../../components/icons/icon-reports'
+// import { IconRoles } from '../../components/icons/icon-roles'
+// import { IconSecuredControls } from '../../components/icons/icon-secured-controls'
+// import { IconUsers } from '../../components/icons/icon-users'
+// import { IconVoucher } from '../../components/icons/icon-voucher'
+
+import { IconAdminUsers } from "../../controls/icons/icon-admin-users"
+import { IconBusinessUnits } from "../../controls/icons/icon-business-units"
+import { IconClients } from "../../controls/icons/icon-clients"
+import { IconDashboard } from "../../controls/icons/icon-dashboard"
+import { IconFinalAccounts } from "../../controls/icons/icon-final-accounts"
+import { IconInventory } from "../../controls/icons/icon-inventory"
+import { IconMasters } from "../../controls/icons/icon-masters"
+import { IconOptions } from "../../controls/icons/icon-options"
+import { IconPurchaseSales } from "../../controls/icons/icon-purchase-sales"
+import { IconReports } from "../../controls/icons/icon-reports"
+import { IconRoles } from "../../controls/icons/icon-roles"
+import { IconSecuredControls } from "../../controls/icons/icon-secured-controls"
+import { IconUsers } from "../../controls/icons/icon-users"
+import { IconVoucher } from "../../controls/icons/icon-voucher"
 
 export const MasterMenuData: MenuDataType = {
   accounts: [

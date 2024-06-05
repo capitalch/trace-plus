@@ -1,18 +1,20 @@
-// import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids"
-import { ContentContainer } from "../../../../components/widgets/content-container"
-import { LoadingIndicator } from "../../../../components/widgets/loading-indicator"
+import { CompContentContainer } from "../../../../controls/components/comp-content-container"
+import { WidgetButtonRefresh } from "../../../../controls/widgets/widget-button-refresh"
+import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator"
 import { SuperAdminDashBoardType, useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
-// import { testData } from "../../../../test-data/test-data"
 
 export function SuperAdminDashboard() {
     const { loading, refetch, superAdminDashBoard }: { loading: boolean, refetch: any, superAdminDashBoard: SuperAdminDashBoardType } = useSuperAdminDashBoard()
+    
     if (loading) {
-        return (<LoadingIndicator />)
+        return (<WidgetLoadingIndicator />)
+        // return(<div>Loading</div>)
+
     }
 
     return (
-        <ContentContainer title='Super admin dashboard' className="">
-            <div className="flex flex-wrap gap-8">
+        <CompContentContainer title='Super admin dashboard' CustomControl={() => <WidgetButtonRefresh handleRefresh={() => refetch()} />}>
+            <div className="flex flex-wrap gap-8 mt-8">
 
                 {/* Database connections */}
                 <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
@@ -112,12 +114,12 @@ export function SuperAdminDashboard() {
                     </span>
                 </div>
 
-                <div>
+                {/* <div>
                     <button className="rounded-md bg-slate-200 px-2" onClick={() => {
                         refetch()
                     }}>Re fetch</button>
-                </div>
+                </div> */}
             </div>
-        </ContentContainer>
+        </CompContentContainer>
     )
 }

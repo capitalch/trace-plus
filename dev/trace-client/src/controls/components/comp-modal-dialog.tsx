@@ -3,7 +3,7 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "../../utils/ibuki"
 import { IbukiMessages } from "../../utils/ibukiMessages"
 
-function ModalDialog({ body, isOpen, size = 'sm', title, toShowCloseButton = false, instanceName }: ModalDialogType) {
+export function CompModalDialog({ body, isOpen, size = 'sm', title, toShowCloseButton = false, instanceName }: CompModalDialogType) {
     const sizeLogic = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-4xl' }
     const footerClassName = toShowCloseButton ? 'flex' : 'hidden'
     
@@ -57,9 +57,7 @@ function ModalDialog({ body, isOpen, size = 'sm', title, toShowCloseButton = fal
     }
 }
 
-export { ModalDialog }
-
-type ModalDialogType = {
+type CompModalDialogType = {
     body?: ReactElement
     defaultData?: any
     isOpen: boolean

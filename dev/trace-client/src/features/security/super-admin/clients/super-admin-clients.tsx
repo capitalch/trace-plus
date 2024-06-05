@@ -1,17 +1,16 @@
 import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
-import { AppGridToolbar } from "../../../../components/controls/app-grid-toolbar";
-import { ContentContainer } from "../../../../components/widgets/content-container";
 import { testData } from "../../../../test-data/test-data";
+import { CompAppGridToolbar } from "../../../../controls/components/comp-app-grid-toolbar";
+import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 
 export function SuperAdminClients() {
     return (
-        <ContentContainer title='Super admin clients' >
-            <AppGridToolbar title="Clients view" isLastNoOfRows={true} />
+        <CompContentContainer title='Super admin clients' >
+            <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />
             <div>
                 <GridComponent
                     className="mt-2"
                     gridLines="Both"
-                    // width={"98%"} 
                     height='calc(100vh - 280px)'
                     dataSource={testData}>
                     <ColumnsDirective>
@@ -22,6 +21,6 @@ export function SuperAdminClients() {
                     </ColumnsDirective>
                 </GridComponent>
             </div>
-        </ContentContainer>
+        </CompContentContainer>
     )
 }

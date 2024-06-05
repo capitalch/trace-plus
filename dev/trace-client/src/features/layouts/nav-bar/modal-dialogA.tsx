@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ModalDialog } from "../../../components/widgets/modal-dialog";
 import { ibukiFilterOn } from "../../../utils/ibuki";
 import { IbukiMessages } from "../../../utils/ibukiMessages";
+import { CompModalDialog } from "../../../controls/components/comp-modal-dialog";
 
 export function ModalDialogA() {
     const instanceName: string = 'A'
@@ -13,7 +13,7 @@ export function ModalDialogA() {
     const [, setRefresh] = useState({})
 
     useEffect(() => {
-        const subsA: any = ibukiFilterOn(IbukiMessages["SHOW-MODAL-DIALOG-A"] ).subscribe((d) => {
+        const subsA: any = ibukiFilterOn(IbukiMessages["SHOW-MODAL-DIALOG-A"]).subscribe((d) => {
             meta.current.title = d.data.title
             meta.current.isOpen = d.data.isOpen
             meta.current.element = d.data.element
@@ -25,7 +25,7 @@ export function ModalDialogA() {
     }, [])
 
     return (
-        <ModalDialog body={meta.current.element} title={meta.current.title} isOpen={meta.current.isOpen} instanceName={instanceName} />
+        <CompModalDialog body={meta.current.element} title={meta.current.title} isOpen={meta.current.isOpen} instanceName={instanceName} />
     )
 }
 

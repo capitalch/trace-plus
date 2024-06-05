@@ -2,10 +2,10 @@ import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
-import { IconCheveronUp } from "../../../components/icons/icon-cheveron-up"
 import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../master-menu-data"
 import { useNavigate } from "react-router-dom"
-import { IconCheveronDown } from "../../../components/icons/icon-cheveron-down"
+import { IconCheveronUp } from "../../../controls/icons/icon-cheveron-up"
+import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down"
 
 function SideMenu() {
     const navigate = useNavigate()
