@@ -26,5 +26,5 @@ export type GraphQLQueryArgsType = {
   dbParams?: string
   [key: string]: any
   sqlId: string
-  sqlArgs?: { [key: string]: string }
+  sqlArgs?: { [key: string]: string | number}
 }
