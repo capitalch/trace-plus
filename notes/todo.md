@@ -3,6 +3,7 @@
 																								- Columns
 																									- client id, clientCode, client name, db name, extdb, active
 - Error handling
+- Make use of SqlIds instead of direct id
 																								- Aggregates
 - Delete, edit
 																								- Refresh icon placement in middle of screen
