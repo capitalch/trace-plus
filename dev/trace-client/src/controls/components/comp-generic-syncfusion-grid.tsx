@@ -1,7 +1,7 @@
-import { Aggregate, AggregateColumnDirective, AggregatesDirective, ColumnDirective, ColumnsDirective, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Toolbar } from "@syncfusion/ej2-react-grids"
-import { FC, useRef } from "react"
+import { Aggregate, AggregateColumnDirective, AggregatesDirective, ColumnDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective } from "@syncfusion/ej2-react-grids"
+import { FC, useEffect, useRef } from "react"
 import { GraphQLQueries, GraphQLQueryArgsType } from "../../app/graphql/graphql-queries"
-import { useLazyQuery, useQuery } from "@apollo/client"
+import { useLazyQuery, } from "@apollo/client"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../app/global-constants"
 import { WidgetLoadingIndicator } from "../widgets/widget-loading-indicator"
 import { Utils } from "../../utils/utils"
@@ -10,6 +10,7 @@ export function CompGenericSyncFusionGrid({
     aggregates,
     columns,
     height,
+    isLoadOnInit = true,
     // instance,
     sqlArgs,
     sqlId
@@ -20,17 +21,16 @@ export function CompGenericSyncFusionGrid({
         sqlArgs: sqlArgs
     }
 
-    // const [getData, { loading, error, data }] = useLazyQuery(
-    //     GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, args)
-    //     , { notifyOnNetworkStatusChange: true }
-    // )
-
-    const { loading, error, data } = useQuery(
+    const [getData, { loading, error, data }] = useLazyQuery(
         GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, args)
         , { notifyOnNetworkStatusChange: true }
     )
 
-    // getData()
+    useEffect(() => {
+        if (isLoadOnInit) {
+            getData()
+        }
+    }, [])
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -47,7 +47,7 @@ export function CompGenericSyncFusionGrid({
         allowSorting={true}
         allowSelection={true}
         allowTextWrap={true}
-        dataSource={data}
+        dataSource={data?.genericQuery || []}
         gridLines="Both"
         ref={gridRef}
         height={height}>
@@ -55,9 +55,23 @@ export function CompGenericSyncFusionGrid({
             {getColumnDirectives()}
         </ColumnsDirective>
         <AggregatesDirective>
-            {getAggrColDirectives()}
+            <AggregateDirective>
+                <AggregateColumnsDirective>
+                    {getAggrColDirectives()}
+                </AggregateColumnsDirective>
+            </AggregateDirective>
         </AggregatesDirective>
-        <Inject services={[Aggregate, ExcelExport, InfiniteScroll, PdfExport, Resize, Search, Selection, Toolbar,]} />
+        <Inject services={[
+            Aggregate
+            , ExcelExport
+            , InfiniteScroll
+            , PdfExport
+            , Resize
+            , Search
+            , Selection
+            , Sort
+            , Toolbar
+        ]} />
 
     </GridComponent>)
 
@@ -65,7 +79,7 @@ export function CompGenericSyncFusionGrid({
         const defaultFooterTemplate: FC = (props: any) => <span><b>{props.Sum}</b></span>
         let ds: any[] = []
         if (aggregates && aggregates.length > 0) {
-            ds = aggregates.map((aggr: AggregateType, index: number) => {
+            ds = aggregates.map((aggr: SyncFusionAggregateType, index: number) => {
                 return (<AggregateColumnDirective
                     key={index}
                     field={aggr.field}
@@ -85,6 +99,7 @@ export function CompGenericSyncFusionGrid({
                 headerText={col.headerText}
                 key={index}
                 textAlign={col.textAlign}
+                template={col.template}
                 type={col.type}
                 width={col.width}
                 format={col.format}
@@ -94,17 +109,18 @@ export function CompGenericSyncFusionGrid({
 }
 
 type CompGenericSyncFusionGridType = {
-    aggregates?: AggregateType[]
+    aggregates?: SyncFusionAggregateType[]
     columns: SyncFusionGridColumnType[]
     height?: string
+    isLoadOnInit?: boolean
     instance: string
     sqlArgs: SqlArgsType
     sqlId: string
 }
 
-type AggregateType = {
+export type SyncFusionAggregateType = {
     field: string
-    type: 'Average' | 'Count' | 'Sum' | 'Min' | 'Max'
+    type?: 'Average' | 'Count' | 'Sum' | 'Min' | 'Max'
     footerTemplate?: FC
     format?: 'N2' | 'N0'
 }
@@ -113,6 +129,7 @@ export type SyncFusionGridColumnType = {
     field: string
     format?: string
     headerText: string
+    template?: any
     textAlign?: 'Center' | 'Justify' | 'Left' | 'Right'
     type?: 'string' | 'number' | 'boolean' | 'date' | 'datetime'
     width?: number

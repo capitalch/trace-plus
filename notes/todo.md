@@ -1,12 +1,21 @@
 ## To do
-- Syncfusion latest version grid
-- Modal
-- react-toastify for error toast
-- Clients
-	- New client
-	- New client with external database
-	- Header report with Export csv, last rows, global search, refresh
-
+																								- Grid query make work
+																								- Columns
+																									- client id, clientCode, client name, db name, extdb, active
+- Error handling
+																								- Aggregates
+- Delete, edit
+																								- Refresh icon placement in middle of screen
+																								- Data fetch and refetch finalize
+- Grid instance
+- Redux with grid
+- make provisions for useQuery's data.genericQuery
+- Clients grid status bar
+	- Search
+	- last no of rows
+	- refresh
+	- Two buttons
+	- Forms for input new client Internal and external databases
 ## GraphQL
 - store hostUrl in Global context
 - implement GraphQL with token

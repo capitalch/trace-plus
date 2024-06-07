@@ -1,8 +1,7 @@
 class SqlSecurity:
     get_all_clients = '''
-            select "clientCode", "clientName" from "ClientM" 
-                --order by "id" DESC --limit %(noOfRows)s
-        ''',
+        SELECT * FROM "ClientM" 
+    '''
         
     get_super_admin_dashboard = '''
         with "dbName" as (values(%(dbName)s))
@@ -112,6 +111,7 @@ class SqlSecurity:
                 , 'role', (select row_to_json(c) from cte3 c)
             ) as "jsonResult"
         '''
+
 allSqls = {
     "sql1": """with cte1 as (
             select * from "TranD" where "id" <> %(id)s

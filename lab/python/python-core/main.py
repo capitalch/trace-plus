@@ -31,11 +31,12 @@ async def exec_sql_async(sql: str) -> None:
 async def doProcess():
     records = []
     sql = 'SELECT * FROM "ClientM" '
-    sqlArgs = {}
+    sqlArgs = {'dbNames': 'traceAuth'}
+    schema = None
     try:
         connInfo = get_conn_info()
         async with await AsyncConnection.connect(connInfo) as aconn:
-            await aconn.execute(f"set search_path to {'public'}")
+            await aconn.execute(f"set search_path to {schema or 'public'}")
             async with aconn.cursor(row_factory=dict_row) as acur:
                 await acur.execute(sql, sqlArgs)
                 if acur.rowcount > 0:
@@ -50,10 +51,10 @@ async def doProcess():
     return (records)
 
 async def main():
-    rec = await exec_sql_async('set search_path to "public"; SELECT * FROM "UserM" ')
+    # rec = await exec_sql_async('set search_path to "public"; SELECT * FROM "UserM" ')
     rec1 = await doProcess()
     print(rec1)
-    print(rec)
+    # print(rec)
     # await asyncio.sleep(0)
 
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
