@@ -30,7 +30,7 @@ async def exec_sql_async(sql: str) -> None:
                 return(rec)
 async def doProcess():
     records = []
-    sql = 'SELECT * FROM "UserM" '
+    sql = 'SELECT * FROM "ClientM" '
     sqlArgs = {}
     try:
         connInfo = get_conn_info()
