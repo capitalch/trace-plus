@@ -1,4 +1,9 @@
 class SqlSecurity:
+    get_all_clients = '''
+            select "clientCode", "clientName" from "ClientM" 
+                --order by "id" DESC --limit %(noOfRows)s
+        ''',
+        
     get_super_admin_dashboard = '''
         with "dbName" as (values(%(dbName)s))
          --with "dbName" as (values('traceAuth'))
@@ -33,6 +38,7 @@ class SqlSecurity:
 				, 'roles', (select json_agg(row_to_json(d)) from cte6 d)
             ) as "jsonResult"
     '''
+    
     does_user_email_exist = '''
         with "email" as (values(%(email)s))
             --with "email" as (values('capitalch@gmail.com'))

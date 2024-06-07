@@ -1,7 +1,7 @@
 import { Aggregate, AggregateColumnDirective, AggregatesDirective, ColumnDirective, ColumnsDirective, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Toolbar } from "@syncfusion/ej2-react-grids"
 import { FC, useRef } from "react"
 import { GraphQLQueries, GraphQLQueryArgsType } from "../../app/graphql/graphql-queries"
-import { useLazyQuery } from "@apollo/client"
+import { useLazyQuery, useQuery } from "@apollo/client"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../app/global-constants"
 import { WidgetLoadingIndicator } from "../widgets/widget-loading-indicator"
 import { Utils } from "../../utils/utils"
@@ -20,12 +20,17 @@ export function CompGenericSyncFusionGrid({
         sqlArgs: sqlArgs
     }
 
-    const [getData, { loading, error, data }] = useLazyQuery(
+    // const [getData, { loading, error, data }] = useLazyQuery(
+    //     GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, args)
+    //     , { notifyOnNetworkStatusChange: true }
+    // )
+
+    const { loading, error, data } = useQuery(
         GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, args)
         , { notifyOnNetworkStatusChange: true }
     )
 
-    getData()
+    // getData()
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -74,7 +79,7 @@ export function CompGenericSyncFusionGrid({
     }
 
     function getColumnDirectives() {
-        return columns.map((col: ColumnType, index: number) => {
+        return columns.map((col: SyncFusionGridColumnType, index: number) => {
             return (<ColumnDirective
                 field={col.field}
                 headerText={col.headerText}
@@ -90,7 +95,7 @@ export function CompGenericSyncFusionGrid({
 
 type CompGenericSyncFusionGridType = {
     aggregates?: AggregateType[]
-    columns: ColumnType[]
+    columns: SyncFusionGridColumnType[]
     height?: string
     instance: string
     sqlArgs: SqlArgsType
@@ -104,7 +109,7 @@ type AggregateType = {
     format?: 'N2' | 'N0'
 }
 
-type ColumnType = {
+export type SyncFusionGridColumnType = {
     field: string
     format?: string
     headerText: string

@@ -1,4 +1,5 @@
 import asyncio
+from psycopg import AsyncConnection, OperationalError
 from psycopg_pool import AsyncConnectionPool, ConnectionPool
 from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
@@ -27,9 +28,31 @@ async def exec_sql_async(sql: str) -> None:
                 cur.nextset()
                 rec = await cur.fetchall()
                 return(rec)
+async def doProcess():
+    records = []
+    sql = 'SELECT * FROM "UserM" '
+    sqlArgs = {}
+    try:
+        connInfo = get_conn_info()
+        async with await AsyncConnection.connect(connInfo) as aconn:
+            await aconn.execute(f"set search_path to {'public'}")
+            async with aconn.cursor(row_factory=dict_row) as acur:
+                await acur.execute(sql, sqlArgs)
+                if acur.rowcount > 0:
+                    records = await acur.fetchall()
+            await acur.close()
+            await aconn.commit()
+            await aconn.close()
+    except OperationalError as e:
+        raise e
+    except Exception as e:
+        raise e
+    return (records)
 
 async def main():
     rec = await exec_sql_async('set search_path to "public"; SELECT * FROM "UserM" ')
+    rec1 = await doProcess()
+    print(rec1)
     print(rec)
     # await asyncio.sleep(0)
 
