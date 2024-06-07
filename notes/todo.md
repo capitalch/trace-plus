@@ -2,15 +2,15 @@
 																								- Grid query make work
 																								- Columns
 																									- client id, clientCode, client name, db name, extdb, active
-- Error handling
-- Make use of SqlIds instead of direct id
+																								- Error handling
+																								- Make use of SqlIds instead of direct id
 																								- Aggregates
 - Delete, edit
 																								- Refresh icon placement in middle of screen
 																								- Data fetch and refetch finalize
 - Grid instance
 - Redux with grid
-- make provisions for useQuery's data.genericQuery
+
 - Clients grid status bar
 	- Search
 	- last no of rows

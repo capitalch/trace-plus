@@ -1,3 +1,4 @@
 export const SqlIds = {
-    getSuperAdminDashBoard: 'get_super_admin_dashboard'
+  getAllClients: 'get_all_clients',
+  getSuperAdminDashBoard: 'get_super_admin_dashboard'
 }

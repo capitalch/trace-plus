@@ -64,7 +64,7 @@ function showGraphQlErrorMessage(error: GraphQlErrorType){
         position: "bottom-right",
         color: "white",
         background: 'red',
-        timer: 10000,
+        timer: 50000,
         timerProgressBar: true,
         title: `Error ${error?.status_code}: ${error?.error_code}: ${error?.message}: ${error?.detail}`,
         padding: '10px',
@@ -72,6 +72,7 @@ function showGraphQlErrorMessage(error: GraphQlErrorType){
         icon: 'error',
         iconColor: 'white',
         width: 'auto',
+        showCloseButton: true,
     })
 }
 

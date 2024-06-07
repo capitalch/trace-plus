@@ -1,8 +1,8 @@
-// import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
-// import { testData } from "../../../../test-data/test-data";
-import { CompAppGridToolbar } from "../../../../controls/components/comp-app-grid-toolbar";
+import { SqlIds } from "../../../../app/graphql/sqlIds";
+// import { CompAppGridToolbar } from "../../../../controls/components/comp-app-grid-toolbar";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
-import { CompGenericSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/comp-generic-syncfusion-grid";
+import { CompAppGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-app-grid-toolbar";
+import { CompGenericSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-generic-syncfusion-grid";
 
 export function SuperAdminClients() {
     return (
@@ -13,14 +13,14 @@ export function SuperAdminClients() {
                 columns={getColumns()}
                 instance="super-admin-clients"
                 sqlArgs={{ dbName: 'traceAuth' }}
-                sqlId="get_all_clients"
+                sqlId={SqlIds.getAllClients}
             />
         </CompContentContainer>
     )
 
     function getAggregates(): SyncFusionAggregateType[] {
         return ([
-            {type:'Count',  field: 'clientCode', format: 'N0', footerTemplate: clientCodeAggrTemplate }
+            { type: 'Count', field: 'clientCode', format: 'N0', footerTemplate: clientCodeAggrTemplate }
         ])
     }
 
