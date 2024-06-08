@@ -1,6 +1,6 @@
 import { Aggregate, AggregateColumnDirective, AggregatesDirective, ColumnDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective } from "@syncfusion/ej2-react-grids"
 import { FC, useEffect, useRef } from "react"
-import { GraphQLQueries, GraphQLQueryArgsType } from "../../../app/graphql/graphql-queries"
+import { MapGraphQLQueries, GraphQLQueryArgsType } from "../../../app/graphql/maps/map-graphql-queries"
 import { useLazyQuery, } from "@apollo/client"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
@@ -22,7 +22,7 @@ export function CompGenericSyncFusionGrid({
     }
 
     const [getData, { loading, error, data }] = useLazyQuery(
-        GraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, args)
+        MapGraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, args)
         , { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' } // network-only fetches data from server every time the query is called
     )
 

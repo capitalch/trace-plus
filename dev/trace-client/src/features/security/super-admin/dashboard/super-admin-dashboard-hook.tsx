@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client"
-import { GraphQLQueries, GraphQLQueryArgsType } from "../../../../app/graphql/graphql-queries"
+import { MapGraphQLQueries, GraphQLQueryArgsType } from "../../../../app/graphql/maps/map-graphql-queries"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 
 import _ from "lodash"
@@ -15,10 +15,10 @@ export function useSuperAdminDashBoard() {
     let isCustomError: boolean = false
 
     const { client, data, error, loading, refetch } = useQuery(
-        GraphQLQueries.genericQuery(
+        MapGraphQLQueries.genericQuery(
             GLOBAL_SECURITY_DATABASE_NAME
             , args)
-        , { notifyOnNetworkStatusChange: true }) // for each api call refresh client component
+        , { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }) // for each api call refresh client component
 
     if (error) {
         Utils.showErrorMessage(error)

@@ -1,5 +1,4 @@
-import { SqlIds } from "../../../../app/graphql/sqlIds";
-// import { CompAppGridToolbar } from "../../../../controls/components/comp-app-grid-toolbar";
+import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompAppGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-app-grid-toolbar";
 import { CompGenericSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-generic-syncfusion-grid";
@@ -13,7 +12,7 @@ export function SuperAdminClients() {
                 columns={getColumns()}
                 instance="super-admin-clients"
                 sqlArgs={{ dbName: 'traceAuth' }}
-                sqlId={SqlIds.getAllClients}
+                sqlId={MapSqlIds.getAllClients}
             />
         </CompContentContainer>
     )

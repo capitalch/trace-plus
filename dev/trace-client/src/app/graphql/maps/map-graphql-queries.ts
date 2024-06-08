@@ -1,11 +1,11 @@
 import { gql } from '@apollo/client'
 import _ from 'lodash'
 
-export const GraphQLQueries = {
+export const MapGraphQLQueries = {
   genericQuery: genericQuery
 }
 
-function genericQuery (dbName: string, val: any) {
+function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
   const value = encodeObj(val)
   return gql`
         query ${dbName} {
@@ -26,5 +26,5 @@ export type GraphQLQueryArgsType = {
   dbParams?: string
   [key: string]: any
   sqlId: string
-  sqlArgs?: { [key: string]: string | number}
+  sqlArgs?: { [key: string]: string | number }
 }
