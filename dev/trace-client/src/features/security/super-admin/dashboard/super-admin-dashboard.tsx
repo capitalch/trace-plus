@@ -4,16 +4,18 @@ import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-load
 import { SuperAdminDashBoardType, useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
 
 export function SuperAdminDashboard() {
-    const { loading, refetch, superAdminDashBoard }: { loading: boolean, refetch: any, superAdminDashBoard: SuperAdminDashBoardType } = useSuperAdminDashBoard()
+    const { loadData, loading,  superAdminDashBoard }: {loadData: any, loading: boolean,  superAdminDashBoard: SuperAdminDashBoardType } = useSuperAdminDashBoard()
 
     return (
-        <CompContentContainer title='Super admin dashboard' CustomControl={() => <WidgetButtonRefresh handleRefresh={()=>refetch()} />}>
+        <CompContentContainer title='Super admin dashboard' CustomControl={() => <WidgetButtonRefresh handleRefresh={async () => await loadData()} />}>
             {loading ? <WidgetLoadingIndicator /> : getContent()}
         </CompContentContainer>
     )
 
     function getContent() {
+
         return (<div className="flex flex-wrap gap-8 mt-8">
+            
             {/* Database connections */}
             <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
                 <label className="text-lg font-bold">Database connections</label>

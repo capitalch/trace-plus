@@ -1,27 +1,25 @@
+import { MapDataInstances } from "../../../../app/graphql/maps/map-data-instances";
 import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompAppGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-app-grid-toolbar";
-import { CompGenericSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-generic-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 
 export function SuperAdminClients() {
+    
     return (
         <CompContentContainer title='Super admin clients' >
             <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />
-            <CompGenericSyncFusionGrid
+            <CompSyncFusionGrid
                 aggregates={getAggregates()}
                 columns={getColumns()}
-                instance="super-admin-clients"
+                instance={MapDataInstances.superAdminClients}
                 sqlArgs={{ dbName: 'traceAuth' }}
-                sqlId={MapSqlIds.getAllClients}
+                sqlId={MapSqlIds.allClients}
             />
         </CompContentContainer>
     )
 
-    function getAggregates(): SyncFusionAggregateType[] {
-        return ([
-            { type: 'Count', field: 'clientCode', format: 'N0', footerTemplate: clientCodeAggrTemplate }
-        ])
-    }
+    
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
@@ -69,20 +67,13 @@ export function SuperAdminClients() {
         return (<input type="checkbox" readOnly checked={props.isExternalDb} />)
     }
 
+    function getAggregates(): SyncFusionAggregateType[] {
+        return ([
+            { type: 'Count', field: 'clientCode', format: 'N0', footerTemplate: clientCodeAggrTemplate }
+        ])
+    }
+
     function clientCodeAggrTemplate(props: any) {
         return (<span><b>Count: {props.Count}</b></span>)
     }
 }
-
-{/* <GridComponent
-    className="mt-2"
-    gridLines="Both"
-    height='calc(100vh - 280px)'
-    dataSource={testData}>
-    <ColumnsDirective>
-        <ColumnDirective field='OrderID' headerText='Order ID' width='120' textAlign="Right" />
-        <ColumnDirective field='CustomerID' headerText='Customer ID' width='150' />
-        <ColumnDirective field='ShipCity' headerText='Ship City' width='150' />
-        <ColumnDirective field='ShipName' headerText='Ship Name' width='150' />
-    </ColumnsDirective>
-</GridComponent> */}

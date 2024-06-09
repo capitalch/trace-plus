@@ -1,8 +1,8 @@
-export const MapSqlIds: MapSqlIdsType = {
-  getAllClients: 'get_all_clients',
-  getSuperAdminDashBoard: 'get_super_admin_dashboard'
+export const MapSqlIds = {
+  allClients: 'get_all_clients',
+  superAdminDashBoard: 'get_super_admin_dashboard'
 }
 
-type MapSqlIdsType = {
-  [key: string]: string
-}
+// type MapSqlIdsType = {
+//   [key: string]: string
+// }

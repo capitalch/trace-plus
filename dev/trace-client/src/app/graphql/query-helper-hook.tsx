@@ -1,20 +1,52 @@
 import { useLazyQuery } from "@apollo/client";
 import { MapGraphQLQueries, GraphQLQueryArgsType } from "./maps/map-graphql-queries";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../global-constants";
+import { useEffect } from "react";
+import { Utils } from "../../utils/utils";
+import { AppDispatchType } from "../store/store";
+import { useDispatch } from "react-redux";
+import { setQueryHelperDataR } from "./query-helper-slice";
 
-export function useQueryHelper({databaseName=GLOBAL_SECURITY_DATABASE_NAME, instance = undefined, queryArgs }: QueryHelperType) {
-    console.log(instance)
-    const [getGenericQueryData, { loading, error }] = useLazyQuery(
-        MapGraphQLQueries.genericQuery(databaseName, queryArgs)
+export function useQueryHelper({
+    databaseName = GLOBAL_SECURITY_DATABASE_NAME
+    , getQueryArgs
+    , instance
+    , isExecQueryOnLoad = true
+}: QueryHelperType) {
+
+    const dispatch: AppDispatchType = useDispatch()
+    const [getGenericQueryData, { error, loading }] = useLazyQuery(
+        MapGraphQLQueries.genericQuery(databaseName, getQueryArgs())
         , { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
     )
 
-    return ({ getGenericQueryData, loading, error })
+    useEffect(() => {
+        if (isExecQueryOnLoad) {
+            loadData()
+        }
+    }, [])
+
+    if (error) {
+        Utils.showErrorMessage(error)
+    }
+
+    async function loadData() {
+        const result: any = await getGenericQueryData()
+        if (result?.data?.genericQuery?.error?.content) {
+            Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
+        }
+        dispatch(setQueryHelperDataR({ data: result?.data, instance: instance }))
+    }
+
+
+    return ({ loadData, loading })
 
 }
 
 type QueryHelperType = {
-    databaseName: string
-    instance: string | undefined
-    queryArgs: GraphQLQueryArgsType
+    databaseName?: string
+    getQueryArgs: () => GraphQLQueryArgsType
+    instance: string
+    isExecQueryOnLoad?: boolean
+
 }

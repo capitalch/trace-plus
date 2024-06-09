@@ -9,12 +9,15 @@
 
 ## Redux steps
 # Step 1: Create store
-# Step 2: Create slice and export reducer and actions
-- One slice has multiple actions
-# Step 3: Assign reducer to store
-# Step 4: Create Provider at index.tsx and set the store
+# Step 2: Create Provider at index.tsx and set the store in provider
+# Step 3: Create slice and export reducer and actions
+- One slice has multiple actions but one reducer
+# Step 4: Assign reducer to store. 
+	- Likewise you can create many slices and each slice has corresponding reducer
+	- In store write all the reducers
 # Step 5: use actions
 - In components make use of useSelectors and dispath
+- In dispatch make use of actions
 
 ## TypeScript with redux
 # Step 1: In store.ts include types AppDispatchType, RootStateType

@@ -5,8 +5,8 @@ import './App.css'
 // import { Counter } from './features/redux-counter/counter'
 // import { SignalsCounter } from './features/signals-counter/signals-counter'
 // import { Counter } from './features/redux-counter/counter'
-import { RouterProvider } from 'react-router-dom'
-import { router } from './features/react-router/react-router'
+// import { RouterProvider } from 'react-router-dom'
+// import { router } from './features/react-router/react-router'
 // import { ToastError } from './features/sweetalert2/toast-error'
 // import { LoginForm } from './features/login-form/login-form'
 // import { ReactQueryComp } from './features/react-query/react-query-comp'
@@ -25,17 +25,18 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
-import { ToastContainer } from 'react-toastify'
-import { ReactToastify } from './features/react-toastify/ReactToastify';
+// import { ToastContainer } from 'react-toastify'
+// import { ReactToastify } from './features/react-toastify/ReactToastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
+// import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
+import { Counter } from './features/redux-counter/counter';
 export const GlobalContext: any = createContext({})
 
 function App() {
 
   return (
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
-      <RouterProvider router={router} />
+      {/* <RouterProvider router={router} /> */}
       {/* <Counter /> */}
       {/* <OfficeContext.Provider value={{ standardSelect: { brandID: () => { } } }}>
         <Office />
@@ -59,9 +60,10 @@ function App() {
         <ApolloGraphQLComp2 />
       </div> */}
       {/* <PrimeReact /> */}
-      <ToastContainer />
+      {/* <ToastContainer />
       <ReactToastify />
-      <SyncfusionGrid />
+      <SyncfusionGrid /> */}
+      <Counter />
     </GlobalContext.Provider>
   )
 }

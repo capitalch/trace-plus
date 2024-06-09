@@ -1,33 +1,29 @@
-import { useQuery } from "@apollo/client"
-import { MapGraphQLQueries, GraphQLQueryArgsType } from "../../../../app/graphql/maps/map-graphql-queries"
+import { GraphQLQueryArgsType, } from "../../../../app/graphql/maps/map-graphql-queries"
+import _ from "lodash"
+import { useQueryHelper } from "../../../../app/graphql/query-helper-hook"
+import { MapDataInstances } from "../../../../app/graphql/maps/map-data-instances"
+import { useSelector } from "react-redux"
+import { RootStateType } from "../../../../app/store/store"
+import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 
-import _ from "lodash"
-import { Utils } from "../../../../utils/utils"
-
 export function useSuperAdminDashBoard() {
+    const instance = MapDataInstances.superAdminDashBoard
     const args: GraphQLQueryArgsType = {
-        sqlId: 'get_super_admin_dashboard',
+        sqlId: MapSqlIds.superAdminDashBoard,
         sqlArgs: {
-            dbName: 'traceAuth'
+            dbName: GLOBAL_SECURITY_DATABASE_NAME
         }
     }
-    let isCustomError: boolean = false
 
-    const { client, data, error, loading, refetch } = useQuery(
-        MapGraphQLQueries.genericQuery(
-            GLOBAL_SECURITY_DATABASE_NAME
-            , args)
-        , { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }) // for each api call refresh client component
+    const { loadData, loading, } = useQueryHelper({
+        getQueryArgs: () => args,
+        instance: instance,
+    })
 
-    if (error) {
-        Utils.showErrorMessage(error)
-    }
-
-    if (data?.genericQuery?.error?.content) {
-        Utils.showGraphQlErrorMessage(data.genericQuery.error.content)
-        isCustomError = true
-    }
+    const selectedData: any = useSelector((state: RootStateType) => {
+        return (state.queryHelper[instance])
+    })
 
     const superAdminDashBoard: SuperAdminDashBoardType = getSuperAdminDashBoard()
 
@@ -66,8 +62,8 @@ export function useSuperAdminDashBoard() {
 
         let jsonResult: any = {}
 
-        if (data) {
-            jsonResult = data?.genericQuery[0]?.jsonResult
+        if (!_.isEmpty(selectedData)) {
+            jsonResult = selectedData?.genericQuery[0]?.jsonResult
             if (!_.isEmpty(jsonResult)) {
                 populateDashBoard(dashBoard, jsonResult)
             }
@@ -151,7 +147,7 @@ export function useSuperAdminDashBoard() {
         setMisc(dashBoard, jsonResult)
     }
 
-    return ({ client, data, error, isCustomError, superAdminDashBoard, loading, refetch })
+    return ({ loadData, superAdminDashBoard, loading })
 }
 
 export type SuperAdminDashBoardType = {
@@ -185,3 +181,16 @@ export type SuperAdminDashBoardType = {
         securedControlsCount: number
     }
 }
+// const { data, error, loading, refetch } = useQuery(
+//     MapGraphQLQueries.genericQuery(
+//         GLOBAL_SECURITY_DATABASE_NAME
+//         , args)
+//     , { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }) // for each api call refresh client component
+
+// if (error) {
+//     Utils.showErrorMessage(error)
+// }
+
+// if (data?.genericQuery?.error?.content) {
+//     Utils.showGraphQlErrorMessage(data.genericQuery.error.content)
+// }

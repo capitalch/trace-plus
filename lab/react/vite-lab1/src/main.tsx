@@ -1,14 +1,14 @@
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { Provider } from 'react-redux'
-import { store } from './app/store.ts'
 // import { QueryClient, QueryClientProvider } from 'react-query'
 // import { PrimeReactProvider } from 'primereact/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 
 import { registerLicense } from '@syncfusion/ej2-base'
+import { store } from './app/store.ts'
+import { Provider } from 'react-redux'
 // import { RouterProvider } from 'react-router-dom'
 // import { router } from './features/react-router/react-router.tsx'
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NBaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXlecnVRR2NdWEJwXUE=')
