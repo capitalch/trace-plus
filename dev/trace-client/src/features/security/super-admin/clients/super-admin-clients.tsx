@@ -5,21 +5,20 @@ import { CompAppGridToolbar } from "../../../../controls/components/generic-sync
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 
 export function SuperAdminClients() {
-    
+    // CustomControl={() => <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />}
+    const instance = MapDataInstances.superAdminClients
     return (
-        <CompContentContainer title='Super admin clients' >
-            <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />
+        <CompContentContainer title='Super admin clients'  >
+            <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
                 aggregates={getAggregates()}
                 columns={getColumns()}
-                instance={MapDataInstances.superAdminClients}
+                instance={instance}
                 sqlArgs={{ dbName: 'traceAuth' }}
                 sqlId={MapSqlIds.allClients}
             />
         </CompContentContainer>
     )
-
-    
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([

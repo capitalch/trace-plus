@@ -1,22 +1,26 @@
 ## To do
+- Delete, edit
+- Grid
+	- Create UI for status bar
+	- Status bar align with container
+	- Search
+	- load data
+	- last no of rows
+	- Two buttons
+	- Forms for input new client Internal and external databases
+	- pdf and excel export
+
+
+																								- Grid instance
+																								- Redux with grid
 																								- Grid query make work
 																								- Columns
 																									- client id, clientCode, client name, db name, extdb, active
 																								- Error handling
 																								- Make use of SqlIds instead of direct id
 																								- Aggregates
-- Delete, edit
 																								- Refresh icon placement in middle of screen
 																								- Data fetch and refetch finalize
-- Grid instance
-- Redux with grid
-
-- Clients grid status bar
-	- Search
-	- last no of rows
-	- refresh
-	- Two buttons
-	- Forms for input new client Internal and external databases
 ## GraphQL
 - store hostUrl in Global context
 - implement GraphQL with token

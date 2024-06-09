@@ -5,15 +5,18 @@ import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
+// import { GlobalContextType } from "../../../app/global-context";
+// import { GlobalContext } from "../../../App";
 
 export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, }: any) {
+    // 
 
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,
         sqlArgs: sqlArgs
     }
 
-    const { loading, } = useQueryHelper({
+    const { loadData, loading, } = useQueryHelper({
         getQueryArgs: () => args,
         instance: instance,
         isExecQueryOnLoad: isLoadOnInit
@@ -53,5 +56,5 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
         })
     }
 
-    return ({ getAggrColDirectives, getColumnDirectives, loading, selectedData })
+    return ({ getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData })
 }

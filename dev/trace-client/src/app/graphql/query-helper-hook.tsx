@@ -38,9 +38,7 @@ export function useQueryHelper({
         dispatch(setQueryHelperDataR({ data: result?.data, instance: instance }))
     }
 
-
     return ({ loadData, loading })
-
 }
 
 type QueryHelperType = {

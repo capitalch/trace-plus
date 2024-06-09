@@ -1,7 +1,9 @@
 import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective } from "@syncfusion/ej2-react-grids"
-import { FC, useRef } from "react"
+import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
+import { GlobalContextType } from "../../../app/global-context"
+import { GlobalContext } from "../../../App"
 
 export function CompSyncFusionGrid({
     aggregates,
@@ -12,10 +14,16 @@ export function CompSyncFusionGrid({
     sqlArgs,
     sqlId
 }: CompSyncFusionGridType) {
-
-    const { getAggrColDirectives, getColumnDirectives, loading, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, })
+    const context: GlobalContextType = useContext(GlobalContext)
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, })
 
     const gridRef: any = useRef({})
+    const toolbarOptions = ['Search']
+
+    useEffect(() => {
+        context.CompSyncFusionGrid[instance].loadData = loadData
+        context.CompSyncFusionGrid[instance].gridRef = gridRef
+    }, [])
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -25,12 +33,14 @@ export function CompSyncFusionGrid({
         allowPdfExport={true}
         allowExcelExport={true}
         allowResizing={true}
+        // allowSearching={true}
         allowSorting={true}
         allowSelection={true}
         allowTextWrap={true}
         dataSource={selectedData?.genericQuery || []}
         gridLines="Both"
         ref={gridRef}
+        toolbar={toolbarOptions}
         height={height}>
         <ColumnsDirective>
             {getColumnDirectives()}
