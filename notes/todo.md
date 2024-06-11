@@ -3,12 +3,12 @@
 - Grid
 	- Create UI for status bar
 	- Status bar align with container
-	- Search
-	- load data
+		- Search
+		- load data
 	- last no of rows
 	- Two buttons
 	- Forms for input new client Internal and external databases
-	- pdf and excel export
+		- pdf and excel export
 
 
 																								- Grid instance

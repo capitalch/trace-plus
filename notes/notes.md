@@ -22,11 +22,10 @@
 - Product price lock for sales
 - Product merge
 - Back / forward to see last next entries
-<<<<<<< HEAD
 - Voucher delete control
 - TCS entry
 - Purchase sale rewind
-=======
+- Machine info against entry
 - Sales return would notify the original invoice that it is returned
 ## fastapi with async psycopg connection pool
 https://medium.com/@benshearlaw/asynchronous-postgres-with-python-fastapi-and-psycopg-3-fafa5faa2c08

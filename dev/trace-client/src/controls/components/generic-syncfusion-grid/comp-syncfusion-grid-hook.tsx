@@ -1,15 +1,23 @@
 import { FC, } from "react"
 import { GraphQLQueryArgsType, } from "../../../app/graphql/maps/map-graphql-queries";
-import { SyncFusionAggregateType, SyncFusionGridColumnType } from "./comp-syncfusion-grid";
+import { CompSyncFusionGridType, SyncFusionAggregateType, SyncFusionGridColumnType } from "./comp-syncfusion-grid";
 import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react-grids";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
-// import { GlobalContextType } from "../../../app/global-context";
-// import { GlobalContext } from "../../../App";
 
-export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, }: any) {
-    // 
+export function useCompSyncFusionGrid({ aggregates, columns, instance, isLastNoOfRows, isLoadOnInit, sqlId, sqlArgs, }: CompSyncFusionGridType) {
+
+    const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
+    let lastNoOfRows
+    console.log('selectedLastNoOfRows: ', selectedLastNoOfRows)
+    console.log(isLastNoOfRows)
+    if (selectedLastNoOfRows === undefined) {
+        lastNoOfRows = 100
+    } else {
+        lastNoOfRows = selectedLastNoOfRows
+    }
+    sqlArgs.no = lastNoOfRows
 
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,
@@ -22,7 +30,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
         isExecQueryOnLoad: isLoadOnInit
     })
 
-    const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance])
+    const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data)
 
     function getAggrColDirectives() {
         const defaultFooterTemplate: FC = (props: any) => <span><b>{props.Sum}</b></span>

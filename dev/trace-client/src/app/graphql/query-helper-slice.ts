@@ -1,25 +1,37 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { MapDataInstances } from './maps/map-data-instances'
+// import { MapDataInstances } from './maps/map-data-instances'
 
 const initialState: InitialStateType = {
-  [MapDataInstances.superAdminDashBoard]: undefined
+  // [MapDataInstances.superAdminDashBoard]: undefined
 }
 
 const queryHelperSlice = createSlice({
   name: 'queryHelper',
   initialState: initialState,
+
   reducers: {
     setQueryHelperDataR: (
       state: InitialStateType,
       action: PayloadAction<SetQueryHelperDataActionType>
     ) => {
-      state[action.payload.instance] = action.payload.data
+      state[action.payload.instance] = {}
+      state[action.payload.instance].data = action.payload.data
+    },
+
+    setLastNoOfRowsR: (
+      state: InitialStateType,
+      action: PayloadAction<SetLastNoOfRowsActionType>
+    ) => {
+      if(!state[action.payload.instance]){
+        state[action.payload.instance] = {}
+      }
+      state[action.payload.instance].lastNoOfRows = action.payload.lastNoOfRows
     }
   }
 })
 
 export const queryHelperReducer = queryHelperSlice.reducer
-export const { setQueryHelperDataR } = queryHelperSlice.actions
+export const { setQueryHelperDataR, setLastNoOfRowsR } = queryHelperSlice.actions
 
 type InitialStateType = {
   [key: string]: any
@@ -30,5 +42,9 @@ type SetQueryHelperDataActionType = {
   instance: string
 }
 
-// Selector functions
+type SetLastNoOfRowsActionType = {
+  instance: string
+  lastNoOfRows: number
+}
 
+// Selector functions

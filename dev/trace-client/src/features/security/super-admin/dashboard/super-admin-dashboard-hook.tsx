@@ -22,7 +22,7 @@ export function useSuperAdminDashBoard() {
     })
 
     const selectedData: any = useSelector((state: RootStateType) => {
-        return (state.queryHelper[instance])
+        return (state.queryHelper[instance]?.data)
     })
 
     const superAdminDashBoard: SuperAdminDashBoardType = getSuperAdminDashBoard()
