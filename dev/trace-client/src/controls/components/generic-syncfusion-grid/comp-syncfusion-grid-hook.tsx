@@ -9,13 +9,13 @@ import { RootStateType } from "../../../app/store/store";
 export function useCompSyncFusionGrid({ aggregates, columns, instance, isLastNoOfRows, isLoadOnInit, sqlId, sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
-    let lastNoOfRows
+    let lastNoOfRows = selectedLastNoOfRows
     console.log('selectedLastNoOfRows: ', selectedLastNoOfRows)
     console.log(isLastNoOfRows)
     if (selectedLastNoOfRows === undefined) {
         lastNoOfRows = 100
-    } else {
-        lastNoOfRows = selectedLastNoOfRows
+    } else if(selectedLastNoOfRows === '') {
+        lastNoOfRows = undefined
     }
     sqlArgs.no = lastNoOfRows
 

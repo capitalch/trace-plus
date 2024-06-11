@@ -14,12 +14,10 @@ export function CompAppGridToolbar({ CustomControl = undefined, isLastNoOfRows =
     const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
     // const state: RootStateType = Utils.getReduxState()
-    let lastNoOfRows: string = ''
     const selectedLastNoOfRows: string = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
+    let lastNoOfRows: string = selectedLastNoOfRows
     if (selectedLastNoOfRows === undefined) {
         lastNoOfRows = '100'
-    } else {
-        lastNoOfRows = selectedLastNoOfRows
     }
 
     return (<div className="flex justify-between items-center">

@@ -2,6 +2,14 @@ class SqlSecurity:
     get_all_clients = '''
         SELECT * FROM "ClientM" 
     '''
+    
+    get_all_clients1 = '''
+    --with "no" as (values(%(no)s))
+        with "no" as (values(null))
+            select * from "ClientM"
+                order by "id" DESC
+                    limit (table "no")
+    '''
         
     get_super_admin_dashboard = '''
         with "dbName" as (values(%(dbName)s))
