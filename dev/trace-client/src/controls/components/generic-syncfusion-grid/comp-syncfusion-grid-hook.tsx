@@ -6,18 +6,17 @@ import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
 
-export function useCompSyncFusionGrid({ aggregates, columns, instance, isLastNoOfRows, isLoadOnInit, sqlId, sqlArgs, }: CompSyncFusionGridType) {
+export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     let lastNoOfRows = selectedLastNoOfRows
-    console.log('selectedLastNoOfRows: ', selectedLastNoOfRows)
-    console.log(isLastNoOfRows)
+    // console.log(isLastNoOfRows)
     if (selectedLastNoOfRows === undefined) {
         lastNoOfRows = 100
     } else if(selectedLastNoOfRows === '') {
         lastNoOfRows = undefined
     }
-    sqlArgs.no = lastNoOfRows
+    sqlArgs.noOfRows = lastNoOfRows
 
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,

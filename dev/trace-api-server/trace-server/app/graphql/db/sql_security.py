@@ -1,14 +1,14 @@
 class SqlSecurity:
-    get_all_clients = '''
+    get_all_clients1 = '''
         SELECT * FROM "ClientM" 
     '''
     
-    get_all_clients1 = '''
-    --with "no" as (values(%(no)s))
-        with "no" as (values(null))
+    get_all_clients = '''
+    with "noOfRows" as (values(%(noOfRows)s::int))
+        --with "noOfRows" as (values(null::int))
             select * from "ClientM"
                 order by "id" DESC
-                    limit (table "no")
+                    limit (table "noOfRows")
     '''
         
     get_super_admin_dashboard = '''

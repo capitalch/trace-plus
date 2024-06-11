@@ -6,6 +6,7 @@
 		- Search
 		- load data
 	- last no of rows
+	- Refresh should not reset the last no of rows
 	- Two buttons
 	- Forms for input new client Internal and external databases
 		- pdf and excel export

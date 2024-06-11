@@ -9,14 +9,13 @@ export function CompSyncFusionGrid({
     aggregates,
     columns,
     height,
-    isLastNoOfRows = false,
     isLoadOnInit = true,
     instance,
     sqlArgs,
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLastNoOfRows, isLoadOnInit, sqlId, sqlArgs, })
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, })
 
     const gridRef: any = useRef({})
     const toolbarOptions = ['Search']
@@ -34,7 +33,6 @@ export function CompSyncFusionGrid({
         allowPdfExport={true}
         allowExcelExport={true}
         allowResizing={true}
-        // allowSearching={true}
         allowSorting={true}
         allowSelection={true}
         allowTextWrap={true}
@@ -73,7 +71,6 @@ export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
     columns: SyncFusionGridColumnType[]
     height?: string
-    isLastNoOfRows?: boolean
     isLoadOnInit?: boolean
     instance: string
     sqlArgs: SqlArgsType

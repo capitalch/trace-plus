@@ -1,5 +1,5 @@
 import { FC, useContext } from "react"
-import { CompAppGridSearchBox } from "./comp-app-grid-search-box"
+import { CompSyncFusionGridSearchBox } from "./comp-syncfusion-grid-search-box"
 // import { IconIconRefresh } from "../../icons/icon-icon-refresh"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { GlobalContextType } from "../../../app/global-context"
@@ -25,14 +25,14 @@ export function CompAppGridToolbar({ CustomControl = undefined, isLastNoOfRows =
         <div className="flex gap-2 items-center" >
             {CustomControl && <CustomControl />}
             {isLastNoOfRows && <select value={lastNoOfRows}
-                className="h-8 border border-none bg-slate-200  text-sm rounded-xs focus:outline-none focus:border-none" 
+                className="h-9 border border-none bg-slate-200  text-sm rounded-xs focus:outline-none focus:border-none"
                 onChange={handleOnChangeLastNoOfRows}>
                 <option value="100">Last 100 rows</option>
                 <option value="500">Last 500 rows</option>
                 <option value="1000">Last 1000 rows</option>
                 <option value="">All rows</option>
             </select>}
-            <CompAppGridSearchBox />
+            <CompSyncFusionGridSearchBox instance={instance} />
             <button className="bg-slate-200" onClick={() => {
                 const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                 gridRef.current.search('ext')
