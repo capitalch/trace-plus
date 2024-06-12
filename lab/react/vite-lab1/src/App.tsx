@@ -30,6 +30,7 @@ import 'primeicons/primeicons.css'
 import 'react-toastify/dist/ReactToastify.css';
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
 import { Counter } from './features/redux-counter/counter';
+import { ReactTooltip, ReactTooltip1Control } from './features/tooltip/react-tooltip';
 export const GlobalContext: any = createContext({})
 
 function App() {
@@ -64,6 +65,8 @@ function App() {
       <ReactToastify />
       <SyncfusionGrid /> */}
       <Counter />
+      <ReactTooltip />
+      <ReactTooltip1Control />
     </GlobalContext.Provider>
   )
 }

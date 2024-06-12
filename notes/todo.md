@@ -3,14 +3,19 @@
 - Grid
 	- Create UI for status bar
 	- Status bar align with container
-		- Search
-		- load data
-	- last no of rows
+	- pdf and excel export
+	- Search
+		- retain searchString in Redux
+		- Multiple keyword search
+		- On Refresh execute the search also																								
 	- Refresh should not reset the last no of rows
 	- Two buttons
 	- Forms for input new client Internal and external databases
-		- pdf and excel export
-
+	- Edit, Delete and Preview
+	- Tooltip widget
+	
+																								- load data
+																								- last no of rows
 
 																								- Grid instance
 																								- Redux with grid

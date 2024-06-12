@@ -9,6 +9,7 @@ import { GlobalContext } from "../../../App"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { useDispatch, useSelector } from "react-redux"
 import { setLastNoOfRowsR } from '../../../app/graphql/query-helper-slice'
+import { IconFilePdf } from "../../icons/icon-file-pdf"
 
 export function CompAppGridToolbar({ CustomControl = undefined, isLastNoOfRows = false, instance = '', title }: CompAppGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -33,14 +34,14 @@ export function CompAppGridToolbar({ CustomControl = undefined, isLastNoOfRows =
                 <option value="">All rows</option>
             </select>}
             <CompSyncFusionGridSearchBox instance={instance} />
-            <button className="bg-slate-200" onClick={() => {
-                const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
-                gridRef.current.search('ext')
-            }}>Search</button>
+            
             <button className="bg-slate-200" onClick={() => {
                 const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                 gridRef.current.pdfExport()
-            }}>PDF</button>
+            }}>
+                
+                <IconFilePdf className="text-red-500 w-10 h-10" />
+            </button>
             <button className="bg-slate-200" onClick={() => {
                 const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                 gridRef.current.excelExport()
