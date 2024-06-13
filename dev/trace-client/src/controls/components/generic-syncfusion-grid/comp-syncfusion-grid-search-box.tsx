@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from "react";
+import { ChangeEvent, useContext, useEffect, useMemo } from "react";
 import { GlobalContextType } from "../../../app/global-context";
 import { IconSearch } from "../../icons/icon-search";
 import { GlobalContext } from "../../../App";
@@ -14,7 +14,7 @@ export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSear
 
     const onTextChange = useMemo( // For debounce
         () =>
-            _.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+            _.debounce((e: ChangeEvent<HTMLInputElement>) => {
                 handleOnChange(e);
             }, 1200),
         []
@@ -26,14 +26,17 @@ export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSear
     return (
         <div className="flex pr-1 rounded-sm items-center border-2 border-gray-400 focus:ring-2">
             <input type="search" placeholder="Search" className="text-md h-9 w-56 border-none focus:ring-0" value={selectedSearchString || ''}
-                onChange={onTextChange}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    dispatch(setSearchStringR({ instance: instance, searchString: e.target.value }))
+                    onTextChange(e)
+                }}
             />
             <IconSearch />
         </div>
     )
 
-    function handleOnChange(event: any) {
-        dispatch(setSearchStringR({ instance: instance, searchString: event.target.value }))
+    function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
+        // dispatch(setSearchStringR({ instance: instance, searchString: event.target.value }))
         const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
         gridRef.current.search(event.target.value)
     }

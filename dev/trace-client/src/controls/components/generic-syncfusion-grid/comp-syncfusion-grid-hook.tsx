@@ -10,7 +10,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     let lastNoOfRows = selectedLastNoOfRows
-    // console.log(isLastNoOfRows)
+
     if (selectedLastNoOfRows === undefined) {
         lastNoOfRows = 100
     } else if(selectedLastNoOfRows === '') {
