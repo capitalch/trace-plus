@@ -1,7 +1,7 @@
 import { MapDataInstances } from "../../../../app/graphql/maps/map-data-instances";
 import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
-import { CompAppGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-app-grid-toolbar";
+import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 
 export function SuperAdminClients() {
@@ -9,7 +9,7 @@ export function SuperAdminClients() {
     const instance = MapDataInstances.superAdminClients
     return (
         <CompContentContainer title='Super admin clients'  >
-            <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} instance={instance} />
+            <CompSyncFusionGridToolbar title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
                 aggregates={getAggregates()}
                 columns={getColumns()}

@@ -3,11 +3,16 @@ import { GlobalContextType } from "../../../app/global-context";
 import { IconSearch } from "../../icons/icon-search";
 import { GlobalContext } from "../../../App";
 import _ from "lodash";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../app/store/store";
+import { setSearchStringR } from "../../../app/graphql/query-helper-slice";
 
 export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSearchBoxType) {
-    console.log(instance)
+    const dispatch: AppDispatchType = useDispatch()
     const context: GlobalContextType = useContext(GlobalContext)
-    const onTextChange = useMemo(
+    const selectedSearchString: string = useSelector((state: RootStateType) => state.queryHelper[instance]?.searchString)
+
+    const onTextChange = useMemo( // For debounce
         () =>
             _.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
                 handleOnChange(e);
@@ -17,10 +22,10 @@ export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSear
     useEffect(() => {
         return (() => onTextChange.cancel())
     }, [onTextChange])
-    
+
     return (
         <div className="flex pr-1 rounded-sm items-center border-2 border-gray-400 focus:ring-2">
-            <input type="search" placeholder="Search" className="text-md h-9 w-56 border-none focus:ring-0"
+            <input type="search" placeholder="Search" className="text-md h-9 w-56 border-none focus:ring-0" value={selectedSearchString || ''}
                 onChange={onTextChange}
             />
             <IconSearch />
@@ -28,6 +33,7 @@ export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSear
     )
 
     function handleOnChange(event: any) {
+        dispatch(setSearchStringR({ instance: instance, searchString: event.target.value }))
         const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
         gridRef.current.search(event.target.value)
     }
