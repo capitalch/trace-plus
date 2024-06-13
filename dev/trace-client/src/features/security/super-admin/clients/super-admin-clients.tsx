@@ -8,8 +8,8 @@ export function SuperAdminClients() {
     // CustomControl={() => <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />}
     const instance = MapDataInstances.superAdminClients
     return (
-        <CompContentContainer title='Super admin clients'  >
-            <CompSyncFusionGridToolbar title="Clients view" isLastNoOfRows={true} instance={instance} />
+        <CompContentContainer title='Super admin clients' className="" >
+            <CompSyncFusionGridToolbar CustomControl={SuperAdminClientCustomControl} title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
                 aggregates={getAggregates()}
                 columns={getColumns()}
@@ -75,4 +75,13 @@ export function SuperAdminClients() {
     function clientCodeAggrTemplate(props: any) {
         return (<span><b>Count: {props.Count}</b></span>)
     }
+}
+
+function SuperAdminClientCustomControl() {
+    return (
+        <div className="flex flex-wrap gap-2">
+            <button className="bg-primary-400 text-white w-20 min-w-24 h-10 rounded-md hover:bg-primary-600">New client</button>
+            <button className="bg-primary-400 text-white w-20 h-10 rounded-md min-w-64 hover:bg-primary-600">New client with external database</button>
+        </div>
+    )
 }

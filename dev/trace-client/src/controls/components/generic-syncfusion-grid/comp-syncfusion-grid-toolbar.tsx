@@ -1,4 +1,4 @@
-import { FC, useContext } from "react"
+import { FC, useContext, } from "react"
 import { CompSyncFusionGridSearchBox } from "./comp-syncfusion-grid-search-box"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { GlobalContextType } from "../../../app/global-context"
@@ -10,7 +10,7 @@ import { IconFilePdf } from "../../icons/icon-file-pdf"
 import { WidgetTooltip } from "../../widgets/widget-tooltip"
 import { IconFileExcel } from "../../icons/icon-file-excel"
 import { IconFileCsv } from "../../icons/icon-file-csv"
-// import { ExcelExportProperties } from "@syncfusion/ej2-react-grids"
+import { Utils } from "../../../utils/utils"
 
 export function CompSyncFusionGridToolbar({
     CustomControl = undefined
@@ -55,9 +55,6 @@ export function CompSyncFusionGridToolbar({
                 <option value="">All rows</option>
             </select>}
 
-            {/* Search */}
-            {isSearch && <CompSyncFusionGridSearchBox instance={instance} />}
-
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
                 <button className="h-8 w-8 rounded-md bg-yellow-500" onClick={() => {
@@ -90,12 +87,21 @@ export function CompSyncFusionGridToolbar({
 
             {/* Refresh */}
             {isRefresh && <WidgetTooltip title="Refresh">
-                <WidgetButtonRefresh handleRefresh={() => {
+                <WidgetButtonRefresh handleRefresh={async () => {
                     const loadData: any = context.
                         CompSyncFusionGrid[instance].loadData
-                    loadData && loadData()
+                    loadData && await loadData()
+                    const state: RootStateType = Utils.getReduxState()
+                    const searchString = state.queryHelper[instance].searchString
+                    const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+                    if (searchString) {
+                        gridRef.current.search(searchString)
+                    }
                 }} />
             </WidgetTooltip>}
+
+             {/* Search */}
+             {isSearch && <CompSyncFusionGridSearchBox instance={instance} />}
 
         </div>
     </div >)

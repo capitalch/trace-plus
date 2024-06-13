@@ -4,6 +4,10 @@ import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
 import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
+import { RootStateType } from "../../../app/store/store"
+import { Utils } from "../../../utils/utils"
+// import { RootStateType } from "../../../app/store/store"
+// import { Utils } from "../../../utils/utils"
 
 export function CompSyncFusionGrid({
     aggregates,
@@ -18,11 +22,15 @@ export function CompSyncFusionGrid({
     const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, })
 
     const gridRef: any = useRef({})
-    // const toolbarOptions = ['Search', 'ExcelExport','PdfExport','CsvExport']
 
     useEffect(() => {
         context.CompSyncFusionGrid[instance].loadData = loadData
         context.CompSyncFusionGrid[instance].gridRef = gridRef
+        // const state: RootStateType = Utils.getReduxState()
+        // const searchString = state.queryHelper[instance]?.searchString
+        // if (searchString) {
+        //     gridRef.current.search(searchString)
+        // }
     }, [])
 
     if (loading) {
@@ -42,6 +50,8 @@ export function CompSyncFusionGrid({
         allowSorting={true}
         allowSelection={true}
         allowTextWrap={true}
+        created={onCreated}
+        dataBound={onDataBound}
         dataSource={selectedData?.genericQuery || []}
         gridLines="Both"
         ref={gridRef}
@@ -71,6 +81,22 @@ export function CompSyncFusionGrid({
         ]} />
 
     </GridComponent>)
+
+    function onDataBound() {
+        // const state: RootStateType = Utils.getReduxState()
+        // const searchString = state.queryHelper[instance]?.searchString
+        // if (searchString && gridRef.current) {
+        //     gridRef.current.search(searchString)
+        // }
+    }
+
+    function onCreated() {
+        const state: RootStateType = Utils.getReduxState()
+        const searchString = state.queryHelper[instance]?.searchString
+        if (searchString && gridRef.current) {
+            gridRef.current.search(searchString)
+        }
+    }
 
 }
 

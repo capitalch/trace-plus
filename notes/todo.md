@@ -1,18 +1,19 @@
 ## To do
 - Delete, edit
 - Grid
-	- Create UI for status bar
+																								- Create UI for status bar
 	- Status bar align with container
-	- pdf and excel export
+																								- pdf and excel export
 	- Search
-		- retain searchString in Redux
+																								- retain searchString in Redux
 		- Multiple keyword search
-		- On Refresh execute the search also																								
+																								- On Refresh execute the search also																								
 	- Refresh should not reset the last no of rows
+		- If changed last no of rows and click refresh then error
 	- Two buttons
 	- Forms for input new client Internal and external databases
 	- Edit, Delete and Preview
-	- Tooltip widget
+																								- Tooltip widget
 	
 																								- load data
 																								- last no of rows
