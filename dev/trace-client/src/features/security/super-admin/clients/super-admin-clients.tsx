@@ -3,19 +3,27 @@ import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
+import { SuperAdminClientNewClient } from "./super-admin-clients-new-client";
 
 export function SuperAdminClients() {
     // CustomControl={() => <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />}
     const instance = MapDataInstances.superAdminClients
     return (
-        <CompContentContainer title='Super admin clients' className="" >
-            <CompSyncFusionGridToolbar CustomControl={SuperAdminClientCustomControl} title="Clients view" isLastNoOfRows={true} instance={instance} />
+        <CompContentContainer title='Super admin clients' className="" 
+        // CustomControl={() => <CompSyncFusionGridToolbar CustomControl={SuperAdminClientCustomControl} title="Clients view" isLastNoOfRows={true} instance={instance} />}
+        >
+            <CompSyncFusionGridToolbar CustomControl={SuperAdminClientNewClient} title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
+                className="mt-4"
                 aggregates={getAggregates()}
                 columns={getColumns()}
                 instance={instance}
+                rowHeight={40}
                 sqlArgs={{ dbName: 'traceAuth' }}
                 sqlId={MapSqlIds.allClients}
+                onDelete={handleOnDelete}
+                onEdit={handleOnEdit}
+                onPreview={handleOnPreview}
             />
         </CompContentContainer>
     )
@@ -24,9 +32,9 @@ export function SuperAdminClients() {
         return ([
             {
                 field: 'id',
-                headerText: 'Client id',
+                headerText: 'Cl id',
                 type: 'number',
-                width: 30,
+                width: 25,
             },
             {
                 field: 'clientCode',
@@ -58,6 +66,18 @@ export function SuperAdminClients() {
         ])
     }
 
+    function handleOnDelete(id: string) {
+        console.log('Delete clicked:', id)
+    }
+
+    function handleOnEdit(props:any){
+        console.log('Edit clicked: ', props)
+    }
+
+    function handleOnPreview(props:any){
+        console.log('Preview clicked: ', props)
+    }
+
     function isActiveTemplate(props: any) {
         return (<input type="checkbox" readOnly checked={props.isActive} />)
     }
@@ -75,13 +95,4 @@ export function SuperAdminClients() {
     function clientCodeAggrTemplate(props: any) {
         return (<span><b>Count: {props.Count}</b></span>)
     }
-}
-
-function SuperAdminClientCustomControl() {
-    return (
-        <div className="flex flex-wrap gap-2">
-            <button className="bg-primary-400 text-white w-20 min-w-24 h-10 rounded-md hover:bg-primary-600">New client</button>
-            <button className="bg-primary-400 text-white w-20 h-10 rounded-md min-w-64 hover:bg-primary-600">New client with external database</button>
-        </div>
-    )
 }

@@ -1,18 +1,17 @@
 ## To do
-- Delete, edit
+- Find a way to directly pass a react element without FC
 - Grid
 																								- Create UI for status bar
-	- Status bar align with container
+																								- Status bar align with container
 																								- pdf and excel export
 	- Search
-																								- retain searchString in Redux
 		- Multiple keyword search
+																								- retain searchString in Redux
 																								- On Refresh execute the search also																								
-	- Refresh should not reset the last no of rows
-		- If changed last no of rows and click refresh then error
-	- Two buttons
+	- When last no of rows selected, refresh does not display loading indicator
+																								- Two buttons
 	- Forms for input new client Internal and external databases
-	- Edit, Delete and Preview
+																								- Edit, Delete and Preview
 																								- Tooltip widget
 	
 																								- load data

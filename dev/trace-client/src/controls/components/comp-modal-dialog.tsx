@@ -19,11 +19,11 @@ export function CompModalDialog({ body, isOpen, size = 'sm', title, toShowCloseB
                             <div className="relative flex flex-col w-full bg-white rounded-lg shadow-lg outline-none focus:outline-none">
 
                                 {/*header*/}
-                                <div className="flex items-center justify-between p-5 ">
-                                    <label className="text-2xl font-semibold text-primary-500">
+                                <div className="flex items-center justify-between p-4 ">
+                                    <label className="text-lg font-semibold text-primary-500">
                                         {title}
                                     </label>
-                                    <button onClick={onClickClose} className="w-6 h-6 px-0 py-0 font-semibold bg-transparent border-0 outline-none focus:outline-none">
+                                    <button onClick={onClickClose} className="w-6 h-6 px-0 py-0 mt-1 ml-auto font-semibold bg-transparent border-0 outline-none focus:outline-none">
                                         X
                                     </button>
                                 </div>

@@ -46,8 +46,9 @@ export function CompSyncFusionGridToolbar({
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
 
+            {/* last no of rows */}
             {isLastNoOfRows && <select value={lastNoOfRows}
-                className="rounded-xs h-9 border border-none bg-slate-200 text-sm focus:border-none focus:outline-none"
+                className="rounded-md h-9 border border-none bg-slate-200 text-sm focus:border-none focus:outline-none"
                 onChange={handleOnChangeLastNoOfRows}>
                 <option value="100">Last 100 rows</option>
                 <option value="500">Last 500 rows</option>
@@ -57,7 +58,7 @@ export function CompSyncFusionGridToolbar({
 
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
-                <button className="h-8 w-8 rounded-md bg-yellow-500" onClick={() => {
+                <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                     gridRef.current.pdfExport()
                 }}>
@@ -67,7 +68,7 @@ export function CompSyncFusionGridToolbar({
 
             {/* Excel export */}
             {isExcelExport && <WidgetTooltip title="Excel export">
-                <button className="h-8 w-8 rounded-md bg-gray-300" onClick={() => {
+                <button className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                     gridRef.current.excelExport()
                 }}>
@@ -77,13 +78,16 @@ export function CompSyncFusionGridToolbar({
 
             {/* csv export */}
             {isCsvExport && <WidgetTooltip title="Csv export">
-                <button className="h-8 w-8 rounded-md bg-red-100" onClick={() => {
+                <button className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                     gridRef.current.csvExport()
                 }}>
                     <IconFileCsv className="m-auto h-6 w-6 text-blue-600" />
                 </button>
             </WidgetTooltip>}
+
+            {/* Search */}
+            {isSearch && <CompSyncFusionGridSearchBox instance={instance} />}
 
             {/* Refresh */}
             {isRefresh && <WidgetTooltip title="Refresh">
@@ -99,9 +103,6 @@ export function CompSyncFusionGridToolbar({
                     }
                 }} />
             </WidgetTooltip>}
-
-             {/* Search */}
-             {isSearch && <CompSyncFusionGridSearchBox instance={instance} />}
 
         </div>
     </div >)

@@ -6,31 +6,29 @@ import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
 import { RootStateType } from "../../../app/store/store"
 import { Utils } from "../../../utils/utils"
-// import { RootStateType } from "../../../app/store/store"
-// import { Utils } from "../../../utils/utils"
 
 export function CompSyncFusionGrid({
     aggregates,
+    className='',
     columns,
     height,
     isLoadOnInit = true,
     instance,
+    onDelete = undefined,
+    onEdit = undefined,
+    onPreview = undefined,
+    rowHeight= 30,
     sqlArgs,
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, })
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
 
     const gridRef: any = useRef({})
 
     useEffect(() => {
         context.CompSyncFusionGrid[instance].loadData = loadData
         context.CompSyncFusionGrid[instance].gridRef = gridRef
-        // const state: RootStateType = Utils.getReduxState()
-        // const searchString = state.queryHelper[instance]?.searchString
-        // if (searchString) {
-        //     gridRef.current.search(searchString)
-        // }
     }, [])
 
     if (loading) {
@@ -50,11 +48,12 @@ export function CompSyncFusionGrid({
         allowSorting={true}
         allowSelection={true}
         allowTextWrap={true}
+        className={className}
         created={onCreated}
-        dataBound={onDataBound}
         dataSource={selectedData?.genericQuery || []}
         gridLines="Both"
         ref={gridRef}
+        rowHeight={rowHeight}
         // toolbar={toolbarOptions}
         searchSettings={searchOptions}
         height={height}>
@@ -82,14 +81,6 @@ export function CompSyncFusionGrid({
 
     </GridComponent>)
 
-    function onDataBound() {
-        // const state: RootStateType = Utils.getReduxState()
-        // const searchString = state.queryHelper[instance]?.searchString
-        // if (searchString && gridRef.current) {
-        //     gridRef.current.search(searchString)
-        // }
-    }
-
     function onCreated() {
         const state: RootStateType = Utils.getReduxState()
         const searchString = state.queryHelper[instance]?.searchString
@@ -97,15 +88,19 @@ export function CompSyncFusionGrid({
             gridRef.current.search(searchString)
         }
     }
-
 }
 
 export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
+    className?: string
     columns: SyncFusionGridColumnType[]
     height?: string
     isLoadOnInit?: boolean
     instance: string
+    onDelete?: (id:string) => void
+    onEdit?:(args:any) => void
+    onPreview?: (args:any) => void
+    rowHeight?: number
     sqlArgs: SqlArgsType
     sqlId: string
 }

@@ -4,7 +4,7 @@ export function WidgetTooltip({ children, className, title }: WidgetTooltipType)
     return (
         <div className={clsx(className, "group relative w-max")}>
             {children}
-            <span className="pointer-events-none absolute -top-8 left-0 w-max rounded-md bg-gray-500 px-2 text-white opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="pointer-events-none absolute -top-8 z-10 left-0 w-max rounded-md bg-gray-500 px-2 text-white opacity-0 transition-opacity group-hover:opacity-100">
                 {title}
             </span>
         </div>

@@ -5,16 +5,20 @@ import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
+import { WidgetTooltip } from "../../widgets/widget-tooltip";
+import { IconEdit } from "../../icons/icon-edit";
+import { IconDelete } from "../../icons/icon-delete";
+import { IconPreview } from "../../icons/icon-preview";
 
-export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, sqlId, sqlArgs, }: CompSyncFusionGridType) {
+export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     let lastNoOfRows = selectedLastNoOfRows
 
     if (selectedLastNoOfRows === undefined) {
         lastNoOfRows = 100
-    } else if(selectedLastNoOfRows === '') {
-        lastNoOfRows = undefined
+    } else if (selectedLastNoOfRows === '') {
+        lastNoOfRows = null
     }
     sqlArgs.noOfRows = lastNoOfRows
 
@@ -49,7 +53,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
     }
 
     function getColumnDirectives() {
-        return columns.map((col: SyncFusionGridColumnType, index: number) => {
+        const colDirectives: any[] = columns.map((col: SyncFusionGridColumnType, index: number) => {
             return (<ColumnDirective
                 field={col.field}
                 headerText={col.headerText}
@@ -61,7 +65,75 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
                 format={col.format}
             />)
         })
+
+        if (onDelete) {
+            colDirectives.unshift(<ColumnDirective
+                key='D'
+                field=''
+                headerText=''
+                template={deleteTemplate}
+                width={12}
+            />)
+        }
+
+        if (onPreview) {
+            colDirectives.unshift(<ColumnDirective
+                key='D'
+                field=''
+                headerText=''
+                template={previewTemplate}
+                width={12}
+            />)
+        }
+
+        if (onEdit) {
+            colDirectives.unshift(<ColumnDirective
+                key='E'
+                field=''
+                headerText=''
+                template={editTemplate}
+                width={12}
+            />)
+        }
+        return (colDirectives)
     }
+
+    function deleteTemplate(props: any) {
+        return (<WidgetTooltip title="Edit">
+            <button className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+                if (onDelete) {
+                    onDelete(props.id)
+                }
+            }}>
+                <IconDelete className="m-auto mt-1 h-4 w-4 text-red-600" />
+            </button>
+        </WidgetTooltip>)
+    }
+
+    function previewTemplate(props: any) {
+        return (<WidgetTooltip title="Edit">
+            <button className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+                if (onPreview) {
+                    onPreview(props)
+                }
+            }}>
+                <IconPreview className="m-auto mt-1 h-5 w-5 text-blue-600" />
+            </button>
+        </WidgetTooltip>)
+    }
+
+    function editTemplate(props: any) {
+        return (<WidgetTooltip title="Edit">
+            <button className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+                if (onEdit) {
+                    onEdit(props)
+                }
+            }}>
+                <IconEdit className="m-auto mt-1 h-5 w-5 text-green-600" />
+            </button>
+        </WidgetTooltip>)
+    }
+
 
     return ({ getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData })
 }
