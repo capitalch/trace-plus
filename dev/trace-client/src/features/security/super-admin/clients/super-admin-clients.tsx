@@ -3,7 +3,7 @@ import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
-import { SuperAdminClientNewClient } from "./super-admin-clients-new-client";
+import { SuperAdminClientNewClientButtons } from "./super-admin-clients-new-client-buttons";
 
 export function SuperAdminClients() {
     // CustomControl={() => <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />}
@@ -12,7 +12,7 @@ export function SuperAdminClients() {
         <CompContentContainer title='Super admin clients' className="" 
         // CustomControl={() => <CompSyncFusionGridToolbar CustomControl={SuperAdminClientCustomControl} title="Clients view" isLastNoOfRows={true} instance={instance} />}
         >
-            <CompSyncFusionGridToolbar CustomControl={SuperAdminClientNewClient} title="Clients view" isLastNoOfRows={true} instance={instance} />
+            <CompSyncFusionGridToolbar CustomControl={SuperAdminClientNewClientButtons} title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
                 className="mt-4"
                 aggregates={getAggregates()}

@@ -11,6 +11,7 @@ import { WidgetTooltip } from "../../widgets/widget-tooltip"
 import { IconFileExcel } from "../../icons/icon-file-excel"
 import { IconFileCsv } from "../../icons/icon-file-csv"
 import { Utils } from "../../../utils/utils"
+import { PdfExportProperties } from "@syncfusion/ej2-react-grids"
 
 export function CompSyncFusionGridToolbar({
     CustomControl = undefined
@@ -19,6 +20,7 @@ export function CompSyncFusionGridToolbar({
     , isExcelExport = true
     , isLastNoOfRows = false
     , isPdfExport = true
+    , isPdfExportAsLandscape = false
     , isRefresh = true
     , isSearch = true
 
@@ -41,6 +43,11 @@ export function CompSyncFusionGridToolbar({
     //     columns: columns
     // }
 
+    const pdfExportProperties: PdfExportProperties = {
+        fileName: 'trace-export.pdf',
+        pageOrientation: isPdfExportAsLandscape ? 'Landscape' : 'Portrait'
+    }
+
     return (<div className="flex items-center justify-between">
         <h2 className="mt-0 text-lg font-medium text-primary-500">{title}</h2>
         <div className="flex items-center gap-2 flex-wrap" >
@@ -60,7 +67,7 @@ export function CompSyncFusionGridToolbar({
             {isPdfExport && <WidgetTooltip title="Pdf export">
                 <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
-                    gridRef.current.pdfExport()
+                    gridRef.current.pdfExport(pdfExportProperties)
                 }}>
                     <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
                 </button>
@@ -100,6 +107,7 @@ export function CompSyncFusionGridToolbar({
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                     if (searchString) {
                         gridRef.current.search(searchString)
+                        // gridRef.current.refresh()
                     }
                 }} />
             </WidgetTooltip>}
@@ -123,6 +131,7 @@ type CompSyncFusionGridToolbarType = {
     isExcelExport?: boolean
     isLastNoOfRows?: boolean
     isPdfExport?: boolean
+    isPdfExportAsLandscape?: boolean
     isRefresh?: boolean
     isSearch?: boolean
 

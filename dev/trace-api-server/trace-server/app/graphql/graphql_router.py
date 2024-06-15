@@ -11,13 +11,17 @@ from app.graphql.graphql_helper import generic_query_helper
 
 type_defs = load_schema_from_path(".")
 query = QueryType()
-
+mutation = MutationType()
 
 @query.field("genericQuery")
 async def generic_query(_, info, value=""):
     request: Request = info.context["request"]
     return await generic_query_helper(info, value, request)
 
+@mutation.field("genericUpdate")
+async def generic_update(_, info, value=''):
+    request: Request = info.context["request"]
+    return await (generic_update_helper(info, value, request))
 
 @query.field("hello")
 async def hello(_, info):

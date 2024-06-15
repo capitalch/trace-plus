@@ -1,5 +1,4 @@
 ## To do
-- Find a way to directly pass a react element without FC
 - Grid
 																								- Create UI for status bar
 																								- Status bar align with container
@@ -8,7 +7,7 @@
 		- Multiple keyword search
 																								- retain searchString in Redux
 																								- On Refresh execute the search also																								
-	- When last no of rows selected, refresh does not display loading indicator
+	- When last no of rows selected, refresh click does not display loading indicator
 																								- Two buttons
 	- Forms for input new client Internal and external databases
 																								- Edit, Delete and Preview

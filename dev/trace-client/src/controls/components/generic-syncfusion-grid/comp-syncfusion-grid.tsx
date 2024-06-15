@@ -95,8 +95,8 @@ export type CompSyncFusionGridType = {
     className?: string
     columns: SyncFusionGridColumnType[]
     height?: string
-    isLoadOnInit?: boolean
     instance: string
+    isLoadOnInit?: boolean
     onDelete?: (id:string) => void
     onEdit?:(args:any) => void
     onPreview?: (args:any) => void

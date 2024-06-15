@@ -12,14 +12,13 @@ from app.utils import getSqlQueryObject
 
 
 async def generic_query_helper(info, value: str, request: Request):
-    error = {}
+    # error = {}
     data = {}
     try:
         valueString = unquote(value)
         valueDict = json.loads(valueString)
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
-        # toReconnect = valueDict.get("toReconnect", False)
         sqlId = valueDict.get("sqlId", None)
         request = info.context.get("request", None)
         requestJson = await request.json()

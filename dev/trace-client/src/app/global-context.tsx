@@ -1,5 +1,3 @@
-// import { FC } from 'react'
-
 import { MapDataInstances } from "./graphql/maps/map-data-instances"
 
 export const defaultGlobalContext: GlobalContextType = {

@@ -1,6 +1,7 @@
 import { Utils } from "../../../../utils/utils"
+import { SuperAdminNewClient } from "./super-admin-new-client"
 
-export function SuperAdminClientNewClient() {
+export function SuperAdminClientNewClientButtons() {
     return (
         <div className="flex flex-wrap gap-2">
             <button className="bg-primary-400 text-white w-20 min-w-24 h-10 rounded-md hover:bg-primary-600" onClick={handleNewClient}>New client</button>
@@ -12,7 +13,7 @@ export function SuperAdminClientNewClient() {
         Utils.showHideModalDialogA({
             title: "New client",
             isOpen: true,
-            element: <button>Test</button>
+            element: <SuperAdminNewClient />
         })
     }
 
