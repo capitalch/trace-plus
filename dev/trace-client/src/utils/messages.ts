@@ -3,6 +3,7 @@ const Messages = {
   errAtLeast8Chars: 'Should be at least 8 chars long',
   errAtLeast6Chars: 'Should be at least 6 chars long',
   errAtMost10Chars: 'Should be at most 10 chars long',
+  errAtMost50Chars: 'Should be at most 50 chars long',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errMustHaveOneDigit: 'Should have a digit',
   errMustHaveOneLetter: 'Should have one letter',

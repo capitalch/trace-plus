@@ -35,8 +35,7 @@ export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSear
         </div>
     )
 
-    function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
-        // dispatch(setSearchStringR({ instance: instance, searchString: event.target.value }))
+    function handleOnChange(event: ChangeEvent<HTMLInputElement>) {        
         const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
         gridRef.current.search(event.target.value)
     }
