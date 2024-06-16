@@ -1,15 +1,22 @@
 ## To do
+- Forms for input new client Internal and external databases
+	- GraphQL mutation at client side
+	- Server validation for clientCode for unique clientCode
+	- Update
+	- with external db
+
+	- GraphQL mutation at server side
+	- updateClient at server
 - Grid
+	- Edit grid for client
 																								- Create UI for status bar
 																								- Status bar align with container
 																								- pdf and excel export
 	- Search
 		- Multiple keyword search
 																								- retain searchString in Redux
-																								- On Refresh execute the search also																								
-	- When last no of rows selected, refresh click does not display loading indicator
+																								- On Refresh execute the search also
 																								- Two buttons
-	- Forms for input new client Internal and external databases
 																								- Edit, Delete and Preview
 																								- Tooltip widget
 	

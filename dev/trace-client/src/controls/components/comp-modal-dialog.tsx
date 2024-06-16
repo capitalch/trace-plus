@@ -12,18 +12,18 @@ export function CompModalDialog({ body, isOpen, size = 'sm', title, toShowCloseB
             {isOpen ? (
                 <>
                     <div
-                        className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+                        className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
                         <div className={clsx("relative w-auto max-w-4xl mx-auto", sizeLogic[size])}>
 
                             {/*content*/}
-                            <div className="relative flex flex-col w-full bg-white rounded-lg shadow-lg outline-none focus:outline-none">
+                            <div className="relative flex w-full flex-col rounded-lg bg-white shadow-lg outline-none focus:outline-none">
 
                                 {/*header*/}
-                                <div className="flex items-center justify-between p-4 ">
+                                <div className="flex items-center justify-between p-4">
                                     <label className="text-lg font-semibold text-primary-500">
                                         {title}
                                     </label>
-                                    <button onClick={onClickClose} className="w-6 h-6 px-0 py-0 mt-1 ml-auto font-semibold bg-transparent border-0 outline-none focus:outline-none">
+                                    <button onClick={onClickClose} className="ml-auto mt-1 h-6 w-6 cursor-pointer border-0 bg-transparent px-0 py-0 font-semibold outline-none focus:outline-none">
                                         X
                                     </button>
                                 </div>
@@ -37,7 +37,7 @@ export function CompModalDialog({ body, isOpen, size = 'sm', title, toShowCloseB
                                 {/*footer*/}
                                 <div className={clsx("flex ml-auto mr-6 mb-6 ", footerClassName)} >
                                     <button
-                                        className="px-6 py-2 text-sm font-bold text-white uppercase border-[1px] bg-primary-400 hover:bg-primary-500 active:bg-primary-600"
+                                        className="border-[1px] bg-primary-400 px-6 py-2 text-sm font-bold uppercase text-white hover:bg-primary-500 active:bg-primary-600"
                                         type="button"
                                         onClick={onClickClose}>
                                         Close

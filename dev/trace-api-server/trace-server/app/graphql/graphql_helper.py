@@ -10,9 +10,10 @@ from .db.helpers.psycopg_async_helper import exec_sql
 # from .db.sql_security import SqlSecurity
 from app.utils import getSqlQueryObject
 
+async def generic_update_helper(info,value: str):
+    pass
 
-async def generic_query_helper(info, value: str, request: Request):
-    # error = {}
+async def generic_query_helper(info, value: str):
     data = {}
     try:
         valueString = unquote(value)
@@ -53,7 +54,38 @@ async def generic_query_helper(info, value: str, request: Request):
         }
     return data
 
-
+async def update_client_helper(info, value: str):
+    data = {}
+    try:
+        valueString = unquote(value)
+        request = info.context.get('request', None)
+        requestJson = await request.json()
+        operationName = requestJson.get('operationName', None)
+        sqlObj = json.loads(valueString)
+        xData = sqlObj.get('xData', None)
+        if(xData):
+            isExternalDb: bool = xData.get('isExternalDb', None)
+            dbParams = xData.get('dbParams', None)
+            if (dbParams):
+                pass
+                # dbParamsEncrypted = utils.encrypt(dbParams)
+                # xData['dbParams'] = dbParamsEncrypted
+                # Encrypt dbParams and set in xData
+            dbToCreate = xData.get('dbName')
+            if(dbToCreate):
+                pass
+                # dbNameInCatalog: str = await exec_sql(
+                #     request,
+                #     dbName=operationName,
+                #     db_params=dbParams,
+                #     schema="public",
+                #     sql=SqlSecurity.get_db_name_in_catalog,
+                #     sqlArgs={"dbName": dbToCreate},
+                # )
+    except Exception as e:
+        pass
+    
+    
 # async def generic_query_helper1():
 #     # sql = 'select * from "TranD" where "id" <> %(id)s'
 #     sql = allSqls.get("sql1")

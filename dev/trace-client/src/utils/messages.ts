@@ -9,9 +9,12 @@ const Messages = {
   errMustHaveOneLetter: 'Should have one letter',
   errMustHaveOneSpecialChar: 'Must have a special character',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
+  errNoSpecialChar: 'Cannot have special character',
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
+  messClientCode: 'Client code should be between 6 characters and 10 characters',
+  messClientName: 'Client name should be between 6 characters and 50 characters',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messUserNameEmailHelper:
     'At least 4 characters long | no space | no special char'
