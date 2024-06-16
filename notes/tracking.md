@@ -3,6 +3,8 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 01-06-2024 - 16-06-2024
+- Super admin clients (Client and server side)
 # 06-05-2024
 - Client side error page design
 - Client side error handling

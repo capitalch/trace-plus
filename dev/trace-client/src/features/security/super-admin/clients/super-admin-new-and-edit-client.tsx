@@ -8,9 +8,17 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { useState } from "react"
 import { useValidators } from "../../../../utils/validators-hook"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
+// import { useMutation } from "@apollo/client"
+// import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
+import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
+import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
+import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
+import { Utils } from "../../../../utils/utils"
+// import { useMutation } from "@apollo/client"
 
-export function SuperAdminNewClient() {
+export function SuperAdminNewAndEditClient() {
     const [active, setActive] = useState(false)
+    const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { handleSubmit, register, formState: { errors } } = useForm({ mode: 'onTouched' })
 
@@ -80,12 +88,26 @@ export function SuperAdminNewClient() {
         </form>
     )
 
-    function onSubmit(data: FormDataType) {
+    async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: 'ClientM',
-            xData: { ...data, dbName:`${data.clientCode}_accounts` }
+            tableName: 'ClientM'
+            , xData: {
+                ...data
+                , dbName: `${data.clientCode}_accounts`
+                , isExternalDb: false
+            }
         }
-        console.log(traceDataObject)
+        try {
+            const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
+            // show loading indicator
+            const res: any = await mutateGraphQL(q)
+            console.log(res)
+        } catch (e: any) {
+            console.log(e.message)
+            Utils.showGraphQlErrorMessage(e)
+        } finally {
+            // hide loading indicator
+        }
     }
 }
 

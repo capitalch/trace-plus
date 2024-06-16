@@ -13,8 +13,7 @@ export function useQueryHelper({
     , instance
     , isExecQueryOnLoad = true
 }: QueryHelperType) {
-    // const queryArgs = getQueryArgs()
-    // console.log(queryArgs)
+
     const dispatch: AppDispatchType = useDispatch()
     const [getGenericQueryData, { error, loading }] = useLazyQuery(
         MapGraphQLQueries.genericQuery(databaseName, getQueryArgs())
@@ -47,5 +46,4 @@ type QueryHelperType = {
     getQueryArgs: () => GraphQLQueryArgsType
     instance: string
     isExecQueryOnLoad?: boolean
-
 }

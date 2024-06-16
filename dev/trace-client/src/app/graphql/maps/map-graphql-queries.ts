@@ -1,8 +1,10 @@
 import { gql } from '@apollo/client'
 import _ from 'lodash'
+import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enums'
 
 export const MapGraphQLQueries = {
-  genericQuery: genericQuery
+  genericQuery: genericQuery,
+  updateClient: updateClient
 }
 
 function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
@@ -10,6 +12,15 @@ function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
   return gql`
         query ${dbName} {
             genericQuery(value:"${value}")
+        }
+    `
+}
+
+function updateClient (dbName: string, val: TraceDataObjectType) {
+  const value = encodeObj(val)
+  return gql`
+        mutation ${dbName} {
+            updateClient(value:"${value}")
         }
     `
 }
