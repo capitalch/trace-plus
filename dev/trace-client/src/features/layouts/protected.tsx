@@ -8,9 +8,7 @@ function Protected({ children }: { children: any }) {
     const isLoggedInSelector = useSelector(isLoggedInSelectorFn)
     // if isLoggedIn then return children else return Navigate with path as 'login'
     return (<div className="">
-        {
-            isLoggedInSelector ? children : <Navigate to='/login' />
-        }
+        {isLoggedInSelector ? children : <Navigate to='/login' />}
     </div>)
 }
 export { Protected }

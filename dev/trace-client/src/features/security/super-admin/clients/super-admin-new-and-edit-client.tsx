@@ -14,6 +14,7 @@ import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
 import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
+// import { delay } from "lodash"
 // import { useMutation } from "@apollo/client"
 
 export function SuperAdminNewAndEditClient() {
@@ -100,12 +101,15 @@ export function SuperAdminNewAndEditClient() {
         try {
             const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
             // show loading indicator
+            Utils.showAppLoader(true)
+            // await new Promise(resolve => setTimeout(resolve, 3000));
             const res: any = await mutateGraphQL(q)
             console.log(res)
         } catch (e: any) {
             console.log(e.message)
             Utils.showGraphQlErrorMessage(e)
         } finally {
+            Utils.showAppLoader(false)
             // hide loading indicator
         }
     }

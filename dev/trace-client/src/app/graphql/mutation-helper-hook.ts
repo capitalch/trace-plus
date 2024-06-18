@@ -10,7 +10,9 @@ import { getApolloClient } from './apollo-client'
 export function useMutationHelper () {
     async function mutateGraphQL(q:any){
         const client = getApolloClient()
-        const ret: any = await client.mutate(q)
+        const ret: any = await client.mutate({
+            mutation: q
+        })
         return(ret)
     }
     return({mutateGraphQL})

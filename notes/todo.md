@@ -7,6 +7,7 @@
 
 	- GraphQL mutation at server side
 	- updateClient at server
+	- Independent Loading indicator
 - Grid
 	- Edit grid for client
 																								- Create UI for status bar

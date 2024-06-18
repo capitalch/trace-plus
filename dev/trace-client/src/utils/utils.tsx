@@ -9,6 +9,7 @@ export const Utils: UtilsType = {
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
     getToken: getToken,
+    showAppLoader: showAppLoader,
     showErrorMessage: showErrorMessage,
     showHideModalDialogA: showHideModalDialogA,
     showHideModalDialogB: showHideModalDialogB,
@@ -26,13 +27,17 @@ function getHostUrl() {
     return (url)
 }
 
-function getReduxState(): RootStateType{
-    return(store.getState())
+function getReduxState(): RootStateType {
+    return (store.getState())
 }
 
-function getToken(){
+function getToken() {
     const state: RootStateType = store.getState();
-    return(state.login.token)
+    return (state.login.token)
+}
+
+function showAppLoader(val: boolean) {
+    ibukiEmit('SHOW-APP-LOADER', val)
 }
 
 function showErrorMessage(error?: ErrorType, errorCode?: string, errorMessage?: string): void {
@@ -54,11 +59,11 @@ function showErrorMessage(error?: ErrorType, errorCode?: string, errorMessage?: 
         iconColor: 'white',
         width: 'auto',
         showCloseButton: true,
-        
+
     })
 }
 
-function showGraphQlErrorMessage(error: GraphQlErrorType){
+function showGraphQlErrorMessage(error: GraphQlErrorType) {
     Swal.fire({
         toast: true,
         position: "bottom-right",
@@ -84,7 +89,7 @@ function showHideModalDialogA({ isOpen, title, element }: ShowHideModalDialogTyp
         element: element,
         instanceName: instanceName
     }
-    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName] , args)
+    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName], args)
 }
 
 function showHideModalDialogB({ isOpen, title, element }: ShowHideModalDialogType) {
@@ -95,7 +100,7 @@ function showHideModalDialogB({ isOpen, title, element }: ShowHideModalDialogTyp
         element: element,
         instanceName: instanceName
     }
-    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName] , args)
+    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName], args)
 }
 
 function showSaveMessage() {
@@ -114,7 +119,7 @@ function showSaveMessage() {
             toast.addEventListener('mouseenter', Swal.stopTimer)
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         },
-        width:'20rem'
+        width: '20rem'
     })
 }
 
@@ -153,9 +158,10 @@ type UtilsType = {
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined
+    showAppLoader: (val: boolean) => void
     showErrorMessage: (error?: ErrorType, errorCode?: string, errorMessage?: string) => void
-    showHideModalDialogA: (options:ShowHideModalDialogType) => void
-    showHideModalDialogB: (options:ShowHideModalDialogType) => void
+    showHideModalDialogA: (options: ShowHideModalDialogType) => void
+    showHideModalDialogB: (options: ShowHideModalDialogType) => void
     showGraphQlErrorMessage: (error: GraphQlErrorType) => void
     showSaveMessage: () => void
 }
