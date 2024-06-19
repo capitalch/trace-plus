@@ -1,8 +1,5 @@
 class SqlSecurity:
-    get_all_clients1 = '''
-        SELECT * FROM "ClientM" 
-    '''
-    
+
     get_all_clients = '''
     with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))

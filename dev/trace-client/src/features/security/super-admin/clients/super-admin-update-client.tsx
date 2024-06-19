@@ -8,16 +8,12 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { useState } from "react"
 import { useValidators } from "../../../../utils/validators-hook"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
-// import { useMutation } from "@apollo/client"
-// import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
 import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
 import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
-// import { delay } from "lodash"
-// import { useMutation } from "@apollo/client"
 
-export function SuperAdminNewAndEditClient() {
+export function SuperAdminUpdateClient() {
     const [active, setActive] = useState(false)
     const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
@@ -41,7 +37,7 @@ export function SuperAdminNewAndEditClient() {
         }
     })
 
-    const registerIsClientActive = register('isClientActive')
+    const registerIsClientActive = register('isActive')
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2 w-64'>
@@ -74,11 +70,11 @@ export function SuperAdminNewAndEditClient() {
                     </span>
                 </label>
 
-                {/* Is client active  */}
+                {/* Is active  */}
                 <div className="flex items-center">
-                    <input type="checkbox" id='isClientActive' className='h-4 w-4 cursor-pointer'
+                    <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
                         checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
-                    <label htmlFor="isClientActive" className="ml-3 text-sm text-primary-500 cursor-pointer">Is this client active</label>
+                    <label htmlFor="isActive" className="ml-3 text-sm text-primary-500 cursor-pointer">Is this client active</label>
                 </div>
 
                 {/* Save */}
@@ -102,8 +98,9 @@ export function SuperAdminNewAndEditClient() {
             const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
             // show loading indicator
             Utils.showAppLoader(true)
-            // await new Promise(resolve => setTimeout(resolve, 3000));
-            const res: any = await mutateGraphQL(q)
+            const queryName: string = MapGraphQLQueries.updateClient.name
+            const res: any = await mutateGraphQL(q,queryName)
+            Utils.showSaveMessage()
             console.log(res)
         } catch (e: any) {
             console.log(e.message)

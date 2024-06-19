@@ -106,9 +106,9 @@ function showHideModalDialogB({ isOpen, title, element }: ShowHideModalDialogTyp
 function showSaveMessage() {
     Swal.fire({
         toast: true,
-        position: "top-right",
+        position: "bottom-right",
         background: '#d0f0c0',
-        timer: 3000,
+        timer: 5000,
         timerProgressBar: true,
         title: 'Operation successful',
         padding: '10px',

@@ -5,15 +5,20 @@
 //   MapGraphQLQueries
 // } from './maps/map-graphql-queries'
 
+import { Utils } from '../../utils/utils'
 import { getApolloClient } from './apollo-client'
 
 export function useMutationHelper () {
-    async function mutateGraphQL(q:any){
+    async function mutateGraphQL(q:any, queryName:string){
         const client = getApolloClient()
-        const ret: any = await client.mutate({
+        const result: any = await client.mutate({
             mutation: q
         })
-        return(ret)
+        const error: any = result?.data?.[queryName]?.error?.content
+        if(error){
+            Utils.showGraphQlErrorMessage(error)
+        }
+        return(result)
     }
     return({mutateGraphQL})
 }

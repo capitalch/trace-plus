@@ -1,5 +1,5 @@
 import { Utils } from "../../../../utils/utils"
-import { SuperAdminNewAndEditClient } from "./super-admin-new-and-edit-client"
+import { SuperAdminUpdateClient } from "./super-admin-update-client"
 
 export function SuperAdminClientNewClientButtons() {
     return (
@@ -13,7 +13,7 @@ export function SuperAdminClientNewClientButtons() {
         Utils.showHideModalDialogA({
             title: "New client",
             isOpen: true,
-            element: <SuperAdminNewAndEditClient />
+            element: <SuperAdminUpdateClient />
         })
     }
 

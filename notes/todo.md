@@ -1,13 +1,16 @@
 ## To do
 - Forms for input new client Internal and external databases
-																								- GraphQL mutation at client side
 	- Server validation for clientCode for unique clientCode
-	- Update
-	- with external db
+	- Close form after success
+	- Reload data aftersuccess save
+	- Edit row data
+	- Delete row
+	- Accommodate external DB code at client side
+	- Ext DB code at server side
+	- Create database DML at server
 
-	- GraphQL mutation at server side
-	- updateClient at server
-	- Independent Loading indicator
+																								- GraphQL mutation at server side
+																								- Independent Loading indicator
 - Grid
 	- Edit grid for client
 																								- Create UI for status bar

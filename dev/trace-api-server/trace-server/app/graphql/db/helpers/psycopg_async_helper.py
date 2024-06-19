@@ -22,7 +22,7 @@ def get_conn_info(
     return connInfo
 
 async def exec_sql(
-    request,
+    # request,
     dbName: str = Config.DB_SECURITY_DATABASE,
     db_params: dict[str, str] = dbParams,
     schema: str = "public",
@@ -33,7 +33,6 @@ async def exec_sql(
     records = []
     records = await doProcess(connInfo, schema, dbName, sql, sqlArgs)
     return jsonable_encoder(records)
-
 
 async def doProcess(
     connInfo, schema, dbName, sql, sqlArgs
