@@ -1,9 +1,9 @@
 ## To do
 - Forms for input new client Internal and external databases
 	- Server validation for clientCode for unique clientCode
-	- Close form after success
-	- Reload data aftersuccess save
-	- Edit row data
+																								- Close form after success
+																								- Reload data aftersuccess save
+																								- Edit row data
 	- Delete row
 	- Accommodate external DB code at client side
 	- Ext DB code at server side

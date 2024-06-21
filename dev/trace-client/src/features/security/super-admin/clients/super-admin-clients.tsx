@@ -4,15 +4,17 @@ import { CompContentContainer } from "../../../../controls/components/comp-conte
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 import { SuperAdminClientNewClientButtons } from "./super-admin-clients-new-client-buttons";
+import { Utils } from "../../../../utils/utils";
+import { SuperAdminUpdateClient } from "./super-admin-update-client";
 
 export function SuperAdminClients() {
     // CustomControl={() => <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />}
     const instance = MapDataInstances.superAdminClients
     return (
-        <CompContentContainer title='Super admin clients' className="" 
+        <CompContentContainer title='Super admin clients' className=""
         // CustomControl={() => <CompSyncFusionGridToolbar CustomControl={SuperAdminClientCustomControl} title="Clients view" isLastNoOfRows={true} instance={instance} />}
         >
-            <CompSyncFusionGridToolbar CustomControl={SuperAdminClientNewClientButtons} title="Clients view" isLastNoOfRows={true} instance={instance} />
+            <CompSyncFusionGridToolbar CustomControl={() => <SuperAdminClientNewClientButtons dataInstance={instance} />} title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
                 className="mt-4"
                 aggregates={getAggregates()}
@@ -70,11 +72,23 @@ export function SuperAdminClients() {
         console.log('Delete clicked:', id)
     }
 
-    function handleOnEdit(props:any){
+    function handleOnEdit(props: any) {
         console.log('Edit clicked: ', props)
+        Utils.showHideModalDialogA({
+            title: "Edit client",
+            isOpen: true,
+            element: <SuperAdminUpdateClient
+                clientCode={props.clientCode}
+                clientName={props.clientName}
+                dbName={props.dbName}
+                id={props.id}
+                isActive={props.isActive}
+                dataInstance={instance}
+            />,
+        })
     }
 
-    function handleOnPreview(props:any){
+    function handleOnPreview(props: any) {
         console.log('Preview clicked: ', props)
     }
 

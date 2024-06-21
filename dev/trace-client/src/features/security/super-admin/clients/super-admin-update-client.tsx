@@ -5,19 +5,31 @@ import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-h
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
-import { useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useValidators } from "../../../../utils/validators-hook"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
 import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
+import { GlobalContextType } from "../../../../app/global-context"
+import { GlobalContext } from "../../../../App"
 
-export function SuperAdminUpdateClient() {
+export function SuperAdminUpdateClient({
+    clientCode
+    , clientName
+    , dataInstance
+    , dbName
+    // , dbParams
+    , id
+    , isActive
+    , isExternalDb
+}: SuperAdminUpdateClientType) {
     const [active, setActive] = useState(false)
     const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { handleSubmit, register, formState: { errors } } = useForm({ mode: 'onTouched' })
+    const { handleSubmit, register, setValue, formState: { errors } } = useForm<FormDataType>({ mode: 'onTouched' })
+    const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode', {
         maxLength: { value: 10, message: Messages.errAtMost10Chars },
@@ -38,6 +50,15 @@ export function SuperAdminUpdateClient() {
     })
 
     const registerIsClientActive = register('isActive')
+    useEffect(()=>{
+        setValue('clientCode', clientCode || '')
+        setValue('clientName', clientName || '')
+        setValue('dbName', dbName || '')
+        // setValue('dbParams', dbParams || '')
+        setValue('id', id  )
+        setValue('isActive', isActive || false)
+        setValue('isExternalDb', isExternalDb || false)
+    },[])
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2 w-64'>
@@ -86,11 +107,12 @@ export function SuperAdminUpdateClient() {
     )
 
     async function onSubmit(data: FormDataType) {
+        const dbName1: string = data.dbName ||  `${data.clientCode}_accounts` // If dbname is already there, it does not change
         const traceDataObject: TraceDataObjectType = {
             tableName: 'ClientM'
             , xData: {
                 ...data
-                , dbName: `${data.clientCode}_accounts`
+                , dbName: dbName1
                 , isExternalDb: false
             }
         }
@@ -99,19 +121,39 @@ export function SuperAdminUpdateClient() {
             // show loading indicator
             Utils.showAppLoader(true)
             const queryName: string = MapGraphQLQueries.updateClient.name
-            const res: any = await mutateGraphQL(q,queryName)
+            const res: any = await mutateGraphQL(q, queryName)
             Utils.showSaveMessage()
             console.log(res)
+            Utils.showHideModalDialogA({
+                isOpen: false,
+            })
+            context.CompSyncFusionGrid[dataInstance].loadData()
         } catch (e: any) {
             console.log(e.message)
             Utils.showGraphQlErrorMessage(e)
         } finally {
             Utils.showAppLoader(false)
-            // hide loading indicator
         }
     }
 }
 
 type FormDataType = {
-    [key: string]: string
+    clientCode: string
+    clientName: string
+    dbName: string
+    id?: number | undefined
+    isActive: boolean
+    isExternalDb?: boolean
+    // [key: string]: string
+}
+
+type SuperAdminUpdateClientType = {
+    dataInstance: string
+    clientCode?: string | undefined
+    clientName?: string
+    dbName?: string
+    dbParams?: string
+    id?: number | undefined
+    isActive?: boolean
+    isExternalDb?: boolean
 }
