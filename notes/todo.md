@@ -12,7 +12,6 @@
 																								- GraphQL mutation at server side
 																								- Independent Loading indicator
 - Grid
-	- Edit grid for client
 																								- Create UI for status bar
 																								- Status bar align with container
 																								- pdf and excel export
