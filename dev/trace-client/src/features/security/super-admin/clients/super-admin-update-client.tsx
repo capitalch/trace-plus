@@ -12,15 +12,16 @@ import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
 import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
+import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
 import { GlobalContextType } from "../../../../app/global-context"
 import { GlobalContext } from "../../../../App"
+import { IbukiMessages } from "../../../../utils/ibukiMessages"
 
 export function SuperAdminUpdateClient({
     clientCode
     , clientName
     , dataInstance
     , dbName
-    // , dbParams
     , id
     , isActive
     , isExternalDb
@@ -28,15 +29,27 @@ export function SuperAdminUpdateClient({
     const [active, setActive] = useState(false)
     const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { handleSubmit, register, setValue, formState: { errors } } = useForm<FormDataType>({ mode: 'onTouched' })
+    const { handleSubmit,  register, /*setError ,*/ setValue, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
     const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode', {
         maxLength: { value: 10, message: Messages.errAtMost10Chars },
         minLength: { value: 6, message: Messages.errAtLeast6Chars },
         required: Messages.errRequired,
+        // validate: (val:string)=>{
+        //     console.log(val)
+        //     return true
+        // }
         validate: {
-            noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult
+            noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
+            validate: (value: string) => {
+                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value });
+                return true;
+            },
+            // uniqueClientCode: (value: string) => {
+            //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value })
+            //     return (true)
+            // }
         }
 
     })
@@ -50,16 +63,22 @@ export function SuperAdminUpdateClient({
     })
 
     const registerIsClientActive = register('isActive')
-    useEffect(()=>{
+    useEffect(() => {
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-UPDATE-CLIENTS"], 1200).subscribe((d: any) => {
+            validateClientCode(d.data)
+        })
         setValue('clientCode', clientCode || '')
         setValue('clientName', clientName || '')
         setValue('dbName', dbName || '')
-        // setValue('dbParams', dbParams || '')
-        setValue('id', id  )
+        setValue('id', id)
         setValue('isActive', isActive || false)
         setValue('isExternalDb', isExternalDb || false)
-    },[])
-    
+
+        return (() => {
+            subs1.unsubscribe()
+        })
+    }, [])
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2 w-64'>
@@ -67,7 +86,13 @@ export function SuperAdminUpdateClient({
                 {/* Client code */}
                 <label className='flex flex-col font-medium text-primary-400'>
                     <span className='font-bold'>Client code <WidgetAstrix /></span>
-                    <input type='text' placeholder="e.g battle" className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerClientCode} />
+                    <input type='text' placeholder="e.g battle"
+                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+                        {...registerClientCode}
+                    // onChange={(e: any) => {
+                    //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: e.target.value })
+                    // }} 
+                    />
                     <span className="flex justify-between">
                         {(errors.clientCode)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientCode.message} />
@@ -101,14 +126,14 @@ export function SuperAdminUpdateClient({
 
                 {/* Save */}
                 <div className='mt-4 flex justify-start'>
-                    <WidgetButtonSubmitFullWidth label='Save' />
+                    <WidgetButtonSubmitFullWidth label='Save' disabled={!isValid} />
                 </div>
             </div>
         </form>
     )
 
     async function onSubmit(data: FormDataType) {
-        const dbName1: string = data.dbName ||  `${data.clientCode}_accounts` // If dbname is already there, it does not change
+        const dbName1: string = data.dbName || `${data.clientCode}_accounts` // If dbname is already there, it does not change
         const traceDataObject: TraceDataObjectType = {
             tableName: 'ClientM'
             , xData: {
@@ -131,10 +156,18 @@ export function SuperAdminUpdateClient({
             context.CompSyncFusionGrid[dataInstance].loadData()
         } catch (e: any) {
             console.log(e.message)
-            Utils.showGraphQlErrorMessage(e)
         } finally {
             Utils.showAppLoader(false)
         }
+    }
+
+    async function validateClientCode(value: any) {
+        console.log(value)
+        // setError('clientCode', {
+        //     type: '400',
+        //     message: 'Invalid client code'
+        // })
+        return (false)
     }
 }
 

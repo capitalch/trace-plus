@@ -1,5 +1,6 @@
 ## To do
 - Forms for input new client Internal and external databases
+	- Login error handling not correct
 	- Server validation for clientCode for unique clientCode
 																								- Close form after success
 																								- Reload data aftersuccess save
@@ -12,7 +13,6 @@
 																								- GraphQL mutation at server side
 																								- Independent Loading indicator
 - Grid
-	- Edit grid for client
 																								- Create UI for status bar
 																								- Status bar align with container
 																								- pdf and excel export
