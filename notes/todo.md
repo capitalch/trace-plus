@@ -1,5 +1,6 @@
 ## To do
 - Forms for input new client Internal and external databases
+	- Login error handling not correct
 	- Server validation for clientCode for unique clientCode
 																								- Close form after success
 																								- Reload data aftersuccess save

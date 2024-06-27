@@ -29,7 +29,7 @@ export function SuperAdminUpdateClient({
     const [active, setActive] = useState(false)
     const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { handleSubmit,  register, setError, setValue, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
+    const { handleSubmit,  register, /*setError ,*/ setValue, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
     const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode', {
@@ -43,8 +43,8 @@ export function SuperAdminUpdateClient({
         validate: {
             noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
             validate: (value: string) => {
-                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value })
-                return (true)
+                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value });
+                return true;
             },
             // uniqueClientCode: (value: string) => {
             //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value })
@@ -156,7 +156,6 @@ export function SuperAdminUpdateClient({
             context.CompSyncFusionGrid[dataInstance].loadData()
         } catch (e: any) {
             console.log(e.message)
-            Utils.showGraphQlErrorMessage(e)
         } finally {
             Utils.showAppLoader(false)
         }
@@ -164,11 +163,11 @@ export function SuperAdminUpdateClient({
 
     async function validateClientCode(value: any) {
         console.log(value)
-        setError('clientCode', {
-            type: '400',
-            message: 'Invalid client code'
-        })
-        // return (true)
+        // setError('clientCode', {
+        //     type: '400',
+        //     message: 'Invalid client code'
+        // })
+        return (false)
     }
 }
 

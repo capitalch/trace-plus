@@ -1,4 +1,4 @@
-export const IbukiMessages = {
+export const IbukiMessages:IbukiMessageType = {
     'Functionality:SourceComponent:DestinationComponent+fieldName': crypto.randomUUID(),
     'DEBOUNCE-UPDATE-CLIENTS': 'DEBOUNCE-UPDATE-CLIENTS',
     'SHOW-MODAL-DIALOG-A': crypto.randomUUID(),
@@ -6,6 +6,6 @@ export const IbukiMessages = {
     'SHOW-MODAL-DIALOG-': crypto.randomUUID(),
 }
 
-// type IbukiMessageType = {
-//     [key: string]: string
-// }
+type IbukiMessageType = {
+    [key: string]: string
+}

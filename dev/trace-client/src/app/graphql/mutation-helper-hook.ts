@@ -1,10 +1,3 @@
-// import { useMutation } from '@apollo/client'
-// import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
-// import {
-//   GraphQLQueryArgsType,
-//   MapGraphQLQueries
-// } from './maps/map-graphql-queries'
-
 import { Utils } from '../../utils/utils'
 import { getApolloClient } from './apollo-client'
 
@@ -17,11 +10,20 @@ export function useMutationHelper () {
         const error: any = result?.data?.[queryName]?.error?.content
         if(error){
             Utils.showGraphQlErrorMessage(error)
+            throw error
         }
         return(result)
     }
     return({mutateGraphQL})
 }
+
+// import { useMutation } from '@apollo/client'
+// import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
+// import {
+//   GraphQLQueryArgsType,
+//   MapGraphQLQueries
+// } from './maps/map-graphql-queries'
+
 
 // type MutationHelperType = {
 //   databaseName?: string
