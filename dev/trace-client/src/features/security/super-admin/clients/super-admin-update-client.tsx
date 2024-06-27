@@ -1,4 +1,5 @@
 import { useForm, ValidateResult } from "react-hook-form"
+import _ from 'lodash'
 import { Messages } from "../../../../utils/messages"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
 import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text"
@@ -27,10 +28,9 @@ export function SuperAdminUpdateClient({
     , isExternalDb
 }: SuperAdminUpdateClientType) {
     const [active, setActive] = useState(false)
-    const [isUniqClientCode, setUniqClientCode] = useState(false)
-    const { mutateGraphQL } = useMutationHelper()
+    // const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { handleSubmit, register, setError, setValue, trigger, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
+    const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'all' })
     const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode'
@@ -38,24 +38,12 @@ export function SuperAdminUpdateClient({
             maxLength: { value: 10, message: Messages.errAtMost10Chars },
             minLength: { value: 6, message: Messages.errAtLeast6Chars },
             required: Messages.errRequired,
-            // validate: (val:string)=>{
-            //     console.log(val)
-            //     return true
-            // }
-            // validate: {
-                // noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
-                // validate: (value: string) => {
-                //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value });
-                //     return(isUniqClientCode);
-                // },
-                // uniqueClientCode: (value: string) => {
-                //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value })
-                //     return (true)
-                // }
-            // }
-
+            validate: {
+                noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
+            }
         }
     )
+
     const registerClientName = register('clientName', {
         required: Messages.errRequired,
         minLength: { value: 6, message: Messages.errAtLeast6Chars },
@@ -66,6 +54,7 @@ export function SuperAdminUpdateClient({
     })
 
     const registerIsClientActive = register('isActive')
+
     useEffect(() => {
         const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-UPDATE-CLIENTS"], 1200).subscribe((d: any) => {
             validateClientCode(d.data)
@@ -81,10 +70,6 @@ export function SuperAdminUpdateClient({
             subs1.unsubscribe()
         })
     }, [])
-
-    useEffect(() => {
-        // trigger('clientCode')
-    }, [isUniqClientCode])
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -133,23 +118,11 @@ export function SuperAdminUpdateClient({
 
                 {/* Save */}
                 <div className='mt-4 flex justify-start'>
-                    <WidgetButtonSubmitFullWidth label='Save' disabled={!isValid} />
+                    <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-
-                <button type="button" className="bg-slate-100 px-2" onClick={checkErrors}>Check errors</button>
-                <button type="button" className="bg-slate-100 px-2" onClick={() => {
-                    setUniqClientCode(!isUniqClientCode)
-                    // trigger('clientCode')
-                }}>Set unique</button>
             </div>
         </form>
     )
-
-    function checkErrors() {
-        console.log(errors)
-        console.log(isValid)
-        console.log(isUniqClientCode)
-    }
 
     async function onSubmit(data: FormDataType) {
         const dbName1: string = data.dbName || `${data.clientCode}_accounts` // If dbname is already there, it does not change
@@ -163,31 +136,27 @@ export function SuperAdminUpdateClient({
         }
         try {
             const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
-            // show loading indicator
-            Utils.showAppLoader(true)
             const queryName: string = MapGraphQLQueries.updateClient.name
-            const res: any = await mutateGraphQL(q, queryName)
-            Utils.showSaveMessage()
-            console.log(res)
+            await Utils.mutateGraphQL(q, queryName)
+            // Utils.showSaveMessage()
+            // console.log(res)
             Utils.showHideModalDialogA({
                 isOpen: false,
             })
             context.CompSyncFusionGrid[dataInstance].loadData()
-        } catch (e: any) {
+        } catch (e: any) { // Error handling allready done in mutateGraphQL
             console.log(e.message)
         } finally {
-            Utils.showAppLoader(false)
+            // Utils.showAppLoader(false)
         }
     }
 
     async function validateClientCode(value: any) {
         console.log(value)
-        setError('clientCode', {
-            type: '400',
-            message: 'Invalid client code'
-        })
-        setUniqClientCode(true)
-        // trigger('clientCode')
+        // setError('clientCode', {
+        //     type: '400',
+        //     message: 'Invalid client code'
+        // })
     }
 }
 

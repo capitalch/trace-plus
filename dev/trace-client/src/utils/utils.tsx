@@ -4,11 +4,14 @@ import { Messages } from "./messages"
 import { ReactElement } from "react"
 import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
+import { getApolloClient } from "../app/graphql/apollo-client"
 
 export const Utils: UtilsType = {
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
     getToken: getToken,
+    mutateGraphQL: mutateGraphQL,
+    queryGraphQL: queryGraphQL,
     showAppLoader: showAppLoader,
     showErrorMessage: showErrorMessage,
     showHideModalDialogA: showHideModalDialogA,
@@ -34,6 +37,44 @@ function getReduxState(): RootStateType {
 function getToken() {
     const state: RootStateType = store.getState();
     return (state.login.token)
+}
+
+async function mutateGraphQL(q: any, queryName: string) {
+    try {
+        showAppLoader(true)
+        const client = getApolloClient()
+        const result: any = await client.mutate({
+            mutation: q
+        })
+        const error: any = result?.data?.[queryName]?.error?.content
+        if (error) {
+            Utils.showGraphQlErrorMessage(error)
+            throw error
+        }
+        showSaveMessage()
+        return (result)
+    } finally {
+        showAppLoader(false)
+    }
+}
+
+async function queryGraphQL(q: any, queryName: string) {
+    try {
+        showAppLoader(true)
+        const client = getApolloClient()
+        const result: any = await client.query({
+            query: q
+        })
+        const error: any = result?.data?.[queryName]?.error?.content
+        if (error) {
+            Utils.showGraphQlErrorMessage(error)
+            throw error
+        }
+        // showSaveMessage()
+        return (result)
+    } finally {
+        showAppLoader(false)
+    }
 }
 
 function showAppLoader(val: boolean) {
@@ -81,7 +122,7 @@ function showGraphQlErrorMessage(error: GraphQlErrorType) {
     })
 }
 
-function showHideModalDialogA({ isOpen, title='', element=<></> }: ShowHideModalDialogType) {
+function showHideModalDialogA({ isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
     const instanceName: string = 'A'
     const args: ShowModalDialogMessageArgsType = {
         title: title,
@@ -92,7 +133,7 @@ function showHideModalDialogA({ isOpen, title='', element=<></> }: ShowHideModal
     ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName], args)
 }
 
-function showHideModalDialogB({ isOpen, title='', element=<></> }: ShowHideModalDialogType) {
+function showHideModalDialogB({ isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
     const instanceName: string = 'B'
     const args: ShowModalDialogMessageArgsType = {
         title: title,
@@ -158,6 +199,8 @@ type UtilsType = {
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined
+    mutateGraphQL: (q: any, queryName: string) => any
+    queryGraphQL: (q: any, queryName: string) => any
     showAppLoader: (val: boolean) => void
     showErrorMessage: (error?: ErrorType, errorCode?: string, errorMessage?: string) => void
     showHideModalDialogA: (options: ShowHideModalDialogType) => void
