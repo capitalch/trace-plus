@@ -27,32 +27,35 @@ export function SuperAdminUpdateClient({
     , isExternalDb
 }: SuperAdminUpdateClientType) {
     const [active, setActive] = useState(false)
+    const [isUniqClientCode, setUniqClientCode] = useState(false)
     const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { handleSubmit,  register, /*setError ,*/ setValue, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
+    const { handleSubmit, register, setError, setValue, trigger, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
     const context: GlobalContextType = useContext(GlobalContext)
 
-    const registerClientCode = register('clientCode', {
-        maxLength: { value: 10, message: Messages.errAtMost10Chars },
-        minLength: { value: 6, message: Messages.errAtLeast6Chars },
-        required: Messages.errRequired,
-        // validate: (val:string)=>{
-        //     console.log(val)
-        //     return true
-        // }
-        validate: {
-            noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
-            validate: (value: string) => {
-                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value });
-                return true;
-            },
-            // uniqueClientCode: (value: string) => {
-            //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value })
-            //     return (true)
+    const registerClientCode = register('clientCode'
+        , {
+            maxLength: { value: 10, message: Messages.errAtMost10Chars },
+            minLength: { value: 6, message: Messages.errAtLeast6Chars },
+            required: Messages.errRequired,
+            // validate: (val:string)=>{
+            //     console.log(val)
+            //     return true
             // }
-        }
+            // validate: {
+                // noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
+                // validate: (value: string) => {
+                //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value });
+                //     return(isUniqClientCode);
+                // },
+                // uniqueClientCode: (value: string) => {
+                //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: value })
+                //     return (true)
+                // }
+            // }
 
-    })
+        }
+    )
     const registerClientName = register('clientName', {
         required: Messages.errRequired,
         minLength: { value: 6, message: Messages.errAtLeast6Chars },
@@ -79,6 +82,10 @@ export function SuperAdminUpdateClient({
         })
     }, [])
 
+    useEffect(() => {
+        // trigger('clientCode')
+    }, [isUniqClientCode])
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2 w-64'>
@@ -89,9 +96,9 @@ export function SuperAdminUpdateClient({
                     <input type='text' placeholder="e.g battle"
                         className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                         {...registerClientCode}
-                    // onChange={(e: any) => {
-                    //     ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: e.target.value })
-                    // }} 
+                        onChange={(e: any) => {
+                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: e.target.value })
+                        }}
                     />
                     <span className="flex justify-between">
                         {(errors.clientCode)
@@ -128,9 +135,21 @@ export function SuperAdminUpdateClient({
                 <div className='mt-4 flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!isValid} />
                 </div>
+
+                <button type="button" className="bg-slate-100 px-2" onClick={checkErrors}>Check errors</button>
+                <button type="button" className="bg-slate-100 px-2" onClick={() => {
+                    setUniqClientCode(!isUniqClientCode)
+                    // trigger('clientCode')
+                }}>Set unique</button>
             </div>
         </form>
     )
+
+    function checkErrors() {
+        console.log(errors)
+        console.log(isValid)
+        console.log(isUniqClientCode)
+    }
 
     async function onSubmit(data: FormDataType) {
         const dbName1: string = data.dbName || `${data.clientCode}_accounts` // If dbname is already there, it does not change
@@ -163,11 +182,12 @@ export function SuperAdminUpdateClient({
 
     async function validateClientCode(value: any) {
         console.log(value)
-        // setError('clientCode', {
-        //     type: '400',
-        //     message: 'Invalid client code'
-        // })
-        return (false)
+        setError('clientCode', {
+            type: '400',
+            message: 'Invalid client code'
+        })
+        setUniqClientCode(true)
+        // trigger('clientCode')
     }
 }
 
@@ -178,7 +198,6 @@ type FormDataType = {
     id?: number | undefined
     isActive: boolean
     isExternalDb?: boolean
-    // [key: string]: string
 }
 
 type SuperAdminUpdateClientType = {
