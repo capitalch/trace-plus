@@ -59,6 +59,7 @@ export function SuperAdminUpdateClient({
         setValue('isActive', isActive || false)
         setValue('isExternalDb', isExternalDb || false)
     },[])
+    
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2 w-64'>
