@@ -9,7 +9,7 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { useContext, useEffect, useState } from "react"
 import { useValidators } from "../../../../utils/validators-hook"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
-import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
+// import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
 import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
@@ -17,6 +17,7 @@ import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibu
 import { GlobalContextType } from "../../../../app/global-context"
 import { GlobalContext } from "../../../../App"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
+import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids"
 
 export function SuperAdminUpdateClient({
     clientCode
@@ -30,7 +31,7 @@ export function SuperAdminUpdateClient({
     const [active, setActive] = useState(false)
     // const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'all' })
+    const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onTouched' })
     const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode'
@@ -152,7 +153,11 @@ export function SuperAdminUpdateClient({
     }
 
     async function validateClientCode(value: any) {
-        console.log(value)
+        // console.log(value)
+        const res: any = Utils.queryGraphQL(
+            MapGraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: MapSqlIds.getClient, sqlArgs: { clientCode: value } })
+            , MapGraphQLQueries.genericQuery.name)
+        console.log(res)
         // setError('clientCode', {
         //     type: '400',
         //     message: 'Invalid client code'
