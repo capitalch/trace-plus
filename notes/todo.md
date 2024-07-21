@@ -1,14 +1,15 @@
 ## To do
 - Forms for input new client Internal and external databases
-	- Login error handling not correct
-	- Server validation for clientCode for unique clientCode
+																								- Grid Text prompt on edit, preview and delete
+- Login error handling not correct
+- Server validation for clientCode for unique clientCode
+- Delete row
+- Accommodate external DB code at client side
+- Ext DB code at server side
+- Create database DML at server
 																								- Close form after success
 																								- Reload data aftersuccess save
 																								- Edit row data
-	- Delete row
-	- Accommodate external DB code at client side
-	- Ext DB code at server side
-	- Create database DML at server
 
 																								- GraphQL mutation at server side
 																								- Independent Loading indicator

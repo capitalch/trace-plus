@@ -9,6 +9,7 @@ import { WidgetTooltip } from "../../widgets/widget-tooltip";
 import { IconEdit } from "../../icons/icon-edit";
 import { IconDelete } from "../../icons/icon-delete";
 import { IconPreview } from "../../icons/icon-preview";
+import { Button } from "primereact/button";
 
 export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, }: CompSyncFusionGridType) {
 
@@ -55,7 +56,8 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
     function getColumnDirectives() {
         const colDirectives: any[] = columns.map((col: SyncFusionGridColumnType, index: number) => {
             return (<ColumnDirective
-                field={col.field}
+                field={col.field} 
+                clipMode="EllipsisWithTooltip"
                 headerText={col.headerText}
                 key={index}
                 textAlign={col.textAlign}
@@ -99,39 +101,38 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
     }
 
     function deleteTemplate(props: any) {
-        return (<WidgetTooltip title="Edit">
-            <button className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+        return (
+            <Button tooltip="Delete" tooltipOptions={{position:'top', mouseTrack:true,mouseTrackTop:10}} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
                 if (onDelete) {
                     onDelete(props.id)
                 }
             }}>
                 <IconDelete className="m-auto mt-1 h-4 w-4 text-red-600" />
-            </button>
-        </WidgetTooltip>)
+            </Button>)
     }
 
     function previewTemplate(props: any) {
-        return (<WidgetTooltip title="Edit">
-            <button className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+        return (
+            <Button tooltip="Preview" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
                 if (onPreview) {
                     onPreview(props)
                 }
             }}>
                 <IconPreview className="m-auto mt-1 h-5 w-5 text-blue-600" />
-            </button>
-        </WidgetTooltip>)
+            </Button>)
     }
 
     function editTemplate(props: any) {
-        return (<WidgetTooltip title="Edit">
-            <button className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+        return (
+            // WidgetTooltip not working here
+            <Button tooltip="Edit" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
                 if (onEdit) {
                     onEdit(props)
                 }
             }}>
                 <IconEdit className="m-auto mt-1 h-5 w-5 text-green-600" />
-            </button>
-        </WidgetTooltip>)
+            </Button>
+        )
     }
 
 
