@@ -29,8 +29,8 @@ export function SuperAdminUpdateClient({
     const [active, setActive] = useState(false)
     const [isUniqClientCode, setUniqClientCode] = useState(false)
     const { mutateGraphQL } = useMutationHelper()
-    const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { handleSubmit, register, setError, setValue, trigger, formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
+    const {  checkNoSpecialChar } = useValidators()
+    const { handleSubmit, register, setError, setValue,  formState: { errors, isValid }, } = useForm<FormDataType>({ mode: 'onChange' })
     const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode'
