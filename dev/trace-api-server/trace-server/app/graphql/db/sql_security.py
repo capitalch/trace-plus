@@ -1,14 +1,19 @@
 class SqlSecurity:
 
-    get_all_clients = '''
+    get_all_clients = """
     with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
             select * from "ClientM"
                 order by "id" DESC
                     limit (table "noOfRows")
-    '''
-        
-    get_super_admin_dashboard = '''
+    """
+
+    get_client = """
+            select 1 from "ClientM"
+                where lower("clientCode") = %(clientCode)s
+        """
+
+    get_super_admin_dashboard = """
         with "dbName" as (values(%(dbName)s))
          --with "dbName" as (values('traceAuth'))
         , cte1 as(
@@ -41,17 +46,17 @@ class SqlSecurity:
 				, 'users', (select json_agg(row_to_json(c)) from cte5 c)
 				, 'roles', (select json_agg(row_to_json(d)) from cte6 d)
             ) as "jsonResult"
-    '''
-    
-    does_user_email_exist = '''
+    """
+
+    does_user_email_exist = """
         with "email" as (values(%(email)s))
             --with "email" as (values('capitalch@gmail.com'))
         select exists(select 1
             from "UserM"
                 where "userEmail" = (table "email"))
-    '''
-    
-    get_user_details = '''
+    """
+
+    get_user_details = """
         with "uidOrEmail" as (values(%(uidOrEmail)s))
             --with "uidOrEmail" as (values('capitalch@gmail.com'))
             , cte1 as ( -- user details
@@ -82,9 +87,9 @@ class SqlSecurity:
                 , 'businessUnits', (select json_agg(row_to_json(b)) from cte2 b)
                 , 'role', (select row_to_json(c) from cte3 c)
             ) as "jsonResult"
-    '''
-    
-    get_user_details1 = '''
+    """
+
+    get_user_details1 = """
             with "uidOrEmail" as (values(%(uidOrEmail)s))
             --with "uidOrEmail" as (values('cap@gmail.com'))
             , cte1 as ( -- user details
@@ -115,7 +120,8 @@ class SqlSecurity:
                 , 'businessUnits', (select json_agg(row_to_json(b)) from cte2 b)
                 , 'role', (select row_to_json(c) from cte3 c)
             ) as "jsonResult"
-        '''
+        """
+
 
 allSqls = {
     "sql1": """with cte1 as (
