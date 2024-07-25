@@ -1,3 +1,15 @@
+## To recap
+- React-Query
+- Data access layer for grid
+- Data access layer for update
+- GraphQL
+- Apollo client
+- Maps
+- Redux
+- Global context
+- Side menu and layouts working
+- forms and forms validations
+
 ## To do
 - Forms for input new client Internal and external databases
 																								- Grid Text prompt on edit, preview and delete

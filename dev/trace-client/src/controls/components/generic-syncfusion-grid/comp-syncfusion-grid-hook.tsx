@@ -5,7 +5,7 @@ import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
-import { WidgetTooltip } from "../../widgets/widget-tooltip";
+// import { WidgetTooltip } from "../../widgets/widget-tooltip";
 import { IconEdit } from "../../icons/icon-edit";
 import { IconDelete } from "../../icons/icon-delete";
 import { IconPreview } from "../../icons/icon-preview";

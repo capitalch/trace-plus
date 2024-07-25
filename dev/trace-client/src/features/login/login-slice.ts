@@ -92,20 +92,3 @@ export const isLoggedInSelectorFn = (state: RootStateType) =>
   state.login.isLoggedIn
 
 export const userTypeSelectorFn = (state: RootStateType) => state.login.userType
-
-// export type LoginInfoType = {
-//   businessUnits: string[]
-//   clientCode: string
-//   clientId: string
-//   clientName: string
-//   email: string
-//   isClentActive: boolean
-//   isUserActive: boolean
-//   lastUsedBrandId: string
-//   lastUsedBuId: string
-//   mobileNo: string
-//   name: string
-//   token: string
-//   uid: string
-//   userType: string
-// }
