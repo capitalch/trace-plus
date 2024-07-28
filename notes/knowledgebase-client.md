@@ -7,6 +7,30 @@
 - Use refetch() method got from useQuery() hook to fetch the data on button click. The component will reload only when the fetched data is deifferent than internal cache. Otherwise the api call will be made but component will not refresh
 - In useQuery hook pass {notifyOnNetworkStatusChange: true} options for each time rerender of component when a query is made. Otherwise rerender of component will only happen when query result is changed
 
+## QueryHelper: Is used for data fetch all over
+	- Uses Apollo Client's useLazyQuery for flexiblity
+	- Provides a generic data access layer used all over
+	- Returns 'loadData' method and 'loading'
+	- Parameter isExecQueryOnLoad is by default true. So query is executed on load by default
+	- One of Input parameters is 'instance'. Using redux sets the data to state.queryHelper.[instance]
+	- Fetched data is available in component by using selector as:
+			useSelector((state: RootStateType) => {
+		        return (state.queryHelper[instance]?.data)
+		    })
+	- Takes care of normal error and graphQL errors automatically
+## Important Notes
+- Use CompContentContainer as outermost container for all pages
+- instance for the syncfusionGrid is same as instance for data
+- For forms, the react-hook-form is used
+- For all queries the queryHelper is used
+- for mutation Utils.mutateGraphQL is used
+- React-hook-form
+	- If you do setError() to set error for a field, this error will not be persisted once associated rules for the control are OK
+
+## How to use Global context
+- const context: GlobalContextType = useContext(GlobalContext)
+- In global-context.tsx set the property for intellisence
+- context.[property] = value
 ## Redux steps
 # Step 1: Create store
 # Step 2: Create Provider at index.tsx and set the store in provider
@@ -63,9 +87,6 @@
     function handleDecrement() {
         dispatch(doDecrement({step:1}))
     }
-
-## Dataflow mechanism with GraphQL and redux
-	- QueryHelper
 
 ## Typescript tailwind
 - With typescript the tailwind.config.js file must have: content: [{html,js,jsx,ts,tsx}]

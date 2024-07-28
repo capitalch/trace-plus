@@ -4,7 +4,7 @@ import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-load
 import { SuperAdminDashBoardType, useSuperAdminDashBoard } from "./super-admin-dashboard-hook"
 
 export function SuperAdminDashboard() {
-    const { loadData, loading,  superAdminDashBoard }: {loadData: any, loading: boolean,  superAdminDashBoard: SuperAdminDashBoardType } = useSuperAdminDashBoard()
+    const { loadData, loading, superAdminDashBoard }: { loadData: any, loading: boolean, superAdminDashBoard: SuperAdminDashBoardType } = useSuperAdminDashBoard()
 
     return (
         <CompContentContainer title='Super admin dashboard' CustomControl={() => <WidgetButtonRefresh handleRefresh={async () => await loadData()} />}>
@@ -15,7 +15,7 @@ export function SuperAdminDashboard() {
     function getContent() {
 
         return (<div className="flex flex-wrap gap-8 mt-8">
-            
+
             {/* Database connections */}
             <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
                 <label className="text-lg font-bold">Database connections</label>
@@ -113,12 +113,12 @@ export function SuperAdminDashboard() {
                     <label>{superAdminDashBoard.misc.securedControlsCount}</label>
                 </span>
             </div>
-
-            {/* <div>
-            <button className="rounded-md bg-slate-200 px-2" onClick={() => {
-                refetch()
-            }}>Re fetch</button>
-        </div> */}
         </div>)
     }
 }
+
+{/* <div>
+    <button className="rounded-md bg-slate-200 px-2" onClick={() => {
+        refetch()
+    }}>Re fetch</button>
+</div> */}

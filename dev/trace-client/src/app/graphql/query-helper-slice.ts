@@ -18,7 +18,6 @@ const queryHelperSlice = createSlice({
       if (!state[action.payload.instance]) {
         state[action.payload.instance] = { data: [] }
       }
-      // state[action.payload.instance] = {}
       state[action.payload.instance].data = action.payload.data
     },
 

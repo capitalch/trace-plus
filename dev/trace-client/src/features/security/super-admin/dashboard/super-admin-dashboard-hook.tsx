@@ -181,16 +181,3 @@ export type SuperAdminDashBoardType = {
         securedControlsCount: number
     }
 }
-// const { data, error, loading, refetch } = useQuery(
-//     MapGraphQLQueries.genericQuery(
-//         GLOBAL_SECURITY_DATABASE_NAME
-//         , args)
-//     , { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }) // for each api call refresh client component
-
-// if (error) {
-//     Utils.showErrorMessage(error)
-// }
-
-// if (data?.genericQuery?.error?.content) {
-//     Utils.showGraphQlErrorMessage(data.genericQuery.error.content)
-// }

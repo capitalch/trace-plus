@@ -1,6 +1,7 @@
 export const MapSqlIds = {
   allClients: 'get_all_clients',
-  getClient: 'get_client',
+  getClientOnClientCode: 'get_client_on_clientCode',
+  getClientOnClientName: 'get_client_on_clientName',
   superAdminDashBoard: 'get_super_admin_dashboard'
 }
 

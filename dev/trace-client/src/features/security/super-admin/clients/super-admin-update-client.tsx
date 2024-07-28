@@ -9,7 +9,6 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { useContext, useEffect, useState } from "react"
 import { useValidators } from "../../../../utils/validators-hook"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
-// import { useMutationHelper } from "../../../../app/graphql/mutation-helper-hook"
 import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
@@ -31,7 +30,12 @@ export function SuperAdminUpdateClient({
     const [active, setActive] = useState(false)
     // const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const {  handleSubmit, register,  setValue, formState: { errors,  }, } = useForm<FormDataType>({ mode: 'onTouched' })
+    const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
+        mode: 'onTouched', criteriaMode: 'firstError', defaultValues: {
+            clientCode: ''
+            , clientName: ''
+        }
+    })
     const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode'
@@ -57,8 +61,11 @@ export function SuperAdminUpdateClient({
     const registerIsClientActive = register('isActive')
 
     useEffect(() => {
-        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-UPDATE-CLIENTS"], 1200).subscribe((d: any) => {
-            validateClientCode(d.data)
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-CLIENT-CODE'], 1200).subscribe((d: any) => {
+            validateClientCodeAtServer(d.data)
+        })
+        const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-CLIENT-NAME"], 1600).subscribe((d: any) => {
+            validateClientNameAtServer(d.data)
         })
         setValue('clientCode', clientCode || '')
         setValue('clientName', clientName || '')
@@ -69,6 +76,7 @@ export function SuperAdminUpdateClient({
 
         return (() => {
             subs1.unsubscribe()
+            subs2.unsubscribe()
         })
     }, [])
 
@@ -79,11 +87,11 @@ export function SuperAdminUpdateClient({
                 {/* Client code */}
                 <label className='flex flex-col font-medium text-primary-400'>
                     <span className='font-bold'>Client code <WidgetAstrix /></span>
-                    <input type='text' placeholder="e.g battle"
+                    <input type='text' placeholder="e.g battle" autoComplete="off"
                         className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                         {...registerClientCode}
                         onChange={(e: any) => {
-                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-UPDATE-CLIENTS'], { clientCode: e.target.value })
+                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-CODE'], { clientCode: e.target.value })
                         }}
                     />
                     <span className="flex justify-between">
@@ -99,7 +107,12 @@ export function SuperAdminUpdateClient({
                 {/* Client name */}
                 <label className='flex flex-col font-medium text-primary-400'>
                     <span className='font-bold'>Client name <WidgetAstrix /></span>
-                    <input type='text' placeholder="e.g Battle ground" className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName} />
+                    <input type='text' placeholder="e.g Battle ground" autoComplete="off"
+                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName}
+                        onChange={(e: any) => {
+                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-NAME'], { clientName: e.target.value })
+                        }}
+                    />
                     <span className="flex justify-between">
                         {(errors.clientName)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientName.message} />
@@ -121,6 +134,12 @@ export function SuperAdminUpdateClient({
                 <div className='mt-4 flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
+                {/* <button type="button" onClick={() => {
+                    console.log(errors)
+                }}>Test</button> */}
+                <span>
+                    {showServerValidationError()}
+                </span>
             </div>
         </form>
     )
@@ -152,16 +171,54 @@ export function SuperAdminUpdateClient({
         }
     }
 
-    async function validateClientCode(value: any) {
-        // console.log(value)
-        const res: any = Utils.queryGraphQL(
-            MapGraphQLQueries.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: MapSqlIds.getClient, sqlArgs: { clientCode: value } })
+    function showServerValidationError() {
+        let Ret = <></>
+        if (errors?.root?.clientCode) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.clientCode.message} />
+        } else if(errors?.root?.clientName) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.clientName.message} />
+        } else {
+            Ret = <WidgetFormHelperText helperText='&nbsp;' />
+        }
+        return(Ret)
+    }
+
+    async function validateClientCodeAtServer(value: any) {
+        const res: any = await Utils.queryGraphQL(
+            MapGraphQLQueries.genericQuery(
+                GLOBAL_SECURITY_DATABASE_NAME
+                , {
+                    sqlId: MapSqlIds.getClientOnClientCode
+                    , sqlArgs: { clientCode: value?.clientCode }
+                })
             , MapGraphQLQueries.genericQuery.name)
-        console.log(res)
-        // setError('clientCode', {
-        //     type: '400',
-        //     message: 'Invalid client code'
-        // })
+        if (res?.data?.genericQuery[0]) {
+            setError('root.clientCode', {
+                type: 'serverError',
+                message: Messages.errClientCodeExists
+            })
+        } else {
+            clearErrors('root.clientCode')
+        }
+    }
+
+    async function validateClientNameAtServer(value: any) {
+        const res: any = await Utils.queryGraphQL(
+            MapGraphQLQueries.genericQuery(
+                GLOBAL_SECURITY_DATABASE_NAME
+                , {
+                    sqlId: MapSqlIds.getClientOnClientName
+                    , sqlArgs: { clientName: value?.clientName }
+                })
+            , MapGraphQLQueries.genericQuery.name)
+        if (res?.data?.genericQuery[0]) {
+            setError('root.clientName', {
+                type: 'serverError',
+                message: Messages.errClientNameExists
+            })
+        } else {
+            clearErrors('root.clientName')
+        }
     }
 }
 
@@ -172,6 +229,7 @@ type FormDataType = {
     id?: number | undefined
     isActive: boolean
     isExternalDb?: boolean
+
 }
 
 type SuperAdminUpdateClientType = {

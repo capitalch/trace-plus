@@ -70,7 +70,6 @@ async function queryGraphQL(q: any, queryName: string) {
             Utils.showGraphQlErrorMessage(error)
             throw error
         }
-        // showSaveMessage()
         return (result)
     } finally {
         showAppLoader(false)

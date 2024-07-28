@@ -8,9 +8,14 @@ class SqlSecurity:
                     limit (table "noOfRows")
     """
 
-    get_client = """
-            select 1 from "ClientM"
+    get_client_on_clientCode = """
+            select 1 as "clientCode" from "ClientM"
                 where lower("clientCode") = %(clientCode)s
+        """
+        
+    get_client_on_clientName = """
+            select 1 as "clientName" from "ClientM"
+                where lower("clientName") = %(clientName)s
         """
 
     get_super_admin_dashboard = """

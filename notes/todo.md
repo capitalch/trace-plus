@@ -1,24 +1,24 @@
 ## To recap
-- React-Query
-- Data access layer for grid
+	- Data access layer for grid
 - Data access layer for update
-- GraphQL
-- Apollo client
-- Maps
-- Redux
-- Global context
+	- GraphQL
+	- Apollo client
+	- Maps
+	- Redux
+	- Global context
 - Side menu and layouts working
-- forms and forms validations
+	- forms and forms validations
 
 ## To do
 - Forms for input new client Internal and external databases
 																								- Grid Text prompt on edit, preview and delete
-- Login error handling not correct
-- Server validation for clientCode for unique clientCode
+																								- Server validation for clientCode for unique clientCode
+																								- Server validation for clientName for unique clientName
 - Delete row
 - Accommodate external DB code at client side
 - Ext DB code at server side
 - Create database DML at server
+- Login error handling not correct
 																								- Close form after success
 																								- Reload data aftersuccess save
 																								- Edit row data
