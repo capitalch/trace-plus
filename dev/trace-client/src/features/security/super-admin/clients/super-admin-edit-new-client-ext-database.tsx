@@ -1,34 +1,33 @@
-import { useForm, ValidateResult } from "react-hook-form"
-import _ from 'lodash'
-import { Messages } from "../../../../utils/messages"
-import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
-import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text"
-import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
-import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
-import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { useContext, useEffect, useState } from "react"
+import _ from 'lodash'
 import { useValidators } from "../../../../utils/validators-hook"
-import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
-import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
-import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
-import { Utils } from "../../../../utils/utils"
-import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
+import { useForm, ValidateResult } from "react-hook-form"
 import { GlobalContextType } from "../../../../app/global-context"
 import { GlobalContext } from "../../../../App"
+import { Messages } from "../../../../utils/messages"
+import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
+import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
+import { Utils } from "../../../../utils/utils"
+import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids"
+import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
+import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text"
+import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
+import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
+import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
+import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 
-export function SuperAdminUpdateClient({
-    clientCode
-    , clientName
-    , dataInstance
-    , dbName
-    , id
-    , isActive
-    , isExternalDb
-}: SuperAdminUpdateClientType) {
+export function SuperAdminEditNewClientExtDatabase({
+clientCode
+, clientName
+, dataInstance
+, dbName
+, id
+, isActive
+, isExternalDb
+}:SuperAdminEditNewClientExtDatabaseType) {
     const [active, setActive] = useState(false)
-    // const { mutateGraphQL } = useMutationHelper()
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched', criteriaMode: 'firstError', defaultValues: {
@@ -126,7 +125,7 @@ export function SuperAdminUpdateClient({
                 {/* Is active  */}
                 <div className="flex items-center">
                     <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
-                        checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
+                        checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)}  />
                     <label htmlFor="isActive" className="ml-3 text-sm text-primary-500 cursor-pointer">Is this client active</label>
                 </div>
 
@@ -224,19 +223,18 @@ type FormDataType = {
     clientCode: string
     clientName: string
     dbName: string
-    id?: number | undefined
+    id?: string
     isActive: boolean
     isExternalDb?: boolean
-
 }
 
-type SuperAdminUpdateClientType = {
+type SuperAdminEditNewClientExtDatabaseType = {
     dataInstance: string
-    clientCode?: string | undefined
+    clientCode?: string
     clientName?: string
     dbName?: string
     dbParams?: string
-    id?: number | undefined
+    id?: string
     isActive?: boolean
     isExternalDb?: boolean
 }

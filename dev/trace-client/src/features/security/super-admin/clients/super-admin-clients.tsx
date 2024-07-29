@@ -5,7 +5,7 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/gener
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 import { SuperAdminClientNewClientButtons } from "./super-admin-clients-new-client-buttons";
 import { Utils } from "../../../../utils/utils";
-import { SuperAdminUpdateClient } from "./super-admin-update-client";
+import { SuperAdminEditNewClient } from "./super-admin-edit-new-client";
 
 export function SuperAdminClients() {
     // CustomControl={() => <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />}
@@ -76,7 +76,7 @@ export function SuperAdminClients() {
         Utils.showHideModalDialogA({
             title: "Edit client",
             isOpen: true,
-            element: <SuperAdminUpdateClient
+            element: <SuperAdminEditNewClient
                 clientCode={props.clientCode}
                 clientName={props.clientName}
                 dbName={props.dbName}

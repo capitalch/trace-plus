@@ -54,7 +54,7 @@ async def generic_query_helper(info, value: str):
                 }
             }
         }
-    print(data)
+    # print(data)
     return data
 
 

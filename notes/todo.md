@@ -10,6 +10,12 @@
 	- forms and forms validations
 
 ## To do
+- External DB
+	- Provide fields in form with validations
+	- Test database connection
+	- submit with encoding etc
+	- edit mode
+																								- Form for new client has error in isActive field
 - Forms for input new client Internal and external databases
 																								- Grid Text prompt on edit, preview and delete
 																								- Server validation for clientCode for unique clientCode

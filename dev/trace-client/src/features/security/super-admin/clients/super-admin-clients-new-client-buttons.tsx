@@ -1,6 +1,7 @@
 // import { MapDialogInstances } from "../../../../app/graphql/maps/map-dialog-instances"
 import { Utils } from "../../../../utils/utils"
-import { SuperAdminUpdateClient } from "./super-admin-update-client"
+import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-client-ext-database"
+import { SuperAdminEditNewClient } from "./super-admin-edit-new-client"
 
 export function SuperAdminClientNewClientButtons({dataInstance}:{dataInstance: string}) {
     // const dialogInstance: string = MapDialogInstances.superAdminUpdateClient
@@ -15,15 +16,15 @@ export function SuperAdminClientNewClientButtons({dataInstance}:{dataInstance: s
         Utils.showHideModalDialogA({
             title: "New client",
             isOpen: true,
-            element: <SuperAdminUpdateClient dataInstance={dataInstance} />,
+            element: <SuperAdminEditNewClient dataInstance={dataInstance} />,
         })
     }
 
     function handleNewClientWithExtDb() {
         Utils.showHideModalDialogA({
-            title: "New client with externalDatabase",
+            title: "New client with external database",
             isOpen: true,
-            element: <button>Test</button>
+            element: <SuperAdminEditNewClientExtDatabase dataInstance={dataInstance} />,
         })
     }
 }
