@@ -1,21 +1,17 @@
-import { IconVoucher } from "../../../components/icons/icon-voucher"
-import { IconCheveronDown } from "../../../components/icons/icon-cheveron-down"
-import { IconPurchaseSales } from "../../../components/icons/icon-purchase-sales"
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
-import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
+import { setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
-import { IconCheveronUp } from "../../../components/icons/icon-cheveron-up"
-import { MasterMenuData } from "../master-menu-data"
+import { IconCheveronUp } from "../../../controls/icons/icon-cheveron-up"
+import { IconVoucher } from "../../../controls/icons/icon-voucher"
+import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down"
+import { IconPurchaseSales } from "../../../controls/icons/icon-purchase-sales"
 
 function SideMenuTemp() {
-    const menuItemSelector: MenuItemType = useSelector(menuItemSelectorFn)
     const sideBarSelectedParentIdSelector = useSelector(sideBarSelectedParentIdFn)
     const sideBarSelectedChildIdSelector = useSelector(sideBarSelectedChildIdFn)
     const dispatch: AppDispatchType = useDispatch()
 
-    const menuData = MasterMenuData[menuItemSelector]
-    console.log(menuData)
     const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
     const parentClass = "flex h-10 px-2 border-b-[1px] items-center gap-3 rounded-md  font-bold hover:bg-primary-50 focus:outline-none"
     const childClass = "flex h-10 w-full border-b-[1px]  items-center rounded-md  pl-9 hover:bg-primary-100 focus:outline-none "

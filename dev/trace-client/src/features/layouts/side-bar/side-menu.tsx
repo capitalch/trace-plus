@@ -129,7 +129,6 @@ function SideMenu() {
     }
 
     function handleChildClick(e: any, path?: string) {
-        // console.log(path)
         const id = e.currentTarget.id
         dispatch(setSideBarSelectedChildIdR({ id: id }))
         if (path) {

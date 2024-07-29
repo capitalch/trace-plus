@@ -69,11 +69,10 @@ export function SuperAdminClients() {
     }
 
     function handleOnDelete(id: string) {
-        console.log('Delete clicked:', id)
+        // console.log('Delete clicked:', id)
     }
 
     function handleOnEdit(props: any) {
-        console.log('Edit clicked: ', props)
         Utils.showHideModalDialogA({
             title: "Edit client",
             isOpen: true,

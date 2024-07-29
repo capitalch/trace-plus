@@ -158,8 +158,6 @@ export function SuperAdminUpdateClient({
             const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
             const queryName: string = MapGraphQLQueries.updateClient.name
             await Utils.mutateGraphQL(q, queryName)
-            // Utils.showSaveMessage()
-            // console.log(res)
             Utils.showHideModalDialogA({
                 isOpen: false,
             })

@@ -3,6 +3,9 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 27-07-2024 - 28-07-2024: Sunday
+- recap of codebase
+- clientCode and clientName server side validation
 # 01-06-2024 - 16-06-2024
 - Super admin clients (Client and server side)
 # 06-05-2024
