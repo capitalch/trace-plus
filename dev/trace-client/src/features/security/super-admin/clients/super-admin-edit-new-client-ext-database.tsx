@@ -53,11 +53,25 @@ clientCode
         minLength: { value: 6, message: Messages.errAtLeast6Chars },
         maxLength: { value: 50, message: Messages.errAtMost50Chars },
         validate: {
-            noSpecialChar: (value: string) => checkNoSpecialChar(value) as ValidateResult
+            noSpecialChar: checkNoSpecialChar
         }
     })
 
     const registerIsClientActive = register('isActive')
+
+    const registerDbName = register('dbName', {
+        required: Messages.errRequired
+        , validate: {
+            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar,
+        }
+    })
+
+    // const registerHost = register('host', {
+    //     required: Messages.errRequired
+    //     , validate: {
+    //         noSpace: checkNoSpaceOrSpecialChar
+    //     }
+    // })
 
     useEffect(() => {
         const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-CLIENT-CODE'], 1200).subscribe((d: any) => {
@@ -81,7 +95,7 @@ clientCode
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex flex-col gap-2 w-64'>
+            <div className='flex flex-col gap-2 w-auto min-w-80'>
 
                 {/* Client code */}
                 <label className='flex flex-col font-medium text-primary-400'>

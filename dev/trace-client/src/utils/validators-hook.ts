@@ -2,7 +2,7 @@ import { Messages } from './messages'
 
 function useValidators () {
   function checkAtLeast8Chars (input: string) {
-    let error = null
+    let error = undefined
     if (input.length < 8) {
       error = Messages.errAtLeast8Chars
     }
@@ -10,7 +10,7 @@ function useValidators () {
   }
 
   function checkMustHaveOneDigit (input: string) {
-    let error = null
+    let error = undefined
     if (input.search(/[0-9]/) < 0) {
       error = Messages.errMustHaveOneDigit
     }
@@ -18,7 +18,7 @@ function useValidators () {
   }
 
   function checkMustHaveOneLetter (input: string) {
-    let error = null
+    let error = undefined
     if (input.search(/[a-z]/i) < 0) {
       error = Messages.errMustHaveOneLetter
     }
@@ -26,7 +26,7 @@ function useValidators () {
   }
 
   function checkMustHaveOneSpecialChar (input: string) {
-    let error = null
+    let error = undefined
     if (input.search(/[!@#\\$%\\^&\\*_`~]/) < 0) {
       error = Messages.errMustHaveOneSpecialChar
     }
@@ -34,7 +34,7 @@ function useValidators () {
   }
 
   function checkNoSpaceOrSpecialChar (input: string) {
-    let error = null
+    let error = undefined
     if (input.search(/^[\w-_]*$/) < 0) {
       error = Messages.errNoSpceOrSpecialChar
     }
@@ -42,7 +42,7 @@ function useValidators () {
   }
 
   function checkNoSpecialChar (input: string) {
-    let error = null
+    let error = undefined
     if (input.search(/[^\w\s]/) > 0) {
       error = Messages.errNoSpecialChar
     }
@@ -50,7 +50,7 @@ function useValidators () {
   }
 
   function checkRequired (input: string) {
-    let error = null
+    let error = undefined
     if (input.length === 0) {
       error = Messages.errRequired
     }
@@ -69,7 +69,7 @@ function useValidators () {
 
   function checkUserNameOrEmail (input: string) {
     //should be alphanumeric, non empty and no space in between or email
-    let error = null
+    let error = undefined
     if (!isValidEmail(input)) {
       error = checkRequired(input) || checkNoSpaceOrSpecialChar(input)
     }

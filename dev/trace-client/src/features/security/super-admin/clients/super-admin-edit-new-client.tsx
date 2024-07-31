@@ -30,10 +30,12 @@ export function SuperAdminEditNewClient({
     const [active, setActive] = useState(isActive || false)
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
-        mode: 'onTouched', criteriaMode: 'firstError', defaultValues: {
-            clientCode: ''
-            , clientName: ''
-        }
+        mode: 'onTouched'
+        // , criteriaMode: 'firstError'
+        // , defaultValues: {
+        //     clientCode: ''
+        //     , clientName: ''
+        // }
     })
     const context: GlobalContextType = useContext(GlobalContext)
 
@@ -44,6 +46,7 @@ export function SuperAdminEditNewClient({
             required: Messages.errRequired,
             validate: {
                 noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
+                // (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
             }
         }
     )
@@ -53,7 +56,7 @@ export function SuperAdminEditNewClient({
         minLength: { value: 6, message: Messages.errAtLeast6Chars },
         maxLength: { value: 50, message: Messages.errAtMost50Chars },
         validate: {
-            noSpecialChar: (value: string) => checkNoSpecialChar(value) as ValidateResult
+            noSpecialChar: checkNoSpecialChar
         }
     })
 
@@ -81,7 +84,7 @@ export function SuperAdminEditNewClient({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex flex-col gap-2 w-64'>
+            <div className='flex flex-col gap-2 w-auto min-w-72'>
 
                 {/* Client code */}
                 <label className='flex flex-col font-medium text-primary-400'>
@@ -125,7 +128,7 @@ export function SuperAdminEditNewClient({
                 {/* Is active  */}
                 <div className="flex items-center">
                     <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
-                        checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)}  />
+                        checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
                     <label htmlFor="isActive" className="ml-3 text-sm text-primary-500 cursor-pointer">Is this client active</label>
                 </div>
 
@@ -133,9 +136,9 @@ export function SuperAdminEditNewClient({
                 <div className='mt-4 flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-                {/* <button type="button" onClick={() => {
+                <button type="button" onClick={() => {
                     console.log(errors)
-                }}>Test</button> */}
+                }}>Test</button>
                 <span>
                     {showServerValidationError()}
                 </span>
@@ -172,12 +175,12 @@ export function SuperAdminEditNewClient({
         let Ret = <></>
         if (errors?.root?.clientCode) {
             Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.clientCode.message} />
-        } else if(errors?.root?.clientName) {
+        } else if (errors?.root?.clientName) {
             Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.clientName.message} />
         } else {
             Ret = <WidgetFormHelperText helperText='&nbsp;' />
         }
-        return(Ret)
+        return (Ret)
     }
 
     async function validateClientCodeAtServer(value: any) {

@@ -4,7 +4,7 @@ import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-clien
 import { SuperAdminEditNewClient } from "./super-admin-edit-new-client"
 
 export function SuperAdminClientNewClientButtons({dataInstance}:{dataInstance: string}) {
-    // const dialogInstance: string = MapDialogInstances.superAdminUpdateClient
+
     return (
         <div className="flex flex-wrap gap-2">
             <button className="bg-primary-400 text-white w-20 min-w-24 h-10 rounded-md hover:bg-primary-600" onClick={handleNewClient}>New client</button>
