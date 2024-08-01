@@ -6,6 +6,7 @@ const Messages = {
   errAtMost50Chars: 'Should be at most 50 chars long',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
+  errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errMustHaveOneDigit: 'Should have a digit',
   errMustHaveOneLetter: 'Should have one letter',
