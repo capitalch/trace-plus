@@ -19,21 +19,18 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 
 export function SuperAdminEditNewClientExtDatabase({
-clientCode
-, clientName
-, dataInstance
-, dbName
-, id
-, isActive
-, isExternalDb
-}:SuperAdminEditNewClientExtDatabaseType) {
+    clientCode
+    , clientName
+    , dataInstance
+    , dbName
+    , id
+    , isActive
+    , isExternalDb
+}: SuperAdminEditNewClientExtDatabaseType) {
     const [active, setActive] = useState(false)
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
-        mode: 'onTouched', criteriaMode: 'firstError', defaultValues: {
-            clientCode: ''
-            , clientName: ''
-        }
+        mode: 'onTouched', criteriaMode: 'firstError',
     })
     const context: GlobalContextType = useContext(GlobalContext)
 
@@ -43,19 +40,26 @@ clientCode
             minLength: { value: 6, message: Messages.errAtLeast6Chars },
             required: Messages.errRequired,
             validate: {
-                noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
+                noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar,
+            },
+            onChange: (e: any) => {
+                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-CODE'], { clientCode: e.target.value })
             }
         }
     )
 
-    const registerClientName = register('clientName', {
-        required: Messages.errRequired,
-        minLength: { value: 6, message: Messages.errAtLeast6Chars },
-        maxLength: { value: 50, message: Messages.errAtMost50Chars },
-        validate: {
-            noSpecialChar: checkNoSpecialChar
-        }
-    })
+    const registerClientName = register('clientName'
+        , {
+            required: Messages.errRequired,
+            minLength: { value: 6, message: Messages.errAtLeast6Chars },
+            maxLength: { value: 50, message: Messages.errAtMost50Chars },
+            validate: {
+                noSpecialChar: checkNoSpecialChar
+            },
+            onChange: (e: any) => {
+                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-NAME'], { clientName: e.target.value })
+            }
+        })
 
     const registerIsClientActive = register('isActive')
 
@@ -139,8 +143,22 @@ clientCode
                 {/* Is active  */}
                 <div className="flex items-center">
                     <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
-                        checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)}  />
+                        checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
                     <label htmlFor="isActive" className="ml-3 text-sm text-primary-500 cursor-pointer">Is this client active</label>
+                </div>
+
+                {/* External database details */}
+                <div className="flex flex-col">
+                    <label className="font-medium text-sm">External database connection details</label>
+                    <div className="flex mt-1">
+                        {/* db name */}
+                        <div className="flex flex-col">
+                            <label className="text-sm">DB name</label>
+                            <input type="text" placeholder="e.g battle_db" autoComplete="off"
+                                className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+                                {...registerDbName} />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Save */}
@@ -186,12 +204,12 @@ clientCode
         let Ret = <></>
         if (errors?.root?.clientCode) {
             Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.clientCode.message} />
-        } else if(errors?.root?.clientName) {
+        } else if (errors?.root?.clientName) {
             Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.clientName.message} />
         } else {
             Ret = <WidgetFormHelperText helperText='&nbsp;' />
         }
-        return(Ret)
+        return (Ret)
     }
 
     async function validateClientCodeAtServer(value: any) {

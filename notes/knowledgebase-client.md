@@ -25,7 +25,18 @@
 - For all queries the queryHelper is used
 - for mutation Utils.mutateGraphQL is used
 - React-hook-form
-	- If you do setError() to set error for a field, this error will not be persisted once associated rules for the control are OK
+	- If you do setError() to set error for a field, this error will not be persisted once associated rules for the control are validated
+	- If you want onChange event in the control, you cannot use onChange event in normal manner. You need to put onChangeevent in the registerField method as below:
+		const registerClientCode = register('clientCode'
+        , {
+            required: Messages.errRequired,
+            validate: {
+                noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar,
+            },
+            onChange: (e: any) => {
+                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-CODE'], { clientCode: e.target.value })
+            }
+        }
 
 ## How to use Global context
 - const context: GlobalContextType = useContext(GlobalContext)

@@ -31,11 +31,7 @@ export function SuperAdminEditNewClient({
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched'
-        // , criteriaMode: 'firstError'
-        // , defaultValues: {
-        //     clientCode: ''
-        //     , clientName: ''
-        // }
+        , criteriaMode: 'firstError'
     })
     const context: GlobalContextType = useContext(GlobalContext)
 
@@ -45,8 +41,10 @@ export function SuperAdminEditNewClient({
             minLength: { value: 6, message: Messages.errAtLeast6Chars },
             required: Messages.errRequired,
             validate: {
-                noSpaceOrSpecialChar: (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
-                // (value: string) => checkNoSpaceOrSpecialChar(value) as ValidateResult,
+                noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar,
+            },
+            onChange: (e: any) => {
+                ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-CODE'], { clientCode: e.target.value })
             }
         }
     )
@@ -57,6 +55,9 @@ export function SuperAdminEditNewClient({
         maxLength: { value: 50, message: Messages.errAtMost50Chars },
         validate: {
             noSpecialChar: checkNoSpecialChar
+        },
+        onChange: (e: any) => {
+            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-NAME'], { clientName: e.target.value })
         }
     })
 
@@ -92,9 +93,6 @@ export function SuperAdminEditNewClient({
                     <input type='text' placeholder="e.g battle" autoComplete="off"
                         className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                         {...registerClientCode}
-                        onChange={(e: any) => {
-                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-CODE'], { clientCode: e.target.value })
-                        }}
                     />
                     <span className="flex justify-between">
                         {(errors.clientCode)
@@ -110,10 +108,8 @@ export function SuperAdminEditNewClient({
                 <label className='flex flex-col font-medium text-primary-400'>
                     <span className='font-bold'>Client name <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g Battle ground" autoComplete="off"
-                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName}
-                        onChange={(e: any) => {
-                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-NAME'], { clientName: e.target.value })
-                        }}
+                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+                        {...registerClientName}
                     />
                     <span className="flex justify-between">
                         {(errors.clientName)
@@ -136,9 +132,9 @@ export function SuperAdminEditNewClient({
                 <div className='mt-4 flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-                <button type="button" onClick={() => {
+                {/* <button type="button" onClick={() => {
                     console.log(errors)
-                }}>Test</button>
+                }}>Test</button> */}
                 <span>
                     {showServerValidationError()}
                 </span>
