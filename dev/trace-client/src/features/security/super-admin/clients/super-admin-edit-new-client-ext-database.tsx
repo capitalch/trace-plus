@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import _ from 'lodash'
 import { useValidators } from "../../../../utils/validators-hook"
-import { useForm, ValidateResult } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { GlobalContextType } from "../../../../app/global-context"
 import { GlobalContext } from "../../../../App"
 import { Messages } from "../../../../utils/messages"
@@ -70,12 +70,24 @@ export function SuperAdminEditNewClientExtDatabase({
         }
     })
 
-    // const registerHost = register('host', {
-    //     required: Messages.errRequired
-    //     , validate: {
-    //         noSpace: checkNoSpaceOrSpecialChar
-    //     }
-    // })
+    const registerHost = register('host', {
+        required: Messages.errRequired
+        , validate: {
+            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
+        }
+    })
+
+    const registerUser = register('user', {
+        minLength: { value: 4, message: Messages.errAtLeast4Chars },
+        required: Messages.errRequired
+        , validate: {
+            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
+        }
+    })
+    const registerPassword = register('password', {
+        minLength: { value: 4, message: Messages.errAtLeast4Chars },
+        required: Messages.errRequired
+    })
 
     useEffect(() => {
         const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-CLIENT-CODE'], 1200).subscribe((d: any) => {
@@ -107,9 +119,6 @@ export function SuperAdminEditNewClientExtDatabase({
                     <input type='text' placeholder="e.g battle" autoComplete="off"
                         className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                         {...registerClientCode}
-                        onChange={(e: any) => {
-                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-CODE'], { clientCode: e.target.value })
-                        }}
                     />
                     <span className="flex justify-between">
                         {(errors.clientCode)
@@ -126,9 +135,6 @@ export function SuperAdminEditNewClientExtDatabase({
                     <span className='font-bold'>Client name <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g Battle ground" autoComplete="off"
                         className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName}
-                        onChange={(e: any) => {
-                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-CLIENT-NAME'], { clientName: e.target.value })
-                        }}
                     />
                     <span className="flex justify-between">
                         {(errors.clientName)
@@ -148,16 +154,74 @@ export function SuperAdminEditNewClientExtDatabase({
                 </div>
 
                 {/* External database details */}
-                <div className="flex flex-col">
-                    <label className="font-medium text-sm">External database connection details</label>
-                    <div className="flex mt-1">
+                <div className="flex flex-col bg-slate-100 w-full">
+                    <label className="font-medium text-sm text-primary-400">External database connection details</label>
+                    
+                    {/* db name and host */}
+                    <div className="flex mt-1 gap-2 w-auto">
+
                         {/* db name */}
-                        <div className="flex flex-col">
-                            <label className="text-sm">DB name</label>
-                            <input type="text" placeholder="e.g battle_db" autoComplete="off"
-                                className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
-                                {...registerDbName} />
-                        </div>
+                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2'>
+                            <span className='font-bold text-xs'>DB name <WidgetAstrix /></span>
+                            <input type='text' placeholder="e.g Battle_database" autoComplete="off"
+                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerDbName}
+                            />
+                            <span className="flex justify-between">
+                                {(errors.dbName)
+                                    ? <WidgetFormErrorMessage errorMessage={errors.dbName.message} />
+                                    : <WidgetFormHelperText helperText='&nbsp;' />}
+
+                            </span>
+                        </label>
+
+                        {/* db host */}
+                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2 pr-2'>
+                            <span className='font-bold text-xs'>DB host <WidgetAstrix /></span>
+                            <input type='text' placeholder="e.g host name" autoComplete="off"
+                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' 
+                                {...registerHost}
+                            />
+                            <span className="flex justify-between">
+                                {(errors.host)
+                                    ? <WidgetFormErrorMessage errorMessage={errors.host.message} />
+                                    : <WidgetFormHelperText helperText='&nbsp;' />}
+
+                            </span>
+                        </label>
+                    </div>
+
+                    {/* User name and password */}
+                    <div className="flex mt-1 gap-2 w-auto">
+
+                        {/* db User name */}
+                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2'>
+                            <span className='font-bold text-xs'>DB user name <WidgetAstrix /></span>
+                            <input type='text' placeholder="e.g Battle_database" autoComplete="off"
+                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' 
+                                {...registerUser}
+                            />
+                            <span className="flex justify-between">
+                                {(errors.user)
+                                    ? <WidgetFormErrorMessage errorMessage={errors.user.message} />
+                                    : <WidgetFormHelperText helperText='&nbsp;' />}
+
+                            </span>
+                        </label>
+
+                        {/* db password */}
+                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2 pr-2'>
+                            <span className='font-bold text-xs'>DB password <WidgetAstrix /></span>
+                            <input type='password' autoComplete="off"
+                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' 
+                                {...registerPassword}
+                            />
+                            <span className="flex justify-between">
+                                {(errors.password)
+                                    ? <WidgetFormErrorMessage errorMessage={errors.password.message} />
+                                    : <WidgetFormHelperText helperText='&nbsp;' />}
+
+                            </span>
+                        </label>
                     </div>
                 </div>
 
@@ -258,6 +322,9 @@ type FormDataType = {
     id?: string
     isActive: boolean
     isExternalDb?: boolean
+    host: string
+    user: string
+    password: string
 }
 
 type SuperAdminEditNewClientExtDatabaseType = {

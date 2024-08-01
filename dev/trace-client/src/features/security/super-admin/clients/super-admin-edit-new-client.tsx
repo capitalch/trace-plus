@@ -1,4 +1,4 @@
-import { useForm, ValidateResult } from "react-hook-form"
+import { useForm} from "react-hook-form"
 import _ from 'lodash'
 import { Messages } from "../../../../utils/messages"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
