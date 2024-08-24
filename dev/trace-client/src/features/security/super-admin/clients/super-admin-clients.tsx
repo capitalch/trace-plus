@@ -8,12 +8,9 @@ import { Utils } from "../../../../utils/utils";
 import { SuperAdminEditNewClient } from "./super-admin-edit-new-client";
 
 export function SuperAdminClients() {
-    // CustomControl={() => <CompAppGridToolbar title="Clients view" isLastNoOfRows={true} />}
-    const instance = MapDataInstances.superAdminClients
+    const instance = MapDataInstances.superAdminClients //Grid
     return (
-        <CompContentContainer title='Super admin clients' className=""
-        // CustomControl={() => <CompSyncFusionGridToolbar CustomControl={SuperAdminClientCustomControl} title="Clients view" isLastNoOfRows={true} instance={instance} />}
-        >
+        <CompContentContainer title='Super admin clients' className="">
             <CompSyncFusionGridToolbar CustomControl={() => <SuperAdminClientNewClientButtons dataInstance={instance} />} title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
                 className="mt-4"

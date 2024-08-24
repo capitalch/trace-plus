@@ -1,11 +1,11 @@
 ## To recap
-	- Data access layer for grid
+- Data access layer for grid
 - Data access layer for update
-	- GraphQL
-	- Apollo client
-	- Maps
-	- Redux
-	- Global context
+- GraphQL
+- Apollo client
+- Maps
+- Redux
+- Global context
 - Side menu and layouts working
 	- forms and forms validations
 
@@ -16,7 +16,6 @@
 	- submit with encoding etc
 	- edit mode
 																								- Form for new client has error in isActive field
-- Forms for input new client Internal and external databases
 																								- Grid Text prompt on edit, preview and delete
 																								- Server validation for clientCode for unique clientCode
 																								- Server validation for clientName for unique clientName
