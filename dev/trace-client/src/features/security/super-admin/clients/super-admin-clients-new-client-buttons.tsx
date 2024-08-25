@@ -1,4 +1,3 @@
-// import { MapDialogInstances } from "../../../../app/graphql/maps/map-dialog-instances"
 import { Utils } from "../../../../utils/utils"
 import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-client-ext-database"
 import { SuperAdminEditNewClient } from "./super-admin-edit-new-client"
