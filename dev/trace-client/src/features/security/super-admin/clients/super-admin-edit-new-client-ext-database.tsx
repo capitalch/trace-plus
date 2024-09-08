@@ -24,19 +24,19 @@ export function SuperAdminEditNewClientExtDatabase({
     , dataInstance
     , dbName
     , id
-    , isActive
+    , isActive = false
     , isExternalDb
 }: SuperAdminEditNewClientExtDatabaseType) {
     const [active, setActive] = useState(false)
-    const { checkNoSpaceOrSpecialChar, checkNoSpecialChar, checkUrl, shouldNotBeZero } = useValidators()
-    const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
+    const { checkNoSpaceOrSpecialChar, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
+    const { clearErrors, handleSubmit, register, setError, setValue, /*getValues, getFieldState,*/ trigger, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched', criteriaMode: 'firstError',
     })
     const context: GlobalContextType = useContext(GlobalContext)
 
     const registerClientCode = register('clientCode'
         , {
-            maxLength: { value: 10, message: Messages.errAtMost10Chars },
+            maxLength: { value: 30, message: Messages.errAtMost30Chars },
             minLength: { value: 6, message: Messages.errAtLeast6Chars },
             required: Messages.errRequired,
             validate: {
@@ -64,8 +64,9 @@ export function SuperAdminEditNewClientExtDatabase({
     const registerIsClientActive = register('isActive')
 
     const registerDbName = register('dbName', {
-        required: Messages.errRequired
-        , validate: {
+        required: Messages.errRequired,
+        minLength: { value: 6, message: Messages.errAtLeast6Chars },
+        validate: {
             noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar,
         }
     })
@@ -84,6 +85,7 @@ export function SuperAdminEditNewClientExtDatabase({
             noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
         }
     })
+
     const registerPassword = register('password', {
         minLength: { value: 4, message: Messages.errAtLeast4Chars },
         required: Messages.errRequired
@@ -93,11 +95,12 @@ export function SuperAdminEditNewClientExtDatabase({
         required: Messages.errRequired
         , validate: {
             // onlyNumeric: checkNumeric,
-            shouldNotBeZero: shouldNotBeZero
+            shouldNotBeZero: shouldNotBeZero,
+            shouldBePositive: shouldBePositive
         }
     })
     const registerUrl = register('url', {
-        validate:{
+        validate: {
             urlType: checkUrl
         }
     })
@@ -109,12 +112,13 @@ export function SuperAdminEditNewClientExtDatabase({
         const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-CLIENT-NAME"], 1600).subscribe((d: any) => {
             validateClientNameAtServer(d.data)
         })
+        // Following code for edit purpose
         setValue('clientCode', clientCode || '')
         setValue('clientName', clientName || '')
         setValue('dbName', dbName || '')
         setValue('id', id)
         setValue('isActive', isActive || false)
-        setValue('isExternalDb', isExternalDb || false)
+        setValue('isExternalDb', isExternalDb || true)
 
         return (() => {
             subs1.unsubscribe()
@@ -124,7 +128,7 @@ export function SuperAdminEditNewClientExtDatabase({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex flex-col gap-2 w-auto min-w-80'>
+            <div className='flex w-auto min-w-80 flex-col gap-2'>
 
                 {/* Client code */}
                 <label className='flex flex-col font-medium text-primary-400'>
@@ -137,7 +141,7 @@ export function SuperAdminEditNewClientExtDatabase({
                         {(errors.clientCode)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientCode.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <WidgetTooltip title={Messages.messClientCode} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                        <WidgetTooltip title={Messages.messClientCode} className="!-top-5 border-2 border-gray-200 bg-white text-sm font-normal !text-blue-500">
                             <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
                         </WidgetTooltip>
                     </span>
@@ -153,7 +157,7 @@ export function SuperAdminEditNewClientExtDatabase({
                         {(errors.clientName)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientName.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <WidgetTooltip title={Messages.messClientName} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                        <WidgetTooltip title={Messages.messClientName} className="!-top-5 border-2 border-gray-200 bg-white text-sm font-normal !text-blue-500">
                             <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
                         </WidgetTooltip>
                     </span>
@@ -163,19 +167,19 @@ export function SuperAdminEditNewClientExtDatabase({
                 <div className="flex items-center">
                     <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
                         checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
-                    <label htmlFor="isActive" className="ml-3 text-sm text-primary-500 cursor-pointer">Is this client active</label>
+                    <label htmlFor="isActive" className="ml-3 cursor-pointer text-sm text-primary-500">Is this client active</label>
                 </div>
 
                 {/* External database details */}
-                <div className="flex flex-col bg-slate-100 w-full p-2">
-                    <label className="font-medium text-sm text-primary-400">External database connection details</label>
+                <div className="flex w-full flex-col bg-slate-100 p-2">
+                    <label className="text-sm font-bold text-primary-500">External database connection details</label>
 
                     {/* db name and host */}
-                    <div className="flex mt-1 gap-2 w-auto">
+                    <div className="mt-1 flex w-auto gap-2">
 
                         {/* db name */}
-                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2'>
-                            <span className='font-bold text-xs'>DB name <WidgetAstrix /></span>
+                        <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+                            <span className='text-xs font-bold'>DB name <WidgetAstrix /></span>
                             <input type='text' placeholder="e.g Battle_database" autoComplete="off"
                                 className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerDbName}
                             />
@@ -188,8 +192,8 @@ export function SuperAdminEditNewClientExtDatabase({
                         </label>
 
                         {/* db host */}
-                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2 pr-2'>
-                            <span className='font-bold text-xs'>DB host <WidgetAstrix /></span>
+                        <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+                            <span className='text-xs font-bold'>DB host <WidgetAstrix /></span>
                             <input type='text' placeholder="e.g host name" autoComplete="off"
                                 className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                                 {...registerHost}
@@ -204,11 +208,11 @@ export function SuperAdminEditNewClientExtDatabase({
                     </div>
 
                     {/* User name and password */}
-                    <div className="flex mt-1 gap-2 w-auto">
+                    <div className="mt-1 flex w-auto gap-2">
 
                         {/* db User name */}
-                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2'>
-                            <span className='font-bold text-xs'>DB user name <WidgetAstrix /></span>
+                        <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+                            <span className='text-xs font-bold'>DB user name <WidgetAstrix /></span>
                             <input type='text' autoComplete="off"
                                 className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                                 {...registerUser}
@@ -222,9 +226,9 @@ export function SuperAdminEditNewClientExtDatabase({
                         </label>
 
                         {/* db password */}
-                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2 pr-2'>
-                            <span className='font-bold text-xs'>DB password <WidgetAstrix /></span>
-                            <input type='password'
+                        <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+                            <span className='text-xs font-bold'>DB password <WidgetAstrix /></span>
+                            <input type='password' autoComplete="off"
                                 className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                                 {...registerPassword}
                             />
@@ -238,11 +242,11 @@ export function SuperAdminEditNewClientExtDatabase({
                     </div>
 
                     {/* DB port and DB url */}
-                    <div className="flex mt-1 gap-2 w-auto">
+                    <div className="mt-1 flex w-auto gap-2">
 
                         {/* db port */}
-                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2'>
-                            <span className='font-bold text-xs'>DB port <WidgetAstrix /></span>
+                        <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+                            <span className='text-xs font-bold'>DB port <WidgetAstrix /></span>
                             <input type='number' autoComplete="off"
                                 className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                                 {...registerPort}
@@ -256,8 +260,8 @@ export function SuperAdminEditNewClientExtDatabase({
                         </label>
 
                         {/* db url */}
-                        <label className='flex flex-col font-medium text-primary-400 gap-1 w-1/2 pr-2'>
-                            <span className='font-bold text-xs'>DB url </span>
+                        <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+                            <span className='text-xs font-bold'>DB url </span>
                             <input type='text' autoComplete="off"
                                 className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
                                 {...registerUrl}
@@ -270,6 +274,9 @@ export function SuperAdminEditNewClientExtDatabase({
                             </span>
                         </label>
                     </div>
+                    <button type="button" onClick={handleTestDbConnection}
+                        disabled={isDbValidationErrors()}
+                        className="ml-auto mt-1 h-7 w-max rounded-md bg-lime-600 px-2 text-xs text-white hover:bg-lime-700 disabled:bg-slate-300 active:shadow-primary-2">Test database connection</button>
                 </div>
 
                 {/* Save */}
@@ -286,19 +293,51 @@ export function SuperAdminEditNewClientExtDatabase({
         </form>
     )
 
+
+    async function handleTestDbConnection() {
+        const ret = await trigger(['dbName', 'host', 'user', 'password', 'port'])
+        if (ret) {
+            //proceed
+        }
+    }
+
+    function isDbValidationErrors() {
+        const ret: any = errors.dbName
+            || errors.host
+            || errors.user
+            || errors.password
+            || errors.port
+            || errors.url
+
+        return (ret)
+    }
+
     async function onSubmit(data: FormDataType) {
         const dbName1: string = data.dbName || `${data.clientCode}_accounts` // If dbname is already there, it does not change
+        const dbParams: any = {
+            dbName: dbName1,
+            host: data?.host,
+            user: data?.user,
+            password: data?.password,
+            port: +data?.port,
+            url: data?.url
+        }
         const traceDataObject: TraceDataObjectType = {
             tableName: 'ClientM'
             , xData: {
-                ...data
+                id: data?.id
+                , clientCode: data?.clientCode
+                , clientName: data?.clientName
                 , dbName: dbName1
-                , isExternalDb: false
+                , isActive: data.isActive
+                , isExternalDb: true
+                , dbParams: JSON.stringify(dbParams)
             }
         }
         try {
             const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
             const queryName: string = MapGraphQLQueries.updateClient.name
+            console.log(q, queryName)
             await Utils.mutateGraphQL(q, queryName)
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -383,6 +422,19 @@ type SuperAdminEditNewClientExtDatabaseType = {
     dbName?: string
     dbParams?: string
     id?: string
-    isActive?: boolean
+    isActive: boolean
     isExternalDb?: boolean
 }
+
+// const data: any = getValues()
+
+// const isEmpty: boolean = _.isEmpty(data.dbName)
+//     && _.isEmpty(data.host)
+//     && _.isEmpty(data.user)
+//     && _.isEmpty(data.password)
+//     && _.isEmpty(data.port)
+
+// const isInValiduserName = getFieldState('user').invalid
+// const isInValidpassword = getFieldState('password').invalid
+// const isInValidPort = getFieldState('port').invalid
+// trigger(['dbName', 'host', 'user', 'password', 'port'])

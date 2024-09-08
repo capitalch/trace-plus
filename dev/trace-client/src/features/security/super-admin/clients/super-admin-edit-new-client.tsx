@@ -37,7 +37,7 @@ export function SuperAdminEditNewClient({
 
     const registerClientCode = register('clientCode'
         , {
-            maxLength: { value: 10, message: Messages.errAtMost10Chars },
+            maxLength: { value: 30, message: Messages.errAtMost30Chars },
             minLength: { value: 6, message: Messages.errAtLeast6Chars },
             required: Messages.errRequired,
             validate: {

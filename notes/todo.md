@@ -11,19 +11,28 @@
 
 ## To do
 - External DB
-	- Provide fields in form with validations
+																								- Provide fields in form with validations
 	- Test database connection
-	- submit with encoding etc
+		- Initially it is enabled whereas should be disabled
+		- Test connection
+		- Enable / Disable etc.
+																							- submit
+																								- Client side
+																								- Server side code
+																								- Create database DML at server
 	- edit mode
+	- delete
+																								- DB port validation
+																								- url validation correction
+																								- remove preview
+	- server code
+
+- Login error handling not correct
 																								- Form for new client has error in isActive field
 																								- Grid Text prompt on edit, preview and delete
 																								- Server validation for clientCode for unique clientCode
 																								- Server validation for clientName for unique clientName
-- Delete row
-- Accommodate external DB code at client side
-- Ext DB code at server side
-- Create database DML at server
-- Login error handling not correct
+
 																								- Close form after success
 																								- Reload data aftersuccess save
 																								- Edit row data
@@ -41,10 +50,8 @@
 																								- Two buttons
 																								- Edit, Delete and Preview
 																								- Tooltip widget
-	
 																								- load data
 																								- last no of rows
-
 																								- Grid instance
 																								- Redux with grid
 																								- Grid query make work

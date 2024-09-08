@@ -5,10 +5,11 @@ from urllib.parse import unquote
 from app.dependencies import AppHttpException
 from app.messages import Messages
 from .db.sql_security import allSqls
-from .db.helpers.psycopg_async_helper import exec_sql, exec_sql_object
+from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql_object
+from .db.sql_security import SqlSecurity
 
 # from .db.sql_security import SqlSecurity
-from app.utils import getSqlQueryObject
+from app.utils import encrypt, getSqlQueryObject
 
 
 async def generic_update_helper(info, value: str):
@@ -71,21 +72,31 @@ async def update_client_helper(info, value: str):
             isExternalDb: bool = xData.get("isExternalDb", None)
             dbParams = xData.get("dbParams", None)
             if dbParams:
-                pass
-                # dbParamsEncrypted = utils.encrypt(dbParams)
-                # xData['dbParams'] = dbParamsEncrypted
-                # Encrypt dbParams and set in xData
+                # pass
+                dbParamsEncrypted = encrypt(dbParams)
+                xData["dbParams"] = dbParamsEncrypted
             dbToCreate = xData.get("dbName")
-            if dbToCreate:
-                pass
-                # dbNameInCatalog: str = await exec_sql(
-                #     request,
-                #     dbName=operationName,
-                #     db_params=dbParams,
-                #     schema="public",
-                #     sql=SqlSecurity.get_db_name_in_catalog,
-                #     sqlArgs={"dbName": dbToCreate},
-                # )
+            if dbToCreate and (not isExternalDb):
+                dbNameInCatalog: str = await exec_sql(
+                    dbName=operationName,
+                    db_params=dbParams,
+                    schema="public",
+                    sql=SqlSecurity.get_db_name_in_catalog,
+                    sqlArgs={"datname": dbToCreate},
+                )
+                if not dbNameInCatalog:
+                    await execute_sql_dml(
+                        dbName=operationName,
+                        db_params=dbParams,
+                        schema="public",
+                        sql=f'CREATE DATABASE "{dbToCreate}"',
+                    )
+                    await execute_sql_dml(
+                        dbName=dbToCreate,
+                        db_params=dbParams,
+                        schema="public",
+                        sql=SqlSecurity.drop_public_schema,
+                    )
         data = await exec_sql_object(dbName=operationName, sqlObject=sqlObj)
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL

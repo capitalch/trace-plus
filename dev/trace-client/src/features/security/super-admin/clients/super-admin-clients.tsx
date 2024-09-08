@@ -22,7 +22,7 @@ export function SuperAdminClients() {
                 sqlId={MapSqlIds.allClients}
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
-                onPreview={handleOnPreview}
+            // onPreview={handleOnPreview}
             />
         </CompContentContainer>
     )
@@ -66,7 +66,7 @@ export function SuperAdminClients() {
     }
 
     function handleOnDelete(id: string) {
-        // console.log('Delete clicked:', id)
+        console.log('Delete clicked:', id)
     }
 
     function handleOnEdit(props: any) {
@@ -82,10 +82,6 @@ export function SuperAdminClients() {
                 dataInstance={instance}
             />,
         })
-    }
-
-    function handleOnPreview(props: any) {
-        console.log('Preview clicked: ', props)
     }
 
     function isActiveTemplate(props: any) {
@@ -106,3 +102,8 @@ export function SuperAdminClients() {
         return (<span><b>Count: {props.Count}</b></span>)
     }
 }
+
+
+// function handleOnPreview(props: any) {
+//     console.log('Preview clicked: ', props)
+// }

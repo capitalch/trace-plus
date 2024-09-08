@@ -12,6 +12,7 @@ dbParams: dict = {
     "host": Config.DB_HOST,
 }
 
+
 def get_conn_info(
     dbName: str = Config.DB_SECURITY_DATABASE, db_params: dict[str, str] = dbParams
 ) -> str:
@@ -20,6 +21,7 @@ def get_conn_info(
     db_params.update({"dbname": dbName})
     connInfo = make_conninfo("", **db_params)
     return connInfo
+
 
 async def exec_sql(
     # request,
@@ -33,6 +35,7 @@ async def exec_sql(
     records = []
     records = await doProcess(connInfo, schema, dbName, sql, sqlArgs)
     return jsonable_encoder(records)
+
 
 async def doProcess(
     connInfo, schema, dbName, sql, sqlArgs
@@ -54,38 +57,53 @@ async def doProcess(
         raise e
     return records
 
+
 # Data manipulation language sql. No return value. Not inside a transaction
-async def execute_sql_dml(dbName: str = Config.DB_SECURITY_DATABASE, db_params: dict[str, str] = dbParams, schema: str = 'public', sql: str = '', sqlArgs: dict[str, str] = {}):
+async def execute_sql_dml(
+    dbName: str = Config.DB_SECURITY_DATABASE,
+    db_params: dict[str, str] = dbParams,
+    schema: str = "public",
+    sql: str = "",
+    sqlArgs: dict[str, str] = {},
+):
     connInfo = get_conn_info(dbName, db_params)
     try:
-        async with await AsyncConnection.connect(connInfo) as aconn:
+        # autocommit to be turned on, otherwise dml statements will fail
+        async with await AsyncConnection.connect(connInfo, autocommit=True) as aconn:
             await aconn.execute(f"set search_path to {schema or 'public'}")
-            await aconn.execute(sql,sqlArgs)
+            await aconn.execute(sql, sqlArgs)
             await aconn.close()
     except OperationalError as e:
         raise e
     except Exception as e:
         raise e
-    
+
+
 async def process_details(sqlObject: Any, acur: Any, fkeyValue=None):
     ret = None
-    if ('deletedIds' in sqlObject):
+    if "deletedIds" in sqlObject:
         await process_deleted_ids(sqlObject, acur)
-    xData = sqlObject.get('xData', None)
-    tableName = sqlObject.get('tableName', None)
-    fkeyName = sqlObject.get('fkeyName', None)
-    if (xData):
-        if (type(xData) is list):
+    xData = sqlObject.get("xData", None)
+    tableName = sqlObject.get("tableName", None)
+    fkeyName = sqlObject.get("fkeyName", None)
+    if xData:
+        if type(xData) is list:
             for item in xData:
-                ret = await process_data(item, acur, tableName,
-                                         fkeyName, fkeyValue)
+                ret = await process_data(item, acur, tableName, fkeyName, fkeyValue)
         else:
             ret = await process_data(xData, acur, tableName, fkeyName, fkeyValue)
-    return (ret)
+    return ret
 
-async def exec_sql_object(dbName: str = Config.DB_SECURITY_DATABASE, db_params: dict[str, str] = dbParams, schema: str = 'public',  execSqlObject: Any = process_details, sqlObject: Any = None):
+
+async def exec_sql_object(
+    dbName: str = Config.DB_SECURITY_DATABASE,
+    db_params: dict[str, str] = dbParams,
+    schema: str = "public",
+    execSqlObject: Any = process_details,
+    sqlObject: Any = None,
+):
     connInfo = get_conn_info(dbName, db_params)
-    schema = 'public' if schema is None else schema
+    schema = "public" if schema is None else schema
     records = None
     try:
         async with await AsyncConnection.connect(connInfo) as aconn:
@@ -99,91 +117,89 @@ async def exec_sql_object(dbName: str = Config.DB_SECURITY_DATABASE, db_params: 
         raise e
     except Exception as e:
         raise e
-    return records  
-    
+    return records
+
+
 async def process_data(xData, acur, tableName, fkeyName, fkeyValue):
     xDetails = None
     id = None
     records = None
-    if ('xDetails' in xData):
-        xDetails = xData.pop('xDetails')
+    if "xDetails" in xData:
+        xDetails = xData.pop("xDetails")
     sql, tup = get_sql(xData, tableName, fkeyName, fkeyValue)
-    if (sql):
+    if sql:
         await acur.execute(sql, tup)
-        if (acur.rowcount > 0):
+        if acur.rowcount > 0:
             records = await acur.fetchone()
-            id = records.get('id')
-    if (xDetails):
+            id = records.get("id")
+    if xDetails:
         for item in xDetails:
             await process_details(item, acur, id)
-    return (id)
+    return id
 
 
 def get_sql(xData, tableName, fkeyName, fkeyValue):
     sql = None
     valuesTuple = None
-    if (xData.get('id', None)):  # update
+    if xData.get("id", None):  # update
         sql, valuesTuple = get_update_sql(xData, tableName)
     else:  # insert
-        sql, valuesTuple = get_insert_sql(
-            xData, tableName, fkeyName, fkeyValue)
+        sql, valuesTuple = get_insert_sql(xData, tableName, fkeyName, fkeyValue)
     return (sql, valuesTuple)
 
 
 def get_insert_sql(xData, tableName, fkeyName, fkeyValue):
     fieldNamesList = list(xData.keys())
-    if (fkeyName and fkeyValue):
+    if fkeyName and fkeyValue:
         fieldNamesList.append(fkeyName)
     fieldsCount = len(fieldNamesList)
 
     for idx, name in enumerate(fieldNamesList):
-        fieldNamesList[idx] = f''' "{name}" '''  # surround fields with ""
-    fieldsString = ','.join(
-        fieldNamesList)  # f'''({','.join( fieldNamesList   )})'''
+        fieldNamesList[idx] = f""" "{name}" """  # surround fields with ""
+    fieldsString = ",".join(fieldNamesList)  # f'''({','.join( fieldNamesList   )})'''
 
-    placeholderList = ['%s'] * fieldsCount
-    placeholdersForValues = ', '.join(placeholderList)
+    placeholderList = ["%s"] * fieldsCount
+    placeholdersForValues = ", ".join(placeholderList)
 
     valuesList = list(xData.values())
     if fkeyName and fkeyValue:
         valuesList.append(fkeyValue)
     valuesTuple = tuple(valuesList)
-    sql = f'''insert into "{tableName}"
+    sql = f"""insert into "{tableName}"
         ({fieldsString}) values({placeholdersForValues}) returning id
-        '''
+        """
     return (sql, valuesTuple)
 
 
 def get_update_sql(xData, tableName):
     def getUpdateKeyValuesString(dataCopy):
-        dataCopy.pop('id')
+        dataCopy.pop("id")
         lst = []
         for item in dataCopy:
-            lst.append(f''' "{item}" = %s''')
-        keyValueStr = ', '.join(lst)
+            lst.append(f""" "{item}" = %s""")
+        keyValueStr = ", ".join(lst)
         valuesTuple = tuple(dataCopy.values())
         return (keyValueStr, valuesTuple)
 
     keyValueStr, valuesTuple = getUpdateKeyValuesString(xData.copy())
-    sql = f'''
+    sql = f"""
         update "{tableName}" set {keyValueStr}
             where id = {xData['id']} returning "{"id"}"
-    '''
+    """
     return (sql, valuesTuple)
 
 
 async def process_deleted_ids(sqlObject, acur: Any):
-    deletedIdList = sqlObject.get('deletedIds')
-    tableName = sqlObject.get('tableName')
-    ret = '('
+    deletedIdList = sqlObject.get("deletedIds")
+    tableName = sqlObject.get("tableName")
+    ret = "("
     for x in deletedIdList:
-        ret = ret + str(x) + ','
-    ret = ret.rstrip(',') + ')'
-    sql = f'''delete from "{tableName}" where id in{ret}'''
+        ret = ret + str(x) + ","
+    ret = ret.rstrip(",") + ")"
+    sql = f"""delete from "{tableName}" where id in{ret}"""
     await acur.execute(sql)
-    
-    
-    
+
+
 # from psycopg_pool import AsyncConnectionPool
 # poolStore = {}
 # from app.dependencies import AppHttpException
