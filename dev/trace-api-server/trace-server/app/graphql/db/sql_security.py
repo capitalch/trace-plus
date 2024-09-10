@@ -102,6 +102,9 @@ class SqlSecurity:
             ) as "jsonResult"
     """
 
+    test_connection = """
+        select 1
+    """
 
 allSqls = {
     "sql1": """with cte1 as (

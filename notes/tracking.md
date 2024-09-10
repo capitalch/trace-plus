@@ -3,6 +3,8 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 08-09-2024
+- New client with outside database
 # 27-07-2024 - 28-07-2024: Sunday
 - recap of codebase
 - clientCode and clientName server side validation

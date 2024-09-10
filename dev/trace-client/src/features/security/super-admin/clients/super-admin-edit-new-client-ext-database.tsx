@@ -29,7 +29,7 @@ export function SuperAdminEditNewClientExtDatabase({
 }: SuperAdminEditNewClientExtDatabaseType) {
     const [active, setActive] = useState(false)
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
-    const { clearErrors, handleSubmit, register, setError, setValue, /*getValues, getFieldState,*/ trigger, formState: { errors, }, } = useForm<FormDataType>({
+    const { clearErrors, handleSubmit, register, setError, setValue, getValues, /*getValues, getFieldState,*/ trigger, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched', criteriaMode: 'firstError',
     })
     const context: GlobalContextType = useContext(GlobalContext)
@@ -283,9 +283,7 @@ export function SuperAdminEditNewClientExtDatabase({
                 <div className='mt-4 flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-                {/* <button type="button" onClick={() => {
-                    console.log(errors)
-                }}>Test</button> */}
+                <button type="button" className="bg-slate-300" onClick={handleTestDbConnection}>Test conn</button>
                 <span>
                     {showServerValidationError()}
                 </span>
@@ -296,8 +294,28 @@ export function SuperAdminEditNewClientExtDatabase({
 
     async function handleTestDbConnection() {
         const ret = await trigger(['dbName', 'host', 'user', 'password', 'port'])
-        if (ret) {
-            //proceed
+        if (!ret) {
+            // return
+        }
+        const data: any = getValues()
+        console.log(data)
+        const dbParams = {
+            dbName: 'trace',
+            host: 'node15',
+            user: 'web',
+            password: 'Kkkdmmcfd',
+            port: 100
+        }
+        try {
+            const q: any = MapGraphQLQueries.genericQuery(dbParams.dbName, {
+                sqlId: MapSqlIds.testConnection,
+                ...dbParams
+            })
+            const queryName: string = MapGraphQLQueries.genericQuery.name
+            const res = await Utils.queryGraphQL(q, queryName)
+            console.log(res)
+        } catch (e: any) {
+            console.log(e.message)
         }
     }
 
@@ -337,7 +355,7 @@ export function SuperAdminEditNewClientExtDatabase({
         try {
             const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
             const queryName: string = MapGraphQLQueries.updateClient.name
-            console.log(q, queryName)
+            // console.log(q, queryName)
             await Utils.mutateGraphQL(q, queryName)
             Utils.showHideModalDialogA({
                 isOpen: false,
