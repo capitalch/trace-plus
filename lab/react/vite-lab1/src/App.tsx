@@ -19,8 +19,8 @@ import './App.css'
 // import { ReactQueryComp2 } from './features/react-query/react-query-comp2';
 // import { ApolloGraphQLComp1 } from './features/apollo-graphql/apollo-graphql-comp1';
 // import { ApolloGraphQLComp2 } from './features/apollo-graphql/apollo-graphql-comp2';
-import { PrimeReact } from './features/prime-react/PrimeReact';
-import { PrimeReactProvider } from 'primereact/api'
+// import { PrimeReact } from './features/prime-react/PrimeReact';
+// import { PrimeReactProvider } from 'primereact/api'
 // import { DeepObjectReset } from './features/deep-object-reset/deep-object-reset'
 import 'primereact/resources/themes/nova/theme.css'
 import 'primereact/resources/primereact.min.css'
@@ -28,17 +28,18 @@ import 'primeicons/primeicons.css'
 // import { ToastContainer } from 'react-toastify'
 // import { ReactToastify } from './features/react-toastify/ReactToastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ReactSelectTypeAhead } from './features/react-select/react-select-type-ahead'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
-import { Counter } from './features/redux-counter/counter';
-import { ReactTooltip, ReactTooltip1Control } from './features/tooltip/react-tooltip';
-import { Violations } from './features/Misc/violations';
+// import { Counter } from './features/redux-counter/counter';
+// import { ReactTooltip, ReactTooltip1Control } from './features/tooltip/react-tooltip';
+// import { Violations } from './features/Misc/violations';
 export const GlobalContext: any = createContext({})
 
 function App() {
   
   return (
     <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
-      <PrimeReactProvider value = {{appendTo:'self'}} >
+      {/* <PrimeReactProvider value = {{appendTo:'self'}} > */}
         {/* <RouterProvider router={router} /> */}
         {/* <Counter /> */}
         {/* <OfficeContext.Provider value={{ standardSelect: { brandID: () => { } } }}>
@@ -62,15 +63,16 @@ function App() {
         <ApolloGraphQLComp1 />
         <ApolloGraphQLComp2 />
       </div> */}
-        <PrimeReact />
+        {/* <PrimeReact /> */}
         {/* <ToastContainer />
       <ReactToastify />
       <SyncfusionGrid /> */}
-        <Counter />
+        {/* <Counter />
         <ReactTooltip />
         <ReactTooltip1Control />
-        <Violations />
-      </PrimeReactProvider>
+        <Violations /> */}
+      {/* </PrimeReactProvider> */}
+      <ReactSelectTypeAhead />
     </GlobalContext.Provider>
   )
 }
