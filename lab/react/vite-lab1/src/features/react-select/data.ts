@@ -17,6 +17,10 @@ export interface ColourOption {
     { value: 'forest', label: 'Forest', color: '#00875A' },
     { value: 'slate', label: 'Slate', color: '#253858' },
     { value: 'silver', label: 'Silver', color: '#666666' },
+    { value: 'reed', label:'Reed', color:''},
+    { value: 'reed1', label:'Reed1', color:''},
+    { value: 'reed2', label:'Reed2', color:''},
+    { value: 'reed3', label:'Reed3', color:''},
   ];
   
   export interface FlavourOption {
