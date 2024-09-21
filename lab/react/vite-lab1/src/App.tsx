@@ -28,6 +28,7 @@ import 'primeicons/primeicons.css'
 // import { ToastContainer } from 'react-toastify'
 // import { ReactToastify } from './features/react-toastify/ReactToastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ReactSelectTypeAheadAsync } from './features/react-select/react-select-type-ahead-async'
 import { ReactSelectTypeAhead } from './features/react-select/react-select-type-ahead'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
 // import { Counter } from './features/redux-counter/counter';
@@ -72,6 +73,7 @@ function App() {
         <ReactTooltip1Control />
         <Violations /> */}
       {/* </PrimeReactProvider> */}
+      <ReactSelectTypeAheadAsync />
       <ReactSelectTypeAhead />
     </GlobalContext.Provider>
   )
