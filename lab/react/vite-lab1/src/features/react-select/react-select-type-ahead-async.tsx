@@ -1,7 +1,9 @@
 import AsyncSelect from 'react-select/async';
 import axios from 'axios';
 import _ from 'lodash'
-import awPromise from 'awesome-debounce-promise'
+// import awPromise from 'awesome-debounce-promise'
+import { useEffect } from 'react';
+import { ibukiDebounceFilterOn } from '../../app/ibuki';
 // import Async, { useAsync } from 'react-select/async';
 // import Select from 'react-select'
 // import { ColourOption, colourOptions } from './data';
@@ -18,6 +20,21 @@ export function ReactSelectTypeAheadAsync() {
         dbFunc()
     })
 
+    const pr = new Promise((resolve) => {
+        axios.get(url).then((res: any) =>
+            resolve(res.data))
+    })
+
+    useEffect(() => {
+        const res: any = ibukiDebounceFilterOn('DEBOUNCE-ASYNC', 1200).subscribe((d: any) => {
+            console.log(d.data)
+            // loadData(d.data)
+        })
+        return (() => {
+            res.unsubscribe()
+        })
+    }, [])
+
     return (<div className='m-2 w-64'>
         <AsyncSelect
             loadOptions={debounced1}
@@ -28,10 +45,18 @@ export function ReactSelectTypeAheadAsync() {
             isLoading={false}
             getOptionLabel={(option: any) => option.name}
             getOptionValue={(option: any) => option.capital}
-        // cacheOptions={true}
         />
         <button onClick={handleButtonClick} className='bg-slate-100 m-2'>Debounce</button>
     </div>)
+
+    function debounced1(inputValue: string): Promise<any> {
+        const res: any = undefined
+        if (inputValue.length <= 2) {
+            return (res)
+        }
+
+        return (pr.then((re: any) => re))
+    }
 
     function handleButtonClick() {
         const d = _.debounce(() => {
@@ -42,47 +67,36 @@ export function ReactSelectTypeAheadAsync() {
         d()
     }
 
-    function debounced(inputValue: string): Promise<any> {
-        let res: any = undefined
-        if (inputValue.length <= 2) {
-            return (res)
-        }
-        const url = 'https://freetestapi.com/api/v1/countries?limit=50'
-        const p = new Promise((resolve) => {
-            setTimeout(
-                () =>
-                    axios.get(url).then((res: any) =>
-                        resolve(res.data))
-                , 1000)
-            // axios.get(url).then((res: any) => resolve(res.data))
-        })
-        return (p.then((re: any) => re))
-    }
+    // function debounced(inputValue: string): Promise<any> {
+    //     let res: any = undefined
+    //     if (inputValue.length <= 2) {
+    //         return (res)
+    //     }
+    //     const url = 'https://freetestapi.com/api/v1/countries?limit=50'
+    //     const p = new Promise((resolve) => {
+    //         setTimeout(
+    //             () =>
+    //                 axios.get(url).then((res: any) =>
+    //                     resolve(res.data))
+    //             , 1000)
+    //     })
+    //     return (p.then((re: any) => re))
+    // }
 
-    const dbFunc = (resolve:any) => _.debounce(
-        () =>
-            axios.get(url).then((res: any) =>
-                resolve(res.data))
-        , 1000)
+    // const dbFunc = (resolve:any) => _.debounce(
+    //     () =>
+    //         axios.get(url).then((res: any) =>
+    //             resolve(res.data))
+    //     , 1000)
 
-    
-    function debounced1(inputValue: string): Promise<any> {
-        let res: any = undefined
-        if (inputValue.length <= 2) {
-            return (res)
-        }
-
-        return (p.then((re: any) => re))
-    }
-
-    async function loadOptions(inputValue: string) {
-        let res: any = undefined
-        if (inputValue.length > 2) {
-            const url = 'https://freetestapi.com/api/v1/countries?limit=50'
-            res = await axios.get(url)
-        }
-        return res.data
-    }
+    // async function loadOptions(inputValue: string) {
+    //     let res: any = undefined
+    //     if (inputValue.length > 2) {
+    //         const url = 'https://freetestapi.com/api/v1/countries?limit=50'
+    //         res = await axios.get(url)
+    //     }
+    //     return res.data
+    // }
 
     function handleOnChange(e: any) {
         console.log(e)
