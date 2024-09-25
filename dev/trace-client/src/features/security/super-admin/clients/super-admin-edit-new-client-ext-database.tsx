@@ -300,11 +300,11 @@ export function SuperAdminEditNewClientExtDatabase({
         const data: any = getValues()
         console.log(data)
         const dbParams = {
-            dbName: 'trace',
-            host: 'node15',
-            user: 'web',
-            password: 'Kkkdmmcfd',
-            port: 100
+            dbName: 'tra',
+            host: 'node150',
+            user: 'w',
+            password: 'K',
+            port: 11
         }
         try {
             const q: any = MapGraphQLQueries.genericQuery(dbParams.dbName, {
@@ -312,9 +312,14 @@ export function SuperAdminEditNewClientExtDatabase({
                 ...dbParams
             })
             const queryName: string = MapGraphQLQueries.genericQuery.name
-            const res = await Utils.queryGraphQL(q, queryName)
-            console.log(res)
+            const res: any = await Utils.queryGraphQL(q, queryName)
+            if (res?.data?.[queryName]?.[0]?.connection) {
+                Utils.showSuccessAlertMessage({ message: Messages.messDbConnSuccessful, title: Messages.messSuccess })
+            } else {
+                Utils.showFailureAlertMessage({ message: Messages.messDbConnFailure, title: Messages.messFailure })
+            }
         } catch (e: any) {
+            Utils.showFailureAlertMessage({ message: Messages.messDbConnFailure, title: Messages.messFailure })
             console.log(e.message)
         }
     }

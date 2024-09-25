@@ -23,7 +23,11 @@ const Messages = {
     'Client code should be between 6 characters and 10 characters',
   messClientName:
     'Client name should be between 6 characters and 50 characters',
+  messFailure:"Failure",
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
+  messSuccess:'Successfull',
+  messDbConnSuccessful:"Database connection was successful",
+  messDbConnFailure:"Database connection was failed",
   messUserNameEmailHelper:
     'At least 4 characters long | no space | no special char'
 }

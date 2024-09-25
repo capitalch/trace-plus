@@ -17,7 +17,9 @@ export const Utils: UtilsType = {
     showHideModalDialogA: showHideModalDialogA,
     showHideModalDialogB: showHideModalDialogB,
     showGraphQlErrorMessage: showGraphQlErrorMessage,
-    showSaveMessage: showSaveMessage
+    showSaveMessage: showSaveMessage,
+    showSuccessAlertMessage: showSuccessAlertMessage,
+    showFailureAlertMessage: showFailureAlertMessage
 }
 
 function getHostUrl() {
@@ -84,7 +86,6 @@ function showErrorMessage(error?: ErrorType, errorCode?: string, errorMessage?: 
     const errCode = error?.response?.data?.error_code || errorCode || ''
     const errMessage = error?.response?.data?.message || errorMessage || Messages.errUnknown
     const status = error?.response?.status || 500
-
     Swal.fire({
         toast: true,
         position: "bottom-right",
@@ -122,25 +123,25 @@ function showGraphQlErrorMessage(error: GraphQlErrorType) {
 }
 
 function showHideModalDialogA({ isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
-    const instanceName: string = 'A'
     const args: ShowModalDialogMessageArgsType = {
         title: title,
         isOpen: isOpen,
         element: element,
-        instanceName: instanceName
+        instanceName: 'A'
     }
-    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName], args)
+    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-A"], args)
 }
 
 function showHideModalDialogB({ isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
-    const instanceName: string = 'B'
+
     const args: ShowModalDialogMessageArgsType = {
         title: title,
         isOpen: isOpen,
         element: element,
-        instanceName: instanceName
+        instanceName: 'B'
     }
-    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-" + instanceName], args)
+    ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-B"], args)
+
 }
 
 function showSaveMessage() {
@@ -163,6 +164,22 @@ function showSaveMessage() {
     })
 }
 
+function showSuccessAlertMessage(alertMessage: AlertMessageType) {
+    Swal.fire({
+        title: alertMessage.title,
+        text: alertMessage.message,
+        icon: 'success'
+    })
+}
+
+function showFailureAlertMessage(alertMessage: AlertMessageType) {
+    Swal.fire({
+        title: alertMessage.title,
+        text: alertMessage.message,
+        icon: 'error'
+    })
+}
+
 type ErrorType = {
     message: string
     response?: {
@@ -172,6 +189,11 @@ type ErrorType = {
             message: string
         }
     }
+}
+
+type AlertMessageType = {
+    title: string
+    message: string
 }
 
 type GraphQlErrorType = {
@@ -200,6 +222,8 @@ type UtilsType = {
     getToken: () => string | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
+    showFailureAlertMessage:(alertMessage:AlertMessageType) => void
+    showSuccessAlertMessage: (alertMessage: AlertMessageType) => void
     showAppLoader: (val: boolean) => void
     showErrorMessage: (error?: ErrorType, errorCode?: string, errorMessage?: string) => void
     showHideModalDialogA: (options: ShowHideModalDialogType) => void

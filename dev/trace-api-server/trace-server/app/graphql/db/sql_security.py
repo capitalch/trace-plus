@@ -103,7 +103,7 @@ class SqlSecurity:
     """
 
     test_connection = """
-        select 1
+        select 'ok' as "connection"
     """
 
 allSqls = {
