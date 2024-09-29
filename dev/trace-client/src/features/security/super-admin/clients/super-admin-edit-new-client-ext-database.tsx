@@ -299,7 +299,6 @@ export function SuperAdminEditNewClientExtDatabase({
             return
         }
         const data: FormDataType = getValues()
-        // console.log(data)
         const dbParams = {
             dbname: data.dbName, // 'tra', // its dbname and not dbName
             host: data.host, // 'node',
