@@ -26,7 +26,7 @@ export function CompSyncFusionGrid({
 
     const gridRef: any = useRef({})
 
-    useEffect(() => {
+    useEffect(() => { // make them available globally
         context.CompSyncFusionGrid[instance].loadData = loadData
         context.CompSyncFusionGrid[instance].gridRef = gridRef
     }, [])

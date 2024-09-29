@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import _ from 'lodash'
 import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enums'
 
-export const MapGraphQLQueries = {
+export const GraphQLQueriesMap = {
   genericQuery: genericQuery,
   updateClient: updateClient
 }
@@ -34,7 +34,7 @@ function encodeObj (obj: any) {
 }
 
 export type GraphQLQueryArgsType = {
-  dbParams?: string
+  dbParams?: { [key: string]: string | number }
   [key: string]: any
   sqlId: string
   sqlArgs?: { [key: string]: string | number }

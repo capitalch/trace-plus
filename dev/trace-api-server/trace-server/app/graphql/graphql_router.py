@@ -15,7 +15,7 @@ mutation = MutationType()
 
 @query.field("genericQuery")
 async def generic_query(_, info, value=""):
-    # request: Request = info.context["request"]
+    request: Request = info.context["request"]
     return await generic_query_helper(info, value)
 
 # @mutation.field("genericUpdate")

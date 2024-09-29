@@ -18,7 +18,7 @@ def get_conn_info(
 ) -> str:
     dbName = Config.DB_SECURITY_DATABASE if dbName is None else dbName
     db_params = dbParams if db_params is None else db_params
-    db_params.update({"dbname": dbName})
+    db_params.update({"dbname": dbName}) # dbName and dbname are different
     connInfo = make_conninfo("", **db_params)
     return connInfo
 

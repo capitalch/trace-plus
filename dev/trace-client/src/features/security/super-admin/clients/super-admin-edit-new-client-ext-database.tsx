@@ -7,10 +7,10 @@ import { GlobalContext } from "../../../../App"
 import { Messages } from "../../../../utils/messages"
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
-import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Utils } from "../../../../utils/utils"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
-import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids"
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
 import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
@@ -28,7 +28,7 @@ export function SuperAdminEditNewClientExtDatabase({
     , isExternalDb
 }: SuperAdminEditNewClientExtDatabaseType) {
     const [active, setActive] = useState(false)
-    const { checkNoSpaceOrSpecialChar, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
+    const { checkNoSpaceOrSpecialChar, checkNoSpaceOrSpecialCharAllowDot, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, getValues, /*getValues, getFieldState,*/ trigger, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched', criteriaMode: 'firstError',
     })
@@ -74,7 +74,7 @@ export function SuperAdminEditNewClientExtDatabase({
     const registerHost = register('host', {
         required: Messages.errRequired
         , validate: {
-            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
+            noSpaceOrSpecialChar: checkNoSpaceOrSpecialCharAllowDot
         }
     })
 
@@ -94,7 +94,6 @@ export function SuperAdminEditNewClientExtDatabase({
     const registerPort = register('port', {
         required: Messages.errRequired
         , validate: {
-            // onlyNumeric: checkNumeric,
             shouldNotBeZero: shouldNotBeZero,
             shouldBePositive: shouldBePositive
         }
@@ -276,14 +275,16 @@ export function SuperAdminEditNewClientExtDatabase({
                     </div>
                     <button type="button" onClick={handleTestDbConnection}
                         disabled={isDbValidationErrors()}
-                        className="ml-auto mt-1 h-7 w-max rounded-md bg-lime-600 px-2 text-xs text-white hover:bg-lime-700 disabled:bg-slate-300 active:shadow-primary-2">Test database connection</button>
+                        className="ml-auto mt-1 h-7 w-max rounded-md bg-lime-600 px-2 text-xs text-white hover:bg-lime-700 disabled:bg-slate-300 active:shadow-primary-2">
+                        Test database connection
+                    </button>
                 </div>
 
                 {/* Save */}
-                <div className='mt-4 flex justify-start'>
+                <div className='flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-                <button type="button" className="bg-slate-300" onClick={handleTestDbConnection}>Test conn</button>
+                {/* <button type="button" className="bg-slate-300" onClick={handleTestDbConnection}>Test conn</button> */}
                 <span>
                     {showServerValidationError()}
                 </span>
@@ -295,23 +296,24 @@ export function SuperAdminEditNewClientExtDatabase({
     async function handleTestDbConnection() {
         const ret = await trigger(['dbName', 'host', 'user', 'password', 'port'])
         if (!ret) {
-            // return
+            return
         }
-        const data: any = getValues()
-        console.log(data)
+        const data: FormDataType = getValues()
+        // console.log(data)
         const dbParams = {
-            dbName: 'tra',
-            host: 'node150',
-            user: 'w',
-            password: 'K',
-            port: 11
+            dbname: data.dbName, // 'traceAuth', // its dbname and not dbName
+            host: data.host, // 'node150483-trace-link.cloudjiffy.net',
+            user: data.user, // 'webadmin',
+            password: data.password, // 'KXKdms69217',
+            port: data.port, //11085
         }
         try {
-            const q: any = MapGraphQLQueries.genericQuery(dbParams.dbName, {
-                sqlId: MapSqlIds.testConnection,
-                ...dbParams
+            const q: any = GraphQLQueriesMap.genericQuery(dbParams.dbname, {
+                sqlId: SqlIdsMap.testConnection,
+                dbParams: dbParams
+                // ...dbParams
             })
-            const queryName: string = MapGraphQLQueries.genericQuery.name
+            const queryName: string = GraphQLQueriesMap.genericQuery.name
             const res: any = await Utils.queryGraphQL(q, queryName)
             if (res?.data?.[queryName]?.[0]?.connection) {
                 Utils.showSuccessAlertMessage({ message: Messages.messDbConnSuccessful, title: Messages.messSuccess })
@@ -338,7 +340,7 @@ export function SuperAdminEditNewClientExtDatabase({
     async function onSubmit(data: FormDataType) {
         const dbName1: string = data.dbName || `${data.clientCode}_accounts` // If dbname is already there, it does not change
         const dbParams: any = {
-            dbName: dbName1,
+            dbname: dbName1, // In dbParams it is dbname and not dbName
             host: data?.host,
             user: data?.user,
             password: data?.password,
@@ -346,7 +348,7 @@ export function SuperAdminEditNewClientExtDatabase({
             url: data?.url
         }
         const traceDataObject: TraceDataObjectType = {
-            tableName: 'ClientM'
+            tableName: 'ClientM' // When id is present then considered as update
             , xData: {
                 id: data?.id
                 , clientCode: data?.clientCode
@@ -358,9 +360,8 @@ export function SuperAdminEditNewClientExtDatabase({
             }
         }
         try {
-            const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
-            const queryName: string = MapGraphQLQueries.updateClient.name
-            // console.log(q, queryName)
+            const q: any = GraphQLQueriesMap.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
+            const queryName: string = GraphQLQueriesMap.updateClient.name
             await Utils.mutateGraphQL(q, queryName)
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -387,13 +388,13 @@ export function SuperAdminEditNewClientExtDatabase({
 
     async function validateClientCodeAtServer(value: any) {
         const res: any = await Utils.queryGraphQL(
-            MapGraphQLQueries.genericQuery(
+            GraphQLQueriesMap.genericQuery(
                 GLOBAL_SECURITY_DATABASE_NAME
                 , {
-                    sqlId: MapSqlIds.getClientOnClientCode
+                    sqlId: SqlIdsMap.getClientOnClientCode
                     , sqlArgs: { clientCode: value?.clientCode }
                 })
-            , MapGraphQLQueries.genericQuery.name)
+            , GraphQLQueriesMap.genericQuery.name)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientCode', {
                 type: 'serverError',
@@ -406,13 +407,13 @@ export function SuperAdminEditNewClientExtDatabase({
 
     async function validateClientNameAtServer(value: any) {
         const res: any = await Utils.queryGraphQL(
-            MapGraphQLQueries.genericQuery(
+            GraphQLQueriesMap.genericQuery(
                 GLOBAL_SECURITY_DATABASE_NAME
                 , {
-                    sqlId: MapSqlIds.getClientOnClientName
+                    sqlId: SqlIdsMap.getClientOnClientName
                     , sqlArgs: { clientName: value?.clientName }
                 })
-            , MapGraphQLQueries.genericQuery.name)
+            , GraphQLQueriesMap.genericQuery.name)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientName', {
                 type: 'serverError',

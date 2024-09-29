@@ -1,49 +1,51 @@
-import { useLazyQuery } from "@apollo/client";
-import { MapGraphQLQueries, GraphQLQueryArgsType } from "./maps/map-graphql-queries";
-import { GLOBAL_SECURITY_DATABASE_NAME } from "../global-constants";
-import { useEffect } from "react";
-import { Utils } from "../../utils/utils";
-import { AppDispatchType } from "../store/store";
-import { useDispatch } from "react-redux";
-import { setQueryHelperDataR } from "./query-helper-slice";
+import { useLazyQuery } from '@apollo/client'
+import {
+  GraphQLQueriesMap,
+  GraphQLQueryArgsType
+} from './maps/graphql-queries-map'
+import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
+import { useEffect } from 'react'
+import { Utils } from '../../utils/utils'
+import { AppDispatchType } from '../store/store'
+import { useDispatch } from 'react-redux'
+import { setQueryHelperDataR } from './query-helper-slice'
 
-export function useQueryHelper({
-    databaseName = GLOBAL_SECURITY_DATABASE_NAME
-    , getQueryArgs
-    , instance
-    , isExecQueryOnLoad = true
+export function useQueryHelper ({
+  databaseName = GLOBAL_SECURITY_DATABASE_NAME,
+  getQueryArgs,
+  instance,
+  isExecQueryOnLoad = true
 }: QueryHelperType) {
+  const dispatch: AppDispatchType = useDispatch()
+  const [getGenericQueryData, { error, loading }] = useLazyQuery(
+    GraphQLQueriesMap.genericQuery(databaseName, getQueryArgs()),
+    { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
+  )
 
-    const dispatch: AppDispatchType = useDispatch()
-    const [getGenericQueryData, { error, loading }] = useLazyQuery(
-        MapGraphQLQueries.genericQuery(databaseName, getQueryArgs())
-        , { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
-    )
-
-    useEffect(() => {
-        if (isExecQueryOnLoad) {
-            loadData()
-        }
-    }, [])
-
-    if (error) {
-        Utils.showErrorMessage(error)
+  useEffect(() => {
+    if (isExecQueryOnLoad) {
+      loadData()
     }
+  }, [])
 
-    async function loadData() {
-        const result: any = await getGenericQueryData()
-        if (result?.data?.genericQuery?.error?.content) {
-            Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
-        }
-        dispatch(setQueryHelperDataR({ data: result?.data, instance: instance }))
+  if (error) {
+    Utils.showErrorMessage(error)
+  }
+
+  async function loadData () {
+    const result: any = await getGenericQueryData()
+    if (result?.data?.genericQuery?.error?.content) {
+      Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
     }
+    dispatch(setQueryHelperDataR({ data: result?.data, instance: instance }))
+  }
 
-    return ({ loadData, loading })
+  return { loadData, loading }
 }
 
 type QueryHelperType = {
-    databaseName?: string
-    getQueryArgs: () => GraphQLQueryArgsType
-    instance: string
-    isExecQueryOnLoad?: boolean
+  databaseName?: string
+  getQueryArgs: () => GraphQLQueryArgsType
+  instance: string
+  isExecQueryOnLoad?: boolean
 }

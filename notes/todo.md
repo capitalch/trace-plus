@@ -12,15 +12,13 @@
 ## To do
 - External DB
 																								- Provide fields in form with validations
-	- Test database connection
-		- Initially it is enabled whereas should be disabled
-		- Test connection
-		- Enable / Disable etc.
+																								- Test database connection
 																							- submit
 																								- Client side
 																								- Server side code
 																								- Create database DML at server
 	- edit mode
+		- decoding dbparams
 	- delete
 																								- DB port validation
 																								- url validation correction

@@ -1,5 +1,5 @@
 import { FC, } from "react"
-import { GraphQLQueryArgsType, } from "../../../app/graphql/maps/map-graphql-queries";
+import { GraphQLQueryArgsType, } from "../../../app/graphql/maps/graphql-queries-map";
 import { CompSyncFusionGridType, SyncFusionAggregateType, SyncFusionGridColumnType } from "./comp-syncfusion-grid";
 import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react-grids";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
@@ -55,7 +55,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
     function getColumnDirectives() {
         const colDirectives: any[] = columns.map((col: SyncFusionGridColumnType, index: number) => {
             return (<ColumnDirective
-                field={col.field} 
+                field={col.field}
                 clipMode="EllipsisWithTooltip"
                 headerText={col.headerText}
                 key={index}
@@ -101,7 +101,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
 
     function deleteTemplate(props: any) {
         return (
-            <Button tooltip="Delete" tooltipOptions={{position:'top', mouseTrack:true,mouseTrackTop:10}} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+            <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
                 if (onDelete) {
                     onDelete(props.id)
                 }

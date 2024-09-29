@@ -1,14 +1,15 @@
-import { MapDataInstances } from "../../../../app/graphql/maps/map-data-instances";
-import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids";
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 import { SuperAdminClientNewClientButtons } from "./super-admin-clients-new-client-buttons";
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminEditNewClient } from "./super-admin-edit-new-client";
+import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-client-ext-database";
 
 export function SuperAdminClients() {
-    const instance = MapDataInstances.superAdminClients //Grid
+    const instance = DataInstancesMap.superAdminClients //Grid
     return (
         <CompContentContainer title='Super admin clients' className="">
             <CompSyncFusionGridToolbar CustomControl={() => <SuperAdminClientNewClientButtons dataInstance={instance} />} title="Clients view" isLastNoOfRows={true} instance={instance} />
@@ -19,7 +20,7 @@ export function SuperAdminClients() {
                 instance={instance}
                 rowHeight={40}
                 sqlArgs={{ dbName: 'traceAuth' }}
-                sqlId={MapSqlIds.allClients}
+                sqlId={SqlIdsMap.allClients}
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
             // onPreview={handleOnPreview}
@@ -70,18 +71,34 @@ export function SuperAdminClients() {
     }
 
     function handleOnEdit(props: any) {
-        Utils.showHideModalDialogA({
-            title: "Edit client",
-            isOpen: true,
-            element: <SuperAdminEditNewClient
-                clientCode={props.clientCode}
-                clientName={props.clientName}
-                dbName={props.dbName}
-                id={props.id}
-                isActive={props.isActive}
-                dataInstance={instance}
-            />,
-        })
+        if (props.isExternalDb) {
+            Utils.showHideModalDialogA({
+                title: 'Edit client with external database',
+                isOpen: true,
+                element: <SuperAdminEditNewClientExtDatabase
+                    clientCode={props.clientCode}
+                    clientName={props.clientName}
+                    dbName={props.dbName}
+                    id={props.id}
+                    isActive={props.isActive}
+                    dataInstance={instance}
+                    isExternalDb={true}
+                />
+            })
+        } else {
+            Utils.showHideModalDialogA({
+                title: "Edit client",
+                isOpen: true,
+                element: <SuperAdminEditNewClient
+                    clientCode={props.clientCode}
+                    clientName={props.clientName}
+                    dbName={props.dbName}
+                    id={props.id}
+                    isActive={props.isActive}
+                    dataInstance={instance}
+                />,
+            })
+        }
     }
 
     function isActiveTemplate(props: any) {

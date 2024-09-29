@@ -41,9 +41,17 @@ function useValidators () {
     return error
   }
 
+  function checkNoSpaceOrSpecialCharAllowDot (input: string) {
+    let error = undefined
+    if (input.search(/^[\w-_.]*$/) < 0) {
+      error = Messages.errNoSpceOrSpecialChar
+    }
+    return error
+  }
+
   function checkNoSpecialChar (input: string) {
     let error = undefined
-    if (input.search(/[^\w\s]/) > 0) {
+    if (input.search(/[^\w\s-_]/) > 0) {
       error = Messages.errNoSpecialChar
     }
     return error
@@ -111,6 +119,7 @@ function useValidators () {
 
   return {
     checkNoSpaceOrSpecialChar,
+    checkNoSpaceOrSpecialCharAllowDot,
     checkNoSpecialChar,
     checkPassword,
     checkUrl,

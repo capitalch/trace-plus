@@ -1,16 +1,16 @@
-import { GraphQLQueryArgsType, } from "../../../../app/graphql/maps/map-graphql-queries"
+import { GraphQLQueryArgsType, } from "../../../../app/graphql/maps/graphql-queries-map"
 import _ from "lodash"
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook"
-import { MapDataInstances } from "../../../../app/graphql/maps/map-data-instances"
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { useSelector } from "react-redux"
 import { RootStateType } from "../../../../app/store/store"
-import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids"
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 
 export function useSuperAdminDashBoard() {
-    const instance = MapDataInstances.superAdminDashBoard
+    const instance = DataInstancesMap.superAdminDashBoard
     const args: GraphQLQueryArgsType = {
-        sqlId: MapSqlIds.superAdminDashBoard,
+        sqlId: SqlIdsMap.superAdminDashBoard,
         sqlArgs: {
             dbName: GLOBAL_SECURITY_DATABASE_NAME
         }

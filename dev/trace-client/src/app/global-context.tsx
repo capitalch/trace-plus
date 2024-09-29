@@ -1,20 +1,18 @@
-import { MapDataInstances } from "./graphql/maps/map-data-instances"
+import { DataInstancesMap } from "./graphql/maps/data-instances-map"
 
 export const defaultGlobalContext: GlobalContextType = {
-  app: {
-    // name: 'Trace+'
-  },
+  // app: {
+  //   // name: 'Trace+'
+  // },
   CompSyncFusionGrid: {
-    [MapDataInstances.superAdminClients]: {
+    [DataInstancesMap.superAdminClients]: {
       loadData: undefined
     }
   }
 }
 
 export type GlobalContextType = {
-  app: {
-    // name: string
-  }
+  // app: 
   CompSyncFusionGrid: {
     [key: string]: {
       loadData: any

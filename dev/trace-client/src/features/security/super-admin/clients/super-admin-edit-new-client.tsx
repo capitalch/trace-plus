@@ -1,4 +1,4 @@
-import { useForm} from "react-hook-form"
+import { useForm } from "react-hook-form"
 import _ from 'lodash'
 import { Messages } from "../../../../utils/messages"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
@@ -9,14 +9,14 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { useContext, useEffect, useState } from "react"
 import { useValidators } from "../../../../utils/validators-hook"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
-import { MapGraphQLQueries } from "../../../../app/graphql/maps/map-graphql-queries"
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
 import { GlobalContextType } from "../../../../app/global-context"
 import { GlobalContext } from "../../../../App"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
-import { MapSqlIds } from "../../../../app/graphql/maps/map-sql-ids"
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 
 export function SuperAdminEditNewClient({
     clientCode
@@ -153,8 +153,8 @@ export function SuperAdminEditNewClient({
             }
         }
         try {
-            const q: any = MapGraphQLQueries.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
-            const queryName: string = MapGraphQLQueries.updateClient.name
+            const q: any = GraphQLQueriesMap.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
+            const queryName: string = GraphQLQueriesMap.updateClient.name
             await Utils.mutateGraphQL(q, queryName)
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -181,13 +181,13 @@ export function SuperAdminEditNewClient({
 
     async function validateClientCodeAtServer(value: any) {
         const res: any = await Utils.queryGraphQL(
-            MapGraphQLQueries.genericQuery(
+            GraphQLQueriesMap.genericQuery(
                 GLOBAL_SECURITY_DATABASE_NAME
                 , {
-                    sqlId: MapSqlIds.getClientOnClientCode
+                    sqlId: SqlIdsMap.getClientOnClientCode
                     , sqlArgs: { clientCode: value?.clientCode }
                 })
-            , MapGraphQLQueries.genericQuery.name)
+            , GraphQLQueriesMap.genericQuery.name)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientCode', {
                 type: 'serverError',
@@ -200,13 +200,13 @@ export function SuperAdminEditNewClient({
 
     async function validateClientNameAtServer(value: any) {
         const res: any = await Utils.queryGraphQL(
-            MapGraphQLQueries.genericQuery(
+            GraphQLQueriesMap.genericQuery(
                 GLOBAL_SECURITY_DATABASE_NAME
                 , {
-                    sqlId: MapSqlIds.getClientOnClientName
+                    sqlId: SqlIdsMap.getClientOnClientName
                     , sqlArgs: { clientName: value?.clientName }
                 })
-            , MapGraphQLQueries.genericQuery.name)
+            , GraphQLQueriesMap.genericQuery.name)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientName', {
                 type: 'serverError',

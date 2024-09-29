@@ -1,9 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { MapDataInstances } from './maps/map-data-instances'
+import { DataInstancesMap } from './maps/data-instances-map'
 
 const initialState: InitialStateType = {
-  [MapDataInstances.superAdminDashBoard]: undefined,
-  [MapDataInstances.superAdminClients]: undefined
+  [DataInstancesMap.superAdminDashBoard]: undefined,
+  [DataInstancesMap.superAdminClients]: undefined
 }
 
 const queryHelperSlice = createSlice({
