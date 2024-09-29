@@ -301,11 +301,11 @@ export function SuperAdminEditNewClientExtDatabase({
         const data: FormDataType = getValues()
         // console.log(data)
         const dbParams = {
-            dbname: data.dbName, // 'traceAuth', // its dbname and not dbName
-            host: data.host, // 'node150483-trace-link.cloudjiffy.net',
-            user: data.user, // 'webadmin',
-            password: data.password, // 'KXKdms69217',
-            port: data.port, //11085
+            dbname: data.dbName, // 'tra', // its dbname and not dbName
+            host: data.host, // 'node',
+            user: data.user, // 'web',
+            password: data.password, // 'K',
+            port: data.port, //1
         }
         try {
             const q: any = GraphQLQueriesMap.genericQuery(dbParams.dbname, {
