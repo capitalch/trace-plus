@@ -5,7 +5,7 @@ import { GlobalContext } from "../../../App";
 import _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../app/store/store";
-import { setSearchStringR } from "../../../app/graphql/query-helper-slice";
+import { setSearchString } from "../../../app/graphql/query-helper-slice";
 
 export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSearchBoxType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -27,7 +27,7 @@ export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSear
         <div className="flex pr-1 rounded-sm items-center border-2 border-gray-400 focus:ring-2">
             <input type="search" placeholder="Search" className="text-md h-9 w-56 border-none focus:ring-0" value={selectedSearchString || ''}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    dispatch(setSearchStringR({ instance: instance, searchString: e.target.value }))
+                    dispatch(setSearchString({ instance: instance, searchString: e.target.value }))
                     onTextChange(e)
                 }}
             />

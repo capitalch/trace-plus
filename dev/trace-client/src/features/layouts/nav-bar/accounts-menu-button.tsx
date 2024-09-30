@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
-import { MenuItemType, menuItemSelectorFn, setMenuItemR } from "../layouts-slice"
+import { MenuItemType, menuItemSelectorFn, setMenuItem } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
 
 function AccountsMenuButton({ className }: { className?: string }) {
@@ -12,7 +12,7 @@ function AccountsMenuButton({ className }: { className?: string }) {
     </button>)
 
     function handleOnClick() {
-        dispatch(setMenuItemR({ menuItem: "accounts" }))
+        dispatch(setMenuItem({ menuItem: "accounts" }))
     }
 }
 export { AccountsMenuButton }

@@ -10,6 +10,7 @@
 	- forms and forms validations
 
 ## To do
+- Rename all reducers withour R ending
 - External DB
 																								- Provide fields in form with validations
 																								- Test database connection
@@ -17,13 +18,16 @@
 																								- Client side
 																								- Server side code
 																								- Create database DML at server
-	- edit mode
-		- decoding dbparams
-	- delete
+- Authentication
+	- Token at client
+	- Token management at server
+- edit mode
+	- decoding dbparams
+- delete
 																								- DB port validation
 																								- url validation correction
 																								- remove preview
-	- server code
+- server code
 
 - Login error handling not correct
 																								- Form for new client has error in isActive field

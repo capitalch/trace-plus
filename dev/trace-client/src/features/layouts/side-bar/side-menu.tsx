@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
-import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
+import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
 import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../master-menu-data"
 import { useNavigate } from "react-router-dom"
@@ -119,9 +119,9 @@ function SideMenu() {
     function handleParentClick(item: MenuDataItemType) {
         const id = item.id
         if (id === sideBarSelectedParentIdSelector) {
-            dispatch(setSideBarSelectedParentChildIdsR({ parentId: '', childId: '' }))
+            dispatch(setSideBarSelectedParentChildIds({ parentId: '', childId: '' }))
         } else {
-            dispatch(setSideBarSelectedParentChildIdsR({ parentId: id, childId: '' }))
+            dispatch(setSideBarSelectedParentChildIds({ parentId: id, childId: '' }))
         }
         if (item.path) {
             navigate(item.path)
@@ -130,7 +130,7 @@ function SideMenu() {
 
     function handleChildClick(e: any, path?: string) {
         const id = e.currentTarget.id
-        dispatch(setSideBarSelectedChildIdR({ id: id }))
+        dispatch(setSideBarSelectedChildId({ id: id }))
         if (path) {
             navigate(path)
         }

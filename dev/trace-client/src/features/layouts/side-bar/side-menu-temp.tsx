@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
-import { setSideBarSelectedChildIdR, setSideBarSelectedParentChildIdsR, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
+import { setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store/store"
 import { IconCheveronUp } from "../../../controls/icons/icon-cheveron-up"
 import { IconVoucher } from "../../../controls/icons/icon-voucher"
@@ -85,15 +85,15 @@ function SideMenuTemp() {
     function handleParentClick(e: any) {
         const id = e.currentTarget.id
         if (id === sideBarSelectedParentIdSelector) {
-            dispatch(setSideBarSelectedParentChildIdsR({ parentId: '', childId: '' }))
+            dispatch(setSideBarSelectedParentChildIds({ parentId: '', childId: '' }))
         } else {
-            dispatch(setSideBarSelectedParentChildIdsR({ parentId: id, childId: '' }))
+            dispatch(setSideBarSelectedParentChildIds({ parentId: id, childId: '' }))
         }
     }
 
     function handleChildClick(e: any) {
         const id = e.currentTarget.id
-        dispatch(setSideBarSelectedChildIdR({ id: id }))
+        dispatch(setSideBarSelectedChildId({ id: id }))
     }
 }
 export { SideMenuTemp }

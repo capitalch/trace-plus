@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-import { doLoginR } from "./login-slice"
+import { doLogin } from "./login-slice"
 import { Utils } from "../../utils/utils"
 
 function useLogin() {
@@ -16,7 +16,7 @@ function useLogin() {
     }
 
     function handleTestSignIn(userType: any) {
-        dispatch(doLoginR({
+        dispatch(doLogin({
             isLoggedIn: true,
             businessUnits: [],
             clientCode: undefined,
@@ -54,7 +54,7 @@ function useLogin() {
             const accessToken: string = ret?.data?.accessToken
             const payloadData: any = ret?.data?.payload
             if (accessToken) {
-                dispatch(doLoginR({
+                dispatch(doLogin({
                     isLoggedIn: true,
                     businessUnits: payloadData?.businessUnits,
                     clientCode: payloadData?.clientCode,

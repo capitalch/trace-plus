@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import { MenuItemType, menuItemSelectorFn, setMenuItemR } from "../layouts-slice"
+import { MenuItemType, menuItemSelectorFn, setMenuItem } from "../layouts-slice"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatchType } from "../../../app/store/store"
 
@@ -14,6 +14,6 @@ export function SuperAdminMenuButton() {
         Super admin
     </button>)
     function handleOnClick() {
-        dispatch(setMenuItemR({ menuItem: 'superAdmin' }))
+        dispatch(setMenuItem({ menuItem: 'superAdmin' }))
     }
 }

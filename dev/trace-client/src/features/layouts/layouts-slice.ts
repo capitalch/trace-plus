@@ -18,7 +18,7 @@ export const layoutsSlice = createSlice({
   initialState: initialState,
   reducers: {
     // navbar
-    setShowNavBarDropDownR: (
+    setShowNavBarDropDown: (
       state: InitialStateType,
       action: PayloadAction<ShowNavBarDropDownActionType>
     ) => {
@@ -26,14 +26,14 @@ export const layoutsSlice = createSlice({
     },
 
     // sidebar
-    setIsSideBarOpenR: (
+    setIsSideBarOpen: (
       state: InitialStateType,
       action: PayloadAction<IsSideBarOpenActionType>
     ) => {
       state.sideBar.isSideBarOpen = action.payload.isSideBarOpen
     },
 
-    setMenuItemR: (
+    setMenuItem: (
       state: InitialStateType,
       action: PayloadAction<MenuItemActionType>
     ) => {
@@ -43,21 +43,21 @@ export const layoutsSlice = createSlice({
       state.sideBar.selectedParentId = ''
     },
 
-    setSideBarSelectedParentIdR: (
+    setSideBarSelectedParentId: (
       state: InitialStateType,
       action: PayloadAction<SideBarSelectedParentIdType>
     ) => {
       state.sideBar.selectedParentId = action.payload.id
     },
 
-    setSideBarSelectedChildIdR: (
+    setSideBarSelectedChildId: (
       state: InitialStateType,
       action: PayloadAction<SideBarSelectedChildIdType>
     ) => {
       state.sideBar.selectedChildId = action.payload.id
     },
 
-    setSideBarSelectedParentChildIdsR: (
+    setSideBarSelectedParentChildIds: (
       state: InitialStateType,
       action: PayloadAction<SideBarSelectedParentChildIdsType>
     ) => {
@@ -69,12 +69,12 @@ export const layoutsSlice = createSlice({
 
 export const layoutsReducer = layoutsSlice.reducer
 export const {
-  setIsSideBarOpenR,
-  setMenuItemR,
-  setShowNavBarDropDownR,
-  setSideBarSelectedChildIdR,
-  setSideBarSelectedParentIdR,
-  setSideBarSelectedParentChildIdsR,
+  setIsSideBarOpen,
+  setMenuItem,
+  setShowNavBarDropDown,
+  setSideBarSelectedChildId,
+  setSideBarSelectedParentId,
+  setSideBarSelectedParentChildIds,
 } = layoutsSlice.actions
 
 type IsSideBarOpenActionType = {

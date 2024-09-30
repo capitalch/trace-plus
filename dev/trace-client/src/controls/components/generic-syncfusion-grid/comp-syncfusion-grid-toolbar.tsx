@@ -5,7 +5,7 @@ import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { useDispatch, useSelector } from "react-redux"
-import { setLastNoOfRowsR } from '../../../app/graphql/query-helper-slice'
+import { setLastNoOfRows } from '../../../app/graphql/query-helper-slice'
 import { IconFilePdf } from "../../icons/icon-file-pdf"
 import { WidgetTooltip } from "../../widgets/widget-tooltip"
 import { IconFileExcel } from "../../icons/icon-file-excel"
@@ -116,7 +116,7 @@ export function CompSyncFusionGridToolbar({
     </div >)
 
     function handleOnChangeLastNoOfRows(e: any) {
-        dispatch(setLastNoOfRowsR({
+        dispatch(setLastNoOfRows({
             instance: instance,
             lastNoOfRows: e.target.value
         }))

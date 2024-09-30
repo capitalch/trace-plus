@@ -5,7 +5,7 @@ import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
 import { AppDispatchType } from "../../app/store/store"
 import { useDispatch } from "react-redux"
-import { setIsSideBarOpenR } from "./layouts-slice"
+import { setIsSideBarOpen } from "./layouts-slice"
 
 function Layouts() {
 
@@ -14,9 +14,9 @@ function Layouts() {
 
     useEffect(() => {
         if (isBigScreen) {
-            dispatch(setIsSideBarOpenR({ isSideBarOpen: true }))
+            dispatch(setIsSideBarOpen({ isSideBarOpen: true }))
         } else {
-            dispatch(setIsSideBarOpenR({ isSideBarOpen: false }))
+            dispatch(setIsSideBarOpen({ isSideBarOpen: false }))
         }
     })
 

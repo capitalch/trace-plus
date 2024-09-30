@@ -23,7 +23,7 @@ export const loginSlice = createSlice({
   name: 'login',
   initialState: initialState,
   reducers: {
-    doLoginR: (
+    doLogin: (
       state: InitialLoginStateType,
       action: PayloadAction<DoLoginActionType>
     ) => {
@@ -44,7 +44,7 @@ export const loginSlice = createSlice({
       state.userType = action.payload.userType
     },
 
-    doLogoutR: (state: InitialLoginStateType) => {
+    doLogout: (state: InitialLoginStateType) => {
       state.isLoggedIn = false
       state.businessUnits = []
       state.clientCode = undefined
@@ -65,7 +65,7 @@ export const loginSlice = createSlice({
 })
 
 export const loginReducer = loginSlice.reducer
-export const { doLoginR, doLogoutR } = loginSlice.actions
+export const { doLogin, doLogout } = loginSlice.actions
 
 type DoLoginActionType = InitialLoginStateType
 

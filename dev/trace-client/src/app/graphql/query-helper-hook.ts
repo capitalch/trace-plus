@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 import { Utils } from '../../utils/utils'
 import { AppDispatchType } from '../store/store'
 import { useDispatch } from 'react-redux'
-import { setQueryHelperDataR } from './query-helper-slice'
+import { setQueryHelperData } from './query-helper-slice'
 
 export function useQueryHelper ({
   databaseName = GLOBAL_SECURITY_DATABASE_NAME,
@@ -37,7 +37,7 @@ export function useQueryHelper ({
     if (result?.data?.genericQuery?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
     }
-    dispatch(setQueryHelperDataR({ data: result?.data, instance: instance }))
+    dispatch(setQueryHelperData({ data: result?.data, instance: instance }))
   }
 
   return { loadData, loading }

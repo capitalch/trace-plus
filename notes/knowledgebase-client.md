@@ -1,4 +1,5 @@
 ## GraphQL Apollo
+- We are only using GraphQL Apollo for query and not using react-query
 - Create apollo client and get the apolloClient instance through exported getApolloClient() method in app/graphql folder
 - In main.tsx make use of ApolloProvider and set client
 - Make use of useQuery hook for running GraphQL query at component load when required
