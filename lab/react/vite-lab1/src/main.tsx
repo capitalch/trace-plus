@@ -28,8 +28,8 @@ const queryClient = new QueryClient(
 )
 
 const apolloClient = new ApolloClient({
-  // uri: 'https://graphqlzero.almansi.me/api', // Mock server for GraphQL API requests
-  uri: 'http://localhost:5000',
+  uri: 'https://graphqlzero.almansi.me/api', // Mock server for GraphQL API requests
+  // uri: 'http://localhost:5000',
   cache: new InMemoryCache()
 })
 
