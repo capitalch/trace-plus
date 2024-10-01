@@ -9,7 +9,7 @@ def encrypt(input: str):
     # encode converts string to bytes, decode does opposite
     encoded_text = cipher_suite.encrypt(input.encode('utf-8'))
     return (encoded_text.decode())
-
+    
 def getSqlQueryObject(dbName: str):
     queryObject = SqlMain
     if (dbName == 'traceAuth'):

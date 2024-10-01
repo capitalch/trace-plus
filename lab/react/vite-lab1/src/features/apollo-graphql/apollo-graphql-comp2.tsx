@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client"
-import { GET_ALL_TODOS } from "./apollo-graphql-queries"
+import { GET_ALBUMS, } from "./apollo-graphql-queries"
 
 export function ApolloGraphQLComp2() {
-    const { data, error, loading, refetch } = useQuery(GET_ALL_TODOS)
+    const { data, error, loading, refetch } = useQuery(GET_ALBUMS)
 
     if (loading) { return (<div>Loading...</div>) }
     if (error) { return (<div>Error {error.message}</div>) }
@@ -12,8 +12,8 @@ export function ApolloGraphQLComp2() {
             // client.refetchQueries({})
             refetch()
         }}>Get albums</button>
-        {data && data.allTodos && data.allTodos.map((todo: any) => (
-            <div key={todo.id}>{todo.status} {todo.title}</div>
+        {data && data.albums && data.albums.data && data.albums.data.map((album: any) => (
+            <div key={album.id}>{album.title}</div>
         ))}
     </div>)
 }

@@ -10,7 +10,7 @@
 	- forms and forms validations
 
 ## To do
-- Rename all reducers withour R ending
+																								- Rename all reducers withour R ending
 - External DB
 																								- Provide fields in form with validations
 																								- Test database connection

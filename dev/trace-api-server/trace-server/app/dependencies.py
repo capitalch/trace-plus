@@ -2,7 +2,9 @@ from typing import Any
 from fastapi import HTTPException, status, Request
 from fastapi.responses import JSONResponse
 from app.messages import Messages
-
+# from app.security.security_utils import validate_token
+from datetime import datetime
+import logging
 
 class AppHttpException(HTTPException):
     def __init__(
@@ -15,6 +17,7 @@ class AppHttpException(HTTPException):
 
 
 async def app_http_exception_handler(request: Request, exc: AppHttpException):
+    logging.error(exc.message)
     return JSONResponse(
         status_code=exc.status_code,
         content={
@@ -24,7 +27,14 @@ async def app_http_exception_handler(request: Request, exc: AppHttpException):
         },
     )
 
-
+def configure_logger():
+    # Logging levels are Debug:10, Info: 20, Warning: 30, Error: 40, Critical: 50
+    currentMonth = datetime.now().strftime("%b")
+    currentYear = datetime.now().year
+    logFormatStr = '%(asctime)s  %(levelname)s - %(message)s'
+    logging.basicConfig(filename=f'logs/{currentMonth}-{currentYear}.log',
+                        force=True, level=logging.INFO, format=logFormatStr,)
+    
 async def exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
@@ -34,6 +44,7 @@ async def exceptions_middleware(request: Request, call_next):
         statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
         if len(ex.args) > 0:
             mess = ex.args[0]
+        logging.error(mess)
         return JSONResponse(
             status_code=statusCode,
             content={
@@ -43,7 +54,33 @@ async def exceptions_middleware(request: Request, call_next):
             },
         )
 
-
+async def handle_token_middleware(request: Request, call_next):
+    try:
+        path = request.url.path
+        # accessControl = request.headers.get('access-control-request-headers')
+        if(path.find('graphql/exempted/') != -1):
+            return await call_next(request)
+        elif(path.find('graphql') != -1):
+            # validate_token(request)
+            pass
+        else:
+            return await call_next(request)
+    except Exception as ex:
+        mess = Messages.err_internal_server_error
+        statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
+        if len(ex.args) > 0:
+            mess = ex.args[0]
+        logging.error(mess)
+        return JSONResponse(
+            status_code=statusCode,
+            content={
+                "error_code": "e1000",
+                "detail": "An uncaught error occurred at server",
+                "message": mess,
+            },
+        )
+    
+    
 class UserClass:
     def __init__(
         self,

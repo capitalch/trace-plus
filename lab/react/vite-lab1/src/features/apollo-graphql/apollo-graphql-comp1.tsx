@@ -1,26 +1,10 @@
 // Mock graphql server is https://graphqlzero.almansi.me/api
-// Query is 
-// query getAlbums {
-//     albums {
-//       data{
-//         id,
-//         title,
-//         user {
-//           id,
-//           name,
-//           username,
-//           email
-//         }
-//       }
-//     }
-//   }
-
 import { useLazyQuery, } from "@apollo/client"
-import { GET_ALL_TODOS } from "./apollo-graphql-queries"
+import { GET_ALBUMS } from "./apollo-graphql-queries"
 
 // }
 export function ApolloGraphQLComp1() {
-  const [getData, { loading, error, data }] = useLazyQuery(GET_ALL_TODOS, 
+  const [getData, { loading, error, data }] = useLazyQuery(GET_ALBUMS, 
     {
       fetchPolicy: 'cache-first',
       // notifyOnNetworkStatusChange: true,
@@ -28,16 +12,7 @@ export function ApolloGraphQLComp1() {
         console.log('completed')
       }
     })
-  // const { data, error, loading, refetch, client } = useQuery(
-  //   GET_ALL_TODOS, 
-  //   {
-  //     fetchPolicy: 'cache-first',
-  //     skip: true,
-  //     // notifyOnNetworkStatusChange: true,
-  //     onCompleted: () => {
-  //       console.log('completed')
-  //     }
-  //   })
+  
   if (loading) { return (<div>Loading...</div>) }
   if (error) { return (<div>Error {error.message}</div>) }
   return (
@@ -46,9 +21,9 @@ export function ApolloGraphQLComp1() {
         // client.refetchQueries({})
         getData()
         // refetch()
-      }}>Get TODOs</button>
-      {data && data.allTodos && data.allTodos.map((todo: any) => (
-        <div key={todo.id}>{todo.status} {todo.title}</div>
+      }}>Get Albums</button>
+      {data && data.albums && data.albums.data && data.albums.data.map((album: any) => (
+        <div key={album.id}>{album.title}</div>
       ))}
     </div>)
 }

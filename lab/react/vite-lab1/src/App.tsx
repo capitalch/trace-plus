@@ -30,7 +30,7 @@ import 'primeicons/primeicons.css'
 import 'react-toastify/dist/ReactToastify.css';
 // import { ReactSelectTypeAheadAsync } from './features/react-select/react-select-type-ahead-async'
 // import { ReactSelectTypeAhead } from './features/react-select/react-select-type-ahead'
-import { ReactSelectTypeAheadAsync1 } from './features/react-select/react-select-type-ahead-async1'
+// import { ReactSelectTypeAheadAsync1 } from './features/react-select/react-select-type-ahead-async1'
 import { ApolloGraphQLComp1 } from './features/apollo-graphql/apollo-graphql-comp1'
 import { ApolloGraphQLComp2 } from './features/apollo-graphql/apollo-graphql-comp2'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';

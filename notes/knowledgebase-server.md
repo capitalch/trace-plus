@@ -99,3 +99,5 @@ When due to some error in program, somewhere some exception is generated and it 
 
     scalar Generic
     ```
+## Authentication graphql
+- Free from authentication is /graphql/exempted

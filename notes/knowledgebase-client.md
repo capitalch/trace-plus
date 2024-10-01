@@ -1,7 +1,7 @@
 ## GraphQL Apollo
-- We are only using GraphQL Apollo for query and not using react-query
+- We are only using GraphQL Apollo for query and not using react-query library
 - Create apollo client and get the apolloClient instance through exported getApolloClient() method in app/graphql folder
-- In main.tsx make use of ApolloProvider and set client. useQuery hook is provided by Apollo GraphQL
+- In main.tsx make use of ApolloProvider and set client. useQuery and useLazyQuery hooks are provided by Apollo GraphQL
 - We have created a useQueryHelper hook upon useQuery hook, with parameters as db name, instance, queryArgs, isExecQueryOnLoad
 - Make use of useQuery hook for running GraphQL query at component load when required
 - Make use of useLazyQuery hook if you want to run the query on some event like button click event
@@ -9,7 +9,7 @@
 - Use refetch() method got from useQuery() hook to fetch the data on button click. The component will reload only when the fetched data is deifferent than internal cache. Otherwise the api call will be made but component will not refresh
 - In useQuery hook pass {notifyOnNetworkStatusChange: true} options for each time rerender of component when a query is made. Otherwise rerender of component will only happen when query result is changed
 
-## QueryHelper: Is used for data fetch all over
+## useQueryHelper: Is used for data fetch all over
 	- Uses Apollo Client's useLazyQuery for flexiblity
 	- Provides a generic data access layer used all over
 	- Returns 'loadData' method and 'loading'
@@ -20,6 +20,8 @@
 		        return (state.queryHelper[instance]?.data)
 		    })
 	- Takes care of normal error and graphQL errors automatically
+	- useQueryHelper hook is used strictly for syncfusionGrid. They are tightly coupled
+	- For ad hoc queries and updates make use of Utils.queryGraphQL and mutateGraphQL methods
 ## Important Notes
 - Use CompContentContainer as outermost container for all pages
 - instance for the syncfusionGrid is same as instance for data

@@ -3,6 +3,10 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 30-09-2024 - 01-10-2024
+	- Revisit graphql
+	- Server logging
+	- GraphQL auth and token management
 # 08-09-2024
 - New client with outside database
 # 27-07-2024 - 28-07-2024: Sunday

@@ -65,29 +65,29 @@ export function ReactSelectTypeAheadAsync1() {
         // return (promiseWrapper().then((options: any) => options))
     }
 
-    async function debounced1(inputValue: string): Promise<any> {
-        const res: any = undefined
-        if (inputValue.length <= 2) {
-            return (res)
-        }
-        const wrapper = async () => {
-            const output: any = { val: [] }
-            const resolve = (val: any) => { 
-                output.val = val 
-                return(output.val)
-            }
-            ibukiEmit('DEBOUNCE-ASYNC1', { action: resolve })
-            // return output.val
-            // return (resolve)
-        }
-        return (
-            await wrapper()
-        )
-        // const promiseWrapper = () => new Promise((resolve) => {
-        //     ibukiEmit('DEBOUNCE-ASYNC1', { action: resolve })
-        // })
-        // return (promiseWrapper().then((options: any) => options))
-    }
+    // async function debounced1(inputValue: string): Promise<any> {
+    //     const res: any = undefined
+    //     if (inputValue.length <= 2) {
+    //         return (res)
+    //     }
+    //     const wrapper = async () => {
+    //         const output: any = { val: [] }
+    //         const resolve = (val: any) => { 
+    //             output.val = val 
+    //             return(output.val)
+    //         }
+    //         ibukiEmit('DEBOUNCE-ASYNC1', { action: resolve })
+    //         // return output.val
+    //         // return (resolve)
+    //     }
+    //     return (
+    //         await wrapper()
+    //     )
+    //     // const promiseWrapper = () => new Promise((resolve) => {
+    //     //     ibukiEmit('DEBOUNCE-ASYNC1', { action: resolve })
+    //     // })
+    //     // return (promiseWrapper().then((options: any) => options))
+    // }
 
     function handleOnChange(e: any) {
         console.log(e)
