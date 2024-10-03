@@ -1,11 +1,7 @@
-from typing import Any
 from fastapi import HTTPException, status, Request
-from fastapi.responses import JSONResponse
-from app.messages import Messages
-# from app.security.security_utils import validate_token
-from datetime import datetime
-import logging
 
+
+# Placement of class before the imports resolve circular import problem
 class AppHttpException(HTTPException):
     def __init__(
         self, error_code: str, message: str, status_code: int = 404, detail: str = ""
@@ -14,6 +10,15 @@ class AppHttpException(HTTPException):
         self.message = message
         self.status_code = status_code
         self.detail = detail  # detail is must
+
+
+from typing import Any
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
+from app.messages import Messages
+from app.security.security_utils import validate_token
+from datetime import datetime
+import logging
 
 
 async def app_http_exception_handler(request: Request, exc: AppHttpException):
@@ -27,14 +32,20 @@ async def app_http_exception_handler(request: Request, exc: AppHttpException):
         },
     )
 
+
 def configure_logger():
     # Logging levels are Debug:10, Info: 20, Warning: 30, Error: 40, Critical: 50
     currentMonth = datetime.now().strftime("%b")
     currentYear = datetime.now().year
-    logFormatStr = '%(asctime)s  %(levelname)s - %(message)s'
-    logging.basicConfig(filename=f'logs/{currentMonth}-{currentYear}.log',
-                        force=True, level=logging.INFO, format=logFormatStr,)
-    
+    logFormatStr = "%(asctime)s  %(levelname)s - %(message)s"
+    logging.basicConfig(
+        filename=f"logs/{currentMonth}-{currentYear}.log",
+        force=True,
+        level=logging.INFO,
+        format=logFormatStr,
+    )
+
+
 async def exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
@@ -54,15 +65,27 @@ async def exceptions_middleware(request: Request, call_next):
             },
         )
 
+
 async def handle_token_middleware(request: Request, call_next):
     try:
         path = request.url.path
         # accessControl = request.headers.get('access-control-request-headers')
-        if(path.find('graphql/exempted/') != -1):
+        if path.find("graphql/exempted/") != -1:
             return await call_next(request)
-        elif(path.find('graphql') != -1):
-            # validate_token(request)
-            pass
+        elif path.find("graphql") != -1:
+            # await validate_token(request)
+            return JSONResponse(content=jsonable_encoder({"name": "Sushant"}))
+            # return({
+            #     "name":"Sushant"
+            # })
+            # return JSONResponse(
+            # status_code=403,
+            # content={
+            #     "error_code": "e1000",
+            #     "detail": "An uncaught error occurred at server",
+            #     "message": 'ABCD',
+            # },
+        # )
         else:
             return await call_next(request)
     except Exception as ex:
@@ -70,7 +93,12 @@ async def handle_token_middleware(request: Request, call_next):
         statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
         if len(ex.args) > 0:
             mess = ex.args[0]
+        if getattr(ex, "message", None):
+            mess = ex.message
+            statusCode = ex.status_code
+
         logging.error(mess)
+        # return('abcd')
         return JSONResponse(
             status_code=statusCode,
             content={
@@ -79,8 +107,8 @@ async def handle_token_middleware(request: Request, call_next):
                 "message": mess,
             },
         )
-    
-    
+
+
 class UserClass:
     def __init__(
         self,

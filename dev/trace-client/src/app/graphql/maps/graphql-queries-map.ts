@@ -4,7 +4,8 @@ import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enum
 
 export const GraphQLQueriesMap = {
   genericQuery: genericQuery,
-  updateClient: updateClient
+  updateClient: updateClient,
+  hello: hello
 }
 
 function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
@@ -23,6 +24,12 @@ function updateClient (dbName: string, val: TraceDataObjectType) {
             updateClient(value:"${value}")
         }
     `
+}
+
+function hello(){
+  return gql`
+    query hello
+  `
 }
 
 function encodeObj (obj: any) {

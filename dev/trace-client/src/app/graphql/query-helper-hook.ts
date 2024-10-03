@@ -19,6 +19,7 @@ export function useQueryHelper ({
   const dispatch: AppDispatchType = useDispatch()
   const [getGenericQueryData, { error, loading }] = useLazyQuery(
     GraphQLQueriesMap.genericQuery(databaseName, getQueryArgs()),
+    // GraphQLQueriesMap.hello(),
     { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
   )
 

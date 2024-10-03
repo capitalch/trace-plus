@@ -34,7 +34,7 @@ app.add_middleware(
 app.include_router(securityRouter)
 # Uncatched exceptions will come here
 app.middleware("http")(exceptions_middleware)
-app.middleware("http")(handle_token_middleware)
+# app.middleware("http")(handle_token_middleware)
 # Add custom exception handler to app
 # If you raise an exception of type AppHttpException, it will come here
 app.add_exception_handler(AppHttpException, app_http_exception_handler)

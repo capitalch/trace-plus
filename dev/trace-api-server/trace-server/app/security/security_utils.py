@@ -36,30 +36,41 @@ def verify_password(password, hash):
 
 async def validate_token(request: Request):
     try:
-        err = None
         auth: str = request.headers.get("Authorization", None)
-        if auth:
+        if(auth is None):
+            raise AppHttpException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            error_code="e1015",
+            message=Messages.err_access_token_missing,
+        )
+        else:
             token = auth.split()[1].strip()
             jwt.decode(token, ACCESS_TOKEN_SECRET_KEY, algorithms=ALGORITHM)
     except ExpiredSignatureError as e:
         logging.error(e)
         raise AppHttpException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            error_code='e1011',
-            message=Messages.err_access_token_signature_expired
+            error_code="e1011",
+            message=Messages.err_access_token_signature_expired,
         )
     except InvalidSignatureError as e:
         logging.error(e)
-        # raise AppHttpException(
-        #     detail=Messages.err_access_token_signature_invalid, status_code=status.HTTP_401_UNAUTHORIZED, error_code='e1014'
-        # )
+        raise AppHttpException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            error_code="e1012",
+            message=Messages.err_access_token_signature_invalid,
+        )
     except InvalidTokenError as e:
         logging.error(e)
-        # raise AppHttpException(
-        #     detail=Messages.err_access_token_invalid, status_code=status.HTTP_401_UNAUTHORIZED, error_code='e1015'
-        # )
+        raise AppHttpException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            error_code="e1013",
+            message=Messages.err_access_token_invalid,
+        )
     except Exception as e:
         logging.error(e)
-        # raise AppHttpException(
-        #     detail=Messages.err_access_token_invalid, status_code=status.HTTP_401_UNAUTHORIZED, error_code='e1015'
-        # )
+        raise AppHttpException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            error_code= e.error_code if e.error_code is not None else "e1014",
+            message= e.message if e.message is not None else Messages.err_access_token_unknown_error,
+        )

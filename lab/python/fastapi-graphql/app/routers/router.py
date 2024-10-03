@@ -11,6 +11,7 @@ async def do_login(token=Annotated[str, Depends(oauth2_scheme)]):
 
 @security_router.get('/test')
 async def do_test():
-    raise HTTPException(status_code=400, detail="An error occurred as HTTPException")
+    
+    # raise HTTPException(status_code=400, detail="An error occurred as HTTPException")
     # raise ValueError("An error occurred1")
-    # return {"test": "test"}
+    return {"test": "test"}

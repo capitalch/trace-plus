@@ -33,4 +33,10 @@ async def hello(_, info):
 
 
 schema = make_executable_schema(type_defs, query, mutation)
-GraphQLApp = GraphQL(schema)
+GraphQLApp: GraphQL = GraphQL(schema)
+# CORSMiddleware(
+#     GraphQL(schema), allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000'], allow_methods=['*'], allow_headers=['*'],
+# )
+
+# GraphQL(schema)
+

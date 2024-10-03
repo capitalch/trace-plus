@@ -31,7 +31,8 @@ export function getApolloClient () {
       query: {
         fetchPolicy: 'network-only'
       }
-    }
+    },
+    // credentials:'include'
   })
   return apolloClient
 }

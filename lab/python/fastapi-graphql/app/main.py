@@ -31,7 +31,7 @@ app.include_router(security_router)
 @app.exception_handler(Exception)
 async def exception_handler(request, exc):
     return JSONResponse(content={"message":"test message"})
-    return JSONResponse(status_code=200, content={"message": "test"})
+    # return JSONResponse(status_code=200, content={"message": "test"})
     # return {"test": "test"}
     # return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 

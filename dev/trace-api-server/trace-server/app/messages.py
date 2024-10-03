@@ -1,5 +1,11 @@
 class Messages:
+    err_access_token_missing = "Access token is missing in the request to server"
     err_access_token_signature_expired = "Access token signature is expired"
+    err_access_token_signature_invalid = "Access token signature is invalid"
+    err_access_token_invalid = "Access token is invalid"
+    err_access_token_unknown_error = (
+        "Unknown error occured while validating access token"
+    )
     err_internal_server_error = "Internal server error"
     err_inactive_user = "Inactive user"
     err_invalid_password = "Invalid password"
@@ -25,5 +31,12 @@ class customErrorCodes:
     e1009 = "Password is incorrect"
     e1010 = "SqlId is not found in the query sent to server. This is badly formed graphQL query"
     e1011 = "Access token signature expired. Please login again"
+    e1012 = "Access token signature is invalid"
+    e1013 = "Access token is invalid"
+    e1014 = "Unknown error occured while validating access token"
+    e1015 = "Access token is missing in the API request"
+    
+    
+    
     
     e2000 = "Error occurred while executing GraphQL query in file graphql_helper"
