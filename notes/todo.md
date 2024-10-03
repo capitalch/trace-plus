@@ -1,3 +1,11 @@
+## Relearn
+											- Basic fastapi server
+	- Integrate middleware and exceptions
+	- Custom Exception handling
+	- Integrate GraphQL
+	- Connect client graphQL, get basic data
+	- Exception with GraphQL
+	- DB data from graphQL
 ## To recap
 - Data access layer for grid
 - Data access layer for update
