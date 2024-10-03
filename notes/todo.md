@@ -1,9 +1,9 @@
 ## Relearn
 											- Basic fastapi server
-	- Integrate middleware and exceptions
-	- Custom Exception handling
-	- Integrate GraphQL
-	- Connect client graphQL, get basic data
+											- Integrate middleware and exceptions
+											- Custom Exception handling
+											- Integrate GraphQL
+											- Connect client graphQL, get basic data
 	- Exception with GraphQL
 	- DB data from graphQL
 ## To recap

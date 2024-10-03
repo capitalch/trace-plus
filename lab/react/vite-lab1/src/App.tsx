@@ -31,8 +31,9 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { ReactSelectTypeAheadAsync } from './features/react-select/react-select-type-ahead-async'
 // import { ReactSelectTypeAhead } from './features/react-select/react-select-type-ahead'
 // import { ReactSelectTypeAheadAsync1 } from './features/react-select/react-select-type-ahead-async1'
-import { ApolloGraphQLComp1 } from './features/apollo-graphql/apollo-graphql-comp1'
-import { ApolloGraphQLComp2 } from './features/apollo-graphql/apollo-graphql-comp2'
+// import { ApolloGraphQLComp1 } from './features/apollo-graphql/apollo-graphql-comp1'
+// import { ApolloGraphQLComp2 } from './features/apollo-graphql/apollo-graphql-comp2'
+import { ApolloGraphQL03112024 } from './features/apollo-graphql/apollo-graphql-03-10-2024'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
 // import { Counter } from './features/redux-counter/counter';
 // import { ReactTooltip, ReactTooltip1Control } from './features/tooltip/react-tooltip';
@@ -77,8 +78,9 @@ function App() {
       {/* </PrimeReactProvider> */}
       {/* <ReactSelectTypeAheadAsync1 /> */}
       {/* <ReactSelectTypeAhead /> */}
-      <ApolloGraphQLComp1 />
-      <ApolloGraphQLComp2 />
+      {/* <ApolloGraphQLComp1 />
+      <ApolloGraphQLComp2 /> */}
+      <ApolloGraphQL03112024 />
     </GlobalContext.Provider>
   )
 }

@@ -23,25 +23,32 @@ cd c:\projects\trace-plus
 4. pip install flask demjson simplejson psycopg2 requests ariadne pandas flask_cors nested_lookup flask_mail pyjwt datetime bcrypt autopep8 xlsxwriter flask_scss flask_weasyprint babel
 
 ## **Notes on universal exception handling in fastapi**
-There are two types of exceptions:
-# Caught exceptions: 
-- When you are able to catch some exception in your code and you raise that exception with your own context information. This raised exception is now caught by a custom method with HTTPException as argument.
+There are two types of exception handling:
+# Intentional exceptions:
+- These are the raised exceptions intentionally by raise exception like **raise HTTPException(status_code=401, detail= {"Exception":"Raised Exception1"})** 
   
-  @app.exception_handler(HttpException)
-  async def handle_http_exception(request,ex):
-    return JSONResponse(status_code=exc.status_code, content={"message": exc.detail})
+  app.add_exception_handler(HTTPException, handle_http_exception)
+  async def handle_http_exception(request, exc: HTTPException):
+    return(JSONResponse(status_code=exc.status_code, content=exc.detail))
+- Now when you do raise HTTPException it is handled by handle_http_exception method
 
 - You can also create a subclass of HTTPException say AppHTTPException to add more attributes and work in similar manner.
-- If any http call is made and in this call a exception is raised through AppHttpException then this exception is handled directly
-- for example if you write at any point
   ```
     raise AppHttpException(
         error_code='e1002', message='A custom exception from inside of code has occured',)
   ```
-- This is executed directly and does not pass through the exception handler of middleware
+  ```app.add_exception_handler(AppHttpException, app_http_exception_handler)```
+  ```
+  async def handle_app_http_exception(request, exc: AppHttpException):
+    return(JSONResponse(
+        status_code=exc.status_code, 
+        content=exc.detail
+        ))
+  ```
+
 
 # Uncaught exceptions handled through http middleware: 
-When due to some error in program, somewhere some exception is generated and it is uncaught. It spits lot of stack info in terminal. This uncaught exception is handled through http middleware. Basically all calls are routed through this middleware function surrounded by a try catch. If any error happens in the calll execution, that is caught by try catch and properly handled.
+When due to some error in program, somewhere some exception is generated and it is uncaught. It spits lot of stack info in terminal. This uncaught exception is handled through http middleware. Basically all calls are routed through this middleware function surrounded by a try catch. If any error happens in the call execution, that is caught by try catch and properly handled.
 - app.middleware("http")(catch_exceptions_middleware)
   - This line enables all http calls to pass through the call_next(request) method of catch_exception_middleware
   - if anywhere in your software uncaught exception occurs then catch block or except block is executed
