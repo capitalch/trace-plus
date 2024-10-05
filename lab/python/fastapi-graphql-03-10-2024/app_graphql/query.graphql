@@ -6,7 +6,8 @@ type Book {
 type Query {
   hello: String!
   books: [Book]
-  testException: String
+  testException: Generic
 }
+scalar Generic
 
 

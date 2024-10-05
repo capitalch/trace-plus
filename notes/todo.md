@@ -4,8 +4,9 @@
 											- Custom Exception handling
 											- Integrate GraphQL
 											- Connect client graphQL, get basic data
-	- Exception with GraphQL
+											- Exception with GraphQL
 	- DB data from graphQL
+	- middleware approach with token
 ## To recap
 - Data access layer for grid
 - Data access layer for update

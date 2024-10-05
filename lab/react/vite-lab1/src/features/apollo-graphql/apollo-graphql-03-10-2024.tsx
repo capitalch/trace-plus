@@ -14,7 +14,7 @@ export function ApolloGraphQL03112024() {
         <button onClick={
             () => getData()
         } className="ml-2 bg-slate-50 w-1/2">Get books</button>
-        {data?.testException ? data.testException : <></>}
+        {data?.testException ? JSON.stringify(data.testException) : <></>}
         {/* {data?.books ? data.books.map((book: any,index:number) => {
             return (<div key={index}>
                 <span>{book.title}</span>

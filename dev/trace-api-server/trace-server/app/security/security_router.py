@@ -7,6 +7,9 @@ from app.dependencies import AppHttpException
 
 securityRouter = APIRouter()
 
+@securityRouter.get("/api")
+async def get_api():
+    return {"api": "trace-plus server"}
 
 @securityRouter.post("/login", summary="Creates access token")
 async def do_login(bundle=Depends(login_helper)):

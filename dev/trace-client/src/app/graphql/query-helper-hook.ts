@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client'
+import { ApolloClient, NormalizedCacheObject, useApolloClient, useLazyQuery } from '@apollo/client'
 import {
   GraphQLQueriesMap,
   GraphQLQueryArgsType
@@ -17,9 +17,10 @@ export function useQueryHelper ({
   isExecQueryOnLoad = true
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
+  const apolloClient:ApolloClient<object> = useApolloClient()
+
   const [getGenericQueryData, { error, loading }] = useLazyQuery(
     GraphQLQueriesMap.genericQuery(databaseName, getQueryArgs()),
-    // GraphQLQueriesMap.hello(),
     { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
   )
 
@@ -34,6 +35,7 @@ export function useQueryHelper ({
   }
 
   async function loadData () {
+    await apolloClient.reFetchObservableQueries()
     const result: any = await getGenericQueryData()
     if (result?.data?.genericQuery?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)

@@ -33,18 +33,26 @@ def verify_password(password, hash):
         ret = True
     return ret
 
+def parse_bearer_token(s):
+    if ((not s) or (not s.strip())):
+        return None
+    if s.startswith("Bearer "):
+        return s[len("Bearer "):].strip()
+    return s
+
 
 async def validate_token(request: Request):
     try:
         auth: str = request.headers.get("Authorization", None)
-        if(auth is None):
+        token = parse_bearer_token(auth)
+        if((token is None) or (token == '')):
             raise AppHttpException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             error_code="e1015",
             message=Messages.err_access_token_missing,
         )
         else:
-            token = auth.split()[1].strip()
+            token = auth.split()[1].strip() # Need checkup of this line
             jwt.decode(token, ACCESS_TOKEN_SECRET_KEY, algorithms=ALGORITHM)
     except ExpiredSignatureError as e:
         logging.error(e)
@@ -67,6 +75,8 @@ async def validate_token(request: Request):
             error_code="e1013",
             message=Messages.err_access_token_invalid,
         )
+    except AppHttpException as e:
+        raise e
     except Exception as e:
         logging.error(e)
         raise AppHttpException(

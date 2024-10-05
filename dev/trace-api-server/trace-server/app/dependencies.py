@@ -66,47 +66,36 @@ async def exceptions_middleware(request: Request, call_next):
         )
 
 
-async def handle_token_middleware(request: Request, call_next):
-    try:
-        path = request.url.path
-        # accessControl = request.headers.get('access-control-request-headers')
-        if path.find("graphql/exempted/") != -1:
-            return await call_next(request)
-        elif path.find("graphql") != -1:
-            # await validate_token(request)
-            return JSONResponse(content=jsonable_encoder({"name": "Sushant"}))
-            # return({
-            #     "name":"Sushant"
-            # })
-            # return JSONResponse(
-            # status_code=403,
-            # content={
-            #     "error_code": "e1000",
-            #     "detail": "An uncaught error occurred at server",
-            #     "message": 'ABCD',
-            # },
-        # )
-        else:
-            return await call_next(request)
-    except Exception as ex:
-        mess = Messages.err_internal_server_error
-        statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
-        if len(ex.args) > 0:
-            mess = ex.args[0]
-        if getattr(ex, "message", None):
-            mess = ex.message
-            statusCode = ex.status_code
+# async def handle_token_middleware(request: Request, call_next):
+#     try:
+#         path = request.url.path
+#         # accessControl = request.headers.get('access-control-request-headers')
+#         if path.find("graphql/exempted/") != -1:
+#             return await call_next(request)
+#         elif path.find("graphql") != -1:
+#             # await validate_token(request)
+#             return JSONResponse(content=jsonable_encoder({"name": "Sushant"}))
+#         else:
+#             return await call_next(request)
+#     except Exception as ex:
+#         mess = Messages.err_internal_server_error
+#         statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
+#         if len(ex.args) > 0:
+#             mess = ex.args[0]
+#         if getattr(ex, "message", None):
+#             mess = ex.message
+#             statusCode = ex.status_code
 
-        logging.error(mess)
-        # return('abcd')
-        return JSONResponse(
-            status_code=statusCode,
-            content={
-                "error_code": "e1000",
-                "detail": "An uncaught error occurred at server",
-                "message": mess,
-            },
-        )
+#         logging.error(mess)
+#         # return('abcd')
+#         return JSONResponse(
+#             status_code=statusCode,
+#             content={
+#                 "error_code": "e1000",
+#                 "detail": "An uncaught error occurred at server",
+#                 "message": mess,
+#             },
+#         )
 
 
 class UserClass:

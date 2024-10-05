@@ -82,10 +82,10 @@ function showAppLoader(val: boolean) {
     ibukiEmit('SHOW-APP-LOADER', val)
 }
 
-function showErrorMessage(error?: ErrorType, errorCode?: string, errorMessage?: string): void {
-    const errCode = error?.response?.data?.error_code || errorCode || ''
-    const errMessage = error?.response?.data?.message || errorMessage || error?.message || Messages.errUnknown
-    const status = error?.response?.status || 500
+function showErrorMessage(error?: any, errorCode?: string, errorMessage?: string): void {
+    const errCode = error?.response?.data?.error_code || errorCode || error?.networkError?.result?.error_code || ''
+    const errMessage = error?.response?.data?.message || errorMessage || error?.networkError?.result?.message || error?.message || Messages.errUnknown
+    const status = error?.response?.status || error?.networkError?.statusCode || 500
     Swal.fire({
         toast: true,
         position: "bottom-right",
@@ -180,16 +180,23 @@ function showFailureAlertMessage(alertMessage: AlertMessageType) {
     })
 }
 
-type ErrorType = {
-    message: string
-    response?: {
-        status: number
-        data: {
-            error_code: string
-            message: string
-        }
-    }
-}
+// type ErrorType = {
+//     message: string
+//     networkError?: {
+//         statusCode?: number | string
+//         result?:{
+//             error_code: string
+//             message: string
+//         }
+//     }
+//     response?: {
+//         status: number
+//         data: {
+//             error_code: string
+//             message: string
+//         }
+//     }
+// }
 
 type AlertMessageType = {
     title: string
@@ -222,10 +229,10 @@ type UtilsType = {
     getToken: () => string | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
-    showFailureAlertMessage:(alertMessage:AlertMessageType) => void
+    showFailureAlertMessage: (alertMessage: AlertMessageType) => void
     showSuccessAlertMessage: (alertMessage: AlertMessageType) => void
     showAppLoader: (val: boolean) => void
-    showErrorMessage: (error?: ErrorType, errorCode?: string, errorMessage?: string) => void
+    showErrorMessage: (error?: any, errorCode?: string, errorMessage?: string) => void
     showHideModalDialogA: (options: ShowHideModalDialogType) => void
     showHideModalDialogB: (options: ShowHideModalDialogType) => void
     showGraphQlErrorMessage: (error: GraphQlErrorType) => void

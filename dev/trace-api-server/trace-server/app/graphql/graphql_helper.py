@@ -8,7 +8,6 @@ from .db.sql_security import allSqls
 from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
 
-# from .db.sql_security import SqlSecurity
 from app.utils import encrypt, getSqlQueryObject
 
 
@@ -42,20 +41,7 @@ async def generic_query_helper(info, value: str):
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
-        mess = ""
-        if (e.args) is not None:
-            mess = e.args[0]
-        return {
-            "error": {
-                "content": {
-                    "error_code": "e2000",
-                    "message": "Graphql error occured",
-                    "status_code": "400",
-                    "detail": mess,
-                }
-            }
-        }
-    # print(data)
+        return create_graphql_exception(e)
     return data
 
 
@@ -101,21 +87,23 @@ async def update_client_helper(info, value: str):
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
-        mess = ""
-        if (e.args) is not None:
-            mess = e.args[0]
-        return {
-            "error": {
-                "content": {
-                    "error_code": "e2000",
-                    "message": "Graphql error occured",
-                    "status_code": "400",
-                    "detail": mess,
-                }
-            }
-        }
+        return create_graphql_exception(e)
     return data
 
+def create_graphql_exception(e: Exception):
+    mess = ""
+    if (e.args) is not None:
+        mess = e.args[0]
+    return {
+        "error": {
+            "content": {
+                "error_code": "e2000",
+                "message": "Graphql error occured",
+                "status_code": "400",
+                "detail": mess,
+            }
+        }
+    }
 
 # async def generic_query_helper1():
 #     # sql = 'select * from "TranD" where "id" <> %(id)s'

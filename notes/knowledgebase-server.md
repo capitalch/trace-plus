@@ -46,7 +46,6 @@ There are two types of exception handling:
         ))
   ```
 
-
 # Uncaught exceptions handled through http middleware: 
 When due to some error in program, somewhere some exception is generated and it is uncaught. It spits lot of stack info in terminal. This uncaught exception is handled through http middleware. Basically all calls are routed through this middleware function surrounded by a try catch. If any error happens in the call execution, that is caught by try catch and properly handled.
 - app.middleware("http")(catch_exceptions_middleware)
@@ -67,6 +66,7 @@ When due to some error in program, somewhere some exception is generated and it 
 ```
 - You can also handle specific exception such as 404 exception in following manner
 - There can be any number of app.exception_handler in the software
+
 # handling 404 exception when end point is not found
 - This is done like this:
   ```
@@ -75,6 +75,8 @@ When due to some error in program, somewhere some exception is generated and it 
       return (JSONResponse(status_code=404, content={'error_code': 'e1001', 'message': 'Direct 404 handle'}))
   ```
 - When the url is not found the above exception is executed directly
+# Handling GraphQL error
+  GraphQL has no exception mechanism. You get error from try ... except; Then convert the error info as error json data and return. At client look for error attribute and display message to user.
 
 # GraphQL
 - In fastapi to use GraphQL you need to create a new graphql app which is added on main app

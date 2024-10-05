@@ -1,7 +1,9 @@
 from ariadne import QueryType, make_executable_schema, load_schema_from_path
 from ariadne.asgi import GraphQL
 from fastapi import HTTPException
-
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+import json
 type_defs = load_schema_from_path(".")
 query = QueryType()
 
@@ -19,9 +21,26 @@ async def resolve_books(*_):
     ]
 @query.field("testException")
 async def testException(*_):
-    print("Test Exception")
-    # return('ABCD')
-    raise HTTPException(status_code=501, detail="This is a test exception from GraphQL")
+    try:
+        print("Test Exception")
+        print(1/0)
+        # return([{"name":"Sushant"}])
+    except Exception as e:
+        # return(JSONResponse(status_code=501, content={"message":"Internal GRaphQL Error"})) # not working
+        # return(jsonable_encoder({"error":"Internal GraphQL error"})) # not working
+        # raise HTTPException(detail='ABCD' , status_code=503)
+        mess = e.args[0]
+        return { # it works
+            "error": {
+                "content": {
+                    "error_code": "e2000",
+                    "message": "Graphql error occured",
+                    "status_code": "400",
+                    "detail": mess,
+                }
+            }
+        }
+        return('GraphQL error')
 
 schema = make_executable_schema(type_defs, query)
-GraphQLApp: GraphQL = GraphQL(schema)
+GraphQLApp: GraphQL = GraphQL(schema, debug=True)
