@@ -26,7 +26,7 @@ export function SuperAdminEditNewClient({
     , id
     , isActive
     , isExternalDb
-}: SuperAdminEditNewClientType) {
+}: SuperAdminEditNewClientExtDbType) {
     const [active, setActive] = useState(isActive || false)
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
@@ -227,7 +227,7 @@ type FormDataType = {
     isExternalDb?: boolean
 }
 
-type SuperAdminEditNewClientType = {
+type SuperAdminEditNewClientExtDbType = {
     dataInstance: string
     clientCode?: string | undefined
     clientName?: string

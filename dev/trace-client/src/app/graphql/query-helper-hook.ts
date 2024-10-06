@@ -1,14 +1,15 @@
-import { ApolloClient, NormalizedCacheObject, useApolloClient, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import {
   GraphQLQueriesMap,
   GraphQLQueryArgsType
 } from './maps/graphql-queries-map'
+// import {setContext} from '@apollo/client/link/context'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
 import { useEffect } from 'react'
 import { Utils } from '../../utils/utils'
 import { AppDispatchType } from '../store/store'
 import { useDispatch } from 'react-redux'
-import { setQueryHelperData } from './query-helper-slice'
+import { resetQueryHelperData, setQueryHelperData } from './query-helper-slice'
 
 export function useQueryHelper ({
   databaseName = GLOBAL_SECURITY_DATABASE_NAME,
@@ -17,7 +18,7 @@ export function useQueryHelper ({
   isExecQueryOnLoad = true
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
-  const apolloClient:ApolloClient<object> = useApolloClient()
+  // const apolloClient: any = useApolloClient()
 
   const [getGenericQueryData, { error, loading }] = useLazyQuery(
     GraphQLQueriesMap.genericQuery(databaseName, getQueryArgs()),
@@ -28,6 +29,10 @@ export function useQueryHelper ({
     if (isExecQueryOnLoad) {
       loadData()
     }
+    return () => {
+      // Cleanup data. Otherwise syncfusion grid loads the old data
+      dispatch(resetQueryHelperData({ instance: instance}))
+    }
   }, [])
 
   if (error) {
@@ -35,12 +40,16 @@ export function useQueryHelper ({
   }
 
   async function loadData () {
-    await apolloClient.reFetchObservableQueries()
-    const result: any = await getGenericQueryData()
+    const result: any = await getGenericQueryData({ fetchPolicy: 'no-cache' })
     if (result?.data?.genericQuery?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
     }
-    dispatch(setQueryHelperData({ data: result?.data, instance: instance }))
+    dispatch(
+      setQueryHelperData({
+        data: result?.data ? result.data : [],
+        instance: instance
+      })
+    )
   }
 
   return { loadData, loading }

@@ -17,12 +17,14 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
 import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
+// import {Button} from 'primereact/button'
 
 export function SuperAdminEditNewClientExtDatabase({
     clientCode
     , clientName
     , dataInstance
     , dbName
+    , dbParams
     , id
     , isActive = false
     , isExternalDb
@@ -111,14 +113,7 @@ export function SuperAdminEditNewClientExtDatabase({
         const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-CLIENT-NAME"], 1600).subscribe((d: any) => {
             validateClientNameAtServer(d.data)
         })
-        // Following code for edit purpose
-        setValue('clientCode', clientCode || '')
-        setValue('clientName', clientName || '')
-        setValue('dbName', dbName || '')
-        setValue('id', id)
-        setValue('isActive', isActive || false)
-        setValue('isExternalDb', isExternalDb || true)
-
+        populateValues() // useful for edit purpose
         return (() => {
             subs1.unsubscribe()
             subs2.unsubscribe()
@@ -284,6 +279,7 @@ export function SuperAdminEditNewClientExtDatabase({
                 <div className='flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
+                {/* <Button>Prime react</Button> */}
                 {/* <button type="button" className="bg-slate-300" onClick={handleTestDbConnection}>Test conn</button> */}
                 <span>
                     {showServerValidationError()}
@@ -291,7 +287,21 @@ export function SuperAdminEditNewClientExtDatabase({
             </div>
         </form>
     )
+    function populateValues() {
+        setValue('clientCode', clientCode || '')
+        setValue('clientName', clientName || '')
+        setValue('dbName', dbName || '')
+        setValue('id', id)
+        setValue('isActive', isActive || false)
+        setValue('isExternalDb', isExternalDb || true)
 
+        setValue('host',dbParams?.host)
+        setValue('password', dbParams?.password)
+        setValue('port',dbParams?.port)
+        setValue('user', dbParams?.user)
+        setValue('url', dbParams?.url)
+        console.log('dbParams:', dbParams)
+    }
 
     async function handleTestDbConnection() {
         const ret = await trigger(['dbName', 'host', 'user', 'password', 'port'])
@@ -443,7 +453,8 @@ type SuperAdminEditNewClientExtDatabaseType = {
     clientCode?: string
     clientName?: string
     dbName?: string
-    dbParams?: string
+    dbParams: any
+    // encodedDbParams: string
     id?: string
     isActive: boolean
     isExternalDb?: boolean

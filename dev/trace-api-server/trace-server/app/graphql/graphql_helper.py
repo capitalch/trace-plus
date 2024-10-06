@@ -7,9 +7,16 @@ from app.messages import Messages
 from .db.sql_security import allSqls
 from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
+from app.utils import decrypt, encrypt, getSqlQueryObject
 
-from app.utils import encrypt, getSqlQueryObject
 
+async def decode_ext_db_params_helper(info, value):
+    decodedDbParams = None
+    try:
+        decodedDbParams = decrypt(value)
+    except Exception as e:
+        return create_graphql_exception(e)
+    return(decodedDbParams)
 
 async def generic_update_helper(info, value: str):
     pass
@@ -90,10 +97,20 @@ async def update_client_helper(info, value: str):
         return create_graphql_exception(e)
     return data
 
+def is_not_none_or_empty(value):
+    ret = True
+    if(value is None):
+        ret = False
+    if(isinstance(value,(tuple, list, set, dict)) and (len(value) == 0)):
+        ret = False
+    return(ret)
+
 def create_graphql_exception(e: Exception):
     mess = ""
-    if (e.args) is not None:
+    if is_not_none_or_empty(e.args):
         mess = e.args[0]
+    else:
+        mess = Messages.err_unknown
     return {
         "error": {
             "content": {
@@ -104,6 +121,7 @@ def create_graphql_exception(e: Exception):
             }
         }
     }
+
 
 # async def generic_query_helper1():
 #     # sql = 'select * from "TranD" where "id" <> %(id)s'

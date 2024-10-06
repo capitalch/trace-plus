@@ -16,13 +16,15 @@ function Login() {
     const registerUserName = register('username', {
         required: Messages.errRequired,
         validate: { checkUserNameOrEmail },
-        minLength: { value: 4, message: Messages.errAtLeast4Chars }
+        minLength: { value: 4, message: Messages.errAtLeast4Chars },
+        value:'superAdmin'
     })
 
     const registerPassword = register('password', {
         required: Messages.errRequired,
         validate: { checkPassword },
-        minLength: { value: 8, message: Messages.errAtLeast8Chars }
+        minLength: { value: 8, message: Messages.errAtLeast8Chars },
+        value:'superadmin@123'
     })
 
     return (

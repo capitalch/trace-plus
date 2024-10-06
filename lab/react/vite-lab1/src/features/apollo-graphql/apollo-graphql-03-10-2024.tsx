@@ -1,5 +1,5 @@
 import { useLazyQuery } from "@apollo/client";
-import { GET_BOOKS, GET_TEST_EXCEPTION } from "./apollo-graphql-queries";
+import {  GET_TEST_EXCEPTION } from "./apollo-graphql-queries";
 
 export function ApolloGraphQL03112024() {
     const [getData, { loading, error, data }] = useLazyQuery(GET_TEST_EXCEPTION, {

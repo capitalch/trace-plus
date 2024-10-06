@@ -1,3 +1,6 @@
+## To do
+- External DB
+
 ## Relearn
 											- Basic fastapi server
 											- Integrate middleware and exceptions
@@ -5,33 +8,23 @@
 											- Integrate GraphQL
 											- Connect client graphQL, get basic data
 											- Exception with GraphQL
-	- DB data from graphQL
-	- middleware approach with token
-## To recap
-- Data access layer for grid
-- Data access layer for update
-- GraphQL
-- Apollo client
-- Maps
-- Redux
-- Global context
-- Side menu and layouts working
-	- forms and forms validations
+											- DB data from graphQL
+											- middleware approach with token
 
 ## To do
 																								- Rename all reducers withour R ending
-- External DB
+
 																								- Provide fields in form with validations
 																								- Test database connection
 																							- submit
 																								- Client side
 																								- Server side code
 																								- Create database DML at server
-- Authentication
-	- Token at client
-	- Token management at server
-- edit mode
-	- decoding dbparams
+																							- Authentication
+																								- Token at client
+																								- Token management at server
+																							- edit mode
+																								- decoding dbparams
 - delete
 																								- DB port validation
 																								- url validation correction

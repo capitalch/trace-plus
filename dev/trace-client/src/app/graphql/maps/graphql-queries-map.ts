@@ -3,9 +3,19 @@ import _ from 'lodash'
 import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enums'
 
 export const GraphQLQueriesMap = {
+  decodeExtDbParams: decodeExtDbParams,
   genericQuery: genericQuery,
   updateClient: updateClient,
   hello: hello
+}
+
+function decodeExtDbParams (val: string) {
+  // does not hit database
+  const q = gql`
+    query  {
+      decodeExtDbParams(value: "${val}")
+    }`
+  return q
 }
 
 function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
@@ -26,7 +36,7 @@ function updateClient (dbName: string, val: TraceDataObjectType) {
     `
 }
 
-function hello(){
+function hello () {
   return gql`
     query hello
   `

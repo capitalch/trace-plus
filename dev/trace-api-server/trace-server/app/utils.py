@@ -3,6 +3,12 @@ from app.graphql.db.sql_security import SqlSecurity
 from app.config import Config
 from cryptography.fernet import Fernet
 
+def decrypt(input: str):
+    key = Config.CRYPTO_KEY
+    cipher_suite = Fernet(key)
+    decoded_text = cipher_suite.decrypt(input.encode())
+    return (decoded_text.decode())
+
 def encrypt(input: str):
     key = Config.CRYPTO_KEY
     cipher_suite = Fernet(key)

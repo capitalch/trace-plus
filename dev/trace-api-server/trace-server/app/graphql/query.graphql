@@ -1,4 +1,5 @@
 type Query {
+    decodeExtDbParams(value: String): Generic
     genericQuery(value: String): Generic
     hello: Generic
 }

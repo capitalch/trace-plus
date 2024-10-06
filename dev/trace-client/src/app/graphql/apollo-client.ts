@@ -10,12 +10,12 @@ import urlJoin from 'url-join'
 import { Utils } from '../../utils/utils'
 
 export function getApolloClient () {
-  const token = Utils.getToken()
   const url = Utils.getHostUrl()
   const link = new HttpLink({
     uri: urlJoin(url, 'graphql/')
   })
   const authLink = new ApolloLink((operation: Operation, forward: NextLink) => {
+    const token = Utils.getToken()
     operation.setContext({
       headers: {
         authorization: token ? `Bearer ${token}` : ''
@@ -29,10 +29,13 @@ export function getApolloClient () {
     link: authLink.concat(link),
     defaultOptions: {
       query: {
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'no-cache',
+      },
+      watchQuery:{
+        fetchPolicy: 'no-cache',
       }
     },
-    // credentials:'include'
+    credentials:'include'
   })
   return apolloClient
 }

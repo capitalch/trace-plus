@@ -8,6 +8,7 @@ const Messages = {
   errCannotBeZero: 'Cannot have zero values',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
+  errExtDbParamsFormatError:"External database parameters are not in proper format",
   errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errMustBePositive: 'Must be a positive number',

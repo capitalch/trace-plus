@@ -11,6 +11,14 @@ const queryHelperSlice = createSlice({
   initialState: initialState,
 
   reducers: {
+    resetQueryHelperData: (
+      state: InitialStateType,
+      action: PayloadAction<ResetQueryHelperDataActionType>
+    ) => {
+      if (state[action.payload.instance]) {
+        state[action.payload.instance] = { data: [] }
+      }
+    },
     setQueryHelperData: (
       state: InitialStateType,
       action: PayloadAction<SetQueryHelperDataActionType>
@@ -44,8 +52,12 @@ const queryHelperSlice = createSlice({
 })
 
 export const queryHelperReducer = queryHelperSlice.reducer
-export const { setLastNoOfRows, setQueryHelperData, setSearchString } =
-  queryHelperSlice.actions
+export const {
+  resetQueryHelperData,
+  setLastNoOfRows,
+  setQueryHelperData,
+  setSearchString
+} = queryHelperSlice.actions
 
 type InitialStateType = {
   [key: string]: any
@@ -59,6 +71,10 @@ type SetQueryHelperDataActionType = {
   data: any
   instance: string
 }
+
+type ResetQueryHelperDataActionType = {
+  instance: string
+} 
 
 type SetLastNoOfRowsActionType = {
   instance: string

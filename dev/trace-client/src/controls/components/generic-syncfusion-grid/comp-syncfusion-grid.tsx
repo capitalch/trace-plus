@@ -9,7 +9,7 @@ import { Utils } from "../../../utils/utils"
 
 export function CompSyncFusionGrid({
     aggregates,
-    className='',
+    className = '',
     columns,
     height,
     isLoadOnInit = true,
@@ -17,7 +17,7 @@ export function CompSyncFusionGrid({
     onDelete = undefined,
     onEdit = undefined,
     onPreview = undefined,
-    rowHeight= 30,
+    rowHeight = 30,
     sqlArgs,
     sqlId
 }: CompSyncFusionGridType) {
@@ -41,7 +41,8 @@ export function CompSyncFusionGrid({
         operator: 'contains'
     }
 
-    return (<GridComponent
+        return (<GridComponent
+        enablePersistence={false}
         allowPdfExport={true}
         allowExcelExport={true}
         allowResizing={true}
@@ -97,9 +98,9 @@ export type CompSyncFusionGridType = {
     height?: string
     instance: string
     isLoadOnInit?: boolean
-    onDelete?: (id:string) => void
-    onEdit?:(args:any) => void
-    onPreview?: (args:any) => void
+    onDelete?: (id: string) => void
+    onEdit?: (args: any) => void
+    onPreview?: (args: any) => void
     rowHeight?: number
     sqlArgs: SqlArgsType
     sqlId: string

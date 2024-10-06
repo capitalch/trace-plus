@@ -87,11 +87,12 @@ function showErrorMessage(error?: any, errorCode?: string, errorMessage?: string
     const errMessage = error?.response?.data?.message || errorMessage || error?.networkError?.result?.message || error?.message || Messages.errUnknown
     const status = error?.response?.status || error?.networkError?.statusCode || 500
     Swal.fire({
+        // allowOutsideClick:true, // Does not work in toast mode
         toast: true,
         position: "bottom-right",
         color: "white",
         background: 'red',
-        timer: 50000,
+        timer: 10000,
         timerProgressBar: true,
         title: `Error ${status}: ${errCode}: ${errMessage}`,
         padding: '10px',
@@ -100,7 +101,7 @@ function showErrorMessage(error?: any, errorCode?: string, errorMessage?: string
         iconColor: 'white',
         width: 'auto',
         showCloseButton: true,
-
+        allowEscapeKey:true
     })
 }
 

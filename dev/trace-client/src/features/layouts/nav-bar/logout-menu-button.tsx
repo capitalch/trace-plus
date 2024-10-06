@@ -12,6 +12,8 @@ import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down";
 import { IconChangeUid } from "../../../controls/icons/icon-change-uid";
 import { IconChangePassword } from "../../../controls/icons/icon-change-password";
 import { IconLogout } from "../../../controls/icons/icon-logout";
+// import Swal from "sweetalert2";
+
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -63,6 +65,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     }
     function handleOnClickAway() {
         dispatch(setShowNavBarDropDown({ toShowNavBarDropDown: false }))
+        // Swal.close() // If any swal popup or error message is active, that is now closed
     }
     function handleOnLogout() {
         handleOnClickAway() // Otherwise the menu remains open

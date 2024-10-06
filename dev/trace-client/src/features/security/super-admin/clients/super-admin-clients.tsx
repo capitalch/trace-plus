@@ -7,6 +7,9 @@ import { SuperAdminClientNewClientButtons } from "./super-admin-clients-new-clie
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminEditNewClient } from "./super-admin-edit-new-client";
 import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-client-ext-database";
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import _ from "lodash";
+import { Messages } from "../../../../utils/messages";
 
 export function SuperAdminClients() {
     const instance = DataInstancesMap.superAdminClients //Grid
@@ -27,6 +30,22 @@ export function SuperAdminClients() {
             />
         </CompContentContainer>
     )
+
+    async function decodeExtDbParams(encodedDbParams: string) {
+        const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams)
+        const qName = GraphQLQueriesMap.decodeExtDbParams.name
+        try {
+            const res: any = await Utils.queryGraphQL(q, qName)
+            const dbParamsString = res?.data?.[qName]
+            const dbParams: object = JSON.parse(dbParamsString)
+            if(_.isEmpty(dbParams)){
+                throw new Error(Messages.errExtDbParamsFormatError)
+            }
+            return(dbParams)
+        } catch (e: any) {
+            Utils.showErrorMessage(e)
+        }
+    }
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
@@ -70,8 +89,9 @@ export function SuperAdminClients() {
         console.log('Delete clicked:', id)
     }
 
-    function handleOnEdit(props: any) {
+    async function handleOnEdit(props: any) {
         if (props.isExternalDb) {
+            const dbParams: object | undefined = await decodeExtDbParams(props?.dbParams)
             Utils.showHideModalDialogA({
                 title: 'Edit client with external database',
                 isOpen: true,
@@ -79,6 +99,7 @@ export function SuperAdminClients() {
                     clientCode={props.clientCode}
                     clientName={props.clientName}
                     dbName={props.dbName}
+                    dbParams={dbParams}
                     id={props.id}
                     isActive={props.isActive}
                     dataInstance={instance}
