@@ -8,7 +8,8 @@ const Messages = {
   errCannotBeZero: 'Cannot have zero values',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
-  errExtDbParamsFormatError:"External database parameters are not in proper format",
+  errExtDbParamsFormatError:
+    'External database parameters are not in proper format',
   errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errMustBePositive: 'Must be a positive number',
@@ -24,13 +25,15 @@ const Messages = {
     'Client code should be between 6 characters and 10 characters',
   messClientName:
     'Client name should be between 6 characters and 50 characters',
-  messFailure:"Failure",
+  messDbConnFailure: 'Database connection was failed',
+  messDbConnSuccessful: 'Database connection was successful',
+  messFailure: 'Failure',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
-  messSuccess:'Successfull',
-  messDbConnSuccessful:"Database connection was successful",
-  messDbConnFailure:"Database connection was failed",
+  messRecordDeleted: 'The record was successfully deleted',
+  messSuccess: 'Successfull',
   messUserNameEmailHelper:
-    'At least 4 characters long | no space | no special char'
+    'At least 4 characters long | no space | no special char',
+  
 }
 
 export { Messages }

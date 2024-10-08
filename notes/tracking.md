@@ -3,13 +3,14 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
-# 01-10-2024 - 06-10-2024
+# 01-10-2024 - 08-10-2024
 	- Revisited apollo graphQL, Fastapi and other concepts
 	- Corrected error handling and token management at server
 	- Corrected token management at client
 	- Client: Error message on click should go away: done
 	- Corrected login with token management
 	- Resolved Syncfusion Grid caching issue
+	- Completed Super admin clients with ext database
 # 30-09-2024 - 01-10-2024
 	- Revisit graphql
 	- Server logging

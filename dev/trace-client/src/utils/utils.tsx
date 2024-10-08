@@ -13,6 +13,7 @@ export const Utils: UtilsType = {
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
     showAppLoader: showAppLoader,
+    showConfirmDialog: showConfirmDialog,
     showErrorMessage: showErrorMessage,
     showHideModalDialogA: showHideModalDialogA,
     showHideModalDialogB: showHideModalDialogB,
@@ -57,6 +58,7 @@ async function mutateGraphQL(q: any, queryName: string) {
         return (result)
     } catch (e: any) {
         console.log(e)
+        throw e
     }
 
     finally {
@@ -84,6 +86,22 @@ async function queryGraphQL(q: any, queryName: string) {
 
 function showAppLoader(val: boolean) {
     ibukiEmit('SHOW-APP-LOADER', val)
+}
+
+function showConfirmDialog(onConfirm: () => void) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, proceed!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            onConfirm()
+        }
+    })
 }
 
 function showErrorMessage(error?: any, errorCode?: string, errorMessage?: string): void {
@@ -169,11 +187,15 @@ function showSaveMessage() {
     })
 }
 
-function showSuccessAlertMessage(alertMessage: AlertMessageType) {
+function showSuccessAlertMessage(alertMessage: AlertMessageType, callback?: () => void) {
     Swal.fire({
         title: alertMessage.title,
         text: alertMessage.message,
         icon: 'success'
+    }).then(() => {
+        if (callback) {
+            callback()
+        }
     })
 }
 
@@ -184,24 +206,6 @@ function showFailureAlertMessage(alertMessage: AlertMessageType) {
         icon: 'error'
     })
 }
-
-// type ErrorType = {
-//     message: string
-//     networkError?: {
-//         statusCode?: number | string
-//         result?:{
-//             error_code: string
-//             message: string
-//         }
-//     }
-//     response?: {
-//         status: number
-//         data: {
-//             error_code: string
-//             message: string
-//         }
-//     }
-// }
 
 type AlertMessageType = {
     title: string
@@ -234,8 +238,9 @@ type UtilsType = {
     getToken: () => string | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
+    showConfirmDialog: (onConfirm: () => void) => void
     showFailureAlertMessage: (alertMessage: AlertMessageType) => void
-    showSuccessAlertMessage: (alertMessage: AlertMessageType) => void
+    showSuccessAlertMessage: (alertMessage: AlertMessageType, callback?: () => void) => void
     showAppLoader: (val: boolean) => void
     showErrorMessage: (error?: any, errorCode?: string, errorMessage?: string) => void
     showHideModalDialogA: (options: ShowHideModalDialogType) => void

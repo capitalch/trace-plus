@@ -320,12 +320,11 @@ export function SuperAdminEditNewClientExtDatabase({
             const q: any = GraphQLQueriesMap.genericQuery(dbParams.dbname, {
                 sqlId: SqlIdsMap.testConnection,
                 dbParams: dbParams
-                // ...dbParams
             })
             const queryName: string = GraphQLQueriesMap.genericQuery.name
             const res: any = await Utils.queryGraphQL(q, queryName)
             if (res?.data?.[queryName]?.[0]?.connection) {
-                Utils.showSuccessAlertMessage({ message: Messages.messDbConnSuccessful, title: Messages.messSuccess })
+                Utils.showSuccessAlertMessage({ message: Messages.messDbConnSuccessful, title: Messages.messSuccess },)
             } else {
                 Utils.showFailureAlertMessage({ message: Messages.messDbConnFailure, title: Messages.messFailure })
             }

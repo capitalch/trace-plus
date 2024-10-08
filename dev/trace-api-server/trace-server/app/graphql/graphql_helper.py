@@ -26,12 +26,10 @@ async def generic_update_helper(info, value: str):
         valueDict = json.loads(valueString)
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
-        # sqlId = valueDict.get("sqlId", None)
         request = info.context.get("request", None)
         requestJson = await request.json()
         operationName = requestJson.get("operationName", None)
         sqlObj = json.loads(valueString)
-
         data = await exec_sql_object(
             dbName=operationName, db_params=dbParams, schema=schema, sqlObject=sqlObj
         )

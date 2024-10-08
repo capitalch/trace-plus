@@ -7,6 +7,7 @@ import { ErrorPage } from "./error-page";
 import { Comp1 } from "../../features/pages/comp1";
 import { SuperAdminDashboard } from "../../features/security/super-admin/dashboard/super-admin-dashboard";
 import { SuperAdminClients } from "../../features/security/super-admin/clients/super-admin-clients";
+import { SuperAdminRoles } from "../../features/security/super-admin/roles/super-admin-roles";
 
 export const appRouter = createBrowserRouter([
     {
@@ -31,6 +32,10 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'super-admin-clients',
                 element: <SuperAdminClients />
+            },
+            {
+                path: 'super-admin-roles',
+                element : <SuperAdminRoles />
             }
             // {
             //     path: 'change-uid',

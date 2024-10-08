@@ -293,7 +293,7 @@ export const MasterMenuData: MenuDataType = {
       icon: IconRoles,
       iconColorClass: 'text-amber-500',
       children: [],
-      path: '/blogs'
+      path: '/super-admin-roles'
     },
     {
       id: '15',

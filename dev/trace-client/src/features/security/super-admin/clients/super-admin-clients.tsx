@@ -11,8 +11,12 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import _ from "lodash";
 import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
+import { GlobalContextType } from "../../../../app/global-context";
+import { useContext } from "react";
+import { GlobalContext } from "../../../../App";
 
 export function SuperAdminClients() {
+    const context: GlobalContextType = useContext(GlobalContext)
     const instance = DataInstancesMap.superAdminClients //Grid
     return (
         <CompContentContainer title='Super admin clients' className="">
@@ -88,12 +92,20 @@ export function SuperAdminClients() {
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            // sqlObj: {
-                tableName: 'ClientM',
-                deletedIds: [id]
-            // }
+            tableName: 'ClientM',
+            deletedIds: [id]
         })
-        await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)
+        Utils.showConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
+        async function doDelete() {
+            try {
+                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)
+                Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }, () => {
+                    context.CompSyncFusionGrid[instance].loadData() // this is executed when OK button is pressed on the alert message
+                })
+            } catch (e: any) {
+                Utils.showFailureAlertMessage({ message: e?.message || '', title: 'Failed' })
+            }
+        }
     }
 
     async function handleOnEdit(props: any) {
@@ -147,8 +159,3 @@ export function SuperAdminClients() {
         return (<span><b>Count: {props.Count}</b></span>)
     }
 }
-
-
-// function handleOnPreview(props: any) {
-//     console.log('Preview clicked: ', props)
-// }
