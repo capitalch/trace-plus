@@ -54,6 +54,7 @@ async def validate_token(request: Request):
         else:
             token = auth.split()[1].strip() # Need checkup of this line
             jwt.decode(token, ACCESS_TOKEN_SECRET_KEY, algorithms=ALGORITHM)
+            print('success')
     except ExpiredSignatureError as e:
         logging.error(e)
         raise AppHttpException(

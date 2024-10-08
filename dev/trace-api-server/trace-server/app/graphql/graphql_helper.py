@@ -16,10 +16,31 @@ async def decode_ext_db_params_helper(info, value):
         decodedDbParams = decrypt(value)
     except Exception as e:
         return create_graphql_exception(e)
-    return(decodedDbParams)
+    return decodedDbParams
+
 
 async def generic_update_helper(info, value: str):
-    pass
+    data = {}
+    try:
+        valueString = unquote(value)
+        valueDict = json.loads(valueString)
+        dbParams = valueDict.get("dbParams", None)
+        schema = valueDict.get("buCode", None)
+        # sqlId = valueDict.get("sqlId", None)
+        request = info.context.get("request", None)
+        requestJson = await request.json()
+        operationName = requestJson.get("operationName", None)
+        sqlObj = json.loads(valueString)
+
+        data = await exec_sql_object(
+            dbName=operationName, db_params=dbParams, schema=schema, sqlObject=sqlObj
+        )
+
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
 
 
 async def generic_query_helper(info, value: str):
@@ -97,13 +118,15 @@ async def update_client_helper(info, value: str):
         return create_graphql_exception(e)
     return data
 
+
 def is_not_none_or_empty(value):
     ret = True
-    if(value is None):
+    if value is None:
         ret = False
-    if(isinstance(value,(tuple, list, set, dict)) and (len(value) == 0)):
+    if isinstance(value, (tuple, list, set, dict)) and (len(value) == 0):
         ret = False
-    return(ret)
+    return ret
+
 
 def create_graphql_exception(e: Exception):
     mess = ""
@@ -121,39 +144,3 @@ def create_graphql_exception(e: Exception):
             }
         }
     }
-
-
-# async def generic_query_helper1():
-#     # sql = 'select * from "TranD" where "id" <> %(id)s'
-#     sql = allSqls.get("sql1")
-#     sqlArgs = {"id": 1}
-#     data = []
-#     try:
-#         start_time = datetime.now()
-#         for i in range(1):
-#             data = exec_sql_psycopg2(
-#                 dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs={"id": 1}
-#             )
-#         end_time = datetime.now()
-#         print(f"Duration1: {end_time - start_time}")
-
-#         start_time = datetime.now()
-#         for i in range(1):
-#             data = await exec_sql_psycopg_async(
-#                 dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs={"id": 1}
-#             )
-#         end_time = datetime.now()
-#         print(f"Duration2: {end_time - start_time}")
-
-#         start_time = datetime.now()
-#         for i in range(1):
-#             data = await exec_sql_asyncpg(
-#                 dbName="demo_accounts", schema="demounit1", sql=sql, sqlArgs=sqlArgs
-#             )
-#         end_time = datetime.now()
-#         print(f"Duration3: {end_time - start_time}")
-
-#     except Exception as e:
-#         print(e)
-
-#     return data

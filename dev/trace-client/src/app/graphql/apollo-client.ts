@@ -28,6 +28,9 @@ export function getApolloClient () {
     cache: new InMemoryCache(),
     link: authLink.concat(link),
     defaultOptions: {
+      mutate:{
+        fetchPolicy: 'no-cache',
+      },
       query: {
         fetchPolicy: 'no-cache',
       },

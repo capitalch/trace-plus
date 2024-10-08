@@ -5,11 +5,12 @@ import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enum
 export const GraphQLQueriesMap = {
   decodeExtDbParams: decodeExtDbParams,
   genericQuery: genericQuery,
+  genericUpdate: genericUpdate,
   updateClient: updateClient,
   hello: hello
 }
 
-function decodeExtDbParams (val: string) {
+function decodeExtDbParams(val: string) {
   // does not hit database
   const q = gql`
     query  {
@@ -18,7 +19,7 @@ function decodeExtDbParams (val: string) {
   return q
 }
 
-function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
+function genericQuery(dbName: string, val: GraphQLQueryArgsType) {
   const value = encodeObj(val)
   return gql`
         query ${dbName} {
@@ -27,7 +28,16 @@ function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
     `
 }
 
-function updateClient (dbName: string, val: TraceDataObjectType) {
+function genericUpdate(dbName: string, val: GraphQLUpdateArgsType) {
+  const value = encodeObj(val) // dbName below is transferred as operationName
+  return gql`
+        mutation ${dbName} { 
+            genericUpdate(value:"${value}")
+        }
+    `
+}
+
+function updateClient(dbName: string, val: TraceDataObjectType) {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} {
@@ -36,13 +46,13 @@ function updateClient (dbName: string, val: TraceDataObjectType) {
     `
 }
 
-function hello () {
+function hello() {
   return gql`
     query hello
   `
 }
 
-function encodeObj (obj: any) {
+function encodeObj(obj: any) {
   let ret = ''
   if (!_.isEmpty(obj)) {
     ret = encodeURI(JSON.stringify(obj))
@@ -55,4 +65,16 @@ export type GraphQLQueryArgsType = {
   [key: string]: any
   sqlId: string
   sqlArgs?: { [key: string]: string | number }
+}
+
+export type GraphQLUpdateArgsType = {
+  dbParams?: { [key: string]: string | number }
+  [key: string]: any
+  // sqlObj: {
+    tableName: string
+    deletedIds?: [string]
+  // }
+
+  // sqlId: string
+  // sqlArgs?: { [key: string]: string | number }
 }

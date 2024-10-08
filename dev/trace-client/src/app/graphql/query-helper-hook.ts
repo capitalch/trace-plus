@@ -3,7 +3,6 @@ import {
   GraphQLQueriesMap,
   GraphQLQueryArgsType
 } from './maps/graphql-queries-map'
-// import {setContext} from '@apollo/client/link/context'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
 import { useEffect } from 'react'
 import { Utils } from '../../utils/utils'
@@ -18,7 +17,6 @@ export function useQueryHelper ({
   isExecQueryOnLoad = true
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
-  // const apolloClient: any = useApolloClient()
 
   const [getGenericQueryData, { error, loading }] = useLazyQuery(
     GraphQLQueriesMap.genericQuery(databaseName, getQueryArgs()),

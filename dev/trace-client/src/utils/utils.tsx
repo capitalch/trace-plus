@@ -55,7 +55,11 @@ async function mutateGraphQL(q: any, queryName: string) {
         }
         showSaveMessage()
         return (result)
-    } finally {
+    } catch (e: any) {
+        console.log(e)
+    }
+
+    finally {
         showAppLoader(false)
     }
 }
@@ -101,7 +105,7 @@ function showErrorMessage(error?: any, errorCode?: string, errorMessage?: string
         iconColor: 'white',
         width: 'auto',
         showCloseButton: true,
-        allowEscapeKey:true
+        allowEscapeKey: true
     })
 }
 

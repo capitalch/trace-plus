@@ -10,6 +10,7 @@ import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-clien
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import _ from "lodash";
 import { Messages } from "../../../../utils/messages";
+import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 
 export function SuperAdminClients() {
     const instance = DataInstancesMap.superAdminClients //Grid
@@ -22,7 +23,7 @@ export function SuperAdminClients() {
                 columns={getColumns()}
                 instance={instance}
                 rowHeight={40}
-                sqlArgs={{ dbName: 'traceAuth' }}
+                sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
                 sqlId={SqlIdsMap.allClients}
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
@@ -38,10 +39,10 @@ export function SuperAdminClients() {
             const res: any = await Utils.queryGraphQL(q, qName)
             const dbParamsString = res?.data?.[qName]
             const dbParams: object = JSON.parse(dbParamsString)
-            if(_.isEmpty(dbParams)){
+            if (_.isEmpty(dbParams)) {
                 throw new Error(Messages.errExtDbParamsFormatError)
             }
-            return(dbParams)
+            return (dbParams)
         } catch (e: any) {
             Utils.showErrorMessage(e)
         }
@@ -85,8 +86,14 @@ export function SuperAdminClients() {
         ])
     }
 
-    function handleOnDelete(id: string) {
-        console.log('Delete clicked:', id)
+    async function handleOnDelete(id: string) {
+        const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
+            // sqlObj: {
+                tableName: 'ClientM',
+                deletedIds: [id]
+            // }
+        })
+        await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)
     }
 
     async function handleOnEdit(props: any) {

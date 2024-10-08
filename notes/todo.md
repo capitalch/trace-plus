@@ -1,5 +1,11 @@
 ## To do
-- External DB
+- Delete
+	- Server
+		- Graphql genericUpdate
+	- Client
+		- map Graphql
+- UI correction: Label Super admin user. Horizontal scrollbar should not come
+																								- External DB
 
 ## Relearn
 											- Basic fastapi server
@@ -29,7 +35,7 @@
 																								- DB port validation
 																								- url validation correction
 																								- remove preview
-- server code
+																							- server code
 
 - Login error handling not correct
 																								- Form for new client has error in isActive field
@@ -43,7 +49,7 @@
 
 																								- GraphQL mutation at server side
 																								- Independent Loading indicator
-- Grid
+																							- Grid
 																								- Create UI for status bar
 																								- Status bar align with container
 																								- pdf and excel export
@@ -66,9 +72,9 @@
 																								- Aggregates
 																								- Refresh icon placement in middle of screen
 																								- Data fetch and refetch finalize
-## GraphQL
-- store hostUrl in Global context
-- implement GraphQL with token
+																							## GraphQL
+																							- store hostUrl in Global context
+																							- implement GraphQL with token
 ## Super Admin
 																								- Upgrade the server with latest libs
 - Brief learning of GraphQL client and server
