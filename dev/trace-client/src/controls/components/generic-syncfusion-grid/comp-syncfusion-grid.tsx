@@ -11,6 +11,7 @@ export function CompSyncFusionGrid({
     aggregates,
     className = '',
     columns,
+    hasIndexColumn= false,
     height,
     isLoadOnInit = true,
     instance,
@@ -22,7 +23,7 @@ export function CompSyncFusionGrid({
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
 
     const gridRef: any = useRef({})
 
@@ -55,7 +56,6 @@ export function CompSyncFusionGrid({
         gridLines="Both"
         ref={gridRef}
         rowHeight={rowHeight}
-        // toolbar={toolbarOptions}
         searchSettings={searchOptions}
         height={height}>
         <ColumnsDirective>
@@ -95,6 +95,7 @@ export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
     className?: string
     columns: SyncFusionGridColumnType[]
+    hasIndexColumn?: boolean
     height?: string
     instance: string
     isLoadOnInit?: boolean

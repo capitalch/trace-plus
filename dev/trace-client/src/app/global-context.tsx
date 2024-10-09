@@ -7,6 +7,9 @@ export const defaultGlobalContext: GlobalContextType = {
   CompSyncFusionGrid: {
     [DataInstancesMap.superAdminClients]: {
       loadData: undefined
+    },
+    [DataInstancesMap.superAdminRoles]: {
+      loadData: undefined
     }
   }
 }

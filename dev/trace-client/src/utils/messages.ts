@@ -18,6 +18,7 @@ const Messages = {
   errMustHaveOneSpecialChar: 'Must have a special character',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
+  errSuperAdminRoleNameExists:"Super admin role name alrady exists",
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
@@ -30,6 +31,7 @@ const Messages = {
   messFailure: 'Failure',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
+  messRoleName:'Role name should be a string without any special character',
   messSuccess: 'Successfull',
   messUserNameEmailHelper:
     'At least 4 characters long | no space | no special char',

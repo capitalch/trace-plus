@@ -1,8 +1,10 @@
 export const SqlIdsMap = {
   allClients: 'get_all_clients',
+  allRoles:'get_all_roles',
+  allSecuredControls:'get_all_secured_controls',
   getClientOnClientCode: 'get_client_on_clientCode',
   getClientOnClientName: 'get_client_on_clientName',
-  allRoles:'get_all_roles',
+  getSuperAdminRoleOnRoleName: 'get_super_admin_role_on_role_name',
   superAdminDashBoard: 'get_super_admin_dashboard',
   testConnection:'test_connection',
 }

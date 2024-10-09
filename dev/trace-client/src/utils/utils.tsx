@@ -13,7 +13,7 @@ export const Utils: UtilsType = {
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
     showAppLoader: showAppLoader,
-    showConfirmDialog: showConfirmDialog,
+    showDeleteConfirmDialog: showDeleteConfirmDialog,
     showErrorMessage: showErrorMessage,
     showHideModalDialogA: showHideModalDialogA,
     showHideModalDialogB: showHideModalDialogB,
@@ -88,9 +88,9 @@ function showAppLoader(val: boolean) {
     ibukiEmit('SHOW-APP-LOADER', val)
 }
 
-function showConfirmDialog(onConfirm: () => void) {
+function showDeleteConfirmDialog(onConfirm: () => void) {
     Swal.fire({
-        title: "Are you sure?",
+        title: "Are you sure to delete?",
         text: "You won't be able to revert this!",
         icon: "warning",
         showCancelButton: true,
@@ -238,7 +238,7 @@ type UtilsType = {
     getToken: () => string | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
-    showConfirmDialog: (onConfirm: () => void) => void
+    showDeleteConfirmDialog: (onConfirm: () => void) => void
     showFailureAlertMessage: (alertMessage: AlertMessageType) => void
     showSuccessAlertMessage: (alertMessage: AlertMessageType, callback?: () => void) => void
     showAppLoader: (val: boolean) => void

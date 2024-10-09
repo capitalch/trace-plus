@@ -1,11 +1,27 @@
 class SqlSecurity:
 
     get_all_clients = """
-    with "noOfRows" as (values(%(noOfRows)s::int))
+        with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
             select * from "ClientM"
                 order by "id" DESC
                     limit (table "noOfRows")
+    """
+    
+    get_all_roles = """
+        with "noOfRows" as (values(%(noOfRows)s::int))
+        --with "noOfRows" as (values(null::int))
+            select * from "RoleM"
+                order by "id" DESC
+                    limit (table "noOfRows")
+    """
+    
+    get_all_secured_controls = """
+        with "noOfRows" as (values(%(noOfRows)s::int))
+            --with "noOfRows" as (values(null::int))
+                select * from "SecuredControlM"
+                    order by "id" DESC
+                        limit (table "noOfRows")
     """
 
     get_client_on_clientCode = """
@@ -57,6 +73,13 @@ class SqlSecurity:
             ) as "jsonResult"
     """
 
+    get_super_admin_role_on_role_name = """
+        with "roleName" as (values(%(roleName)s))
+        --with "roleName" as (values('manager'))
+            select 1 as "roleName" from "RoleM"
+                where lower("roleName") = (table "roleName")
+    """
+    
     does_user_email_exist = """
         with "email" as (values(%(email)s))
             --with "email" as (values('capitalch@gmail.com'))

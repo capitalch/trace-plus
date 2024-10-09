@@ -10,7 +10,7 @@ import { IconDelete } from "../../icons/icon-delete";
 import { IconPreview } from "../../icons/icon-preview";
 import { Button } from "primereact/button";
 
-export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, }: CompSyncFusionGridType) {
+export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     let lastNoOfRows = selectedLastNoOfRows
@@ -96,6 +96,15 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
                 width={12}
             />)
         }
+        if (hasIndexColumn) {
+            colDirectives.unshift(<ColumnDirective
+                key='#'
+                field=''
+                headerText='#'
+                template={indexColumnTemplate}
+                width={12}
+            />)
+        }
         return (colDirectives)
     }
 
@@ -132,6 +141,11 @@ export function useCompSyncFusionGrid({ aggregates, columns, instance, isLoadOnI
                 <IconEdit className="m-auto mt-1 h-5 w-5 text-green-600" />
             </Button>
         )
+    }
+
+    function indexColumnTemplate(props:any) {
+        const idx: number = +props.index + 1
+        return(idx)
     }
 
 

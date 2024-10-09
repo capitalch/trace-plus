@@ -95,7 +95,7 @@ export function SuperAdminClients() {
             tableName: 'ClientM',
             deletedIds: [id]
         })
-        Utils.showConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
+        Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
         async function doDelete() {
             try {
                 await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)

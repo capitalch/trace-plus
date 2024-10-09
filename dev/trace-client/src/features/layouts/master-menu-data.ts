@@ -301,7 +301,7 @@ export const MasterMenuData: MenuDataType = {
       icon: IconSecuredControls,
       iconColorClass: 'text-red-500',
       children: [],
-      path: '/blogs'
+      path: '/super-admin-secured-controls'
     },
     {
       id: '16',

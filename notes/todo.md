@@ -1,9 +1,21 @@
 ## To do
-- Delete
-	- Server
-		- Graphql genericUpdate
-	- Client
-		- map Graphql
+- Secured controls
+	- View
+	- Add
+	- edit
+	- Delete
+
+- Roles
+																							- Grid view
+																							- edit
+																							- delete
+																							- new
+																							- grid header
+																						- Delete
+																							- Server
+																								- Graphql genericUpdate
+																							- Client
+																								- map Graphql
 - UI correction: Label Super admin user. Horizontal scrollbar should not come
 																								- External DB
 

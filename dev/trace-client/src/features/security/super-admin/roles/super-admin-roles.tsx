@@ -1,48 +1,103 @@
-// import { useContext } from "react";
-// import { GlobalContextType } from "../../../../app/global-context";
+import { useContext } from "react";
+import { GlobalContextType } from "../../../../app/global-context";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
-// import { GlobalContext } from "../../../../App";
+import { GlobalContext } from "../../../../App";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SuperAdminRolesNewRoleButton } from "./super-admin-roles-new-role-button";
+import { Utils } from "../../../../utils/utils";
+import { SuperAdminEditNewRole } from "./super-admin-edit-new-role";
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { Messages } from "../../../../utils/messages";
 
 export function SuperAdminRoles() {
-    // const context: GlobalContextType = useContext(GlobalContext)
+    const context: GlobalContextType = useContext(GlobalContext)
     const instance = DataInstancesMap.superAdminRoles //Grid
-    return (<CompContentContainer title='Super Admin Roles'>
-        <CompSyncFusionGridToolbar title="Roles view" isLastNoOfRows={true} instance={instance} />
+    return (<CompContentContainer title='Super admin roles'>
+        <CompSyncFusionGridToolbar
+            CustomControl={() => <SuperAdminRolesNewRoleButton dataInstance={instance} />}
+            title="Roles view"
+            isLastNoOfRows={true}
+            instance={instance} />
         <CompSyncFusionGrid
             className="mt-4"
             aggregates={getAggregates()}
             columns={getColumns()}
+            hasIndexColumn={true}
             instance={instance}
             rowHeight={40}
             sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
             sqlId={SqlIdsMap.allRoles}
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
-        // onPreview={handleOnPreview}
         />
     </CompContentContainer>);
 
     function getAggregates(): SyncFusionAggregateType[] {
         return ([
-            // { type: 'Count', field: 'clientCode', format: 'N0', footerTemplate: clientCodeAggrTemplate }
+            { type: 'Count', field: 'roleName', format: 'N0', footerTemplate: roleNameAggrTemplate }
         ])
     }
 
     function getColumns(): SyncFusionGridColumnType[] {
-        return ([])
+        return ([
+            {
+                field: 'roleName',
+                headerText: 'Role name',
+                type: 'string',
+                width: 40,
+            },
+            {
+                field: 'descr',
+                headerText: 'Description',
+                type: 'string',
+                // width: 80,
+            },
+            {
+                field: 'rank',
+                headerText: 'Rank',
+                type: 'number',
+                width: 40,
+            },
+        ])
     }
 
     async function handleOnDelete(id: string) {
-        console.log(id)
+        const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
+            tableName: 'RoleM',
+            deletedIds: [id]
+        })
+        Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
+        async function doDelete() {
+            try {
+                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)
+                Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }, () => {
+                    context.CompSyncFusionGrid[instance].loadData() // this is executed when OK button is pressed on the alert message
+                })
+            } catch (e: any) {
+                Utils.showFailureAlertMessage({ message: e?.message || '', title: 'Failed' })
+            }
+        }
     }
 
     async function handleOnEdit(props: any) {
-        console.log(props)
+        Utils.showHideModalDialogA({
+            title: 'Edit super admin role',
+            isOpen: true,
+            element: <SuperAdminEditNewRole
+                dataInstance={instance}
+                descr={props.descr}
+                id={props.id}
+                roleName={props.roleName}
+            />
+        })
+    }
+
+    function roleNameAggrTemplate(props: any) {
+        return (<span><b>Count: {props.Count}</b></span>)
     }
 }
 

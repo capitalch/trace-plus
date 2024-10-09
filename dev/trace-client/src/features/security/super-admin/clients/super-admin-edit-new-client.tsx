@@ -26,7 +26,7 @@ export function SuperAdminEditNewClient({
     , id
     , isActive
     , isExternalDb
-}: SuperAdminEditNewClientExtDbType) {
+}: SuperAdminEditNewClientType) {
     const [active, setActive] = useState(isActive || false)
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
@@ -163,7 +163,7 @@ export function SuperAdminEditNewClient({
         } catch (e: any) { // Error handling allready done in mutateGraphQL
             console.log(e.message)
         } finally {
-            // Utils.showAppLoader(false)
+            Utils.showAppLoader(false)
         }
     }
 
@@ -227,7 +227,7 @@ type FormDataType = {
     isExternalDb?: boolean
 }
 
-type SuperAdminEditNewClientExtDbType = {
+type SuperAdminEditNewClientType = {
     dataInstance: string
     clientCode?: string | undefined
     clientName?: string

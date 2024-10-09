@@ -279,9 +279,7 @@ export function SuperAdminEditNewClientExtDatabase({
                 <div className='flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-                {/* <Button>Prime react</Button> */}
-                {/* <button type="button" className="bg-slate-300" onClick={handleTestDbConnection}>Test conn</button> */}
-                <span>
+               <span>
                     {showServerValidationError()}
                 </span>
             </div>
@@ -378,7 +376,7 @@ export function SuperAdminEditNewClientExtDatabase({
         } catch (e: any) { // Error handling allready done in mutateGraphQL
             console.log(e.message)
         } finally {
-            // Utils.showAppLoader(false)
+            Utils.showAppLoader(false)
         }
     }
 
@@ -452,22 +450,8 @@ type SuperAdminEditNewClientExtDatabaseType = {
     clientCode?: string
     clientName?: string
     dbName?: string
-    dbParams: any
-    // encodedDbParams: string
+    dbParams?: any
     id?: string
-    isActive: boolean
+    isActive?: boolean
     isExternalDb?: boolean
 }
-
-// const data: any = getValues()
-
-// const isEmpty: boolean = _.isEmpty(data.dbName)
-//     && _.isEmpty(data.host)
-//     && _.isEmpty(data.user)
-//     && _.isEmpty(data.password)
-//     && _.isEmpty(data.port)
-
-// const isInValiduserName = getFieldState('user').invalid
-// const isInValidpassword = getFieldState('password').invalid
-// const isInValidPort = getFieldState('port').invalid
-// trigger(['dbName', 'host', 'user', 'password', 'port'])
