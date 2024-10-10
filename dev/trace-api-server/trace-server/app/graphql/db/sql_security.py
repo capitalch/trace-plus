@@ -1,5 +1,24 @@
 class SqlSecurity:
 
+    get_all_admin_users = """
+    with "noOfRows" as (values(%(noOfRows)s::int))
+        --with "noOfRows" as (values(null::int))
+            select "clientName"
+				, "uid"
+				, "userName"
+				, "mobileNo"
+				, "userEmail"
+				, "remarks"
+				, u."isActive"
+				, u."timestamp"
+			from "UserM" u
+				join "ClientM" c
+					on c.id = u."clientId"
+				where "isAdminUser"
+                order by u."id" DESC
+                    limit (table "noOfRows")
+    """
+    
     get_all_clients = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
@@ -7,7 +26,7 @@ class SqlSecurity:
                 order by "id" DESC
                     limit (table "noOfRows")
     """
-    
+
     get_all_roles = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
@@ -15,7 +34,7 @@ class SqlSecurity:
                 order by "id" DESC
                     limit (table "noOfRows")
     """
-    
+
     get_all_secured_controls = """
         with "noOfRows" as (values(%(noOfRows)s::int))
             --with "noOfRows" as (values(null::int))
@@ -73,13 +92,20 @@ class SqlSecurity:
             ) as "jsonResult"
     """
 
+    get_super_admin_control_on_control_name = """
+        with "controlName" as (values(%(controlName)s))
+        --with "controlName" as (values('vouchers-journal'))
+            select 1 as "controlName" from "SecuredControlM"
+                where lower("controlName") = (table "controlName")
+    """
+    
     get_super_admin_role_on_role_name = """
         with "roleName" as (values(%(roleName)s))
         --with "roleName" as (values('manager'))
             select 1 as "roleName" from "RoleM"
                 where lower("roleName") = (table "roleName")
     """
-    
+
     does_user_email_exist = """
         with "email" as (values(%(email)s))
             --with "email" as (values('capitalch@gmail.com'))
@@ -128,6 +154,7 @@ class SqlSecurity:
     test_connection = """
         select 'ok' as "connection"
     """
+
 
 allSqls = {
     "sql1": """with cte1 as (

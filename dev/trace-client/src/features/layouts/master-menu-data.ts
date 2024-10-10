@@ -309,7 +309,7 @@ export const MasterMenuData: MenuDataType = {
       icon: IconAdminUsers,
       iconColorClass: 'text-red-500',
       children: [],
-      path: '/blogs'
+      path: '/super-admin-admin-users'
     }
   ]
 }

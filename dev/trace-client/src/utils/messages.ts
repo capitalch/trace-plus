@@ -11,6 +11,7 @@ const Messages = {
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
   errInputMustBeUrl: 'Input must be a valid URL',
+  errInvalidEmail: 'Invalid email',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errMustBePositive: 'Must be a positive number',
   errMustHaveOneDigit: 'Should have a digit',
@@ -19,6 +20,7 @@ const Messages = {
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
   errSuperAdminRoleNameExists:"Super admin role name alrady exists",
+  errSuperAdminControlNameExists:"Super admin control name already exists",
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
@@ -32,6 +34,7 @@ const Messages = {
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
   messRoleName:'Role name should be a string without any special character',
+  messSecuredControlName:'Secured control name should be a string without any space or special character',
   messSuccess: 'Successfull',
   messUserNameEmailHelper:
     'At least 4 characters long | no space | no special char',

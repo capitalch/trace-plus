@@ -1,9 +1,15 @@
 ## To do
-- Secured controls
-	- View
+- Check if no of rows is passed as arg from client
+- Admin users
+																							- View
 	- Add
 	- edit
 	- Delete
+- Secured controls
+																							- View
+																							- Add
+																							- edit
+																							- Delete
 
 - Roles
 																							- Grid view

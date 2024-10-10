@@ -6,7 +6,7 @@ import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-h
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
-import { useContext, useEffect} from "react";
+import { useContext, useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
@@ -18,38 +18,57 @@ import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 
-export function SuperAdminEditNewRole({
-    descr,
-    roleName,
+export function SuperAdminEditNewSecuredControl({
+    controlName,
+    controlNo,
+    controlType,
     dataInstance,
+    descr,
     id,
-}: SuperAdminEditNewRoleType) {
-    const { checkNoSpecialChar } = useValidators();
+}: SuperAdminEditNewSecuredControlType) {
+    const { checkNoSpaceOrSpecialChar, shouldBePositive, shouldNotBeZero } = useValidators();
     const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
     });
     const context: GlobalContextType = useContext(GlobalContext);
 
-    const registerRoleName = register("roleName", {
-        required: Messages.errRequired,
-        validate: {
-            noSpecialChar: checkNoSpecialChar
+    const registerControlName = register("controlName", {
+        required: Messages.errRequired
+        , validate: {
+            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
         },
         onChange: (e: any) => {
-            ibukiDdebounceEmit(IbukiMessages["DEBOUNCE-ROLE-NAME"], { roleName: e.target.value });
+            ibukiDdebounceEmit(IbukiMessages["DEBOUNCE-SECURED-CONTROL-NAME"], { controlName: e.target.value });
         }
     });
 
-    const registerDescr = register("descr")
+    const registerControlNo = register("controlNo", {
+        required: Messages.errRequired
+        , validate: {
+            shouldNotBeZero: shouldNotBeZero,
+            shouldBePositive: shouldBePositive
+        }
+    });
+
+    const registerControlType = register("controlType", {
+        required: Messages.errRequired
+        , validate: {
+            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
+        },
+    });
+
+    const registerDescr = register("descr");
 
     useEffect(() => {
-        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-ROLE-NAME"], 1200).subscribe((d: any) => {
-            validateRoleNameAtServer(d.data);
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-SECURED-CONTROL-NAME"], 1200).subscribe((d: any) => {
+            validateControlNameAtServer(d.data);
         });
-        setValue("roleName", roleName || "");
+        setValue("controlName", controlName || "");
+        setValue("controlNo", controlNo || 0);
+        setValue("controlType", controlType || "");
         setValue("id", id);
-        setValue("descr", descr || undefined)
+        setValue("descr", descr || undefined);
 
         return () => {
             subs1.unsubscribe();
@@ -60,27 +79,47 @@ export function SuperAdminEditNewRole({
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-2 w-auto min-w-72">
 
-                {/* Role name */}
+                {/* Control name */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Super admin role name <WidgetAstrix /></span>
-                    <input type="text" placeholder="e.g. Administrator" autoComplete="off"
+                    <span className="font-bold">Control name <WidgetAstrix /></span>
+                    <input type="text" placeholder="e.g. ViewReports" autoComplete="off"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
-                        {...registerRoleName}
+                        {...registerControlName}
                     />
                     <span className="flex justify-between">
-                        {(errors.roleName)
-                            ? <WidgetFormErrorMessage errorMessage={errors.roleName.message} />
+                        {errors.controlName
+                            ? <WidgetFormErrorMessage errorMessage={errors.controlName.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <WidgetTooltip title={Messages.messRoleName} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                        <WidgetTooltip title={Messages.messSecuredControlName} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
                             <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
                         </WidgetTooltip>
                     </span>
                 </label>
 
+                {/* Control No */}
+                <label className="flex flex-col font-medium text-primary-400">
+                    <span className="font-bold">Control number <WidgetAstrix /></span>
+                    <input type="number" placeholder="e.g. 001" autoComplete="off" onFocus={(event) => event.target.select()}
+                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        {...registerControlNo}
+                    />
+                    {errors.controlNo && <WidgetFormErrorMessage errorMessage={errors.controlNo.message} />}
+                </label>
+
+                {/* Control Type */}
+                <label className="flex flex-col font-medium text-primary-400">
+                    <span className="font-bold">Control type <WidgetAstrix /></span>
+                    <input type="text" placeholder="e.g. menu" autoComplete="off"
+                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        {...registerControlType}
+                    />
+                    {errors.controlType && <WidgetFormErrorMessage errorMessage={errors.controlType.message} />}
+                </label>
+
                 {/* Description */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Super admin role Description</span>
-                    <input type="text" placeholder="e.g. Has all powers to insert, modify and delete" autoComplete="off"
+                    <span className="font-bold">Control description</span>
+                    <input type="text" placeholder="e.g. Allows viewing of all reports" autoComplete="off"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
                         {...registerDescr}
                     />
@@ -99,7 +138,7 @@ export function SuperAdminEditNewRole({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: "RoleM",
+            tableName: "SecuredControlM",
             xData: {
                 ...data,
             }
@@ -112,51 +151,58 @@ export function SuperAdminEditNewRole({
                 isOpen: false,
             });
             context.CompSyncFusionGrid[dataInstance].loadData();
-            Utils.showSaveMessage()
+            Utils.showSaveMessage();
         } catch (e: any) {
             console.log(e.message);
         }
+        // finally {
+        //     Utils.showAppLoader(false);
+        // }
     }
 
     function showServerValidationError() {
         let Ret = <></>;
-        if (errors?.root?.roleName) {
-            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.roleName.message} />;
+        if (errors?.root?.controlName) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.controlName.message} />;
         } else {
             Ret = <WidgetFormHelperText helperText="&nbsp;" />;
         }
         return Ret;
     }
 
-    async function validateRoleNameAtServer(value: any) {
+    async function validateControlNameAtServer(value: any) {
         const res: any = await Utils.queryGraphQL(
             GraphQLQueriesMap.genericQuery(
                 GLOBAL_SECURITY_DATABASE_NAME,
                 {
-                    sqlId: SqlIdsMap.getSuperAdminRoleOnRoleName,
-                    sqlArgs: { roleName: value?.roleName }
+                    sqlId: SqlIdsMap.getSuperAdminControlOnControlName,
+                    sqlArgs: { controlName: value?.controlName }
                 }),
             GraphQLQueriesMap.genericQuery.name);
         if (res?.data?.genericQuery[0]) {
-            setError("root.roleName", {
+            setError("root.controlName", {
                 type: "serverError",
-                message: Messages.errSuperAdminRoleNameExists
+                message: Messages.errSuperAdminControlNameExists
             });
         } else {
-            clearErrors("root.roleName");
+            clearErrors("root.controlName");
         }
     }
 }
 
 type FormDataType = {
-    descr: string | undefined
-    roleName: string;
+    descr: string | undefined;
+    controlName: string;
+    controlNo: number;
+    controlType: string;
     id?: string;
 };
 
-type SuperAdminEditNewRoleType = {
+type SuperAdminEditNewSecuredControlType = {
     dataInstance: string;
-    descr?: string | undefined
-    roleName?: string;
+    descr?: string | undefined;
+    controlName?: string;
+    controlNo?: number;
+    controlType?: string;
     id?: string;
 };

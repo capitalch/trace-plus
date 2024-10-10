@@ -156,6 +156,6 @@ export function SuperAdminClients() {
     }
 
     function clientCodeAggrTemplate(props: any) {
-        return (<span><b>Count: {props.Count}</b></span>)
+        return (<span className="text-xs">Count: {props.Count}</span>)
     }
 }

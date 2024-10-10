@@ -97,7 +97,7 @@ export function SuperAdminRoles() {
     }
 
     function roleNameAggrTemplate(props: any) {
-        return (<span><b>Count: {props.Count}</b></span>)
+        return (<span className="text-xs">Count: {props.Count}</span>)
     }
 }
 

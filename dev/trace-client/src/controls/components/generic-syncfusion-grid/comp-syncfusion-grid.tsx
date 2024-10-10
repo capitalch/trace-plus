@@ -11,7 +11,7 @@ export function CompSyncFusionGrid({
     aggregates,
     className = '',
     columns,
-    hasIndexColumn= false,
+    hasIndexColumn = false,
     height,
     isLoadOnInit = true,
     instance,
@@ -28,6 +28,9 @@ export function CompSyncFusionGrid({
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
+        if (!context.CompSyncFusionGrid[instance]) {
+            context.CompSyncFusionGrid[instance] = { loadData: undefined, gridRef: undefined }
+        }
         context.CompSyncFusionGrid[instance].loadData = loadData
         context.CompSyncFusionGrid[instance].gridRef = gridRef
     }, [])
@@ -42,7 +45,7 @@ export function CompSyncFusionGrid({
         operator: 'contains'
     }
 
-        return (<GridComponent
+    return (<GridComponent
         enablePersistence={false}
         allowPdfExport={true}
         allowExcelExport={true}

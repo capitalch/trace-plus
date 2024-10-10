@@ -10,17 +10,18 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { Utils } from "../../../../utils/utils"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
-import { SuperAdminSecuredControlsNewControlButton } from "./super-admin-secured-controls-new-control-button"
-import { SuperAdminEditNewSecuredControl } from "./super-admin-edit-new-secured-control"
+import { SuperAdminNewAdminUserButton } from "./super-admin-new-admin-user-button"
+// import { SuperAdminSecuredControlsNewControlButton } from "./super-admin-secured-controls-new-control-button"
+// import { SuperAdminEditNewSecuredControl } from "./super-admin-edit-new-secured-control"
 
-export function SuperAdminSecuredControls() {
+export function SuperAdminAdminUsers() {
     const context: GlobalContextType = useContext(GlobalContext)
-    const instance = DataInstancesMap.superAdminSecuredControls //Grid
+    const instance = DataInstancesMap.superAdminAdminUsers //Grid
 
-    return (<CompContentContainer title='Super admin secured controls'>
+    return (<CompContentContainer title='Admin users'>
         <CompSyncFusionGridToolbar
-            CustomControl={() => <SuperAdminSecuredControlsNewControlButton dataInstance={instance} />}
-            title="Secured controls view"
+            CustomControl={() => <SuperAdminNewAdminUserButton dataInstance={instance} />}
+            title="Admin users view"
             isLastNoOfRows={true}
             instance={instance} />
         <CompSyncFusionGrid
@@ -31,7 +32,7 @@ export function SuperAdminSecuredControls() {
             instance={instance}
             rowHeight={40}
             sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
-            sqlId={SqlIdsMap.allSecuredControls}
+            sqlId={SqlIdsMap.allAdminUsers}
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
         />
@@ -39,34 +40,58 @@ export function SuperAdminSecuredControls() {
 
     function getAggregates(): SyncFusionAggregateType[] {
         return ([
-            { type: 'Count', field: 'controlName', format: 'N0', footerTemplate: controlNameAggrTemplate }
+            { type: 'Count', field: 'clientName', format: 'N0', footerTemplate: clientNameAggrTemplate }
         ])
     }
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
             {
-                field: 'controlName',
-                headerText: 'Control name',
+                field: 'clientName',
+                headerText: 'Client name',
                 type: 'string',
                 width: 40,
             },
             {
-                field: 'controlNo',
-                headerText: 'Control no',
+                field: 'uid',
+                headerText: 'Uid',
                 type: 'string',
                 width: 40,
             },
             {
-                field: 'controlType',
-                headerText: 'Control type',
+                field: 'userName',
+                headerText: 'User name',
                 type: 'string',
                 width: 40,
             },
             {
-                field: 'descr',
-                headerText: 'Description',
+                field: 'mobileNo',
+                headerText: 'Mobile no',
                 type: 'string',
+                width: 40,
+            },
+            {
+                field: 'userEmail',
+                headerText: 'Email',
+                type: 'string',
+                width: 40,
+            },
+            {
+                field: 'remarks',
+                headerText: 'Remarks',
+                type: 'string',
+            },
+            {
+                field: 'isActive',
+                headerText: 'Active',
+                type: 'boolean',
+                width: 40,
+            },
+            {
+                field: 'timestamp',
+                headerText: 'Timestamp',
+                type: 'string',
+                width: 40,
             },
         ])
     }
@@ -91,20 +116,20 @@ export function SuperAdminSecuredControls() {
 
     async function handleOnEdit(props: any) {
         Utils.showHideModalDialogA({
-            title: 'Edit secured control',
+            title: 'Edit admin user',
             isOpen: true,
-            element: <SuperAdminEditNewSecuredControl
-                controlName={props.controlName}
-                controlNo={props.controlNo}
-                controlType={props.controlType}
-                dataInstance={instance}
-                descr={props.descr}
-                id={props.id}
-            />
+            // element: <SuperAdminEditNewSecuredControl
+            //     controlName={props.controlName}
+            //     controlNo={props.controlNo}
+            //     controlType={props.controlType}
+            //     dataInstance={instance}
+            //     descr={props.descr}
+            //     id={props.id}
+            // />
         })
     }
 
-    function controlNameAggrTemplate(props: any) {
+    function clientNameAggrTemplate(props: any) {
         return (<span className="text-xs">Count: {props.Count}</span>)
     }
 }

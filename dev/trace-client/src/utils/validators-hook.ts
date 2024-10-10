@@ -1,7 +1,7 @@
 import { Messages } from './messages'
 
-function useValidators () {
-  function checkAtLeast8Chars (input: string) {
+function useValidators() {
+  function checkAtLeast8Chars(input: string) {
     let error = undefined
     if (input.length < 8) {
       error = Messages.errAtLeast8Chars
@@ -9,7 +9,15 @@ function useValidators () {
     return error
   }
 
-  function checkMustHaveOneDigit (input: string) {
+  function checkEmail(input: string) {
+    let error = undefined
+    if (!isValidEmail(input)) {
+      error = Messages.errInvalidEmail
+    }
+    return (error)
+  }
+
+  function checkMustHaveOneDigit(input: string) {
     let error = undefined
     if (input.search(/[0-9]/) < 0) {
       error = Messages.errMustHaveOneDigit
@@ -17,7 +25,7 @@ function useValidators () {
     return error
   }
 
-  function checkMustHaveOneLetter (input: string) {
+  function checkMustHaveOneLetter(input: string) {
     let error = undefined
     if (input.search(/[a-z]/i) < 0) {
       error = Messages.errMustHaveOneLetter
@@ -25,7 +33,7 @@ function useValidators () {
     return error
   }
 
-  function checkMustHaveOneSpecialChar (input: string) {
+  function checkMustHaveOneSpecialChar(input: string) {
     let error = undefined
     if (input.search(/[!@#\\$%\\^&\\*_`~]/) < 0) {
       error = Messages.errMustHaveOneSpecialChar
@@ -33,7 +41,7 @@ function useValidators () {
     return error
   }
 
-  function checkNoSpaceOrSpecialChar (input: string) {
+  function checkNoSpaceOrSpecialChar(input: string) {
     let error = undefined
     if (input.search(/^[\w-_]*$/) < 0) {
       error = Messages.errNoSpceOrSpecialChar
@@ -41,7 +49,7 @@ function useValidators () {
     return error
   }
 
-  function checkNoSpaceOrSpecialCharAllowDot (input: string) {
+  function checkNoSpaceOrSpecialCharAllowDot(input: string) {
     let error = undefined
     if (input.search(/^[\w-_.]*$/) < 0) {
       error = Messages.errNoSpceOrSpecialChar
@@ -49,7 +57,7 @@ function useValidators () {
     return error
   }
 
-  function checkNoSpecialChar (input: string) {
+  function checkNoSpecialChar(input: string) {
     let error = undefined
     if (input.search(/[^\w\s-_]/) > 0) {
       error = Messages.errNoSpecialChar
@@ -57,7 +65,7 @@ function useValidators () {
     return error
   }
 
-  function checkRequired (input: string) {
+  function checkRequired(input: string) {
     let error = undefined
     if (input.length === 0) {
       error = Messages.errRequired
@@ -65,7 +73,7 @@ function useValidators () {
     return error
   }
 
-  function checkPassword (input: string) {
+  function checkPassword(input: string) {
     const error =
       checkRequired(input) ||
       checkAtLeast8Chars(input) ||
@@ -75,7 +83,7 @@ function useValidators () {
     return error
   }
 
-  function checkUserNameOrEmail (input: string) {
+  function checkUserNameOrEmail(input: string) {
     //should be alphanumeric, non empty and no space in between or email
     let error = undefined
     if (!isValidEmail(input)) {
@@ -87,19 +95,19 @@ function useValidators () {
     return error
   }
 
-  function checkUrl (input: string) {
+  function checkUrl(input: string) {
     let error = undefined
     if (!input) {
       return error
     }
-    const regex =  /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/\S*)?$/
-    if(!regex.test(input)){
+    const regex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/\S*)?$/
+    if (!regex.test(input)) {
       error = Messages.errInputMustBeUrl
     }
     return error
   }
 
-  function shouldBePositive (input: number) {
+  function shouldBePositive(input: number) {
     let error = undefined
     const inp: number = +input
     if (inp < 0) {
@@ -108,7 +116,7 @@ function useValidators () {
     return error
   }
 
-  function shouldNotBeZero (input: number) {
+  function shouldNotBeZero(input: number) {
     let error = undefined
     const inp: number = +input
     if (inp === 0) {
@@ -118,6 +126,7 @@ function useValidators () {
   }
 
   return {
+    checkEmail,
     checkNoSpaceOrSpecialChar,
     checkNoSpaceOrSpecialCharAllowDot,
     checkNoSpecialChar,
@@ -129,7 +138,7 @@ function useValidators () {
   }
 
   // Helper methods
-  function isValidEmail (input: string) {
+  function isValidEmail(input: string) {
     const ret = input.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
     return ret
   }

@@ -9,6 +9,7 @@ import { SuperAdminDashboard } from "../../features/security/super-admin/dashboa
 import { SuperAdminClients } from "../../features/security/super-admin/clients/super-admin-clients";
 import { SuperAdminRoles } from "../../features/security/super-admin/roles/super-admin-roles";
 import { SuperAdminSecuredControls } from "../../features/security/super-admin/secured-controls/super-admin-secured-controls";
+import { SuperAdminAdminUsers } from "../../features/security/super-admin/admin-users/super-admin-admin-users";
 
 export const appRouter = createBrowserRouter([
     {
@@ -41,6 +42,10 @@ export const appRouter = createBrowserRouter([
             {
                 path:'super-admin-secured-controls',
                 element: <SuperAdminSecuredControls />
+            },
+            {
+                path:'super-admin-admin-users',
+                element: <SuperAdminAdminUsers />
             }
             // {
             //     path: 'change-uid',
