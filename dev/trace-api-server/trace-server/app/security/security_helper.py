@@ -1,20 +1,65 @@
-from fastapi import Depends, status
+from fastapi import Depends, status, Request
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.dependencies import AppHttpException, UserClass
 from app.messages import Messages
 from app.config import Config
 from app.security.security_utils import create_access_token, verify_password
-# from app.graphql.db.sql_security import SqlSerurity
+from app.graphql.db.sql_security import SqlSecurity
+
 # import json
 from app.graphql.db.helpers.psycopg_async_helper import exec_sql
 
-async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
+
+async def login_clients_helper(request: Request):
+    body = await request.json()
+    criteria = body.get("criteria")
+
+    if criteria:
+        sqlArgs = {"criteria": criteria}
+        sql = SqlSecurity.get_clients_on_criteria
+        res = await exec_sql(sql=sql, sqlArgs=sqlArgs)
+        return JSONResponse(content=res)
+    else:
+        return JSONResponse(content=[])
+
+
+# async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
+#     """
+#     returns access token along with user details. Raises exception if user does not exist
+#     """
+#     try:
+#         username = formData.username.strip()
+#         password = formData.password.strip()
+#         if (not username) or (not password):
+#             raise AppHttpException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 error_code="e1003",
+#                 message=Messages.err_missing_username_password,
+#             )
+#         bundle = get_super_admin_bundle(username, password)
+#         if bundle is None:
+#             bundle = await get_other_user_bundle(username, password)
+#         if bundle is None:
+#             raise AppHttpException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 error_code="e1004",
+#                 message=Messages.err_invalid_username_or_password,
+#             )
+#         return bundle
+#     except AppHttpException as e:
+#         raise e
+#     except Exception as e:
+#         raise AppHttpException(
+#             status_code=status.HTTP_401_UNAUTHORIZED, error_code="e1004", message=str(e)
+#         )
+
+
+async def login_helper(clientId, username, password):
     """
     returns access token along with user details. Raises exception if user does not exist
     """
     try:
-        username = formData.username.strip()
-        password = formData.password.strip()
         if (not username) or (not password):
             raise AppHttpException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -23,7 +68,7 @@ async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
             )
         bundle = get_super_admin_bundle(username, password)
         if bundle is None:
-            bundle = await get_other_user_bundle(username, password)
+            bundle = await get_other_user_bundle(clientId, username, password)
         if bundle is None:
             raise AppHttpException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -47,17 +92,16 @@ def get_bundle(user: UserClass):
     return {"accessToken": accessToken, "payload": user}
 
 
-async def get_other_user_bundle(uidOrEmail: str, password: str):
+async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
     bundle = None
-
+    # Do modifications for clientId
     details: list = await exec_sql(
-        sql=SqlSerurity.get_user_details,
+        sql=SqlSecurity.get_user_details,
         sqlArgs={"uidOrEmail": uidOrEmail},
     )
 
     if details:
         jsonResultDict = details[0]["jsonResult"]
-        # jsonResultDict = json.loads(jsonResult) // in case of asyncpg
         userDetails = jsonResultDict.get("userDetails")
         businessUnits = jsonResultDict.get("businessUnits")
         role = jsonResultDict.get("role")

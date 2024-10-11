@@ -11,6 +11,7 @@ import { Utils } from "../../../../utils/utils"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
 import { SuperAdminNewAdminUserButton } from "./super-admin-new-admin-user-button"
+import { SuperAdminEditNewAdminUser } from "./super-admin-edit-new-admin-user"
 // import { SuperAdminSecuredControlsNewControlButton } from "./super-admin-secured-controls-new-control-button"
 // import { SuperAdminEditNewSecuredControl } from "./super-admin-edit-new-secured-control"
 
@@ -50,7 +51,7 @@ export function SuperAdminAdminUsers() {
                 field: 'clientName',
                 headerText: 'Client name',
                 type: 'string',
-                width: 40,
+                width: 50,
             },
             {
                 field: 'uid',
@@ -62,11 +63,11 @@ export function SuperAdminAdminUsers() {
                 field: 'userName',
                 headerText: 'User name',
                 type: 'string',
-                width: 40,
+                width: 60,
             },
             {
                 field: 'mobileNo',
-                headerText: 'Mobile no',
+                headerText: 'Mobile',
                 type: 'string',
                 width: 40,
             },
@@ -74,31 +75,33 @@ export function SuperAdminAdminUsers() {
                 field: 'userEmail',
                 headerText: 'Email',
                 type: 'string',
-                width: 40,
+                width: 60,
             },
             {
-                field: 'remarks',
-                headerText: 'Remarks',
-                type: 'string',
+                field: 'descr',
+                headerText: 'Description',
+                type: 'string'
             },
             {
                 field: 'isActive',
                 headerText: 'Active',
+                template: isActiveTemplate,
                 type: 'boolean',
-                width: 40,
+                width: 35,
             },
             {
                 field: 'timestamp',
                 headerText: 'Timestamp',
-                type: 'string',
-                width: 40,
+                type: 'datetime',
+                width: 70,
+                format: 'dd MMM yyyy HH:mm'
             },
         ])
     }
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: 'SecuredControlM',
+            tableName: 'UserM',
             deletedIds: [id]
         })
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
@@ -118,15 +121,21 @@ export function SuperAdminAdminUsers() {
         Utils.showHideModalDialogA({
             title: 'Edit admin user',
             isOpen: true,
-            // element: <SuperAdminEditNewSecuredControl
-            //     controlName={props.controlName}
-            //     controlNo={props.controlNo}
-            //     controlType={props.controlType}
-            //     dataInstance={instance}
-            //     descr={props.descr}
-            //     id={props.id}
-            // />
+            element: <SuperAdminEditNewAdminUser
+                dataInstance={instance}
+                clientId={props.clientId}
+                descr={props.descr}
+                id={props.id}
+                isActive={props.isActive}
+                mobileNo={props.mobileNo}
+                userEmail={props.userEmail}
+                userName={props.userName}
+            />
         })
+    }
+
+    function isActiveTemplate(props: any) {
+        return (<input type="checkbox" readOnly checked={props.isActive} />)
     }
 
     function clientNameAggrTemplate(props: any) {

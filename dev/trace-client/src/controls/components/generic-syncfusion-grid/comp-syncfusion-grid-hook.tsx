@@ -94,6 +94,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, ins
                 headerText=''
                 template={editTemplate}
                 width={12}
+                textAlign="Center"
             />)
         }
         if (hasIndexColumn) {

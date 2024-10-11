@@ -3,6 +3,11 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 09-10-2024 - 11-10-2024
+	- Completed SuperAdmin all items
+		- Roles
+		- Secured controls
+		- Admin users
 # 01-10-2024 - 08-10-2024
 	- Revisited apollo graphQL, Fastapi and other concepts
 	- Corrected error handling and token management at server

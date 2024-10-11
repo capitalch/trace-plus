@@ -5,7 +5,7 @@ export enum UserTypesEnum {
 }
 
 export type TraceDataObjectType = {
-  tableName: string
+  tableName?: string
   fkeyName?: string
   xData: XDataObjectType[] | XDataObjectType
 }

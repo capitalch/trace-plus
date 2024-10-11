@@ -11,7 +11,9 @@ const Messages = {
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
   errInputMustBeUrl: 'Input must be a valid URL',
+  errInvalidClientName: 'Invalid client name',
   errInvalidEmail: 'Invalid email',
+  errInvalidMobileNo: 'Invalid mobile no',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errMustBePositive: 'Must be a positive number',
   errMustHaveOneDigit: 'Should have a digit',
@@ -19,13 +21,14 @@ const Messages = {
   errMustHaveOneSpecialChar: 'Must have a special character',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
-  errSuperAdminRoleNameExists:"Super admin role name alrady exists",
-  errSuperAdminControlNameExists:"Super admin control name already exists",
+  errSuperAdminRoleNameExists: "Super admin role name alrady exists",
+  errSuperAdminControlNameExists: "Super admin control name already exists",
+  errEmailExistsForClient:'This email already exists for the selected client',
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
   messClientCode:
-    'Client code should be between 6 characters and 10 characters',
+    'Client code should be between 6 characters and 30 characters',
   messClientName:
     'Client name should be between 6 characters and 50 characters',
   messDbConnFailure: 'Database connection was failed',
@@ -33,12 +36,13 @@ const Messages = {
   messFailure: 'Failure',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
-  messRoleName:'Role name should be a string without any special character',
-  messSecuredControlName:'Secured control name should be a string without any space or special character',
+  messRoleName: 'Role name should be a string without any special character',
+  messSecuredControlName: 'Secured control name should be a string without any space or special character',
+  messSelectClientName: 'Type first 6 chars to select a client name',
   messSuccess: 'Successfull',
   messUserNameEmailHelper:
     'At least 4 characters long | no space | no special char',
-  
+
 }
 
 export { Messages }

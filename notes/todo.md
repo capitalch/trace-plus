@@ -1,17 +1,26 @@
 ## To do
-- Check if no of rows is passed as arg from client
-- Admin users
+																						- Login to use client id concept
+																							- Typeahead implement
+																							- Axios query post
+																							- UI
+																							- client logic
+																							- server logic
+																						- Check if no of rows is passed as arg from client
+																					- Admin users
 																							- View
-	- Add
-	- edit
-	- Delete
-- Secured controls
+																						- Add
+																							- server check user email
+																						- edit
+																						- Delete
+																						- Save
+																							- custom logic for server
+																					- Secured controls
 																							- View
 																							- Add
 																							- edit
 																							- Delete
 
-- Roles
+																					- Roles
 																							- Grid view
 																							- edit
 																							- delete

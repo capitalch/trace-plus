@@ -11,6 +11,7 @@ from app.graphql.graphql_helper import (
     generic_query_helper,
     generic_update_helper,
     update_client_helper,
+    update_user_helper,
     decode_ext_db_params_helper,
 )
 
@@ -38,6 +39,9 @@ async def generic_update(_, info, value=""):
 async def update_client(_, info, value=""):
     return await update_client_helper(info, value)
 
+@mutation.field("updateUser")
+async def update_user(_, info, value=""):
+    return await update_user_helper(info, value)
 
 @query.field("hello")
 async def hello(_, info):

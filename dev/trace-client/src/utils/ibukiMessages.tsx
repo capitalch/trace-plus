@@ -9,6 +9,10 @@ export const IbukiMessages = {
     'SHOW-MODAL-DIALOG-': crypto.randomUUID(),
 }
 
-// type IbukiMessageType = {
-//     [key: string]: string
-// }
+type IbukiMessageType = {
+    [key: string]: string
+}
+
+interface IbukiMessageT  {
+    [key: string]: string
+}

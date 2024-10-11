@@ -45,45 +45,52 @@ export function CompSyncFusionGrid({
         operator: 'contains'
     }
 
-    return (<GridComponent
-        enablePersistence={false}
-        allowPdfExport={true}
-        allowExcelExport={true}
-        allowResizing={true}
-        allowSorting={true}
-        allowSelection={true}
-        allowTextWrap={true}
-        className={className}
-        created={onCreated}
-        dataSource={selectedData?.genericQuery || []}
-        gridLines="Both"
-        ref={gridRef}
-        rowHeight={rowHeight}
-        searchSettings={searchOptions}
-        height={height}>
-        <ColumnsDirective>
-            {getColumnDirectives()}
-        </ColumnsDirective>
-        <AggregatesDirective>
-            <AggregateDirective>
-                <AggregateColumnsDirective>
-                    {getAggrColDirectives()}
-                </AggregateColumnsDirective>
-            </AggregateDirective>
-        </AggregatesDirective>
-        <Inject services={[
-            Aggregate
-            , ExcelExport
-            , InfiniteScroll
-            , PdfExport
-            , Resize
-            , Search
-            , Selection
-            , Sort
-            , Toolbar
-        ]} />
+    return (
+        //The div container is important. The minWidth works with style only
+        <div style={{minWidth:'1200px'}}> 
+            <GridComponent
+                clipMode="EllipsisWithTooltip"
+                enablePersistence={false}
+                allowPdfExport={true}
+                allowExcelExport={true}
+                allowResizing={true}
+                allowSorting={true}
+                allowSelection={true}
+                allowTextWrap={true}
+                className={className}
+                created={onCreated}
+                dataSource={selectedData?.genericQuery || []}
+                gridLines="Both"
+                ref={gridRef}
+                // width='90vw'
+                rowHeight={rowHeight}
+                searchSettings={searchOptions}
+                height={height}>
+                <ColumnsDirective>
+                    {getColumnDirectives()}
+                </ColumnsDirective>
+                <AggregatesDirective>
+                    <AggregateDirective>
+                        <AggregateColumnsDirective>
+                            {getAggrColDirectives()}
+                        </AggregateColumnsDirective>
+                    </AggregateDirective>
+                </AggregatesDirective>
+                <Inject services={[
+                    Aggregate
+                    , ExcelExport
+                    , InfiniteScroll
+                    , PdfExport
+                    , Resize
+                    , Search
+                    , Selection
+                    , Sort
+                    , Toolbar
+                ]} />
 
-    </GridComponent>)
+            </GridComponent>
+        </div>
+    )
 
     function onCreated() {
         const state: RootStateType = Utils.getReduxState()

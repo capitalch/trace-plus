@@ -17,6 +17,15 @@ function useValidators() {
     return (error)
   }
 
+  function checkMobileNo(input: string) {
+    let error = undefined
+    const regex = /^(\+91[\-\s]?)?[6-9]\d{9}$/
+    if (!regex.test(input)) {
+      error = Messages.errInvalidMobileNo
+    }
+    return (error)
+  }
+
   function checkMustHaveOneDigit(input: string) {
     let error = undefined
     if (input.search(/[0-9]/) < 0) {
@@ -127,6 +136,7 @@ function useValidators() {
 
   return {
     checkEmail,
+    checkMobileNo,
     checkNoSpaceOrSpecialChar,
     checkNoSpaceOrSpecialCharAllowDot,
     checkNoSpecialChar,

@@ -7,6 +7,7 @@ export const GraphQLQueriesMap = {
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
   updateClient: updateClient,
+  updateUser: updateUser,
   hello: hello
 }
 
@@ -46,6 +47,16 @@ function updateClient(dbName: string, val: TraceDataObjectType) {
     `
 }
 
+function updateUser(dbName: string, val: TraceDataObjectType) {
+  const value = encodeObj(val)
+  return gql`
+        mutation ${dbName} {
+            updateUser(value:"${value}")
+        }
+    `
+}
+
+
 function hello() {
   return gql`
     query hello
@@ -64,15 +75,15 @@ export type GraphQLQueryArgsType = {
   dbParams?: { [key: string]: string | number }
   [key: string]: any
   sqlId: string
-  sqlArgs?: { [key: string]: string | number }
+  sqlArgs?: { [key: string]: any }
 }
 
 export type GraphQLUpdateArgsType = {
-  dbParams?: { [key: string]: string | number }
+  dbParams?: { [key: string]: any }
   [key: string]: any
   // sqlObj: {
-    tableName: string
-    deletedIds?: [string]
+  tableName?: string
+  deletedIds?: [string]
   // }
 
   // sqlId: string

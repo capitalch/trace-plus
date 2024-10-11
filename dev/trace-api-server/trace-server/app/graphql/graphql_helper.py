@@ -2,8 +2,11 @@ import datetime
 import json
 from fastapi import status, Request
 from urllib.parse import unquote
+from app.config import Config
 from app.dependencies import AppHttpException
-from app.messages import Messages
+from app.security.security_utils import getRandomUserId, getRandomPassword, getPasswordHash
+from app.messages import Messages,EmailMessages
+from app.mail import send_email
 from .db.sql_security import allSqls
 from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
@@ -113,6 +116,52 @@ async def update_client_helper(info, value: str):
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
+async def update_user_helper(info, value:str):
+    data = {}
+    try:
+        valueString = unquote(value)
+        request = info.context.get("request", None)
+        requestJson = await request.json()
+        operationName = requestJson.get("operationName", None)
+        sqlObj = json.loads(valueString)
+        xData = sqlObj.get("xData", None)
+        pwd = ''
+        isUpdate = True
+        if (xData):
+            id = xData.get('id', None)
+            if (id is None):
+                isUpdate = False
+                xData['uid'] = getRandomUserId()
+                pwd = getRandomPassword()
+                tHash = getPasswordHash(pwd)
+                xData['hash'] = tHash
+        data = await exec_sql_object(dbName=operationName, sqlObject=sqlObj)
+        uid = xData.get('uid', None)
+        email = xData.get('userEmail', None)
+        userName = xData.get('userName', 'user')
+        companyName = Config.PACKAGE_NAME + ' team.'
+        roleId = xData.get('roleId', None)
+        userType = 'Admin user' if roleId is None else 'Business user'
+        if (isUpdate):
+            subject = Config.PACKAGE_NAME + ' ' + \
+                EmailMessages.email_subject_update_user
+            body = EmailMessages.email_body_update_user(
+                userName=userName, companyName=companyName)
+        else:
+            subject = Config.PACKAGE_NAME + ' ' + \
+                EmailMessages.email_subject_new_user(userType=userType)
+            body = EmailMessages.email_body_new_user(
+                uid=uid, password=pwd, userName=userName, companyName=companyName, userType=userType)
+        recipients = [email]
+        try:
+            await send_email(subject=subject, body=body, recipients=recipients)
+        except Exception as e:
+            raise AppHttpException(
+                detail=Messages.err_email_send_error_server, error_code='e1016', status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
         return create_graphql_exception(e)
     return data
 

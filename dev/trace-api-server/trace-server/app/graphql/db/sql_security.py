@@ -1,20 +1,22 @@
 class SqlSecurity:
 
     get_all_admin_users = """
-    with "noOfRows" as (values(%(noOfRows)s::int))
+        with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
-            select "clientName"
+            select c.id as "clientId" 
+				, "clientName"
+				, u."id"
 				, "uid"
 				, "userName"
 				, "mobileNo"
 				, "userEmail"
-				, "remarks"
+				, u."descr"
 				, u."isActive"
 				, u."timestamp"
 			from "UserM" u
 				join "ClientM" c
 					on c.id = u."clientId"
-				where "isAdminUser"
+				where "roleId" is null
                 order by u."id" DESC
                     limit (table "noOfRows")
     """
@@ -25,6 +27,11 @@ class SqlSecurity:
             select * from "ClientM"
                 order by "id" DESC
                     limit (table "noOfRows")
+    """
+    
+    get_all_client_names_no_args = """
+        select "id", "clientName" from "ClientM"
+                order by "clientName"
     """
 
     get_all_roles = """
@@ -41,6 +48,16 @@ class SqlSecurity:
                 select * from "SecuredControlM"
                     order by "id" DESC
                         limit (table "noOfRows")
+    """
+    
+    get_clients_on_criteria = """
+        with "criteria" as (values(%(criteria)s::text))
+        --with "criteria" as (values('cap'::text))
+            select "id" 
+				, "clientName"
+			from "ClientM" c
+				where LOWER("clientName") like LOWER((table "criteria") || '%%')
+            order by "clientName"
     """
 
     get_client_on_clientCode = """
@@ -105,6 +122,15 @@ class SqlSecurity:
             select 1 as "roleName" from "RoleM"
                 where lower("roleName") = (table "roleName")
     """
+    
+    get_userId_on_clientId_and_email = """
+        with "clientId" as (values(%(clientId)s::int)), "userEmail" as (values(%(userEmail)s)), "id" as (values(%(id)s))
+			--with "clientId" as (values(8)), "userEmail" as (values('capitalch@gmail.com')), "id" as (values(null::int))
+            select id from "UserM"
+				where "clientId" = (table "clientId")
+					and "userEmail" = (table "userEmail")
+					and "id" <> COALESCE((table "id")::int,0)
+    """
 
     does_user_email_exist = """
         with "email" as (values(%(email)s))
@@ -122,7 +148,7 @@ class SqlSecurity:
         with "uidOrEmail" as (values(%(uidOrEmail)s))
             --with "uidOrEmail" as (values('capitalch@gmail.com'))
             , cte1 as ( -- user details
-                select u.id, "uid", "userEmail", "hash", "name"
+                select u.id, "uid", "userEmail", "hash", "userName"
                     , "branchIds", "lastUsedBuId", "lastUsedBranchId", u."clientId", "mobileNo", u."isActive" as "isUserActive", u."roleId"
 					, c."clientCode", c."clientName", c."isActive" as "isClientActive", c."isExternalDb", c."dbName", c."dbParams"
                 , CASE when ("roleId" is null) THEN 'A' ELSE 'B' END as "userType"	

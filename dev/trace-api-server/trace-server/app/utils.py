@@ -1,3 +1,4 @@
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from app.graphql.db.sql_main import SqlMain
 from app.graphql.db.sql_security import SqlSecurity
 from app.config import Config

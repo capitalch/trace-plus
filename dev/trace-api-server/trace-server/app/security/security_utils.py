@@ -9,6 +9,8 @@ from jwt.exceptions import (
     InvalidSignatureError,
     InvalidTokenError,
 )
+import random
+import string
 
 ACCESS_TOKEN_EXPIRE_HOURS = Config.ACCESS_TOKEN_EXPIRE_HOURS
 ALGORITHM = Config.ALGORITHM
@@ -25,6 +27,25 @@ def create_access_token(subject: dict) -> str:
     return encodedJwt
 
 
+def getPasswordHash(pwd):
+    interm = pwd.encode('utf-8')
+    salt = bcrypt.gensalt(rounds=12)
+    pwdHash = bcrypt.hashpw(interm, salt).decode('utf-8')
+    return pwdHash
+
+
+def getRandomPassword():
+    rnd = f'@A1{randomStringGenerator(9, (string.ascii_letters + string.punctuation + string.digits))}b'
+    # Remove all instances of ':' since clint sends credentials as 'uid:pwd'
+    return (rnd.replace(':', '$'))
+
+
+def getRandomUserId():
+    rnd = randomStringGenerator(8, string.ascii_letters + string.digits)
+    # Remove all instances of ':' since clint sends credentials as 'uid:pwd'
+    return (rnd.replace(':', '$'))
+
+
 def verify_password(password, hash):
     bytes = password.encode("utf-8")
     hash1 = hash.encode("utf-8")
@@ -33,11 +54,12 @@ def verify_password(password, hash):
         ret = True
     return ret
 
+
 def parse_bearer_token(s):
-    if ((not s) or (not s.strip())):
+    if (not s) or (not s.strip()):
         return None
     if s.startswith("Bearer "):
-        return s[len("Bearer "):].strip()
+        return s[len("Bearer ") :].strip()
     return s
 
 
@@ -45,16 +67,16 @@ async def validate_token(request: Request):
     try:
         auth: str = request.headers.get("Authorization", None)
         token = parse_bearer_token(auth)
-        if((token is None) or (token == '')):
+        if (token is None) or (token == ""):
             raise AppHttpException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            error_code="e1015",
-            message=Messages.err_access_token_missing,
-        )
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                error_code="e1015",
+                message=Messages.err_access_token_missing,
+            )
         else:
-            token = auth.split()[1].strip() # Need checkup of this line
+            token = auth.split()[1].strip()  # Need checkup of this line
             jwt.decode(token, ACCESS_TOKEN_SECRET_KEY, algorithms=ALGORITHM)
-            print('success')
+            print("success")
     except ExpiredSignatureError as e:
         logging.error(e)
         raise AppHttpException(
@@ -82,6 +104,14 @@ async def validate_token(request: Request):
         logging.error(e)
         raise AppHttpException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            error_code= e.error_code if e.error_code is not None else "e1014",
-            message= e.message if e.message is not None else Messages.err_access_token_unknown_error,
+            error_code=e.error_code if e.error_code is not None else "e1014",
+            message=(
+                e.message
+                if e.message is not None
+                else Messages.err_access_token_unknown_error
+            ),
         )
+
+
+def randomStringGenerator(strSize, allowedChars):
+    return ''.join(random.choice(allowedChars) for x in range(strSize))

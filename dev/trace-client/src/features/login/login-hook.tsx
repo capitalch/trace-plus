@@ -6,14 +6,20 @@ import axios from "axios"
 import qs from 'qs'
 import { doLogin } from "./login-slice"
 import { Utils } from "../../utils/utils"
+// import { useForm } from "react-hook-form"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
+    // const {setValue} = useForm({ mode: 'onTouched' })
     const navigate = useNavigate()
 
     function handleForgotPassword() {
         Utils.showSaveMessage()
     }
+
+    // function handleOnChangeClient(selectedObject: any) {
+    //     setValue('clientId', selectedObject?.id)
+    // }
 
     function handleTestSignIn(userType: any) {
         dispatch(doLogin({
@@ -44,6 +50,7 @@ function useLogin() {
                 method: 'post',
                 url: loginUrl,
                 data: qs.stringify({
+                    clientId: data?.clientId,
                     username: data.username,
                     password: data.password
                 }),
@@ -77,7 +84,7 @@ function useLogin() {
             Utils.showErrorMessage(error)
         }
     }
-    return ({ handleForgotPassword, handleTestSignIn, onSubmit })
+    return ({ handleForgotPassword,/* handleOnChangeClient,*/ handleTestSignIn, onSubmit })
 }
 export { useLogin }
 

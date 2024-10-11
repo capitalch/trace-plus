@@ -8,33 +8,71 @@ import { WidgetAstrix } from "../../controls/widgets/widget-astrix"
 import { WidgetFormHelperText } from "../../controls/widgets/widget-form-helper-text"
 import { WidgetFormErrorMessage } from "../../controls/widgets/widget-form-error-message"
 import { WidgetButtonSubmitFullWidth } from "../../controls/widgets/widget-button-submit-full-width"
+import { CompTypeAhead } from "../../controls/components/comp-type-ahead"
+import { Utils } from "../../utils/utils"
+import urlJoin from "url-join"
+import { useEffect } from "react"
 
 function Login() {
-    const { handleSubmit, register, formState: { errors } } = useForm({ mode: 'onTouched' })
-    const { handleForgotPassword, handleTestSignIn, onSubmit } = useLogin()
+    const { handleSubmit, register, setValue, clearErrors, formState: { errors, } } = useForm({ mode: 'onTouched' })
+    const { handleForgotPassword, /*handleOnChangeClient,*/ handleTestSignIn, onSubmit } = useLogin()
     const { checkPassword, checkUserNameOrEmail }: any = useValidators()
+    const instance = 'user-login'
+    const clientsUrl = urlJoin(Utils.getHostUrl(), 'login-clients')
+
+    const registerClientId = register('clientId', {
+        required: Messages.errRequired
+    })
+
     const registerUserName = register('username', {
         required: Messages.errRequired,
         validate: { checkUserNameOrEmail },
         minLength: { value: 4, message: Messages.errAtLeast4Chars },
-        value:'superAdmin'
+        value: 'superAdmin'
     })
 
     const registerPassword = register('password', {
         required: Messages.errRequired,
         validate: { checkPassword },
         minLength: { value: 8, message: Messages.errAtLeast8Chars },
-        value:'superadmin@123'
+        value: 'superadmin@123'
     })
+
+    useEffect(() => {
+        // setValue('clientId', undefined, { shouldTouch: true, shouldDirty: true })
+    }, [])
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex h-screen">
-            <div className="prose m-auto flex w-96 flex-col gap-3 rounded-md border-[2px] border-primary-200 p-5 shadow-xl">
+            <div className="m-auto flex w-96 flex-col gap-3 rounded-md border-[2px] border-primary-200 p-5 shadow-xl">
                 <span className="text-xs text-primary-300 flex justify-end -my-4 -mr-4">{GLOBAL_APP_NAME} {GLOBAL_APP_VERSION}</span>
-                <h2 className="mx-auto font-bold text-primary-400 m-2"> Login </h2>
+                <h2 className="mx-auto font-bold text-primary-400 m-2 text-2xl"> Login </h2>
+
+                <label className="flex flex-col font-medium text-primary-400">
+                    <span className="font-bold">Client name <WidgetAstrix /></span>
+                    <CompTypeAhead
+                        instance={instance}
+                        noOfCharsToType={1}
+                        optionLabel="clientName"
+                        optionValue="id"
+                        url={clientsUrl}
+                        {...registerClientId}
+                        onChange={handleOnChangeClient}
+                        ref={null} //This is important to avoid an error in react-hook-form
+                    />
+                    {(errors.clientId)
+                        ? <WidgetFormErrorMessage errorMessage={errors?.clientId?.message} />
+                        : <WidgetFormHelperText helperText="&nbsp;" />}
+                    <WidgetFormHelperText helperText={Messages.messSelectClientName} />
+                </label>
+
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">User name / Email <WidgetAstrix /></span>
-                    <input autoFocus autoComplete="username" placeholder="accounts@gmail.com" type="text" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerUserName} />
+                    <input autoFocus autoComplete="username"
+                        placeholder="accounts@gmail.com"
+                        type="text"
+                        className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        {...registerUserName} />
                     {(errors.username)
                         ? <WidgetFormErrorMessage errorMessage={Messages.errInvalidUserNameOrEmail} />
                         : <WidgetFormHelperText helperText="&nbsp;" />}
@@ -60,5 +98,10 @@ function Login() {
             </div>
         </form>
     )
+
+    function handleOnChangeClient(selectedObject: any) {
+        setValue('clientId', selectedObject?.id)
+        clearErrors('clientId')
+    }
 }
 export { Login }

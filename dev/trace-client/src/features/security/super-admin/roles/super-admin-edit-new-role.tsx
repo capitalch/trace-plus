@@ -62,7 +62,7 @@ export function SuperAdminEditNewRole({
 
                 {/* Role name */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Super admin role name <WidgetAstrix /></span>
+                    <span className="font-bold">Role name <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. Administrator" autoComplete="off"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
                         {...registerRoleName}
@@ -79,7 +79,7 @@ export function SuperAdminEditNewRole({
 
                 {/* Description */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Super admin role Description</span>
+                    <span className="font-bold">Role description</span>
                     <input type="text" placeholder="e.g. Has all powers to insert, modify and delete" autoComplete="off"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
                         {...registerDescr}
