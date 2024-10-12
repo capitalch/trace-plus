@@ -1,5 +1,24 @@
 class SqlSecurity:
 
+    does_user_email_exist = """
+        with "email" as (values(%(email)s))
+            --with "email" as (values('capitalch@gmail.com'))
+        select exists(select 1
+            from "UserM"
+                where "userEmail" = (table "email"))
+    """
+
+    does_user_with_id_and_uid_exist = """
+        with "uid" as (values(%(uid)s)), "id" as (values(%(id)s::int))
+            --with "uid" as (values('MsqVEc0W')), "id" as (values(56))
+            select exists(select 1 from "UserM"
+	            where ("id" =(table "id")) and uid=(table "uid"))
+    """
+
+    drop_public_schema = """
+        DROP SCHEMA IF EXISTS public RESTRICT
+    """
+
     get_all_admin_users = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
@@ -20,7 +39,7 @@ class SqlSecurity:
                 order by u."id" DESC
                     limit (table "noOfRows")
     """
-    
+
     get_all_clients = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
@@ -28,7 +47,7 @@ class SqlSecurity:
                 order by "id" DESC
                     limit (table "noOfRows")
     """
-    
+
     get_all_client_names_no_args = """
         select "id", "clientName" from "ClientM"
                 order by "clientName"
@@ -49,7 +68,7 @@ class SqlSecurity:
                     order by "id" DESC
                         limit (table "noOfRows")
     """
-    
+
     get_clients_on_criteria = """
         with "criteria" as (values(%(criteria)s::text))
         --with "criteria" as (values('cap'::text))
@@ -115,14 +134,14 @@ class SqlSecurity:
             select 1 as "controlName" from "SecuredControlM"
                 where lower("controlName") = (table "controlName")
     """
-    
+
     get_super_admin_role_on_role_name = """
         with "roleName" as (values(%(roleName)s))
         --with "roleName" as (values('manager'))
             select 1 as "roleName" from "RoleM"
                 where lower("roleName") = (table "roleName")
     """
-    
+
     get_userId_on_clientId_and_email = """
         with "clientId" as (values(%(clientId)s::int)), "userEmail" as (values(%(userEmail)s)), "id" as (values(%(id)s))
 			--with "clientId" as (values(8)), "userEmail" as (values('capitalch@gmail.com')), "id" as (values(null::int))
@@ -132,21 +151,9 @@ class SqlSecurity:
 					and "id" <> COALESCE((table "id")::int,0)
     """
 
-    does_user_email_exist = """
-        with "email" as (values(%(email)s))
-            --with "email" as (values('capitalch@gmail.com'))
-        select exists(select 1
-            from "UserM"
-                where "userEmail" = (table "email"))
-    """
-
-    drop_public_schema = """
-        DROP SCHEMA IF EXISTS public RESTRICT
-    """
-
     get_user_details = """
-        with "uidOrEmail" as (values(%(uidOrEmail)s))
-            --with "uidOrEmail" as (values('capitalch@gmail.com'))
+        with "uidOrEmail" as (values(%(uidOrEmail)s)), "clientId" as (values(%(clientId)s::int))
+            --with "uidOrEmail" as (values('capitalch@gmail.com')), "clientId" as (values(51))
             , cte1 as ( -- user details
                 select u.id, "uid", "userEmail", "hash", "userName"
                     , "branchIds", "lastUsedBuId", "lastUsedBranchId", u."clientId", "mobileNo", u."isActive" as "isUserActive", u."roleId"
@@ -155,7 +162,10 @@ class SqlSecurity:
                 from "UserM" u
 					join "ClientM" c
 						on c."id" = u."clientId"
-                where (("uid" = (table "uidOrEmail") or ("userEmail" = (table "uidOrEmail")))))
+                where (
+					(("uid" = (table "uidOrEmail")) or ("userEmail" = (table "uidOrEmail")))
+						and c."id" = (table "clientId")
+				))
             , cte2 as ( -- get bu's associated with user
                 select b.id as "buId", "buCode", "buName"
                     from "BuM" b
@@ -181,7 +191,13 @@ class SqlSecurity:
         select 'ok' as "connection"
     """
 
-
+    update_user_uid = """
+        with "uid" as (values(%(uid)s)), "id" as (values(%(id)s::int))
+            --with "uid" as (values('MsqVEc0W')), "id" as (values(56))
+            update "UserM"
+                set "uid" = (table "uid")
+                    where "id" = (table "id")
+    """
 allSqls = {
     "sql1": """with cte1 as (
             select * from "TranD" where "id" <> %(id)s

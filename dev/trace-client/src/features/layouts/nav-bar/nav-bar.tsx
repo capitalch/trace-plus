@@ -4,7 +4,6 @@ import { LogoutMenuButton } from "./logout-menu-button"
 import { ModalDialogA } from "./modal-dialogA"
 import { IconMenuUnfold } from "../../../controls/icons/icon-menu-unfold"
 import { AppLoader } from "./app-loader"
-// import { WidgetLoadingIndicator } from "../../../controls/widgets/widget-loading-indicator"
 
 function NavBar() {
     const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()

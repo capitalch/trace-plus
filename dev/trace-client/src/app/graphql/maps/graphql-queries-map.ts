@@ -1,14 +1,25 @@
 import { gql } from '@apollo/client'
 import _ from 'lodash'
 import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enums'
+import { GLOBAL_SECURITY_DATABASE_NAME } from '../../global-constants'
 
 export const GraphQLQueriesMap = {
+  changeUid: changeUid,
   decodeExtDbParams: decodeExtDbParams,
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
   updateClient: updateClient,
   updateUser: updateUser,
   hello: hello
+}
+
+function changeUid(val: ChangeUidType) {
+  const value = encodeObj(val)
+  return gql`
+        mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
+            changeUid(value:"${value}")
+        }
+    `
 }
 
 function decodeExtDbParams(val: string) {
@@ -56,7 +67,6 @@ function updateUser(dbName: string, val: TraceDataObjectType) {
     `
 }
 
-
 function hello() {
   return gql`
     query hello
@@ -69,6 +79,12 @@ function encodeObj(obj: any) {
     ret = encodeURI(JSON.stringify(obj))
   }
   return ret
+}
+
+export type ChangeUidType = {
+  currentUid: string
+  uid: string
+  id: string | undefined // id of userM
 }
 
 export type GraphQLQueryArgsType = {

@@ -6,20 +6,15 @@ import axios from "axios"
 import qs from 'qs'
 import { doLogin } from "./login-slice"
 import { Utils } from "../../utils/utils"
-// import { useForm } from "react-hook-form"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
-    // const {setValue} = useForm({ mode: 'onTouched' })
     const navigate = useNavigate()
 
     function handleForgotPassword() {
         Utils.showSaveMessage()
     }
 
-    // function handleOnChangeClient(selectedObject: any) {
-    //     setValue('clientId', selectedObject?.id)
-    // }
 
     function handleTestSignIn(userType: any) {
         dispatch(doLogin({
@@ -29,6 +24,7 @@ function useLogin() {
             clientId: undefined,
             clientName: undefined,
             email: undefined,
+            id: undefined,
             isClentActive: false,
             isUserActive: false,
             lastUsedBranchId: undefined,
@@ -68,6 +64,7 @@ function useLogin() {
                     clientId: payloadData?.clientId,
                     clientName: payloadData?.clientName,
                     email: payloadData?.email,
+                    id:payloadData?.id,
                     isClentActive: payloadData?.isClentActive,
                     isUserActive: payloadData?.isUserActive,
                     lastUsedBranchId: payloadData?.lastUsedBrandId,
@@ -94,6 +91,7 @@ export type UserLoginPayloadType = {
     clientId: string
     clientName: string
     email: string
+    id: string
     isClentActive: boolean
     isUserActive: boolean
     lastUsedBrandId: string

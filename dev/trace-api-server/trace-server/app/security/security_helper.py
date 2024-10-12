@@ -1,4 +1,4 @@
-from fastapi import Depends, status, Request
+from fastapi import status, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.dependencies import AppHttpException, UserClass
@@ -6,8 +6,6 @@ from app.messages import Messages
 from app.config import Config
 from app.security.security_utils import create_access_token, verify_password
 from app.graphql.db.sql_security import SqlSecurity
-
-# import json
 from app.graphql.db.helpers.psycopg_async_helper import exec_sql
 
 
@@ -22,37 +20,6 @@ async def login_clients_helper(request: Request):
         return JSONResponse(content=res)
     else:
         return JSONResponse(content=[])
-
-
-# async def login_helper(formData=Depends(OAuth2PasswordRequestForm)):
-#     """
-#     returns access token along with user details. Raises exception if user does not exist
-#     """
-#     try:
-#         username = formData.username.strip()
-#         password = formData.password.strip()
-#         if (not username) or (not password):
-#             raise AppHttpException(
-#                 status_code=status.HTTP_401_UNAUTHORIZED,
-#                 error_code="e1003",
-#                 message=Messages.err_missing_username_password,
-#             )
-#         bundle = get_super_admin_bundle(username, password)
-#         if bundle is None:
-#             bundle = await get_other_user_bundle(username, password)
-#         if bundle is None:
-#             raise AppHttpException(
-#                 status_code=status.HTTP_401_UNAUTHORIZED,
-#                 error_code="e1004",
-#                 message=Messages.err_invalid_username_or_password,
-#             )
-#         return bundle
-#     except AppHttpException as e:
-#         raise e
-#     except Exception as e:
-#         raise AppHttpException(
-#             status_code=status.HTTP_401_UNAUTHORIZED, error_code="e1004", message=str(e)
-#         )
 
 
 async def login_helper(clientId, username, password):
@@ -88,7 +55,7 @@ async def login_helper(clientId, username, password):
 
 
 def get_bundle(user: UserClass):
-    accessToken = create_access_token({"name": user.name})
+    accessToken = create_access_token({"userName": user.userName})
     return {"accessToken": accessToken, "payload": user}
 
 
@@ -97,7 +64,7 @@ async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
     # Do modifications for clientId
     details: list = await exec_sql(
         sql=SqlSecurity.get_user_details,
-        sqlArgs={"uidOrEmail": uidOrEmail},
+        sqlArgs={"uidOrEmail": uidOrEmail, "clientId": clientId},
     )
 
     if details:
@@ -146,7 +113,7 @@ async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
             mobileNo=userDetails["mobileNo"],
             role=role,
             uid=userDetails["uid"],
-            name=userDetails["name"],
+            userName=userDetails["userName"],
             id=userDetails["id"],
         )
         bundle = get_bundle(user)
@@ -162,7 +129,7 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
         isValidSuperAdmin = verify_password(password=password, hash=superAdminHash)
         if isValidSuperAdmin:
             user = UserClass(
-                name=superAdminUserName,
+                userName=superAdminUserName,
                 email=superAdminEmail,
                 mobileNo=superAdminMobile,
                 userType="S",

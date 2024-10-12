@@ -46,8 +46,12 @@ async def doProcess(
             await aconn.execute(f"set search_path to {schema or 'public'}")
             async with aconn.cursor(row_factory=dict_row) as acur:
                 await acur.execute(sql, sqlArgs)
+                # Following way dealing is required. Otherwise error
                 if acur.rowcount > 0:
-                    records = await acur.fetchall()
+                    if(acur.description): # select statement
+                        records = await acur.fetchall()
+                    else: # insert update or delete statement
+                        records = acur.rowcount
             await acur.close()
             await aconn.commit()
             await aconn.close()

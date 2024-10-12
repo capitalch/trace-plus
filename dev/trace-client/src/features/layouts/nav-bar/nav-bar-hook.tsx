@@ -31,12 +31,10 @@ export function useNavBar() {
 
     function getMenuButtons() {
         if (userTypeSelector === UserTypesEnum.SuperAdmin) {
-            // dispatch(setMenuItem({ menuItem: 'superAdmin' }))
             return (<div>
                 <SuperAdminMenuButton />
             </div>)
         } else if (userTypeSelector === UserTypesEnum.Admin) {
-            // dispatch(setMenuItem({ menuItem: "accounts" }))
             return (<div className="flex">
                 <AccountsMenuButton />
                 <AdminMenuButton />

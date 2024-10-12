@@ -117,7 +117,7 @@ class UserClass:
         mobileNo=None,
         uid=None,
         id=None,
-        name=None,
+        userName=None,
         role=None,
     ):
 
@@ -137,7 +137,7 @@ class UserClass:
         self.role = role
         self.userType = userType
         self.uid = uid
-        self.name = name
+        self.userName = userName
         self.id = id
 
     businessUnits: Any
@@ -156,5 +156,5 @@ class UserClass:
     role: dict
     uid: str
     id: int
-    name: str
+    userName: str
     userType: str

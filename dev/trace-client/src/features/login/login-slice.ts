@@ -8,6 +8,7 @@ const initialState: InitialLoginStateType = {
   clientId: undefined,
   clientName: undefined,
   email: undefined,
+  id: undefined,
   isClentActive: false,
   isUserActive: false,
   lastUsedBranchId: undefined,
@@ -33,6 +34,7 @@ export const loginSlice = createSlice({
       state.clientId = action.payload.clientId
       state.clientName = action.payload.clientName
       state.email = action.payload.email
+      state.id = action.payload.id
       state.isClentActive = action.payload.isClentActive
       state.isUserActive = action.payload.isUserActive
       state.lastUsedBranchId = action.payload.lastUsedBranchId
@@ -51,6 +53,7 @@ export const loginSlice = createSlice({
       state.clientId = undefined
       state.clientName = undefined
       state.email = undefined
+      state.id = undefined
       state.isClentActive = false
       state.isUserActive = false
       state.lastUsedBranchId = undefined
@@ -69,13 +72,14 @@ export const { doLogin, doLogout } = loginSlice.actions
 
 type DoLoginActionType = InitialLoginStateType
 
-type InitialLoginStateType = {
+export type InitialLoginStateType = {
   isLoggedIn: boolean
   businessUnits: string[] | undefined
   clientCode: string | undefined
   clientId: string | undefined
   clientName: string | undefined
   email: string | undefined
+  id: string | undefined
   isClentActive: boolean
   isUserActive: boolean
   lastUsedBranchId: string | undefined

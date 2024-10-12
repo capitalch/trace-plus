@@ -184,8 +184,6 @@ export function SuperAdminEditNewAdminUser({
             Utils.showSaveMessage();
         } catch (e: any) {
             console.log(e.message);
-        } finally {
-            Utils.showAppLoader(false);
         }
     }
 
@@ -206,30 +204,34 @@ export function SuperAdminEditNewAdminUser({
         if ((!userEmail) || (!values.clientId)) {
             return
         }
-
-        const res: any = await Utils.queryGraphQL(
-            GraphQLQueriesMap.genericQuery(
-                GLOBAL_SECURITY_DATABASE_NAME,
-                {
-                    sqlId: SqlIdsMap.getUserIdOnClientIdEmail,
-                    sqlArgs: {
-                        id: id || null,
-                        clientId: values.clientId,
-                        userEmail: userEmail
+        try {
+            const res: any = await Utils.queryGraphQL(
+                GraphQLQueriesMap.genericQuery(
+                    GLOBAL_SECURITY_DATABASE_NAME,
+                    {
+                        sqlId: SqlIdsMap.getUserIdOnClientIdEmail,
+                        sqlArgs: {
+                            id: id || null,
+                            clientId: values.clientId,
+                            userEmail: userEmail
+                        }
                     }
-                }
-            ),
-            GraphQLQueriesMap.genericQuery.name);
-        if (!_.isEmpty(res?.data?.genericQuery[0])) {
-            setError("root.userEmail", {
-                type: "serverError",
-                message: Messages.errEmailExistsForClient
-            });
-            ret = false
-        } else {
-            clearErrors("root.userEmail");
+                ),
+                GraphQLQueriesMap.genericQuery.name);
+
+            if (!_.isEmpty(res?.data?.genericQuery[0])) {
+                setError("root.userEmail", {
+                    type: "serverError",
+                    message: Messages.errEmailExistsForClient
+                });
+                ret = false
+            } else {
+                clearErrors("root.userEmail");
+            }
+            return (ret)
+        } catch (e: any) {
+            console.log(e?.message)
         }
-        return (ret)
     }
 }
 

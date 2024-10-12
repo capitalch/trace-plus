@@ -2,7 +2,7 @@ import clsx from "clsx";
 import ClickAwayListener from "react-click-away-listener"
 import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDown, showNavBarDropDownFn } from "../layouts-slice";
-import { AppDispatchType, } from "../../../app/store/store";
+import { AppDispatchType, RootStateType, } from "../../../app/store/store";
 import { doLogout } from "../../login/login-slice";
 import { ChangeUid } from "./change-uid";
 import { ChangePassword } from "./change-password";
@@ -12,12 +12,15 @@ import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down";
 import { IconChangeUid } from "../../../controls/icons/icon-change-uid";
 import { IconChangePassword } from "../../../controls/icons/icon-change-password";
 import { IconLogout } from "../../../controls/icons/icon-logout";
-// import Swal from "sweetalert2";
-
+import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
     const toShowNavBarDropDownSelector: boolean = useSelector(showNavBarDropDownFn)
+    const reduxState: RootStateType = Utils.getReduxState()
+    const userType: string | undefined = reduxState.login.userType
+    const isNotSuperAdmin = !(userType === UserTypesEnum.SuperAdmin)
+
     return (
         <ClickAwayListener onClickAway={handleOnClickAway} >
             <div>
@@ -27,17 +30,18 @@ export function LogoutMenuButton({ className }: { className?: string }) {
                     <IconCheveronDown />
                 </button>
 
-                {toShowNavBarDropDownSelector &&
+                {
+                    toShowNavBarDropDownSelector &&
                     <div className="absolute z-10 mt-2 rounded-md shadow-lg bg-gray-50 right-0 border-[1px] text-gray-500 font-semibold">
                         <div className="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <button onClick={handleOnChangeUid} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
+                            {isNotSuperAdmin && <button onClick={handleOnChangeUid} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
                                 <IconChangeUid className='w-4 h-4 my-2 text-blue-500' />
                                 <span className="text-secondary-500">Change uid</span>
-                            </button>
-                            <button onClick={handleOnChangePassword} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
+                            </button>}
+                            {isNotSuperAdmin && <button onClick={handleOnChangePassword} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
                                 <IconChangePassword className='w-4 h-4 my-2 text-red-700' />
                                 <span>Change password</span>
-                            </button>
+                            </button>}
                             <button onClick={handleOnLogout} className=" h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
                                 <IconLogout className='w-4 h-4 my-2 text-green-500' />
                                 <span>Log out</span>

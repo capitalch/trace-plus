@@ -21,6 +21,7 @@ const Messages = {
   errMustHaveOneSpecialChar: 'Must have a special character',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
+  errSameCurrentUidAndNewUid:'Current uid and new uid cannot be same',
   errSuperAdminRoleNameExists: "Super admin role name alrady exists",
   errSuperAdminControlNameExists: "Super admin control name already exists",
   errEmailExistsForClient:'This email already exists for the selected client',
@@ -40,6 +41,7 @@ const Messages = {
   messSecuredControlName: 'Secured control name should be a string without any space or special character',
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSuccess: 'Successfull',
+  messUidExists:'This uid already exists for current client',
   messUserNameEmailHelper:
     'At least 4 characters long | no space | no special char',
 

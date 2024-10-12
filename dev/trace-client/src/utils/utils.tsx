@@ -5,13 +5,16 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
+import { InitialLoginStateType } from "../features/login/login-slice"
 
 export const Utils: UtilsType = {
+    getCurrentLoginInfo: getCurrentLoginInfo,
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
     getToken: getToken,
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
+    showAlertMessage: showAlertMessage,
     showAppLoader: showAppLoader,
     showDeleteConfirmDialog: showDeleteConfirmDialog,
     showErrorMessage: showErrorMessage,
@@ -21,6 +24,11 @@ export const Utils: UtilsType = {
     showSaveMessage: showSaveMessage,
     showSuccessAlertMessage: showSuccessAlertMessage,
     showFailureAlertMessage: showFailureAlertMessage
+}
+
+function getCurrentLoginInfo() {
+    const reduxState: RootStateType = store.getState()
+    return (reduxState.login)
 }
 
 function getHostUrl() {
@@ -86,6 +94,18 @@ async function queryGraphQL(q: any, queryName: string) {
 
 function showAppLoader(val: boolean) {
     ibukiEmit('SHOW-APP-LOADER', val)
+}
+
+function showAlertMessage(title: string, message: string) {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: "info",
+        // showCancelButton: true,
+        // confirmButtonColor: "#3085d6",
+        // cancelButtonColor: "#d33",
+        // confirmButtonText: "Yes, proceed!"
+    })
 }
 
 function showDeleteConfirmDialog(onConfirm: () => void) {
@@ -233,11 +253,13 @@ type ShowModalDialogMessageArgsType = {
 }
 
 type UtilsType = {
+    getCurrentLoginInfo: () => InitialLoginStateType
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
+    showAlertMessage: (title: string, message: string) => void
     showDeleteConfirmDialog: (onConfirm: () => void) => void
     showFailureAlertMessage: (alertMessage: AlertMessageType) => void
     showSuccessAlertMessage: (alertMessage: AlertMessageType, callback?: () => void) => void

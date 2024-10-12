@@ -11,6 +11,7 @@ class Messages:
     err_email_not_provided = 'Email is not provided'
     err_internal_server_error = "Internal server error"
     err_inactive_user = "Inactive user"
+    err_invalid_uid = "The current UID given by you is wrong"
     err_invalid_password = "Invalid password"
     err_invalid_username_or_email = "Invalid username or email"
     err_invalid_username_or_password = "Invalid username or password"
@@ -39,6 +40,7 @@ class customErrorCodes:
     e1014 = "Unknown error occured while validating access token"
     e1015 = "Access token is missing in the API request"
     e1016 = 'Email send error. An email could not be sent'
+    e1017 = 'The current UID given by the user is wrong'
     
     
     

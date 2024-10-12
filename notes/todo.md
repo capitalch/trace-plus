@@ -1,4 +1,30 @@
 ## To do
+- uid:MsqVEc0W
+- pwd:@A16cl&`|"wtb
+- Change uid
+	- Ui
+																					- current uid and uid cannot be same
+	- verify current UID at server
+	- Email from server
+- Change pwd
+	- Ui and client side code
+	- current pwd and pwd cannot be same
+	- Email from server
+																					- Login menu
+																						- From super admin remove Change password and change uid
+- Admin
+	- Dashboard
+	- Business units
+	- Roles
+	- Business users
+- Business user
+	- Vouchers
+	- Purch / Sales
+	- Masters
+	- Final accounts
+	- Options
+	- Reports
+	- Inventory
 																						- Login to use client id concept
 																							- Typeahead implement
 																							- Axios query post
