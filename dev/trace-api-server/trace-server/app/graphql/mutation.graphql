@@ -1,4 +1,5 @@
 type Mutation {
+    changePwd(value: Generic): Generic
     changeUid(value: Generic): Generic
     genericUpdate(value: Generic): Generic
     updateClient(value: Generic): Generic

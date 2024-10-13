@@ -9,6 +9,7 @@ const Messages = {
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
   errCurrentAndNewUidCannotBeSame:'Current uid and new uid cannot be same',
+  errCurrentAndNewPwdCannotBeSame:'Current and new passwords cannot be same',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
   errInputMustBeUrl: 'Input must be a valid URL',
@@ -23,6 +24,7 @@ const Messages = {
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
   errSameCurrentUidAndNewUid:'Current uid and new uid cannot be same',
+  errSameCurrentPwdAndNewPwd:'Current password and new password cannot be same',
   errSuperAdminRoleNameExists: "Super admin role name alrady exists",
   errSuperAdminControlNameExists: "Super admin control name already exists",
   errEmailExistsForClient:'This email already exists for the selected client',
@@ -44,6 +46,7 @@ const Messages = {
   messSuccess: 'Successfull',
   messUidExists:'This uid already exists for current client',
   messUidHelper:'At least 4 characters long | no space | no special char',
+  messUnableToConnectToServer: 'Unable to connect to server. Server may be offline',
   messUserNameEmailHelper:
     'UID: At least 4 characters long | no space | no special char or valid email',
   

@@ -117,5 +117,4 @@ export function ChangeUid() {
 type FormDataType = {
     currentUid: string;
     uid: string;
-    // id?: string;
 };

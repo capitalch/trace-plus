@@ -101,10 +101,6 @@ function showAlertMessage(title: string, message: string) {
         title: title,
         text: message,
         icon: "info",
-        // showCancelButton: true,
-        // confirmButtonColor: "#3085d6",
-        // cancelButtonColor: "#d33",
-        // confirmButtonText: "Yes, proceed!"
     })
 }
 

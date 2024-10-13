@@ -46,6 +46,7 @@ function Login() {
                 <span className="text-xs text-primary-300 flex justify-end -my-4 -mr-4">{GLOBAL_APP_NAME} {GLOBAL_APP_VERSION}</span>
                 <h2 className="mx-auto font-bold text-primary-400 m-2 text-2xl"> Login </h2>
 
+                {/* ClientId */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Client name <WidgetAstrix /></span>
                     <CompTypeAhead
@@ -64,6 +65,7 @@ function Login() {
                     <WidgetFormHelperText helperText={Messages.messSelectClientName} />
                 </label>
 
+                {/* uid */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">UID / Email <WidgetAstrix /></span>
                     <input autoFocus autoComplete="username"
@@ -76,6 +78,8 @@ function Login() {
                         : <WidgetFormHelperText helperText="&nbsp;" />}
                     <WidgetFormHelperText helperText={Messages.messUserNameEmailHelper} />
                 </label>
+
+                {/* Password */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Password <WidgetAstrix /></span>
                     <input type="password" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
@@ -85,6 +89,7 @@ function Login() {
                     <WidgetFormHelperText helperText={Messages.messPasswordHelper} />
                 </label>
                 <span onClick={handleForgotPassword} className="ml-auto px-2 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-blue-400 hover:underline">Forgot password</span>
+                
                 <div className="mt-2 flex flex-col">
                     <WidgetButtonSubmitFullWidth label="Sign in" />
                     <div className="mt-2 flex justify-start">

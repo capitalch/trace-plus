@@ -2,6 +2,8 @@ import { useEffect } from "react"
 import { ibukiDebounceFilterOn, ibukiEmit } from "../../utils/ibuki"
 import axios from "axios"
 import AsyncSelect from "react-select/async"
+import { Utils } from "../../utils/utils"
+import { Messages } from "../../utils/messages"
 
 export function CompTypeAhead({
     instance
@@ -17,8 +19,13 @@ export function CompTypeAhead({
     useEffect(() => {
         const obs1: any = ibukiDebounceFilterOn(messageName, 1200).subscribe(async (d: any) => {
             const input = d.data?.inputValue
-            const res: any = await axios.post(url, { criteria: input })
-            d.data.action(res.data)
+            try {
+                const res: any = await axios.post(url, { criteria: input })
+                d.data.action(res.data)
+            } catch (e: any) {
+                Utils.showErrorMessage(e, '', Messages.messUnableToConnectToServer)
+            }
+
         })
         return (() => {
             obs1.unsubscribe()
@@ -63,20 +70,12 @@ export function CompTypeAhead({
                     boxShadow: "none",
                 },
             }),
-            option: (defaultStyles: any, state: any) => ({
+            option: (defaultStyles: any) => ({
                 ...defaultStyles,
                 paddingTop: '2px',
                 paddingBottom: '2px',
                 fontSize: '14px',
             }),
-            // valueContainer: (defaultStyles: any, state: any) => ({
-            //     ...defaultStyles,
-            //     fontSize: '14px',
-            // }),
-            // control: (base: any) => ({
-            //     ...base,
-            //     width: '20rem'
-            // }),
         })
     }
 }

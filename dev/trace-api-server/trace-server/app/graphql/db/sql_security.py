@@ -186,11 +186,28 @@ class SqlSecurity:
                 , 'role', (select row_to_json(c) from cte3 c)
             ) as "jsonResult"
     """
+    
+    get_user_hash = """
+        with "id" as (values(%(id)s::int))
+			--with "id" as (values(56))
+	            select "hash" from "UserM"
+					where "id" = (table "id")
+    """
 
     test_connection = """
         select 'ok' as "connection"
     """
-
+    
+    
+    update_user_hash = """
+        with "id" as (values(%(id)s::int)), "hash" as (values(%(hash)s))
+			--with "id" as (values(56)), "hash" as (values('$2b$12$vcAUj2OC1XkPcT/hE7pFn.bBa84EVJWpraFV8ojEGthBoXBn4JzFa'))
+	            update "UserM"
+					set hash = (table "hash")
+						where "id" = (table "id")
+    """
+    
+    
     update_user_uid = """
         with "uid" as (values(%(uid)s)), "id" as (values(%(id)s::int))
             --with "uid" as (values('MsqVEc0W')), "id" as (values(56))

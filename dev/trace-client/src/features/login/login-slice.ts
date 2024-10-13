@@ -65,9 +65,12 @@ export const loginSlice = createSlice({
       state.userType = undefined
     },
 
-    setUid: (state: InitialLoginStateType, action: PayloadAction<setUidActonType>) => {
+    setUid: (
+      state: InitialLoginStateType,
+      action: PayloadAction<setUidActonType>
+    ) => {
       state.uid = action.payload.uid
-    }
+    },
   }
 })
 

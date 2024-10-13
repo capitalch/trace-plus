@@ -8,6 +8,7 @@ from app.security.security_utils import (
     getRandomUserId,
     getRandomPassword,
     getPasswordHash,
+    verify_password,
 )
 from app.messages import Messages, EmailMessages
 from app.mail import send_email
@@ -16,6 +17,63 @@ from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql
 from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject
 from app.config import Config
+
+
+async def change_pwd_helper(info, value):
+    data = {}
+    data1 = {}
+    try:
+        valueString = unquote(value)
+        valueDict: dict = json.loads(valueString)
+        request = info.context.get("request", None)
+        requestJson = await request.json()
+        operationName = requestJson.get("operationName", None)
+        sqlQueryObject = getSqlQueryObject(operationName)
+        sql = sqlQueryObject.get_user_hash
+        sqlArgs = {"id": valueDict.get("id", None)}
+        currentPwd = valueDict.get("currentPwd", None)
+        data = await exec_sql(dbName=operationName, sql=sql, sqlArgs=sqlArgs)
+        if data and len(data) > 0 and data[0].get("hash", False):
+            # verify pwd
+            hash = data[0].get("hash", False)
+            if verify_password(currentPwd, hash):
+                # save new password's hash in database
+                pwd = valueDict.get("pwd", None)
+                hash = getPasswordHash(pwd)
+                sql = sqlQueryObject.update_user_hash
+                sqlArgs = {"id": valueDict.get("id", None), "hash": hash}
+                data1 = await exec_sql(dbName=operationName, sql=sql, sqlArgs=sqlArgs)
+                # Send mail with new pwd
+                email = valueDict.get("email", None)
+                userName = valueDict.get("userName", None)
+                await send_mail_for_change_pwd(
+                    companyName=Config.PACKAGE_NAME,
+                    email=email,
+                    pwd=pwd,
+                    userName=userName,
+                )
+            else:
+                # current password invalid. Raise error
+                raise AppHttpException(
+                    message="Error",
+                    detail=Messages.err_invalid_current_password,
+                    error_code="e1019",
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+        else:
+            # password not found. Raise error
+            raise AppHttpException(
+                message="Error",
+                detail=Messages.err_unknown_current_password_error,
+                error_code="e1018",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data1
 
 
 async def change_uid_helper(info, value):
@@ -220,7 +278,19 @@ def is_not_none_or_empty(value):
         ret = False
     return ret
 
-
+async def send_mail_for_change_pwd(companyName: str, email: str, pwd: str, userName: str):
+    subject = Config.PACKAGE_NAME + " " + EmailMessages.email_subject_change_pwd
+    body = EmailMessages.email_body_change_pwd(userName, companyName, pwd)
+    recipients = [email]
+    try:
+        await send_email(subject=subject, body=body, recipients=recipients)
+    except Exception as e:
+        raise AppHttpException(
+            detail=Messages.err_email_send_error_server,
+            error_code="e1016",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    
 async def send_mail_for_change_uid(
     companyName: str, email: str, uid: str, userName: str
 ):

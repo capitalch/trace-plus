@@ -60,6 +60,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
             isOpen: true
         })
     }
+
     function handleOnChangePassword() {
         Utils.showHideModalDialogA({
             title: 'Change Password',
@@ -69,7 +70,6 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     }
     function handleOnClickAway() {
         dispatch(setShowNavBarDropDown({ toShowNavBarDropDown: false }))
-        // Swal.close() // If any swal popup or error message is active, that is now closed
     }
     function handleOnLogout() {
         handleOnClickAway() // Otherwise the menu remains open

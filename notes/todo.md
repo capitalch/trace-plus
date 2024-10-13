@@ -2,15 +2,17 @@
 - uid:MsqVEc0W
 - pwd:@A16cl&`|"wtb
 - Display user details on screen after login
-- Change uid
-	- Ui
+- Provide appropriate logging
+																					- handle clientid axios error in login screen when server is not running
+																				- Change uid
+																					- Ui
 																					- current uid and uid cannot be same
-	- verify current UID at server
-	- Email from server
+																					- verify current UID at server
+																					- Email from server
 - Change pwd
-	- Ui and client side code
-	- current pwd and pwd cannot be same
-	- Email from server
+																					- Ui and client side code
+																					- current pwd and pwd cannot be same
+																					- Email from server
 																					- Login menu
 																						- From super admin remove Change password and change uid
 - Admin
