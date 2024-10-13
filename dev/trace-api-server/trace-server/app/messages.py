@@ -1,3 +1,4 @@
+from app.config import Config
 class Messages:
     err_access_token_missing = "Access token is missing in the request to server"
     err_access_token_signature_expired = "Access token signature is expired"
@@ -49,8 +50,76 @@ class customErrorCodes:
 
 
 class EmailMessages():
+    email_subject_update_user = 'update of your user credentials'
+    
+    email_subject_change_uid= 'change of uid'
+    
+    
+    def email_body_change_uid(userName, companyName, uid,):
+        return f'''
+    <!DOCTYPE html>
+        <html>
+        <head>
+        <title>Changed uid</title>
+        <style>
+            body {{
+            font-family: sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+            }}
+            
+            h1 {{
+            font-size: 24px;
+            margin-top: 0;
+            }}
+            
+            p {{
+            margin-bottom: 10px;
+            }}
+            
+            ul {{
+            margin-left: 20px;
+            }}
+            
+            li {{
+            list-style-type: none;
+            margin-bottom: 5px;
+            }}
+            
+            b {{
+            font-weight: bold;
+            }}
+            
+            .container {{
+            width: 500px;
+            }}
+            
+            .footer {{
+            text-align: center;
+            padding: 20px 0;
+            }}
+        </style>
+        </head>
+        <body>
+        <div class="container">
+            <h1>UID changed</h1>
+            <p>Dear {userName},</p>
+            <p>This is to inform you that your uid is changed. The new uid is as follows:</p>
+            <p>
+                <b>New uid: {uid}</b>
+            </p>
+            <p>Yours sincerely,</p>
+            <dv>{companyName} team.</div>
+        </div>
+        </body>
+        </html>
+    '''
+    
+    
     def email_subject_new_user(
         userType): return f'new {userType} with your email address'
+
 
     def email_body_new_user(userName, companyName, uid, password, userType): return f'''
         <!DOCTYPE html>
@@ -114,7 +183,7 @@ class EmailMessages():
         </body>
         </html>
     '''
-    email_subject_update_user = 'update of your user credentials'
+
 
     def email_body_update_user(userName, companyName): return f'''
     <!DOCTYPE html>

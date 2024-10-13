@@ -8,6 +8,7 @@ const Messages = {
   errCannotBeZero: 'Cannot have zero values',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
+  errCurrentAndNewUidCannotBeSame:'Current uid and new uid cannot be same',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
   errInputMustBeUrl: 'Input must be a valid URL',
@@ -42,9 +43,10 @@ const Messages = {
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSuccess: 'Successfull',
   messUidExists:'This uid already exists for current client',
+  messUidHelper:'At least 4 characters long | no space | no special char',
   messUserNameEmailHelper:
-    'At least 4 characters long | no space | no special char',
-
+    'UID: At least 4 characters long | no space | no special char or valid email',
+  
 }
 
 export { Messages }

@@ -30,7 +30,7 @@ function useLogin() {
             lastUsedBranchId: undefined,
             lastUsedBuId: undefined,
             mobileNo: undefined,
-            name: undefined,
+            userName: undefined,
             token: undefined,
             uid: undefined,
             userType: userType
@@ -70,7 +70,7 @@ function useLogin() {
                     lastUsedBranchId: payloadData?.lastUsedBrandId,
                     lastUsedBuId: payloadData?.lastUsedBuId,
                     mobileNo: payloadData?.mobileNo,
-                    name: payloadData?.name,
+                    userName: payloadData?.userName,
                     token: accessToken,
                     uid: payloadData?.uid,
                     userType: payloadData?.userType

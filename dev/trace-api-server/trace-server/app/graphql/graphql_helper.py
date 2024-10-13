@@ -15,6 +15,7 @@ from .db.sql_security import allSqls
 from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject
+from app.config import Config
 
 
 async def change_uid_helper(info, value):
@@ -36,22 +37,11 @@ async def change_uid_helper(info, value):
             data = await exec_sql(dbName=operationName, sql=sql, sqlArgs=sqlArgs)
             # successful. Now send mail
             email = valueDict.get("email", None)
-            if email:
-                subject = (
-                    Config.PACKAGE_NAME
-                    + " "
-                    # + EmailMessages.email_subject_new_user(userType=userType)
-                )
-            body = "Email body"
-            # EmailMessages.email_body_new_user(
-            #     uid=uid,
-            #     password=pwd,
-            #     userName=userName,
-            #     companyName=companyName,
-            #     userType=userType,
-            # )
-            recipients = [email]
-            await send_email(subject=subject, body=body, recipients=recipients)
+            uid = valueDict.get("uid", None)
+            userName = valueDict.get("userName", None)
+            await send_mail_for_change_uid(
+                companyName=Config.PACKAGE_NAME, email=email, uid=uid, userName=userName
+            )
         else:
             raise AppHttpException(
                 message="Error",
@@ -194,53 +184,13 @@ async def update_user_helper(info, value: str):
                 tHash = getPasswordHash(pwd)
                 xData["hash"] = tHash
         data = await exec_sql_object(dbName=operationName, sqlObject=sqlObj)
-        uid = xData.get("uid", None)
-        email = xData.get("userEmail", None)
-        userName = xData.get("userName", "user")
-        companyName = Config.PACKAGE_NAME + " team."
-        roleId = xData.get("roleId", None)
-        userType = "Admin user" if roleId is None else "Business user"
-        if isUpdate:
-            subject = (
-                Config.PACKAGE_NAME + " " + EmailMessages.email_subject_update_user
-            )
-            body = EmailMessages.email_body_update_user(
-                userName=userName, companyName=companyName
-            )
-        else:
-            subject = (
-                Config.PACKAGE_NAME
-                + " "
-                + EmailMessages.email_subject_new_user(userType=userType)
-            )
-            body = EmailMessages.email_body_new_user(
-                uid=uid,
-                password=pwd,
-                userName=userName,
-                companyName=companyName,
-                userType=userType,
-            )
-        recipients = [email]
-        try:
-            await send_email(subject=subject, body=body, recipients=recipients)
-        except Exception as e:
-            raise AppHttpException(
-                detail=Messages.err_email_send_error_server,
-                error_code="e1016",
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        await send_mail_for_update_user(isUpdate, xData, pwd)
     except Exception as e:
         return create_graphql_exception(e)
     return data
 
 
-def is_not_none_or_empty(value):
-    ret = True
-    if value is None:
-        ret = False
-    if isinstance(value, (tuple, list, set, dict)) and (len(value) == 0):
-        ret = False
-    return ret
+# Local helper for helper methods
 
 
 def create_graphql_exception(e: Exception):
@@ -260,3 +210,66 @@ def create_graphql_exception(e: Exception):
             }
         }
     }
+
+
+def is_not_none_or_empty(value):
+    ret = True
+    if value is None:
+        ret = False
+    if isinstance(value, (tuple, list, set, dict)) and (len(value) == 0):
+        ret = False
+    return ret
+
+
+async def send_mail_for_change_uid(
+    companyName: str, email: str, uid: str, userName: str
+):
+    subject = Config.PACKAGE_NAME + " " + EmailMessages.email_subject_change_uid
+    body = EmailMessages.email_body_change_uid(userName, companyName, uid)
+    recipients = [email]
+    try:
+        await send_email(subject=subject, body=body, recipients=recipients)
+    except Exception as e:
+        raise AppHttpException(
+            detail=Messages.err_email_send_error_server,
+            error_code="e1016",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+async def send_mail_for_update_user(isUpdate: bool, xData: any, pwd: str):
+    uid = xData.get("uid", None)
+    email = xData.get("userEmail", None)
+    userName = xData.get("userName", "user")
+    companyName = Config.PACKAGE_NAME + " team."
+    roleId = xData.get("roleId", None)
+    userType = "Admin user" if roleId is None else "Business user"
+    if isUpdate:
+        subject = (
+            Config.PACKAGE_NAME + " " + EmailMessages.email_subject_update_user
+        )  # Note that this not a function
+        body = EmailMessages.email_body_update_user(
+            userName=userName, companyName=companyName
+        )
+    else:
+        subject = (
+            Config.PACKAGE_NAME
+            + " "
+            + EmailMessages.email_subject_new_user(userType=userType)
+        )
+        body = EmailMessages.email_body_new_user(
+            uid=uid,
+            password=pwd,
+            userName=userName,
+            companyName=companyName,
+            userType=userType,
+        )
+    recipients = [email]
+    try:
+        await send_email(subject=subject, body=body, recipients=recipients)
+    except Exception as e:
+        raise AppHttpException(
+            detail=Messages.err_email_send_error_server,
+            error_code="e1016",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

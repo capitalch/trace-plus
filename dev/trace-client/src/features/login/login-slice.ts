@@ -14,7 +14,7 @@ const initialState: InitialLoginStateType = {
   lastUsedBranchId: undefined,
   lastUsedBuId: undefined,
   mobileNo: undefined,
-  name: undefined,
+  userName: undefined,
   token: undefined,
   uid: undefined,
   userType: undefined
@@ -40,7 +40,7 @@ export const loginSlice = createSlice({
       state.lastUsedBranchId = action.payload.lastUsedBranchId
       state.lastUsedBuId = action.payload.lastUsedBuId
       state.mobileNo = action.payload.mobileNo
-      state.name = action.payload.name
+      state.userName = action.payload.userName
       state.token = action.payload.token
       state.uid = action.payload.uid
       state.userType = action.payload.userType
@@ -59,16 +59,20 @@ export const loginSlice = createSlice({
       state.lastUsedBranchId = undefined
       state.lastUsedBuId = undefined
       state.mobileNo = undefined
-      state.name = undefined
+      state.userName = undefined
       state.token = undefined
       state.uid = undefined
       state.userType = undefined
+    },
+
+    setUid: (state: InitialLoginStateType, action: PayloadAction<setUidActonType>) => {
+      state.uid = action.payload.uid
     }
   }
 })
 
 export const loginReducer = loginSlice.reducer
-export const { doLogin, doLogout } = loginSlice.actions
+export const { doLogin, doLogout, setUid } = loginSlice.actions
 
 type DoLoginActionType = InitialLoginStateType
 
@@ -85,10 +89,14 @@ export type InitialLoginStateType = {
   lastUsedBranchId: string | undefined
   lastUsedBuId: string | undefined
   mobileNo: string | undefined
-  name: string | undefined
+  userName: string | undefined
   token: string | undefined
   uid: string | undefined
   userType: 'S' | 'A' | 'B' | undefined
+}
+
+export type setUidActonType = {
+  uid: string
 }
 
 // selectors

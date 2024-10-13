@@ -1,6 +1,7 @@
 ## To do
 - uid:MsqVEc0W
 - pwd:@A16cl&`|"wtb
+- Display user details on screen after login
 - Change uid
 	- Ui
 																					- current uid and uid cannot be same

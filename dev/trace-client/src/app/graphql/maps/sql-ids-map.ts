@@ -8,7 +8,6 @@ export const SqlIdsMap = {
   getClientOnClientName: 'get_client_on_clientName',
   getSuperAdminRoleOnRoleName: 'get_super_admin_role_on_role_name',
   getSuperAdminControlOnControlName: 'get_super_admin_control_on_control_name',
-  // getUidOnClientId:'get_uid_on_clientId',
   getUserIdOnClientIdEmail:'get_userId_on_clientId_and_email',
   superAdminDashBoard: 'get_super_admin_dashboard',
   testConnection:'test_connection',

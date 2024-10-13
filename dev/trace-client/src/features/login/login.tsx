@@ -11,7 +11,7 @@ import { WidgetButtonSubmitFullWidth } from "../../controls/widgets/widget-butto
 import { CompTypeAhead } from "../../controls/components/comp-type-ahead"
 import { Utils } from "../../utils/utils"
 import urlJoin from "url-join"
-import { useEffect } from "react"
+// import { useEffect } from "react"
 
 function Login() {
     const { handleSubmit, register, setValue, clearErrors, formState: { errors, } } = useForm({ mode: 'onTouched' })
@@ -24,6 +24,8 @@ function Login() {
         required: Messages.errRequired
     })
 
+    // Note that this username is actually uid for login purposes
+    // Fastapi makes it mandatory to name it strictly as username which is actually uid in this software
     const registerUserName = register('username', {
         required: Messages.errRequired,
         validate: { checkUserNameOrEmail },
@@ -37,10 +39,6 @@ function Login() {
         minLength: { value: 8, message: Messages.errAtLeast8Chars },
         value: 'superadmin@123'
     })
-
-    useEffect(() => {
-        // setValue('clientId', undefined, { shouldTouch: true, shouldDirty: true })
-    }, [])
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex h-screen">
@@ -67,7 +65,7 @@ function Login() {
                 </label>
 
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">User name / Email <WidgetAstrix /></span>
+                    <span className="font-bold">UID / Email <WidgetAstrix /></span>
                     <input autoFocus autoComplete="username"
                         placeholder="accounts@gmail.com"
                         type="text"
