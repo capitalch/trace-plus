@@ -4,6 +4,14 @@ from app.graphql.db.sql_security import SqlSecurity
 from app.config import Config
 from cryptography.fernet import Fernet
 
+def is_not_none_or_empty(value):
+    ret = True
+    if value is None:
+        ret = False
+    if isinstance(value, (tuple, list, set, dict)) and (len(value) == 0):
+        ret = False
+    return ret
+
 def decrypt(input: str):
     key = Config.CRYPTO_KEY
     cipher_suite = Fernet(key)

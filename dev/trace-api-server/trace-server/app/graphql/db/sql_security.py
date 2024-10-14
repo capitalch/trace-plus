@@ -1,11 +1,11 @@
 class SqlSecurity:
 
     does_user_email_exist = """
-        with "email" as (values(%(email)s))
-            --with "email" as (values('capitalch@gmail.com'))
+        with "email" as (values(%(email)s)), "clientId" as (values(%(clientId)s::int))
+            --with "email" as (values('capitalch@gmail.com')), "clientId" as (values(51))
         select exists(select 1
             from "UserM"
-                where "userEmail" = (table "email"))
+                where "clientId" = (table "clientId") and "userEmail" = (table "email"))
     """
 
     does_user_with_id_and_uid_exist = """

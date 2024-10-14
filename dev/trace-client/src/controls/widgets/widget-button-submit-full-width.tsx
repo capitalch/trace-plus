@@ -12,7 +12,7 @@ export function WidgetButtonSubmitFullWidth({ className = '', label, onClick, pr
 type WidgetButtonSubmitFullWidthType = {
     className?: string
     label: string
-    onClick?: () => void
+    onClick?: (data?:any) => void
     props?: any
     disabled?: boolean
 }

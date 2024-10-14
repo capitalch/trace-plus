@@ -8,8 +8,8 @@ const Messages = {
   errCannotBeZero: 'Cannot have zero values',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
-  errCurrentAndNewUidCannotBeSame:'Current uid and new uid cannot be same',
-  errCurrentAndNewPwdCannotBeSame:'Current and new passwords cannot be same',
+  errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
+  errCurrentAndNewPwdCannotBeSame: 'Current and new passwords cannot be same',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
   errInputMustBeUrl: 'Input must be a valid URL',
@@ -23,11 +23,11 @@ const Messages = {
   errMustHaveOneSpecialChar: 'Must have a special character',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
-  errSameCurrentUidAndNewUid:'Current uid and new uid cannot be same',
-  errSameCurrentPwdAndNewPwd:'Current password and new password cannot be same',
+  errSameCurrentUidAndNewUid: 'Current uid and new uid cannot be same',
+  errSameCurrentPwdAndNewPwd: 'Current password and new password cannot be same',
   errSuperAdminRoleNameExists: "Super admin role name alrady exists",
   errSuperAdminControlNameExists: "Super admin control name already exists",
-  errEmailExistsForClient:'This email already exists for the selected client',
+  errEmailExistsForClient: 'This email already exists for the selected client',
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
@@ -41,15 +41,17 @@ const Messages = {
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
   messRoleName: 'Role name should be a string without any special character',
+  messResetLinkSendFail: 'Could not send reset link to the email address provided by you',
+  messResetLinkSendSuccess:"Successfully sent the email with the reset link",
   messSecuredControlName: 'Secured control name should be a string without any space or special character',
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSuccess: 'Successfull',
-  messUidExists:'This uid already exists for current client',
-  messUidHelper:'At least 4 characters long | no space | no special char',
+  messUidExists: 'This uid already exists for current client',
+  messUidHelper: 'At least 4 characters long | no space | no special char',
   messUnableToConnectToServer: 'Unable to connect to server. Server may be offline',
   messUserNameEmailHelper:
     'UID: At least 4 characters long | no space | no special char or valid email',
-  
+
 }
 
 export { Messages }

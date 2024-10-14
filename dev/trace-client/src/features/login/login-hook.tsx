@@ -6,13 +6,18 @@ import axios from "axios"
 import qs from 'qs'
 import { doLogin } from "./login-slice"
 import { Utils } from "../../utils/utils"
+import { ForgotPassword } from "./forgot-password"
 
 function useLogin() {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
 
     function handleForgotPassword() {
-        Utils.showSaveMessage()
+        Utils.showHideModalDialogA({
+            title: 'Forgot password',
+            element: <ForgotPassword />,
+            isOpen: true
+        })
     }
 
 

@@ -1,12 +1,67 @@
 from fastapi import status, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from datetime import datetime, timedelta, timezone
 from app.dependencies import AppHttpException, UserClass
 from app.messages import Messages
 from app.config import Config
-from app.security.security_utils import create_access_token, verify_password
+from app.security.security_utils import (
+    create_access_token,
+    create_jwt_token,
+    verify_password,
+)
 from app.graphql.db.sql_security import SqlSecurity
 from app.graphql.db.helpers.psycopg_async_helper import exec_sql
+from app.utils import is_not_none_or_empty
+from app.messages import EmailMessages
+from app.mail import send_email
+import base64
+import jwt
+
+
+async def forgot_password_helper(request: Request):
+    try:
+        json_data = await request.json()
+        email = json_data.get("email", None)
+        clientId = json_data.get("clientId", None)
+        ret: list = await exec_sql(
+            sql=SqlSecurity.does_user_email_exist,
+            sqlArgs={"clientId": clientId, "email": email},
+        )
+        if is_not_none_or_empty(ret) and ret[0].get("exists"):
+            # Email exists; hence send mail with reset link
+            resetLink = get_reset_link(request, clientId, email)
+            subject = EmailMessages.email_subject_forgot_password_reset_link
+            body = EmailMessages.email_body_forgot_password_reset_link(resetLink)
+            await send_email(subject=subject, body=body, recipients=[email])
+        else:
+            # Error email does not exist in database
+            raise AppHttpException(
+                error_code="e1020",
+                message=Messages.err_email_not_exists,
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="",
+            )
+        pass
+    except Exception as e:
+        raise e
+
+
+async def reset_password_helper(token: str):
+    try:
+        # decode token for base64
+        tkn = base64.b64decode(token)
+        result = jwt.decode(
+            tkn, Config.ACCESS_TOKEN_SECRET_KEY, algorithms=Config.ALGORITHM
+        )
+        data = result.get('data', None) # data has clientID and email
+        # Check clientID with email. If not exists then error
+        # reset password for clientId and email
+        # Fetch client name against clientId
+        # send mail with client name, email and new password
+        
+    except Exception as e:
+        raise e
 
 
 async def login_clients_helper(request: Request):
@@ -118,6 +173,16 @@ async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
         )
         bundle = get_bundle(user)
     return bundle
+
+
+def get_reset_link(request: Request, clientId, email: str):
+    jwtToken = create_jwt_token(60, {"clientId": clientId, "email": email})
+    baseUrl = str(request.base_url)
+    jwtToken = base64.b64encode(jwtToken.encode("utf-8")).decode(
+        "utf-8"
+    )  # convert to base64, otherwise email is treated as spam
+    resetLink = f"{baseUrl}reset-password/{jwtToken}"
+    return resetLink
 
 
 def get_super_admin_bundle(uidOrEmail: str, password: str):

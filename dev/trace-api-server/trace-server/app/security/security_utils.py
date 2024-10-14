@@ -26,6 +26,13 @@ def create_access_token(subject: dict) -> str:
     encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)
     return encodedJwt
 
+def create_jwt_token(expireMinutes: int, data: dict) -> str:
+    expiresDelta = datetime.now() + timedelta(minutes=expireMinutes)
+    toEncode = {
+        "exp": expiresDelta, "data": data
+    }
+    encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)
+    return(encodedJwt)
 
 def getPasswordHash(pwd):
     interm = pwd.encode('utf-8')

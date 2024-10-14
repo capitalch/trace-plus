@@ -15,7 +15,7 @@ from app.mail import send_email
 from .db.sql_security import allSqls
 from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
-from app.utils import decrypt, encrypt, getSqlQueryObject
+from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 
 
@@ -268,15 +268,6 @@ def create_graphql_exception(e: Exception):
             }
         }
     }
-
-
-def is_not_none_or_empty(value):
-    ret = True
-    if value is None:
-        ret = False
-    if isinstance(value, (tuple, list, set, dict)) and (len(value) == 0):
-        ret = False
-    return ret
 
 async def send_mail_for_change_pwd(companyName: str, email: str, pwd: str, userName: str):
     subject = Config.PACKAGE_NAME + " " + EmailMessages.email_subject_change_pwd

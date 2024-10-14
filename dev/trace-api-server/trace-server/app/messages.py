@@ -9,6 +9,7 @@ class Messages:
     err_access_token_unknown_error = (
         "Unknown error occured while validating access token"
     )
+    err_email_not_exists = "Email provided by you does not exist"
     err_email_send_error = "There was error in sending email. Email parameters from client are improper or missing"
     err_email_send_error_server = "There was error in sending email from server"
     err_email_not_provided = "Email is not provided"
@@ -48,7 +49,10 @@ class customErrorCodes:
     e1017 = "The current UID given by the user is wrong"
     e1018 = "The hash for current user was not found in database"
     e1019 = "The current password given by the user for purpose of change to new password was incorrect"
-
+    e1020 = "For the selected client the email address given by the user does not exist in database"
+    
+    
+    
     e2000 = "Error occurred while executing GraphQL query in file graphql_helper"
 
 
@@ -58,6 +62,32 @@ class EmailMessages:
     email_subject_change_uid = "change of uid"
 
     email_subject_change_pwd = "change of pwd"
+
+    email_subject_forgot_password_reset_link = (
+        f"Reset password link for forgot passwordk for {Config.PACKAGE_NAME} "
+    )
+
+    def email_subject_new_user(userType):
+        return f"new {userType} with your email address"
+
+    def email_body_forgot_password_reset_link(resetPasswordLink: str):
+        return f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>Reset password link</title>
+            </head>
+            <body>
+            <h1>Reset password link</h1>
+            <p>Dear Sir / Madam,</p>
+            <p>Here is the reset password link for your account in {Config.PACKAGE_NAME}.</p>
+            <p>This link is valid for one hour. Click this link to securely reset your password</p>
+            <p>{resetPasswordLink}</p>
+            <p>Thank you,</p>
+            <p>{Config.PACKAGE_NAME}</p>
+            </body>
+            </html>
+        """
 
     def email_body_change_pwd(userName, companyName, pwd):
         return f"""
@@ -184,9 +214,6 @@ class EmailMessages:
         </body>
         </html>
     """
-
-    def email_subject_new_user(userType):
-        return f"new {userType} with your email address"
 
     def email_body_new_user(userName, companyName, uid, password, userType):
         return f"""

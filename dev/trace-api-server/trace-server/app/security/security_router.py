@@ -3,7 +3,12 @@ from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Depends, Request
 from typing import Annotated
 from pydantic import BaseModel
-from app.security.security_helper import login_helper, login_clients_helper
+from app.security.security_helper import (
+    forgot_password_helper,
+    login_helper,
+    login_clients_helper,
+    reset_password_helper,
+)
 from app.dependencies import AppHttpException
 import json
 
@@ -50,9 +55,6 @@ async def resolve_countries():
 @securityRouter.post("/login-clients")
 async def resolve_login_clients(request: Request):
     return await login_clients_helper(request)
-    # with open('app/security/test_countries.json') as countries:
-    #     parsed_countries = json.load(countries)
-    #     return(JSONResponse(content=parsed_countries))
 
 
 @securityRouter.post("/test")
@@ -63,3 +65,13 @@ async def resolve_test():
         status_code=401,
         detail="This is a test detail",
     )
+
+
+@securityRouter.post("/forgot-password")
+async def resolve_forgot_password(request: Request):
+    return await forgot_password_helper(request)
+
+
+@securityRouter.get("/reset-password/{token}")
+async def resolve_reset_password(token: str):
+    return await reset_password_helper(token)

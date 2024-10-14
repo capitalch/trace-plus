@@ -63,7 +63,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
 
     function handleOnChangePassword() {
         Utils.showHideModalDialogA({
-            title: 'Change Password',
+            title: 'Change password',
             element: <ChangePassword />,
             isOpen: true
         })
