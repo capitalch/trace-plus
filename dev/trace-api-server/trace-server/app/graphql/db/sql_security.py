@@ -88,7 +88,8 @@ class SqlSecurity:
             select 1 as "clientName" from "ClientM"
                 where lower("clientName") = %(clientName)s
         """
-
+    
+    
     get_db_name_in_catalog = """
         SELECT datname FROM pg_catalog.pg_database where datname = %(datname)s
     """
@@ -142,6 +143,18 @@ class SqlSecurity:
                 where lower("roleName") = (table "roleName")
     """
 
+    
+    get_userId_client_name_on_clientId_email = """
+        with "email" as (values(%(email)s)), "clientId" as (values(%(clientId)s::int))
+            --with "email" as (values('capitalch@gmail.com')), "clientId" as (values(51))
+        select "clientName", u.id
+			from "ClientM" c
+				join "UserM" u
+					on c.id = u."clientId"
+             where "clientId" = (table "clientId") and "userEmail" = (table "email")
+    
+    """
+    
     get_userId_on_clientId_and_email = """
         with "clientId" as (values(%(clientId)s::int)), "userEmail" as (values(%(userEmail)s)), "id" as (values(%(id)s))
 			--with "clientId" as (values(8)), "userEmail" as (values('capitalch@gmail.com')), "id" as (values(null::int))
@@ -203,7 +216,7 @@ class SqlSecurity:
         with "id" as (values(%(id)s::int)), "hash" as (values(%(hash)s))
 			--with "id" as (values(56)), "hash" as (values('$2b$12$vcAUj2OC1XkPcT/hE7pFn.bBa84EVJWpraFV8ojEGthBoXBn4JzFa'))
 	            update "UserM"
-					set hash = (table "hash")
+					set "hash" = (table "hash")
 						where "id" = (table "id")
     """
     

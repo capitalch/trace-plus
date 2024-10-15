@@ -1,6 +1,7 @@
 ## To do
 - uid:MsqVEc0W
-- pwd:@A16cl&`|"wtb
+- pwd:@A1.R<RM!,"Hb
+- pwd:
 - Display user details on screen after login
 - Provide appropriate logging
 																					- handle clientid axios error in login screen when server is not running

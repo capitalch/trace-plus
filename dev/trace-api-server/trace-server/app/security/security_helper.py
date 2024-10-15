@@ -15,6 +15,15 @@ from app.graphql.db.helpers.psycopg_async_helper import exec_sql
 from app.utils import is_not_none_or_empty
 from app.messages import EmailMessages
 from app.mail import send_email
+from jwt.exceptions import (
+    ExpiredSignatureError,
+    InvalidSignatureError,
+    InvalidTokenError,
+)
+from app.security.security_utils import (
+    getRandomPassword,
+    getPasswordHash,
+)
 import base64
 import jwt
 
@@ -54,14 +63,59 @@ async def reset_password_helper(token: str):
         result = jwt.decode(
             tkn, Config.ACCESS_TOKEN_SECRET_KEY, algorithms=Config.ALGORITHM
         )
-        data = result.get('data', None) # data has clientID and email
-        # Check clientID with email. If not exists then error
-        # reset password for clientId and email
-        # Fetch client name against clientId
-        # send mail with client name, email and new password
-        
-    except Exception as e:
-        raise e
+        data = result.get("data", None)  # data has clientID and email
+        clientId = data.get("clientId", None)
+        email = data.get("email", None)
+        sql = SqlSecurity.get_userId_client_name_on_clientId_email
+        sqlArgs = {"clientId": clientId, "email": email}
+        res = await exec_sql(sql=sql, sqlArgs=sqlArgs)
+        if is_not_none_or_empty(res) and res[0].get("clientName", None):
+            clientName = res[0].get("clientName")
+            userId = res[0].get("id")
+            # create a random password
+            pwd = getRandomPassword()
+            tHash = getPasswordHash(pwd)
+            # update hash in database
+            sql = (SqlSecurity.update_user_hash,)
+            sqlArgs = {"id": userId, "hash": tHash}
+            await exec_sql(sql=sql, sqlArgs=sqlArgs)
+            # Send mail to user for new password
+            subject = EmailMessages.email_subject_reset_password_success
+            body = EmailMessages.email_body_reset_password_success(
+                clientName, email, pwd
+            )
+            recipients = [email]
+            try:
+                await send_email(subject=subject, body=body, recipients=recipients)
+            except Exception as e:
+                raise AppHttpException(
+                    error_code="e1024",
+                    message=Messages.err_reset_password_success_but_mail_send_fail,
+                )
+        else:
+            raise AppHttpException(
+                error_code="e1023",
+                message=Messages.err_email_not_exists,
+            )
+
+    except ExpiredSignatureError as e1:
+        raise AppHttpException(
+            error_code="e1021",
+            message=Messages.err_link_expired,
+        )
+    except InvalidSignatureError as e2:
+        raise AppHttpException(
+            error_code="e1021",
+            message=Messages.err_invalid_reset_password_link,
+        )
+    except InvalidTokenError as e3:
+        raise AppHttpException(
+            error_code="e1022",
+            message=Messages.err_invalid_token_in_reset_password_link,
+        )
+    except Exception as e4:
+        raise e4
+    return Messages.mess_reset_password_success
 
 
 async def login_clients_helper(request: Request):
