@@ -10,6 +10,10 @@ import { SuperAdminClients } from "../../features/security/super-admin/clients/s
 import { SuperAdminRoles } from "../../features/security/super-admin/roles/super-admin-roles";
 import { SuperAdminSecuredControls } from "../../features/security/super-admin/secured-controls/super-admin-secured-controls";
 import { SuperAdminAdminUsers } from "../../features/security/super-admin/admin-users/super-admin-admin-users";
+import { AdminDashBoard } from "../../features/security/admin/dashboard/admin-dashboard";
+import { AdminBusinessUnits } from "../../features/security/admin/business-units/admin-business-units";
+import { AdminRoles } from "../../features/security/admin/roles/admin-roles";
+import { AdminBusinessUsers } from "../../features/security/admin/business users/admin-business-users";
 
 export const appRouter = createBrowserRouter([
     {
@@ -46,7 +50,24 @@ export const appRouter = createBrowserRouter([
             {
                 path:'super-admin-admin-users',
                 element: <SuperAdminAdminUsers />
+            },
+            {
+                path:'admin-dashboard',
+                element: <AdminDashBoard />
+            },
+            {
+                path:'admin-business-units',
+                element: <AdminBusinessUnits />
+            },
+            {
+                path:'admin-roles',
+                element: <AdminRoles />
+            },
+            {
+                path:'admin-business-users',
+                element: <AdminBusinessUsers />
             }
+
             // {
             //     path: 'change-uid',
             //     element: <ChangeUid />

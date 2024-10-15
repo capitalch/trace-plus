@@ -19,6 +19,30 @@ class SqlSecurity:
         DROP SCHEMA IF EXISTS public RESTRICT
     """
 
+
+    get_admin_dashboard = '''
+        with "clientId" as (values(%(clientId)s))
+		--with "clientId" as (values(1))
+		, cte1 as (
+		 	select COUNT(*) count
+				from "BuM"
+			 		where "clientId" = (table "clientId") and "isActive")
+		, cte2 as (
+			select COUNT(*) count
+				from "RoleM"
+					where "clientId" = (table "clientId"))
+		, cte3 as (
+			select COUNT(*) count
+				from "UserM"
+					where "clientId" = (table "clientId") and "isActive")
+        select json_build_object(
+                    'buesCount', (select count from cte1)
+                    , 'rolesCount', (select count from cte2)
+                    , 'businessUsersCount', (select count from cte3)
+                ) as "jsonResult"
+    '''
+    
+    
     get_all_admin_users = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))

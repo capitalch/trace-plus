@@ -70,7 +70,7 @@ function Login() {
                     {/* uid */}
                     <label className="flex flex-col font-medium text-primary-400">
                         <span className="font-bold">UID / Email <WidgetAstrix /></span>
-                        <input autoFocus autoComplete="username"
+                        <input autoComplete="username"
                             placeholder="accounts@gmail.com"
                             type="text"
                             className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"

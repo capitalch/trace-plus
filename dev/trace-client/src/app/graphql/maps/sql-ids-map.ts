@@ -1,4 +1,5 @@
 export const SqlIdsMap = {
+  adminDashBoard:'get-admin-dashboard',
   allAdminUsers:'get_all_admin_users',
   allClients: 'get_all_clients',
   allRoles:'get_all_roles',

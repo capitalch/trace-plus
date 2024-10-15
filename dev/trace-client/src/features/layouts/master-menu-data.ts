@@ -243,6 +243,7 @@ export const MasterMenuData: MenuDataType = {
       label: 'Dashboard',
       icon: IconDashboard,
       iconColorClass: 'text-primary-500',
+      path:'/admin-dashboard',
       children: []
     },
     {
@@ -250,6 +251,7 @@ export const MasterMenuData: MenuDataType = {
       label: 'Business units',
       icon: IconBusinessUnits,
       iconColorClass: 'text-teal-500',
+      path:'/admin-business-units',
       children: []
       // path: 'purchase'
     },
@@ -259,7 +261,7 @@ export const MasterMenuData: MenuDataType = {
       icon: IconRoles,
       iconColorClass: 'text-red-500',
       children: [],
-      path: '/blogs'
+      path: '/admin-roles'
     },
     {
       id: '11',
@@ -267,7 +269,7 @@ export const MasterMenuData: MenuDataType = {
       icon: IconUsers,
       iconColorClass: 'text-amber-500',
       children: [],
-      path: '/blogs'
+      path: '/admin-business-users'
     }
   ],
   superAdmin: [
