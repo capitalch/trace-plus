@@ -1,6 +1,6 @@
 ## To do
 - uid:MsqVEc0W
-- pwd:@A1.R<RM!,"Hb
+- pwd:
 - pwd:
 - Display user details on screen after login
 - Provide appropriate logging

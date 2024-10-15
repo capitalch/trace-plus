@@ -12,7 +12,7 @@ from app.security.security_utils import (
 )
 from app.graphql.db.sql_security import SqlSecurity
 from app.graphql.db.helpers.psycopg_async_helper import exec_sql
-from app.utils import is_not_none_or_empty
+from app.utils import is_not_none_or_empty,getSqlQueryObject
 from app.messages import EmailMessages
 from app.mail import send_email
 from jwt.exceptions import (
@@ -76,9 +76,9 @@ async def reset_password_helper(token: str):
             pwd = getRandomPassword()
             tHash = getPasswordHash(pwd)
             # update hash in database
-            sql = (SqlSecurity.update_user_hash,)
+            sql = SqlSecurity.update_user_hash
             sqlArgs = {"id": userId, "hash": tHash}
-            await exec_sql(sql=sql, sqlArgs=sqlArgs)
+            res = await exec_sql(sql=sql, sqlArgs=sqlArgs)
             # Send mail to user for new password
             subject = EmailMessages.email_subject_reset_password_success
             body = EmailMessages.email_body_reset_password_success(
