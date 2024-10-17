@@ -13,11 +13,14 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import { Messages } from "../../../../utils/messages";
 import { AdminBusinessUnitsNewButton } from "./admin-business-units-new-button";
 import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit";
+import { AppDispatchType } from "../../../../app/store/store";
+import { useDispatch } from "react-redux";
+import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 
 export function AdminBusinessUnits() {
     const context: GlobalContextType = useContext(GlobalContext);
     const instance = DataInstancesMap.adminBusinessUnits; // Grid instance for Business Units
-
+    const dispatch: AppDispatchType = useDispatch()
     return (
         <CompContentContainer title='Admin business units'>
             <CompSyncFusionGridToolbar
@@ -79,9 +82,12 @@ export function AdminBusinessUnits() {
         async function doDelete() {
             try {
                 await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name);
-                Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }, async () => {
-                    await context.CompSyncFusionGrid[instance].loadData();
-                });
+                Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }
+                    , () => {
+                        dispatch(resetQueryHelperData({ instance: instance }))
+                        context.CompSyncFusionGrid[instance].loadData();
+                    }
+                );
             } catch (e: any) {
                 Utils.showFailureAlertMessage({ message: e?.message || '', title: 'Failed' });
             }

@@ -29,14 +29,14 @@
 																					- Login menu
 																						- From super admin remove Change password and change uid
 - Admin
-	- When top menu changes then do clean up and make the screen blank
+																					- When top menu changes then do clean up and make the screen blank
 																						- Dashboard
 	- Business units
 		- New
 																						- View
 																						- Edit
-		- Delete
-			- After delete the data is not getting refreshed
+																						- Delete
+																							- After delete the data is not getting refreshed
 		- Server side create BU
 	- Roles
 	- Business users

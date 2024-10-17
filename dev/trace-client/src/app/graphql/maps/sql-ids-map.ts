@@ -5,6 +5,7 @@ export const SqlIdsMap = {
   allClients: 'get_all_clients',
   allRoles:'get_all_roles',
   allSecuredControls:'get_all_secured_controls',
+  getSAdminRoleOnRoleNameClientId: 'get_admin_role_on_roleName_clientId',
   getAllClientNamesNoArgs:'get_all_client_names_no_args',
   getBuOnBuCodeAndClientId:'get_bu_on_buCode_and_clientId',
   getClientOnClientCode: 'get_client_on_clientCode',

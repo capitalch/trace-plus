@@ -41,6 +41,16 @@ class SqlSecurity:
                 ) as "jsonResult"
     """
 
+
+    get_admin_role_on_roleName_clientId = """
+        with "roleName" as (values(%(roleName)s)), "clientId" as (values(%(clientId)s::int))
+            --with "roleName" as (values('manager')), "clientId" as (values(51))
+                select "roleName" from "RoleM"
+                    where lower("roleName") = (table "roleName")
+                        and "clientId" =(table "clientId")
+    """
+    
+    
     get_all_admin_users = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))

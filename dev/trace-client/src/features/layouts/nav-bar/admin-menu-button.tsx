@@ -2,9 +2,11 @@ import clsx from "clsx"
 import { MenuItemType, menuItemSelectorFn, setMenuItem } from "../layouts-slice"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatchType } from "../../../app/store/store"
+import { useNavigate } from "react-router-dom"
 
 export function AdminMenuButton() {
     const dispatch: AppDispatchType = useDispatch()
+    const navigate = useNavigate()
     const menuItemSelector: MenuItemType = useSelector(menuItemSelectorFn)
     const clsName = menuItemSelector === 'admin' ? 'bg-primary-700' : 'bg-primary-500'
 
@@ -15,6 +17,7 @@ export function AdminMenuButton() {
 
     function handleOnClick() {
         dispatch(setMenuItem({ menuItem: 'admin' }))
+        navigate('/')
     }
 
 }

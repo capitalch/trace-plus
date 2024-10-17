@@ -24,6 +24,10 @@ export const appRouter = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
             {
+                path: '/',
+                element: <></>
+            },
+            {
                 path: 'blogs',
                 element: <Blogs />
             },
@@ -41,30 +45,30 @@ export const appRouter = createBrowserRouter([
             },
             {
                 path: 'super-admin-roles',
-                element : <SuperAdminRoles />
+                element: <SuperAdminRoles />
             },
             {
-                path:'super-admin-secured-controls',
+                path: 'super-admin-secured-controls',
                 element: <SuperAdminSecuredControls />
             },
             {
-                path:'super-admin-admin-users',
+                path: 'super-admin-admin-users',
                 element: <SuperAdminAdminUsers />
             },
             {
-                path:'admin-dashboard',
+                path: 'admin-dashboard',
                 element: <AdminDashBoard />
             },
             {
-                path:'admin-business-units',
+                path: 'admin-business-units',
                 element: <AdminBusinessUnits />
             },
             {
-                path:'admin-roles',
+                path: 'admin-roles',
                 element: <AdminRoles />
             },
             {
-                path:'admin-business-users',
+                path: 'admin-business-users',
                 element: <AdminBusinessUsers />
             }
 

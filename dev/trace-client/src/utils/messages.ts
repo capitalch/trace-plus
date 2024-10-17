@@ -1,4 +1,5 @@
 const Messages = {
+  errAdminRoleNameExists:'The admin role for current client already exists',
   errAtLeast4Chars: 'Should be at least 4 chars long',
   errAtLeast8Chars: 'Should be at least 8 chars long',
   errAtLeast6Chars: 'Should be at least 6 chars long',

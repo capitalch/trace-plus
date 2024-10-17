@@ -23,7 +23,7 @@ const queryHelperSlice = createSlice({
       state: InitialStateType,
       action: PayloadAction<SetQueryHelperDataActionType>
     ) => {
-      console.log(current(state))
+      // console.log(current(state))
       if (!state[action.payload.instance]) {
         state[action.payload.instance] = { data: [] }
       }
