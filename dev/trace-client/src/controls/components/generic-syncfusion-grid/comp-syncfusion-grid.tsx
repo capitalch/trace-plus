@@ -33,6 +33,9 @@ export function CompSyncFusionGrid({
         }
         context.CompSyncFusionGrid[instance].loadData = loadData
         context.CompSyncFusionGrid[instance].gridRef = gridRef
+        return(()=>{
+            console.log('Syncfusion cleanup')
+        })
     }, [])
 
     if (loading) {

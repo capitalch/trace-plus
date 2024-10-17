@@ -31,14 +31,14 @@ function Login() {
         required: Messages.errRequired,
         validate: { checkUserNameOrEmail },
         minLength: { value: 4, message: Messages.errAtLeast4Chars },
-        value: 'superAdmin'
+        value: 'capital'
     })
 
     const registerPassword = register('password', {
         required: Messages.errRequired,
         validate: { checkPassword },
         minLength: { value: 8, message: Messages.errAtLeast8Chars },
-        value: 'superadmin@123'
+        value: 'su$hant123'
     })
 
     return (

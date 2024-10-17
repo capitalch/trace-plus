@@ -33,7 +33,11 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, ins
         isExecQueryOnLoad: isLoadOnInit
     })
 
-    const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data)
+    const selectedData: any = useSelector((state: RootStateType) => {
+        const ret: any = state.queryHelper[instance]?.data
+        console.log(ret)
+        return(ret)
+    })
 
     function getAggrColDirectives() {
         const defaultFooterTemplate: FC = (props: any) => <span><b>{props.Sum}</b></span>

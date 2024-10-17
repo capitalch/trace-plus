@@ -3,6 +3,7 @@ import {
   GraphQLQueriesMap,
   GraphQLQueryArgsType
 } from './maps/graphql-queries-map'
+import _ from 'lodash'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
 import { useEffect } from 'react'
 import { Utils } from '../../utils/utils'
@@ -29,6 +30,7 @@ export function useQueryHelper ({
     }
     return () => {
       // Cleanup data. Otherwise syncfusion grid loads the old data
+      console.log('Cleanup')
       dispatch(resetQueryHelperData({ instance: instance}))
     }
   }, [])
@@ -42,10 +44,10 @@ export function useQueryHelper ({
     if (result?.data?.genericQuery?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
     }
-    // const dta = result?.data?.genericQuery ? result.data.genericQuery : []
+    const dta = result?.data?.genericQuery ? result.data.genericQuery : []
     dispatch(
       setQueryHelperData({
-        data: result?.data?.genericQuery ? result.data.genericQuery : [],
+        data: _.isEmpty(result?.data?.genericQuery) ? [] : result.data.genericQuery,
         instance: instance
       })
     )
