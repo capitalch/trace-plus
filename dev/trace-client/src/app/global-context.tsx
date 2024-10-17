@@ -13,18 +13,3 @@ export type GlobalContextType = {
     }
   }
 }
-
-// CompSyncFusionGrid: {
-//   [DataInstancesMap.superAdminClients]: {
-//     loadData: undefined
-//   },
-//   [DataInstancesMap.superAdminRoles]: {
-//     loadData: undefined
-//   },
-//   [DataInstancesMap.superAdminSecuredControls]: {
-//     loadData: undefined
-//   },
-//   [DataInstancesMap.superAdminAdminUsers]:{
-//     loadData: undefined
-//   }
-// }

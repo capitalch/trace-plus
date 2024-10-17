@@ -133,8 +133,8 @@ export function SuperAdminEditNewAdminUser({
 
                 {/* Active Status */}
                 <label className="flex flex-row items-center font-medium text-primary-400">
-                    <input type="checkbox" {...registerIsActive} className="mr-2" />
-                    <span>Is Active</span>
+                    <input type="checkbox" {...registerIsActive} className="mr-2 cursor-pointer" />
+                    <span className="cursor-pointer">Is Active</span>
                 </label>
 
                 {/* Save */}

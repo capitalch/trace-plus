@@ -5,6 +5,8 @@ const Messages = {
   errAtMost10Chars: 'Should be at most 10 chars long',
   errAtMost30Chars: 'Should be at most 30 chars long',
   errAtMost50Chars: 'Should be at most 50 chars long',
+  errAtMost150Chars: 'Should be at most 150 chars long',
+  errBuCodeExists: 'This business unit code already exists for the current client',
   errCannotBeZero: 'Cannot have zero values',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
@@ -31,6 +33,10 @@ const Messages = {
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
+  messBuCode:
+    'Business unit code can be between 4 characters and 50 characters',
+    messBuName:
+    'Business unit name can be between 6 characters and 150 characters',
   messClientCode:
     'Client code should be between 6 characters and 30 characters',
   messClientName:

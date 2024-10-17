@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice, current } from '@reduxjs/toolkit'
 import { DataInstancesMap } from './maps/data-instances-map'
 
 const initialState: InitialStateType = {
@@ -23,6 +23,7 @@ const queryHelperSlice = createSlice({
       state: InitialStateType,
       action: PayloadAction<SetQueryHelperDataActionType>
     ) => {
+      console.log(current(state))
       if (!state[action.payload.instance]) {
         state[action.payload.instance] = { data: [] }
       }

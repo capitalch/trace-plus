@@ -6,7 +6,7 @@ import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-h
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
-import { useContext, useEffect} from "react";
+import { useContext, useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
@@ -25,7 +25,7 @@ export function SuperAdminEditNewRole({
     id,
 }: SuperAdminEditNewRoleType) {
     const { checkNoSpecialChar } = useValidators();
-    const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors }, } = useForm<FormDataType>({
+    const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
     });
@@ -44,8 +44,11 @@ export function SuperAdminEditNewRole({
     const registerDescr = register("descr")
 
     useEffect(() => {
-        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-ROLE-NAME"], 1200).subscribe((d: any) => {
-            validateRoleNameAtServer(d.data);
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-ROLE-NAME"], 1200).subscribe(async (d: any) => {
+            const isValid = await trigger('roleName')
+            if (isValid) {
+                validateRoleNameAtServer(d.data);
+            }
         });
         setValue("roleName", roleName || "");
         setValue("id", id);

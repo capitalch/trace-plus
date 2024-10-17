@@ -31,7 +31,7 @@ export function SuperAdminEditNewClientExtDatabase({
 }: SuperAdminEditNewClientExtDatabaseType) {
     const [active, setActive] = useState(false)
     const { checkNoSpaceOrSpecialChar, checkNoSpaceOrSpecialCharAllowDot, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
-    const { clearErrors, handleSubmit, register, setError, setValue, getValues, /*getValues, getFieldState,*/ trigger, formState: { errors, }, } = useForm<FormDataType>({
+    const { clearErrors, handleSubmit, register, setError, setValue, getValues, trigger, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched', criteriaMode: 'firstError',
     })
     const context: GlobalContextType = useContext(GlobalContext)
@@ -107,11 +107,17 @@ export function SuperAdminEditNewClientExtDatabase({
     })
 
     useEffect(() => {
-        const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-CLIENT-CODE'], 1200).subscribe((d: any) => {
-            validateClientCodeAtServer(d.data)
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-CLIENT-CODE'], 1200).subscribe(async (d: any) => {
+            const isValid = await trigger('clientCode')
+            if (isValid) {
+                validateClientCodeAtServer(d.data)
+            }
         })
-        const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-CLIENT-NAME"], 1600).subscribe((d: any) => {
-            validateClientNameAtServer(d.data)
+        const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-CLIENT-NAME"], 1600).subscribe(async (d: any) => {
+            const isValid = await trigger('clientName')
+            if (isValid) {
+                validateClientNameAtServer(d.data)
+            }
         })
         populateValues() // useful for edit purpose
         return (() => {
@@ -279,7 +285,7 @@ export function SuperAdminEditNewClientExtDatabase({
                 <div className='flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-               <span>
+                <span>
                     {showServerValidationError()}
                 </span>
             </div>
@@ -293,9 +299,9 @@ export function SuperAdminEditNewClientExtDatabase({
         setValue('isActive', isActive || false)
         setValue('isExternalDb', isExternalDb || true)
 
-        setValue('host',dbParams?.host)
+        setValue('host', dbParams?.host)
         setValue('password', dbParams?.password)
-        setValue('port',dbParams?.port)
+        setValue('port', dbParams?.port)
         setValue('user', dbParams?.user)
         setValue('url', dbParams?.url)
         console.log('dbParams:', dbParams)

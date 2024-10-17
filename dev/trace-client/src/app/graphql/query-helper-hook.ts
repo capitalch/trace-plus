@@ -42,9 +42,10 @@ export function useQueryHelper ({
     if (result?.data?.genericQuery?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
     }
+    // const dta = result?.data?.genericQuery ? result.data.genericQuery : []
     dispatch(
       setQueryHelperData({
-        data: result?.data ? result.data : [],
+        data: result?.data?.genericQuery ? result.data.genericQuery : [],
         instance: instance
       })
     )

@@ -18,60 +18,56 @@ import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 
-export function SuperAdminEditNewSecuredControl({
-    controlName,
-    controlNo,
-    controlType,
+export function AdminNewEditBusinessUnit({
+    buCode,
+    buName,
+    isActive,
     dataInstance,
-    descr,
     id,
-}: SuperAdminEditNewSecuredControlType) {
-    const { checkNoSpaceOrSpecialChar, shouldBePositive, shouldNotBeZero } = useValidators();
+}: AdminNewEditBusinessUnitType) {
+    const { checkNoSpaceOrSpecialChar , checkNoSpecialChar} = useValidators();
     const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
     });
     const context: GlobalContextType = useContext(GlobalContext);
 
-    const registerControlName = register("controlName", {
-        required: Messages.errRequired
-        , validate: {
-            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
+    const registerBuCode = register("buCode", {
+        minLength: { value: 4, message: Messages.errAtLeast4Chars },
+        maxLength: { value: 50, message: Messages.errAtMost50Chars },
+        required: Messages.errRequired,
+        validate: {
+            noSpaceOrpecialChar: checkNoSpaceOrSpecialChar
         },
         onChange: (e: any) => {
-            ibukiDdebounceEmit(IbukiMessages["DEBOUNCE-SECURED-CONTROL-NAME"], { controlName: e.target.value });
+            ibukiDdebounceEmit(IbukiMessages["DEBOUNCE-BU-CODE"], { buCode: e.target.value });
         }
     });
 
-    const registerControlNo = register("controlNo", {
-        required: Messages.errRequired
-        , validate: {
-            shouldNotBeZero: shouldNotBeZero,
-            shouldBePositive: shouldBePositive
+    const registerBuName = register("buName",
+        {
+            minLength: { value: 6, message: Messages.errAtLeast6Chars },
+            maxLength: { value: 150, message: Messages.errAtMost150Chars },
+            required: Messages.errRequired,
+            validate: {
+                nopecialChar: checkNoSpecialChar
+            },
         }
-    });
+    );
 
-    const registerControlType = register("controlType", {
-        required: Messages.errRequired
-        , validate: {
-            noSpaceOrSpecialChar: checkNoSpaceOrSpecialChar
-        },
-    });
-
-    const registerDescr = register("descr");
+    const registerIsActive = register("isActive");
 
     useEffect(() => {
-        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-SECURED-CONTROL-NAME"], 1200).subscribe(async (d: any) => {
-            const isValid = await trigger('controlName')
-            if(isValid){
-                validateControlNameAtServer(d.data);
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-BU-CODE"], 1200).subscribe(async (d: any) => {
+            const isValid = await trigger('buCode')
+            if (isValid) {
+                validateBuCodeAtServer(d.data);
             }
         });
-        setValue("controlName", controlName || "");
-        setValue("controlNo", controlNo || 0);
-        setValue("controlType", controlType || "");
+        setValue("buCode", buCode || "");
+        setValue("buName", buName || "");
+        setValue("isActive", isActive || false);
         setValue("id", id);
-        setValue("descr", descr || undefined);
 
         return () => {
             subs1.unsubscribe();
@@ -82,50 +78,46 @@ export function SuperAdminEditNewSecuredControl({
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-2 w-auto min-w-72">
 
-                {/* Control name */}
+                {/* Business Unit Code */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Control name <WidgetAstrix /></span>
-                    <input type="text" placeholder="e.g. ViewReports" autoComplete="off"
+                    <span className="font-bold">Business Unit Code <WidgetAstrix /></span>
+                    <input type="text" placeholder="e.g. BU123" autoComplete="off"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
-                        {...registerControlName}
+                        {...registerBuCode}
                     />
                     <span className="flex justify-between">
-                        {errors.controlName
-                            ? <WidgetFormErrorMessage errorMessage={errors.controlName.message} />
+                        {(errors.buCode)
+                            ? <WidgetFormErrorMessage errorMessage={errors.buCode.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <WidgetTooltip title={Messages.messSecuredControlName} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                        <WidgetTooltip title={Messages.messBuCode} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
                             <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
                         </WidgetTooltip>
                     </span>
                 </label>
 
-                {/* Control No */}
+                {/* Business Unit Name */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Control number <WidgetAstrix /></span>
-                    <input type="number" placeholder="e.g. 001" autoComplete="off" onFocus={(event) => event.target.select()}
+                    <span className="font-bold">Business Unit Name <WidgetAstrix /></span>
+                    <input type="text" placeholder="e.g. Sales Department" autoComplete="off"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
-                        {...registerControlNo}
+                        {...registerBuName}
                     />
-                    {errors.controlNo && <WidgetFormErrorMessage errorMessage={errors.controlNo.message} />}
+                    <span className="flex justify-between">
+                        {(errors.buName)
+                            ? <WidgetFormErrorMessage errorMessage={errors.buName.message} />
+                            : <WidgetFormHelperText helperText="&nbsp;" />}
+                        <WidgetTooltip title={Messages.messBuName} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                            <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
+                        </WidgetTooltip>
+                    </span>
                 </label>
 
-                {/* Control Type */}
-                <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Control type <WidgetAstrix /></span>
-                    <input type="text" placeholder="e.g. menu" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
-                        {...registerControlType}
+                {/* Is Active */}
+                <label className="flex items-center font-medium text-primary-400">
+                    <input type="checkbox" className="mr-2 cursor-pointer"
+                        {...registerIsActive}
                     />
-                    {errors.controlType && <WidgetFormErrorMessage errorMessage={errors.controlType.message} />}
-                </label>
-
-                {/* Description */}
-                <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold">Control description</span>
-                    <input type="text" placeholder="e.g. Allows viewing of all reports" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
-                        {...registerDescr}
-                    />
+                    <span className="cursor-pointer">Is Active</span>
                 </label>
 
                 {/* Save */}
@@ -141,9 +133,10 @@ export function SuperAdminEditNewSecuredControl({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: "SecuredControlM",
+            tableName: "BuM",
             xData: {
                 ...data,
+                clientId: Utils.getCurrentLoginInfo().clientId
             }
         };
         try {
@@ -162,47 +155,45 @@ export function SuperAdminEditNewSecuredControl({
 
     function showServerValidationError() {
         let Ret = <></>;
-        if (errors?.root?.controlName) {
-            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.controlName.message} />;
+        if (errors?.root?.buCode) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.buCode.message} />;
         } else {
             Ret = <WidgetFormHelperText helperText="&nbsp;" />;
         }
         return Ret;
     }
 
-    async function validateControlNameAtServer(value: any) {
+    async function validateBuCodeAtServer(value: any) {
         const res: any = await Utils.queryGraphQL(
             GraphQLQueriesMap.genericQuery(
                 GLOBAL_SECURITY_DATABASE_NAME,
                 {
-                    sqlId: SqlIdsMap.getSuperAdminControlOnControlName,
-                    sqlArgs: { controlName: value?.controlName }
+                    sqlId: SqlIdsMap.getBuOnBuCodeAndClientId,
+                    sqlArgs: { buCode: value?.buCode, clientId: Utils.getCurrentLoginInfo().clientId }
                 }),
             GraphQLQueriesMap.genericQuery.name);
         if (res?.data?.genericQuery[0]) {
-            setError("root.controlName", {
+            setError("root.buCode", {
                 type: "serverError",
-                message: Messages.errSuperAdminControlNameExists
+                message: Messages.errBuCodeExists
             });
         } else {
-            clearErrors("root.controlName");
+            clearErrors("root.buCode");
         }
     }
 }
 
 type FormDataType = {
-    descr: string | undefined;
-    controlName: string;
-    controlNo: number;
-    controlType: string;
+    buCode: string;
+    buName: string;
+    isActive: boolean;
     id?: string;
 };
 
-type SuperAdminEditNewSecuredControlType = {
+type AdminNewEditBusinessUnitType = {
     dataInstance: string;
-    descr?: string | undefined;
-    controlName?: string;
-    controlNo?: number;
-    controlType?: string;
+    buCode?: string;
+    buName?: string;
+    isActive?: boolean;
     id?: string;
 };

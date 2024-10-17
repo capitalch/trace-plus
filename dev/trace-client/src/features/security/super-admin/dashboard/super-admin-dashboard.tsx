@@ -116,9 +116,3 @@ export function SuperAdminDashboard() {
         </div>)
     }
 }
-
-{/* <div>
-    <button className="rounded-md bg-slate-200 px-2" onClick={() => {
-        refetch()
-    }}>Re fetch</button>
-</div> */}

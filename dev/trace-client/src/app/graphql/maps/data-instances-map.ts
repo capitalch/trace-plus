@@ -1,4 +1,5 @@
 export const DataInstancesMap = {
+  adminBusinessUnits:'admin-business-units',
   adminDashBoard:'admin-dashboard',
   superAdminAdminUsers: 'super-admin-admin-users',
   superAdminDashBoard: 'super-admin-dashboard',
@@ -6,7 +7,3 @@ export const DataInstancesMap = {
   superAdminRoles: 'super-admin-roles',
   superAdminSecuredControls: 'super-addmin-secured-controls'
 }
-
-// type DataInstancesMap = {
-//   [key: string]: string | number
-// }

@@ -1,10 +1,12 @@
 export const SqlIdsMap = {
-  adminDashBoard:'get-admin-dashboard',
   allAdminUsers:'get_all_admin_users',
+  allBusinessUnits: 'get_all_business_units_on_clientId',
+  adminDashBoard:'get_admin_dashboard',
   allClients: 'get_all_clients',
   allRoles:'get_all_roles',
   allSecuredControls:'get_all_secured_controls',
   getAllClientNamesNoArgs:'get_all_client_names_no_args',
+  getBuOnBuCodeAndClientId:'get_bu_on_buCode_and_clientId',
   getClientOnClientCode: 'get_client_on_clientCode',
   getClientOnClientName: 'get_client_on_clientName',
   getSuperAdminRoleOnRoleName: 'get_super_admin_role_on_role_name',

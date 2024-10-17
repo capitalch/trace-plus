@@ -58,8 +58,8 @@ export function CompSyncFusionGrid({
                 allowSelection={true}
                 allowTextWrap={true}
                 className={className}
-                created={onCreated}
-                dataSource={selectedData?.genericQuery || []}
+                created={onCreated} //?.genericQuery
+                dataSource={selectedData || []}
                 gridLines="Both"
                 ref={gridRef}
                 // width='90vw'

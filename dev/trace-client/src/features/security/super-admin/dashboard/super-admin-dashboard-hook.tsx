@@ -63,7 +63,8 @@ export function useSuperAdminDashBoard() {
         let jsonResult: any = {}
 
         if (!_.isEmpty(selectedData)) {
-            jsonResult = selectedData?.genericQuery[0]?.jsonResult
+            jsonResult = selectedData?.[0]?.jsonResult
+            // jsonResult = selectedData?.genericQuery[0]?.jsonResult
             if (!_.isEmpty(jsonResult)) {
                 populateDashBoard(dashBoard, jsonResult)
             }

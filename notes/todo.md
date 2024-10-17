@@ -1,38 +1,43 @@
 ## To do
-- uid:MsqVEc0W
-- pwd:
-- pwd:
 - Display user details on screen after login
-- Provide appropriate logging
+- Provide appropriate logging at server
+																				- Apply client side validations prior to server side validations in Super admin
 																					- handle clientid axios error in login screen when server is not running
 																				- Change uid
 																					- Ui
 																					- current uid and uid cannot be same
 																					- verify current UID at server
 																					- Email from server
-- Change pwd
-	- Logic
-		- UI Forgot password popup with email input
-		- Hits at unsecured url forgot-password
-			- Verify email from UserM table
-				- If email exists: Send mail with url encoded with email JWT tken for 30 mins
-					- Message: Check you mail for reset link
-				- Else raise error: Email does not exist
-	- Detailed logic
-		- User requests a password reset by entering their email in the frontend.
-		- Frontend sends a request to the backend with the user's email.
-		- Backend validates the email, generates a secure token, and sends an email to the user with a password reset link (containing the token).
-		- User clicks the link and is redirected to a password reset page.
-		- User enters a new password on this page, which is sent to the backend along with the token.
-		- Backend verifies the token, updates the password, and returns a success message.
+																				- Change pwd
+																					- Logic
+																						- UI Forgot password popup with email input
+																						- Hits at unsecured url forgot-password
+																							- Verify email from UserM table
+																								- If email exists: Send mail with url encoded with email JWT tken for 30 mins
+																									- Message: Check you mail for reset link
+																								- Else raise error: Email does not exist
+																					- Detailed logic
+																						- User requests a password reset by entering their email in the frontend.
+																						- Frontend sends a request to the backend with the user's email.
+																						- Backend validates the email, generates a secure token, and sends an email to the user with a password reset link (containing the token).
+																						- User clicks the link and is redirected to a password reset page.
+																						- User enters a new password on this page, which is sent to the backend along with the token.
+																						- Backend verifies the token, updates the password, and returns a success message.
 																					- Ui and client side code
 																					- current pwd and pwd cannot be same
 																					- Email from server
 																					- Login menu
 																						- From super admin remove Change password and change uid
 - Admin
-	- Dashboard
+	- When top menu changes then do clean up and make the screen blank
+																						- Dashboard
 	- Business units
+		- New
+																						- View
+																						- Edit
+		- Delete
+			- After delete the data is not getting refreshed
+		- Server side create BU
 	- Roles
 	- Business users
 - Business user

@@ -29,7 +29,7 @@ export function SuperAdminEditNewClient({
 }: SuperAdminEditNewClientType) {
     const [active, setActive] = useState(isActive || false)
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { clearErrors, handleSubmit, register, setError, setValue, formState: { errors, }, } = useForm<FormDataType>({
+    const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched'
         , criteriaMode: 'firstError'
     })
@@ -64,11 +64,17 @@ export function SuperAdminEditNewClient({
     const registerIsClientActive = register('isActive')
 
     useEffect(() => {
-        const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-CLIENT-CODE'], 1200).subscribe((d: any) => {
-            validateClientCodeAtServer(d.data)
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-CLIENT-CODE'], 1200).subscribe(async (d: any) => {
+            const isValid = await trigger('clientCode')
+            if (isValid) {
+                validateClientCodeAtServer(d.data)
+            }
         })
-        const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-CLIENT-NAME"], 1600).subscribe((d: any) => {
-            validateClientNameAtServer(d.data)
+        const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-CLIENT-NAME"], 1600).subscribe(async (d: any) => {
+            const isValid = await trigger('clientName')
+            if (isValid) {
+                validateClientNameAtServer(d.data)
+            }
         })
         setValue('clientCode', clientCode || '')
         setValue('clientName', clientName || '')

@@ -19,10 +19,9 @@ class SqlSecurity:
         DROP SCHEMA IF EXISTS public RESTRICT
     """
 
-
-    get_admin_dashboard = '''
+    get_admin_dashboard = """
         with "clientId" as (values(%(clientId)s))
-		--with "clientId" as (values(1))
+		--with "clientId" as (values(51))
 		, cte1 as (
 		 	select COUNT(*) count
 				from "BuM"
@@ -34,15 +33,14 @@ class SqlSecurity:
 		, cte3 as (
 			select COUNT(*) count
 				from "UserM"
-					where "clientId" = (table "clientId") and "isActive")
+					where "clientId" = (table "clientId") and "isActive" and ("roleId" is not null))
         select json_build_object(
-                    'buesCount', (select count from cte1)
+                    'businessUnitsCount', (select count from cte1)
                     , 'rolesCount', (select count from cte2)
                     , 'businessUsersCount', (select count from cte3)
                 ) as "jsonResult"
-    '''
-    
-    
+    """
+
     get_all_admin_users = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
@@ -62,6 +60,15 @@ class SqlSecurity:
 				where "roleId" is null
                 order by u."id" DESC
                     limit (table "noOfRows")
+    """
+
+    get_all_business_units_on_clientId = """
+        with "clientId" as (values(%(clientId)s))
+		--with "clientId" as (values(51))
+		select *
+			from "BuM"
+				where "clientId" = (table "clientId")
+            order by "id" DESC
     """
 
     get_all_clients = """
@@ -93,6 +100,14 @@ class SqlSecurity:
                         limit (table "noOfRows")
     """
 
+    get_bu_on_buCode_and_clientId = """
+        with "clientId" as (values(%(clientId)s)), "buCode" as (values(%(buCode)s))
+		--with "clientId" as (values(51)), "buCode" as (values('test'))
+            select "buName"
+                from "BuM"
+                    where "clientId" = (table "clientId") 
+                        and "buCode" = (table "buCode")
+    """
     get_clients_on_criteria = """
         with "criteria" as (values(%(criteria)s::text))
         --with "criteria" as (values('cap'::text))
@@ -112,8 +127,7 @@ class SqlSecurity:
             select 1 as "clientName" from "ClientM"
                 where lower("clientName") = %(clientName)s
         """
-    
-    
+
     get_db_name_in_catalog = """
         SELECT datname FROM pg_catalog.pg_database where datname = %(datname)s
     """
@@ -167,7 +181,6 @@ class SqlSecurity:
                 where lower("roleName") = (table "roleName")
     """
 
-    
     get_userId_client_name_on_clientId_email = """
         with "email" as (values(%(email)s)), "clientId" as (values(%(clientId)s::int))
             --with "email" as (values('capitalch@gmail.com')), "clientId" as (values(51))
@@ -178,7 +191,7 @@ class SqlSecurity:
              where "clientId" = (table "clientId") and "userEmail" = (table "email")
     
     """
-    
+
     get_userId_on_clientId_and_email = """
         with "clientId" as (values(%(clientId)s::int)), "userEmail" as (values(%(userEmail)s)), "id" as (values(%(id)s))
 			--with "clientId" as (values(8)), "userEmail" as (values('capitalch@gmail.com')), "id" as (values(null::int))
@@ -223,7 +236,7 @@ class SqlSecurity:
                 , 'role', (select row_to_json(c) from cte3 c)
             ) as "jsonResult"
     """
-    
+
     get_user_hash = """
         with "id" as (values(%(id)s::int))
 			--with "id" as (values(56))
@@ -234,8 +247,7 @@ class SqlSecurity:
     test_connection = """
         select 'ok' as "connection"
     """
-    
-    
+
     update_user_hash = """
         with "id" as (values(%(id)s::int)), "hash" as (values(%(hash)s))
 			--with "id" as (values(56)), "hash" as (values('$2b$12$vcAUj2OC1XkPcT/hE7pFn.bBa84EVJWpraFV8ojEGthBoXBn4JzFa'))
@@ -243,8 +255,7 @@ class SqlSecurity:
 					set "hash" = (table "hash")
 						where "id" = (table "id")
     """
-    
-    
+
     update_user_uid = """
         with "uid" as (values(%(uid)s)), "id" as (values(%(id)s::int))
             --with "uid" as (values('MsqVEc0W')), "id" as (values(56))
@@ -252,6 +263,8 @@ class SqlSecurity:
                 set "uid" = (table "uid")
                     where "id" = (table "id")
     """
+
+
 allSqls = {
     "sql1": """with cte1 as (
             select * from "TranD" where "id" <> %(id)s
