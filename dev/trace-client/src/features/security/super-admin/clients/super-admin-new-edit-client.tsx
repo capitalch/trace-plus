@@ -18,7 +18,7 @@ import { GlobalContext } from "../../../../App"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 
-export function SuperAdminEditNewClient({
+export function SuperAdminNewEditClient({
     clientCode
     , clientName
     , dataInstance
@@ -26,7 +26,7 @@ export function SuperAdminEditNewClient({
     , id
     , isActive
     , isExternalDb
-}: SuperAdminEditNewClientType) {
+}: SuperAdminNewEditClientType) {
     const [active, setActive] = useState(isActive || false)
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors, }, } = useForm<FormDataType>({
@@ -231,7 +231,7 @@ type FormDataType = {
     isExternalDb?: boolean
 }
 
-type SuperAdminEditNewClientType = {
+type SuperAdminNewEditClientType = {
     dataInstance: string
     clientCode?: string | undefined
     clientName?: string

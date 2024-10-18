@@ -19,7 +19,7 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 // import {Button} from 'primereact/button'
 
-export function SuperAdminEditNewClientExtDatabase({
+export function SuperAdminNewEditClientExtDatabase({
     clientCode
     , clientName
     , dataInstance
@@ -28,7 +28,7 @@ export function SuperAdminEditNewClientExtDatabase({
     , id
     , isActive = false
     , isExternalDb
-}: SuperAdminEditNewClientExtDatabaseType) {
+}: SuperAdminNewEditClientExtDatabaseType) {
     const [active, setActive] = useState(false)
     const { checkNoSpaceOrSpecialChar, checkNoSpaceOrSpecialCharAllowDot, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, getValues, trigger, formState: { errors, }, } = useForm<FormDataType>({
@@ -449,7 +449,7 @@ type FormDataType = {
     url: string
 }
 
-type SuperAdminEditNewClientExtDatabaseType = {
+type SuperAdminNewEditClientExtDatabaseType = {
     dataInstance: string
     clientCode?: string
     clientName?: string

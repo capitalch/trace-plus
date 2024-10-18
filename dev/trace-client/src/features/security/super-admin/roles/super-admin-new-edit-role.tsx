@@ -18,12 +18,12 @@ import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 
-export function SuperAdminEditNewRole({
+export function SuperAdminNewEditRole({
     descr,
     roleName,
     dataInstance,
     id,
-}: SuperAdminEditNewRoleType) {
+}: SuperAdminNewEditRoleType) {
     const { checkNoSpecialChar } = useValidators();
     const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
@@ -157,7 +157,7 @@ type FormDataType = {
     id?: string;
 };
 
-type SuperAdminEditNewRoleType = {
+type SuperAdminNewEditRoleType = {
     dataInstance: string;
     descr?: string | undefined
     roleName?: string;

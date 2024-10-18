@@ -10,8 +10,8 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { Utils } from "../../../../utils/utils"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
-import { SuperAdminSecuredControlsNewControlButton } from "./super-admin-secured-controls-new-control-button"
-import { SuperAdminEditNewSecuredControl } from "./super-admin-edit-new-secured-control"
+import { SuperAdminNewSecuredControlButton } from "./super-admin-new-secured-control-button"
+import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
 
 export function SuperAdminSecuredControls() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -19,7 +19,7 @@ export function SuperAdminSecuredControls() {
 
     return (<CompContentContainer title='Super admin secured controls'>
         <CompSyncFusionGridToolbar
-            CustomControl={() => <SuperAdminSecuredControlsNewControlButton dataInstance={instance} />}
+            CustomControl={() => <SuperAdminNewSecuredControlButton dataInstance={instance} />}
             title="Secured controls view"
             isLastNoOfRows={true}
             instance={instance} />
@@ -93,7 +93,7 @@ export function SuperAdminSecuredControls() {
         Utils.showHideModalDialogA({
             title: 'Edit secured control',
             isOpen: true,
-            element: <SuperAdminEditNewSecuredControl
+            element: <SuperAdminNewEditSecuredControl
                 controlName={props.controlName}
                 controlNo={props.controlNo}
                 controlType={props.controlType}

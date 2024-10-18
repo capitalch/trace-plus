@@ -1,8 +1,8 @@
 import { Utils } from "../../../../utils/utils"
-import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-client-ext-database"
-import { SuperAdminEditNewClient } from "./super-admin-edit-new-client"
+import { SuperAdminNewEditClientExtDatabase } from "./super-admin-new-edit-client-ext-database"
+import { SuperAdminNewEditClient } from "./super-admin-new-edit-client"
 
-export function SuperAdminClientNewClientButtons({dataInstance}:{dataInstance: string}) {
+export function SuperAdminNewClientButtons({dataInstance}:{dataInstance: string}) {
 
     return (
         <div className="flex flex-wrap gap-2">
@@ -15,7 +15,7 @@ export function SuperAdminClientNewClientButtons({dataInstance}:{dataInstance: s
         Utils.showHideModalDialogA({
             title: "New client",
             isOpen: true,
-            element: <SuperAdminEditNewClient dataInstance={dataInstance} />,
+            element: <SuperAdminNewEditClient dataInstance={dataInstance} />,
         })
     }
 
@@ -23,7 +23,7 @@ export function SuperAdminClientNewClientButtons({dataInstance}:{dataInstance: s
         Utils.showHideModalDialogA({
             title: "New client with external database",
             isOpen: true,
-            element: <SuperAdminEditNewClientExtDatabase dataInstance={dataInstance} />,
+            element: <SuperAdminNewEditClientExtDatabase dataInstance={dataInstance} />,
         })
     }
 }

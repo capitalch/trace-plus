@@ -3,10 +3,10 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
-import { SuperAdminClientNewClientButtons } from "./super-admin-clients-new-client-buttons";
+import { SuperAdminNewClientButtons } from "./super-admin-new-client-buttons";
 import { Utils } from "../../../../utils/utils";
-import { SuperAdminEditNewClient } from "./super-admin-edit-new-client";
-import { SuperAdminEditNewClientExtDatabase } from "./super-admin-edit-new-client-ext-database";
+import { SuperAdminNewEditClient } from "./super-admin-new-edit-client";
+import { SuperAdminNewEditClientExtDatabase } from "./super-admin-new-edit-client-ext-database";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import _ from "lodash";
 import { Messages } from "../../../../utils/messages";
@@ -20,7 +20,7 @@ export function SuperAdminClients() {
     const instance = DataInstancesMap.superAdminClients //Grid
     return (
         <CompContentContainer title='Super admin clients' className="">
-            <CompSyncFusionGridToolbar CustomControl={() => <SuperAdminClientNewClientButtons dataInstance={instance} />} title="Clients view" isLastNoOfRows={true} instance={instance} />
+            <CompSyncFusionGridToolbar CustomControl={() => <SuperAdminNewClientButtons dataInstance={instance} />} title="Clients view" isLastNoOfRows={true} instance={instance} />
             <CompSyncFusionGrid
                 className="mt-4"
                 aggregates={getAggregates()}
@@ -114,7 +114,7 @@ export function SuperAdminClients() {
             Utils.showHideModalDialogA({
                 title: 'Edit client with external database',
                 isOpen: true,
-                element: <SuperAdminEditNewClientExtDatabase
+                element: <SuperAdminNewEditClientExtDatabase
                     clientCode={props.clientCode}
                     clientName={props.clientName}
                     dbName={props.dbName}
@@ -129,7 +129,7 @@ export function SuperAdminClients() {
             Utils.showHideModalDialogA({
                 title: "Edit client",
                 isOpen: true,
-                element: <SuperAdminEditNewClient
+                element: <SuperAdminNewEditClient
                     clientCode={props.clientCode}
                     clientName={props.clientName}
                     dbName={props.dbName}

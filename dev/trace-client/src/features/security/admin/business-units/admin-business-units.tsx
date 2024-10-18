@@ -8,10 +8,9 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
-// import { AdminEditNewBusinessUnit } from "./admin-edit-new-business-unit";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
-import { AdminBusinessUnitsNewButton } from "./admin-business-units-new-button";
+import { AdminNewBusinessUnitButton } from "./admin-new-business-unit-button";
 import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit";
 import { AppDispatchType } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
@@ -24,7 +23,7 @@ export function AdminBusinessUnits() {
     return (
         <CompContentContainer title='Admin business units'>
             <CompSyncFusionGridToolbar
-                CustomControl={() => <AdminBusinessUnitsNewButton dataInstance={instance} />}
+                CustomControl={() => <AdminNewBusinessUnitButton dataInstance={instance} />}
                 title="Business units view"
                 isLastNoOfRows={true}
                 instance={instance}

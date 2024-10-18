@@ -7,9 +7,9 @@ import { GlobalContext } from "../../../../App";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { SuperAdminRolesNewRoleButton } from "./super-admin-roles-new-role-button";
+import { SuperAdminNewRoleButton } from "./super-admin-new-role-button";
 import { Utils } from "../../../../utils/utils";
-import { SuperAdminEditNewRole } from "./super-admin-edit-new-role";
+import { SuperAdminNewEditRole } from "./super-admin-new-edit-role";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 
@@ -18,7 +18,7 @@ export function SuperAdminRoles() {
     const instance = DataInstancesMap.superAdminRoles //Grid
     return (<CompContentContainer title='Super admin roles'>
         <CompSyncFusionGridToolbar
-            CustomControl={() => <SuperAdminRolesNewRoleButton dataInstance={instance} />}
+            CustomControl={() => <SuperAdminNewRoleButton dataInstance={instance} />}
             title="Roles view"
             isLastNoOfRows={true}
             instance={instance} />
@@ -87,7 +87,7 @@ export function SuperAdminRoles() {
         Utils.showHideModalDialogA({
             title: 'Edit super admin role',
             isOpen: true,
-            element: <SuperAdminEditNewRole
+            element: <SuperAdminNewEditRole
                 dataInstance={instance}
                 descr={props.descr}
                 id={props.id}

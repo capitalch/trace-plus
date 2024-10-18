@@ -11,7 +11,7 @@ import { Utils } from "../../../../utils/utils"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
 import { SuperAdminNewAdminUserButton } from "./super-admin-new-admin-user-button"
-import { SuperAdminEditNewAdminUser } from "./super-admin-edit-new-admin-user"
+import { SuperAdminEditNewAdminUser } from "./super-admin-new-edit-admin-user"
 // import { SuperAdminSecuredControlsNewControlButton } from "./super-admin-secured-controls-new-control-button"
 // import { SuperAdminEditNewSecuredControl } from "./super-admin-edit-new-secured-control"
 

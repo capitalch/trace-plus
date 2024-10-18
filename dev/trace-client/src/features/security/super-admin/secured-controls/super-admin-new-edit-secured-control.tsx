@@ -18,14 +18,14 @@ import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 
-export function SuperAdminEditNewSecuredControl({
+export function SuperAdminNewEditSecuredControl({
     controlName,
     controlNo,
     controlType,
     dataInstance,
     descr,
     id,
-}: SuperAdminEditNewSecuredControlType) {
+}: SuperAdminNewEditSecuredControlType) {
     const { checkNoSpaceOrSpecialChar, shouldBePositive, shouldNotBeZero } = useValidators();
     const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
@@ -198,7 +198,7 @@ type FormDataType = {
     id?: string;
 };
 
-type SuperAdminEditNewSecuredControlType = {
+type SuperAdminNewEditSecuredControlType = {
     dataInstance: string;
     descr?: string | undefined;
     controlName?: string;

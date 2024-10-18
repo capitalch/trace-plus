@@ -29,6 +29,8 @@
 																					- Login menu
 																						- From super admin remove Change password and change uid
 - Admin
+	- Correct some of naming conventions for client and server
+	- Sometimes top navbar menu has different side menu
 																					- When top menu changes then do clean up and make the screen blank
 																						- Dashboard
 	- Business units

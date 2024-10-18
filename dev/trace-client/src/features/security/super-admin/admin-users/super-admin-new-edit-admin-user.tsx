@@ -16,7 +16,7 @@ import { GlobalContext } from "../../../../App";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 
-export function SuperAdminEditNewAdminUser({
+export function SuperAdminNewEditAdminUser({
     clientId,
     userName,
     mobileNo,
@@ -25,7 +25,7 @@ export function SuperAdminEditNewAdminUser({
     isActive,
     dataInstance,
     id,
-}: SuperAdminEditNewAdminUserType) {
+}: SuperAdminNewEditAdminUserType) {
     const { checkNoSpecialChar, checkEmail, checkMobileNo } = useValidators();
     const { clearErrors, getValues, handleSubmit, register, setError, setValue, formState: { errors, isSubmitting }, } = useForm<FormDataType>({
         mode: "onTouched",
@@ -245,7 +245,7 @@ type FormDataType = {
     id?: string;
 };
 
-type SuperAdminEditNewAdminUserType = {
+type SuperAdminNewEditAdminUserType = {
     clientId?: string;
     userName?: string;
     mobileNo?: string;
