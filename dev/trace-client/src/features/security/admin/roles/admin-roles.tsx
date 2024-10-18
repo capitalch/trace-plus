@@ -34,8 +34,8 @@ export function AdminRoles() {
                 hasIndexColumn={true}
                 instance={instance}
                 rowHeight={40}
-                sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
-                sqlId={SqlIdsMap.allRoles} // Adjust SQL ID if necessary for the admin context
+                sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
+                sqlId={SqlIdsMap.allAdminRoles}
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
             />

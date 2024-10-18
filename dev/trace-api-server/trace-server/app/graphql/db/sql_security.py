@@ -50,6 +50,15 @@ class SqlSecurity:
                         and "clientId" =(table "clientId")
     """
     
+    get_all_admin_roles_onClientId = """
+        with "noOfRows" as (values(%(noOfRows)s::int)), "clientId" as (values(%(clientId)s::int))
+        --with "noOfRows" as (values(null::int)), "clientId" as (values(51))
+            select * from "RoleM"
+                where "clientId" = (table "clientId")
+            order by "id" DESC
+                limit (table "noOfRows")
+    """
+    
     
     get_all_admin_users = """
         with "noOfRows" as (values(%(noOfRows)s::int))
@@ -98,8 +107,9 @@ class SqlSecurity:
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
             select * from "RoleM"
-                order by "id" DESC
-                    limit (table "noOfRows")
+                where "clientId" is null
+            order by "id" DESC
+                limit (table "noOfRows")
     """
 
     get_all_secured_controls = """
