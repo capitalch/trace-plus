@@ -1,12 +1,19 @@
 ## To do
 																				- While logging get roleId and roleName also as loginInfo
 - validations
-	- Admin users
-		- Business users: Server side validations
-			- While create / edit email check that same clientID + email and roleId + email is unique
-			- Make use of coalesce for edit
-		- Change uid
-			- make sure that new clientId + uid and roleId + uid combination is unique
+	- Test case
+		- Create a new business user with client_id 51
+		- Try to change its uid to capital
+			- there should server validation error
+		- Try to change its uid to capital1
+			- it should be OK
+																			- Admin users
+																				- Business users: Server side validations
+																					- While create / edit email check that same clientID + email is unique
+																					- Make use of coalesce for edit
+																				- Change uid
+																					- make sure that new clientID + uid is unique
+																					- use coalesce for edit
 
 																				- Display user email on screen after login
 - Provide appropriate logging at server

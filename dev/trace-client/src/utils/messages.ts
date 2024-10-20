@@ -13,6 +13,7 @@ const Messages = {
   errClientNameExists: 'Client name already exists',
   errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
   errCurrentAndNewPwdCannotBeSame: 'Current and new passwords cannot be same',
+  errEmailExistsForClient: 'This email already exists for the current client',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
   errInputMustBeUrl: 'Input must be a valid URL',
@@ -30,7 +31,7 @@ const Messages = {
   errSameCurrentPwdAndNewPwd: 'Current password and new password cannot be same',
   errSuperAdminRoleNameExists: "Super admin role name alrady exists",
   errSuperAdminControlNameExists: "Super admin control name already exists",
-  errEmailExistsForClient: 'This email already exists for the selected client',
+  errUidExistsForClient: 'This uid already exists for the current client',
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 

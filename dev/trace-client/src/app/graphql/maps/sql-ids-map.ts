@@ -16,6 +16,7 @@ export const SqlIdsMap = {
   getSuperAdminRoleOnRoleName: 'get_super_admin_role_on_role_name',
   getSuperAdminControlOnControlName: 'get_super_admin_control_on_control_name',
   getUserIdOnClientIdEmail:'get_userId_on_clientId_and_email',
+  getUserIdOnClientIdUid:'get_userId_on_clientId_and_uid',
   superAdminDashBoard: 'get_super_admin_dashboard',
   testConnection:'test_connection',
 }

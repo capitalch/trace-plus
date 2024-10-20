@@ -11,12 +11,14 @@ import { Utils } from "../../../utils/utils";
 import { InitialLoginStateType, setUid } from "../../login/login-slice";
 import { AppDispatchType } from "../../../app/store/store";
 import { useDispatch } from "react-redux";
+import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants";
+import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
 
 export function ChangeUid() {
     const { checkNoSpaceOrSpecialChar } = useValidators();
     const dispatch: AppDispatchType = useDispatch()
     const loginInfo: InitialLoginStateType = Utils.getCurrentLoginInfo()
-    const { handleSubmit, register, formState: { errors }, } = useForm<FormDataType>({
+    const { clearErrors, handleSubmit, register, getValues, setError, trigger, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
     });
@@ -33,6 +35,8 @@ export function ChangeUid() {
             notSameAsCurrentUid: checkNotSameAsCurrentUid,
         },
         minLength: { value: 4, message: Messages.errAtLeast4Chars },
+        onChange: () => clearErrors('root.uid')
+        // onBlur: validateUidAtServer
     });
 
     return (
@@ -72,6 +76,7 @@ export function ChangeUid() {
                 <div className="mt-4 flex justify-start">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors)} />
                 </div>
+                <span>{showServerValidationError()}</span>
             </div>
         </form>
     );
@@ -96,6 +101,12 @@ export function ChangeUid() {
     }
 
     async function onSubmit(data: FormDataType) {
+        if (!await validateUidAtServer()) {
+            return
+        }
+        if (!_.isEmpty(errors)) {
+            return;
+        }
         const currentUid = data?.currentUid
         const uid = data?.uid
         if (currentUid && uid && (currentUid !== uid)) {
@@ -111,6 +122,52 @@ export function ChangeUid() {
             error = Messages.errCurrentAndNewUidCannotBeSame
         }
         return (error)
+    }
+
+    function showServerValidationError() {
+        let Ret = <></>;
+        if (errors?.root?.uid) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.uid.message} />;
+        } else {
+            Ret = <WidgetFormHelperText helperText="&nbsp;" />;
+        }
+        return Ret;
+    }
+
+    async function validateUidAtServer(e?: any) {
+        let ret: boolean = true;
+        const values: any = getValues();
+        const uid: string = e?.target?.value || values?.uid;
+        if (!uid) {
+            return;
+        }
+
+        try {
+            const res: any = await Utils.queryGraphQL(
+                GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
+                    sqlId: SqlIdsMap.getUserIdOnClientIdUid,
+                    sqlArgs: {
+                        clientId: Utils.getCurrentLoginInfo().clientId,
+                        id: Utils.getCurrentLoginInfo().id,
+                        uid: uid,
+                    },
+                }),
+                GraphQLQueriesMap.genericQuery.name
+            );
+
+            if (!_.isEmpty(res?.data?.genericQuery[0])) {
+                setError("root.uid", {
+                    type: "serverError",
+                    message: Messages.errUidExistsForClient,
+                });
+                ret = false;
+            } else {
+                clearErrors("root.uid");
+            }
+            return ret;
+        } catch (e: any) {
+            console.log(e?.message);
+        }
     }
 }
 

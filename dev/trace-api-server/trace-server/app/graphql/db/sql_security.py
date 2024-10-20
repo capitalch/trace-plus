@@ -41,7 +41,6 @@ class SqlSecurity:
                 ) as "jsonResult"
     """
 
-
     get_admin_role_on_roleName_clientId = """
         with "roleName" as (values(%(roleName)s)), "clientId" as (values(%(clientId)s::int))
             --with "roleName" as (values('manager')), "clientId" as (values(51))
@@ -49,7 +48,7 @@ class SqlSecurity:
                     where lower("roleName") = (table "roleName")
                         and "clientId" = (table "clientId")
     """
-    
+
     get_all_admin_roles_onClientId = """
         with "noOfRows" as (values(%(noOfRows)s::int)), "clientId" as (values(%(clientId)s::int))
         --with "noOfRows" as (values(null::int)), "clientId" as (values(51))
@@ -58,8 +57,7 @@ class SqlSecurity:
             order by "id" DESC
                 limit (table "noOfRows")
     """
-    
-    
+
     get_all_admin_users = """
         with "noOfRows" as (values(%(noOfRows)s::int))
         --with "noOfRows" as (values(null::int))
@@ -136,7 +134,7 @@ class SqlSecurity:
             order by "id" DESC
                 limit (table "noOfRows")
     """
-    
+
     get_all_role_names_on_clientId = """
         with "clientId" as (values(%(clientId)s::int))
         --with "clientId" as (values(51))
@@ -254,6 +252,15 @@ class SqlSecurity:
 				where "clientId" = (table "clientId")
 					and "userEmail" = (table "userEmail")
 					and "id" <> COALESCE((table "id")::int,0)
+    """
+
+    get_userId_on_clientId_and_uid = """
+        with "clientId" as (values(%(clientId)s::int)), "uid" as (values(%(uid)s)), "id" as (values(%(id)s))
+            --with "clientId" as (values(51)), "uid" as (values('capital')), "id" as (values(56::int))
+            select id from "UserM"
+                where "clientId" = (table "clientId")
+                    and "uid" = (table "uid")
+                    and "id" <> (table "id")
     """
 
     get_user_details = """
