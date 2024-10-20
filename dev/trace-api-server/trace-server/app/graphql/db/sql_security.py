@@ -47,7 +47,7 @@ class SqlSecurity:
             --with "roleName" as (values('manager')), "clientId" as (values(51))
                 select "roleName" from "RoleM"
                     where lower("roleName") = (table "roleName")
-                        and "clientId" =(table "clientId")
+                        and "clientId" = (table "clientId")
     """
     
     get_all_admin_roles_onClientId = """
@@ -81,6 +81,31 @@ class SqlSecurity:
                     limit (table "noOfRows")
     """
 
+    get_all_business_users_on_clientId = """
+        with "noOfRows" as (values(%(noOfRows)s::int)), "clientId" as (values(%(clientId)s::int))
+        --with "noOfRows" as (values(null::int)), "clientId" as (values(51))
+            select c.id as "clientId" 
+				, r."id" as "roleId"
+				, "roleName"
+				, u."id"
+				, "uid"
+				, "userName"
+				, "mobileNo"
+				, "userEmail"
+				, u."descr"
+				, u."isActive"
+				, u."timestamp"
+			from "UserM" u
+				join "ClientM" c
+					on c.id = u."clientId"
+				join "RoleM" r
+					on r."id" = u."roleId"
+				where "roleId" is not null
+					and u."clientId" = (table "clientId")
+                order by u."id" DESC
+                    limit (table "noOfRows")
+    """
+
     get_all_business_units_on_clientId = """
         with "clientId" as (values(%(clientId)s))
 		--with "clientId" as (values(51))
@@ -110,6 +135,16 @@ class SqlSecurity:
                 where "clientId" is null
             order by "id" DESC
                 limit (table "noOfRows")
+    """
+    
+    get_all_role_names_on_clientId = """
+        with "clientId" as (values(%(clientId)s::int))
+        --with "clientId" as (values(51))
+            select "id"
+			, "roleName"
+			from "RoleM"
+				where "clientId" = (table "clientId")
+                order by "roleName"
     """
 
     get_all_secured_controls = """

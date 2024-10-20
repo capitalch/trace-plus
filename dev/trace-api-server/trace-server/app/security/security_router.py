@@ -20,11 +20,6 @@ async def get_api():
     return {"api": "trace-plus server"}
 
 
-# @securityRouter.post("/login", summary="Creates access token")
-# async def do_login(bundle=Depends(login_helper)):
-#     return bundle
-
-
 @securityRouter.post("/login", summary="Creates access token")
 async def do_login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     form = await request.form()

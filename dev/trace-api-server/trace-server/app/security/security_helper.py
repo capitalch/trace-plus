@@ -12,7 +12,7 @@ from app.security.security_utils import (
 )
 from app.graphql.db.sql_security import SqlSecurity
 from app.graphql.db.helpers.psycopg_async_helper import exec_sql
-from app.utils import is_not_none_or_empty,getSqlQueryObject
+from app.utils import is_not_none_or_empty, getSqlQueryObject
 from app.messages import EmailMessages
 from app.mail import send_email
 from jwt.exceptions import (
@@ -221,6 +221,7 @@ async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
             lastUsedBuId=userDetails["lastUsedBuId"],
             mobileNo=userDetails["mobileNo"],
             role=role,
+            roleId=userDetails["roleId"],
             uid=userDetails["uid"],
             userName=userDetails["userName"],
             id=userDetails["id"],

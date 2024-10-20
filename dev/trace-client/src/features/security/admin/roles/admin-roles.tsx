@@ -7,18 +7,19 @@ import { GlobalContext } from "../../../../App";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-// import { AdminRolesNewRoleButton } from "./admin-roles-new-role-button";
 import { Utils } from "../../../../utils/utils";
-// import { AdminEditNewRole } from "./admin-edit-new-role";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 import { AdminNewRoleButton } from "./admin-new-role-button";
 import { AdminNewEditRole } from "./admin-new-edit-role";
+import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
+import { AppDispatchType } from "../../../../app/store/store";
+import { useDispatch } from "react-redux";
 
 export function AdminRoles() {
     const context: GlobalContextType = useContext(GlobalContext);
-    const instance = DataInstancesMap.adminRoles; // Use the adminRoles data instance
-
+    const instance = DataInstancesMap.adminRoles;
+    const dispatch: AppDispatchType = useDispatch()
     return (
         <CompContentContainer title='Admin roles'>
             <CompSyncFusionGridToolbar
@@ -83,6 +84,7 @@ export function AdminRoles() {
                 Utils.showSuccessAlertMessage(
                     { message: Messages.messRecordDeleted, title: Messages.messSuccess },
                     () => {
+                        dispatch(resetQueryHelperData({ instance: instance }))
                         context.CompSyncFusionGrid[instance].loadData(); // Reloads data after deletion
                     }
                 );

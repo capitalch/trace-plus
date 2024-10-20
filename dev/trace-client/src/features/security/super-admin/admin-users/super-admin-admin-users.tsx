@@ -11,13 +11,11 @@ import { Utils } from "../../../../utils/utils"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
 import { SuperAdminNewAdminUserButton } from "./super-admin-new-admin-user-button"
-import { SuperAdminEditNewAdminUser } from "./super-admin-new-edit-admin-user"
-// import { SuperAdminSecuredControlsNewControlButton } from "./super-admin-secured-controls-new-control-button"
-// import { SuperAdminEditNewSecuredControl } from "./super-admin-edit-new-secured-control"
+import { SuperAdminNewEditAdminUser } from "./super-admin-new-edit-admin-user"
 
 export function SuperAdminAdminUsers() {
     const context: GlobalContextType = useContext(GlobalContext)
-    const instance = DataInstancesMap.superAdminAdminUsers //Grid
+    const instance = DataInstancesMap.superAdminAdminUsers
 
     return (<CompContentContainer title='Admin users'>
         <CompSyncFusionGridToolbar
@@ -121,7 +119,7 @@ export function SuperAdminAdminUsers() {
         Utils.showHideModalDialogA({
             title: 'Edit admin user',
             isOpen: true,
-            element: <SuperAdminEditNewAdminUser
+            element: <SuperAdminNewEditAdminUser
                 dataInstance={instance}
                 clientId={props.clientId}
                 descr={props.descr}

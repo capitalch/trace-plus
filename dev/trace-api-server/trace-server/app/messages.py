@@ -251,7 +251,7 @@ class EmailMessages:
         <!DOCTYPE html>
         <html>
         <head>
-        <title>New {userType} Created</title>
+        <title>New {userType} created</title>
         <style>
             body {{
             font-family: sans-serif;
@@ -294,7 +294,7 @@ class EmailMessages:
         </head>
         <body>
         <div class="container">
-            <h1>New {userType} Created</h1>
+            <h1>New {userType} created</h1>
             <p>Dear {userName},</p>
             <p>This is to inform you that a new {userType} has been created with your email address. Your uid and password are as follows:</p>
             <ul>

@@ -1,5 +1,6 @@
 export const DataInstancesMap = {
   adminBusinessUnits:'admin-business-units',
+  adminBusinessUsers:'admin-business-users',
   adminDashBoard:'admin-dashboard',
   adminRoles:'admin-roles',
   superAdminAdminUsers: 'super-admin-admin-users',

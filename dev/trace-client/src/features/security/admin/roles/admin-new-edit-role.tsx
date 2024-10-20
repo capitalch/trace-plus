@@ -105,7 +105,8 @@ export function AdminNewEditRole({
             tableName: "RoleM",
             xData: {
                 ...data,
-            }
+                clientId: Utils.getCurrentLoginInfo().clientId || 0
+            },
         };
         try {
             const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
@@ -136,8 +137,8 @@ export function AdminNewEditRole({
             GraphQLQueriesMap.genericQuery(
                 GLOBAL_SECURITY_DATABASE_NAME,
                 {
-                    sqlId: SqlIdsMap.getSAdminRoleOnRoleNameClientId, // Updated for Admin role validation
-                    sqlArgs: { roleName: value?.roleName }
+                    sqlId: SqlIdsMap.getAdminRoleOnRoleNameClientId,
+                    sqlArgs: { roleName: value?.roleName, clientId:Utils.getCurrentLoginInfo().clientId }
                 }),
             GraphQLQueriesMap.genericQuery.name);
         if (res?.data?.genericQuery[0]) {

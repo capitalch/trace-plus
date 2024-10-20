@@ -3,16 +3,16 @@ import ClickAwayListener from "react-click-away-listener"
 import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDown, showNavBarDropDownFn } from "../layouts-slice";
 import { AppDispatchType, RootStateType, } from "../../../app/store/store";
-import { doLogout } from "../../login/login-slice";
+import { doLogout, InitialLoginStateType } from "../../login/login-slice";
 import { ChangeUid } from "./change-uid";
 import { ChangePassword } from "./change-password";
 import { Utils } from "../../../utils/utils";
-import { IconUser } from "../../../controls/icons/icon-user";
 import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down";
 import { IconChangeUid } from "../../../controls/icons/icon-change-uid";
 import { IconChangePassword } from "../../../controls/icons/icon-change-password";
 import { IconLogout } from "../../../controls/icons/icon-logout";
 import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums";
+import { IconUser1 } from "../../../controls/icons/icon-user1";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -20,16 +20,17 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     const reduxState: RootStateType = Utils.getReduxState()
     const userType: string | undefined = reduxState.login.userType
     const isNotSuperAdmin = !(userType === UserTypesEnum.SuperAdmin)
-
+    const loginInfo: InitialLoginStateType = Utils.getCurrentLoginInfo()
+    const email: string | undefined = loginInfo.email
     return (
         <ClickAwayListener onClickAway={handleOnClickAway} >
             <div>
                 <button onClick={handleShowDropdown}
                     className={clsx(className, 'flex px-4 gap-3 py-2 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400')}>
-                    <IconUser />
+                    <span className="text-sm">{email}</span>
+                    <IconUser1 className='w-4 h-5 text-secondary-200' />
                     <IconCheveronDown />
                 </button>
-
                 {
                     toShowNavBarDropDownSelector &&
                     <div className="absolute z-10 mt-2 rounded-md shadow-lg bg-gray-50 right-0 border-[1px] text-gray-500 font-semibold">

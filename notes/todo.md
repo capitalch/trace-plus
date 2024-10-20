@@ -1,5 +1,14 @@
 ## To do
-- Display user details on screen after login
+																				- While logging get roleId and roleName also as loginInfo
+- validations
+	- Admin users
+		- Business users: Server side validations
+			- While create / edit email check that same clientID + email and roleId + email is unique
+			- Make use of coalesce for edit
+		- Change uid
+			- make sure that new clientId + uid and roleId + uid combination is unique
+
+																				- Display user email on screen after login
 - Provide appropriate logging at server
 																				- Apply client side validations prior to server side validations in Super admin
 																					- handle clientid axios error in login screen when server is not running
@@ -29,8 +38,8 @@
 																					- Login menu
 																						- From super admin remove Change password and change uid
 - Admin
-	- Correct some of naming conventions for client and server
-	- Sometimes top navbar menu has different side menu
+																					- Correct some of naming conventions for client and server
+																					- Sometimes top navbar menu has different side menu
 																					- When top menu changes then do clean up and make the screen blank
 																						- Dashboard
 	- Business units
@@ -40,8 +49,8 @@
 																						- Delete
 																							- After delete the data is not getting refreshed
 		- Server side create BU
-	- Roles
-	- Business users
+																						- Roles
+																						- Business users
 - Business user
 	- Vouchers
 	- Purch / Sales

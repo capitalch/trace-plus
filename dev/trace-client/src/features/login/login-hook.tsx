@@ -35,9 +35,11 @@ function useLogin() {
             lastUsedBranchId: undefined,
             lastUsedBuId: undefined,
             mobileNo: undefined,
-            userName: undefined,
+            roleId: undefined,
+            roleName: undefined,
             token: undefined,
             uid: undefined,
+            userName: undefined,
             userType: userType
         }))
         navigate('/', { replace: true })
@@ -75,9 +77,11 @@ function useLogin() {
                     lastUsedBranchId: payloadData?.lastUsedBrandId,
                     lastUsedBuId: payloadData?.lastUsedBuId,
                     mobileNo: payloadData?.mobileNo,
-                    userName: payloadData?.userName,
+                    roleId: payloadData?.roleId,
+                    roleName: payloadData?.roleName,
                     token: accessToken,
                     uid: payloadData?.uid,
+                    userName: payloadData?.userName,
                     userType: payloadData?.userType
                 }))
                 navigate('/', { replace: true })

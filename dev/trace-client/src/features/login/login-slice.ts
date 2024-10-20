@@ -14,9 +14,11 @@ const initialState: InitialLoginStateType = {
   lastUsedBranchId: undefined,
   lastUsedBuId: undefined,
   mobileNo: undefined,
-  userName: undefined,
+  roleId: undefined,
+  roleName: undefined,
   token: undefined,
   uid: undefined,
+  userName: undefined,
   userType: undefined
 }
 
@@ -92,9 +94,11 @@ export type InitialLoginStateType = {
   lastUsedBranchId: string | undefined
   lastUsedBuId: string | undefined
   mobileNo: string | undefined
-  userName: string | undefined
+  roleId: string | undefined
+  roleName: string | undefined
   token: string | undefined
   uid: string | undefined
+  userName: string | undefined
   userType: 'S' | 'A' | 'B' | undefined
 }
 
