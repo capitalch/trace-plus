@@ -13,6 +13,7 @@
 // import { IconUsers } from '../../components/icons/icon-users'
 // import { IconVoucher } from '../../components/icons/icon-voucher'
 
+import { IconAdminLinkUsers } from "../../controls/icons/icon-admin-link-users"
 import { IconAdminUsers } from "../../controls/icons/icon-admin-users"
 import { IconBusinessUnits } from "../../controls/icons/icon-business-units"
 import { IconClients } from "../../controls/icons/icon-clients"
@@ -270,11 +271,19 @@ export const MasterMenuData: MenuDataType = {
       iconColorClass: 'text-amber-500',
       children: [],
       path: '/admin-business-users'
+    },
+    {
+      id: '12',
+      label: 'Link users',
+      icon: IconAdminLinkUsers,
+      iconColorClass: 'text-secondary-400',
+      children: [],
+      path: '/admin-link-users'
     }
   ],
   superAdmin: [
     {
-      id: '12',
+      id: '13',
       label: 'Dashboard',
       icon: IconDashboard,
       iconColorClass: 'text-primary-500',
@@ -282,7 +291,7 @@ export const MasterMenuData: MenuDataType = {
       path: '/super-admin-dashboard'
     },
     {
-      id: '13',
+      id: '14',
       label: 'Clients',
       icon: IconClients,
       iconColorClass: 'text-teal-500',
@@ -290,7 +299,7 @@ export const MasterMenuData: MenuDataType = {
       path: '/super-admin-clients'
     },
     {
-      id: '14',
+      id: '15',
       label: 'Roles',
       icon: IconRoles,
       iconColorClass: 'text-amber-500',
@@ -298,7 +307,7 @@ export const MasterMenuData: MenuDataType = {
       path: '/super-admin-roles'
     },
     {
-      id: '15',
+      id: '16',
       label: 'Secured controls',
       icon: IconSecuredControls,
       iconColorClass: 'text-red-500',
@@ -306,7 +315,7 @@ export const MasterMenuData: MenuDataType = {
       path: '/super-admin-secured-controls'
     },
     {
-      id: '16',
+      id: '17',
       label: 'Admin users',
       icon: IconAdminUsers,
       iconColorClass: 'text-red-500',

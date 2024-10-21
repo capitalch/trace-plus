@@ -8,6 +8,7 @@
 @import '../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-notifications/styles/material.css'; */
 @import "../node_modules/@syncfusion/ej2-react-grids/styles/bootstrap.css";
+@import "../node_modules/@syncfusion/ej2-react-treegrid/styles/bootstrap.css";
 
 @tailwind base;
 @tailwind components;

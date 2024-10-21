@@ -14,6 +14,7 @@ import { AdminDashBoard } from "../../features/security/admin/dashboard/admin-da
 import { AdminBusinessUnits } from "../../features/security/admin/business-units/admin-business-units";
 import { AdminRoles } from "../../features/security/admin/roles/admin-roles";
 import { AdminBusinessUsers } from "../../features/security/admin/business users/admin-business-users";
+import { AdminLinkUsersWithBu } from "../../features/security/admin/link-users/admin-link-users-with-bu";
 
 export const appRouter = createBrowserRouter([
     {
@@ -70,6 +71,10 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'admin-business-users',
                 element: <AdminBusinessUsers />
+            },
+            {
+                path: 'admin-link-users',
+                element: <AdminLinkUsersWithBu />
             }
 
             // {
