@@ -3,6 +3,9 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 14-10-2024 - 20-10-2034
+	- Security completed
+	- Bu and User mapping remained
 # 12-10-2024 - 13-10-2024
 	- UID change: Working
 # 09-10-2024 - 11-10-2024

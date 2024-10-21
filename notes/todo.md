@@ -1,12 +1,31 @@
 ## To do
-																				- While logging get roleId and roleName also as loginInfo
-- validations
-	- Test case
-		- Create a new business user with client_id 51
-		- Try to change its uid to capital
-			- there should server validation error
-		- Try to change its uid to capital1
-			- it should be OK
+- Provide appropriate logging at server
+- Try tooltip for logout button from syncfusion tooltip. Necessary info about user
+- New Bu should create Schema at server side
+- Admin
+	- Associate users with bu's
+	- Associate secured controls with roles
+- Super admin
+	- Associate secured controls with roles
+
+
+- Business user
+	- Vouchers
+	- Purch / Sales
+	- Masters
+	- Final accounts
+	- Options
+	- Reports
+	- Inventory
+
+																				- While login get roleId and roleName also as loginInfo
+																- validations
+																	- Test case
+																		- Create a new business user with client_id 51
+																		- Try to change its uid to capital
+																			- there should server validation error
+																		- Try to change its uid to capital1
+																			- it should be OK
 																			- Admin users
 																				- Business users: Server side validations
 																					- While create / edit email check that same clientID + email is unique
@@ -16,7 +35,6 @@
 																					- use coalesce for edit
 
 																				- Display user email on screen after login
-- Provide appropriate logging at server
 																				- Apply client side validations prior to server side validations in Super admin
 																					- handle clientid axios error in login screen when server is not running
 																				- Change uid
@@ -44,28 +62,16 @@
 																					- Email from server
 																					- Login menu
 																						- From super admin remove Change password and change uid
-- Admin
 																					- Correct some of naming conventions for client and server
 																					- Sometimes top navbar menu has different side menu
 																					- When top menu changes then do clean up and make the screen blank
 																						- Dashboard
-	- Business units
-		- New
 																						- View
 																						- Edit
 																						- Delete
 																							- After delete the data is not getting refreshed
-		- Server side create BU
 																						- Roles
 																						- Business users
-- Business user
-	- Vouchers
-	- Purch / Sales
-	- Masters
-	- Final accounts
-	- Options
-	- Reports
-	- Inventory
 																						- Login to use client id concept
 																							- Typeahead implement
 																							- Axios query post
