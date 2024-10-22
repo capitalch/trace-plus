@@ -4,6 +4,11 @@
 - New Bu should create Schema at server side
 - Admin
 	- Associate users with bu's
+		- Use treegrid. Business users should appear as children to BU
+		- Button to add new Business user beside bu. Maybe a plus icon
+			- In a modal window
+		- Button to delete existing business user. Maybe a delete icon with tooltip
+
 	- Associate secured controls with roles
 - Super admin
 	- Associate secured controls with roles
