@@ -1,13 +1,13 @@
 export function WidgetSwitch({
-    leftLabel=''
+    leftLabel = ''
     , onChange
-    , rightLabel=''
+    , rightLabel = ''
 }: WidgetSwitchType) {
     return (
-        <label className="inline-flex items-center cursor-pointer">
+        <label className="inline-flex cursor-pointer items-center">
             <span className="mr-2 text-sm font-medium text-gray-500">{leftLabel}</span>
-            <input type="checkbox" value="" className="sr-only peer" onChange={onChange} />
-            <div className="relative w-11 h-6 bg-primary-200 peer-focus:outline-none  dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <input type="checkbox" value="" className="peer sr-only" onChange={onChange} />
+            <div className="peer relative h-6 w-11 rounded-full hover:bg-slate-500 bg-primary-200 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none rtl:peer-checked:after:-translate-x-full dark:border-gray-600 dark:peer-focus:ring-blue-800"></div>
             <span className="ml-2 text-sm font-medium text-gray-600">{rightLabel}</span>
         </label>
     )

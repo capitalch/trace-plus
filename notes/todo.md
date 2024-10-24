@@ -14,13 +14,15 @@
 		- Implement link functionality
 		- Implement unlink functionality
 		- Drag n drop
+																		- Remove unlink button from rows with no user
 		- Generic toolbar
 																		- Search
 																		- pdf, excel, csv export
 																		- Refresh
 																		- Collapse / expand all
-			- Create new business unit button and its functionality
-			- Create new user button and its functionality
+			- Controls alignment
+																		- Create new business unit button and its functionality
+																		- Create new user button and its functionality
 
 	- Associate secured controls with roles
 - Super admin

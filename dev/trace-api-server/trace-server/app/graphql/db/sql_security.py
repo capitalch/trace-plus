@@ -164,8 +164,8 @@ class SqlSecurity:
     
     
     get_bu_users_link = """
-        with "clientId" as (values(%(clientId)s::int))
-        --with "clientId" as (values(51))
+        --with "clientId" as (values(%(clientId)s::int))
+        with "clientId" as (values(51))
         , cte1 as (
             select bu.id as "buId", "buCode" as "code", "buName" as "name"
                 ,json_agg(
@@ -174,7 +174,7 @@ class SqlSecurity:
                             'code', u."uid",
                             'name', u."userName"
                         )
-                ) as users
+                ) FILTER (WHERE u."uid" IS NOT NULL AND u."userName" IS NOT NULL) AS users
             from "BuM" bu
                 left join "UserBuX" x
                     on bu.id = x."buId"
@@ -189,7 +189,7 @@ class SqlSecurity:
             json_build_object(
                 'code',"code",
                 'name',"name",
-                'users',COALESCE(users, '[]'::json)
+                'users',COALESCE(users, null::json)
             )
         ) as "jsonResult" from cte1
     """

@@ -6,15 +6,13 @@ import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-h
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
-import { GlobalContextType } from "../../../../app/global-context";
-import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 
@@ -22,15 +20,14 @@ export function AdminNewEditBusinessUnit({
     buCode,
     buName,
     isActive,
-    dataInstance,
     id,
+    loadData,
 }: AdminNewEditBusinessUnitType) {
-    const { checkNoSpaceOrSpecialChar , checkNoSpecialChar} = useValidators();
+    const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators();
     const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
     });
-    const context: GlobalContextType = useContext(GlobalContext);
 
     const registerBuCode = register("buCode", {
         minLength: { value: 4, message: Messages.errAtLeast4Chars },
@@ -146,7 +143,7 @@ export function AdminNewEditBusinessUnit({
             Utils.showHideModalDialogA({
                 isOpen: false,
             });
-            context.CompSyncFusionGrid[dataInstance].loadData();
+            loadData()
             Utils.showSaveMessage();
         } catch (e: any) {
             console.log(e.message);
@@ -191,9 +188,10 @@ type FormDataType = {
 };
 
 type AdminNewEditBusinessUnitType = {
-    dataInstance: string;
+    // dataInstance: string;
     buCode?: string;
     buName?: string;
     isActive?: boolean;
     id?: string;
+    loadData: () => void
 };
