@@ -11,11 +11,14 @@
 																		- Data wire up at client side
 																		- Grid auto fit in available space
 																		- default expanded or collapsed
+		- Implement link functionality
+		- Implement unlink functionality
+		- Drag n drop
 		- Generic toolbar
-			- Search
-			- pdf, excel, csv export
+																		- Search
+																		- pdf, excel, csv export
 																		- Refresh
-			- Collapse / expand all
+																		- Collapse / expand all
 			- Create new business unit button and its functionality
 			- Create new user button and its functionality
 

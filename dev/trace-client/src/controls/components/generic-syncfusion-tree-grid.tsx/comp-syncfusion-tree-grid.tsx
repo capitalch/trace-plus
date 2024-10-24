@@ -3,7 +3,7 @@ import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { Aggregate, ColumnsDirective, ExcelExport, InfiniteScroll, Inject, Page, PdfExport, Resize, SearchSettings, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { Aggregate, ColumnsDirective, ExcelExport,Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, SearchSettings, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 
 export function CompSyncfusionTreeGrid({
     allowPaging = false,
@@ -54,13 +54,13 @@ export function CompSyncfusionTreeGrid({
                 allowExcelExport={true}
                 allowPaging={allowPaging}
                 allowResizing={true}
-                allowSorting={allowSorting}
+                
                 allowSelection={true}
+                allowSorting={allowSorting}
                 allowTextWrap={true}
                 childMapping={childMapping}
                 className={className}
                 clipMode="EllipsisWithTooltip"
-                // created={onCreated}
                 dataSource={selectedData || []}
                 enablePersistence={false}
                 enableCollapseAll={isCollapsedAllByDefault}
@@ -84,12 +84,11 @@ export function CompSyncfusionTreeGrid({
                 <Inject services={[
                     Aggregate
                     , ExcelExport
+                    , Filter // In treeGrid control Filter module is used in place of Search module. It works the same way
                     , InfiniteScroll
                     , Page
                     , PdfExport
                     , Resize
-                    // , SearchSettings // Not working
-                    // , Selection
                     , Sort
                     , Toolbar
                 ]} />

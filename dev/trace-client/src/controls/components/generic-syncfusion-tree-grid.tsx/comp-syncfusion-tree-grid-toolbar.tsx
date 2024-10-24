@@ -10,6 +10,7 @@ import { IconFileExcel } from "../../icons/icon-file-excel"
 import { IconFileCsv } from "../../icons/icon-file-csv"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { Utils } from "../../../utils/utils"
+import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
 
 export function CompSyncFusionTreeGridToolbar({
     CustomControl = undefined
@@ -33,7 +34,7 @@ export function CompSyncFusionTreeGridToolbar({
         isCollapsedStatePersist: false
     }
 
-    return (<div className="flex items-center justify-between">
+    return (<div className="flex justify-between  align-middle">
         <h2 className="mt-0 text-lg font-medium text-primary-500">{title}</h2>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
@@ -69,7 +70,7 @@ export function CompSyncFusionTreeGridToolbar({
             </WidgetTooltip>}
 
             {/* Search */}
-            {/* {isSearch && <CompSyncFusionGridSearchBox instance={instance} />} */}
+            {isSearch && <CompSyncFusionTreeGridSearchBox instance={instance} />}
 
             {/* Refresh */}
             {isRefresh && <WidgetTooltip title="Refresh">
@@ -79,7 +80,7 @@ export function CompSyncFusionTreeGridToolbar({
                     loadData && await loadData()
                     const state: RootStateType = Utils.getReduxState()
                     const searchString = state.queryHelper[instance].searchString
-                    const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+                    const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     if (searchString) {
                         gridRef.current.search(searchString)
                     }
@@ -101,11 +102,3 @@ type CompSyncFusionTreeGridToolbarType = {
     isSearch?: boolean
     title: string,
 }
-
-
-{/* <label className="inline-flex items-center cursor-pointer">
-    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Toggle me</span>
-    <input type="checkbox" value="" className="sr-only peer" onChange={handleOnChange} onClick={handleOnClick} />
-    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Toggle me</span>
-</label> */}
