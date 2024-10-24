@@ -13,14 +13,14 @@ export function AdminLinkUsersCustomControl({
     const dispatch: AppDispatchType = useDispatch()
 
     return (
-        <div className="flex items-center">
+        <div className="flex items-center ">
             <WidgetSwitch
                 leftLabel="Collapse"
                 onChange={handleOnChange}
                 rightLabel="Expand"
             />
-            <button className="bg-primary-400 rounded-md mx-2 px-2 text-white ">New business unit</button>
-            <button className="bg-secondary-500 rounded-md mx-2 px-2 text-white"> New business user</button>
+            <button className="bg-primary-400 rounded-md mx-2 px-2 py-0.5 text-white ">New business unit</button>
+            <button className="bg-secondary-500 rounded-md mx-2 px-2 py-0.5 text-white"> New business user</button>
         </div>)
 
     function handleOnChange(e: any) {
