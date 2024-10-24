@@ -161,6 +161,40 @@ class SqlSecurity:
                     where "clientId" = (table "clientId") 
                         and "buCode" = (table "buCode")
     """
+    
+    
+    get_bu_users_link = """
+        with "clientId" as (values(%(clientId)s::int))
+        --with "clientId" as (values(51))
+        , cte1 as (
+            select bu.id as "buId", "buCode" as "code", "buName" as "name"
+                ,json_agg(
+                    json_build_object
+                        (
+                            'code', u."uid",
+                            'name', u."userName"
+                        )
+                ) as users
+            from "BuM" bu
+                left join "UserBuX" x
+                    on bu.id = x."buId"
+                left join "UserM" u
+                    on u.id = x."userId"
+                where bu."clientId" = (table "clientId")
+            GROUP by bu.id
+            order by "buCode", "buName"
+        )
+        
+        select json_agg(
+            json_build_object(
+                'code',"code",
+                'name',"name",
+                'users',COALESCE(users, '[]'::json)
+            )
+        ) as "jsonResult" from cte1
+    """
+    
+    
     get_clients_on_criteria = """
         with "criteria" as (values(%(criteria)s::text))
         --with "criteria" as (values('cap'::text))

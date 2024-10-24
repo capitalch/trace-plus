@@ -1,19 +1,17 @@
-import { FC, useContext, } from "react"
-import { CompSyncFusionGridSearchBox } from "./comp-syncfusion-grid-search-box"
-import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
+import { FC, useContext } from "react"
 import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
-import { useDispatch, useSelector } from "react-redux"
-import { setLastNoOfRows } from '../../../app/graphql/query-helper-slice'
-import { IconFilePdf } from "../../icons/icon-file-pdf"
+import { useDispatch } from "react-redux"
+import { TreeGridPdfExportProperties } from "@syncfusion/ej2-react-treegrid"
 import { WidgetTooltip } from "../../widgets/widget-tooltip"
+import { IconFilePdf } from "../../icons/icon-file-pdf"
 import { IconFileExcel } from "../../icons/icon-file-excel"
 import { IconFileCsv } from "../../icons/icon-file-csv"
+import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { Utils } from "../../../utils/utils"
-import { PdfExportProperties } from "@syncfusion/ej2-react-grids"
 
-export function CompSyncFusionGridToolbar({
+export function CompSyncFusionTreeGridToolbar({
     CustomControl = undefined
     , instance = ''
     , isCsvExport = true
@@ -25,18 +23,14 @@ export function CompSyncFusionGridToolbar({
     , isSearch = true
 
     , title
-}: CompSyncFusionGridToolbarType) {
+}: CompSyncFusionTreeGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
-    const selectedLastNoOfRows: string = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
-    let lastNoOfRows: string = selectedLastNoOfRows
-    if (selectedLastNoOfRows === undefined) {
-        lastNoOfRows = '100'
-    }
 
-    const pdfExportProperties: PdfExportProperties = {
+    const pdfExportProperties: TreeGridPdfExportProperties = {
         fileName: 'trace-export.pdf',
-        pageOrientation: isPdfExportAsLandscape ? 'Landscape' : 'Portrait'
+        pageOrientation: isPdfExportAsLandscape ? 'Landscape' : 'Portrait',
+        isCollapsedStatePersist: false
     }
 
     return (<div className="flex items-center justify-between">
@@ -44,20 +38,10 @@ export function CompSyncFusionGridToolbar({
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
 
-            {/* last no of rows */}
-            {isLastNoOfRows && <select value={lastNoOfRows}
-                className="rounded-md h-9 border border-none bg-slate-200 text-sm focus:border-none focus:outline-none"
-                onChange={handleOnChangeLastNoOfRows}>
-                <option value="100">Last 100 rows</option>
-                <option value="500">Last 500 rows</option>
-                <option value="1000">Last 1000 rows</option>
-                <option value="">All rows</option>
-            </select>}
-
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
                 <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
-                    const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+                    const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.pdfExport(pdfExportProperties)
                 }}>
                     <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
@@ -67,7 +51,7 @@ export function CompSyncFusionGridToolbar({
             {/* Excel export */}
             {isExcelExport && <WidgetTooltip title="Excel export">
                 <button className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
-                    const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+                    const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.excelExport()
                 }}>
                     <IconFileExcel className="m-auto h-6 w-6 text-green-600" />
@@ -77,7 +61,7 @@ export function CompSyncFusionGridToolbar({
             {/* csv export */}
             {isCsvExport && <WidgetTooltip title="Csv export">
                 <button className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
-                    const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+                    const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.csvExport()
                 }}>
                     <IconFileCsv className="m-auto h-6 w-6 text-blue-600" />
@@ -85,13 +69,13 @@ export function CompSyncFusionGridToolbar({
             </WidgetTooltip>}
 
             {/* Search */}
-            {isSearch && <CompSyncFusionGridSearchBox instance={instance} />}
+            {/* {isSearch && <CompSyncFusionGridSearchBox instance={instance} />} */}
 
             {/* Refresh */}
             {isRefresh && <WidgetTooltip title="Refresh">
                 <WidgetButtonRefresh handleRefresh={async () => {
                     const loadData: any = context.
-                        CompSyncFusionGrid[instance].loadData
+                        CompSyncFusionTreeGrid[instance].loadData
                     loadData && await loadData()
                     const state: RootStateType = Utils.getReduxState()
                     const searchString = state.queryHelper[instance].searchString
@@ -103,16 +87,9 @@ export function CompSyncFusionGridToolbar({
             </WidgetTooltip>}
         </div>
     </div >)
-
-    function handleOnChangeLastNoOfRows(e: any) {
-        dispatch(setLastNoOfRows({
-            instance: instance,
-            lastNoOfRows: e.target.value
-        }))
-    }
 }
 
-type CompSyncFusionGridToolbarType = {
+type CompSyncFusionTreeGridToolbarType = {
     CustomControl?: FC
     instance: string
     isCsvExport?: boolean
@@ -124,3 +101,11 @@ type CompSyncFusionGridToolbarType = {
     isSearch?: boolean
     title: string,
 }
+
+
+{/* <label className="inline-flex items-center cursor-pointer">
+    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Toggle me</span>
+    <input type="checkbox" value="" className="sr-only peer" onChange={handleOnChange} onClick={handleOnClick} />
+    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Toggle me</span>
+</label> */}

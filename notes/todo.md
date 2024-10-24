@@ -4,10 +4,20 @@
 - New Bu should create Schema at server side
 - Admin
 	- Associate users with bu's
-		- Use treegrid. Business users should appear as children to BU
-		- Button to add new Business user beside bu. Maybe a plus icon
-			- In a modal window
-		- Button to delete existing business user. Maybe a delete icon with tooltip
+																		- Create and use generic tree grid
+																		- Business users should appear as children to BU
+																		- Link unlink buttons for users
+																		- Server side sql for grid data
+																		- Data wire up at client side
+																		- Grid auto fit in available space
+																		- default expanded or collapsed
+		- Generic toolbar
+			- Search
+			- pdf, excel, csv export
+																		- Refresh
+			- Collapse / expand all
+			- Create new business unit button and its functionality
+			- Create new user button and its functionality
 
 	- Associate secured controls with roles
 - Super admin

@@ -24,6 +24,7 @@ export function AdminBusinessUsers() {
     const context: GlobalContextType = useContext(GlobalContext);
     const instance = DataInstancesMap.adminBusinessUsers;
     const dispatch: AppDispatchType = useDispatch()
+    
     return (
         <CompContentContainer title="Business users">
             <CompSyncFusionGridToolbar
