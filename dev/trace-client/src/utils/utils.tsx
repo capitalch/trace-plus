@@ -8,6 +8,7 @@ import { getApolloClient } from "../app/graphql/apollo-client"
 import { InitialLoginStateType } from "../features/login/login-slice"
 
 export const Utils: UtilsType = {
+    addUniqueKeysToJson: addUniqueKeysToJson,
     getCurrentLoginInfo: getCurrentLoginInfo,
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
@@ -16,14 +17,38 @@ export const Utils: UtilsType = {
     queryGraphQL: queryGraphQL,
     showAlertMessage: showAlertMessage,
     showAppLoader: showAppLoader,
+    showConfirmDialog: showConfirmDialog,
+    showCustomMessage: showCustomMessage,
     showDeleteConfirmDialog: showDeleteConfirmDialog,
     showErrorMessage: showErrorMessage,
+    showFailureAlertMessage: showFailureAlertMessage,
     showHideModalDialogA: showHideModalDialogA,
     showHideModalDialogB: showHideModalDialogB,
     showGraphQlErrorMessage: showGraphQlErrorMessage,
+    showOptionsSelect:showOptionsSelect,
     showSaveMessage: showSaveMessage,
     showSuccessAlertMessage: showSuccessAlertMessage,
-    showFailureAlertMessage: showFailureAlertMessage
+}
+
+function addUniqueKeysToJson(data: any) {
+    let runningKey = 1;
+
+    const traverseAndAddKeys = (node: any) => {
+        // Add a unique key to the current node
+        const nodeWithKey = { ...node, key: runningKey++ };
+
+        // Traverse through child nodes if present
+        Object.keys(nodeWithKey).forEach((key) => {
+            if (Array.isArray(nodeWithKey[key])) {
+                nodeWithKey[key] = nodeWithKey[key].map((child) => traverseAndAddKeys(child));
+            } else if (typeof nodeWithKey[key] === 'object' && nodeWithKey[key] !== null) {
+                nodeWithKey[key] = traverseAndAddKeys(nodeWithKey[key]);
+            }
+        });
+
+        return nodeWithKey;
+    }
+    return data.map((item: any) => traverseAndAddKeys(item));
 }
 
 function getCurrentLoginInfo() {
@@ -101,6 +126,42 @@ function showAlertMessage(title: string, message: string) {
         title: title,
         text: message,
         icon: "info",
+    })
+}
+
+function showConfirmDialog(title: string, message: string, onConfirm: () => void) {
+    Swal.fire({
+        title: title,
+        text: message,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, proceed!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            onConfirm()
+        }
+    })
+}
+
+function showCustomMessage(title: string) {
+    Swal.fire({
+        toast: true,
+        position: "bottom-right",
+        background: '#d0f0c0',
+        timer: 5000,
+        timerProgressBar: true,
+        title: title,
+        padding: '10px',
+        showConfirmButton: false,
+        icon: 'success',
+        iconColor: '#007f5c',
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        },
+        width: '20rem'
     })
 }
 
@@ -183,6 +244,27 @@ function showHideModalDialogB({ isOpen, title = '', element = <></> }: ShowHideM
 
 }
 
+function showOptionsSelect( message: string, option1: string, option2: string, action: (result: any) => void) {
+    Swal.fire({
+        title: 'Select an option',
+        text: message,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: option1,
+        cancelButtonText: 'Cancel',
+        showDenyButton: true,
+        denyButtonText: option2
+    }).then(
+        action
+        // (result) => {
+        // if (result.isConfirmed) {
+        //     onOptionSelect(option1);
+        // } else if (result.dismiss === Swal.DismissReason.cancel) {
+        //     onOptionSelect(option2);
+        // }}
+    );
+}
+
 function showSaveMessage() {
     Swal.fire({
         toast: true,
@@ -249,6 +331,7 @@ type ShowModalDialogMessageArgsType = {
 }
 
 type UtilsType = {
+    addUniqueKeysToJson: (data: any) => any
     getCurrentLoginInfo: () => InitialLoginStateType
     getHostUrl: () => string
     getReduxState: () => RootStateType
@@ -256,6 +339,8 @@ type UtilsType = {
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
     showAlertMessage: (title: string, message: string) => void
+    showConfirmDialog: (title: string, message: string, onConfirm: () => void) => void
+    showCustomMessage: (title: string) => void
     showDeleteConfirmDialog: (onConfirm: () => void) => void
     showFailureAlertMessage: (alertMessage: AlertMessageType) => void
     showSuccessAlertMessage: (alertMessage: AlertMessageType, callback?: () => void) => void
@@ -264,5 +349,6 @@ type UtilsType = {
     showHideModalDialogA: (options: ShowHideModalDialogType) => void
     showHideModalDialogB: (options: ShowHideModalDialogType) => void
     showGraphQlErrorMessage: (error: GraphQlErrorType) => void
+    showOptionsSelect: (message: string, option1: string, option2: string, action: (result: any) => void) => void
     showSaveMessage: () => void
 }

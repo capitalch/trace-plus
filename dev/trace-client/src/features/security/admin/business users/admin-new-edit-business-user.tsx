@@ -11,8 +11,6 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
-// import { GlobalContextType } from "../../../../app/global-context";
-// import { GlobalContext } from "../../../../App";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 
@@ -23,7 +21,6 @@ export function AdminNewEditBusinessUser({
     userEmail,
     descr,
     isActive,
-    // dataInstance,
     id,
     loadData
 }: AdminNewEditBusinessUserType) {
@@ -41,7 +38,7 @@ export function AdminNewEditBusinessUser({
         mode: "onTouched",
         criteriaMode: "all",
     });
-    // const context: GlobalContextType = useContext(GlobalContext);
+    
     const registerRoleId = register("roleId", {
         required: Messages.errRequired,
     });
@@ -198,7 +195,6 @@ export function AdminNewEditBusinessUser({
             const queryName: string = GraphQLQueriesMap.updateUser.name;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
-            // context.CompSyncFusionGrid[dataInstance].loadData();
             loadData()
             Utils.showSaveMessage();
         } catch (e: any) {
@@ -273,7 +269,6 @@ type AdminNewEditBusinessUserType = {
     userEmail?: string;
     descr?: string;
     isActive?: boolean;
-    // dataInstance: string;
     id?: string;
     loadData: () => void
 };

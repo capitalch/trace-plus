@@ -39,6 +39,7 @@ import { ReactSelectTypeAhead } from './features/react-select/react-select-type-
 import { ReactSelectTypeAheadAsync1 } from './features/react-select/react-select-type-ahead-async1'
 import { ReactSelectAsync } from './features/react-select/react-select-async'
 import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
+import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
 // import { Counter } from './features/redux-counter/counter';
 // import { ReactTooltip, ReactTooltip1Control } from './features/tooltip/react-tooltip';
@@ -87,8 +88,9 @@ function App() {
       <ApolloGraphQLComp2 /> */}
       {/* <ApolloGraphQL03112024 /> */}
       <ReactSelectTypeAheadAsync1 />
-      <ReactSelectAsync />
+      {/* <ReactSelectAsync /> */}
       <SyncfusionTreeGrid />
+      <KeyToJson />
     </GlobalContext.Provider>
   )
 }

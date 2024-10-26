@@ -164,15 +164,18 @@ class SqlSecurity:
     
     
     get_bu_users_link = """
-        --with "clientId" as (values(%(clientId)s::int))
-        with "clientId" as (values(51))
+        with "clientId" as (values(%(clientId)s::int))
+        --with "clientId" as (values(51))
         , cte1 as (
             select bu.id as "buId", "buCode" as "code", "buName" as "name"
                 ,json_agg(
                     json_build_object
                         (
+                            'id', x.id,
                             'code', u."uid",
-                            'name', u."userName"
+                            'name', u."userName",
+							'buId', bu.id,
+							'userId', u.id
                         )
                 ) FILTER (WHERE u."uid" IS NOT NULL AND u."userName" IS NOT NULL) AS users
             from "BuM" bu
@@ -189,6 +192,7 @@ class SqlSecurity:
             json_build_object(
                 'code',"code",
                 'name',"name",
+				'buId',"buId",
                 'users',COALESCE(users, null::json)
             )
         ) as "jsonResult" from cte1
@@ -338,6 +342,19 @@ class SqlSecurity:
 			--with "id" as (values(56))
 	            select "hash" from "UserM"
 					where "id" = (table "id")
+    """
+
+    get_users_not_linked_with_buId = """
+        with "buId" as (values(%(buId)s::int))
+            --with "buId" as (values(43))
+            SELECT u.id, "userName"||' : '||"userEmail"||' : '||uid as "user"
+            FROM "UserM" u
+            LEFT JOIN "UserBuX" x
+                ON u.id = x."userId" AND x."buId" = (table "buId")
+            JOIN "BuM" b
+                on b.id = (table "buId") AND u."clientId" = b."clientId"
+            WHERE x."userId" IS NULL
+            ORDER BY "userName", "userEmail", uid;
     """
 
     test_connection = """

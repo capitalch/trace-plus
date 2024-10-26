@@ -1,83 +1,224 @@
 import {
-    TreeGridComponent,
-    ColumnsDirective,
-    ColumnDirective,
-  } from "@syncfusion/ej2-react-treegrid";
-  import { Inject, Page, Sort } from "@syncfusion/ej2-react-treegrid";
-import { useState } from "react";
+  TreeGridComponent,
+  ColumnsDirective,
+  ColumnDirective,
+  RowDD,
+} from "@syncfusion/ej2-react-treegrid";
+import { Inject, Page, Sort } from "@syncfusion/ej2-react-treegrid";
 
-export function SyncfusionTreeGrid(){
-    const [data] = useState([
-        {
-          TaskID: 1,
-          TaskName: "Planning",
-          StartDate: new Date("2023-09-01"),
-          EndDate: new Date("2023-09-05"),
-          Progress: 100,
-          SubTasks: [
-            {
-              TaskID: 11,
-              TaskName: "Requirement Gathering",
-              StartDate: new Date("2023-09-02"),
-              EndDate: new Date("2023-09-04"),
-              Progress: 50,
-            },
-            {
-              TaskID: 12,
-              TaskName: "Feasibility Study",
-              StartDate: new Date("2023-09-03"),
-              EndDate: new Date("2023-09-05"),
-              Progress: 75,
-            },
-          ],
-        },
-        {
-          TaskID: 2,
-          TaskName: "Development",
-          StartDate: new Date("2023-09-06"),
-          EndDate: new Date("2023-10-05"),
-          Progress: 60,
-          SubTasks: [
-            {
-              TaskID: 21,
-              TaskName: "Design",
-              StartDate: new Date("2023-09-06"),
-              EndDate: new Date("2023-09-15"),
-              Progress: 70,
-            },
-            {
-              TaskID: 22,
-              TaskName: "Coding",
-              StartDate: new Date("2023-09-16"),
-              EndDate: new Date("2023-10-05"),
-              Progress: 80,
-            },
-          ],
-        },
-      ]);
+export function SyncfusionTreeGrid() {
 
-      return (
-        <div>
-          <TreeGridComponent
-            dataSource={data}
-            treeColumnIndex={1} // Specifies the index of the hierarchical column
-            childMapping="SubTasks" // Field that indicates child data
-            allowPaging={true} // Enable paging
-            allowSorting={true} // Enable sorting
-            pageSettings={{ pageSize: 10 }}
-            gridLines="None"
-          >
-            <ColumnsDirective>
-              <ColumnDirective field="TaskID" headerText="Task ID" width="90" textAlign="Right" />
-              <ColumnDirective field="TaskName" headerText="Task Name" width="200" />
-              <ColumnDirective field="StartDate" headerText="Start Date" width="120" format="yMd" textAlign="Right" />
-              <ColumnDirective field="EndDate" headerText="End Date" width="120" format="yMd" textAlign="Right" />
-              <ColumnDirective field="Progress" headerText="Progress" width="120" textAlign="Right" />
-            </ColumnsDirective>
-            <Inject services={[Page, Sort]} />
-          </TreeGridComponent>
-        </div>
-      );
-    };
+  return (
+    <div className="m-2">
+      <TreeGridComponent
+        allowRowDragAndDrop={true}
+        dataSource={data1}
+        treeColumnIndex={0} // Specifies the index of the hierarchical column
+        childMapping="users" // Field that indicates child data
+        allowPaging={true} // Enable paging
+        allowSorting={true} // Enable sorting
+        enableCollapseAll={true}
+        height='100%'
+        // pageSettings={{ pageSize: 10 }}
+        gridLines="Both"
+      >
+        <ColumnsDirective>
+          <ColumnDirective field="code" headerText="Code" width="100" />
+          <ColumnDirective field="name" headerText="Name" width="200" />
+        </ColumnsDirective>
+        <Inject services={[Page, RowDD, Sort]} />
+      </TreeGridComponent>
+    </div>
+  );
+};
 
 
+const data1 = [
+  {
+    "code": "buu1",
+    "name": "Business unit 1",
+    "buId": 42,
+    "users": [
+      {
+        "id": 22,
+        "code": "user1",
+        "name": "user1",
+        "buId": 42,
+        "userId": 62
+      },
+      {
+        "id": 23,
+        "code": "user2",
+        "name": "user2",
+        "buId": 42,
+        "userId": 63
+      },
+      {
+        "id": 24,
+        "code": "user3",
+        "name": "user3",
+        "buId": 42,
+        "userId": 64
+      },
+      {
+        "id": 25,
+        "code": "user4",
+        "name": "user4",
+        "buId": 42,
+        "userId": 65
+      },
+      {
+        "id": 42,
+        "code": "capital",
+        "name": "Sushant1",
+        "buId": 42,
+        "userId": 56
+      },
+      {
+        "id": 43,
+        "code": "user5",
+        "name": "user5",
+        "buId": 42,
+        "userId": 66
+      },
+      {
+        "id": 44,
+        "code": "user6",
+        "name": "user6",
+        "buId": 42,
+        "userId": 67
+      },
+      {
+        "id": 45,
+        "code": "bFJ1cq6i",
+        "name": "user7",
+        "buId": 42,
+        "userId": 69
+      }
+    ]
+  },
+  {
+    "code": "buu2",
+    "name": "Business unit 2",
+    "buId": 43,
+    "users": [
+      {
+        "id": 29,
+        "code": "user5",
+        "name": "user5",
+        "buId": 43,
+        "userId": 66
+      },
+      {
+        "id": 30,
+        "code": "user6",
+        "name": "user6",
+        "buId": 43,
+        "userId": 67
+      },
+      {
+        "id": 31,
+        "code": "user1",
+        "name": "user1",
+        "buId": 43,
+        "userId": 62
+      }
+    ]
+  },
+  {
+    "code": "buu3",
+    "name": "Business unit 3",
+    "buId": 44,
+    "users": [
+      {
+        "id": 32,
+        "code": "user1",
+        "name": "user1",
+        "buId": 44,
+        "userId": 62
+      },
+      {
+        "id": 33,
+        "code": "user2",
+        "name": "user2",
+        "buId": 44,
+        "userId": 63
+      },
+      {
+        "id": 34,
+        "code": "user3",
+        "name": "user3",
+        "buId": 44,
+        "userId": 64
+      },
+      {
+        "id": 35,
+        "code": "user4",
+        "name": "user4",
+        "buId": 44,
+        "userId": 65
+      },
+      {
+        "id": 36,
+        "code": "user6",
+        "name": "user6",
+        "buId": 44,
+        "userId": 67
+      }
+    ]
+  },
+  {
+    "code": "buu4",
+    "name": "Business unit 4",
+    "buId": 45,
+    "users": [
+      {
+        "id": 37,
+        "code": "user6",
+        "name": "user6",
+        "buId": 45,
+        "userId": 67
+      },
+      {
+        "id": 38,
+        "code": "user5",
+        "name": "user5",
+        "buId": 45,
+        "userId": 66
+      },
+      {
+        "id": 39,
+        "code": "user4",
+        "name": "user4",
+        "buId": 45,
+        "userId": 65
+      },
+      {
+        "id": 40,
+        "code": "user3",
+        "name": "user3",
+        "buId": 45,
+        "userId": 64
+      },
+      {
+        "id": 41,
+        "code": "user2",
+        "name": "user2",
+        "buId": 45,
+        "userId": 63
+      }
+    ]
+  },
+  {
+    "code": "buu5",
+    "name": "Business unit 5",
+    "buId": 46,
+    "users": null
+  },
+  {
+    "code": "buu6",
+    "name": "busi 6",
+    "buId": 54,
+    "users": null
+  }
+]

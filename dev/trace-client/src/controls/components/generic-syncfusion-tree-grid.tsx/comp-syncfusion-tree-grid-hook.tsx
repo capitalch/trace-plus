@@ -1,12 +1,14 @@
 import { useSelector } from "react-redux";
+import _ from 'lodash'
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { CompSyncfusionTreeGridType, SyncFusionTreeGridColumnType } from "./comp-syncfusion-tree-grid";
 import { RootStateType } from "../../../app/store/store";
 import { ColumnDirective } from "@syncfusion/ej2-react-treegrid";
+// import { Utils } from "../../../utils/utils";
 
 export function useCompSyncfusionTreeGrid({
-    columns, instance, isLoadOnInit, sqlId, sqlArgs
+    addUniqueKeyToJson, columns, instance, isLoadOnInit, sqlId, sqlArgs
 }: CompSyncfusionTreeGridType) {
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,
@@ -14,14 +16,18 @@ export function useCompSyncfusionTreeGrid({
     }
 
     const { loadData, loading, } = useQueryHelper({
+        addUniqueKeyToJson: addUniqueKeyToJson,
         getQueryArgs: () => args,
         instance: instance,
         isExecQueryOnLoad: isLoadOnInit
     })
 
     const selectedData: any = useSelector((state: RootStateType) => {
-        const ret: any = state.queryHelper[instance]?.data?.[0]?.jsonResult
-        console.log(ret)
+        let ret: any = state.queryHelper[instance]?.data?.[0]?.jsonResult
+        // if(!_.isEmpty(ret)){
+        //     const dta = {...ret}
+        //     console.log(dta)
+        // }
         return (ret)
     })
 
@@ -31,15 +37,17 @@ export function useCompSyncfusionTreeGrid({
                 field={col.field}
                 clipMode="EllipsisWithTooltip"
                 headerText={col.headerText}
+                isPrimaryKey={col.isPrimaryKey}
                 key={index}
                 textAlign={col.textAlign}
                 template={col.template}
                 type={col.type}
                 width={col.width}
                 format={col.format}
+                visible={col.visible}
             />)
         })
-        return(colDirectives)
+        return (colDirectives)
     }
 
     return ({ getColumnDirectives, loading, loadData, selectedData })

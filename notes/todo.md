@@ -11,8 +11,8 @@
 																		- Data wire up at client side
 																		- Grid auto fit in available space
 																		- default expanded or collapsed
-		- Implement link functionality
-		- Implement unlink functionality
+																		- Implement link functionality
+																		- Implement unlink functionality
 		- Drag n drop
 																		- Remove unlink button from rows with no user
 		- Generic toolbar

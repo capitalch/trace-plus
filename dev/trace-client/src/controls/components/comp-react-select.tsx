@@ -7,7 +7,7 @@ export function CompReactSelect({
     , onChange
     , optionLabelName
     , optionValueName
-    // , ref
+    , placeHolder
     , selectedValue
 }: CompReactSelectType) {
     const [options, setOptions] = useState([])
@@ -32,6 +32,7 @@ export function CompReactSelect({
         options={options}
         ref={selectRef}
         styles={getStyles()}
+        placeholder={placeHolder}
     />)
 
     function selectItem() {
@@ -63,6 +64,7 @@ type CompReactSelectType = {
     onChange: ((selectedObject: any) => void)
     optionLabelName: string
     optionValueName: string
+    placeHolder?: string
     ref: any
     selectedValue: any
 }

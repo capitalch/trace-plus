@@ -128,12 +128,12 @@ export function AdminBusinessUsers() {
     }
 
     async function handleOnEdit(props: any) {
+        const loadData: () => void = () => context.CompSyncFusionGrid[instance].loadData()
         Utils.showHideModalDialogA({
             title: "Edit business user",
             isOpen: true,
             element: (
                 <AdminNewEditBusinessUser
-                    dataInstance={instance}
                     roleId={props.roleId}
                     descr={props.descr}
                     id={props.id}
@@ -141,6 +141,7 @@ export function AdminBusinessUsers() {
                     mobileNo={props.mobileNo}
                     userEmail={props.userEmail}
                     userName={props.userName}
+                    loadData={loadData}
                 />
             ),
         });

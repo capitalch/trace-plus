@@ -1,5 +1,5 @@
 const Messages = {
-  errAdminRoleNameExists:'The admin role for current client already exists',
+  errAdminRoleNameExists: 'The admin role for current client already exists',
   errAtLeast4Chars: 'Should be at least 4 chars long',
   errAtLeast8Chars: 'Should be at least 8 chars long',
   errAtLeast6Chars: 'Should be at least 6 chars long',
@@ -37,7 +37,7 @@ const Messages = {
 
   messBuCode:
     'Business unit code can be between 4 characters and 50 characters',
-    messBuName:
+  messBuName:
     'Business unit name can be between 6 characters and 150 characters',
   messClientCode:
     'Client code should be between 6 characters and 30 characters',
@@ -50,16 +50,18 @@ const Messages = {
   messRecordDeleted: 'The record was successfully deleted',
   messRoleName: 'Role name should be a string without any special character',
   messResetLinkSendFail: 'Could not send reset link to the email address provided by you',
-  messResetLinkSendSuccess:"Successfully sent the email with the reset link",
+  messResetLinkSendSuccess: "Successfully sent the email with the reset link",
   messSecuredControlName: 'Secured control name should be a string without any space or special character',
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSuccess: 'Successfull',
+  messSureUnlinkUser: 'Are you sure to unlink this user?',
+  messSureUnlinkUserBody: 'The selected user will only be unlinked from the business unit. The user will not be deleted.',
   messUidExists: 'This uid already exists for current client',
   messUidHelper: 'At least 4 characters long | no space | no special char',
   messUnableToConnectToServer: 'Unable to connect to server. Server may be offline',
   messUserNameEmailHelper:
     'UID: At least 4 characters long | no space | no special char or valid email',
-
+  messUserUnlinkedSuccess: 'The selected user was unlinked successfully'
 }
 
 export { Messages }

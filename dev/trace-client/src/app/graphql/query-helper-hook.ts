@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux'
 import { resetQueryHelperData, setQueryHelperData } from './query-helper-slice'
 
 export function useQueryHelper ({
+  addUniqueKeyToJson = false,
   databaseName = GLOBAL_SECURITY_DATABASE_NAME,
   getQueryArgs,
   instance,
@@ -30,7 +31,7 @@ export function useQueryHelper ({
     }
     return () => {
       // Cleanup data. Otherwise syncfusion grid loads the old data
-      console.log('Cleanup')
+      // console.log('Cleanup')
       dispatch(resetQueryHelperData({ instance: instance}))
     }
   }, [])
@@ -44,10 +45,13 @@ export function useQueryHelper ({
     if (result?.data?.genericQuery?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
     }
-    
+    let data = _.isEmpty(result?.data?.genericQuery) ? [] : result.data.genericQuery
+    if(addUniqueKeyToJson){
+      data = Utils.addUniqueKeysToJson(data)
+    }
     dispatch(
       setQueryHelperData({
-        data: _.isEmpty(result?.data?.genericQuery) ? [] : result.data.genericQuery,
+        data: data, //_.isEmpty(result?.data?.genericQuery) ? [] : result.data.genericQuery,
         instance: instance
       })
     )
@@ -57,6 +61,7 @@ export function useQueryHelper ({
 }
 
 type QueryHelperType = {
+  addUniqueKeyToJson?: boolean
   databaseName?: string
   getQueryArgs: () => GraphQLQueryArgsType
   instance: string
