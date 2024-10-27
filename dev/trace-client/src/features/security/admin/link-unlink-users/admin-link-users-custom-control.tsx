@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { GlobalContextType } from "../../../../app/global-context";
-import { WidgetSwitch } from "../../../../controls/widgets/widget-switch";
+// import { WidgetSwitch } from "../../../../controls/widgets/widget-switch";
 import { GlobalContext } from "../../../../App";
 import { Utils } from "../../../../utils/utils";
 import { AdminNewEditBusinessUnit } from "../business-units/admin-new-edit-business-unit";
@@ -15,11 +15,11 @@ export function AdminLinkUsersCustomControl({
 
     return (
         <div className="flex items-center">
-            <WidgetSwitch
+            {/* <WidgetSwitch
                 leftLabel="Collapse"
                 onChange={handleOnChange}
                 rightLabel="Expand"
-            />
+            /> */}
             <button onClick={handleNewBu} className="mx-2 rounded-md bg-primary-400 px-2 py-0.5 text-white hover:bg-primary-500">New business unit</button>
             <button onClick={handleNewBusinessUser} className="mx-2 rounded-md bg-secondary-400 px-2 py-0.5 text-white hover:bg-secondary-500"> New business user</button>
         </div>)
@@ -42,17 +42,17 @@ export function AdminLinkUsersCustomControl({
         })
     }
 
-    function handleOnChange(e: any) {
-        const gridRef: any = context.CompSyncFusionTreeGrid[dataInstance].gridRef
-        if (!gridRef?.current) {
-            return
-        }
-        if (e.target?.checked) {
-            gridRef.current.expandAll()
-        } else {
-            gridRef.current.collapseAll()
-        }
-    }
+    // function handleOnChange(e: any) {
+    //     const gridRef: any = context.CompSyncFusionTreeGrid[dataInstance].gridRef
+    //     if (!gridRef?.current) {
+    //         return
+    //     }
+    //     if (e.target?.checked) {
+    //         gridRef.current.expandAll()
+    //     } else {
+    //         gridRef.current.collapseAll()
+    //     }
+    // }
 }
 
 type AdminLinkUsersCustomControlType = {

@@ -46,6 +46,7 @@ const Messages = {
   messDbConnFailure: 'Database connection was failed',
   messDbConnSuccessful: 'Database connection was successful',
   messFailure: 'Failure',
+  messOperationNotAllowed:'This operation is not allowed',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
   messRoleName: 'Role name should be a string without any special character',

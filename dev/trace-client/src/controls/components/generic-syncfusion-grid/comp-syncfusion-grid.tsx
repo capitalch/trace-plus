@@ -72,13 +72,13 @@ export function CompSyncFusionGrid({
                 <ColumnsDirective>
                     {getColumnDirectives()}
                 </ColumnsDirective>
-                <AggregatesDirective>
+                {aggregates && <AggregatesDirective>
                     <AggregateDirective>
                         <AggregateColumnsDirective>
                             {getAggrColDirectives()}
                         </AggregateColumnsDirective>
                     </AggregateDirective>
-                </AggregatesDirective>
+                </AggregatesDirective>}
                 <Inject services={[
                     Aggregate
                     , ExcelExport

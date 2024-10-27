@@ -1,8 +1,8 @@
 import { FC, useContext } from "react"
 import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
-import { AppDispatchType, RootStateType } from "../../../app/store/store"
-import { useDispatch } from "react-redux"
+import { RootStateType } from "../../../app/store/store"
+// import { useDispatch } from "react-redux"
 import { TreeGridPdfExportProperties } from "@syncfusion/ej2-react-treegrid"
 import { WidgetTooltip } from "../../widgets/widget-tooltip"
 import { IconFilePdf } from "../../icons/icon-file-pdf"
@@ -11,13 +11,13 @@ import { IconFileCsv } from "../../icons/icon-file-csv"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
+import { WidgetTreeGridSwitch } from "../../widgets/widget-tree-grid-switch"
 
 export function CompSyncFusionTreeGridToolbar({
     CustomControl = undefined
     , instance = ''
     , isCsvExport = true
     , isExcelExport = true
-    , isLastNoOfRows = false
     , isPdfExport = true
     , isPdfExportAsLandscape = false
     , isRefresh = true
@@ -26,7 +26,6 @@ export function CompSyncFusionTreeGridToolbar({
     , title
 }: CompSyncFusionTreeGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const dispatch: AppDispatchType = useDispatch()
 
     const pdfExportProperties: TreeGridPdfExportProperties = {
         fileName: 'trace-export.pdf',
@@ -69,6 +68,13 @@ export function CompSyncFusionTreeGridToolbar({
                 </button>
             </WidgetTooltip>}
 
+            {/* Expand / Collapse switch */}
+            <WidgetTreeGridSwitch
+                instance={instance}
+                leftLabel="Collapse"
+                rightLabel="Expand"
+            />
+
             {/* Search */}
             {isSearch && <CompSyncFusionTreeGridSearchBox instance={instance} />}
 
@@ -77,7 +83,9 @@ export function CompSyncFusionTreeGridToolbar({
                 <WidgetButtonRefresh handleRefresh={async () => {
                     const loadData: any = context.
                         CompSyncFusionTreeGrid[instance].loadData
-                    loadData && await loadData()
+                    if (loadData) {
+                        await loadData()
+                    }
                     const state: RootStateType = Utils.getReduxState()
                     const searchString = state.queryHelper[instance].searchString
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef

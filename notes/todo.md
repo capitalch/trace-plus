@@ -2,8 +2,11 @@
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - New Bu should create Schema at server side
+- Logout should cleanup context also
 - Admin
 	- Associate users with bu's
+		- Bu and users should be sorted
+																		- BuCode and userCode is not coming
 																		- Create and use generic tree grid
 																		- Business users should appear as children to BU
 																		- Link unlink buttons for users
@@ -13,14 +16,20 @@
 																		- default expanded or collapsed
 																		- Implement link functionality
 																		- Implement unlink functionality
+		- Drag n Drop version 2
 		- Drag n drop
+																		- Cut operation
+																		- Check functionality
+																		- If drop target is user, then also allow to get it dropped to its parent
+																		- Error: When drop is made to BU with no children then error happens
+																		- Pagination in toolbar
 																		- Remove unlink button from rows with no user
-		- Generic toolbar
+																	- Generic toolbar
 																		- Search
 																		- pdf, excel, csv export
 																		- Refresh
 																		- Collapse / expand all
-			- Controls alignment
+																		- Controls alignment
 																		- Create new business unit button and its functionality
 																		- Create new user button and its functionality
 

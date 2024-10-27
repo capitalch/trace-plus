@@ -1,11 +1,10 @@
 import { useSelector } from "react-redux";
-import _ from 'lodash'
+// import _ from 'lodash'
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { CompSyncfusionTreeGridType, SyncFusionTreeGridColumnType } from "./comp-syncfusion-tree-grid";
 import { RootStateType } from "../../../app/store/store";
 import { ColumnDirective } from "@syncfusion/ej2-react-treegrid";
-// import { Utils } from "../../../utils/utils";
 
 export function useCompSyncfusionTreeGrid({
     addUniqueKeyToJson, columns, instance, isLoadOnInit, sqlId, sqlArgs
@@ -23,11 +22,7 @@ export function useCompSyncfusionTreeGrid({
     })
 
     const selectedData: any = useSelector((state: RootStateType) => {
-        let ret: any = state.queryHelper[instance]?.data?.[0]?.jsonResult
-        // if(!_.isEmpty(ret)){
-        //     const dta = {...ret}
-        //     console.log(dta)
-        // }
+        const ret: any = state.queryHelper[instance]?.data?.[0]?.jsonResult
         return (ret)
     })
 

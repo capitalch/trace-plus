@@ -1,5 +1,3 @@
-// import { DataInstancesMap } from "./graphql/maps/data-instances-map"
-
 export const defaultGlobalContext: GlobalContextType = {
   CompSyncFusionGrid: {},
   CompSyncFusionTreeGrid: {}
@@ -17,6 +15,7 @@ export type GlobalContextType = {
     [key: string]: {
       loadData?: any
       gridRef?: any
+      isCollapsed?: boolean
     }
   }
 }
