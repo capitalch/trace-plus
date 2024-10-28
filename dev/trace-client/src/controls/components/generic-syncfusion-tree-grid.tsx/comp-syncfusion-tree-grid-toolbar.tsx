@@ -2,7 +2,6 @@ import { FC, useContext } from "react"
 import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
 import { RootStateType } from "../../../app/store/store"
-// import { useDispatch } from "react-redux"
 import { TreeGridPdfExportProperties } from "@syncfusion/ej2-react-treegrid"
 import { WidgetTooltip } from "../../widgets/widget-tooltip"
 import { IconFilePdf } from "../../icons/icon-file-pdf"
@@ -12,9 +11,11 @@ import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
 import { WidgetTreeGridSwitch } from "../../widgets/widget-tree-grid-switch"
+import clsx from "clsx"
 
 export function CompSyncFusionTreeGridToolbar({
-    CustomControl = undefined
+    className
+    , CustomControl = undefined
     , instance = ''
     , isCsvExport = true
     , isExcelExport = true
@@ -33,7 +34,7 @@ export function CompSyncFusionTreeGridToolbar({
         isCollapsedStatePersist: false
     }
 
-    return (<div className="flex justify-between  align-middle">
+    return (<div className={clsx("flex justify-between  align-middle", className)}>
         <h2 className="mt-0 text-lg font-medium text-primary-500">{title}</h2>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
@@ -99,6 +100,7 @@ export function CompSyncFusionTreeGridToolbar({
 }
 
 type CompSyncFusionTreeGridToolbarType = {
+    className: string
     CustomControl?: FC
     instance: string
     isCsvExport?: boolean

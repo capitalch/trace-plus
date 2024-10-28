@@ -27,6 +27,7 @@ export function SuperAdminRoles() {
             aggregates={getAggregates()}
             columns={getColumns()}
             hasIndexColumn={true}
+            height="calc(100vh - 240px)"
             instance={instance}
             rowHeight={40}
             sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}

@@ -12,9 +12,11 @@ import { IconFileExcel } from "../../icons/icon-file-excel"
 import { IconFileCsv } from "../../icons/icon-file-csv"
 import { Utils } from "../../../utils/utils"
 import { PdfExportProperties } from "@syncfusion/ej2-react-grids"
+import clsx from "clsx"
 
 export function CompSyncFusionGridToolbar({
-    CustomControl = undefined
+    className
+    , CustomControl = undefined
     , instance = ''
     , isCsvExport = true
     , isExcelExport = true
@@ -23,7 +25,7 @@ export function CompSyncFusionGridToolbar({
     , isPdfExportAsLandscape = false
     , isRefresh = true
     , isSearch = true
-
+    , minWidth='1200px'
     , title
 }: CompSyncFusionGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -39,7 +41,7 @@ export function CompSyncFusionGridToolbar({
         pageOrientation: isPdfExportAsLandscape ? 'Landscape' : 'Portrait'
     }
 
-    return (<div className="flex items-center justify-between">
+    return (<div className={clsx("flex items-center justify-between",className)} style ={{minWidth:`${minWidth}`}}>
         <h2 className="mt-0 text-lg font-medium text-primary-500">{title}</h2>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
@@ -113,6 +115,7 @@ export function CompSyncFusionGridToolbar({
 }
 
 type CompSyncFusionGridToolbarType = {
+    className?: string
     CustomControl?: FC
     instance: string
     isCsvExport?: boolean
@@ -122,5 +125,6 @@ type CompSyncFusionGridToolbarType = {
     isPdfExportAsLandscape?: boolean
     isRefresh?: boolean
     isSearch?: boolean
+    minWidth?:string
     title: string,
 }

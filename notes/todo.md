@@ -3,9 +3,10 @@
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - New Bu should create Schema at server side
 - Logout should cleanup context also
+- AdminBusinessUnit: AdminNewEditBusinessUnit: loadData is to be implemented
 - Admin
 	- Associate users with bu's
-		- Bu and users should be sorted
+																		- Bu and users should be sorted
 																		- BuCode and userCode is not coming
 																		- Create and use generic tree grid
 																		- Business users should appear as children to BU
@@ -17,6 +18,10 @@
 																		- Implement link functionality
 																		- Implement unlink functionality
 		- Drag n Drop version 2
+			- Right side grid more validations required
+			- Organize the code
+			- Left to right drop
+			- Left to right drop validations
 		- Drag n drop
 																		- Cut operation
 																		- Check functionality

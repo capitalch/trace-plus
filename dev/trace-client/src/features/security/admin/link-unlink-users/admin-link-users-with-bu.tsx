@@ -31,37 +31,47 @@ export function AdminLinkUsersWithBu() {
     const context: GlobalContextType = useContext(GlobalContext);
     return (
         // <CompContentContainer title='Link users with business units' className=''>
-            <div className='flex gap-6'>
-                <div>
+            <div className='flex gap-6 ' style ={{maxWidth:'calc(100vw - 225px)'}}>
+                <div className='flex flex-col w-[35%]' >
                     <CompSyncFusionGridToolbar
-                        CustomControl={() => <AdminNewBusinessUserButton dataInstance={businessUsersInstance} />}
-                        title=""
-                        isLastNoOfRows={true}
+                        className='mt-4'
+                        // CustomControl={() => <AdminNewBusinessUserButton dataInstance={businessUsersInstance} />}
+                        minWidth='300px'
+                        title=''
+                        isLastNoOfRows={false}
                         instance={businessUsersInstance}
                     />
+                    <label className='ml-4 mt-2 font-medium'>{Messages.messBusinessUsersDragFrom}</label>
                     <CompSyncFusionGrid
-                        className="mt-4"
+                        allowRowDragAndDrop={true}
+                        className="mt-4 ml-4"
                         columns={getUsersColumns()}
-                        // hasIndexColumn={true}
+                        hasIndexColumn={true}
+                        height="calc(100vh - 220px)"
                         instance={businessUsersInstance}
+                        minWidth='300px'
                         rowHeight={40}
                         sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
                         sqlId={SqlIdsMap.allBusinessUsers}
                     />
                 </div>
 
-                <div>
-                    <CompSyncFusionTreeGridToolbar
-                        CustomControl={() => <AdminLinkUsersCustomControl dataInstance={adminLinkInstance} />}
+                <div className='flex flex-col w-[50%]'>
+                    <CompSyncFusionTreeGridToolbar className='mt-4'
+                        // CustomControl={() => <AdminLinkUsersCustomControl dataInstance={adminLinkInstance} />}
                         instance={adminLinkInstance}
                         title=''
                     />
+                    <label className='ml-4 mt-2 font-medium'>{Messages.messExistingLinksDropHere}</label>
                     <CompSyncfusionTreeGrid
                         addUniqueKeyToJson={true}
+                        className="mt-2 ml-4"
                         allowRowDragAndDrop={true}
                         childMapping="users"
                         columns={getColumns()}
+                        height="calc(100vh - 220px)"
                         instance={adminLinkInstance}
+                        minWidth='300px'
                         onRowDrop={handleRowDrop}
                         pageSize={11}
                         rowHeight={40}
@@ -80,13 +90,13 @@ export function AdminLinkUsersWithBu() {
                 field: "uid",
                 headerText: "Uid",
                 type: "string",
-                width: 40,
+                width: 60,
             },
             {
                 field: "userName",
                 headerText: "User name",
                 type: "string",
-                width: 60,
+                // width: 60,
             },
             // {
             //     field: "userEmail",

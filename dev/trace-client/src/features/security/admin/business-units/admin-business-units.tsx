@@ -33,6 +33,7 @@ export function AdminBusinessUnits() {
                 aggregates={getAggregates()}
                 columns={getColumns()}
                 hasIndexColumn={true}
+                height="calc(100vh - 240px)"
                 instance={instance}
                 rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
@@ -98,11 +99,11 @@ export function AdminBusinessUnits() {
             title: 'Edit business unit',
             isOpen: true,
             element: <AdminNewEditBusinessUnit
-                dataInstance={instance}
                 buCode={props.buCode}
                 buName={props.buName}
                 isActive={props.isActive}
                 id={props.id}
+                loadData={() => { }}
             />
         });
     }

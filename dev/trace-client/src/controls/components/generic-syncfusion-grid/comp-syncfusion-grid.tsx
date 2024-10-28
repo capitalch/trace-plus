@@ -1,4 +1,4 @@
-import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel } from "@syncfusion/ej2-react-grids"
+import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD } from "@syncfusion/ej2-react-grids"
 import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
@@ -9,12 +9,14 @@ import { Utils } from "../../../utils/utils"
 
 export function CompSyncFusionGrid({
     aggregates,
+    allowRowDragAndDrop = false,
     className = '',
     columns,
     hasIndexColumn = false,
     height,
     isLoadOnInit = true,
     instance,
+    minWidth = '1200px',
     onDelete = undefined,
     onEdit = undefined,
     onPreview = undefined,
@@ -33,7 +35,7 @@ export function CompSyncFusionGrid({
         }
         context.CompSyncFusionGrid[instance].loadData = loadData
         context.CompSyncFusionGrid[instance].gridRef = gridRef
-        return(()=>{
+        return (() => {
             console.log('Syncfusion cleanup')
         })
     }, [])
@@ -50,13 +52,14 @@ export function CompSyncFusionGrid({
 
     return (
         //The div container is important. The minWidth works with style only
-        <div style={{minWidth:'1200px'}}> 
+        <div style={{ minWidth: `${minWidth}` }}>
             <GridComponent
                 clipMode="EllipsisWithTooltip"
                 enablePersistence={false}
                 allowPdfExport={true}
                 allowExcelExport={true}
                 allowResizing={true}
+                allowRowDragAndDrop={allowRowDragAndDrop}
                 allowSorting={true}
                 allowSelection={true}
                 allowTextWrap={true}
@@ -64,11 +67,10 @@ export function CompSyncFusionGrid({
                 created={onCreated} //?.genericQuery
                 dataSource={selectedData || []}
                 gridLines="Both"
+                height={height}
                 ref={gridRef}
-                // width='90vw'
                 rowHeight={rowHeight}
-                searchSettings={searchOptions}
-                height={height}>
+                searchSettings={searchOptions}>
                 <ColumnsDirective>
                     {getColumnDirectives()}
                 </ColumnsDirective>
@@ -85,6 +87,7 @@ export function CompSyncFusionGrid({
                     , InfiniteScroll
                     , PdfExport
                     , Resize
+                    , RowDD
                     , Search
                     , Selection
                     , Sort
@@ -106,12 +109,14 @@ export function CompSyncFusionGrid({
 
 export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
+    allowRowDragAndDrop?:boolean
     className?: string
     columns: SyncFusionGridColumnType[]
     hasIndexColumn?: boolean
     height?: string
     instance: string
     isLoadOnInit?: boolean
+    minWidth?: string
     onDelete?: (id: string) => void
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void

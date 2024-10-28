@@ -39,14 +39,16 @@ const Messages = {
     'Business unit code can be between 4 characters and 50 characters',
   messBuName:
     'Business unit name can be between 6 characters and 150 characters',
+  messBusinessUsersDragFrom: 'Available business users (Drag a row from below)',
   messClientCode:
     'Client code should be between 6 characters and 30 characters',
   messClientName:
     'Client name should be between 6 characters and 50 characters',
   messDbConnFailure: 'Database connection was failed',
   messDbConnSuccessful: 'Database connection was successful',
+  messExistingLinksDropHere: 'Existing links (Drop the dragged row here)',
   messFailure: 'Failure',
-  messOperationNotAllowed:'This operation is not allowed',
+  messOperationNotAllowed: 'This operation is not allowed',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
   messRoleName: 'Role name should be a string without any special character',

@@ -14,9 +14,11 @@ export function CompSyncfusionTreeGrid({
     childMapping,
     className = '',
     columns,
+    height,
     instance,
     // isCollapsedAllByDefault = true,
     isLoadOnInit = true,
+    minWidth ='1200px',
     onRowDrop,
     pageSize = 50,
     rowHeight = 20,
@@ -52,7 +54,7 @@ export function CompSyncfusionTreeGrid({
     const isCollapsed = context.CompSyncFusionTreeGrid[instance]?.isCollapsed
     return (
         //The div container is important. The minWidth works with style only
-        <div className="mt-2" style={{ minWidth: '1200px'}}>
+        <div className="mt-2" style={{minWidth:`${minWidth}`}}>
             <TreeGridComponent
                 allowPdfExport={true}
                 allowExcelExport={true}
@@ -69,7 +71,7 @@ export function CompSyncfusionTreeGrid({
                 enablePersistence={false}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
                 gridLines="Both"
-                height='calc(100vh - 225px)'
+                height={height}
                 pageSettings={{ pageSize: pageSize }}
                 ref={gridRef}
                 rowDrop={onRowDrop}
@@ -113,8 +115,10 @@ export type CompSyncfusionTreeGridType = {
     childMapping: string
     className?: string
     columns: SyncFusionTreeGridColumnType[]
+    height?: string
     instance: string
     isLoadOnInit?: boolean
+    minWidth?: string
     pageSize?: number
     onRowDrop?: (args: any) => void
     rowHeight?: number

@@ -25,6 +25,7 @@ export function SuperAdminClients() {
                 className="mt-4"
                 aggregates={getAggregates()}
                 columns={getColumns()}
+                height="calc(100vh - 240px)"
                 instance={instance}
                 rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
