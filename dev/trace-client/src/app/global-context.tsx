@@ -3,6 +3,11 @@ export const defaultGlobalContext: GlobalContextType = {
   CompSyncFusionTreeGrid: {}
 }
 
+export function resetGlobalContext(globalContext: GlobalContextType) {
+  globalContext.CompSyncFusionGrid = {}
+  globalContext.CompSyncFusionTreeGrid = {}
+}
+
 export type GlobalContextType = {
   // app: 
   CompSyncFusionGrid: {
@@ -19,3 +24,4 @@ export type GlobalContextType = {
     }
   }
 }
+

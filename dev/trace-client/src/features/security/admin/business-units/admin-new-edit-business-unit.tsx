@@ -78,7 +78,7 @@ export function AdminNewEditBusinessUnit({
                 {/* Business Unit Code */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Business Unit Code <WidgetAstrix /></span>
-                    <input type="text" placeholder="e.g. BU123" autoComplete="off"
+                    <input type="text" placeholder="e.g. BU123" autoComplete="off" disabled={id ? true : false}
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
                         {...registerBuCode}
                     />

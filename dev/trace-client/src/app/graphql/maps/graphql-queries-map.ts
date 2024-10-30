@@ -6,6 +6,7 @@ import { GLOBAL_SECURITY_DATABASE_NAME } from '../../global-constants'
 export const GraphQLQueriesMap = {
   changePwd: changePwd,
   changeUid: changeUid,
+  createBu: createBu,
   decodeExtDbParams: decodeExtDbParams,
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
@@ -28,6 +29,15 @@ function changeUid (val: ChangeUidType) {
   return gql`
         mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
             changeUid(value:"${value}")
+        }
+    `
+}
+
+function createBu (val: CreateBuType) {
+  const value = encodeObj(val)
+  return gql`
+        mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
+            createBu(value:"${value}")
         }
     `
 }
@@ -103,6 +113,13 @@ export type ChangeUidType = {
   id: string | undefined // id of userM
 }
 
+export type CreateBuType = {
+  clientId: string
+  buCode: string
+  buName: string
+  isActive: boolean
+}
+
 export type GraphQLQueryArgsType = {
   dbParams?: { [key: string]: string | number }
   [key: string]: any
@@ -113,11 +130,6 @@ export type GraphQLQueryArgsType = {
 export type GraphQLUpdateArgsType = {
   dbParams?: { [key: string]: any }
   [key: string]: any
-  // sqlObj: {
   tableName?: string
   deletedIds?: [string]
-  // }
-
-  // sqlId: string
-  // sqlArgs?: { [key: string]: string | number }
 }

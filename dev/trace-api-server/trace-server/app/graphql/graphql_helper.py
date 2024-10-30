@@ -115,6 +115,17 @@ async def change_uid_helper(info, value):
     return data
 
 
+async def create_bu_helper(info, value):
+    data = {}
+    try:
+        valueString = unquote(value)
+        valueDict = json.loads(valueString)
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
 async def decode_ext_db_params_helper(info, value):
     decodedDbParams = None
     try:

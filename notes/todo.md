@@ -2,10 +2,11 @@
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - New Bu should create Schema at server side
-- Logout should cleanup context also
-- AdminBusinessUnit: AdminNewEditBusinessUnit: loadData is to be implemented
+																		- Bu code should not be editable
+																		- Logout should cleanup global context also
+																		- AdminBusinessUnit: AdminNewEditBusinessUnit: loadData is to be implemented
 - Admin
-	- Associate users with bu's
+																	- Associate users with bu's
 																		- Bu and users should be sorted
 																		- BuCode and userCode is not coming
 																		- Create and use generic tree grid
@@ -17,16 +18,15 @@
 																		- default expanded or collapsed
 																		- Implement link functionality
 																		- Implement unlink functionality
-		- Drag n Drop version 2
+																	- Drag n Drop version 2
 																		- Proper messaging
 																		- New buttons
 																		- New buttons prompts
-			- Persistence
 																		- Right side grid more validations required
 																		- Organize the code
 																		- Left to right drop
 																		- Left to right drop validations
-		- Drag n drop
+																	- Drag n drop
 																		- Cut operation
 																		- Check functionality
 																		- If drop target is user, then also allow to get it dropped to its parent
