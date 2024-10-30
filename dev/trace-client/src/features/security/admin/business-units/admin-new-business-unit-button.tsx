@@ -3,15 +3,16 @@ import { GlobalContextType } from "../../../../app/global-context";
 import { Utils } from "../../../../utils/utils"
 import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit"
 import { GlobalContext } from "../../../../App";
+import clsx from "clsx";
 
-export function AdminNewBusinessUnitButton({ dataInstance }: { dataInstance: string }) {
+export function AdminNewBusinessUnitButton({ className, dataInstance, isTreeGrid = false }: { className: string, dataInstance: string, isTreeGrid?: boolean }) {
     const context: GlobalContextType = useContext(GlobalContext);
-    
-    return (<button className="bg-primary-400 text-white w-20 min-w-24 h-10 rounded-md hover:bg-primary-600"
+
+    return (<button className={clsx("bg-primary-400 text-white w-20 h-10 rounded-md hover:bg-primary-600", className)}
         onClick={handleNewBu}>New</button>)
 
     function handleNewBu() {
-        const loadData: () => void = () => context.CompSyncFusionGrid[dataInstance].loadData()
+        const loadData: () => void = () => isTreeGrid ? context.CompSyncFusionTreeGrid[dataInstance].loadData(): context.CompSyncFusionGrid[dataInstance].loadData()
         Utils.showHideModalDialogA({
             title: "New Business Unit",
             isOpen: true,

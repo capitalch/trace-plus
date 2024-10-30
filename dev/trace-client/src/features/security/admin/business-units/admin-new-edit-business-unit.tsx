@@ -143,7 +143,7 @@ export function AdminNewEditBusinessUnit({
             Utils.showHideModalDialogA({
                 isOpen: false,
             });
-            loadData()
+            await loadData()
             Utils.showSaveMessage();
         } catch (e: any) {
             console.log(e.message);

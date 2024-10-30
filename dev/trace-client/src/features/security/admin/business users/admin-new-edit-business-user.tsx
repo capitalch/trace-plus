@@ -195,7 +195,7 @@ export function AdminNewEditBusinessUser({
             const queryName: string = GraphQLQueriesMap.updateUser.name;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
-            loadData()
+            await loadData()
             Utils.showSaveMessage();
         } catch (e: any) {
             console.log(e.message);

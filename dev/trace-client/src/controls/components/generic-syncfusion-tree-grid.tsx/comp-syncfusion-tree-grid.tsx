@@ -4,22 +4,21 @@ import { GlobalContextType } from "../../../app/global-context"
 import { GlobalContext } from "../../../App"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 
 export function CompSyncfusionTreeGrid({
     addUniqueKeyToJson = false,
-    // allowPaging = false,
-    allowRowDragAndDrop = false,
+    // allowRowDragAndDrop = false,
     allowSorting = false,
     childMapping,
     className = '',
     columns,
+    gridDragAndDropSettings,
     height,
     instance,
-    // isCollapsedAllByDefault = true,
     isLoadOnInit = true,
-    minWidth ='1200px',
-    onRowDrop,
+    minWidth = '1200px',
+    // onRowDrop,
     pageSize = 50,
     rowHeight = 20,
     sqlArgs,
@@ -29,17 +28,35 @@ export function CompSyncfusionTreeGrid({
     const context: GlobalContextType = useContext(GlobalContext)
     const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, childMapping, columns, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
-
+    const meta: any = useRef({
+        scrollTop: 0,
+        row: undefined
+    })
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionTreeGrid[instance]) {
             context.CompSyncFusionTreeGrid[instance] = { loadData: undefined, gridRef: undefined, isCollapsed: true }
         }
         context.CompSyncFusionTreeGrid[instance].loadData = loadData
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
+        // const gridElement = gridRef.current.element.querySelector('.e-content');
+        // gridRef.current.expandAll()
+        // Add scroll event listener
+        // if (gridElement) {
+        //     gridElement.addEventListener('scroll', handleScroll);
+        // }
+
         return (() => {
-            console.log('Syncfusion cleanup')
+            // if (gridElement) {
+            //     gridElement.removeEventListener('scroll', handleScroll);
+            // }
         })
     }, [])
+
+    // useEffect(()=>{
+    //     if(gridRef?.current){
+    //         gridRef.current.expandAll()
+    //     }
+    // })
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -52,33 +69,41 @@ export function CompSyncfusionTreeGrid({
         hierarchyMode: 'Both'
     }
     const isCollapsed = context.CompSyncFusionTreeGrid[instance]?.isCollapsed
+    const rowDropOptions: RowDropSettingsModel = { targetID: gridDragAndDropSettings?.targetId }
+
     return (
         //The div container is important. The minWidth works with style only
-        <div className="mt-2" style={{minWidth:`${minWidth}`}}>
+        <div className="mt-2" style={{ minWidth: `${minWidth}` }}>
             <TreeGridComponent
                 allowPdfExport={true}
                 allowExcelExport={true}
-                // allowPaging={allowPaging}
                 allowResizing={true}
-                allowRowDragAndDrop={allowRowDragAndDrop}
+                allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
                 allowSelection={true}
                 allowSorting={allowSorting}
                 allowTextWrap={true}
                 childMapping={childMapping}
                 className={className}
                 clipMode="EllipsisWithTooltip"
+                collapsed ={onCollapsed}
                 dataSource={selectedData}
-                enablePersistence={false}
+                enablePersistence={true}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
+                expanded={onxpanded}
                 gridLines="Both"
                 height={height}
+                id={instance}
+                dataBound={onDataBound}
                 pageSettings={{ pageSize: pageSize }}
                 ref={gridRef}
-                rowDrop={onRowDrop}
+                rowDragStart={gridDragAndDropSettings?.onRowDragStart}
+                rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
+                rowDrop={gridDragAndDropSettings?.onRowDrop}
+                rowDropSettings={rowDropOptions}
                 rowHeight={rowHeight}
                 searchSettings={searchOptions}
                 treeColumnIndex={treeColumnIndex}
-                >
+            >
                 <ColumnsDirective>
                     {getColumnDirectives()}
                     {/* {addUniqueKeyToJson && <ColumnDirective field="key" isPrimaryKey={true} visible={false} />} */}
@@ -106,6 +131,50 @@ export function CompSyncfusionTreeGrid({
             </TreeGridComponent>
         </div>
     )
+
+    function onxpanded(e:any){
+        console.log(e)
+        meta.current.row = e.row
+    }
+
+    function onCollapsed(e:any){
+        console.log(e)
+    }
+
+    // function handleScroll(e:any){
+    //     const scrollTop = e.target.scrollTop; // Vertical scroll 
+    //     meta.current.scrollTop = scrollTop
+    // }
+
+    // function onRowDrop(e: any) {
+    //     e.cancel =true
+    //     const content = gridRef.current.getContent()
+    //     // const scrolltop = content.scrollTop
+    //     const scrollTop1 = gridRef.current.element.querySelector('.e-content').scrollTop;
+    //     meta.current.scrollTop = scrollTop1
+    //     if(gridDragAndDropSettings?.onRowDrop) {
+    //         gridDragAndDropSettings.onRowDrop(e)
+    //     } 
+    // }
+
+    function onDataBound(e: any) {
+        console.log(e)
+        if(gridRef?.current && meta.current?.row){
+            // gridRef.current.expandAll()
+        }
+        // if(gridRef.current?.element) {
+        //     gridRef.current.element.querySelector('.e-content').scrollTop = meta.current.scrollTop
+        // }
+    }
+
+}
+
+type GridDragAndDropSettingsType = {
+    allowRowDragAndDrop?: boolean
+    onRowDragStart?: (args: any) => void
+    onRowDragStartHelper?: (args: any) => void
+    onRowDrop?: (args: any) => void
+    targetId?: string
 }
 
 export type CompSyncfusionTreeGridType = {
@@ -115,6 +184,7 @@ export type CompSyncfusionTreeGridType = {
     childMapping: string
     className?: string
     columns: SyncFusionTreeGridColumnType[]
+    gridDragAndDropSettings?: GridDragAndDropSettingsType
     height?: string
     instance: string
     isLoadOnInit?: boolean

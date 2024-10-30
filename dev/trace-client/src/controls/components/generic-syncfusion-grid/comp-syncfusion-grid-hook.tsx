@@ -35,7 +35,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, ins
 
     const selectedData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[instance]?.data
-        console.log(ret)
+        // console.log(ret)
         return(ret)
     })
 
@@ -107,7 +107,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, ins
                 field=''
                 headerText='#'
                 template={indexColumnTemplate}
-                width={12}
+                width={25}
             />)
         }
         return (colDirectives)

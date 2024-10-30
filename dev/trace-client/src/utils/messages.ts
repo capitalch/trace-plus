@@ -57,13 +57,16 @@ const Messages = {
   messSecuredControlName: 'Secured control name should be a string without any space or special character',
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSuccess: 'Successfull',
+  messSureToProceed:'Are you sure to proceed?',
   messSureUnlinkUser: 'Are you sure to unlink this user?',
   messSureUnlinkUserBody: 'The selected user will only be unlinked from the business unit. The user will not be deleted.',
   messUidExists: 'This uid already exists for current client',
   messUidHelper: 'At least 4 characters long | no space | no special char',
   messUnableToConnectToServer: 'Unable to connect to server. Server may be offline',
+  messUserExists:"User already exists in the business unit",
   messUserNameEmailHelper:
     'UID: At least 4 characters long | no space | no special char or valid email',
+  messUserWillBeAdded:'Dragged used will be added to the business unit',
   messUserUnlinkedSuccess: 'The selected user was unlinked successfully'
 }
 

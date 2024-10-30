@@ -1,4 +1,4 @@
-import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD } from "@syncfusion/ej2-react-grids"
+import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDropSettingsModel } from "@syncfusion/ej2-react-grids"
 import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
@@ -9,9 +9,9 @@ import { Utils } from "../../../utils/utils"
 
 export function CompSyncFusionGrid({
     aggregates,
-    allowRowDragAndDrop = false,
     className = '',
     columns,
+    gridDragAndDropSettings,
     hasIndexColumn = false,
     height,
     isLoadOnInit = true,
@@ -50,25 +50,32 @@ export function CompSyncFusionGrid({
         operator: 'contains'
     }
 
+    // const rowDropOptions: RowDropSettingsModel = { targetID: gridDragAndDropSettings?.targetId }
+
     return (
         //The div container is important. The minWidth works with style only
         <div style={{ minWidth: `${minWidth}` }}>
             <GridComponent
+                allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
                 clipMode="EllipsisWithTooltip"
                 enablePersistence={false}
                 allowPdfExport={true}
                 allowExcelExport={true}
                 allowResizing={true}
-                allowRowDragAndDrop={allowRowDragAndDrop}
                 allowSorting={true}
                 allowSelection={true}
                 allowTextWrap={true}
                 className={className}
-                created={onCreated} //?.genericQuery
+                created={onCreated}
                 dataSource={selectedData || []}
                 gridLines="Both"
                 height={height}
+                id={instance}
                 ref={gridRef}
+                rowDragStart={gridDragAndDropSettings?.onRowDragStart}
+                rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
+                rowDrop={gridDragAndDropSettings?.onRowDrop}
+                // rowDropSettings={rowDropOptions}
                 rowHeight={rowHeight}
                 searchSettings={searchOptions}>
                 <ColumnsDirective>
@@ -107,11 +114,19 @@ export function CompSyncFusionGrid({
     }
 }
 
+type GridDragAndDropSettingsType = {
+    allowRowDragAndDrop?: boolean
+    onRowDragStart?: (args: any) => void
+    onRowDragStartHelper?: (args:any) =>void
+    onRowDrop?: (args: any) => void
+    targetId?: string
+}
+
 export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
-    allowRowDragAndDrop?:boolean
     className?: string
     columns: SyncFusionGridColumnType[]
+    gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasIndexColumn?: boolean
     height?: string
     instance: string
@@ -145,5 +160,13 @@ export type SyncFusionGridColumnType = {
 export type SqlArgsType = {
     [key: string]: string | number
 }
+
+const gridData = [
+    { roleName: 10248, uid: 'VINET', userName: 32.38 },
+    { roleName: 10249, uid: 'TOMSP', userName: 11.61 },
+    { roleName: 10250, uid: 'HANAR', userName: 65.83 },
+    { roleName: 10251, uid: 'LILAS', userName: 41.34 },
+    { roleName: 10252, uid: 'HUNGO', userName: 25.00 }
+];
 
 

@@ -18,10 +18,14 @@
 																		- Implement link functionality
 																		- Implement unlink functionality
 		- Drag n Drop version 2
-			- Right side grid more validations required
-			- Organize the code
-			- Left to right drop
-			- Left to right drop validations
+																		- Proper messaging
+																		- New buttons
+																		- New buttons prompts
+			- Persistence
+																		- Right side grid more validations required
+																		- Organize the code
+																		- Left to right drop
+																		- Left to right drop validations
 		- Drag n drop
 																		- Cut operation
 																		- Check functionality
