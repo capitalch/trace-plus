@@ -1,6 +1,6 @@
-import datetime
+# import datetime
 import json
-from fastapi import status, Request
+from fastapi import status
 from urllib.parse import unquote
 from app.config import Config
 from app.dependencies import AppHttpException
@@ -17,6 +17,7 @@ from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql
 from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
+from app.graphql.scripts.create_bu import ClientDetails, create_bu
 
 
 async def change_pwd_helper(info, value):
@@ -120,11 +121,20 @@ async def create_bu_helper(info, value):
     try:
         valueString = unquote(value)
         valueDict = json.loads(valueString)
+        xData = valueDict["xData"]
+        buCode = xData.get("buCode")
+        clientId = xData.get("clientId")
+        await create_bu(buCode, clientId)
+
+        # get db details based on clientId
+
+        print(valueDict)
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
         return create_graphql_exception(e)
     return data
+
 
 async def decode_ext_db_params_helper(info, value):
     decodedDbParams = None
@@ -280,7 +290,10 @@ def create_graphql_exception(e: Exception):
         }
     }
 
-async def send_mail_for_change_pwd(companyName: str, email: str, pwd: str, userName: str):
+
+async def send_mail_for_change_pwd(
+    companyName: str, email: str, pwd: str, userName: str
+):
     subject = Config.PACKAGE_NAME + " " + EmailMessages.email_subject_change_pwd
     body = EmailMessages.email_body_change_pwd(userName, companyName, pwd)
     recipients = [email]
@@ -292,7 +305,8 @@ async def send_mail_for_change_pwd(companyName: str, email: str, pwd: str, userN
             error_code="e1016",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    
+
+
 async def send_mail_for_change_uid(
     companyName: str, email: str, uid: str, userName: str
 ):

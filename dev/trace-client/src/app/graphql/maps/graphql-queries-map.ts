@@ -33,10 +33,10 @@ function changeUid (val: ChangeUidType) {
     `
 }
 
-function createBu (val: CreateBuType) {
+function createBu (dbName: string, val: TraceDataObjectType) {
   const value = encodeObj(val)
   return gql`
-        mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
+        mutation ${dbName} { 
             createBu(value:"${value}")
         }
     `
@@ -113,12 +113,12 @@ export type ChangeUidType = {
   id: string | undefined // id of userM
 }
 
-export type CreateBuType = {
-  clientId: string
-  buCode: string
-  buName: string
-  isActive: boolean
-}
+// export type CreateBuType = {
+//   clientId: string
+//   buCode: string
+//   buName: string
+//   isActive: boolean
+// }
 
 export type GraphQLQueryArgsType = {
   dbParams?: { [key: string]: string | number }

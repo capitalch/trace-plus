@@ -9,6 +9,9 @@ class Messages:
     err_access_token_unknown_error = (
         "Unknown error occured while validating access token"
     )
+    err_db_not_exists = "Database does not exist"
+    err_client_not_found = "Client was not found"
+    err_client_inactive = "Client is not active"
     err_email_not_exists = "Email provided by you does not exist"
     err_email_send_error = "There was error in sending email. Email parameters from client are improper or missing"
     err_email_send_error_server = "There was error in sending email from server"
@@ -18,19 +21,23 @@ class Messages:
     err_invalid_uid = "The current UID given by you is incorrect"
     err_invalid_current_password = "The current password given by you is incorrect"
     err_invalid_password = "Invalid password"
-    err_invalid_reset_password_link = 'The reset password link used by you is invalid'
-    err_invalid_token_in_reset_password_link = "Invalid token was found in the reset password link used by you"
+    err_invalid_reset_password_link = "The reset password link used by you is invalid"
+    err_invalid_token_in_reset_password_link = (
+        "Invalid token was found in the reset password link used by you"
+    )
     err_invalid_username_or_email = "Invalid username or email"
     err_invalid_username_or_password = "Invalid username or password"
-    err_link_expired = "This reset password link is already expired. Kindly generat another link"
+    err_link_expired = (
+        "This reset password link is already expired. Kindly generat another link"
+    )
     err_missing_sql_id = "SqlId not found in the client request"
     err_missing_username_password = "Missing username or password"
     err_reset_password_success_but_mail_send_fail = "Reset of password was successfully done, but corresponding mail sending was failed"
     err_unknown = "Unknown error"
     err_unknown_current_password_error = "Unknown error related to current password"
     err_url_not_found = "Specified api endpoint or url not found"
-    
-    mess_reset_password_success = 'Reset of the password is done successfully'
+
+    mess_reset_password_success = "Reset of the password is done successfully"
 
 
 class customErrorCodes:
@@ -60,7 +67,9 @@ class customErrorCodes:
     e1022 = "Invalid token found in the reset password link used by the user "
     e1023 = "The email provided by you does not exist"
     e1024 = "Reset password is successfully done but there was an error sending the confirmation mail"
-    
+    e1025 = "Client was not found on clientId"
+    e1026 = "Client is not active"
+    e1027 = "The database for the client does not exist"
     e2000 = "Error occurred while executing GraphQL query in file graphql_helper"
 
 
@@ -70,8 +79,10 @@ class EmailMessages:
     email_subject_change_uid = "change of uid"
 
     email_subject_change_pwd = "change of pwd"
-    
-    email_subject_reset_password_success = f'{Config.PACKAGE_NAME}: Reset of password is done successfully'
+
+    email_subject_reset_password_success = (
+        f"{Config.PACKAGE_NAME}: Reset of password is done successfully"
+    )
 
     email_subject_forgot_password_reset_link = (
         f"Reset password link for forgot passwordk for {Config.PACKAGE_NAME} "
@@ -98,7 +109,7 @@ class EmailMessages:
             </body>
             </html>
         """
-        
+
     def email_body_reset_password_success(clientName: str, email: str, pwd: str):
         return f"""
             <!DOCTYPE html>

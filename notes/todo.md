@@ -2,6 +2,17 @@
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - New Bu should create Schema at server side
+	- Get dbName from clientId
+    - Check in catalog if DB exists
+    - if DB exists
+    	- check if buCode as schema exists. If exists then skip schema creation and proceed
+    	- if schema not exists
+    		- In dbName database create public schema 
+    		- execute script with entityName.sql in public schema 
+    		- rename public schema to buCode
+    		- Result is all tables and master data available in buCode schema inside database dbName
+        - Make entry in BuM table thebu details
+        	-
 																		- Bu code should not be editable
 																		- Logout should cleanup global context also
 																		- AdminBusinessUnit: AdminNewEditBusinessUnit: loadData is to be implemented

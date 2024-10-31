@@ -1,5 +1,20 @@
 class SqlSecurity:
 
+    does_database_exist = """
+        with "dbName" as (values(%(dbName)s::int))
+        --with "dbName" as (values('client-capital'))
+            select exists(select 1 from pg_catalog.pg_database where datname = (table "dbName")) as "doesExist"
+    """
+    
+    does_schema_exist_in_db = """
+    with "buCode" as (values(%(buCode)s::int))
+        --with "buCode" as (values('capital2024'))
+        SELECT exists(
+                    select 1 
+                        FROM "information_schema"."schemata" 
+                            WHERE schema_name = (table "buCode")) as "doesExist"
+    """
+    
     does_user_email_exist = """
         with "email" as (values(%(email)s)), "clientId" as (values(%(clientId)s::int))
             --with "email" as (values('capitalch@gmail.com')), "clientId" as (values(51))
@@ -161,8 +176,7 @@ class SqlSecurity:
                     where "clientId" = (table "clientId") 
                         and "buCode" = (table "buCode")
     """
-    
-    
+
     get_bu_users_link = """
         with "clientId" as (values(%(clientId)s::int))
         --with "clientId" as (values(51))
@@ -197,8 +211,15 @@ class SqlSecurity:
             )
         ) as "jsonResult" from cte1
     """
-    
-    
+
+    get_client_details_on_id = """
+       with "id" as (values(%(id)s::int))
+        --with "id" as (values(51))
+            select "clientCode", "isActive", "isExternalDb", "dbName", "dbParams"
+                from "ClientM"
+                    where "id" = (table "id")
+    """
+
     get_clients_on_criteria = """
         with "criteria" as (values(%(criteria)s::text))
         --with "criteria" as (values('cap'::text))

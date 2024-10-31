@@ -137,8 +137,9 @@ export function AdminNewEditBusinessUnit({
             }
         };
         try {
-            const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+            // const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
+            const q: any = GraphQLQueriesMap.createBu(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
+            const queryName: string = GraphQLQueriesMap.createBu.name;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({
                 isOpen: false,
