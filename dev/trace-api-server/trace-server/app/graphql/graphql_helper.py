@@ -13,11 +13,11 @@ from app.security.security_utils import (
 from app.messages import Messages, EmailMessages
 from app.mail import send_email
 from .db.sql_security import allSqls
-from .db.helpers.psycopg_async_helper import exec_sql, execute_sql_dml, exec_sql_object
+from .db.helpers.psycopg_async_helper import exec_sql, exec_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
-from app.graphql.scripts.create_bu import ClientDetails, create_bu
+from app.graphql.handlers.create_bu import ClientDetails, create_bu
 
 
 async def change_pwd_helper(info, value):
@@ -223,13 +223,13 @@ async def update_client_helper(info, value: str):
                     sqlArgs={"datname": dbToCreate},
                 )
                 if not dbNameInCatalog:
-                    await execute_sql_dml(
+                    await exec_sql_dml(
                         dbName=operationName,
                         db_params=dbParams,
                         schema="public",
                         sql=f'CREATE DATABASE "{dbToCreate}"',
                     )
-                    await execute_sql_dml(
+                    await exec_sql_dml(
                         dbName=dbToCreate,
                         db_params=dbParams,
                         schema="public",

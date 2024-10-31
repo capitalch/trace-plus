@@ -1,14 +1,17 @@
 class SqlSecurity:
 
+    # dml_create_schema = """
+    #     CREATE SCHEMA IF NOT EXISTS %(schemaName)s
+    # """
     does_database_exist = """
-        with "dbName" as (values(%(dbName)s::int))
+        with "dbName" as (values(%(dbName)s::text))
         --with "dbName" as (values('client-capital'))
             select exists(select 1 from pg_catalog.pg_database where datname = (table "dbName")) as "doesExist"
     """
     
     does_schema_exist_in_db = """
-    with "buCode" as (values(%(buCode)s::int))
-        --with "buCode" as (values('capital2024'))
+    with "buCode" as (values(%(buCode)s::text))
+        --with "buCode" as (values('temp'))
         SELECT exists(
                     select 1 
                         FROM "information_schema"."schemata" 

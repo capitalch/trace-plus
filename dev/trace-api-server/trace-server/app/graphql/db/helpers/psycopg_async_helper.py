@@ -63,7 +63,7 @@ async def doProcess(
 
 
 # Data manipulation language sql. No return value. Not inside a transaction
-async def execute_sql_dml(
+async def exec_sql_dml(
     dbName: str = Config.DB_SECURITY_DATABASE,
     db_params: dict[str, str] = dbParams,
     schema: str = "public",
