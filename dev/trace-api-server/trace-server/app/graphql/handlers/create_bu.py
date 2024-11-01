@@ -17,7 +17,7 @@ class ClientDetails(BaseModel):
     isActive: bool = False
     isExternalDb: bool = False
     dbName: str = None
-    dbParams: Optional[str] = None # allows null
+    dbParams: Optional[str] = None  # allows null
 
 
 async def create_bu(valueDict: dict) -> None:
@@ -42,7 +42,7 @@ async def create_bu(valueDict: dict) -> None:
 
     # Check if the client is active
     if not clientDetails.isActive:
-        raise_app_http_exception(Messages.err_client_not_found, "e1026")
+        raise_app_http_exception(Messages.err_client_inactive, "e1026")
 
     dbparams = None
 
@@ -93,5 +93,6 @@ def raise_app_http_exception(detail: str, error_code: str) -> None:
     raise AppHttpException(
         detail=detail,
         error_code=error_code,
+        message=detail,
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )

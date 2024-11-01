@@ -3,13 +3,13 @@
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - New Bu should create Schema at server side
 	- Code improvements
-		- Class to dict conversion
+																		- Class to dict conversion
 																		- Entry into BuM tables etc
 		- Code revision and naming conventions
-		- Check the need for rollback in running sql scripts
+																		- Check the need for rollback in running sql scripts. check with error in accounts.sql: No need
 	- QA
-		- give an existing buCode in BuM
-		- Client inactive
+																- give an existing buCode in BuM
+																- Client inactive
 		- DB not exists
 		- Schema already exists
 	- Ext DB code
