@@ -10,6 +10,7 @@ class Messages:
         "Unknown error occured while validating access token"
     )
     err_db_not_exists = "Database does not exist"
+    err_db_params_missing_in_ext_database = "Database connection parameters are missing for external database"
     err_client_not_found = "Client was not found"
     err_client_inactive = "Client is not active"
     err_email_not_exists = "Email provided by you does not exist"
@@ -70,6 +71,11 @@ class customErrorCodes:
     e1025 = "Client was not found on clientId"
     e1026 = "Client is not active"
     e1027 = "The database for the client does not exist"
+    e1028 = "Database connections parameters are missing for this external database. There was something wrong at the time of new client creation"
+    
+    
+    
+    
     e2000 = "Error occurred while executing GraphQL query in file graphql_helper"
 
 

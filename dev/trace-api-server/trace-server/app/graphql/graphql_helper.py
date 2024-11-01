@@ -1,4 +1,5 @@
 import json
+import logging
 from fastapi import status
 from urllib.parse import unquote
 from app.config import Config
@@ -16,7 +17,7 @@ from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
-
+logger = logging.getLogger(__name__)
 
 async def change_pwd_helper(info, value):
     data = {}
@@ -270,6 +271,7 @@ def create_graphql_exception(e: Exception):
     else:
         mess = getattr(e, "detail", None) or Messages.err_unknown
     error_code = getattr(e, "error_code", None) or "e2000"
+    logger.error(f"GraphQl error occured. {mess}")
     return {
         "error": {
             "content": {

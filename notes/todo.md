@@ -1,22 +1,25 @@
 ## To do
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
-- New Bu should create Schema at server side
-	- Code improvements
+																	- New Bu should create Schema at server side
+																		- Code improvements
 																		- Class to dict conversion
 																		- Entry into BuM tables etc
-		- Code revision and naming conventions
+																		- Code revision and naming conventions
 																		- Check the need for rollback in running sql scripts. check with error in accounts.sql: No need
-	- QA
-																- give an existing buCode in BuM
-																- Client inactive
-		- DB not exists
-		- Schema already exists
+																	- QA
+																		- give an existing buCode in BuM
+																		- Client inactive
+																		- DB not exists
+																		- Schema already exists
 	- Ext DB code
-																- Get dbName from clientId
-																- if not externalDB
-																	- Check in catalog if DB exists
-															    - if DB exists
+		- create an external db and register it with client
+																	- Python: Decode db_params
+																	- Python: Adjust code to accomodate ext db logic
+																	- Get dbName from clientId
+																	- if not externalDB
+																		- Check in catalog if DB exists
+																    - if DB exists
 															    	- check if buCode as schema exists. If exists then skip schema creation and proceed
 															    	- if schema not exists
 															    		- In dbName database create public schema 
