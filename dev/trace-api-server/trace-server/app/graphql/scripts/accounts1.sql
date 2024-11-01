@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 12.3
--- Dumped by pg_dump version 12.20
+-- Dumped by pg_dump version 12.18
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -500,40 +500,6 @@ ALTER TABLE public."BranchM_id_seq" OWNER TO webadmin;
 --
 
 ALTER SEQUENCE public."BranchM_id_seq" OWNED BY public."BranchM".id;
-
-
---
--- Name: BranchTransfer; Type: TABLE; Schema: public; Owner: webadmin
---
-
-CREATE TABLE public."BranchTransfer" (
-    id integer NOT NULL,
-    "tranHeaderId" integer NOT NULL,
-    "productId" integer NOT NULL,
-    qty integer DEFAULT 0 NOT NULL,
-    "lineRemarks" text,
-    "lineRefNo" text,
-    "jData" jsonb,
-    price numeric(12,2) DEFAULT 0 NOT NULL,
-    "destBranchId" smallint NOT NULL,
-    "timestamp" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
-ALTER TABLE public."BranchTransfer" OWNER TO webadmin;
-
---
--- Name: BranchTransfer_id_seq; Type: SEQUENCE; Schema: public; Owner: webadmin
---
-
-ALTER TABLE public."BranchTransfer" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public."BranchTransfer_id_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
 
 
 --
@@ -1470,10 +1436,11 @@ INSERT INTO public."AccM" VALUES (21, 'LoansAndAdvances', 'Loans & Advances (Ass
 INSERT INTO public."AccM" VALUES (22, 'SundryDebtors', 'Sundry Debtors', 'A', 15, 'N', true, 12, '2021-03-25 09:52:36.002381+00');
 INSERT INTO public."AccM" VALUES (3, 'CapitalSubgroup', 'Capital Account Subgroup', 'L', 2, 'N', true, 2, '2021-03-25 09:52:36.002381+00');
 
---
--- Data for Name: AccOpBal; Type: TABLE DATA; Schema: public; Owner: webadmin
---
 
+--
+-- Data for Name: BranchM; Type: TABLE DATA; Schema: public; Owner: webadmin
+--
+INSERT INTO public."BranchM" VALUES (1, 'head office', NULL, NULL, 'head', '2021-03-25 09:55:23.321624+00');
 
 --
 -- Data for Name: FinYearM; Type: TABLE DATA; Schema: public; Owner: webadmin
@@ -1504,13 +1471,18 @@ INSERT INTO public."FinYearM" VALUES ('2025-04-01', '2026-03-31', 2025);
 INSERT INTO public."FinYearM" VALUES ('2026-04-01', '2027-03-31', 2026);
 INSERT INTO public."FinYearM" VALUES ('2022-04-01', '2023-03-31', 2022);
 INSERT INTO public."FinYearM" VALUES ('2023-04-01', '2024-03-31', 2023);
+INSERT INTO public."FinYearM" VALUES ('2024-04-01', '2025-03-31', 2024);
 
 --
 -- Data for Name: GodownM; Type: TABLE DATA; Schema: public; Owner: webadmin
 --
 
 INSERT INTO public."GodownM" VALUES (1, 'main', NULL, NULL, '2021-03-25 09:58:55.45763+00');
+INSERT INTO public."PosM" VALUES (1, 'sample1', NULL, NULL, 1);
 
+INSERT INTO public."Settings" VALUES (1, 'menu', NULL, '{"menu": [{"name": "financialAccounting", "label": "Accounts", "children": [{"name": "finalAccounts", "label": "Final Accounts", "children": [{"name": "trialBalance", "label": "Trial Balance", "component": "TraceTrialBalance"}, {"name": "balanceSheet", "label": "Balance Sheet", "component": "balanceSheet"}, {"name": "pl", "label": "PL Account", "component": "plAccount"}]}, {"name": "sales", "label": "Sales", "children": [{"name": "creditSales", "label": "Credit Sales"}, {"name": "cashSales", "label": "Cash Sales"}, {"name": "mixedSales", "label": "Mixed Sales"}, {"name": "cardSales", "label": "Card Sales"}]}, {"name": "purchase", "label": "Purchase", "children": [{"name": "creditPurchase", "label": "Credit Purchase"}, {"name": "cashPurchase", "label": "Cash Purchase"}]}, {"name": "misc", "label": "Misc", "children": [{"name": "contra", "label": "Contra"}, {"name": "journal", "label": "Journals"}, {"name": "stockJournal", "label": "Stock Journal"}]}, {"name": "payments", "label": "Payments", "children": [{"name": "cashPayment", "label": "Cash Payment"}, {"name": "chequePayment", "label": "Cheque Payment"}]}, {"name": "receipts", "label": "Receipts", "children": [{"name": "cashReceipt", "label": "Cash Receipt"}, {"name": "cashReceipt", "label": "Cash receipt"}]}]}, {"name": "payroll", "label": "Payroll", "children": [{"name": "transactions", "label": "Transactions", "children": [{"name": "timeSheet", "label": "Time Sheet", "children": []}, {"name": "leaves", "label": "Leaves", "children": []}]}, {"name": "processing", "label": "Processing", "children": [{"name": "processPayroll", "label": "Process Payroll", "children": []}, {"name": "undoProcessing", "label": "Undo Processing", "children": []}]}, {"name": "stationary", "label": "Stationary", "children": [{"name": "payslips", "label": "Payslips", "children": []}, {"name": "loanAccount", "label": "Loan Account", "children": []}]}, {"name": "reports", "label": "Reports", "children": [{"name": "providentFund", "label": "ProvidentFund", "children": []}, {"name": "esi", "label": "ESI", "children": []}]}]}, {"name": "marketing", "label": "Marketing", "children": [{"name": "mission", "label": "Mission", "children": [{"name": "missionStatement", "label": "Mission Statement", "children": []}, {"name": "objectives", "label": "Objectives", "children": []}]}, {"name": "analysis", "label": "Analysis", "children": [{"name": "opportunities", "label": "Opportunities", "children": []}, {"name": "5canalysis", "label": "5C Analysis", "children": []}, {"name": "swotAnalysis", "label": "SWOT Analysis", "children": []}, {"name": "pestAnalysis", "label": "PEST Analysis", "children": []}]}, {"name": "strategy", "label": "Strategy", "children": [{"name": "targetAudience", "label": "Target Audience", "children": []}, {"name": "measurableGoals", "label": "Measurable Goals", "children": []}, {"name": "budget", "label": "Budget", "children": []}]}, {"name": "marketingMix", "label": "Marketing Mix", "children": [{"name": "productDevelopment", "label": "Product Dev", "children": []}, {"name": "pricing", "label": "Pricing", "children": []}, {"name": "promotion", "label": "Promotion", "children": []}, {"name": "placeAndDistribution", "label": "Place and Distribution", "children": []}]}, {"name": "implementation", "label": "Implementation", "children": [{"name": "planToAction", "label": "Plan to Action", "children": []}, {"name": "monitorResults", "label": "Monitor Results", "children": []}]}]}, {"name": "recruitment", "label": "Recruitment", "children": [{"name": "planning", "label": "Planning", "children": [{"name": "vacancy", "label": "Vacancy", "children": []}, {"name": "resumesScreening", "label": "Resume Screening", "children": []}, {"name": "jobAnalysis", "label": "Job Analysis", "children": []}, {"name": "jobDescription", "label": "Job Description", "children": []}, {"name": "jobSpecification", "label": "Job Specification", "children": []}, {"name": "jobEvaluation", "label": "Job Evaluation", "children": []}]}, {"name": "execution", "label": "Execution", "children": [{"name": "directRecruitment", "label": "Direct Recruitment", "children": []}, {"name": "employmentExchange", "label": "Employment Exch.", "children": []}, {"name": "employmentAgencies", "label": "Employment Ag.", "children": []}, {"name": "advertisement", "label": "Advertisement", "children": []}, {"name": "professionalAssociation", "label": "Proff Associations", "children": []}, {"name": "campusRecruitment", "label": "Campus Recruit", "children": []}, {"name": "wordOfMouth", "label": "Word Of Mouth", "children": []}]}, {"name": "screening", "label": "Screening", "children": [{"name": "processing", "label": "Processing", "children": []}, {"name": "finalization", "label": "Finalization", "children": []}]}, {"name": "stationary", "label": "Stationary", "children": [{"name": "coverLetter", "label": "Cover Letter", "children": []}, {"name": "appointmentLetter", "label": "Appointment Letter", "children": []}]}]}, {"name": "sampleForms", "label": "Sample Forms", "children": [{"name": "registrations", "label": "Registrations", "children": [{"name": "gym", "label": "Gym", "children": []}, {"name": "studentAdmission", "label": "Student Admission", "children": []}, {"name": "clubMembership", "label": "Club Membership", "children": []}, {"name": "employeeInfo", "label": "Employee Information", "children": []}]}, {"name": "applications", "label": "Applications", "children": [{"name": "loanApplication", "label": "Loan Application", "children": []}, {"name": "electronicsRental", "label": "Electronics Rental", "children": []}]}, {"name": "feedbacks", "label": "Feedbacks", "children": [{"name": "employeePerformance", "label": "Employee Performance", "children": []}, {"name": "softwareEvaluation", "label": "Software Evaluation", "children": []}, {"name": "eventFeedback", "label": "Event Feedback", "children": []}]}, {"name": "others", "label": "Others", "children": [{"name": "deeplyNested", "label": "Deeply Nested", "children": []}]}]}]}', 0, '2021-03-25 10:00:14.291414+00');
+INSERT INTO public."Settings" ("id", "key", "intValue")
+	SELECT 4, 'lastProductCode', 1000;
 
 --
 -- Data for Name: TranTypeM; Type: TABLE DATA; Schema: public; Owner: webadmin
@@ -1527,9 +1499,13 @@ INSERT INTO public."TranTypeM" VALUES (8, 'Credit note', 'CRN');
 INSERT INTO public."TranTypeM" VALUES (9, 'Sale return', 'SRT');
 INSERT INTO public."TranTypeM" VALUES (10, 'Purchase return', 'PRT');
 INSERT INTO public."TranTypeM" VALUES (11, 'Stock journal', 'STJ');
+
 --
--- Data for Name: Notes; Type: TABLE DATA; Schema: public; Owner: webadmin
+-- Data for Name: UnitM; Type: TABLE DATA; Schema: public; Owner: webadmin
 --
+
+INSERT INTO public."UnitM" VALUES (1, 'piece', NULL, 'Pc');
+INSERT INTO public."UnitM" VALUES (2, 'kilogram', NULL, 'Kg');
 
 
 
@@ -1537,27 +1513,6 @@ INSERT INTO public."TranTypeM" VALUES (11, 'Stock journal', 'STJ');
 -- Data for Name: PosM; Type: TABLE DATA; Schema: public; Owner: webadmin
 --
 
-INSERT INTO public."UnitM" VALUES (1, 'piece', NULL, 'Pc');
-INSERT INTO public."UnitM" VALUES (2, 'kilogram', NULL, 'Kg');
-
---
--- Data for Name: ProductM; Type: TABLE DATA; Schema: public; Owner: webadmin
---
-
---
--- Data for Name: Settings; Type: TABLE DATA; Schema: public; Owner: webadmin
---
---
--- Data for Name: TranD; Type: TABLE DATA; Schema: public; Owner: webadmin
---
-
---
--- Data for Name: TranH; Type: TABLE DATA; Schema: public; Owner: webadmin
---
-
---
--- Data for Name: audit_table; Type: TABLE DATA; Schema: public; Owner: webadmin
---
 
 --
 -- Name: AccM_id_seq; Type: SEQUENCE SET; Schema: public; Owner: webadmin
@@ -1591,14 +1546,7 @@ SELECT pg_catalog.setval('public."AccM_id_seq"', 30, true);
 -- Name: BranchM_id_seq; Type: SEQUENCE SET; Schema: public; Owner: webadmin
 --
 
--- SELECT pg_catalog.setval('public."BranchM_id_seq"', 0, true);
-
-
---
--- Name: BranchTransfer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: webadmin
---
-
--- SELECT pg_catalog.setval('public."BranchTransfer_id_seq"', 0, true);
+SELECT pg_catalog.setval('public."BranchM_id_seq"', 1, true);
 
 
 --
@@ -1661,7 +1609,7 @@ SELECT pg_catalog.setval('public."AccM_id_seq"', 30, true);
 -- Name: GodownM_id_seq; Type: SEQUENCE SET; Schema: public; Owner: webadmin
 --
 
--- SELECT pg_catalog.setval('public."GodownM_id_seq"', 0, false);
+SELECT pg_catalog.setval('public."GodownM_id_seq"', 1, false);
 
 
 --
@@ -1675,7 +1623,7 @@ SELECT pg_catalog.setval('public."AccM_id_seq"', 30, true);
 -- Name: PosM_id_seq; Type: SEQUENCE SET; Schema: public; Owner: webadmin
 --
 
--- SELECT pg_catalog.setval('public."PosM_id_seq"', 0, true);
+SELECT pg_catalog.setval('public."PosM_id_seq"', 1, true);
 
 
 --
@@ -1719,7 +1667,7 @@ SELECT pg_catalog.setval('public."AccM_id_seq"', 30, true);
 
 -- SELECT pg_catalog.setval('public."TranD_id_seq"', 0, true);
 
-SELECT pg_catalog.setval('public."BranchM_id_seq"', 1, true);
+
 --
 -- Name: TranH_id_seq; Type: SEQUENCE SET; Schema: public; Owner: webadmin
 --
@@ -1805,14 +1753,6 @@ ALTER TABLE ONLY public."BranchM"
 
 ALTER TABLE ONLY public."BranchM"
     ADD CONSTRAINT "BranchM_pkey" PRIMARY KEY (id);
-
-
---
--- Name: BranchTransfer BranchTransfer_pkey; Type: CONSTRAINT; Schema: public; Owner: webadmin
---
-
-ALTER TABLE ONLY public."BranchTransfer"
-    ADD CONSTRAINT "BranchTransfer_pkey" PRIMARY KEY (id);
 
 
 --
@@ -2191,13 +2131,6 @@ CREATE TRIGGER audit_trigger AFTER INSERT OR DELETE OR UPDATE ON public."BankOpB
 
 
 --
--- Name: BranchTransfer audit_trigger; Type: TRIGGER; Schema: public; Owner: webadmin
---
-
-CREATE TRIGGER audit_trigger AFTER INSERT OR DELETE OR UPDATE ON public."BranchTransfer" FOR EACH ROW EXECUTE FUNCTION public.audit_function();
-
-
---
 -- Name: ProductM audit_trigger; Type: TRIGGER; Schema: public; Owner: webadmin
 --
 
@@ -2293,30 +2226,6 @@ ALTER TABLE ONLY public."BankOpBal"
 
 ALTER TABLE ONLY public."AutoSubledgerCounter"
     ADD CONSTRAINT "BranchM_AutoSubledgerCounter_fkey" FOREIGN KEY ("branchId") REFERENCES public."BranchM"(id) ON DELETE CASCADE;
-
-
---
--- Name: BranchTransfer BranchTransfer_destBranchId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: webadmin
---
-
-ALTER TABLE ONLY public."BranchTransfer"
-    ADD CONSTRAINT "BranchTransfer_destBranchId_fkey" FOREIGN KEY ("destBranchId") REFERENCES public."BranchM"(id);
-
-
---
--- Name: BranchTransfer BranchTransfer_productId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: webadmin
---
-
-ALTER TABLE ONLY public."BranchTransfer"
-    ADD CONSTRAINT "BranchTransfer_productId_fkey" FOREIGN KEY ("productId") REFERENCES public."ProductM"(id);
-
-
---
--- Name: BranchTransfer BranchTransfer_tranHeaderId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: webadmin
---
-
-ALTER TABLE ONLY public."BranchTransfer"
-    ADD CONSTRAINT "BranchTransfer_tranHeaderId_fkey" FOREIGN KEY ("tranHeaderId") REFERENCES public."TranH"(id) ON DELETE CASCADE NOT VALID;
 
 
 --
@@ -2526,7 +2435,54 @@ ALTER TABLE ONLY public."TranH"
 ALTER TABLE ONLY public."ProductM"
     ADD CONSTRAINT "unitId" FOREIGN KEY ("unitId") REFERENCES public."UnitM"(id);
 
+-- Incorporation of sql-patch5.sql into accounts.sql
+CREATE TABLE IF NOT EXISTS public."BranchTransfer"
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    "tranHeaderId" integer NOT NULL,
+    "productId" integer NOT NULL,
+    qty integer NOT NULL DEFAULT 0,
+    "lineRemarks" text COLLATE pg_catalog."default",
+    "lineRefNo" text COLLATE pg_catalog."default",
+    "jData" jsonb,
+    price numeric(12,2) NOT NULL DEFAULT 0,
+    "destBranchId" smallint NOT NULL,
+    "timestamp" timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "BranchTransfer_pkey" PRIMARY KEY (id),
+    CONSTRAINT "BranchTransfer_destBranchId_fkey" FOREIGN KEY ("destBranchId")
+        REFERENCES "BranchM" (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "BranchTransfer_productId_fkey" FOREIGN KEY ("productId")
+        REFERENCES "ProductM" (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "BranchTransfer_tranHeaderId_fkey" FOREIGN KEY ("tranHeaderId")
+        REFERENCES "TranH" (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+        NOT VALID
+)
 
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS "BranchTransfer"
+    OWNER to webadmin;
+
+-- Trigger: audit_trigger
+
+DROP TRIGGER IF EXISTS audit_trigger ON "BranchTransfer";
+
+CREATE TRIGGER audit_trigger
+    AFTER INSERT OR DELETE OR UPDATE 
+    ON "BranchTransfer"
+    FOR EACH ROW
+    EXECUTE FUNCTION audit_function();
+
+-- New tran type
+INSERT INTO "TranTypeM" ("id", "tranType", "tranCode")
+	SELECT 12, 'Branch transfer', 'BRT'
+		WHERE NOT EXISTS (SELECT 1 FROM "TranTypeM" WHERE "id"=12);
 --
 -- PostgreSQL database dump complete
 --

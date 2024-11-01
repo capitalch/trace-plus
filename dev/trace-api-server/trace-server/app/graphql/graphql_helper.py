@@ -1,4 +1,3 @@
-# import datetime
 import json
 from fastapi import status
 from urllib.parse import unquote
@@ -12,12 +11,11 @@ from app.security.security_utils import (
 )
 from app.messages import Messages, EmailMessages
 from app.mail import send_email
-from .db.sql_security import allSqls
 from .db.helpers.psycopg_async_helper import exec_sql, exec_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
-from app.graphql.handlers.create_bu import ClientDetails, create_bu
+from app.graphql.handlers.create_bu import create_bu
 
 
 async def change_pwd_helper(info, value):
@@ -121,14 +119,7 @@ async def create_bu_helper(info, value):
     try:
         valueString = unquote(value)
         valueDict = json.loads(valueString)
-        xData = valueDict["xData"]
-        buCode = xData.get("buCode")
-        clientId = xData.get("clientId")
-        await create_bu(buCode, clientId)
-
-        # get db details based on clientId
-
-        print(valueDict)
+        await create_bu(valueDict)
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly

@@ -1,7 +1,12 @@
 import os
 from pydantic import BaseModel
+from typing import Optional
 from fastapi import status
-from app.graphql.db.helpers.psycopg_async_helper import exec_sql, exec_sql_dml
+from app.graphql.db.helpers.psycopg_async_helper import (
+    exec_sql,
+    exec_sql_dml,
+    exec_sql_object,
+)
 from app.graphql.db.sql_security import SqlSecurity
 from app.messages import Messages
 from app.dependencies import AppHttpException
@@ -12,20 +17,24 @@ class ClientDetails(BaseModel):
     isActive: bool = False
     isExternalDb: bool = False
     dbName: str = None
-    dbParams: str = None
+    dbParams: Optional[str] = None # allows null
 
 
-async def create_bu(buCode: str, clientId: str) -> None:
+async def create_bu(valueDict: dict) -> None:
+    xData = valueDict["xData"]
+    buCode = xData.get("buCode")
+    clientId = xData.get("clientId")
     result = await exec_sql(
         sql=SqlSecurity.get_client_details_on_id, sqlArgs={"id": clientId}
     )
-    clientDetails: ClientDetails = ClientDetails()
+    # clientDetails: ClientDetails = ClientDetails(**result[0])
     if result:
-        clientDetails.clientCode = result[0].get("clientCode")
-        clientDetails.dbName = result[0].get("dbName")
-        clientDetails.dbParams = result[0].get("dbParams")
-        clientDetails.isActive = result[0].get("isActive")
-        clientDetails.isExternalDb = result[0].get("isExternalDb")
+        clientDetails: ClientDetails = ClientDetails(**result[0])
+        # clientDetails.clientCode = result[0].get("clientCode")
+        # clientDetails.dbName = result[0].get("dbName")
+        # clientDetails.dbParams = result[0].get("dbParams")
+        # clientDetails.isActive = result[0].get("isActive")
+        # clientDetails.isExternalDb = result[0].get("isExternalDb")
 
     # Check if client details were retrieved successfully
     if not clientDetails:
@@ -69,22 +78,14 @@ async def create_bu(buCode: str, clientId: str) -> None:
         sql = f"CREATE SCHEMA IF NOT EXISTS public"
         await exec_sql_dml(db_params=dbparams, dbName=clientDetails.dbName, sql=sql)
         currentDir = os.getcwd()
-        scriptFilePath = os.path.join(currentDir,'app/graphql/scripts/accounts.sql')
-        # scriptFile = f"graphql/scripts/accounts.sql"
+        scriptFilePath = os.path.join(currentDir, "app/graphql/scripts/accounts.sql")
         sql = open(scriptFilePath, "r").read()
         await exec_sql(dbName=clientDetails.dbName, db_params=dbparams, sql=sql)
         sql = f"alter schema public rename to {buCode}"
         await exec_sql_dml(dbName=clientDetails.dbName, db_params=dbparams, sql=sql)
-        sql = f""
+
     # Now enter details in TraceAuth db for the new schema
-    
-    print("oK")
-    # Check if the schema exists in the database
-    # doesSchemaExistInDb = exec_sql(
-    #     db_params=dbparams,
-    #     sql=SqlSecurity.does_schema_exist_in_db,
-    #     sqlArgs={"buCode": buCode},
-    # ).get("doesExist")
+    await exec_sql_object(sqlObject=valueDict)
 
 
 def raise_app_http_exception(detail: str, error_code: str) -> None:
