@@ -168,15 +168,14 @@ async def generic_query_helper(info, value: str):
         valueDict = json.loads(valueString)
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
-        # sqlId = valueDict.get("sqlId", None)
+        sqlId = valueDict.get("sqlId", None)
         request = info.context.get("request", None)
         requestJson = await request.json()
         operationName = requestJson.get("operationName", None)
-        # sqlQueryObject = getSqlQueryObject(operationName)
-        sql = SqlSecurity.test_connection  # getattr(sqlQueryObject, sqlId, None)
+        sqlQueryObject = getSqlQueryObject(operationName)
+        sql = getattr(sqlQueryObject, sqlId, None)
         sqlArgs = valueDict.get("sqlArgs", {})
         data = await exec_sql(
-            # request,
             dbName=operationName,
             db_params=dbParams,
             schema=schema,
@@ -204,7 +203,6 @@ async def update_client_helper(info, value: str):
             isExternalDb: bool = xData.get("isExternalDb", None)
             dbParams = xData.get("dbParams", None)
             if dbParams:
-                # pass
                 dbParamsEncrypted = encrypt(dbParams)
                 xData["dbParams"] = dbParamsEncrypted
             dbToCreate = xData.get("dbName")
