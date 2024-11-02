@@ -17,7 +17,9 @@ from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
+
 logger = logging.getLogger(__name__)
+
 
 async def change_pwd_helper(info, value):
     data = {}
@@ -166,12 +168,12 @@ async def generic_query_helper(info, value: str):
         valueDict = json.loads(valueString)
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
-        sqlId = valueDict.get("sqlId", None)
+        # sqlId = valueDict.get("sqlId", None)
         request = info.context.get("request", None)
         requestJson = await request.json()
         operationName = requestJson.get("operationName", None)
-        sqlQueryObject = getSqlQueryObject(operationName)
-        sql = getattr(sqlQueryObject, sqlId, None)
+        # sqlQueryObject = getSqlQueryObject(operationName)
+        sql = SqlSecurity.test_connection  # getattr(sqlQueryObject, sqlId, None)
         sqlArgs = valueDict.get("sqlArgs", {})
         data = await exec_sql(
             # request,
