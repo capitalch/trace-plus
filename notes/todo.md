@@ -12,8 +12,8 @@
 																		- Client inactive
 																		- DB not exists
 																		- Schema already exists
-	- Ext DB code
-		- create an external db and register it with client
+																- Ext DB code
+																	- create an external db and register it with client
 																	- Python: Decode db_params
 																	- Python: Adjust code to accomodate ext db logic
 																	- Get dbName from clientId
@@ -30,6 +30,11 @@
 																		- Logout should cleanup global context also
 																		- AdminBusinessUnit: AdminNewEditBusinessUnit: loadData is to be implemented
 - Admin
+																	- At present Admin user also appearing dropdown for link with BU,
+																	 only business users should appear. Admin user has ato permissions on all Bu's
+																	- Link users
+																		- Should be more elaborative
+																		- Must have a title
 																	- Associate users with bu's
 																		- Bu and users should be sorted
 																		- BuCode and userCode is not coming

@@ -52,12 +52,6 @@ export function CompSyncfusionTreeGrid({
         })
     }, [])
 
-    // useEffect(()=>{
-    //     if(gridRef?.current){
-    //         gridRef.current.expandAll()
-    //     }
-    // })
-
     if (loading) {
         return (<WidgetLoadingIndicator />)
     }

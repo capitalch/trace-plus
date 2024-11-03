@@ -46,7 +46,7 @@ const Messages = {
     'Client name should be between 6 characters and 50 characters',
   messDbConnFailure: 'Database connection was failed',
   messDbConnSuccessful: 'Database connection was successful',
-  messExistingLinksDropHere: 'Existing links (Drop the dragged row here)',
+  messExistingLinksDropHere: 'Existing Bu`s and links (Drop the dragged row here)',
   messFailure: 'Failure',
   messOperationNotAllowed: 'This operation is not allowed',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',

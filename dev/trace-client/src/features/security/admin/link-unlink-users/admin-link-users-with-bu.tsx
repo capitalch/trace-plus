@@ -25,67 +25,70 @@ export function AdminLinkUsersWithBu() {
     const linkInstance = DataInstancesMap.adminLinkUsers
     const context: GlobalContextType = useContext(GlobalContext);
     return (
-        <div className='flex gap-6 ' style={{ width: 'calc(100vw - 225px)' }}>
-            <div className='flex flex-col w-min' >
-                <CompSyncFusionGridToolbar
-                    className='mt-4'
-                    CustomControl={() => <WidgetTooltip title='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 mb-2 h-8 px-2 text-xs' /></WidgetTooltip>}
-                    minWidth='300px'
-                    title=''
-                    isLastNoOfRows={false}
-                    instance={businessUsersInstance}
-                />
-                <label className='ml-4 mt-2 font-medium'>{Messages.messBusinessUsersDragFrom}</label>
-                <CompSyncFusionGrid
-                    className="mt-4 ml-4"
-                    columns={getUsersColumns()}
-                    gridDragAndDropSettings={
-                        {
-                            allowRowDragAndDrop: true,
-                            onRowDrop: onUserRowDrop,
-                        }}
-                    hasIndexColumn={true}
-                    height="calc(100vh - 220px)"
-                    instance={businessUsersInstance}
-                    minWidth='600px'
-                    rowHeight={40}
-                    sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
-                    sqlId={SqlIdsMap.allBusinessUsers}
-                />
-            </div>
+        <div className='flex flex-col ml-8'>
+            <span className='mt-6 text-xl font-semibold text-primary-400'>Link the users with business units (bu)</span>
+            <div className='flex gap-8 ' style={{ width: 'calc(100vw - 260px)' }}>
+                <div className='flex flex-col w-min' >
+                    <CompSyncFusionGridToolbar
+                        className='mt-4'
+                        CustomControl={() => <WidgetTooltip title='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 mb-2 h-8 px-2 text-xs' /></WidgetTooltip>}
+                        minWidth='300px'
+                        title=''
+                        isLastNoOfRows={false}
+                        instance={businessUsersInstance}
+                    />
+                    <label className='mt-2 font-medium text-primary-300'>{Messages.messBusinessUsersDragFrom}</label>
+                    <CompSyncFusionGrid
+                        className="mt-4 "
+                        columns={getUsersColumns()}
+                        gridDragAndDropSettings={
+                            {
+                                allowRowDragAndDrop: true,
+                                onRowDrop: onUserRowDrop,
+                            }}
+                        hasIndexColumn={true}
+                        height="calc(100vh - 290px)"
+                        instance={businessUsersInstance}
+                        minWidth='600px'
+                        rowHeight={40}
+                        sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
+                        sqlId={SqlIdsMap.allBusinessUsers}
+                    />
+                </div>
 
-            <div className='flex flex-col w-max'>
-                <CompSyncFusionTreeGridToolbar className='mt-4'
-                    CustomControl={() =>
-                        <WidgetTooltip title='New business unit' >
-                            <AdminNewBusinessUnitButton
-                                dataInstance={linkInstance}
-                                className='w-10 mb-2 h-8 px-2 text-xs'
-                                isTreeGrid={true}
-                            />
-                        </WidgetTooltip>}
-                    instance={linkInstance}
-                    title=''
-                />
-                <label className='ml-4 mt-2 font-medium'>{Messages.messExistingLinksDropHere}</label>
-                <CompSyncfusionTreeGrid
-                    addUniqueKeyToJson={true}
-                    className="mt-2 ml-4"
-                    childMapping="users"
-                    columns={getLinkColumns()}
-                    // gridDragAndDropSettings={{
-                    // allowRowDragAndDrop: true,
-                    // onRowDrop: handleRowDrop
-                    // }}
-                    height="calc(100vh - 220px)"
-                    instance={linkInstance}
-                    minWidth='700px'
-                    pageSize={11}
-                    rowHeight={40}
-                    sqlArgs={{ clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
-                    sqlId={SqlIdsMap.getBuUsersLink}
-                    treeColumnIndex={0}
-                />
+                <div className='flex flex-col w-max'>
+                    <CompSyncFusionTreeGridToolbar className='mt-4'
+                        CustomControl={() =>
+                            <WidgetTooltip title='New business unit' >
+                                <AdminNewBusinessUnitButton
+                                    dataInstance={linkInstance}
+                                    className='w-10 mb-2 h-8 px-2 text-xs'
+                                    isTreeGrid={true}
+                                />
+                            </WidgetTooltip>}
+                        instance={linkInstance}
+                        title=''
+                    />
+                    <label className='mt-2 font-medium text-primary-300'>{Messages.messExistingLinksDropHere}</label>
+                    <CompSyncfusionTreeGrid
+                        addUniqueKeyToJson={true}
+                        className="mt-2 "
+                        childMapping="users"
+                        columns={getLinkColumns()}
+                        // gridDragAndDropSettings={{
+                        // allowRowDragAndDrop: true,
+                        // onRowDrop: handleRowDrop
+                        // }}
+                        height="calc(100vh - 290px)"
+                        instance={linkInstance}
+                        minWidth='700px'
+                        pageSize={11}
+                        rowHeight={40}
+                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
+                        sqlId={SqlIdsMap.getBuUsersLink}
+                        treeColumnIndex={0}
+                    />
+                </div>
             </div>
         </div>
     )
@@ -174,10 +177,10 @@ export function AdminLinkUsersWithBu() {
         return ([
             {
                 field: 'code',
-                headerText: 'Code',
+                headerText: 'Code (Bu / user)',
                 type: 'string',
                 template: codeColumnTemplate,
-                width: 50
+                width: 80
             },
             {
                 field: 'name',

@@ -368,7 +368,7 @@ class SqlSecurity:
 					where "id" = (table "id")
     """
 
-    get_users_not_linked_with_buId = """
+    get_users_not_linked_with_buId_exclude_admin = """
         with "buId" as (values(%(buId)s::int))
             --with "buId" as (values(43))
             SELECT u.id, "userName"||' : '||"userEmail"||' : '||uid as "user"
@@ -377,7 +377,7 @@ class SqlSecurity:
                 ON u.id = x."userId" AND x."buId" = (table "buId")
             JOIN "BuM" b
                 on b.id = (table "buId") AND u."clientId" = b."clientId"
-            WHERE x."userId" IS NULL
+            WHERE (x."userId" IS NULL ) and (u."roleId" is not null)
             ORDER BY "userName", "userEmail", uid;
     """
 

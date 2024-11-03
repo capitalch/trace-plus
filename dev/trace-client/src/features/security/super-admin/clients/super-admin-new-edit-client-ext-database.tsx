@@ -321,7 +321,7 @@ export function SuperAdminNewEditClientExtDatabase({
             port: data.port, //1
         }
         try {
-            const q: any = GraphQLQueriesMap.genericQuery(dbParams.dbname, {
+            const q: any = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
                 sqlId: SqlIdsMap.testConnection,
                 dbParams: dbParams
             })

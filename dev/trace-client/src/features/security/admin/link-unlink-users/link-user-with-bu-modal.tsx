@@ -62,7 +62,7 @@ export function LinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType)
     async function getUserOptions(setOptions: (args: any) => void) {
         console.log(instance, buId)
         const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
-            sqlId: SqlIdsMap.getUsersNotLinkedWithBuId
+            sqlId: SqlIdsMap.getUsersNotLinkedWithBuIdExcludeAdmin
             , sqlArgs: { buId:buId}
         });
         const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
