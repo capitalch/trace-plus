@@ -144,7 +144,6 @@ export function SuperAdminNewEditSecuredControl({
             tableName: "SecuredControlM",
             xData: {
                 ...data,
-                id: data.controlNo
             }
         };
         try {

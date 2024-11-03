@@ -10,12 +10,13 @@ export const GraphQLQueriesMap = {
   decodeExtDbParams: decodeExtDbParams,
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
+  importSecuredControls: importSecuredControls,
   updateClient: updateClient,
   updateUser: updateUser,
   hello: hello
 }
 
-function changePwd (val: ChangePwdType) {
+function changePwd(val: ChangePwdType) {
   const value = encodeObj(val)
   return gql`
         mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
@@ -24,7 +25,7 @@ function changePwd (val: ChangePwdType) {
     `
 }
 
-function changeUid (val: ChangeUidType) {
+function changeUid(val: ChangeUidType) {
   const value = encodeObj(val)
   return gql`
         mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
@@ -33,7 +34,7 @@ function changeUid (val: ChangeUidType) {
     `
 }
 
-function createBu (dbName: string, val: TraceDataObjectType) {
+function createBu(dbName: string, val: TraceDataObjectType) {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} { 
@@ -42,7 +43,7 @@ function createBu (dbName: string, val: TraceDataObjectType) {
     `
 }
 
-function decodeExtDbParams (val: string) {
+function decodeExtDbParams(val: string) {
   // does not hit database
   const q = gql`
     query  {
@@ -51,7 +52,7 @@ function decodeExtDbParams (val: string) {
   return q
 }
 
-function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
+function genericQuery(dbName: string, val: GraphQLQueryArgsType) {
   const value = encodeObj(val)
   return gql`
         query ${dbName} {
@@ -60,7 +61,7 @@ function genericQuery (dbName: string, val: GraphQLQueryArgsType) {
     `
 }
 
-function genericUpdate (dbName: string, val: GraphQLUpdateArgsType) {
+function genericUpdate(dbName: string, val: GraphQLUpdateArgsType) {
   const value = encodeObj(val) // dbName below is transferred as operationName
   return gql`
         mutation ${dbName} { 
@@ -69,7 +70,16 @@ function genericUpdate (dbName: string, val: GraphQLUpdateArgsType) {
     `
 }
 
-function updateClient (dbName: string, val: TraceDataObjectType) {
+function importSecuredControls(dbName: string, val: GraphQLUpdateArgsType) {
+  const value = encodeObj(val)
+  return gql`
+        mutation ${dbName} { 
+            importSecuredControls(value:"${value}")
+        }
+    `
+}
+
+function updateClient(dbName: string, val: TraceDataObjectType) {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} {
@@ -78,7 +88,7 @@ function updateClient (dbName: string, val: TraceDataObjectType) {
     `
 }
 
-function updateUser (dbName: string, val: TraceDataObjectType) {
+function updateUser(dbName: string, val: TraceDataObjectType) {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} {
@@ -87,13 +97,13 @@ function updateUser (dbName: string, val: TraceDataObjectType) {
     `
 }
 
-function hello () {
+function hello() {
   return gql`
     query hello
   `
 }
 
-function encodeObj (obj: any) {
+function encodeObj(obj: any) {
   let ret = ''
   if (!_.isEmpty(obj)) {
     ret = encodeURI(JSON.stringify(obj))
@@ -112,13 +122,6 @@ export type ChangeUidType = {
   uid: string
   id: string | undefined // id of userM
 }
-
-// export type CreateBuType = {
-//   clientId: string
-//   buCode: string
-//   buName: string
-//   isActive: boolean
-// }
 
 export type GraphQLQueryArgsType = {
   dbParams?: { [key: string]: string | number }

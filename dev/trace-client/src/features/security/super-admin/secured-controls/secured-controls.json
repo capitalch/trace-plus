@@ -1,125 +1,107 @@
 [
     {
-      "id": 1,
       "controlNo": 1,
       "controlName": "payment-save",
       "controlType": "button",
       "descr": "Can save payment"
     },
     {
-      "id": 2,
       "controlNo": 2,
       "controlName": "payment-edit",
       "controlType": "button",
       "descr": "Can edit payment"
     },
     {
-      "id": 3,
       "controlNo": 3,
       "controlName": "payment-delete",
       "controlType": "button",
       "descr": "Can delete payment"
     },
     {
-      "id": 4,
       "controlNo": 4,
       "controlName": "receipt-save",
       "controlType": "button",
       "descr": "Can save receipt"
     },
     {
-      "id": 5,
       "controlNo": 5,
       "controlName": "receipt-edit",
       "controlType": "button",
       "descr": "Can edit receipt"
     },
     {
-      "id": 6,
       "controlNo": 6,
       "controlName": "receipt-delete",
       "controlType": "button",
       "descr": "Can delete receipt"
     },
     {
-      "id": 7,
       "controlNo": 7,
       "controlName": "contra-save",
       "controlType": "button",
       "descr": "Can save contra"
     },
     {
-      "id": 8,
       "controlNo": 8,
       "controlName": "contra-edit",
       "controlType": "button",
       "descr": "Can edit contra"
     },
     {
-      "id": 9,
       "controlNo": 9,
       "controlName": "contra-delete",
       "controlType": "button",
       "descr": "Can delete contra"
     },
     {
-      "id": 10,
       "controlNo": 10,
       "controlName": "journal-save",
       "controlType": "button",
       "descr": "Can save journal"
     },
     {
-      "id": 11,
       "controlNo": 11,
       "controlName": "journal-edit",
       "controlType": "button",
       "descr": "Can edit journal"
     },
     {
-      "id": 12,
       "controlNo": 12,
       "controlName": "journal-delete",
       "controlType": "button",
       "descr": "Can delete journal"
     },
     {
-      "id": 13,
       "controlNo": 13,
       "controlName": "debit-note-save",
       "controlType": "button",
       "descr": "Can save debit note"
     },
     {
-      "id": 14,
       "controlNo": 14,
       "controlName": "debit-note-edit",
       "controlType": "button",
       "descr": "Can edit debit note"
     },
     {
-      "id": 15,
       "controlNo": 15,
       "controlName": "debit-note-delete",
       "controlType": "button",
       "descr": "Can delete debit note"
     },
     {
-      "id": 16,
       "controlNo": 16,
       "controlName": "credit-note-save",
       "controlType": "button",
       "descr": "Can save credit note"
     },
     {
-      "id": 17,
       "controlNo": 17,
       "controlName": "credit-note-edit",
       "controlType": "button",
       "descr": "Can edit credit note"
     },
     {
-      "id": 18,
       "controlNo": 18,
       "controlName": "credit-note-delete",
       "controlType": "button",

@@ -5,7 +5,7 @@ import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit"
 import { GlobalContext } from "../../../../App";
 import clsx from "clsx";
 
-export function AdminNewBusinessUnitButton({ className, dataInstance, isTreeGrid = false }: { className: string, dataInstance: string, isTreeGrid?: boolean }) {
+export function AdminNewBusinessUnitButton({ className, dataInstance, isTreeGrid = false }: { className?: string, dataInstance: string, isTreeGrid?: boolean }) {
     const context: GlobalContextType = useContext(GlobalContext);
 
     return (<button className={clsx("bg-primary-400 text-white w-20 h-10 rounded-md hover:bg-primary-600", className)}

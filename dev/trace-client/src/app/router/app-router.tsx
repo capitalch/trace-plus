@@ -15,6 +15,7 @@ import { AdminBusinessUnits } from "../../features/security/admin/business-units
 import { AdminRoles } from "../../features/security/admin/roles/admin-roles";
 import { AdminBusinessUsers } from "../../features/security/admin/business users/admin-business-users";
 import { AdminLinkUsersWithBu } from "../../features/security/admin/link-unlink-users/admin-link-users-with-bu";
+import { LinkSecuredControlsWithRoles } from "../../features/security/super-admin/link-unlink-secured-controls/link-secured-controls-with-roles";
 
 export const appRouter = createBrowserRouter([
     {
@@ -75,7 +76,11 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'admin-link-users',
                 element: <AdminLinkUsersWithBu />
-            }
+            },
+            {
+                path: 'link-secured-controls-roles',
+                element: <LinkSecuredControlsWithRoles />
+            },
 
             // {
             //     path: 'change-uid',

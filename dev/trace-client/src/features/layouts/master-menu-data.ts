@@ -1,18 +1,3 @@
-// import { IconAdminUsers } from '../../components/icons/icon-admin-users'
-// import { IconBusinessUnits } from '../../components/icons/icon-business-units'
-// import { IconClients } from '../../components/icons/icon-clients'
-// import { IconDashboard } from '../../components/icons/icon-dashboard'
-// import { IconFinalAccounts } from '../../components/icons/icon-final-accounts'
-// import { IconInventory } from '../../components/icons/icon-inventory'
-// import { IconMasters } from '../../components/icons/icon-masters'
-// import { IconOptions } from '../../components/icons/icon-options'
-// import { IconPurchaseSales } from '../../components/icons/icon-purchase-sales'
-// import { IconReports } from '../../components/icons/icon-reports'
-// import { IconRoles } from '../../components/icons/icon-roles'
-// import { IconSecuredControls } from '../../components/icons/icon-secured-controls'
-// import { IconUsers } from '../../components/icons/icon-users'
-// import { IconVoucher } from '../../components/icons/icon-voucher'
-
 import { IconAdminLinkUsers } from "../../controls/icons/icon-admin-link-users"
 import { IconAdminUsers } from "../../controls/icons/icon-admin-users"
 import { IconBusinessUnits } from "../../controls/icons/icon-business-units"
@@ -321,6 +306,14 @@ export const MasterMenuData: MenuDataType = {
       iconColorClass: 'text-red-500',
       children: [],
       path: '/super-admin-admin-users'
+    },
+    {
+      id: '18',
+      label: 'Link ctrls <-> roles',
+      icon: IconAdminLinkUsers,
+      iconColorClass: 'text-green-500',
+      children: [],
+      path: '/link-secured-controls-roles'
     }
   ]
 }

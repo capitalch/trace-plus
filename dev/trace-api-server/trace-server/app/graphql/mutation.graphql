@@ -3,6 +3,7 @@ type Mutation {
     changeUid(value: Generic): Generic
     createBu(value: Generic): Generic
     genericUpdate(value: Generic): Generic
+    importSecuredControls(value: Generic): Generic
     updateClient(value: Generic): Generic
     updateUser(value: Generic): Generic
 }

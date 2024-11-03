@@ -6,14 +6,13 @@
 																	- Default manager, default accountant, defaultuser roles in Super admin
 																	- The default roles are available to admin users
 																	- secured-controls.json file: id, controlName,controlNo, controlType, descr
-	- Secured controls entry: Table : non identity. forcedInsert with id field in json object
-	- Mecanism to import secured controls to database: Insert and update
+																	- Mecanism to import secured controls to database: Insert and update
 	- Super admin: Drag and drop secured controls to default roles
 		- Provide persistence
 	- Admin
 		- Drag and drop secured controls to admin created roles
-		- Auto transfer all default manager role secured controls to a role
-		- Auto transfer all default accountant and user level controls to a role
+		- Auto transfer facility all default manager role secured controls to a role
+		- Auto transfer facility all default accountant and user level controls to a role
 
 																	- New Bu should create Schema at server side
 																		- Code improvements

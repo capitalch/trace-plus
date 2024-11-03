@@ -10,7 +10,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { Utils } from "../../../../utils/utils"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
-import { SuperAdminNewSecuredControlButton } from "./super-admin-new-secured-control-button"
+import { SuperAdminNewSecuredControlButtons } from "./super-admin-new-secured-control-buttons"
 import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
 
 export function SuperAdminSecuredControls() {
@@ -19,7 +19,7 @@ export function SuperAdminSecuredControls() {
 
     return (<CompContentContainer title='Super admin secured controls'>
         <CompSyncFusionGridToolbar
-            CustomControl={() => <SuperAdminNewSecuredControlButton dataInstance={instance} />}
+            CustomControl={() => <SuperAdminNewSecuredControlButtons dataInstance={instance} />}
             title="Secured controls view"
             isLastNoOfRows={true}
             instance={instance} />

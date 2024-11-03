@@ -26,7 +26,6 @@ def get_conn_info(
 
 
 async def exec_sql(
-    # request,
     dbName: str = Config.DB_SECURITY_DATABASE,
     db_params: dict[str, str] = dbParams,
     schema: str = "public",
@@ -35,11 +34,11 @@ async def exec_sql(
 ):
     connInfo = get_conn_info(dbName, db_params)
     records = []
-    records = await doProcess(connInfo, schema, dbName, sql, sqlArgs)
+    records = await do_process(connInfo, schema, dbName, sql, sqlArgs)
     return jsonable_encoder(records)
 
 
-async def doProcess(
+async def do_process(
     connInfo, schema, dbName, sql, sqlArgs
 ):  # Implementation without AsyncConnectionPool
     records = []
@@ -204,54 +203,3 @@ async def process_deleted_ids(sqlObject, acur: Any):
     ret = ret.rstrip(",") + ")"
     sql = f"""delete from "{tableName}" where id in{ret}"""
     await acur.execute(sql)
-
-
-# from psycopg_pool import AsyncConnectionPool
-# poolStore = {}
-# from app.dependencies import AppHttpException
-
-# from fastapi import status
-# connInfo = f'''
-#     host = {Config.DB_HOST} password = {Config.DB_PASSWORD} port = {Config.DB_PORT} user = {Config.DB_USER} dbname = {dbName}
-# '''
-
-# pool store not being used
-# async def disconnect_pool_store():
-#     global poolStore
-#     for pool in poolStore.values():
-#         await pool.close()
-#     poolStore = {}
-
-# connection pool not being used
-# def get_connection_pool(
-#     connInfo: str,
-#     dbName: str,
-# ) -> AsyncConnectionPool:
-#     global poolStore
-#     pool: AsyncConnectionPool = poolStore.get(dbName)
-#     if (pool is None) or (pool.closed):
-#         poolStore[dbName] = AsyncConnectionPool(
-#             conninfo=connInfo, timeout=3, reconnect_timeout=2,open=False)
-#     return poolStore[dbName]
-
-# async def doProcess1(connInfo, schema, dbName, sql, sqlArgs): # Implementation with AsyncConnectionPool. I discarded iit because it uses 3 extra connections
-#     apool: AsyncConnectionPool = get_connection_pool(
-#         connInfo,
-#         dbName,
-#     )
-#     records = []
-#     try:
-#         async with apool:
-#             async with apool.connection() as aconn:
-#                 await aconn.execute(f"set search_path to {schema or 'public'}")
-#                 async with aconn.cursor(row_factory=dict_row) as acur:
-#                     await acur.execute(sql, sqlArgs)
-#                     if acur.rowcount > 0:
-#                         records = await acur.fetchall()
-#                 await acur.close()
-#                 await aconn.commit()
-#     except OperationalError as e:
-#         raise e
-#     except Exception as e:
-#         raise e
-#     return (records)

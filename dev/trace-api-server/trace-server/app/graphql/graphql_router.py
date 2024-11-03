@@ -15,6 +15,7 @@ from app.graphql.graphql_helper import (
     decode_ext_db_params_helper,
     generic_query_helper,
     generic_update_helper,
+    import_secured_controls_helper,
     update_client_helper,
     update_user_helper,
 )
@@ -52,6 +53,10 @@ async def change_pwd(_, info, value=""):
 @mutation.field("changeUid")
 async def change_uid(_, info, value):
     return await change_uid_helper(info, value)
+
+@mutation.field("importSecuredControls")
+async def import_secured_controls(_, info, value):
+    return await import_secured_controls_helper(info, value)
 
 
 @mutation.field("updateClient")

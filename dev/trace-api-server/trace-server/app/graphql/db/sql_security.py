@@ -380,6 +380,16 @@ class SqlSecurity:
             WHERE (x."userId" IS NULL ) and (u."roleId" is not null)
             ORDER BY "userName", "userEmail", uid;
     """
+    
+    import_secured_controls = """
+        INSERT INTO "SecuredControlM" ("controlNo", "controlName", "controlType", "descr")
+        VALUES (%(controlNo)s, %(controlName)s, %(controlType)s, %(descr)s)
+        ON CONFLICT ("controlName")
+        DO UPDATE SET
+            "controlNo" = EXCLUDED."controlNo",
+            "controlType" = EXCLUDED."controlType",
+            "descr" = EXCLUDED."descr";
+    """
 
     test_connection = """
         select 'ok' as "connection"

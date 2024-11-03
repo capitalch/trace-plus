@@ -17,6 +17,7 @@ from .db.sql_security import SqlSecurity
 from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
+from app.graphql.handlers.import_secured_controls import import_secured_controls
 
 logger = logging.getLogger(__name__)
 
@@ -189,6 +190,15 @@ async def generic_query_helper(info, value: str):
         return create_graphql_exception(e)
     return data
 
+async def import_secured_controls_helper(info, value: str):
+    data = {}
+    try:
+        valueString = unquote(value)
+        json_data = json.loads(valueString)
+        await import_secured_controls(json_data)
+    except Exception as e:
+        return create_graphql_exception(e)
+    return data
 
 async def update_client_helper(info, value: str):
     data = {}
