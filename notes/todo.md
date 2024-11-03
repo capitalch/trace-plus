@@ -1,6 +1,20 @@
 ## To do
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
+- Provision in drag n drop for persistence of tree
+- Roles and secured control management
+																	- Default manager, default accountant, defaultuser roles in Super admin
+																	- The default roles are available to admin users
+																	- secured-controls.json file: id, controlName,controlNo, controlType, descr
+	- Secured controls entry: Table : non identity. forcedInsert with id field in json object
+	- Mecanism to import secured controls to database: Insert and update
+	- Super admin: Drag and drop secured controls to default roles
+		- Provide persistence
+	- Admin
+		- Drag and drop secured controls to admin created roles
+		- Auto transfer all default manager role secured controls to a role
+		- Auto transfer all default accountant and user level controls to a role
+
 																	- New Bu should create Schema at server side
 																		- Code improvements
 																		- Class to dict conversion
@@ -29,7 +43,7 @@
 																		- Bu code should not be editable
 																		- Logout should cleanup global context also
 																		- AdminBusinessUnit: AdminNewEditBusinessUnit: loadData is to be implemented
-- Admin
+																- Admin
 																	- At present Admin user also appearing dropdown for link with BU,
 																	 only business users should appear. Admin user has ato permissions on all Bu's
 																	- Link users

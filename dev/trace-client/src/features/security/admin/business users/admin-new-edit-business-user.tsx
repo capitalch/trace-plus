@@ -165,7 +165,7 @@ export function AdminNewEditBusinessUser({
     );
 
     async function getRoleOptions(setOptions: (args: any) => void) {
-        const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getAllRoleNamesOnClientId, sqlArgs: { clientId: Utils.getCurrentLoginInfo().clientId } });
+        const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getAllRoleNamesOnClientIdWithBuiltinRoles, sqlArgs: { clientId: Utils.getCurrentLoginInfo().clientId } });
         const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
         setOptions(res.data.genericQuery);
     }

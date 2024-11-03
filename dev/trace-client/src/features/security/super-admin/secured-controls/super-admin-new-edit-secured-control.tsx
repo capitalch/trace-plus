@@ -63,7 +63,7 @@ export function SuperAdminNewEditSecuredControl({
     useEffect(() => {
         const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-SECURED-CONTROL-NAME"], 1200).subscribe(async (d: any) => {
             const isValid = await trigger('controlName')
-            if(isValid){
+            if (isValid) {
                 validateControlNameAtServer(d.data);
             }
         });
@@ -144,6 +144,7 @@ export function SuperAdminNewEditSecuredControl({
             tableName: "SecuredControlM",
             xData: {
                 ...data,
+                id: data.controlNo
             }
         };
         try {

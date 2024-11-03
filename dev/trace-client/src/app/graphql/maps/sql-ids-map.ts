@@ -9,7 +9,7 @@ export const SqlIdsMap = {
   allSecuredControls: 'get_all_secured_controls',
   getAdminRoleOnRoleNameClientId: 'get_admin_role_on_roleName_clientId',
   getAllClientNamesNoArgs: 'get_all_client_names_no_args',
-  getAllRoleNamesOnClientId: 'get_all_role_names_on_clientId',
+  getAllRoleNamesOnClientIdWithBuiltinRoles: 'get_all_role_names_on_clientId_with_builtin_roles',
   getBuOnBuCodeAndClientId: 'get_bu_on_buCode_and_clientId',
   getBuUsersLink: 'get_bu_users_link',
   getClientOnClientCode: 'get_client_on_clientCode',

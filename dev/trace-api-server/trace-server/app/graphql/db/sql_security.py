@@ -153,13 +153,13 @@ class SqlSecurity:
                 limit (table "noOfRows")
     """
 
-    get_all_role_names_on_clientId = """
+    get_all_role_names_on_clientId_with_builtin_roles = """
         with "clientId" as (values(%(clientId)s::int))
         --with "clientId" as (values(51))
             select "id"
 			, "roleName"
 			from "RoleM"
-				where "clientId" = (table "clientId")
+				where ("clientId" = (table "clientId")) or ("clientId" is null)
                 order by "roleName"
     """
 
