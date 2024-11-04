@@ -16,7 +16,7 @@ import { ModalDialogA } from "../layouts/nav-bar/modal-dialogA"
 
 function Login() {
     const { handleSubmit, register, setValue, clearErrors, formState: { errors, } } = useForm({ mode: 'onTouched' })
-    const { handleForgotPassword, /*handleOnChangeClient,*/ handleTestSignIn, onSubmit } = useLogin()
+    const { handleForgotPassword, /*handleOnChangeClient,*/ handleTestSignIn, onSubmit } = useLogin(setValue)
     const { checkPassword, checkUserNameOrEmail }: any = useValidators()
     const instance = 'user-login'
     const clientsUrl = urlJoin(Utils.getHostUrl(), 'login-clients')

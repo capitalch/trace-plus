@@ -26,7 +26,7 @@ export function AdminLinkUsersWithBu() {
     const context: GlobalContextType = useContext(GlobalContext);
     return (
         <div className='flex flex-col ml-8'>
-            <span className='mt-6 text-xl font-semibold text-primary-400'>Link the users with business units (bu)</span>
+            <label className='mt-6 text-xl font-semibold text-primary-400'>Link users with business units (bu)</label>
             <div className='flex gap-8 ' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar

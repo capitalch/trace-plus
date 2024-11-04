@@ -39,14 +39,15 @@ const Messages = {
     'Business unit code can be between 4 characters and 50 characters',
   messBuName:
     'Business unit name can be between 6 characters and 150 characters',
-  messBusinessUsersDragFrom: 'Available business users (Drag a row from below)',
+  messBusinessUsersDragFrom: 'Available business users (Drag a row)',
   messClientCode:
     'Client code should be between 6 characters and 30 characters',
   messClientName:
     'Client name should be between 6 characters and 50 characters',
   messDbConnFailure: 'Database connection was failed',
   messDbConnSuccessful: 'Database connection was successful',
-  messExistingLinksDropHere: 'Existing Bu`s and links (Drop the dragged row here)',
+  messExistingLinksDropHere: 'Existing Bu`s with links (Drop the dragged row here)',
+  messExistingRolesWithLinksDropHere: "Existing roles with links (Drop the dragged row here)",
   messFailure: 'Failure',
   messOperationNotAllowed: 'This operation is not allowed',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
@@ -54,19 +55,20 @@ const Messages = {
   messRoleName: 'Role name should be a string without any special character',
   messResetLinkSendFail: 'Could not send reset link to the email address provided by you',
   messResetLinkSendSuccess: "Successfully sent the email with the reset link",
+  messSecuredControlsDragFrom: "Available secured controls (Drag a row)",
   messSecuredControlName: 'Secured control name should be a string without any space or special character',
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSuccess: 'Successfull',
-  messSureToProceed:'Are you sure to proceed?',
+  messSureToProceed: 'Are you sure to proceed?',
   messSureUnlinkUser: 'Are you sure to unlink this user?',
   messSureUnlinkUserBody: 'The selected user will only be unlinked from the business unit. The user will not be deleted.',
   messUidExists: 'This uid already exists for current client',
   messUidHelper: 'At least 4 characters long | no space | no special char',
   messUnableToConnectToServer: 'Unable to connect to server. Server may be offline',
-  messUserExists:"User already exists in the business unit",
+  messUserExists: "User already exists in the business unit",
   messUserNameEmailHelper:
     'UID: At least 4 characters long | no space | no special char or valid email',
-  messUserWillBeAdded:'Dragged used will be added to the business unit',
+  messUserWillBeAdded: 'Dragged used will be added to the business unit',
   messUserUnlinkedSuccess: 'The selected user was unlinked successfully'
 }
 

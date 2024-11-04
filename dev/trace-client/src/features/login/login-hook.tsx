@@ -7,8 +7,9 @@ import qs from 'qs'
 import { doLogin } from "./login-slice"
 import { Utils } from "../../utils/utils"
 import { ForgotPassword } from "./forgot-password"
+import { UserTypesEnum } from "../../utils/global-types-interfaces-enums"
 
-function useLogin() {
+function useLogin(setValue:any) {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
 
@@ -22,27 +23,15 @@ function useLogin() {
 
 
     function handleTestSignIn(userType: any) {
-        dispatch(doLogin({
-            isLoggedIn: true,
-            businessUnits: [],
-            clientCode: undefined,
-            clientId: undefined,
-            clientName: undefined,
-            email: undefined,
-            id: undefined,
-            isClentActive: false,
-            isUserActive: false,
-            lastUsedBranchId: undefined,
-            lastUsedBuId: undefined,
-            mobileNo: undefined,
-            roleId: undefined,
-            roleName: undefined,
-            token: undefined,
-            uid: undefined,
-            userName: undefined,
-            userType: userType
-        }))
-        navigate('/', { replace: true })
+        if(userType===UserTypesEnum.SuperAdmin){
+            setValue('username','superAdmin')
+            setValue('password', 'superadmin@123')
+        } else if(userType===UserTypesEnum.Admin){
+            setValue('username','capital')
+            setValue('password', 'su$hant123')
+        } else if(userType===UserTypesEnum.BusinessUser){
+
+        }
     }
 
     async function onSubmit(data: any) {
@@ -90,6 +79,7 @@ function useLogin() {
             Utils.showErrorMessage(error)
         }
     }
+    
     return ({ handleForgotPassword,/* handleOnChangeClient,*/ handleTestSignIn, onSubmit })
 }
 export { useLogin }

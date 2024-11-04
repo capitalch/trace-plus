@@ -4,6 +4,8 @@ export const DataInstancesMap = {
   adminDashBoard: 'admin-dashboard',
   adminLinkUsers: 'admin-link-users',
   adminRoles: 'admin-roles',
+  securedControls: 'secured-controls',
+  securedControlsLinkRoles:'secured-controls-link-roles',
   superAdminAdminUsers: 'super-admin-admin-users',
   superAdminDashBoard: 'super-admin-dashboard',
   superAdminClients: 'super-admin-clients',
