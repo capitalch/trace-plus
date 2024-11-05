@@ -3,6 +3,7 @@
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - Provision in drag n drop for persistence of tree
 - Roles and secured control management
+	- Maybe put a small icon in child rows
 																	- Default manager, default accountant, defaultuser roles in Super admin
 																	- The default roles are available to admin users
 																	- secured-controls.json file: id, controlName,controlNo, controlType, descr

@@ -16,6 +16,7 @@ import { IconLink } from "../../../../controls/icons/icon-link";
 import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { IconVoucher } from "../../../../controls/icons/icon-voucher";
 
 export function LinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.securedControls
@@ -156,8 +157,9 @@ export function LinkSecuredControlsWithRoles() {
     }
 
     function nameColumnTemplate(props: any) {
-        return (<div>
-            <span>{props.name}</span>
+        return (<div className="flex items-center">
+            {(props.level===1) && <IconVoucher />}
+            <span className="ml-1">{props.name}</span>
             {getChildCount(props)}
         </div>)
     }

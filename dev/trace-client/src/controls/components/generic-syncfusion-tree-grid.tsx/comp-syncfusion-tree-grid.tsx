@@ -163,7 +163,7 @@ export function CompSyncfusionTreeGrid({
     }
 
     function onRowDataBound(args: any) {
-        console.log(args)
+        // console.log(args)
         // Check if the row is a child row by checking the 'parentId'
         if (args.data.level === 1) {
             // Apply background color to child rows
