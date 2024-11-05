@@ -9,6 +9,12 @@
 																	- Mecanism to import secured controls to database: Insert and update
 	- Super admin: Drag and drop secured controls to default roles
 		- Provide persistence
+																	- Controls row of different color
+																	- Roles grid populate
+																	- Sql
+																	- Client side wiring
+		- link and unlink buttons and their functionality
+		- Drag and drop functionality
 	- Admin
 		- Drag and drop secured controls to admin created roles
 		- Auto transfer facility all default manager role secured controls to a role

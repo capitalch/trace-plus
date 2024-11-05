@@ -79,7 +79,7 @@ export function CompSyncfusionTreeGrid({
                 childMapping={childMapping}
                 className={className}
                 clipMode="EllipsisWithTooltip"
-                collapsed ={onCollapsed}
+                collapsed={onCollapsed}
                 dataSource={selectedData}
                 enablePersistence={true}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
@@ -90,6 +90,7 @@ export function CompSyncfusionTreeGrid({
                 dataBound={onDataBound}
                 pageSettings={{ pageSize: pageSize }}
                 ref={gridRef}
+                rowDataBound={onRowDataBound}
                 rowDragStart={gridDragAndDropSettings?.onRowDragStart}
                 rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
                 rowDrop={gridDragAndDropSettings?.onRowDrop}
@@ -126,12 +127,12 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    function onxpanded(e:any){
+    function onxpanded(e: any) {
         console.log(e)
         meta.current.row = e.row
     }
 
-    function onCollapsed(e:any){
+    function onCollapsed(e: any) {
         console.log(e)
     }
 
@@ -152,13 +153,22 @@ export function CompSyncfusionTreeGrid({
     // }
 
     function onDataBound(e: any) {
-        console.log(e)
-        if(gridRef?.current && meta.current?.row){
+
+        if (gridRef?.current && meta.current?.row) {
             // gridRef.current.expandAll()
         }
         // if(gridRef.current?.element) {
         //     gridRef.current.element.querySelector('.e-content').scrollTop = meta.current.scrollTop
         // }
+    }
+
+    function onRowDataBound(args: any) {
+        console.log(args)
+        // Check if the row is a child row by checking the 'parentId'
+        if (args.data.level === 1) {
+            // Apply background color to child rows
+            args.row.style.backgroundColor = '#f5f5f5';  // Light grey background for child rows
+        }
     }
 
 }

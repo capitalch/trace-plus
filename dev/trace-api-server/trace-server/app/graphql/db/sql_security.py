@@ -247,6 +247,39 @@ class SqlSecurity:
         SELECT datname FROM pg_catalog.pg_database where datname = %(datname)s
     """
 
+    get_roles_securedControls_link = """
+        with cte1 as (
+            select r.id as "roleId", "roleName" as "name", r."descr"
+                , json_agg(
+                    json_build_object
+                        (
+                            'id', x.id,
+                            'name', s."controlName",
+                            'descr', s."descr",
+							'roleId', r.id,
+							'securedControlId', s.id
+                        )
+                ) FILTER (WHERE s."controlName" IS NOT NULL) AS "securedControls"
+            from "RoleM" r
+                left join "RoleSecuredControlX" x
+                    on r.id = x."roleId"
+                left join "SecuredControlM" s
+                    on s.id = x."securedControlId"
+                where r."clientId" is null
+            GROUP by r.id,"roleName"
+            order by "roleName"
+        )
+        
+        select json_agg(
+            json_build_object(
+                'name',"name",
+				'descr',"descr",
+				'roleId',"roleId",
+                'securedControls',COALESCE("securedControls", null::json)
+            )
+        ) as "jsonResult" from cte1
+    """
+
     get_super_admin_dashboard = """
         with "dbName" as (values(%(dbName)s))
          --with "dbName" as (values('traceAuth'))

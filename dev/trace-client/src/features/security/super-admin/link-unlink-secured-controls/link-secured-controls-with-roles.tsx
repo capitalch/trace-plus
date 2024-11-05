@@ -11,6 +11,11 @@ import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { IconLink } from "../../../../controls/icons/icon-link";
+import { IconUnlink } from "../../../../controls/icons/icon-unlink";
+import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 
 export function LinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.securedControls
@@ -41,7 +46,7 @@ export function LinkSecuredControlsWithRoles() {
                                 onRowDrop: onSecuredControlsRowDrop,
                             }}
                         // hasIndexColumn={true}
-                        height="calc(100vh - 290px)"
+                        height="calc(100vh - 308px)"
                         instance={securedControlsInstance}
                         minWidth='600px'
                         rowHeight={40}
@@ -49,7 +54,7 @@ export function LinkSecuredControlsWithRoles() {
                         sqlId={SqlIdsMap.allSecuredControls}
                     />
                 </div>
-                
+
                 <div className='flex flex-col w-max'>
                     <CompSyncFusionTreeGridToolbar className='mt-4'
                         // CustomControl={() =>
@@ -67,7 +72,7 @@ export function LinkSecuredControlsWithRoles() {
                     <CompSyncfusionTreeGrid
                         addUniqueKeyToJson={true}
                         className="mt-2 "
-                        childMapping="users"
+                        childMapping="securedControls"
                         columns={getLinkColumns()}
                         // gridDragAndDropSettings={{
                         // allowRowDragAndDrop: true,
@@ -78,8 +83,8 @@ export function LinkSecuredControlsWithRoles() {
                         minWidth='700px'
                         pageSize={11}
                         rowHeight={40}
-                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
-                        sqlId={SqlIdsMap.getBuUsersLink}
+                        sqlArgs={{}}
+                        sqlId={SqlIdsMap.getRolesSecuredControlsLink}
                         treeColumnIndex={0}
                     />
                 </div>
@@ -118,7 +123,7 @@ export function LinkSecuredControlsWithRoles() {
     }
 
     function onSecuredControlsRowDrop(e: any) {
-        e.cancel=true
+        e.cancel = true
     }
 
     function securedControlsAggrTemplate(props: any) {
@@ -131,8 +136,14 @@ export function LinkSecuredControlsWithRoles() {
                 field: 'name',
                 headerText: 'Name',
                 type: 'string',
-                // template: nameColumnTemplate,
+                template: nameColumnTemplate,
                 // width: 150
+            },
+            {
+                field: 'descr',
+                headerText: 'Description',
+                template: descrColumnTemplate,
+                type: 'string'
             },
             {
                 field: 'key',
@@ -144,5 +155,90 @@ export function LinkSecuredControlsWithRoles() {
         ])
     }
 
+    function nameColumnTemplate(props: any) {
+        return (<div>
+            <span>{props.name}</span>
+            {getChildCount(props)}
+        </div>)
+    }
 
+    function getChildCount(props: any) {
+        return (
+            <span className='text-xs text-red-500 mt-2 ml-2'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
+        )
+    }
+
+    function descrColumnTemplate(props: any) {
+        return (
+            <div className="flex flex-row items-center">
+                <span>{props.descr}</span>
+                {getLinkOrUnlinkButton(props)}
+            </div>
+        )
+    }
+
+    function getLinkOrUnlinkButton(props: any) {
+        let ret = null
+        if (props.level === 0) {
+            ret = <TooltipComponent content="Link an existing user with business unit">
+                <button onClick={() => handleOnClickLink(props)}><IconLink className="w-5 h-5 ml-2 text-blue-500"></IconLink></button>
+            </TooltipComponent>
+        } else {
+            ret = <TooltipComponent content="Unlink this user from business unit">
+                <button onClick={() => handleOnClickUnLink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+            </TooltipComponent>
+        }
+        return (ret)
+    }
+
+    function handleOnClickLink(props: any) {
+        Utils.showHideModalDialogA({
+            title: "Link user with business unit",
+            isOpen: true,
+            // element: <LinkUserWithBuModal buId={props.buId} instance={linkInstance} />,
+        })
+    }
+
+    function handleOnClickUnLink(props: any) {
+        Utils.showConfirmDialog(
+            Messages.messSureUnlinkUser
+            , Messages.messSureUnlinkUserBody
+            , async () => {
+                const traceDataObject: TraceDataObjectType = {
+                    tableName: "UserBuX",
+                    deletedIds: [props.id],
+                };
+                try {
+                    const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
+                    const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+                    await Utils.mutateGraphQL(q, queryName);
+                    await context.CompSyncFusionTreeGrid[linksInstance].loadData();
+                    Utils.showCustomMessage(Messages.messUserUnlinkedSuccess);
+                } catch (e: any) {
+                    console.log(e?.message)
+                }
+            }
+        )
+    }
 }
+
+const data = [
+    {
+        "name": "Default accountant", "descr": "Only accountant level rights are available", "roleId": 34
+        , "securedControls": [
+            { "id": 50, "name": "payment-save", "roleId": 34, "securedControlId": 2 }
+        ]
+    }
+    , {
+        "name": "Default manager", "descr": "All rights available", "roleId": 26
+        , "securedControls": null
+    }
+    , {
+        "name": "Default sales person", "descr": "Sales level rights are available", "roleId": 35
+        , "securedControls": [{ "id": 51, "name": "payment-edit", "roleId": 35, "securedControlId": 3 }]
+    }
+    , {
+        "name": "Default user", "descr": "Only can view certain data", "roleId": 36
+        , "securedControls": null
+    }
+]

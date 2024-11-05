@@ -14,6 +14,7 @@ export const SqlIdsMap = {
   getBuUsersLink: 'get_bu_users_link',
   getClientOnClientCode: 'get_client_on_clientCode',
   getClientOnClientName: 'get_client_on_clientName',
+  getRolesSecuredControlsLink:'get_roles_securedControls_link',
   getSuperAdminRoleOnRoleName: 'get_super_admin_role_on_role_name',
   getSuperAdminControlOnControlName: 'get_super_admin_control_on_control_name',
   getUserIdOnClientIdEmail: 'get_userId_on_clientId_and_email',
