@@ -1,7 +1,11 @@
+import { createContext } from "react"
+
 export const defaultGlobalContext: GlobalContextType = {
   CompSyncFusionGrid: {},
   CompSyncFusionTreeGrid: {}
 }
+
+export const GlobalContext = createContext<GlobalContextType>(defaultGlobalContext)
 
 export function resetGlobalContext(globalContext: GlobalContextType) {
   globalContext.CompSyncFusionGrid = {}

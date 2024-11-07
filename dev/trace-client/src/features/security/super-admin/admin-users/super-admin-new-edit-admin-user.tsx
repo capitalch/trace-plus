@@ -11,8 +11,8 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
-import { GlobalContextType } from "../../../../app/global-context";
-import { GlobalContext } from "../../../../App";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
+// import { GlobalContext } from "../../../../App";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 

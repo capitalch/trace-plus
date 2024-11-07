@@ -11,9 +11,9 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import _ from "lodash";
 import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { GlobalContextType } from "../../../../app/global-context";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-import { GlobalContext } from "../../../../App";
+// import { GlobalContext } from "../../../../App";
 
 export function SuperAdminClients() {
     const context: GlobalContextType = useContext(GlobalContext)

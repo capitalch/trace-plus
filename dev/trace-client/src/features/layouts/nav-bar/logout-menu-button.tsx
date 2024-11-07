@@ -13,9 +13,9 @@ import { IconChangePassword } from "../../../controls/icons/icon-change-password
 import { IconLogout } from "../../../controls/icons/icon-logout";
 import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums";
 import { IconUser1 } from "../../../controls/icons/icon-user1";
-import { GlobalContextType, resetGlobalContext } from "../../../app/global-context";
+import { GlobalContext, GlobalContextType, resetGlobalContext } from "../../../app/global-context";
 import { useContext } from "react";
-import { GlobalContext } from "../../../App";
+// import { GlobalContext } from "../../../App";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const context: GlobalContextType = useContext(GlobalContext);

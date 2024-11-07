@@ -1,8 +1,8 @@
 import { FC, useContext, } from "react"
 import { CompSyncFusionGridSearchBox } from "./comp-syncfusion-grid-search-box"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
-import { GlobalContextType } from "../../../app/global-context"
-import { GlobalContext } from "../../../App"
+import { GlobalContext, GlobalContextType } from "../../../app/global-context"
+// import { GlobalContext } from "../../../App"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { useDispatch, useSelector } from "react-redux"
 import { setLastNoOfRows } from '../../../app/graphql/query-helper-slice'
@@ -94,7 +94,9 @@ export function CompSyncFusionGridToolbar({
                 <WidgetButtonRefresh handleRefresh={async () => {
                     const loadData: any = context.
                         CompSyncFusionGrid[instance].loadData
-                    loadData && await loadData()
+                    if(loadData){
+                        await loadData()
+                    }
                     const state: RootStateType = Utils.getReduxState()
                     const searchString = state.queryHelper[instance].searchString
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef

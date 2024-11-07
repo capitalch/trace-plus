@@ -1,6 +1,6 @@
 import { useContext } from "react"
-import { GlobalContextType } from "../../../../app/global-context"
-import { GlobalContext } from "../../../../App"
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context"
+// import { GlobalContext } from "../../../../App"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { CompContentContainer } from "../../../../controls/components/comp-content-container"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar"

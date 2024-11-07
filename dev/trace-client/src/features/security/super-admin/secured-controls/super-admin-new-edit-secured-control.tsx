@@ -13,8 +13,8 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
-import { GlobalContextType } from "../../../../app/global-context";
-import { GlobalContext } from "../../../../App";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
+// import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 

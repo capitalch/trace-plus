@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import _ from 'lodash'
-import { GlobalContextType } from "../../../../app/global-context";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
-import { GlobalContext } from "../../../../App";
+// import { GlobalContext } from "../../../../App";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
 // import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
 import { Messages } from "../../../../utils/messages";

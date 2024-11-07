@@ -10,9 +10,9 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GlobalContextType } from "../../../../app/global-context";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-import { GlobalContext } from "../../../../App";
+// import { GlobalContext } from "../../../../App";
 
 export function LinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType) {
     const context: GlobalContextType = useContext(GlobalContext);

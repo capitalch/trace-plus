@@ -3,9 +3,9 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import { Utils } from "../../../../utils/utils"
 import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
 import jsonData from './secured-controls.json'
-import { GlobalContextType } from "../../../../app/global-context";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-import { GlobalContext } from "../../../../App";
+// import { GlobalContext } from "../../../../App";
 
 export function SuperAdminNewSecuredControlButtons({ dataInstance }: { dataInstance: string }) {
     const context: GlobalContextType = useContext(GlobalContext);

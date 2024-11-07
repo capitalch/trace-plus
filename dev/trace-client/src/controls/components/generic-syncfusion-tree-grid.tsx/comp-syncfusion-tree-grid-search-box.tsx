@@ -2,8 +2,8 @@ import _ from 'lodash'
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../app/store/store";
 import { ChangeEvent, useContext, useEffect, useMemo } from "react";
-import { GlobalContext } from "../../../App";
-import { GlobalContextType } from "../../../app/global-context";
+// import { GlobalContext } from "../../../App";
+import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { setSearchString } from '../../../app/graphql/query-helper-slice';
 import { IconSearch } from '../../icons/icon-search';
 

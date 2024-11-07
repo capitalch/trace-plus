@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { GlobalContextType } from "../../../../app/global-context";
-import { GlobalContext } from "../../../../App";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
+// import { GlobalContext } from "../../../../App";
 import { useForm } from "react-hook-form";
 import { Messages } from "../../../../utils/messages";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";

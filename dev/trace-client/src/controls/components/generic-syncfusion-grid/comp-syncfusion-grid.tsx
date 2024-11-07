@@ -1,9 +1,9 @@
-import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDropSettingsModel } from "@syncfusion/ej2-react-grids"
+import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD } from "@syncfusion/ej2-react-grids"
 import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
-import { GlobalContextType } from "../../../app/global-context"
-import { GlobalContext } from "../../../App"
+import { GlobalContext, GlobalContextType } from "../../../app/global-context"
+// import { GlobalContext } from "../../../App"
 import { RootStateType } from "../../../app/store/store"
 import { Utils } from "../../../utils/utils"
 
@@ -73,7 +73,7 @@ export function CompSyncFusionGrid({
                 height={height}
                 id={instance}
                 ref={gridRef}
-                rowDataBound={onRowDataBound}
+                // rowDataBound={onRowDataBound}
                 rowDragStart={gridDragAndDropSettings?.onRowDragStart}
                 rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
                 rowDrop={gridDragAndDropSettings?.onRowDrop}
@@ -122,9 +122,9 @@ export function CompSyncFusionGrid({
         }
     }
 
-    function onRowDataBound(args: any) {
-        // args.row.querySelector('td.e-rowdragdropcell').style.display = 'none';
-    }
+    // function onRowDataBound(args: any) {
+    //     // args.row.querySelector('td.e-rowdragdropcell').style.display = 'none';
+    // }
 }
 
 type GridDragAndDropSettingsType = {
@@ -175,13 +175,5 @@ export type SyncFusionGridColumnType = {
 export type SqlArgsType = {
     [key: string]: string | number
 }
-
-const gridData = [
-    { roleName: 10248, uid: 'VINET', userName: 32.38 },
-    { roleName: 10249, uid: 'TOMSP', userName: 11.61 },
-    { roleName: 10250, uid: 'HANAR', userName: 65.83 },
-    { roleName: 10251, uid: 'LILAS', userName: 41.34 },
-    { roleName: 10252, uid: 'HUNGO', userName: 25.00 }
-];
 
 

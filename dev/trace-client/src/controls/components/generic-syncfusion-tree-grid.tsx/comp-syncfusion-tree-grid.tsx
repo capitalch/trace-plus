@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef } from "react"
 // import _ from 'lodash'
-import { GlobalContextType } from "../../../app/global-context"
-import { GlobalContext } from "../../../App"
+import { GlobalContext, GlobalContextType } from "../../../app/global-context"
+// import { GlobalContext } from "../../../App"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
@@ -38,18 +38,6 @@ export function CompSyncfusionTreeGrid({
         }
         context.CompSyncFusionTreeGrid[instance].loadData = loadData
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
-        // const gridElement = gridRef.current.element.querySelector('.e-content');
-        // gridRef.current.expandAll()
-        // Add scroll event listener
-        // if (gridElement) {
-        //     gridElement.addEventListener('scroll', handleScroll);
-        // }
-
-        return (() => {
-            // if (gridElement) {
-            //     gridElement.removeEventListener('scroll', handleScroll);
-            // }
-        })
     }, [])
 
     if (loading) {
@@ -136,37 +124,13 @@ export function CompSyncfusionTreeGrid({
         console.log(e)
     }
 
-    // function handleScroll(e:any){
-    //     const scrollTop = e.target.scrollTop; // Vertical scroll 
-    //     meta.current.scrollTop = scrollTop
-    // }
-
-    // function onRowDrop(e: any) {
-    //     e.cancel =true
-    //     const content = gridRef.current.getContent()
-    //     // const scrolltop = content.scrollTop
-    //     const scrollTop1 = gridRef.current.element.querySelector('.e-content').scrollTop;
-    //     meta.current.scrollTop = scrollTop1
-    //     if(gridDragAndDropSettings?.onRowDrop) {
-    //         gridDragAndDropSettings.onRowDrop(e)
-    //     } 
-    // }
-
     function onDataBound(e: any) {
-
-        if (gridRef?.current && meta.current?.row) {
-            // gridRef.current.expandAll()
-        }
-        // if(gridRef.current?.element) {
-        //     gridRef.current.element.querySelector('.e-content').scrollTop = meta.current.scrollTop
-        // }
+        console.log(e)
     }
 
     function onRowDataBound(args: any) {
-        // console.log(args)
         // Check if the row is a child row by checking the 'parentId'
         if (args.data.level === 1) {
-            // Apply background color to child rows
             args.row.style.backgroundColor = '#f5f5f5';  // Light grey background for child rows
         }
     }

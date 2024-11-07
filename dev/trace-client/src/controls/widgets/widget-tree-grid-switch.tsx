@@ -1,6 +1,6 @@
 import { useContext, useState } from "react"
-import { GlobalContextType } from "../../app/global-context"
-import { GlobalContext } from "../../App"
+import { GlobalContext, GlobalContextType } from "../../app/global-context"
+// import { GlobalContext } from "../../App"
 
 export function WidgetTreeGridSwitch({
     // defaultChecked = false

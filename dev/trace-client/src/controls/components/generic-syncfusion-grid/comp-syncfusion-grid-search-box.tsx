@@ -1,7 +1,7 @@
 import { ChangeEvent, useContext, useEffect, useMemo } from "react";
-import { GlobalContextType } from "../../../app/global-context";
+import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { IconSearch } from "../../icons/icon-search";
-import { GlobalContext } from "../../../App";
+// import { GlobalContext } from "../../../App";
 import _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../app/store/store";
