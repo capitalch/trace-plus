@@ -67,7 +67,7 @@ export function CompSyncfusionTreeGrid({
 
     return (
         //The div container is important. The minWidth works with style only
-        <div className="mt-2" style={{ minWidth: `${minWidth}` }}>
+        <div className="mt-2" style={{ minWidth: `${minWidth}` }} id="grid2">
             <TreeGridComponent
                 allowPdfExport={true}
                 allowExcelExport={true}

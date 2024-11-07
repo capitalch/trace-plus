@@ -18,5 +18,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-}
+@layer components {}
+
+.e-icon-errordrop {
+    display: none !important;
+  }

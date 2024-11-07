@@ -12,6 +12,7 @@ export function CompSyncFusionGrid({
     className = '',
     columns,
     gridDragAndDropSettings,
+    hasCheckBoxSelection = false,
     hasIndexColumn = false,
     height,
     isLoadOnInit = true,
@@ -25,7 +26,7 @@ export function CompSyncFusionGrid({
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance,hasCheckBoxSelection, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
 
     const gridRef: any = useRef({})
 
@@ -72,12 +73,20 @@ export function CompSyncFusionGrid({
                 height={height}
                 id={instance}
                 ref={gridRef}
+                rowDataBound={onRowDataBound}
                 rowDragStart={gridDragAndDropSettings?.onRowDragStart}
                 rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
                 rowDrop={gridDragAndDropSettings?.onRowDrop}
+                rowDropSettings={{
+                    targetID: gridDragAndDropSettings?.targetId || undefined,
+
+                }}
                 // rowDropSettings={rowDropOptions}
                 rowHeight={rowHeight}
-                searchSettings={searchOptions}>
+                searchSettings={searchOptions}
+                selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single',  }}
+            >
+
                 <ColumnsDirective>
                     {getColumnDirectives()}
                 </ColumnsDirective>
@@ -112,13 +121,18 @@ export function CompSyncFusionGrid({
             gridRef.current.search(searchString)
         }
     }
+
+    function onRowDataBound(args: any) {
+        // args.row.querySelector('td.e-rowdragdropcell').style.display = 'none';
+    }
 }
 
 type GridDragAndDropSettingsType = {
     allowRowDragAndDrop?: boolean
     onRowDragStart?: (args: any) => void
-    onRowDragStartHelper?: (args:any) =>void
+    onRowDragStartHelper?: (args: any) => void
     onRowDrop?: (args: any) => void
+    selectionType?:'Multiple' | "Single"
     targetId?: string
 }
 
@@ -127,6 +141,7 @@ export type CompSyncFusionGridType = {
     className?: string
     columns: SyncFusionGridColumnType[]
     gridDragAndDropSettings?: GridDragAndDropSettingsType
+    hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
     height?: string
     instance: string

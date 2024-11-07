@@ -10,7 +10,7 @@ import { IconDelete } from "../../icons/icon-delete";
 import { IconPreview } from "../../icons/icon-preview";
 import { Button } from "primereact/button";
 
-export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, }: CompSyncFusionGridType) {
+export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelection, hasIndexColumn, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     let lastNoOfRows = selectedLastNoOfRows
@@ -35,8 +35,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, ins
 
     const selectedData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[instance]?.data
-        // console.log(ret)
-        return(ret)
+        return (ret)
     })
 
     function getAggrColDirectives() {
@@ -110,47 +109,50 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasIndexColumn, ins
                 width={25}
             />)
         }
+        if(hasCheckBoxSelection){
+            colDirectives.unshift(<ColumnDirective key='X' type="checkbox" width='50' />)
+        }
         return (colDirectives)
     }
 
     function deleteTemplate(props: any) {
         return (
-            <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+            <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
                 if (onDelete) {
                     onDelete(props.id)
                 }
             }}>
-                <IconDelete className="m-auto mt-1 h-4 w-4 text-red-600" />
+                <IconDelete className="w-4 h-4 m-auto mt-1 text-red-600" />
             </Button>)
     }
 
     function previewTemplate(props: any) {
         return (
-            <Button tooltip="Preview" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+            <Button tooltip="Preview" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
                 if (onPreview) {
                     onPreview(props)
                 }
             }}>
-                <IconPreview className="m-auto mt-1 h-5 w-5 text-blue-600" />
+                <IconPreview className="w-5 h-5 m-auto mt-1 text-blue-600" />
             </Button>)
     }
 
     function editTemplate(props: any) {
         return (
             // WidgetTooltip not working here
-            <Button tooltip="Edit" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="h-6 w-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+            <Button tooltip="Edit" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
                 if (onEdit) {
                     onEdit(props)
                 }
             }}>
-                <IconEdit className="m-auto mt-1 h-5 w-5 text-green-600" />
+                <IconEdit className="w-5 h-5 m-auto mt-1 text-green-600" />
             </Button>
         )
     }
 
-    function indexColumnTemplate(props:any) {
+    function indexColumnTemplate(props: any) {
         const idx: number = +props.index + 1
-        return(idx)
+        return (idx)
     }
 
 

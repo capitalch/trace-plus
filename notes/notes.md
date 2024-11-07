@@ -30,12 +30,12 @@
 ## fastapi with async psycopg connection pool
 https://medium.com/@benshearlaw/asynchronous-postgres-with-python-fastapi-and-psycopg-3-fafa5faa2c08
 
->>>>>>> 0c3273513af3f3e25e5d96b1051b6605e70327dd
 ## syncfusion key for 25.x
 ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
 
 ## pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg python-multipart
 - superadmin@123
+
 ## VSCode extensions
 - Tailwind CSS Intellisense
 - HeadWind: class sorter: Works great
@@ -63,6 +63,14 @@ https://apps.microsoft.com/detail/free-timer-app/9NK6ZKX5TV0G?hl=en-US&gl=US
 	
 
 ## UI libraries may consider
+- Some good ones
+	- chart.js
+		https://www.chartjs.org
+	- tippy.js: tooltips, popovers, dropdowns
+		https://atomiks.github.io/tippyjs
+	- vivus: Create stunning, animated SVG drawings with Vivus
+		https://maxwellito.github.io/vivus
+	- 
 - rsuitejs
 - headlessui: considering
 - daisyUI for tw

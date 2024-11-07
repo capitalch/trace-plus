@@ -3,23 +3,28 @@
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - Provision in drag n drop for persistence of tree
 - Roles and secured control management
-	- Maybe put a small icon in child rows
+																	- Maybe put a small icon in child rows
 																	- Default manager, default accountant, defaultuser roles in Super admin
 																	- The default roles are available to admin users
 																	- secured-controls.json file: id, controlName,controlNo, controlType, descr
 																	- Mecanism to import secured controls to database: Insert and update
 	- Super admin: Drag and drop secured controls to default roles
-		- Provide persistence
+		- Provide persistence for expanded and collapse
+																	- checkbox selection
+																	- Multi select drag n drop
+																	- Unlink all for parent
 																	- Controls row of different color
 																	- Roles grid populate
 																	- Sql
 																	- Client side wiring
-		- link and unlink buttons and their functionality
-		- Drag and drop functionality
+																	- link and unlink buttons and their functionality
+																	- Drag and drop functionality
+																	- Drop shows not allowed icon
 	- Admin
 		- Drag and drop secured controls to admin created roles
 		- Auto transfer facility all default manager role secured controls to a role
 		- Auto transfer facility all default accountant and user level controls to a role
+		- Checkup of drag n drop for Users BU
 
 																	- New Bu should create Schema at server side
 																		- Code improvements

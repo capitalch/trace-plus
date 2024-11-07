@@ -279,6 +279,19 @@ class SqlSecurity:
             )
         ) as "jsonResult" from cte1
     """
+    
+    get_securedControls_not_linked_with_roleId="""
+        with "roleId" as (values(%(roleId)s::int))
+            --with "roleId" as (values(26))
+            SELECT s.id, "controlType"||' : '|| "controlName" as "controlName"
+                FROM "SecuredControlM" s
+                WHERE s.id NOT IN (
+                    SELECT x."securedControlId"
+                    FROM "RoleSecuredControlX" x
+                    WHERE x."roleId" = (table "roleId")
+                )
+            ORDER BY "controlType", "controlName"
+    """
 
     get_super_admin_dashboard = """
         with "dbName" as (values(%(dbName)s))
