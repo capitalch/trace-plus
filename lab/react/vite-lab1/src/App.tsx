@@ -88,11 +88,11 @@ function App() {
       {/* <ApolloGraphQLComp1 />
       <ApolloGraphQLComp2 /> */}
       {/* <ApolloGraphQL03112024 /> */}
-      <ReactSelectTypeAheadAsync1 />
+      {/* <ReactSelectTypeAheadAsync1 /> */}
       {/* <ReactSelectAsync /> */}
-      {/* <SyncfusionTreeGrid />
-      <KeyToJson /> */}
-      <GridDragAndDrop />
+      <SyncfusionTreeGrid />
+      {/* <KeyToJson /> */} 
+      {/* <GridDragAndDrop /> */}
     </GlobalContext.Provider>
   )
 }

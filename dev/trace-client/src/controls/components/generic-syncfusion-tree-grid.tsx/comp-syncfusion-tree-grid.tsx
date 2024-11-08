@@ -40,6 +40,10 @@ export function CompSyncfusionTreeGrid({
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
     }, [])
 
+    useEffect(()=>{
+        console.log('test')
+    })
+
     if (loading) {
         return (<WidgetLoadingIndicator />)
     }

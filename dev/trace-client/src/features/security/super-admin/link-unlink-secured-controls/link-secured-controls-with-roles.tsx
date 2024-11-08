@@ -2,9 +2,7 @@ import { useContext } from "react";
 import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
-// import { GlobalContext } from "../../../../App";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
-// import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
 import { Messages } from "../../../../utils/messages";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
@@ -17,7 +15,6 @@ import { IconLink } from "../../../../controls/icons/icon-link";
 import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
-// import { IconVoucher } from "../../../../controls/icons/icon-voucher";
 import { IconControls } from "../../../../controls/icons/icon-controls";
 import { LinkSecuredControlWithRoleModal } from "./link-secured-control-with-role-modal";
 
