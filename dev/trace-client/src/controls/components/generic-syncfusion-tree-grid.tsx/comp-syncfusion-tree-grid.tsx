@@ -13,6 +13,7 @@ export function CompSyncfusionTreeGrid({
     childMapping,
     className = '',
     columns,
+    dataBound,
     gridDragAndDropSettings,
     height,
     instance,
@@ -28,10 +29,7 @@ export function CompSyncfusionTreeGrid({
     const context: GlobalContextType = useContext(GlobalContext)
     const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, childMapping, columns, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
-    const meta: any = useRef({
-        scrollTop: 0,
-        row: undefined
-    })
+   
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionTreeGrid[instance]) {
             context.CompSyncFusionTreeGrid[instance] = { loadData: undefined, gridRef: undefined, isCollapsed: true }
@@ -39,10 +37,6 @@ export function CompSyncfusionTreeGrid({
         context.CompSyncFusionTreeGrid[instance].loadData = loadData
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
     }, [])
-
-    useEffect(()=>{
-        console.log('test')
-    })
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -71,11 +65,11 @@ export function CompSyncfusionTreeGrid({
                 childMapping={childMapping}
                 className={className}
                 clipMode="EllipsisWithTooltip"
-                collapsed={onCollapsed}
+                collapsed={onRowCollapsed}
                 dataSource={selectedData}
                 enablePersistence={true}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
-                expanded={onxpanded}
+                expanded={onRowEpanded}
                 gridLines="Both"
                 height={height}
                 id={instance}
@@ -119,23 +113,36 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    function onxpanded(e: any) {
-        console.log(e)
-        meta.current.row = e.row
-    }
-
-    function onCollapsed(e: any) {
-        console.log(e)
-    }
-
     function onDataBound(e: any) {
-        console.log(e)
+        const expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
+        if (expandedKeys.length > 0) {
+            expandedKeys.forEach((key: string) => gridRef.current.expandByKey(key))
+        }
+        if (dataBound) {
+            dataBound(e)
+        }
+    }
+
+    function onRowCollapsed(args: any) {
+        let expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
+        expandedKeys = expandedKeys.filter((key: any) => key !== args.data.key);
+        context.CompSyncFusionTreeGrid[instance].expandedKeys = [...expandedKeys]
     }
 
     function onRowDataBound(args: any) {
         // Check if the row is a child row by checking the 'parentId'
         if (args.data.level === 1) {
             args.row.style.backgroundColor = '#f5f5f5';  // Light grey background for child rows
+        }
+    }
+
+    function onRowEpanded(args: any) {
+        const expandedKeys = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
+        if (!args?.data?.key) {
+            return
+        }
+        if (!expandedKeys.includes(args.data.key)) {
+            expandedKeys.push(args.data.key)
         }
     }
 
@@ -156,6 +163,7 @@ export type CompSyncfusionTreeGridType = {
     childMapping: string
     className?: string
     columns: SyncFusionTreeGridColumnType[]
+    dataBound?: (args: any) => void
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     height?: string
     instance: string

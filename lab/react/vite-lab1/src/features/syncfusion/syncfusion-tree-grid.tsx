@@ -12,6 +12,8 @@ export function SyncfusionTreeGrid() {
   const gridRef: any = useRef(null)
   return (
     <div className="m-2">
+      <button className="my-2 px-2 bg-slate-200 py-1" onClick={handleOnClick}>Reset localstorage</button>
+      <button className="ml-2 px-2 bg-slate-200 py-1" onClick={handleExpandAll}>Expand all</button>
       <TreeGridComponent
         // allowRowDragAndDrop={true}
         allowSorting={true} // Enable sorting
@@ -32,12 +34,20 @@ export function SyncfusionTreeGrid() {
         <ColumnsDirective>
           <ColumnDirective field="code" headerText="Code" width="100" />
           <ColumnDirective field="name" headerText="Name" width="200" />
-          {/* <ColumnDirective field="key" headerText="Key" width="200" visible={false} isPrimaryKey={true} /> */}
+          <ColumnDirective field="key" headerText="Key" width="200" visible={false} isPrimaryKey={true} />
         </ColumnsDirective>
         <Inject services={[RowDD, Sort]} />
       </TreeGridComponent>
     </div>
   );
+
+  function handleExpandAll(){
+    gridRef.current.expandAll()
+  }
+
+  function handleOnClick(){
+    localStorage.setItem('expandedRows', '');
+  }
 
   function onDataBound() {
     const expandedRows = localStorage.getItem('expandedRows') || ''
@@ -143,29 +153,32 @@ const data1 = [
     "code": "buu2",
     "name": "Business unit 2",
     "buId": 43,
-    // "users": [
-    //   {
-    //     "id": 29,
-    //     "code": "user5",
-    //     "name": "user5",
-    //     "buId": 43,
-    //     "userId": 66
-    //   },
-    //   {
-    //     "id": 30,
-    //     "code": "user6",
-    //     "name": "user6",
-    //     "buId": 43,
-    //     "userId": 67
-    //   },
-    //   {
-    //     "id": 31,
-    //     "code": "user1",
-    //     "name": "user1",
-    //     "buId": 43,
-    //     "userId": 62
-    //   }
-    // ]
+    "users": [
+      {
+        "key": 21,
+        "id": 29,
+        "code": "user5",
+        "name": "user5",
+        "buId": 43,
+        "userId": 66
+      },
+      {
+        "key": 22,
+        "id": 30,
+        "code": "user6",
+        "name": "user6",
+        "buId": 43,
+        "userId": 67
+      },
+      {
+        "key": 23,
+        "id": 31,
+        "code": "user1",
+        "name": "user1",
+        "buId": 43,
+        "userId": 62
+      }
+    ]
   },
   {
     "key": 3,

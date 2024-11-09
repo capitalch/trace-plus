@@ -1,8 +1,11 @@
 ## To do
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
-- Provision in drag n drop for persistence of tree
-- Roles and secured control management
+- TreeGrid
+	- Use collapseAll and ExpandAll for collapse and expand functionality
+		- remove enableCollapseAll
+	- Persistence of tree
+- Roles and secured control management Revisit
 																	- Maybe put a small icon in child rows
 																	- Default manager, default accountant, defaultuser roles in Super admin
 																	- The default roles are available to admin users

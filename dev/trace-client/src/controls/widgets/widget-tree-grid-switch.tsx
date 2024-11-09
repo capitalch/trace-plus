@@ -1,16 +1,14 @@
 import { useContext, useState } from "react"
 import { GlobalContext, GlobalContextType } from "../../app/global-context"
-// import { GlobalContext } from "../../App"
 
 export function WidgetTreeGridSwitch({
-    // defaultChecked = false
     instance
     , leftLabel = ''
-    // , onChange
     , rightLabel = ''
 }: WidgetSwitchType) {
     const context: GlobalContextType = useContext(GlobalContext)
     const [, setRefresh] = useState({})
+
     return (
         <label className="inline-flex cursor-pointer items-center">
             <span className="mr-2 text-sm font-medium text-gray-500">{leftLabel}</span>
@@ -47,6 +45,5 @@ export function WidgetTreeGridSwitch({
 type WidgetSwitchType = {
     instance: string
     leftLabel?: string
-    // onChange?: (e: any) => void
     rightLabel?: string
 }

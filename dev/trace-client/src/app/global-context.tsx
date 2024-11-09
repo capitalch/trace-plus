@@ -24,7 +24,8 @@ export type GlobalContextType = {
     [key: string]: {
       loadData?: any
       gridRef?: any
-      isCollapsed?: boolean
+      isCollapsed?: boolean // For all nodes collapsed
+      expandedKeys?:string[] 
     }
   }
 }
