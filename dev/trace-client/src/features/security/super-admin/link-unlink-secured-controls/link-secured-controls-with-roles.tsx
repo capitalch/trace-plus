@@ -292,7 +292,7 @@ export function LinkSecuredControlsWithRoles() {
                     const queryName: string = GraphQLQueriesMap.genericUpdate.name;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
-                    Utils.showCustomMessage(Messages.messSecuredControlUnlinkSuccess);
+                    Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
                     console.log(e?.message)
                 }
@@ -314,7 +314,7 @@ export function LinkSecuredControlsWithRoles() {
                     const queryName: string = GraphQLQueriesMap.genericUpdate.name;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
-                    Utils.showCustomMessage(Messages.messSecuredControlUnlinkSuccess);
+                    Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
                     console.log(e?.message)
                 }
@@ -327,42 +327,3 @@ export function LinkSecuredControlsWithRoles() {
         }
     }
 }
-
-// const securedControlsGridRef: any = context.CompSyncFusionGrid[securedControlsInstance].gridRef
-// const securedControlsViewRecords = securedControlsGridRef.current.getCurrentViewRecords();
-//find targetrowdata
-// const targetRow = args?.target.closest('tr');
-// const targetRowIndex = rolesLinkGridRef.current.getRowIndexByElement(targetRow);
-// const targetRowData1 = rolesLinkGridRef.current.getRowByIndex(targetRowIndex);
-// const fromIndex = args.fromIndex
-// const targetSecuredControls: any[] = getTargetSecuredControls()
-// const sourceSecureControlId = sourceRowData.id
-// if (targetSecuredControls.some(ctrl => ctrl.securedControlId === sourceSecureControlId)) {
-//     Utils.showAlertMessage('Information', Messages.messSecuredControlExists)
-// } else {
-//     proceedToLink()
-//     // Utils.showConfirmDialog(Messages.messSureToProceed, Messages.messUserWillBeAdded, () => proceedToLink())
-// }
-
-// function onRowDragStart(args:any){
-//     console.log(args)
-// }
-
-// function onRowDragStartHelper(args:any){
-//     console.log(args)
-// }
-
-// function setExpandedKeys1() {
-//     const expandedKeys = context.CompSyncFusionTreeGrid[linksInstance].expandedKeys || []
-//     if (targetRowData.level === 0) {
-//         if (!expandedKeys.includes(targetRowData.pkey)) {
-//             expandedKeys.push(targetRowData.pkey)
-//         }
-//     }
-//     if (targetRowData.level === 1) {
-//         const parentItem = targetRowData.parentItem
-//         if (!expandedKeys.includes(parentItem.pkey)) {
-//             expandedKeys.push(parentItem.pkey)
-//         }
-//     }
-// }

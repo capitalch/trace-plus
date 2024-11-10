@@ -5,7 +5,14 @@
 	- Maintain scroll pos
 																	- Ondrop expand
 																	- Persistence of tree
-- Roles and secured control management Revisit
+																- Roles and secured control management Revisit
+																	- Error fixing
+																	- persistence
+																	- Unlink all
+																	- Checkbox select
+																	- Multi select and drag and drop
+																	- renew drag and drop
+																	- Aggregate in users
 																	- Maybe put a small icon in child rows
 																	- Default manager, default accountant, defaultuser roles in Super admin
 																	- The default roles are available to admin users
@@ -27,7 +34,6 @@
 		- Drag and drop secured controls to admin created roles
 		- Auto transfer facility all default manager role secured controls to a role
 		- Auto transfer facility all default accountant and user level controls to a role
-		- Checkup of drag n drop for Users BU
 
 																	- New Bu should create Schema at server side
 																		- Code improvements

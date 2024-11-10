@@ -3,6 +3,9 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 21-10-2024 - 10-11-2024
+	- Generic drag and drop
+	- Super admin secured controle link Builtin roles
 # 14-10-2024 - 20-10-2034
 	- Security completed
 	- Bu and User mapping remained
