@@ -31,7 +31,6 @@ export function useQueryHelper ({
     }
     return () => {
       // Cleanup data. Otherwise syncfusion grid loads the old data
-      // console.log('Cleanup')
       dispatch(resetQueryHelperData({ instance: instance}))
     }
   }, [])
@@ -45,9 +44,13 @@ export function useQueryHelper ({
     if (result?.data?.genericQuery?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
     }
-    let data = _.isEmpty(result?.data?.genericQuery) ? [] : result.data.genericQuery
+    const data = _.isEmpty(result?.data?.genericQuery) ? [] : result.data.genericQuery
+    // console.log(JSON.stringify(data))
     if(addUniqueKeyToJson){
-      data = Utils.addUniqueKeysToJson(data)
+      if(data?.[0]?.jsonResult){
+        data[0].jsonResult = Utils.addUniqueKeysToJson(data[0].jsonResult)
+      }
+      // data = Utils.addUniqueKeysToJson(data)
     }
     dispatch(
       setQueryHelperData({

@@ -10,6 +10,7 @@ import { Utils } from "../../../utils/utils"
 export function CompSyncFusionGrid({
     aggregates,
     className = '',
+    // clipMode = undefined,
     columns,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
@@ -26,13 +27,16 @@ export function CompSyncFusionGrid({
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance,hasCheckBoxSelection, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, hasCheckBoxSelection, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
 
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionGrid[instance]) {
-            context.CompSyncFusionGrid[instance] = { loadData: undefined, gridRef: undefined }
+            context.CompSyncFusionGrid[instance] = { 
+                gridRef: undefined,
+                loadData: undefined, 
+            }
         }
         context.CompSyncFusionGrid[instance].loadData = loadData
         context.CompSyncFusionGrid[instance].gridRef = gridRef
@@ -58,8 +62,7 @@ export function CompSyncFusionGrid({
         <div style={{ minWidth: `${minWidth}` }}>
             <GridComponent
                 allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
-                clipMode="EllipsisWithTooltip"
-                enablePersistence={false}
+                // clipMode={clipMode}
                 allowPdfExport={true}
                 allowExcelExport={true}
                 allowResizing={true}
@@ -69,6 +72,7 @@ export function CompSyncFusionGrid({
                 className={className}
                 created={onCreated}
                 dataSource={selectedData || []}
+                enablePersistence={false}
                 gridLines="Both"
                 height={height}
                 id={instance}
@@ -81,10 +85,9 @@ export function CompSyncFusionGrid({
                     targetID: gridDragAndDropSettings?.targetId || undefined,
 
                 }}
-                // rowDropSettings={rowDropOptions}
                 rowHeight={rowHeight}
                 searchSettings={searchOptions}
-                selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single',  }}
+                selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
             >
 
                 <ColumnsDirective>
@@ -132,13 +135,14 @@ type GridDragAndDropSettingsType = {
     onRowDragStart?: (args: any) => void
     onRowDragStartHelper?: (args: any) => void
     onRowDrop?: (args: any) => void
-    selectionType?:'Multiple' | "Single"
+    selectionType?: 'Multiple' | "Single"
     targetId?: string
 }
 
 export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
     className?: string
+    // clipMode?: 'Clip' | 'Ellipsis' | 'EllipsisWithTooltip' | undefined
     columns: SyncFusionGridColumnType[]
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean

@@ -2,17 +2,17 @@
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - TreeGrid
-	- Use collapseAll and ExpandAll for collapse and expand functionality
-		- remove enableCollapseAll
-	- Persistence of tree
+	- Maintain scroll pos
+																	- Ondrop expand
+																	- Persistence of tree
 - Roles and secured control management Revisit
 																	- Maybe put a small icon in child rows
 																	- Default manager, default accountant, defaultuser roles in Super admin
 																	- The default roles are available to admin users
 																	- secured-controls.json file: id, controlName,controlNo, controlType, descr
 																	- Mecanism to import secured controls to database: Insert and update
-	- Super admin: Drag and drop secured controls to default roles
-		- Provide persistence for expanded and collapse
+																- Super admin: Drag and drop secured controls to default roles
+																	- Provide persistence for expanded and collapse
 																	- checkbox selection
 																	- Multi select drag n drop
 																	- Unlink all for parent

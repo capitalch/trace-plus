@@ -1,11 +1,9 @@
 import { RouterProvider } from 'react-router-dom'
 import './App.css'
 import { appRouter } from './app/router/app-router'
-// import { createContext } from 'react'
-import { GlobalContext, /*GlobalContextType,*/ defaultGlobalContext } from './app/global-context'
+import { GlobalContext, defaultGlobalContext } from './app/global-context'
 import { PrimeReactProvider } from 'primereact/api'
 
-// export const GlobalContext = createContext<GlobalContextType>(defaultGlobalContext)
 function App() {
   return (
     <GlobalContext.Provider value={defaultGlobalContext}>

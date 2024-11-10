@@ -4,7 +4,7 @@ import {
   ColumnDirective,
   RowDD,
 } from "@syncfusion/ej2-react-treegrid";
-import { Inject, Page, Sort } from "@syncfusion/ej2-react-treegrid";
+import { Inject, Sort } from "@syncfusion/ej2-react-treegrid";
 import { useRef } from "react";
 
 export function SyncfusionTreeGrid() {
@@ -15,14 +15,11 @@ export function SyncfusionTreeGrid() {
       <button className="my-2 px-2 bg-slate-200 py-1" onClick={handleOnClick}>Reset localstorage</button>
       <button className="ml-2 px-2 bg-slate-200 py-1" onClick={handleExpandAll}>Expand all</button>
       <TreeGridComponent
-        // allowRowDragAndDrop={true}
         allowSorting={true} // Enable sorting
         childMapping="users" // Field that indicates child data
         collapsed={onRowCollapsed}
         dataBound={onDataBound}
         dataSource={data1}
-
-        // allowPaging={true} // Enable paging
 
         enableCollapseAll={true}
         expanded={onRowExpanded}
@@ -72,7 +69,7 @@ export function SyncfusionTreeGrid() {
       localStorage.setItem('expandedRows', JSON.stringify(expandedKeys));
     }
   }
-};
+}
 
 
 const data1 = [

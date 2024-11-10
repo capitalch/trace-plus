@@ -16,16 +16,17 @@ export type GlobalContextType = {
   // app: 
   CompSyncFusionGrid: {
     [key: string]: {
-      loadData?: any
       gridRef?: any
+      loadData?: any
     }
   }
   CompSyncFusionTreeGrid: {
     [key: string]: {
-      loadData?: any
+      expandedKeys?:string[] 
       gridRef?: any
       isCollapsed?: boolean // For all nodes collapsed
-      expandedKeys?:string[] 
+      loadData?: any
+      scrollPos?: number
     }
   }
 }

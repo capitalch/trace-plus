@@ -30,25 +30,32 @@ export const Utils: UtilsType = {
     showSuccessAlertMessage: showSuccessAlertMessage,
 }
 
-function addUniqueKeysToJson(data: any) {
-    let runningKey = 1;
-
-    const traverseAndAddKeys = (node: any) => {
-        // Add a unique key to the current node
-        const nodeWithKey = { ...node, key: runningKey++ };
+function addUniqueKeysToJson(data: any) { // Created by AI
+    let runningKey = 100000; // This is child series
+    
+    const traverseAndAddKeys = (node: any, parentKey: number) => {
+        // Add a running key to child nodes, but the parent keeps the same key
+        const nodeWithKey = { ...node, pkey: parentKey };
 
         // Traverse through child nodes if present
         Object.keys(nodeWithKey).forEach((key) => {
             if (Array.isArray(nodeWithKey[key])) {
-                nodeWithKey[key] = nodeWithKey[key].map((child) => traverseAndAddKeys(child));
+                // Children will have unique running keys
+                nodeWithKey[key] = nodeWithKey[key].map((child: any) => traverseAndAddKeys(child, runningKey++));
             } else if (typeof nodeWithKey[key] === 'object' && nodeWithKey[key] !== null) {
-                nodeWithKey[key] = traverseAndAddKeys(nodeWithKey[key]);
+                nodeWithKey[key] = traverseAndAddKeys(nodeWithKey[key], runningKey++);
             }
         });
 
         return nodeWithKey;
-    }
-    return data.map((item: any) => traverseAndAddKeys(item));
+    };
+
+     return data.map((item: any, index: number) => {
+        // Assign a consistent parent key based on index or some stable property
+        const parentKey = index + 1; // Can also be item.id if available
+        return traverseAndAddKeys(item, parentKey);
+    });
+
 }
 
 function getCurrentLoginInfo() {

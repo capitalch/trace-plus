@@ -9,7 +9,7 @@ import { IconFileCsv } from "../../icons/icon-file-csv"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
-import { WidgetTreeGridSwitch } from "../../widgets/widget-tree-grid-switch"
+import { WidgetTreeGridSwitch } from "./widget-tree-grid-switch"
 import clsx from "clsx"
 
 export function CompSyncFusionTreeGridToolbar({
@@ -22,7 +22,6 @@ export function CompSyncFusionTreeGridToolbar({
     , isPdfExportAsLandscape = false
     , isRefresh = true
     , isSearch = true
-
     , title
 }: CompSyncFusionTreeGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)

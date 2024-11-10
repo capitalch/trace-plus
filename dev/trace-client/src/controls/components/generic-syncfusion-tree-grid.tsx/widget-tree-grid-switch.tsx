@@ -1,5 +1,5 @@
 import { useContext, useState } from "react"
-import { GlobalContext, GlobalContextType } from "../../app/global-context"
+import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 
 export function WidgetTreeGridSwitch({
     instance
@@ -18,12 +18,12 @@ export function WidgetTreeGridSwitch({
         </label>
     )
 
-    function getChecked(){
+    function getChecked() {
         let isCollapsed = context.CompSyncFusionTreeGrid?.[instance]?.isCollapsed
-        if(isCollapsed === undefined){
+        if (isCollapsed === undefined) {
             isCollapsed = true
         }
-        return(!isCollapsed)
+        return (!isCollapsed)
     }
 
     function handleOnChangeSwitch(e: any) {

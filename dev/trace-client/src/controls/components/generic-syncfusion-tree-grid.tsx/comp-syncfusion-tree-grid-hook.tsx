@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-// import _ from 'lodash'
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { CompSyncfusionTreeGridType, SyncFusionTreeGridColumnType } from "./comp-syncfusion-tree-grid";
@@ -42,6 +41,14 @@ export function useCompSyncfusionTreeGrid({
                 visible={col.visible}
             />)
         })
+        if (addUniqueKeyToJson) {
+            colDirectives.push(<ColumnDirective
+                field="pkey"
+                isPrimaryKey={true}
+                visible={false}
+                key='P'
+            />)
+        }
         return (colDirectives)
     }
 

@@ -1,7 +1,5 @@
 import { useContext, useEffect, useRef } from "react"
-// import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
-// import { GlobalContext } from "../../../App"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
@@ -29,14 +27,43 @@ export function CompSyncfusionTreeGrid({
     const context: GlobalContextType = useContext(GlobalContext)
     const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, childMapping, columns, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
-   
+
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionTreeGrid[instance]) {
-            context.CompSyncFusionTreeGrid[instance] = { loadData: undefined, gridRef: undefined, isCollapsed: true }
+            context.CompSyncFusionTreeGrid[instance] = {
+                expandedKeys: [],
+                gridRef: undefined,
+                isCollapsed: true,
+                loadData: undefined,
+                scrollPos: 0,
+            }
         }
         context.CompSyncFusionTreeGrid[instance].loadData = loadData
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
+        // if(gridRef.current){
+        //     const content = gridRef.current.grid.getContent()
+        //     const scrollPos = content.scrollTop
+        //     console.log(scrollPos)
+        // }
+        
+        // return (() => {
+        //     context.CompSyncFusionTreeGrid[instance].scrollPos = 300
+            
+        //     if (gridRef.current) {
+        //         context.CompSyncFusionTreeGrid[instance].scrollPos = gridRef.current.getContent().children[0].scrollTop
+        //     }
+        // })
     }, [])
+
+    // useEffect(() => {
+    //     if (gridRef.current) {
+    //         const content = gridRef.current.grid.getContent()
+    //         setTimeout(() => {
+    //             content.scrollTop = 400
+    //             content.scrollLeft = 0
+    //         }, 900);
+    //     }
+    // })
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -64,10 +91,11 @@ export function CompSyncfusionTreeGrid({
                 allowTextWrap={true}
                 childMapping={childMapping}
                 className={className}
-                clipMode="EllipsisWithTooltip"
+                // clipMode='Ellipsis'
                 collapsed={onRowCollapsed}
+                created={onCreated}
                 dataSource={selectedData}
-                enablePersistence={true}
+                // enablePersistence={true}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
                 expanded={onRowEpanded}
                 gridLines="Both"
@@ -87,7 +115,6 @@ export function CompSyncfusionTreeGrid({
             >
                 <ColumnsDirective>
                     {getColumnDirectives()}
-                    {/* {addUniqueKeyToJson && <ColumnDirective field="key" isPrimaryKey={true} visible={false} />} */}
                 </ColumnsDirective>
                 {/* <AggregatesDirective>
                     <AggregateDirective>
@@ -113,11 +140,20 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    function onDataBound(e: any) {
+    function onCreated() {
         const expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
         if (expandedKeys.length > 0) {
-            expandedKeys.forEach((key: string) => gridRef.current.expandByKey(key))
+            expandedKeys.forEach((key: string) => {
+                if (gridRef?.current?.expandByKey) {
+                    setTimeout(() => {
+                        gridRef.current.expandByKey(key)
+                    }, 500); // Delay between expansions. Otherwise error occurs
+                }
+            })
         }
+    }
+
+    function onDataBound(e: any) {
         if (dataBound) {
             dataBound(e)
         }
@@ -125,7 +161,7 @@ export function CompSyncfusionTreeGrid({
 
     function onRowCollapsed(args: any) {
         let expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
-        expandedKeys = expandedKeys.filter((key: any) => key !== args.data.key);
+        expandedKeys = expandedKeys.filter((key: any) => key !== args.data.pkey);
         context.CompSyncFusionTreeGrid[instance].expandedKeys = [...expandedKeys]
     }
 
@@ -138,11 +174,11 @@ export function CompSyncfusionTreeGrid({
 
     function onRowEpanded(args: any) {
         const expandedKeys = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
-        if (!args?.data?.key) {
+        if (!args?.data?.pkey) {
             return
         }
-        if (!expandedKeys.includes(args.data.key)) {
-            expandedKeys.push(args.data.key)
+        if (!expandedKeys.includes(args.data.pkey)) {
+            expandedKeys.push(args.data.pkey)
         }
     }
 

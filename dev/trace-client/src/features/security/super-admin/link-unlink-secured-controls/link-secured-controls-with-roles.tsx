@@ -115,23 +115,24 @@ export function LinkSecuredControlsWithRoles() {
 
     function onSecuredControlsRowDrop(args: any) {
         args.cancel = true
-
-        //find target grid
-        const targetGrid: any = args.target.closest('.e-grid')
-        if (targetGrid.id === securedControlsInstance) {
+        const targetGridRef = context.CompSyncFusionTreeGrid[linksInstance].gridRef
+        const sourceGridRef = context.CompSyncFusionGrid[securedControlsInstance].gridRef
+        if (targetGridRef.current?.id === securedControlsInstance) {
             return
         }
+        
         // If dropped in empty area of target grid then return
         const targetRow = args?.target.closest('tr');
         if (!targetRow) {
             Utils.showFailureAlertMessage({ title: 'Failure', message: Messages.messNotAllowed })
             return
         }
-        const rolesLinkGridRef: any = context.CompSyncFusionTreeGrid[linksInstance].gridRef
-        const rolesLinkViewRecords = rolesLinkGridRef.current.getCurrentViewRecords();
+        
+        const rolesLinkViewRecords = targetGridRef.current.getCurrentViewRecords();
         const targetIndex = args.dropIndex;
 
         const targetRowData = rolesLinkViewRecords[targetIndex];
+        setExpandedKeys()
         if (_.isEmpty(targetRowData)) {
             return
         }
@@ -175,10 +176,27 @@ export function LinkSecuredControlsWithRoles() {
                 await Utils.mutateGraphQL(q, queryName);
                 context.CompSyncFusionTreeGrid[linksInstance].loadData();
                 Utils.showSaveMessage();
+                if(sourceGridRef){
+                    sourceGridRef.current.clearSelection() /// clear selection of source grid
+                }
             } catch (e: any) {
                 console.log(e.message);
             }
         }
+
+        function setExpandedKeys() {
+            // Only expand the key where items are dropped
+            const expandedKeys = []
+            if (targetRowData.level === 0) {
+                expandedKeys.push(targetRowData.pkey)
+            }
+            if (targetRowData.level === 1) {
+                const parentItem = targetRowData.parentItem
+                expandedKeys.push(parentItem.pkey)
+            }
+            context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys
+        }
+
     }
 
     function securedControlsAggrTemplate(props: any) {
@@ -192,7 +210,6 @@ export function LinkSecuredControlsWithRoles() {
                 headerText: 'Name (Role / Secured control)',
                 type: 'string',
                 template: nameColumnTemplate,
-                // width: 150
             },
             {
                 field: 'descr',
@@ -200,13 +217,6 @@ export function LinkSecuredControlsWithRoles() {
                 template: descrColumnTemplate,
                 type: 'string'
             },
-            {
-                field: 'key',
-                headerText: 'Key',
-                isPrimaryKey: true,
-                visible: false,
-                type: 'number'
-            }
         ])
     }
 
@@ -340,4 +350,19 @@ export function LinkSecuredControlsWithRoles() {
 
 // function onRowDragStartHelper(args:any){
 //     console.log(args)
+// }
+
+// function setExpandedKeys1() {
+//     const expandedKeys = context.CompSyncFusionTreeGrid[linksInstance].expandedKeys || []
+//     if (targetRowData.level === 0) {
+//         if (!expandedKeys.includes(targetRowData.pkey)) {
+//             expandedKeys.push(targetRowData.pkey)
+//         }
+//     }
+//     if (targetRowData.level === 1) {
+//         const parentItem = targetRowData.parentItem
+//         if (!expandedKeys.includes(parentItem.pkey)) {
+//             expandedKeys.push(parentItem.pkey)
+//         }
+//     }
 // }
