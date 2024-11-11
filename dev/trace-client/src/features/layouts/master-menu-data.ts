@@ -239,7 +239,6 @@ export const MasterMenuData: MenuDataType = {
       iconColorClass: 'text-teal-500',
       path:'/admin-business-units',
       children: []
-      // path: 'purchase'
     },
     {
       id: '10',
@@ -264,6 +263,14 @@ export const MasterMenuData: MenuDataType = {
       iconColorClass: 'text-secondary-400',
       children: [],
       path: '/admin-link-users'
+    },
+    {
+      id: '18',
+      label: 'Link ctrls <-> roles',
+      icon: IconAdminLinkUsers,
+      iconColorClass: 'text-green-500',
+      children: [],
+      path: '/admin-link-secured-controls-roles'
     }
   ],
   superAdmin: [
@@ -313,7 +320,7 @@ export const MasterMenuData: MenuDataType = {
       icon: IconAdminLinkUsers,
       iconColorClass: 'text-green-500',
       children: [],
-      path: '/link-secured-controls-roles'
+      path: '/super-admin-link-secured-controls-roles'
     }
   ]
 }

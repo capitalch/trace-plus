@@ -1,20 +1,20 @@
+import { useContext } from "react";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
+// import { GlobalContext } from "../../../../App";
 import { useForm } from "react-hook-form";
-import _ from 'lodash'
 import { Messages } from "../../../../utils/messages";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
+import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
-import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
-import { useContext } from "react";
-// import { GlobalContext } from "../../../../App";
+import _ from 'lodash'
 
-export function LinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType) {
+export function SuperAdminLinkSecuredControlWithRoleModal({ roleId, instance }: LinkSecuredControlWithRoleModalType) {
     const context: GlobalContextType = useContext(GlobalContext);
     const {
         clearErrors,
@@ -27,51 +27,50 @@ export function LinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType)
         criteriaMode: "all",
     });
 
-    const registerUserId = register("userId", {
+    const registerSecuredControlId = register("securedControlId", {
         required: Messages.errRequired,
     });
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-80">
+            <div className="flex flex-col w-auto gap-2 min-w-80">
 
-                {/* User id */}
+                {/* Secured control id */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold mb-1">Select user to link with <WidgetAstrix /></span>
+                    <span className="mb-1 font-bold">Select secured control to link with <WidgetAstrix /></span>
                     <CompReactSelect
-                        getOptions={getUserOptions}
-                        optionLabelName="user"
+                        getOptions={getSecuredControlOptions}
+                        optionLabelName="controlName"
                         optionValueName="id"
-                        {...registerUserId}
-                        onChange={handleOnChangeUser}
-                        placeHolder="Select userName : email : uid"
+                        {...registerSecuredControlId}
+                        onChange={handleOnChangeSecuredControl}
+                        placeHolder="Select secured control"
                         ref={null} // necessary for react-hook-form
                         selectedValue={null}
                     />
-                    {errors.userId && <WidgetFormErrorMessage errorMessage={errors.userId.message} />}
+                    {errors.securedControlId && <WidgetFormErrorMessage errorMessage={errors.securedControlId.message} />}
                 </label>
 
                 {/* Save */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors) || isSubmitting} />
                 </div>
             </div>
         </form>
     )
 
-    async function getUserOptions(setOptions: (args: any) => void) {
-        // console.log(instance, buId)
+    async function getSecuredControlOptions(setOptions: (args: any) => void) {
         const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
-            sqlId: SqlIdsMap.getUsersNotLinkedWithBuIdExcludeAdmin
-            , sqlArgs: { buId:buId}
+            sqlId: SqlIdsMap.getSecuredControlsNotLinkedWithRoleId
+            , sqlArgs: { roleId: roleId }
         });
         const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
         setOptions(res.data.genericQuery);
     }
 
-    function handleOnChangeUser(selectedObject: any) {
-        setValue("userId", selectedObject?.id);
-        clearErrors("userId");
+    function handleOnChangeSecuredControl(selectedObject: any) {
+        setValue("securedControlId", selectedObject?.id);
+        clearErrors("securedControlId");
     }
 
     async function onSubmit(data: FormDataType) {
@@ -80,10 +79,10 @@ export function LinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType)
         }
 
         const traceDataObject: TraceDataObjectType = {
-            tableName: "UserBuX",
+            tableName: "RoleSecuredControlX",
             xData: {
                 ...data,
-                buId: buId
+                roleId: roleId
             },
         };
 
@@ -98,14 +97,13 @@ export function LinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType)
             console.log(e.message);
         }
     }
-    
 }
 
 type FormDataType = {
-    userId: string;
+    securedControlId: string;
 };
 
-type LinkUserWithBuModalType = {
-    buId: number
+type LinkSecuredControlWithRoleModalType = {
+    roleId: string
     instance: string
 }

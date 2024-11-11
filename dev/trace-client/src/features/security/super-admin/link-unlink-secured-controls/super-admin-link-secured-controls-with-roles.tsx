@@ -1,130 +1,137 @@
-import { TooltipComponent } from '@syncfusion/ej2-react-popups';
-import { IconLink } from "../../../../controls/icons/icon-link";
+import { useContext } from "react";
 import _ from 'lodash'
-import { IconUnlink } from "../../../../controls/icons/icon-unlink";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
+import { Messages } from "../../../../utils/messages";
+import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
+import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { GlobalContext, GlobalContextType } from '../../../../app/global-context';
-import { useContext } from 'react';
-import { AdminLinkUserWithBuModal } from './admin-link-user-with-bu-modal';
-import { GraphQLQueriesMap } from '../../../../app/graphql/maps/graphql-queries-map';
-import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants';
-import { TraceDataObjectType } from '../../../../utils/global-types-interfaces-enums';
-import { Messages } from '../../../../utils/messages';
-import { CompSyncFusionTreeGridToolbar } from '../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar';
-import { CompSyncFusionGridToolbar } from '../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar';
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from '../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid';
-import { AdminNewBusinessUserButton } from '../business users/admin-new-business-user-button';
-import { WidgetTooltip } from '../../../../controls/widgets/widget-tooltip';
-import { AdminNewBusinessUnitButton } from '../business-units/admin-new-business-unit-button';
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { IconLink } from "../../../../controls/icons/icon-link";
+import { IconUnlink } from "../../../../controls/icons/icon-unlink";
+import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { IconControls } from "../../../../controls/icons/icon-controls";
+import { SuperAdminLinkSecuredControlWithRoleModal } from "./super-admin-link-secured-control-with-role-modal";
 
-export function AdminLinkUsersWithBu() {
-    const businessUsersInstance = DataInstancesMap.adminBusinessUsers
-    const linksInstance = DataInstancesMap.adminLinkUsers
+export function SuperAdminLinkSecuredControlsWithRoles() {
+    const securedControlsInstance: string = DataInstancesMap.securedControls
+    const linksInstance: string = DataInstancesMap.securedControlsLinkRoles
     const context: GlobalContextType = useContext(GlobalContext);
 
     return (
         <div className='flex flex-col ml-8'>
-            <label className='mt-6 text-xl font-semibold text-primary-400'>Link users with business units (bu)</label>
+            <label className="mt-6 text-xl font-semibold text-primary-400">Linking of secured controls with roles</label>
             <div className='flex gap-8 ' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
                         className='mt-4'
-                        CustomControl={() => <WidgetTooltip title='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 h-8 px-2 mb-2 text-xs' /></WidgetTooltip>}
+                        // CustomControl={() => <WidgetTooltip title='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 h-8 px-2 mb-2 text-xs' /></WidgetTooltip>}
                         minWidth='300px'
                         title=''
                         isLastNoOfRows={false}
-                        instance={businessUsersInstance}
+                        instance={securedControlsInstance}
                     />
-                    <label className='mt-2 font-medium text-primary-300'>{Messages.messBusinessUsersDragFrom}</label>
+                    <label className='mt-2 font-medium text-primary-300'>{Messages.messSecuredControlsDragFrom}</label>
                     <CompSyncFusionGrid
-                        aggregates={getBusinessUserssAggregates()}
-                        className="mt-4"
-                        columns={getUsersColumns()}
+                        aggregates={getSecuredControlsAggregates()}
+                        className="mt-4 "
+                        columns={getSecuredControlsColumns()}
                         gridDragAndDropSettings={
                             {
                                 allowRowDragAndDrop: true,
-                                onRowDrop: onUsersRowDrop,
+                                onRowDrop: onSecuredControlsRowDrop,
                                 selectionType: 'Multiple',
                                 targetId: linksInstance
                             }}
                         hasCheckBoxSelection={true}
-                        // hasIndexColumn={true}
-                        height="calc(100vh - 290px)"
-                        instance={businessUsersInstance}
+                        height="calc(100vh - 308px)"
+                        instance={securedControlsInstance}
                         minWidth='600px'
                         rowHeight={40}
-                        sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
-                        sqlId={SqlIdsMap.allBusinessUsers}
+                        sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
+                        sqlId={SqlIdsMap.allSecuredControls}
                     />
                 </div>
 
                 <div className='flex flex-col w-max'>
                     <CompSyncFusionTreeGridToolbar className='mt-4'
-                        CustomControl={() =>
-                            <WidgetTooltip title='New business unit' >
-                                <AdminNewBusinessUnitButton
-                                    dataInstance={linksInstance}
-                                    className='w-10 h-8 px-2 mb-2 text-xs'
-                                    isTreeGrid={true}
-                                />
-                            </WidgetTooltip>}
                         instance={linksInstance}
                         title=''
                     />
-                    <label className='mt-2 font-medium text-primary-300'>{Messages.messExistingLinksDropHere}</label>
+                    <label className='mt-2 font-medium text-primary-300'>{Messages.messExistingRolesWithLinksDropHere}</label>
                     <CompSyncfusionTreeGrid
                         addUniqueKeyToJson={true}
-                        className="mt-2"
-                        childMapping="users"
+                        className="mt-2 "
+                        childMapping="securedControls"
                         columns={getLinkColumns()}
                         height="calc(100vh - 290px)"
                         instance={linksInstance}
                         minWidth='700px'
                         pageSize={11}
                         rowHeight={40}
-                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
-                        sqlId={SqlIdsMap.getBuUsersLink}
+                        sqlArgs={{}}
+                        sqlId={SqlIdsMap.getRolesSecuredControlsLink}
                         treeColumnIndex={0}
                     />
                 </div>
             </div>
-        </div>
-    )
+        </div>)
 
-    function getBusinessUserssAggregates(): SyncFusionAggregateType[] {
+    function getSecuredControlsAggregates(): SyncFusionAggregateType[] {
         return [{
-            field: 'roleName',
+            field: 'controlName',
             type: "Count",
             format: "N0",
-            footerTemplate: businessUserssAggrTemplate
+            footerTemplate: securedControlsAggrTemplate
         }]
     }
 
-    function businessUserssAggrTemplate(props: any) {
-        return <span className="text-xs">Count: {props.Count}</span>;
+    function getSecuredControlsColumns(): SyncFusionGridColumnType[] {
+        return [
+            {
+                field: "controlName",
+                headerText: "Control",
+                type: "string",
+                width: 180,
+            },
+            {
+                field: "controlType",
+                headerText: "Type",
+                type: "string",
+                width: 60,
+            },
+            {
+                field: "descr",
+                headerText: "Description",
+                type: "string",
+            },
+        ]
     }
 
-    function onUsersRowDrop(args: any) {
+    function onSecuredControlsRowDrop(args: any) {
         args.cancel = true
         const targetGridRef = context.CompSyncFusionTreeGrid[linksInstance].gridRef
-        const sourceGridRef = context.CompSyncFusionGrid[businessUsersInstance].gridRef
-        if (targetGridRef.current?.id === businessUsersInstance) {
+        const sourceGridRef = context.CompSyncFusionGrid[securedControlsInstance].gridRef
+        if (targetGridRef.current?.id === securedControlsInstance) {
             return
         }
+        
         // If dropped in empty area of target grid then return
         const targetRow = args?.target.closest('tr');
         if (!targetRow) {
             Utils.showFailureAlertMessage({ title: 'Failure', message: Messages.messNotAllowed })
             return
         }
-
-        const buLinkViewRecords = targetGridRef.current.getCurrentViewRecords();
+        
+        const rolesLinkViewRecords = targetGridRef.current.getCurrentViewRecords();
         const targetIndex = args.dropIndex;
 
-        const targetRowData = buLinkViewRecords[targetIndex];
+        const targetRowData = rolesLinkViewRecords[targetIndex];
         setExpandedKeys()
         if (_.isEmpty(targetRowData)) {
             return
@@ -136,26 +143,26 @@ export function AdminLinkUsersWithBu() {
         function getIdsToExclude() {
             let ctrls: any[] = []
             if (targetRowData?.level === 0) { //dropped on role
-                ctrls = targetRowData?.users || []
+                ctrls = targetRowData?.securedControls || []
             } else if (targetRowData?.level === 1) { //dropped on secured control
                 const parentIndex = targetRowData?.parentItem?.index
-                const parentRowData = buLinkViewRecords[parentIndex]
-                ctrls = parentRowData?.users || []
+                const parentRowData = rolesLinkViewRecords[parentIndex]
+                ctrls = parentRowData?.securedControls || []
             }
-            const ids: string[] = ctrls.map((ctrl: any) => ctrl.userId)
+            const ids: string[] = ctrls.map((ctrl: any) => ctrl.securedControlId)
             return (ids)
         }
 
         async function proceedToLink() {
-            const buId = targetRowData.buId
+            const roleId = targetRowData.roleId
             const xData: any[] = sourceIds
                 .filter((id: string) => !idsToExclude.includes(id))
                 .map(x => ({
-                    userId: x,
-                    buId: buId
+                    securedControlId: x,
+                    roleId: roleId
                 }))
             const traceDataObject: TraceDataObjectType = {
-                tableName: "UserBuX",
+                tableName: "RoleSecuredControlX",
                 xData
             };
 
@@ -169,7 +176,7 @@ export function AdminLinkUsersWithBu() {
                 await Utils.mutateGraphQL(q, queryName);
                 context.CompSyncFusionTreeGrid[linksInstance].loadData();
                 Utils.showSaveMessage();
-                if (sourceGridRef) {
+                if(sourceGridRef){
                     sourceGridRef.current.clearSelection() /// clear selection of source grid
                 }
             } catch (e: any) {
@@ -189,63 +196,36 @@ export function AdminLinkUsersWithBu() {
             }
             context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys
         }
+
     }
 
-    function getUsersColumns(): SyncFusionGridColumnType[] {
-        return [
-            {
-                field: "roleName",
-                headerText: "Role",
-                type: "string",
-                width: 80,
-            },
-            {
-                field: "uid",
-                headerText: "Uid",
-                type: "string",
-                width: 60,
-            },
-            {
-                field: "userName",
-                headerText: "User name",
-                type: "string",
-            },
-        ]
+    function securedControlsAggrTemplate(props: any) {
+        return <span className="text-xs">Count: {props.Count}</span>;
     }
 
     function getLinkColumns(): SyncFusionTreeGridColumnType[] {
         return ([
             {
-                field: 'code',
-                headerText: 'Code (Bu / user)',
-                type: 'string',
-                template: codeColumnTemplate,
-                width: 80
-            },
-            {
                 field: 'name',
-                headerText: 'Name',
+                headerText: 'Name (Role / Secured control)',
                 type: 'string',
                 template: nameColumnTemplate,
+            },
+            {
+                field: 'descr',
+                headerText: 'Description',
+                template: descrColumnTemplate,
+                type: 'string'
             },
         ])
     }
 
-    function codeColumnTemplate(props: any) {
-        return (<div>
-            <span>{props.code}</span>
+    function nameColumnTemplate(props: any) {
+        return (<div className="flex items-center">
+            {(props.level === 1) && <IconControls className="text-sky-400" />}
+            <span className="ml-2">{props.name}</span>
             {getChildCount(props)}
         </div>)
-    }
-
-    function nameColumnTemplate(props: any) {
-        return (
-            <div className="flex flex-row items-center">
-                <span>{props.name}</span>
-                {getLinkOrUnlinkButton(props)}
-                {getUnlinkAllButton(props)}
-            </div>
-        )
     }
 
     function getChildCount(props: any) {
@@ -254,15 +234,25 @@ export function AdminLinkUsersWithBu() {
         )
     }
 
+    function descrColumnTemplate(props: any) {
+        return (
+            <div className="flex flex-row items-center">
+                <span>{props.descr}</span>
+                {getLinkOrUnlinkButton(props)}
+                {getUnlinkAllButton(props)}
+            </div>
+        )
+    }
+
     function getLinkOrUnlinkButton(props: any) {
         let ret = null
         if (props.level === 0) {
-            ret = <TooltipComponent content="Link an existing user with business unit">
+            ret = <TooltipComponent content={Messages.messLinkSecuredControl}>
                 <button onClick={() => handleOnClickLink(props)}><IconLink className="w-5 h-5 ml-2 text-blue-500"></IconLink></button>
             </TooltipComponent>
         } else {
-            ret = <TooltipComponent content="Unlink this user from business unit">
-                <button onClick={() => handleOnClickUnLink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+            ret = <TooltipComponent content={Messages.messUnlinkSecuredControl}>
+                <button onClick={() => handleOnClickUnlink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)
@@ -270,9 +260,9 @@ export function AdminLinkUsersWithBu() {
 
     function getUnlinkAllButton(props: any) {
         let ret = <></>
-        const isVisible: boolean = (props?.users?.length || 0) > 0
+        const isVisible: boolean = (props?.securedControls?.length || 0) > 0
         if ((props.level === 0) && isVisible) {
-            ret = <TooltipComponent content={Messages.messUnlinkAllBusinessUsers}>
+            ret = <TooltipComponent content={Messages.messUnlinkAllSecuredControl}>
                 <button onClick={() => handleOnClickUnlinkAll(props)}>
                     <IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
             </TooltipComponent>
@@ -282,19 +272,19 @@ export function AdminLinkUsersWithBu() {
 
     function handleOnClickLink(props: any) {
         Utils.showHideModalDialogA({
-            title: "Link user with business unit",
+            title: "Link a secured control with role",
             isOpen: true,
-            element: <AdminLinkUserWithBuModal buId={props.buId} instance={linksInstance} />,
+            element: <SuperAdminLinkSecuredControlWithRoleModal roleId={props.roleId} instance={linksInstance} />,
         })
     }
 
-    function handleOnClickUnLink(props: any) {
+    function handleOnClickUnlink(props: any) {
         Utils.showConfirmDialog(
-            Messages.messSureUnlinkUser
-            , Messages.messSureUnlinkUserBody
+            Messages.messSureOnUnLinkSecuredControl
+            , Messages.messSureOnUnLinkSecuredControlBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: "UserBuX",
+                    tableName: "RoleSecuredControlX",
                     deletedIds: [props.id],
                 };
                 try {
@@ -302,7 +292,7 @@ export function AdminLinkUsersWithBu() {
                     const queryName: string = GraphQLQueriesMap.genericUpdate.name;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
-                    Utils.showCustomMessage(Messages.messUserUnlinkedSuccess);
+                    Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
                     console.log(e?.message)
                 }
@@ -312,11 +302,11 @@ export function AdminLinkUsersWithBu() {
 
     function handleOnClickUnlinkAll(props: any) {
         Utils.showConfirmDialog(
-            Messages.messSureOnUnLinkAllBusinessUsers
-            , Messages.messSureOnUnLinkBusinessUsersBody
+            Messages.messSureOnUnLinkAllSecuredControls
+            , Messages.messSureOnUnLinkAllSecuredControlsBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: "UserBuX",
+                    tableName: "RoleSecuredControlX",
                     deletedIds: getAllIds(),
                 };
                 try {
@@ -324,7 +314,7 @@ export function AdminLinkUsersWithBu() {
                     const queryName: string = GraphQLQueriesMap.genericUpdate.name;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
-                    Utils.showCustomMessage(Messages.messBusinessUsersUnlinkSuccess);
+                    Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
                     console.log(e?.message)
                 }
@@ -332,9 +322,8 @@ export function AdminLinkUsersWithBu() {
         )
 
         function getAllIds() {
-            const ids: [string] = props?.users?.map((ctrl: any) => ctrl.id) || []
+            const ids: [string] = props?.securedControls?.map((ctrl: any) => ctrl.id) || []
             return (ids)
         }
     }
 }
-

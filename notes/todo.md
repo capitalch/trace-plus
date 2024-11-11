@@ -31,7 +31,9 @@
 																	- Drag and drop functionality
 																	- Drop shows not allowed icon
 	- Admin
-		- Drag and drop secured controls to admin created roles
+																	- On click Link
+																	- Drag and drop secured controls to admin created roles
+																		- Tree Sql for admin created roles
 		- Auto transfer facility all default manager role secured controls to a role
 		- Auto transfer facility all default accountant and user level controls to a role
 

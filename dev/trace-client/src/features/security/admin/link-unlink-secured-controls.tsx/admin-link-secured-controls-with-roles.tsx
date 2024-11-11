@@ -1,25 +1,26 @@
 import { useContext } from "react";
 import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
-import { Messages } from "../../../../utils/messages";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
+import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
+import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { Utils } from "../../../../utils/utils";
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { IconControls } from "../../../../controls/icons/icon-controls";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconLink } from "../../../../controls/icons/icon-link";
 import { IconUnlink } from "../../../../controls/icons/icon-unlink";
-import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
-import { IconControls } from "../../../../controls/icons/icon-controls";
-import { LinkSecuredControlWithRoleModal } from "./link-secured-control-with-role-modal";
+import { AdminLinkSecuredControlWithRoleModal } from "./admin-link-secured-control-with-role-modal";
+import { IconAutoLink } from "../../../../controls/icons/icon-auto-link";
 
-export function LinkSecuredControlsWithRoles() {
-    const securedControlsInstance: string = DataInstancesMap.securedControls
+export function AdminLinkSecuredControlsWithRoles() {
+    const securedControlsInstance: string = DataInstancesMap.adminSecuredControls
     const linksInstance: string = DataInstancesMap.securedControlsLinkRoles
     const context: GlobalContextType = useContext(GlobalContext);
 
@@ -74,8 +75,8 @@ export function LinkSecuredControlsWithRoles() {
                         minWidth='700px'
                         pageSize={11}
                         rowHeight={40}
-                        sqlArgs={{}}
-                        sqlId={SqlIdsMap.getRolesSecuredControlsLink}
+                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
+                        sqlId={SqlIdsMap.getAdminRolesSecuredControlsLink}
                         treeColumnIndex={0}
                     />
                 </div>
@@ -120,14 +121,14 @@ export function LinkSecuredControlsWithRoles() {
         if (targetGridRef.current?.id === securedControlsInstance) {
             return
         }
-        
+
         // If dropped in empty area of target grid then return
         const targetRow = args?.target.closest('tr');
         if (!targetRow) {
             Utils.showFailureAlertMessage({ title: 'Failure', message: Messages.messNotAllowed })
             return
         }
-        
+
         const rolesLinkViewRecords = targetGridRef.current.getCurrentViewRecords();
         const targetIndex = args.dropIndex;
 
@@ -176,7 +177,7 @@ export function LinkSecuredControlsWithRoles() {
                 await Utils.mutateGraphQL(q, queryName);
                 context.CompSyncFusionTreeGrid[linksInstance].loadData();
                 Utils.showSaveMessage();
-                if(sourceGridRef){
+                if (sourceGridRef) {
                     sourceGridRef.current.clearSelection() /// clear selection of source grid
                 }
             } catch (e: any) {
@@ -240,8 +241,28 @@ export function LinkSecuredControlsWithRoles() {
                 <span>{props.descr}</span>
                 {getLinkOrUnlinkButton(props)}
                 {getUnlinkAllButton(props)}
+                {getAutoLinkButton(props)}
             </div>
         )
+    }
+
+    function getAutoLinkButton(props:any){
+        let ret = <></>
+        if ((props.level === 0)) {
+            ret = <TooltipComponent content={Messages.messAutoLinkBuiltinRoles}>
+                <button onClick={() => handleOnClickAutoLinkFromBuiltinRoles(props)}>
+                    <IconAutoLink className="w-5 h-5 ml-4 text-primary-400"></IconAutoLink></button>
+            </TooltipComponent>
+        }
+        return (ret)
+    }
+
+    function handleOnClickAutoLinkFromBuiltinRoles(props:any){
+        Utils.showHideModalDialogA({
+            title: "Link a secured control with built-in role",
+            isOpen: true,
+            element: <AdminLinkSecuredControlWithRoleModal roleId={props.roleId} instance={linksInstance} />,
+        })
     }
 
     function getLinkOrUnlinkButton(props: any) {
@@ -274,7 +295,7 @@ export function LinkSecuredControlsWithRoles() {
         Utils.showHideModalDialogA({
             title: "Link a secured control with role",
             isOpen: true,
-            element: <LinkSecuredControlWithRoleModal roleId={props.roleId} instance={linksInstance} />,
+            element: <AdminLinkSecuredControlWithRoleModal roleId={props.roleId} instance={linksInstance} />,
         })
     }
 

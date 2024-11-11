@@ -66,6 +66,41 @@ class SqlSecurity:
                     where lower("roleName") = (table "roleName")
                         and "clientId" = (table "clientId")
     """
+    
+    get_admin_roles_securedControls_link = """
+     with "clientId" as (values(%(clientId)s::int))
+        --with "clientId" as (values(51))
+ 		, cte1 as (
+            select r.id as "roleId", "roleName" as "name", r."descr"
+                , json_agg(
+                    json_build_object
+                        (
+                            'id', x.id,
+                            'name', s."controlName",
+                            'descr', s."descr",
+							'roleId', r.id,
+							'securedControlId', s.id
+                        )
+                ) FILTER (WHERE s."controlName" IS NOT NULL) AS "securedControls"
+            from "RoleM" r
+                left join "RoleSecuredControlX" x
+                    on r.id = x."roleId"
+                left join "SecuredControlM" s
+                    on s.id = x."securedControlId"
+                where r."clientId" = (table "clientId")
+            GROUP by r.id,"roleName"
+            order by "roleName"
+        )
+        
+        select json_agg(
+            json_build_object(
+                'name',"name",
+				'descr',"descr",
+				'roleId',"roleId",
+                'securedControls',COALESCE("securedControls", null::json)
+            )
+        ) as "jsonResult" from cte1
+    """
 
     get_all_admin_roles_onClientId = """
         with "noOfRows" as (values(%(noOfRows)s::int)), "clientId" as (values(%(clientId)s::int))
@@ -213,6 +248,12 @@ class SqlSecurity:
                 'users',COALESCE(users, null::json)
             )
         ) as "jsonResult" from cte1
+    """
+
+    get_builtin_roles = """
+        select *
+            from "RoleM"
+                where "clientId" is null
     """
 
     get_client_details_on_id = """
