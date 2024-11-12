@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
@@ -7,43 +8,103 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
+import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
+import { Messages } from "../../../../utils/messages";
+import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 
-export function AdminAutoLinkSecuredControlsFromBuiltinRolesModal({ roleId, instance }: AdminAutoLinkSecuredControlsFromBuiltinRolesModalype) {
+export function AdminAutoLinkSecuredControlsFromBuiltinRolesModal({ adminRoleId, instance }: AdminAutoLinkSecuredControlsFromBuiltinRolesModalype) {
     const context: GlobalContextType = useContext(GlobalContext);
-    console.log(roleId, instance)
-    return (<div className="flex flex-col w-auto gap-2 min-w-80">
+    const {
+        clearErrors,
+        handleSubmit,
+        register,
+        setValue,
+        formState: { errors, isSubmitting },
+    } = useForm<FormDataType>({
+        mode: "onTouched",
+        criteriaMode: "all",
+    });
 
-        {/* Built-in roles*/}
-        <label className="flex flex-col font-medium text-primary-400">
-            <span className="mb-1 font-bold">Select secured control to link with <WidgetAstrix /></span>
-            <CompReactSelect
-                getOptions={getBuiltinRolesOptions}
-                optionLabelName="roleName"
-                optionValueName="id"
-                // {...registerSecuredControlId}
-                onChange={handleOnChangeBuiltinRole}
-                placeHolder="Select secured control"
-                ref={null} // necessary for react-hook-form
-                selectedValue={null}
-            />
-        </label>
-    </div>)
+    const registerSuperAdminRoleId = register("superAdminRoleId", {
+        required: Messages.errRequired,
+    });
+
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col w-auto gap-2 min-w-80">
+
+                {/* Built-in roles*/}
+                <label className="flex flex-col font-medium text-primary-400">
+                    <span className="mb-1 font-bold">Built-in roles <WidgetAstrix /></span>
+                    <CompReactSelect
+                        getOptions={getBuiltinRolesOptions}
+                        optionLabelName="roleName"
+                        optionValueName="id"
+                        {...registerSuperAdminRoleId}
+                        onChange={handleOnChangeBuiltinRole}
+                        placeHolder="Select a built-in role"
+                        ref={null} // necessary for react-hook-form
+                        selectedValue={null}
+                    />
+                    {errors.superAdminRoleId && <WidgetFormErrorMessage errorMessage={errors.superAdminRoleId.message} />}
+                </label>
+                <label className="text-md text-lime-600">On saving, the secured controls from selected built-in role will be auto added</label>
+
+                {/* save */}
+                <div className="flex justify-start mt-4">
+                    <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors) || isSubmitting} />
+                </div>
+            </div>
+        </form>
+    )
 
     async function getBuiltinRolesOptions(setOptions: (args: any) => void) {
         const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
             sqlId: SqlIdsMap.getBuiltinRoles
-            // , sqlArgs: { roleId: roleId }
         });
         const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
         setOptions(res.data.genericQuery);
     }
 
-    function handleOnChangeBuiltinRole() {
+    function handleOnChangeBuiltinRole(selectedObject: any) {
+        setValue("superAdminRoleId", selectedObject?.id);
+        clearErrors("superAdminRoleId");
+    }
 
+    async function onSubmit(data: FormDataType) {
+        if (!_.isEmpty(errors)) {
+            return;
+        }
+        try { // Using a genericQuery, insert is done
+            const res: any = await Utils.queryGraphQL(
+                GraphQLQueriesMap.genericQuery(
+                    GLOBAL_SECURITY_DATABASE_NAME,
+                    {
+                        sqlId: SqlIdsMap.insertSecuredControlsFromBuiltinRole,
+                        sqlArgs: {
+                            adminRoleId: adminRoleId
+                            , superAdminRoleId: data.superAdminRoleId
+                        }
+                    }),
+                GraphQLQueriesMap.genericQuery.name
+            )
+            if (res?.data.genericQuery) {
+                Utils.showHideModalDialogA({ isOpen: false });
+                context.CompSyncFusionTreeGrid[instance].loadData();
+                Utils.showSaveMessage();
+            }
+        } catch (e: any) {
+            console.log(e.message);
+        }
     }
 }
 
+type FormDataType = {
+    adminRoleId: string
+    superAdminRoleId: string
+};
+
 type AdminAutoLinkSecuredControlsFromBuiltinRolesModalype = {
-    roleId: string
+    adminRoleId: string
     instance: string
 }

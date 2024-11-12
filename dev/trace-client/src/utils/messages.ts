@@ -35,7 +35,7 @@ const Messages = {
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
-  messAutoLinkBuiltinRoles:'Link from built-in roles',
+  messAutoLinkBuiltinRoles:'Add controls from built-in roles',
   messBusinessUsersUnlinkSuccess: 'The selected business users were unlinked successfully',
   messBuCode:
     'Business unit code can be between 4 characters and 50 characters',

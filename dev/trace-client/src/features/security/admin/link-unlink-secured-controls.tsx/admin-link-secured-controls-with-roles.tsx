@@ -18,6 +18,7 @@ import { IconLink } from "../../../../controls/icons/icon-link";
 import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { AdminLinkSecuredControlWithRoleModal } from "./admin-link-secured-control-with-role-modal";
 import { IconAutoLink } from "../../../../controls/icons/icon-auto-link";
+import { AdminAutoLinkSecuredControlsFromBuiltinRolesModal } from "./admin-auto-link-secured-controls-from-builtin-roles-modal";
 
 export function AdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.adminSecuredControls
@@ -27,7 +28,7 @@ export function AdminLinkSecuredControlsWithRoles() {
     return (
         <div className='flex flex-col ml-8'>
             <label className="mt-6 text-xl font-semibold text-primary-400">Linking of secured controls with roles</label>
-            <div className='flex gap-8 ' style={{ width: 'calc(100vw - 260px)' }}>
+            <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
                         className='mt-4'
@@ -251,7 +252,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         if ((props.level === 0)) {
             ret = <TooltipComponent content={Messages.messAutoLinkBuiltinRoles}>
                 <button onClick={() => handleOnClickAutoLinkFromBuiltinRoles(props)}>
-                    <IconAutoLink className="w-5 h-5 ml-4 text-primary-400"></IconAutoLink></button>
+                    <IconAutoLink className="w-5 h-5 ml-4 text-teal-500"></IconAutoLink></button>
             </TooltipComponent>
         }
         return (ret)
@@ -259,9 +260,9 @@ export function AdminLinkSecuredControlsWithRoles() {
 
     function handleOnClickAutoLinkFromBuiltinRoles(props:any){
         Utils.showHideModalDialogA({
-            title: "Link a secured control with built-in role",
+            title: "Add secured controls from built-in roles",
             isOpen: true,
-            element: <AdminLinkSecuredControlWithRoleModal roleId={props.roleId} instance={linksInstance} />,
+            element: <AdminAutoLinkSecuredControlsFromBuiltinRolesModal adminRoleId={props.roleId} instance={linksInstance} />,
         })
     }
 

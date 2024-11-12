@@ -23,6 +23,7 @@ export const SqlIdsMap = {
   getUserIdOnClientIdEmail: 'get_userId_on_clientId_and_email',
   getUserIdOnClientIdUid: 'get_userId_on_clientId_and_uid',
   getUsersNotLinkedWithBuIdExcludeAdmin:'get_users_not_linked_with_buId_exclude_admin',
+  insertSecuredControlsFromBuiltinRole:'insert_securedControls_from_builtin_role',
   superAdminDashBoard: 'get_super_admin_dashboard',
   testConnection: 'test_connection',
 }

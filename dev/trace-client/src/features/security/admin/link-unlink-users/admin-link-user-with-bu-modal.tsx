@@ -12,7 +12,6 @@ import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-// import { GlobalContext } from "../../../../App";
 
 export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType) {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -60,7 +59,6 @@ export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModal
     )
 
     async function getUserOptions(setOptions: (args: any) => void) {
-        // console.log(instance, buId)
         const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
             sqlId: SqlIdsMap.getUsersNotLinkedWithBuIdExcludeAdmin
             , sqlArgs: { buId:buId}
@@ -98,7 +96,6 @@ export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModal
             console.log(e.message);
         }
     }
-    
 }
 
 type FormDataType = {

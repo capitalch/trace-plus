@@ -478,6 +478,28 @@ class SqlSecurity:
             "descr" = EXCLUDED."descr";
     """
 
+    insert_securedControls_from_builtin_role = """
+        with "adminRoleId" as (values(%(adminRoleId)s::int)), "superAdminRoleId" as (values(%(superAdminRoleId)s::int))
+            --with "adminRoleId" as (values(32)), "superAdminRoleId" as (values(26))
+            , cte1 as (
+                select "securedControlId"
+                    from "RoleSecuredControlX"
+                        where "roleId" = (table "superAdminRoleId"))
+            , cte2 as (
+                select "securedControlId"
+                    from "RoleSecuredControlX"
+                        where "roleId" = (table "adminRoleId"))
+            , cte3 as (
+                select (table "adminRoleId") as "roleId"
+                    , "securedControlId" from cte1
+                        where "securedControlId" not in(
+                            select "securedControlId"
+                                from cte2))
+            insert into "RoleSecuredControlX"("roleId", "securedControlId")
+                select "roleId", "securedControlId"
+                    from cte3
+    """
+
     test_connection = """
         select 'ok' as "connection"
     """

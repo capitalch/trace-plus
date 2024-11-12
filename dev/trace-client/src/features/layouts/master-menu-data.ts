@@ -258,7 +258,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: '12',
-      label: 'Link users',
+      label: 'Link users <-> bu',
       icon: IconAdminLinkUsers,
       iconColorClass: 'text-secondary-400',
       children: [],

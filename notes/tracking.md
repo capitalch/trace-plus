@@ -6,6 +6,9 @@
 # 21-10-2024 - 10-11-2024
 	- Generic drag and drop
 	- Super admin secured controle link Builtin roles
+	- Generic Tree grid
+	- Secured controls <-> role for admin and super admin
+	- Users <-> Bu for admin
 # 14-10-2024 - 20-10-2034
 	- Security completed
 	- Bu and User mapping remained

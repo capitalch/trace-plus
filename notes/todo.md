@@ -1,8 +1,7 @@
 ## To do
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
-- TreeGrid
-	- Maintain scroll pos
+																- TreeGrid
 																	- Ondrop expand
 																	- Persistence of tree
 																- Roles and secured control management Revisit
@@ -30,12 +29,12 @@
 																	- link and unlink buttons and their functionality
 																	- Drag and drop functionality
 																	- Drop shows not allowed icon
-	- Admin
+																- Admin
 																	- On click Link
 																	- Drag and drop secured controls to admin created roles
 																		- Tree Sql for admin created roles
-		- Auto transfer facility all default manager role secured controls to a role
-		- Auto transfer facility all default accountant and user level controls to a role
+																	- Auto transfer facility all default manager role secured controls to a role
+																	- Auto transfer facility all default accountant and user level controls to a role
 
 																	- New Bu should create Schema at server side
 																		- Code improvements
