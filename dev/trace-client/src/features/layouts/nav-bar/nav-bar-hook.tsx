@@ -7,6 +7,7 @@ import { AdminMenuButton } from "./admin-menu-button"
 import { isSideBarOpenSelectorFn, setIsSideBarOpen, setMenuItem, } from "../layouts-slice"
 import { userTypeSelectorFn } from "../../login/login-slice"
 import { useEffect } from "react"
+import { AccountOptionsInfo } from "./account-options-info/account-opions-info"
 
 export function useNavBar() {
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
@@ -24,6 +25,14 @@ export function useNavBar() {
             dispatch(setMenuItem({ menuItem: "accounts" }))
         }
     }, [dispatch, userTypeSelector])
+
+    function getBuFyBranchInfo() {
+        let ret = <></>
+        if ([UserTypesEnum.Admin, UserTypesEnum.BusinessUser].includes(userTypeSelector)) {
+            ret = <AccountOptionsInfo />
+        }
+        return (ret)
+    }
 
     function getMenuShowHideClass() {
         return (isSideBarOpenSelector ? 'hidden' : 'block')
@@ -49,5 +58,5 @@ export function useNavBar() {
     function handleShowSideBar() {
         dispatch(setIsSideBarOpen({ isSideBarOpen: true }))
     }
-    return ({ getMenuButtons, getMenuShowHideClass, handleShowSideBar })
+    return ({ getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar })
 }

@@ -6,16 +6,17 @@ import { IconMenuUnfold } from "../../../controls/icons/icon-menu-unfold"
 import { AppLoader } from "./app-loader"
 
 function NavBar() {
-    const { getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
+    const {getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
     
     return (
         // Top Nav bar
-        <div className="flex h-12 items-center justify-between bg-primary-500">
-            <div className="prose flex items-center text-white text-lg">
+        <div className="flex items-center justify-between h-12 bg-primary-500">
+            <div className="flex items-center text-lg text-white">
                 <button onClick={handleShowSideBar} className={clsx(getMenuShowHideClass(), 'mx-2')}>
                     <IconMenuUnfold className='h-6' />
                 </button>
                 {getMenuButtons()}
+                {getBuFyBranchInfo()}
             </div>
             <LogoutMenuButton />
             <ModalDialogA />

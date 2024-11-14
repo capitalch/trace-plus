@@ -1,6 +1,20 @@
 ## To do
 - Provide appropriate logging at server
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
+- React router warning
+	- React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in 	early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+- AccountOptions
+	- Show FY
+	- FySelection modal
+	- Show Branch
+	- Branch selection modal
+	- Show Bu
+	- Bu selection modal
+	- Generic Chip
+	- Visible when accounts selected
+	- On login show the last options
+	- Global variable in redux
+	- DB entry for last option against the user
 																- TreeGrid
 																	- Ondrop expand
 																	- Persistence of tree
