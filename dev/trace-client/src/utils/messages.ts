@@ -54,6 +54,7 @@ const Messages = {
   messLinkSecuredControl:"Link a secured control with this role",
   messNothingToDo:"Nothing to do",
   messNotAllowed:"This operation is not allowed",
+  messNoBusinessUnitsDefined:"No business units are defined for this client",
   messOperationNotAllowed: 'This operation is not allowed',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
@@ -84,6 +85,7 @@ const Messages = {
   messUserExists: 'User already exists in the business unit',
   messUserNameEmailHelper:
     'UID: At least 4 characters long | no space | no special char or valid email',
+  messUserNotAssociatedWithBu:'Current user is not associated with any business unit',
   messUserWillBeAdded: 'Dragged used will be added to the business unit',
   messUserUnlinkedSuccess: 'The selected user was unlinked successfully'
 }

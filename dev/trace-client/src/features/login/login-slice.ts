@@ -5,6 +5,8 @@ import { String } from 'lodash'
 const initialState: LoginType = {
   allBusinessUnits: undefined,
   allSecuredControls: undefined,
+  currentBusinessUnit: undefined,
+  currentBusinessUnits: undefined,
   isLoggedIn: false,
   role: undefined,
   token: undefined,
@@ -17,10 +19,7 @@ export const loginSlice = createSlice({
   name: 'login',
   initialState: initialState,
   reducers: {
-    doLogin: (
-      state: LoginType,
-      action: PayloadAction<LoginType>
-    ) => {
+    doLogin: (state: LoginType, action: PayloadAction<LoginType>) => {
       state.allBusinessUnits = action.payload.allBusinessUnits
       state.allSecuredControls = action.payload.allSecuredControls
       state.isLoggedIn = true
@@ -34,6 +33,8 @@ export const loginSlice = createSlice({
     doLogout: (state: LoginType) => {
       state.allBusinessUnits = undefined
       state.allSecuredControls = undefined
+      state.currentBusinessUnit = undefined
+      state.currentBusinessUnits = undefined
       state.isLoggedIn = false
       state.role = undefined
       state.token = undefined
@@ -42,79 +43,109 @@ export const loginSlice = createSlice({
       state.userSecuredControls = undefined
     },
 
-    setUid: (
+    setCurrentBusinessUnit: (
       state: LoginType,
-      action: PayloadAction<setUidActonType>
+      action: PayloadAction<BusinessUnitType>
     ) => {
+      state.currentBusinessUnit = {
+        buId: action.payload.buId,
+        buCode: action.payload.buCode,
+        buName: action.payload.buName
+      }
+    },
+
+    setCurrentBusinessUnits: (
+      state: LoginType,
+      action: PayloadAction<BusinessUnitType[]>
+    ) => {
+      state.currentBusinessUnits = action.payload
+    },
+
+    setUid: (state: LoginType, action: PayloadAction<setUidActonType>) => {
       if (!state.userDetails) {
         state.userDetails = {}
       }
       state.userDetails.uid = action.payload.uid
-    },
+    }
   }
 })
 
 export const loginReducer = loginSlice.reducer
-export const { doLogin, doLogout, setUid } = loginSlice.actions
+export const {
+  doLogin,
+  doLogout,
+  setCurrentBusinessUnit,
+  setCurrentBusinessUnits,
+  setUid
+} = loginSlice.actions
+
 export type setUidActonType = {
   uid: string
+}
+
+export type UserDetailsType = {
+  branchIds?: String
+  clientCode?: string
+  clientId?: number
+  clientName?: string
+  dbName?: string
+  dbParams?: Record<string, string | number>
+  hash?: string
+  id?: number
+  isUserActive?: boolean
+  isClientActive?: boolean
+  isExternalDb?: boolean
+  lastUsedBranchId?: number
+  lastUsedBuId?: number
+  mobileNo?: string
+  uid?: string
+  userEmail?: string
+  userName?: string
+  userType?: 'S' | 'A' | 'B' | undefined
+}
+
+export type BusinessUnitType = {
+  buCode?: string
+  buId?: number
+  buName?: string
+}
+
+export type RoleType = {
+  clientId?: number
+  roleId?: number
+  roleName?: string
+}
+
+export type SecuredControlType = {
+  controlName?: string
+  controlNo?: number
+  controlType?: string
+  descr?: string
+  id?: number
+}
+
+export type LoginType = {
+  allBusinessUnits?: BusinessUnitType[]
+  allSecuredControls?: SecuredControlType[]
+  currentBusinessUnit?: BusinessUnitType
+  currentBusinessUnits?: BusinessUnitType[]
+  isLoggedIn: boolean
+  role?: RoleType
+  token: string | undefined
+  userBusinessUnits?: BusinessUnitType[]
+  userDetails?: UserDetailsType
+  userSecuredControls?: SecuredControlType[]
 }
 
 // selectors
 export const isLoggedInSelectorFn = (state: RootStateType) =>
   state.login.isLoggedIn
 
-export const userTypeSelectorFn = (state: RootStateType) => state.login.userDetails?.userType
+export const userTypeSelectorFn = (state: RootStateType) =>
+  state.login.userDetails?.userType
 
+export const currentBusinessUnitSelectorFn = (state: RootStateType) =>
+  state.login.currentBusinessUnit
 
-export type UserDetailsType = {
-  branchIds?: String;
-  clientCode?: string;
-  clientId?: number;
-  clientName?: string;
-  dbName?: string;
-  dbParams?: Record<string, string | number>;
-  hash?: string;
-  id?: number;
-  isUserActive?: boolean;
-  isClientActive?: boolean;
-  isExternalDb?: boolean;
-  lastUsedBranchId?: number;
-  lastUsedBuId?: number;
-  mobileNo?: string;
-  uid?: string;
-  userEmail?: string;
-  userName?: string;
-  userType?: 'S' | 'A' | 'B' | undefined;
-};
-
-export type BusinessUnitType = {
-  buCode?: string;
-  buId?: number;
-  buName?: string;
-};
-
-export type RoleType = {
-  clientId?: number;
-  roleId?: number;
-  roleName?: string;
-};
-
-export type SecuredControlType = {
-  controlName?: string;
-  controlNo?: number;
-  controlType?: string;
-  descr?: string;
-  id?: number;
-};
-
-export type LoginType = {
-  allBusinessUnits?: BusinessUnitType[];
-  allSecuredControls?: SecuredControlType[];
-  isLoggedIn: boolean;
-  role?: RoleType;
-  token: string | undefined;
-  userBusinessUnits?: BusinessUnitType[];
-  userDetails?: UserDetailsType;
-  userSecuredControls?: SecuredControlType[];
-};
+export const currentBusinessUnitsSelectorFn = (state: RootStateType) =>
+  state.login.currentBusinessUnits
