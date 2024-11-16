@@ -3,7 +3,19 @@
 - Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 - React router warning
 	- React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in 	early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+- Login mechanism
+	- Server
+		- Correct User class and all its initializations
+	- Client
+		- Create initial state based on UserClass at server
+		- Modify full life cycle
 - AccountOptions
+	- Nav bar options
+		- get all bu's associated with user: sorted: buId, buCode, buName
+		- get lastUsedBuId
+		- At client if lastUsedBuId not in list of BuIds select the first one
+		- At client if no buId's associated with user, then show error and don't login
+		- When a business unit is displayed show its code only. On mouse over show full bu name as tooltip
 	- Show FY
 	- FySelection modal
 	- Show Branch

@@ -76,7 +76,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                         minWidth='700px'
                         pageSize={11}
                         rowHeight={40}
-                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
+                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                         sqlId={SqlIdsMap.getAdminRolesSecuredControlsLink}
                         treeColumnIndex={0}
                     />

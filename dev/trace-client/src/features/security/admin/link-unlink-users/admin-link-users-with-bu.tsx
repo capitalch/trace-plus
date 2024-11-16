@@ -56,7 +56,7 @@ export function AdminLinkUsersWithBu() {
                         instance={businessUsersInstance}
                         minWidth='600px'
                         rowHeight={40}
-                        sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
+                        sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                         sqlId={SqlIdsMap.allBusinessUsers}
                     />
                 </div>
@@ -85,7 +85,7 @@ export function AdminLinkUsersWithBu() {
                         minWidth='700px'
                         pageSize={11}
                         rowHeight={40}
-                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo().clientId || 0 }}
+                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                         sqlId={SqlIdsMap.getBuUsersLink}
                         treeColumnIndex={0}
                     />

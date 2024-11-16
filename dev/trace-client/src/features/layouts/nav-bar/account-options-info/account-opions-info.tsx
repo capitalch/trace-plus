@@ -1,20 +1,24 @@
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconMinusCircle } from "../../../../controls/icons/icon-minus-circle";
 import { IconPlusCircle } from "../../../../controls/icons/icon-plus-circle";
-
 
 export function AccountOptionsInfo() {
     return (
         <div className="ml-8 flex items-center bg-gray-500 rounded-full px-2 py-2">
             {/* Business unit */}
-            <button className="flex h-8 w-60 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
-                {/* Badge section */}
-                <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
-                    BU
-                </div>
-                {/* Text section */}
-                <span className="ml-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">Business  unit 1</span>
-            </button>
+            <TooltipComponent content='This a large tooltip'>
+                <button className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
 
+                    {/* Badge section */}
+                    <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
+                        BU
+                    </div>
+                    {/* Text section */}
+                    <span className="ml-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">
+                        Business unit 1
+                    </span>
+                </button>
+            </TooltipComponent>
             {/* financial year */}
             <div className="ml-4 flex items-center">
                 {/* Plus */}

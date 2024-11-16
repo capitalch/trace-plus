@@ -40,7 +40,7 @@ export function AdminBusinessUsers() {
                 height="calc(100vh - 240px)"
                 instance={instance}
                 rowHeight={40}
-                sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME,clientId:Utils.getCurrentLoginInfo().clientId || 0 }}
+                sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME,clientId:Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allBusinessUsers}
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}

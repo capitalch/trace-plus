@@ -8,7 +8,7 @@ import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../utils/validators-hook";
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 import { Utils } from "../../../utils/utils";
-import { InitialLoginStateType, setUid } from "../../login/login-slice";
+import { LoginType, setUid } from "../../login/login-slice";
 import { AppDispatchType } from "../../../app/store/store";
 import { useDispatch } from "react-redux";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants";
@@ -17,15 +17,15 @@ import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
 export function ChangeUid() {
     const { checkNoSpaceOrSpecialChar } = useValidators();
     const dispatch: AppDispatchType = useDispatch()
-    const loginInfo: InitialLoginStateType = Utils.getCurrentLoginInfo()
-    const { clearErrors, handleSubmit, register, getValues, setError, trigger, formState: { errors }, } = useForm<FormDataType>({
+    const loginInfo: LoginType = Utils.getCurrentLoginInfo()
+    const { clearErrors, handleSubmit, register, getValues, setError, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
     });
 
     const registerCurrentUid = register("currentUid", {
         required: Messages.errRequired,
-        value: loginInfo.uid
+        value: loginInfo?.userDetails?.uid
     });
 
     const registerUid = register("uid", {
@@ -85,9 +85,9 @@ export function ChangeUid() {
         try {
             const dataWithId = {
                 ...data,
-                id: loginInfo.id,
-                email: loginInfo.email,
-                userName: loginInfo.userName
+                id: loginInfo?.userDetails?.id,
+                email: loginInfo?.userDetails?.userEmail,
+                userName: loginInfo?.userDetails?.userName
             }
             const q: any = GraphQLQueriesMap.changeUid(dataWithId)
             const qName: string = GraphQLQueriesMap.changeUid.name
@@ -118,7 +118,7 @@ export function ChangeUid() {
 
     function checkNotSameAsCurrentUid(input: string) {
         let error = undefined
-        if (input === loginInfo.uid) {
+        if (input === loginInfo?.userDetails?.uid) {
             error = Messages.errCurrentAndNewUidCannotBeSame
         }
         return (error)
@@ -147,8 +147,8 @@ export function ChangeUid() {
                 GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
                     sqlId: SqlIdsMap.getUserIdOnClientIdUid,
                     sqlArgs: {
-                        clientId: Utils.getCurrentLoginInfo().clientId,
-                        id: Utils.getCurrentLoginInfo().id,
+                        clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId,
+                        id: Utils.getCurrentLoginInfo()?.userDetails?.id,
                         uid: uid,
                     },
                 }),

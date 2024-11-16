@@ -114,13 +114,13 @@ function encodeObj(obj: any) {
 export type ChangePwdType = {
   currentPwd: string
   pwd: string
-  id: string | undefined
+  id: string | number |undefined
 }
 
 export type ChangeUidType = {
   currentUid: string
   uid: string
-  id: string | undefined // id of userM
+  id: string | number | undefined // id of userM
 }
 
 export type GraphQLQueryArgsType = {

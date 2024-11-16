@@ -8,14 +8,14 @@ import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../utils/validators-hook";
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 import { Utils } from "../../../utils/utils";
-import { doLogout, InitialLoginStateType } from "../../login/login-slice";
+import { doLogout, LoginType } from "../../login/login-slice";
 import { AppDispatchType } from "../../../app/store/store";
 import { useDispatch } from "react-redux";
 
 export function ChangePassword() {
     const { checkPassword } = useValidators();
     const dispatch: AppDispatchType = useDispatch()
-    const loginInfo: InitialLoginStateType = Utils.getCurrentLoginInfo();
+    const loginInfo: LoginType = Utils.getCurrentLoginInfo();
     const { getValues, handleSubmit, register, formState: { errors }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError",
@@ -78,9 +78,9 @@ export function ChangePassword() {
         try {
             const dataWithId = {
                 ...data,
-                id: loginInfo.id,
-                email: loginInfo.email,
-                userName: loginInfo.userName,
+                id: loginInfo.userDetails?.id,
+                email: loginInfo.userDetails?.userEmail,
+                userName: loginInfo.userDetails?.userName,
             };
             const q: any = GraphQLQueriesMap.changePwd(dataWithId);
             const qName: string = GraphQLQueriesMap.changePwd.name;

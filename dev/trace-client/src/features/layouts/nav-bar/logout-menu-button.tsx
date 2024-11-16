@@ -3,7 +3,7 @@ import ClickAwayListener from "react-click-away-listener"
 import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDown, showNavBarDropDownFn } from "../layouts-slice";
 import { AppDispatchType, RootStateType, } from "../../../app/store/store";
-import { doLogout, InitialLoginStateType } from "../../login/login-slice";
+import { doLogout, LoginType } from "../../login/login-slice";
 import { ChangeUid } from "./change-uid";
 import { ChangePassword } from "./change-password";
 import { Utils } from "../../../utils/utils";
@@ -15,17 +15,16 @@ import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums";
 import { IconUser1 } from "../../../controls/icons/icon-user1";
 import { GlobalContext, GlobalContextType, resetGlobalContext } from "../../../app/global-context";
 import { useContext } from "react";
-// import { GlobalContext } from "../../../App";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const context: GlobalContextType = useContext(GlobalContext);
     const dispatch: AppDispatchType = useDispatch()
     const toShowNavBarDropDownSelector: boolean = useSelector(showNavBarDropDownFn)
     const reduxState: RootStateType = Utils.getReduxState()
-    const userType: string | undefined = reduxState.login.userType
+    const userType: string | undefined = reduxState.login.userDetails?.userType
     const isNotSuperAdmin = !(userType === UserTypesEnum.SuperAdmin)
-    const loginInfo: InitialLoginStateType = Utils.getCurrentLoginInfo()
-    const email: string | undefined = loginInfo.email
+    const loginInfo: LoginType = Utils.getCurrentLoginInfo()
+    const email: string | undefined = loginInfo.userDetails?.userEmail
     return (
         <ClickAwayListener onClickAway={handleOnClickAway} >
             <div>

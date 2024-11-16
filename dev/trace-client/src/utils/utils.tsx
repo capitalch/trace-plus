@@ -5,7 +5,8 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
-import { InitialLoginStateType } from "../features/login/login-slice"
+import { LoginType } from "../features/login/login-slice"
+// import { InitialLoginStateType } from "../features/login/login-slice"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
@@ -339,7 +340,7 @@ type ShowModalDialogMessageArgsType = {
 
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
-    getCurrentLoginInfo: () => InitialLoginStateType
+    getCurrentLoginInfo: () => LoginType
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined

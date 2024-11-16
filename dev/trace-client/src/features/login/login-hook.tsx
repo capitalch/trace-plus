@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-import { doLogin } from "./login-slice"
+import { doLogin, LoginType } from "./login-slice"
 import { Utils } from "../../utils/utils"
 import { ForgotPassword } from "./forgot-password"
 import { UserTypesEnum } from "../../utils/global-types-interfaces-enums"
 
-function useLogin(setValue:any) {
+function useLogin(setValue: any) {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
 
@@ -23,13 +23,13 @@ function useLogin(setValue:any) {
 
 
     function handleTestSignIn(userType: any) {
-        if(userType===UserTypesEnum.SuperAdmin){
-            setValue('username','superAdmin')
+        if (userType === UserTypesEnum.SuperAdmin) {
+            setValue('username', 'superAdmin')
             setValue('password', 'superadmin@123')
-        } else if(userType===UserTypesEnum.Admin){
-            setValue('username','capital')
+        } else if (userType === UserTypesEnum.Admin) {
+            setValue('username', 'capital')
             setValue('password', 'su$hant123')
-        } else if(userType===UserTypesEnum.BusinessUser){
+        } else if (userType === UserTypesEnum.BusinessUser) {
 
         }
     }
@@ -51,27 +51,17 @@ function useLogin(setValue:any) {
                 },
             })
             const accessToken: string = ret?.data?.accessToken
-            const payloadData: any = ret?.data?.payload
+            const payloadData: LoginType = ret?.data?.payload
             if (accessToken) {
                 dispatch(doLogin({
+                    allBusinessUnits: payloadData.allBusinessUnits,
+                    allSecuredControls: payloadData.allSecuredControls,
                     isLoggedIn: true,
-                    businessUnits: payloadData?.businessUnits,
-                    clientCode: payloadData?.clientCode,
-                    clientId: payloadData?.clientId,
-                    clientName: payloadData?.clientName,
-                    email: payloadData?.email,
-                    id:payloadData?.id,
-                    isClentActive: payloadData?.isClentActive,
-                    isUserActive: payloadData?.isUserActive,
-                    lastUsedBranchId: payloadData?.lastUsedBrandId,
-                    lastUsedBuId: payloadData?.lastUsedBuId,
-                    mobileNo: payloadData?.mobileNo,
-                    roleId: payloadData?.roleId,
-                    roleName: payloadData?.roleName,
+                    role: payloadData.role,
                     token: accessToken,
-                    uid: payloadData?.uid,
-                    userName: payloadData?.userName,
-                    userType: payloadData?.userType
+                    userBusinessUnits: payloadData.userBusinessUnits,
+                    userDetails: payloadData.userDetails,
+                    userSecuredControls: payloadData.userSecuredControls
                 }))
                 navigate('/', { replace: true })
             }
@@ -79,24 +69,7 @@ function useLogin(setValue:any) {
             Utils.showErrorMessage(error)
         }
     }
-    
-    return ({ handleForgotPassword,/* handleOnChangeClient,*/ handleTestSignIn, onSubmit })
+
+    return ({ handleForgotPassword, handleTestSignIn, onSubmit })
 }
 export { useLogin }
-
-export type UserLoginPayloadType = {
-    businessUnits: string[]
-    clientCode: string
-    clientId: string
-    clientName: string
-    email: string
-    id: string
-    isClentActive: boolean
-    isUserActive: boolean
-    lastUsedBrandId: string
-    lastUsedBuId: string
-    mobileNo: string
-    name: string
-    uid: string
-    userType: string
-}

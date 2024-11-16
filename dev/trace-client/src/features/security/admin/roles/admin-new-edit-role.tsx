@@ -105,7 +105,7 @@ export function AdminNewEditRole({
             tableName: "RoleM",
             xData: {
                 ...data,
-                clientId: Utils.getCurrentLoginInfo().clientId || 0
+                clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0
             },
         };
         try {
@@ -138,7 +138,7 @@ export function AdminNewEditRole({
                 GLOBAL_SECURITY_DATABASE_NAME,
                 {
                     sqlId: SqlIdsMap.getAdminRoleOnRoleNameClientId,
-                    sqlArgs: { roleName: value?.roleName, clientId:Utils.getCurrentLoginInfo().clientId }
+                    sqlArgs: { roleName: value?.roleName, clientId:Utils.getCurrentLoginInfo()?.userDetails?.clientId }
                 }),
             GraphQLQueriesMap.genericQuery.name);
         if (res?.data?.genericQuery[0]) {

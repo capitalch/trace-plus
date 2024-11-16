@@ -416,8 +416,8 @@ class SqlSecurity:
         with "uidOrEmail" as (values(%(uidOrEmail)s)), "clientId" as (values(%(clientId)s::int))
             --with "uidOrEmail" as (values('capitalch@gmail.com')), "clientId" as (values(51))
             , cte1 as ( -- user details
-                select u.id, "uid", "userEmail", "hash", "userName"
-                    , "branchIds", "lastUsedBuId", "lastUsedBranchId", u."clientId", "mobileNo", u."isActive" as "isUserActive", u."roleId"
+                select u.id, "uid", "userEmail", "hash", "userName", u."roleId" as "roleId"
+                    , "branchIds", "lastUsedBuId", "lastUsedBranchId", u."clientId", "mobileNo", u."isActive" as "isUserActive"
 					, c."clientCode", c."clientName", c."isActive" as "isClientActive", c."isExternalDb", c."dbName", c."dbParams"
                 , CASE when ("roleId" is null) THEN 'A' ELSE 'B' END as "userType"	
                 from "UserM" u
@@ -434,17 +434,42 @@ class SqlSecurity:
                             on b.id = x."buId"
                         join "UserM" u
                             on u."id" = x."userId"
-                where b."isActive" and (("uid" = (table "uidOrEmail") or ("userEmail" = (table "uidOrEmail")))))
+                where b."isActive" 
+					and (
+						("uid" = (table "uidOrEmail") 
+							or ("userEmail" = (table "uidOrEmail")))))
             , cte3 as ( -- role
                     select r.id as "roleId", r."roleName", r."clientId" 
                     from cte1 u
                         left join "RoleM" r
                             on r.id = u."roleId"
             )
+			, cte4 as ( -- Select all business units assoiated with clientId
+					select b.id as "buId", "buCode", "buName"
+						from "BuM" b
+							where "clientId" = (table "clientId")
+			)
+			, cte5 as ( -- all secured controls
+					select id, "controlName", "controlNo", "controlType", "descr"
+						from "SecuredControlM"
+			)
+			, cte6 as ( -- user Secured controls
+				select s.id, "controlName", "controlNo", "controlType", s."descr"
+					from "UserM" u
+						join "RoleM" r
+							on r.id = u."roleId"
+						join "RoleSecuredControlX" x
+							on r.id = x."roleId"
+						join "SecuredControlM" s
+							on s.id = x."securedControlId"
+			)
             select json_build_object(
                 'userDetails',(select row_to_json(a) from cte1 a)
-                , 'businessUnits', (select json_agg(row_to_json(b)) from cte2 b)
+                , 'userBusinessUnits', (select json_agg(row_to_json(b)) from cte2 b)
+				, 'allBusinessUnits', (select json_agg(row_to_json(d))from cte4 d)
                 , 'role', (select row_to_json(c) from cte3 c)
+				, 'allSecuredControls', (select json_agg(row_to_json(e)) from cte5 e)
+				, 'userSecuredControls', (select json_agg(row_to_json(f)) from cte6 f)
             ) as "jsonResult"
     """
 

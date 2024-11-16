@@ -17,7 +17,7 @@ export function useAdminDashBoard() {
         sqlId: SqlIdsMap.adminDashBoard,
         sqlArgs: {
             dbName: GLOBAL_SECURITY_DATABASE_NAME,
-            clientId: Utils.getCurrentLoginInfo().clientId
+            clientId: Utils.getCurrentLoginInfo().userDetails?.clientId
         }
     }
 

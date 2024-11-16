@@ -165,7 +165,7 @@ export function AdminNewEditBusinessUser({
     );
 
     async function getRoleOptions(setOptions: (args: any) => void) {
-        const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getAllRoleNamesOnClientIdWithBuiltinRoles, sqlArgs: { clientId: Utils.getCurrentLoginInfo().clientId } });
+        const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getAllRoleNamesOnClientIdWithBuiltinRoles, sqlArgs: { clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId } });
         const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
         setOptions(res.data.genericQuery);
     }
@@ -187,7 +187,7 @@ export function AdminNewEditBusinessUser({
             tableName: "UserM",
             xData: {
                 ...data,
-                clientId: Utils.getCurrentLoginInfo().clientId
+                clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId
             },
         };
         try {
@@ -229,7 +229,7 @@ export function AdminNewEditBusinessUser({
                     sqlId: SqlIdsMap.getUserIdOnClientIdEmail,
                     sqlArgs: {
                         id: id || null,
-                        clientId: Utils.getCurrentLoginInfo().clientId,
+                        clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId,
                         userEmail: userEmail,
                     },
                 }),

@@ -133,7 +133,7 @@ export function AdminNewEditBusinessUnit({
             tableName: "BuM",
             xData: {
                 ...data,
-                clientId: Utils.getCurrentLoginInfo().clientId
+                clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId
             }
         };
         try {
@@ -166,7 +166,7 @@ export function AdminNewEditBusinessUnit({
                 GLOBAL_SECURITY_DATABASE_NAME,
                 {
                     sqlId: SqlIdsMap.getBuOnBuCodeAndClientId,
-                    sqlArgs: { buCode: value?.buCode, clientId: Utils.getCurrentLoginInfo().clientId }
+                    sqlArgs: { buCode: value?.buCode, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId }
                 }),
             GraphQLQueriesMap.genericQuery.name);
         if (res?.data?.genericQuery[0]) {

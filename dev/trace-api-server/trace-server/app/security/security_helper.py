@@ -2,7 +2,12 @@ from fastapi import status, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import datetime, timedelta, timezone
-from app.dependencies import AppHttpException, UserClass
+from app.dependencies import (
+    AppHttpException,
+    UserClass,
+    UserDetails,
+    SuperAdminUserClass,
+)
 from app.messages import Messages
 from app.config import Config
 from app.security.security_utils import (
@@ -163,14 +168,15 @@ async def login_helper(clientId, username, password):
 # Helper support functions
 
 
-def get_bundle(user: UserClass):
-    accessToken = create_access_token({"userName": user.userName})
+def get_bundle(user: UserClass | SuperAdminUserClass):
+    accessToken = create_access_token(
+        {"userName": user.userDetails.userName}
+    )
     return {"accessToken": accessToken, "payload": user}
 
 
 async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
     bundle = None
-    # Do modifications for clientId
     details: list = await exec_sql(
         sql=SqlSecurity.get_user_details,
         sqlArgs={"uidOrEmail": uidOrEmail, "clientId": clientId},
@@ -179,8 +185,6 @@ async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
     if details:
         jsonResultDict = details[0]["jsonResult"]
         userDetails = jsonResultDict.get("userDetails")
-        businessUnits = jsonResultDict.get("businessUnits")
-        role = jsonResultDict.get("role")
         if userDetails is None:
             raise AppHttpException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -189,8 +193,8 @@ async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
             )
 
         userType = userDetails.get("userType")
-        isActive = userDetails.get("isUserActive")
-        if not isActive:
+        isUserActive = userDetails.get("isUserActive")
+        if not isUserActive:
             raise AppHttpException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 error_code="e1008",
@@ -206,26 +210,14 @@ async def get_other_user_bundle(clientId, uidOrEmail: str, password: str):
             )
 
         user = UserClass(
-            userType=userType,
-            businessUnits=businessUnits,
-            clientCode=userDetails["clientCode"],
-            clientName=userDetails["clientName"],
-            clientId=userDetails["clientId"],
-            dbName=userDetails["dbName"],
-            dbParams=userDetails["dbParams"],
-            email=userDetails["userEmail"],
-            isClientActive=userDetails["isClientActive"],
-            isUserActive=userDetails["isUserActive"],
-            isExternalDb=userDetails["isExternalDb"],
-            lastUsedBranchId=userDetails["lastUsedBranchId"],
-            lastUsedBuId=userDetails["lastUsedBuId"],
-            mobileNo=userDetails["mobileNo"],
-            role=role,
-            roleId=userDetails["roleId"],
-            uid=userDetails["uid"],
-            userName=userDetails["userName"],
-            id=userDetails["id"],
+            allBusinessUnits=jsonResultDict.get("allBusinessUnits"),
+            allSecuredControls=jsonResultDict.get("allSecuredControls"),
+            role=jsonResultDict.get("role"),
+            userBusinessUnits=jsonResultDict.get("userBusinessUnits"),
+            userDetails=userDetails,
+            userSecuredControls=jsonResultDict.get("userSecuredControls"),
         )
+
         bundle = get_bundle(user)
     return bundle
 
@@ -248,13 +240,15 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
     if (uidOrEmail == superAdminUserName) or (uidOrEmail == superAdminEmail):
         isValidSuperAdmin = verify_password(password=password, hash=superAdminHash)
         if isValidSuperAdmin:
-            user = UserClass(
-                userName=superAdminUserName,
-                email=superAdminEmail,
-                mobileNo=superAdminMobile,
-                userType="S",
+            superAdminUser = SuperAdminUserClass(
+                userDetails={
+                    "userName": superAdminUserName,
+                    "userEmail": superAdminEmail,
+                    "mobileNo": superAdminMobile,
+                    "userType": "S",
+                }
             )
-            bundle = get_bundle(user)
+            bundle = get_bundle(superAdminUser)
     return bundle
 
 
@@ -271,3 +265,26 @@ def get_super_admin_details_from_config():
             error_code="e1004",
             message=Messages.err_internal_server_error,
         )
+
+
+# user = UserClass(
+#             businessUnits=businessUnits,
+#             clientCode=userDetails["clientCode"],
+#             clientId=userDetails["clientId"],
+#             clientName=userDetails["clientName"],
+#             dbName=userDetails["dbName"],
+#             dbParams=userDetails["dbParams"],
+#             email=userDetails["userEmail"],
+#             id=userDetails["id"],
+#             isClientActive=userDetails["isClientActive"],
+#             isExternalDb=userDetails["isExternalDb"],
+#             isUserActive=userDetails["isUserActive"],
+#             lastUsedBranchId=userDetails["lastUsedBranchId"],
+#             lastUsedBuId=userDetails["lastUsedBuId"],
+#             mobileNo=userDetails["mobileNo"],
+#             role=role,
+#             roleId=userDetails["roleId"],
+#             uid=userDetails["uid"],
+#             userName=userDetails["userName"],
+#             userType=userType,
+#         )
