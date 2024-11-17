@@ -1,8 +1,5 @@
 class SqlSecurity:
 
-    # dml_create_schema = """
-    #     CREATE SCHEMA IF NOT EXISTS %(schemaName)s
-    # """
     does_database_exist = """
         with "dbName" as (values(%(dbName)s::text))
         --with "dbName" as (values('client-capital'))
@@ -417,7 +414,7 @@ class SqlSecurity:
             --with "uidOrEmail" as (values('capitalch@gmail.com')), "clientId" as (values(51))
             , cte1 as ( -- user details
                 select u.id, "uid", "userEmail", "hash", "userName", u."roleId" as "roleId"
-                    , "branchIds", "lastUsedBuId", "lastUsedBranchId", u."clientId", "mobileNo", u."isActive" as "isUserActive"
+                    , "branchIds", "lastUsedBuId", "lastUsedBranchId", "lastUsedFinYearId", u."clientId", "mobileNo", u."isActive" as "isUserActive"
 					, c."clientCode", c."clientName", c."isActive" as "isClientActive", c."isExternalDb", c."dbName", c."dbParams"
                 , CASE when ("roleId" is null) THEN 'A' ELSE 'B' END as "userType"	
                 from "UserM" u
@@ -435,9 +432,9 @@ class SqlSecurity:
                         join "UserM" u
                             on u."id" = x."userId"
                 where b."isActive" 
-					and (
-						("uid" = (table "uidOrEmail") 
-							or ("userEmail" = (table "uidOrEmail")))))
+					and (("uid" = (table "uidOrEmail") 
+							or ("userEmail" = (table "uidOrEmail"))))
+				order by "buName")
             , cte3 as ( -- role
                     select r.id as "roleId", r."roleName", r."clientId" 
                     from cte1 u
@@ -448,10 +445,12 @@ class SqlSecurity:
 					select b.id as "buId", "buCode", "buName"
 						from "BuM" b
 							where "clientId" = (table "clientId")
+                        order by "buName"
 			)
 			, cte5 as ( -- all secured controls
 					select id, "controlName", "controlNo", "controlType", "descr"
 						from "SecuredControlM"
+                            order by "controlType", "controlName"
 			)
 			, cte6 as ( -- user Secured controls
 				select s.id, "controlName", "controlNo", "controlType", s."descr"
@@ -462,6 +461,10 @@ class SqlSecurity:
 							on r.id = x."roleId"
 						join "SecuredControlM" s
 							on s.id = x."securedControlId"
+                where (
+						(("uid" = (table "uidOrEmail")) or ("userEmail" = (table "uidOrEmail")))
+							and u."clientId" = (table "clientId"))
+                    order by "controlType", "controlName"
 			)
             select json_build_object(
                 'userDetails',(select row_to_json(a) from cte1 a)

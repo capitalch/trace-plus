@@ -16,6 +16,7 @@ const Messages = {
   errEmailExistsForClient: 'This email already exists for the current client',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
+  errFailFetchingDataFromAccounts:'Failed is fetching data from accounts database. Hence logging out',
   errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidClientName: 'Invalid client name',
   errInvalidEmail: 'Invalid email',
@@ -41,6 +42,7 @@ const Messages = {
     'Business unit code can be between 4 characters and 50 characters',
   messBuName:
     'Business unit name can be between 6 characters and 150 characters',
+  messBuSuccessfullySelected: 'The business unit was successfully selected',
   messBusinessUsersDragFrom: 'Available business users (Drag a row)',
   messClientCode:
     'Client code should be between 6 characters and 30 characters',

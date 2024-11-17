@@ -52,11 +52,20 @@ function decodeExtDbParams(val: string) {
   return q
 }
 
+// function genericQuery1(dbName: string, val: GraphQLQueryArgsType) {
+//   const value = encodeObj(val)
+//   return gql`
+//         query ${dbName} {
+//             genericQuery(value:"${value}")
+//         }
+//     `
+// }
+
 function genericQuery(dbName: string, val: GraphQLQueryArgsType) {
   const value = encodeObj(val)
   return gql`
-        query ${dbName} {
-            genericQuery(value:"${value}")
+        query GenericQuery {
+            genericQuery(dbName:"${dbName}", value:"${value}")
         }
     `
 }
@@ -124,6 +133,7 @@ export type ChangeUidType = {
 }
 
 export type GraphQLQueryArgsType = {
+  buCode?: string
   dbParams?: { [key: string]: string | number }
   [key: string]: any
   sqlId: string

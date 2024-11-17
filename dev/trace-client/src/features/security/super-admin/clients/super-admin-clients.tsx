@@ -8,12 +8,10 @@ import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditClient } from "./super-admin-new-edit-client";
 import { SuperAdminNewEditClientExtDatabase } from "./super-admin-new-edit-client-ext-database";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
-import _ from "lodash";
 import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-// import { GlobalContext } from "../../../../App";
 
 export function SuperAdminClients() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -37,21 +35,21 @@ export function SuperAdminClients() {
         </CompContentContainer>
     )
 
-    async function decodeExtDbParams(encodedDbParams: string) {
-        const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams)
-        const qName = GraphQLQueriesMap.decodeExtDbParams.name
-        try {
-            const res: any = await Utils.queryGraphQL(q, qName)
-            const dbParamsString = res?.data?.[qName]
-            const dbParams: object = JSON.parse(dbParamsString)
-            if (_.isEmpty(dbParams)) {
-                throw new Error(Messages.errExtDbParamsFormatError)
-            }
-            return (dbParams)
-        } catch (e: any) {
-            Utils.showErrorMessage(e)
-        }
-    }
+    // async function decodeExtDbParams(encodedDbParams: string) {
+    //     const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams)
+    //     const qName = GraphQLQueriesMap.decodeExtDbParams.name
+    //     try {
+    //         const res: any = await Utils.queryGraphQL(q, qName)
+    //         const dbParamsString = res?.data?.[qName]
+    //         const dbParams: object = JSON.parse(dbParamsString)
+    //         if (_.isEmpty(dbParams)) {
+    //             throw new Error(Messages.errExtDbParamsFormatError)
+    //         }
+    //         return (dbParams)
+    //     } catch (e: any) {
+    //         Utils.showErrorMessage(e)
+    //     }
+    // }
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
@@ -111,7 +109,7 @@ export function SuperAdminClients() {
 
     async function handleOnEdit(props: any) {
         if (props.isExternalDb) {
-            const dbParams: object | undefined = await decodeExtDbParams(props?.dbParams)
+            const dbParams: object | undefined = await Utils.decodeExtDbParams(props?.dbParams)
             Utils.showHideModalDialogA({
                 title: 'Edit client with external database',
                 isOpen: true,

@@ -1,4 +1,5 @@
 export const SqlIdsMap = {
+  //Security
   allAdminRoles: 'get_all_admin_roles_onClientId',
   allAdminUsers: 'get_all_admin_users',
   allBusinessUsers: 'get_all_business_users_on_clientId',
@@ -26,4 +27,7 @@ export const SqlIdsMap = {
   insertSecuredControlsFromBuiltinRole:'insert_securedControls_from_builtin_role',
   superAdminDashBoard: 'get_super_admin_dashboard',
   testConnection: 'test_connection',
+
+  // accounts
+  getSettingsFinYearsBranches: 'get_settings_fin_years_branches',
 }

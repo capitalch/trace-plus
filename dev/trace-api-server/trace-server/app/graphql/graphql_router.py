@@ -36,7 +36,7 @@ async def create_bu(_, info, value=""):
 
 
 @query.field("genericQuery")
-async def generic_query(_, info, value=""):
+async def generic_query(_, info, dbName="", value=""):
     return await generic_query_helper(info, value)
 
 

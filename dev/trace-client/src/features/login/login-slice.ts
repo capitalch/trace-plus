@@ -89,7 +89,7 @@ export type UserDetailsType = {
   clientId?: number
   clientName?: string
   dbName?: string
-  dbParams?: Record<string, string | number>
+  dbParams?: string
   hash?: string
   id?: number
   isUserActive?: boolean
@@ -97,6 +97,7 @@ export type UserDetailsType = {
   isExternalDb?: boolean
   lastUsedBranchId?: number
   lastUsedBuId?: number
+  lastUsedFinYearId?: number
   mobileNo?: string
   uid?: string
   userEmail?: string
@@ -104,10 +105,30 @@ export type UserDetailsType = {
   userType?: 'S' | 'A' | 'B' | undefined
 }
 
+export type AccSettingType = {
+  settingsId: number
+  key: string
+  textValue: string
+  jData: object
+  intValue: number
+}
+
+export type BranchType = {
+  branchId: number
+  branchName: string
+  branchCode: string
+}
+
 export type BusinessUnitType = {
   buCode?: string
   buId?: number
   buName?: string
+}
+
+export type FinYearType = {
+  finYearId: number
+  startDate: Date
+  endDate: Date
 }
 
 export type RoleType = {
@@ -125,10 +146,15 @@ export type SecuredControlType = {
 }
 
 export type LoginType = {
+  accSettings?: AccSettingType[]
+  allBranches?: BranchType[]
   allBusinessUnits?: BusinessUnitType[]
+  allFinYears?: FinYearType[]
   allSecuredControls?: SecuredControlType[]
+  currentBranch?: BranchType
   currentBusinessUnit?: BusinessUnitType
   currentBusinessUnits?: BusinessUnitType[]
+  currentFinYear?: FinYearType
   isLoggedIn: boolean
   role?: RoleType
   token: string | undefined

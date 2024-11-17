@@ -1,5 +1,5 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from app.graphql.db.sql_main import SqlMain
+from app.graphql.db.sql_accounts import SqlAccounts
 from app.graphql.db.sql_security import SqlSecurity
 from app.config import Config
 from cryptography.fernet import Fernet
@@ -26,7 +26,7 @@ def encrypt(input: str):
     return (encoded_text.decode())
     
 def getSqlQueryObject(dbName: str):
-    queryObject = SqlMain
+    queryObject = SqlAccounts
     if (dbName == 'traceAuth'):
         queryObject = SqlSecurity
     return (queryObject)

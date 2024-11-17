@@ -1,17 +1,60 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { AppDispatchType } from "../../app/store/store"
 import { useNavigate } from "react-router-dom"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-import { doLogin, LoginType } from "./login-slice"
+import { doLogin, doLogout, isLoggedInSelectorFn, LoginType, UserDetailsType } from "./login-slice"
 import { Utils } from "../../utils/utils"
 import { ForgotPassword } from "./forgot-password"
 import { UserTypesEnum } from "../../utils/global-types-interfaces-enums"
+import { useEffect } from "react"
+import { GraphQLQueriesMap } from "../../app/graphql/maps/graphql-queries-map"
+import { SqlIdsMap } from "../../app/graphql/maps/sql-ids-map"
+import { Messages } from "../../utils/messages"
+import { GLOBAL_SECURITY_DATABASE_NAME } from "../../app/global-constants"
 
 function useLogin(setValue: any) {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
+
+    const isLoggedInSelector = useSelector(isLoggedInSelectorFn)
+
+    useEffect(() => {
+        const loginInfo: LoginType = Utils.getCurrentLoginInfo()
+        if (loginInfo.isLoggedIn) {
+            fetchAccSettings()
+        }
+    }, [isLoggedInSelector])
+
+    async function fetchAccSettings() { // fetches various settings and options from accounts database
+        const loginInfo: LoginType = Utils.getCurrentLoginInfo()
+        const userDetails: UserDetailsType = loginInfo.userDetails || {}
+        const dbName: string = userDetails.dbName || ''
+        const isExternalDb: boolean = userDetails.isExternalDb || false
+        const dbParams: string | undefined = userDetails?.dbParams
+        let dbParamsObject: any
+        if (isExternalDb && dbParams) {
+            const decodedDbParams = await Utils.decodeExtDbParams(dbParams)
+            dbParamsObject = JSON.parse(decodedDbParams)
+        }
+        try {
+            const q = GraphQLQueriesMap.genericQuery(dbName, {
+                // buCode: 'temp',// loginInfo.currentBusinessUnit?.buCode,
+                // dbParams: dbParamsObject,
+                sqlId: SqlIdsMap.getSettingsFinYearsBranches,
+                sqlArgs: {}
+                // , sqlArgs: { clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId }
+            });
+            const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
+            console.log(res);
+        } catch (e: any) {
+            console.log(e?.message)
+            Utils.showFailureAlertMessage({title: Messages.messFailure,message:Messages.errFailFetchingDataFromAccounts})
+            dispatch(doLogout())
+        }
+        // setOptions(res.data.genericQuery);
+    }
 
     function handleForgotPassword() {
         Utils.showHideModalDialogA({
@@ -21,7 +64,6 @@ function useLogin(setValue: any) {
         })
     }
 
-
     function handleTestSignIn(userType: any) {
         if (userType === UserTypesEnum.SuperAdmin) {
             setValue('username', 'superAdmin')
@@ -30,7 +72,7 @@ function useLogin(setValue: any) {
             setValue('username', 'capital')
             setValue('password', 'su$hant123')
         } else if (userType === UserTypesEnum.BusinessUser) {
-
+            console.log('')
         }
     }
 

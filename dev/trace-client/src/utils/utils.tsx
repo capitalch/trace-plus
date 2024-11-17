@@ -1,4 +1,5 @@
 import Swal from "sweetalert2"
+import _ from "lodash"
 import { RootStateType, store } from "../app/store/store"
 import { Messages } from "./messages"
 import { ReactElement } from "react"
@@ -6,10 +7,11 @@ import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
 import { LoginType } from "../features/login/login-slice"
-// import { InitialLoginStateType } from "../features/login/login-slice"
+import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
+    decodeExtDbParams: decodeExtDbParams,
     getCurrentLoginInfo: getCurrentLoginInfo,
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
@@ -57,6 +59,22 @@ function addUniqueKeysToJson(data: any) { // Created by AI
         return traverseAndAddKeys(item, parentKey);
     });
 
+}
+
+async function decodeExtDbParams(encodedDbParams: string) {
+    const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams)
+    const qName = GraphQLQueriesMap.decodeExtDbParams.name
+    try {
+        const res: any = await Utils.queryGraphQL(q, qName)
+        const dbParamsString = res?.data?.[qName]
+        const dbParams: object = JSON.parse(dbParamsString)
+        if (_.isEmpty(dbParams)) {
+            throw new Error(Messages.errExtDbParamsFormatError)
+        }
+        return (dbParams)
+    } catch (e: any) {
+        Utils.showErrorMessage(e)
+    }
 }
 
 function getCurrentLoginInfo() {
@@ -340,6 +358,7 @@ type ShowModalDialogMessageArgsType = {
 
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
+    decodeExtDbParams: (encodedDbParams: string) => any
     getCurrentLoginInfo: () => LoginType
     getHostUrl: () => string
     getReduxState: () => RootStateType

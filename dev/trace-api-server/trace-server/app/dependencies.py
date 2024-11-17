@@ -1,6 +1,4 @@
 from fastapi import HTTPException, status, Request
-
-
 # Placement of class before the imports resolve circular import problem
 class AppHttpException(HTTPException):
     def __init__(
@@ -11,14 +9,13 @@ class AppHttpException(HTTPException):
         self.status_code = status_code
         self.detail = detail  # detail is must
 
-
-from typing import Any
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-from app.messages import Messages
-from app.security.security_utils import validate_token
-from datetime import datetime
 import logging
+from datetime import datetime
+from app.security.security_utils import validate_token
+from app.messages import Messages
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from typing import Any
 
 
 async def app_http_exception_handler(request: Request, exc: AppHttpException):
@@ -113,6 +110,7 @@ class UserDetails:
         isExternalDb: bool,
         lastUsedBranchId: int,
         lastUsedBuId: int,
+        lastUsedFinYearId: int,
         mobileNo: str,
         roleId: int,
         uid: str,
@@ -133,6 +131,7 @@ class UserDetails:
         self.isExternalDb = isExternalDb
         self.lastUsedBranchId = lastUsedBranchId
         self.lastUsedBuId = lastUsedBuId
+        self.lastUsedFinYearId = lastUsedFinYearId
         self.mobileNo = mobileNo
         self.roleId = roleId
         self.uid = uid
@@ -151,86 +150,18 @@ class UserClass:
         userDetails: dict[str, int | str | bool | list[int] | dict[str, str | int]],
         userSecuredControls: list[dict[str, int | str]],
     ):
-        self.userDetails = UserDetails(**userDetails)
-        self.userBusinessUnits = userBusinessUnits # [BusinessUnit(**bu) for bu in userBusinessUnits]
-        self.allBusinessUnits = allBusinessUnits # [BusinessUnit(**bu) for bu in allBusinessUnits]
+        self.allBusinessUnits = allBusinessUnits
+        self.allSecuredControls = allSecuredControls
         self.role = Role(**role)
-        self.allSecuredControls = allSecuredControls # [
-            #SecuredControl(**ctrl) for ctrl in allSecuredControls
-        #]
-        self.userSecuredControls = userSecuredControls #[
-            #SecuredControl(**ctrl) for ctrl in userSecuredControls
-        #]
+        self.userBusinessUnits = userBusinessUnits
+        self.userDetails = UserDetails(**userDetails)
+        self.userSecuredControls = userSecuredControls
 
 class SuperAdminUserClass:
-    def __init__(self, userDetails:dict[str:str]):
+    def __init__(self, userDetails: dict[str:str]):
         self.userDetails = {
             "userName": userDetails.get('userName'),
             "userEmail": userDetails.get('userEmail'),
-            "mobileNo":userDetails.get('mobileNo'),
+            "mobileNo": userDetails.get('mobileNo'),
             "userType": userDetails.get('userType')
         }
-
-# class UserClass:
-#     def __init__(
-#         self,
-#         businessUnits=None,
-#         clientCode=None,
-#         clientId=None,
-#         clientName=None,
-#         dbName=None,
-#         dbParams=None,
-#         email=None,
-#         id=None,
-#         isClientActive=False,
-#         isExternalDb=False,
-#         isUserActive=False,
-#         lastUsedBranchId=None,
-#         lastUsedBuId=None,
-#         mobileNo=None,
-#         role=None,
-#         roleId=None,
-#         uid=None,
-#         userName=None,
-#         userType=None
-#     ):
-
-#         self.businessUnits = businessUnits
-#         self.clientCode = clientCode
-#         self.clientId = clientId
-#         self.clientName = clientName
-#         self.dbName = dbName
-#         self.dbParams = dbParams
-#         self.email = email
-#         self.id = id
-#         self.isClientActive = isClientActive
-#         self.isExternalDb = isExternalDb
-#         self.isUserActive = isUserActive
-#         self.lastUsedBranchId = lastUsedBranchId
-#         self.lastUsedBuId = lastUsedBuId
-#         self.mobileNo = mobileNo
-#         self.role = role
-#         self.roleId = roleId
-#         self.uid = uid
-#         self.userName = userName
-#         self.userType = userType
-
-
-#     businessUnits: Any
-#     clientCode: str
-#     clientId: int
-#     clientName: str
-#     dbName: str
-#     dbParams: dict
-#     email: str
-#     id: int
-#     isExternalDb: bool
-#     isUserActive: bool
-#     lastUsedBranchId: int
-#     lastUsedBuId: int
-#     mobileNo: str
-#     role: dict
-#     roleId: int
-#     uid: str
-#     userName: str
-#     userType: str
