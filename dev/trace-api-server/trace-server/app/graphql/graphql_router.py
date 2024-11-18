@@ -7,6 +7,7 @@ from ariadne import (
 
 # from fastapi import Request
 from ariadne.asgi import GraphQL
+
 # from fastapi.middleware.cors import CORSMiddleware
 from app.graphql.graphql_helper import (
     change_pwd_helper,
@@ -37,12 +38,12 @@ async def create_bu(_, info, value=""):
 
 @query.field("genericQuery")
 async def generic_query(_, info, dbName="", value=""):
-    return await generic_query_helper(info, value)
+    return await generic_query_helper(info, dbName, value)
 
 
 @mutation.field("genericUpdate")
-async def generic_update(_, info, value=""):
-    return await generic_update_helper(info, value)
+async def generic_update(_, info, dbName="", value=""):
+    return await generic_update_helper(info,dbName, value)
 
 
 @mutation.field("changePwd")
@@ -53,6 +54,7 @@ async def change_pwd(_, info, value=""):
 @mutation.field("changeUid")
 async def change_uid(_, info, value):
     return await change_uid_helper(info, value)
+
 
 @mutation.field("importSecuredControls")
 async def import_secured_controls(_, info, value):

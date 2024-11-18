@@ -2,7 +2,7 @@ type Mutation {
     changePwd(value: Generic): Generic
     changeUid(value: Generic): Generic
     createBu(value: Generic): Generic
-    genericUpdate(value: Generic): Generic
+    genericUpdate(dbName: String, value: Generic): Generic
     importSecuredControls(value: Generic): Generic
     updateClient(value: Generic): Generic
     updateUser(value: Generic): Generic

@@ -21,8 +21,9 @@ function useLogin(setValue: any) {
     const isLoggedInSelector = useSelector(isLoggedInSelectorFn)
 
     useEffect(() => {
+        // perhaps this is to be decided when bu is finally selected
         const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-        if (loginInfo.isLoggedIn) {
+        if (loginInfo.isLoggedIn && (loginInfo?.userDetails?.userType !== UserTypesEnum.SuperAdmin)) {
             fetchAccSettings()
         }
     }, [isLoggedInSelector])
@@ -38,10 +39,15 @@ function useLogin(setValue: any) {
             const decodedDbParams = await Utils.decodeExtDbParams(dbParams)
             dbParamsObject = JSON.parse(decodedDbParams)
         }
+        // if buCodes are not there then give message and exit
+        // if((!loginInfo.userBusinessUnits) || (loginInfo.userBusinessUnits?.length === 0))
+        if(!loginInfo?.currentBusinessUnit?.buCode){
+            Utils.showFailureAlertMessage({title:Messages.messFailure,message:Messages.messNoBusinessUnitsDefined})
+        }
         try {
             const q = GraphQLQueriesMap.genericQuery(dbName, {
-                // buCode: 'temp',// loginInfo.currentBusinessUnit?.buCode,
-                // dbParams: dbParamsObject,
+                buCode: loginInfo.currentBusinessUnit?.buCode,
+                dbParams: dbParamsObject,
                 sqlId: SqlIdsMap.getSettingsFinYearsBranches,
                 sqlArgs: {}
                 // , sqlArgs: { clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId }
@@ -50,7 +56,7 @@ function useLogin(setValue: any) {
             console.log(res);
         } catch (e: any) {
             console.log(e?.message)
-            Utils.showFailureAlertMessage({title: Messages.messFailure,message:Messages.errFailFetchingDataFromAccounts})
+            Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errFailFetchingDataFromAccounts })
             dispatch(doLogout())
         }
         // setOptions(res.data.genericQuery);

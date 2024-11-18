@@ -70,11 +70,20 @@ function genericQuery(dbName: string, val: GraphQLQueryArgsType) {
     `
 }
 
+// function genericUpdate(dbName: string, val: GraphQLUpdateArgsType) {
+//   const value = encodeObj(val) // dbName below is transferred as operationName
+//   return gql`
+//         mutation ${dbName} { 
+//             genericUpdate(value:"${value}")
+//         }
+//     `
+// }
+
 function genericUpdate(dbName: string, val: GraphQLUpdateArgsType) {
   const value = encodeObj(val) // dbName below is transferred as operationName
   return gql`
-        mutation ${dbName} { 
-            genericUpdate(value:"${value}")
+        mutation GenericUpdate { 
+            genericUpdate(dbName:"${dbName}", value:"${value}")
         }
     `
 }

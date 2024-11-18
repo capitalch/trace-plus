@@ -140,19 +140,19 @@ async def decode_ext_db_params_helper(info, value):
     return decodedDbParams
 
 
-async def generic_update_helper(info, value: str):
+async def generic_update_helper(info, dbName: str, value: str):
     data = {}
     try:
         valueString = unquote(value)
         valueDict = json.loads(valueString)
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
-        request = info.context.get("request", None)
-        requestJson = await request.json()
-        operationName = requestJson.get("operationName", None)
+        # request = info.context.get("request", None)
+        # requestJson = await request.json()
+        # operationName = requestJson.get("operationName", None)
         sqlObj = json.loads(valueString)
         data = await exec_sql_object(
-            dbName=operationName, db_params=dbParams, schema=schema, sqlObject=sqlObj
+            dbName=dbName, db_params=dbParams, schema=schema, sqlObject=sqlObj
         )
 
     except Exception as e:
@@ -162,7 +162,7 @@ async def generic_update_helper(info, value: str):
     return data
 
 
-async def generic_query_helper(info, value: str):
+async def generic_query_helper(info, dbName: str, value: str):
     data = {}
     try:
         valueString = unquote(value)
@@ -170,14 +170,14 @@ async def generic_query_helper(info, value: str):
         dbParams = valueDict.get("dbParams", None)
         schema = valueDict.get("buCode", None)
         sqlId = valueDict.get("sqlId", None)
-        request = info.context.get("request", None)
-        requestJson = await request.json()
-        operationName = requestJson.get("operationName", None)
-        sqlQueryObject = getSqlQueryObject(operationName)
+        # request = info.context.get("request", None)
+        # requestJson = await request.json()
+        # operationName = requestJson.get("operationName", None)
+        sqlQueryObject = getSqlQueryObject(dbName)
         sql = getattr(sqlQueryObject, sqlId, None)
         sqlArgs = valueDict.get("sqlArgs", {})
         data = await exec_sql(
-            dbName=operationName,
+            dbName=dbName,
             db_params=dbParams,
             schema=schema,
             sql=sql,
@@ -190,6 +190,7 @@ async def generic_query_helper(info, value: str):
         return create_graphql_exception(e)
     return data
 
+
 async def import_secured_controls_helper(info, value: str):
     data = {}
     try:
@@ -199,6 +200,7 @@ async def import_secured_controls_helper(info, value: str):
     except Exception as e:
         return create_graphql_exception(e)
     return data
+
 
 async def update_client_helper(info, value: str):
     data = {}
