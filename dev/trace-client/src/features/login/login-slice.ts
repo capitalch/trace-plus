@@ -6,7 +6,6 @@ const initialState: LoginType = {
   allBusinessUnits: undefined,
   allSecuredControls: undefined,
   currentBusinessUnit: undefined,
-  // currentBusinessUnits: undefined,
   isLoggedIn: false,
   role: undefined,
   token: undefined,
@@ -34,7 +33,6 @@ export const loginSlice = createSlice({
       state.allBusinessUnits = undefined
       state.allSecuredControls = undefined
       state.currentBusinessUnit = undefined
-      // state.currentBusinessUnits = undefined
       state.isLoggedIn = false
       state.role = undefined
       state.token = undefined
@@ -52,6 +50,16 @@ export const loginSlice = createSlice({
         buCode: action.payload.buCode,
         buName: action.payload.buName
       }
+    },
+
+    setDecodedDbParamsObject: (
+      state: LoginType,
+      action: PayloadAction<any>
+    ) => {
+      if (!state.userDetails) {
+        state.userDetails = {}
+      }
+      state.userDetails.decodedDbParamsObject = action.payload
     },
 
     setUserBusinessUnits: (
@@ -75,6 +83,7 @@ export const {
   doLogin,
   doLogout,
   setCurrentBusinessUnit,
+  setDecodedDbParamsObject,
   setUserBusinessUnits,
   setUid
 } = loginSlice.actions
@@ -90,6 +99,7 @@ export type UserDetailsType = {
   clientName?: string
   dbName?: string
   dbParams?: string
+  decodedDbParamsObject?: { [key: string]: string | undefined}
   hash?: string
   id?: number
   isUserActive?: boolean

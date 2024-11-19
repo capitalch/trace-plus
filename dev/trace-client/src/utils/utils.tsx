@@ -6,13 +6,14 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
-import { LoginType } from "../features/login/login-slice"
+import { LoginType, UserDetailsType } from "../features/login/login-slice"
 import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
     decodeExtDbParams: decodeExtDbParams,
     getCurrentLoginInfo: getCurrentLoginInfo,
+    getDbNameDbParams: getDbNameDbParams,
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
     getToken: getToken,
@@ -28,14 +29,14 @@ export const Utils: UtilsType = {
     showHideModalDialogA: showHideModalDialogA,
     showHideModalDialogB: showHideModalDialogB,
     showGraphQlErrorMessage: showGraphQlErrorMessage,
-    showOptionsSelect:showOptionsSelect,
+    showOptionsSelect: showOptionsSelect,
     showSaveMessage: showSaveMessage,
     showSuccessAlertMessage: showSuccessAlertMessage,
 }
 
 function addUniqueKeysToJson(data: any) { // Created by AI
     let runningKey = 100000; // This is child series
-    
+
     const traverseAndAddKeys = (node: any, parentKey: number) => {
         // Add a running key to child nodes, but the parent keeps the same key
         const nodeWithKey = { ...node, pkey: parentKey };
@@ -53,7 +54,7 @@ function addUniqueKeysToJson(data: any) { // Created by AI
         return nodeWithKey;
     };
 
-     return data.map((item: any, index: number) => {
+    return data.map((item: any, index: number) => {
         // Assign a consistent parent key based on index or some stable property
         const parentKey = index + 1; // Can also be item.id if available
         return traverseAndAddKeys(item, parentKey);
@@ -80,6 +81,16 @@ async function decodeExtDbParams(encodedDbParams: string) {
 function getCurrentLoginInfo() {
     const reduxState: RootStateType = store.getState()
     return (reduxState.login)
+}
+
+function getDbNameDbParams(): DbNameDbParamsType{
+    const loginInfo: LoginType = store.getState().login
+    const userDetails: UserDetailsType = loginInfo?.userDetails || {}
+    const dbNameDbParams: DbNameDbParamsType = {
+        dbName: userDetails.dbName,
+        dbParams: userDetails.decodedDbParamsObject
+    }
+    return(dbNameDbParams)
 }
 
 function getHostUrl() {
@@ -270,7 +281,7 @@ function showHideModalDialogB({ isOpen, title = '', element = <></> }: ShowHideM
 
 }
 
-function showOptionsSelect( message: string, option1: string, option2: string, action: (result: any) => void) {
+function showOptionsSelect(message: string, option1: string, option2: string, action: (result: any) => void) {
     Swal.fire({
         title: 'Select an option',
         text: message,
@@ -356,10 +367,16 @@ type ShowModalDialogMessageArgsType = {
     instanceName: string
 }
 
+export type DbNameDbParamsType = {
+    dbName: string | undefined
+    dbParams?: { [key: string]: string | undefined }
+}
+
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
     decodeExtDbParams: (encodedDbParams: string) => any
     getCurrentLoginInfo: () => LoginType
+    getDbNameDbParams: () => DbNameDbParamsType
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined
