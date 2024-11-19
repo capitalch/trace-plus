@@ -6,7 +6,7 @@ const initialState: LoginType = {
   allBusinessUnits: undefined,
   allSecuredControls: undefined,
   currentBusinessUnit: undefined,
-  currentBusinessUnits: undefined,
+  // currentBusinessUnits: undefined,
   isLoggedIn: false,
   role: undefined,
   token: undefined,
@@ -34,7 +34,7 @@ export const loginSlice = createSlice({
       state.allBusinessUnits = undefined
       state.allSecuredControls = undefined
       state.currentBusinessUnit = undefined
-      state.currentBusinessUnits = undefined
+      // state.currentBusinessUnits = undefined
       state.isLoggedIn = false
       state.role = undefined
       state.token = undefined
@@ -54,11 +54,11 @@ export const loginSlice = createSlice({
       }
     },
 
-    setCurrentBusinessUnits: (
+    setUserBusinessUnits: (
       state: LoginType,
       action: PayloadAction<BusinessUnitType[]>
     ) => {
-      state.currentBusinessUnits = action.payload
+      state.userBusinessUnits = action.payload
     },
 
     setUid: (state: LoginType, action: PayloadAction<setUidActonType>) => {
@@ -75,7 +75,7 @@ export const {
   doLogin,
   doLogout,
   setCurrentBusinessUnit,
-  setCurrentBusinessUnits,
+  setUserBusinessUnits,
   setUid
 } = loginSlice.actions
 
@@ -153,7 +153,7 @@ export type LoginType = {
   allSecuredControls?: SecuredControlType[]
   currentBranch?: BranchType
   currentBusinessUnit?: BusinessUnitType
-  currentBusinessUnits?: BusinessUnitType[]
+  // currentBusinessUnits?: BusinessUnitType[]
   currentFinYear?: FinYearType
   isLoggedIn: boolean
   role?: RoleType
@@ -173,5 +173,5 @@ export const userTypeSelectorFn = (state: RootStateType) =>
 export const currentBusinessUnitSelectorFn = (state: RootStateType) =>
   state.login.currentBusinessUnit
 
-export const currentBusinessUnitsSelectorFn = (state: RootStateType) =>
-  state.login.currentBusinessUnits
+export const userBusinessUnitsSelectorFn = (state: RootStateType) =>
+  state.login.userBusinessUnits

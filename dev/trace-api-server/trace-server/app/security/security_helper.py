@@ -170,7 +170,7 @@ async def login_helper(clientId, username, password):
 
 def get_bundle(user: UserClass | SuperAdminUserClass):
     accessToken = create_access_token(
-        {"userName": user.userDetails.get("userName")}
+        {"userName": user.userDetails.userName}
     )
     return {"accessToken": accessToken, "payload": user}
 

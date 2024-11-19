@@ -7,7 +7,8 @@
 - Stock transactions op balance error
 - Sales report does not show sales return
 ## New features to include
-	- Inter branch transfer
+- Same party ref-no should be unique
+- Inter branch transfer
 - Branches same bank account provision
 
 - No duplicate entries should be achievable in purchase

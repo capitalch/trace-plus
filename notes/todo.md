@@ -12,6 +12,9 @@
 																- Client
 																	- Create initial state based on UserClass at server
 																	- Modify full life cycle
+- There is confusion for allBusinessUnits, currentBusinessUnits and userBusinessUnits
+	Maybe currentBusinessUnits is not required
+- fetchAccSettings may not be required during login. It may be incorporated in account-options-info after the bu is finalised.
 - AccountOptions
 	- Nav bar options
 																- Bu: Full lifecycle

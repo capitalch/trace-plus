@@ -1,6 +1,6 @@
 import { ListBoxComponent } from '@syncfusion/ej2-react-dropdowns';
 import { useDispatch, useSelector } from 'react-redux';
-import { BusinessUnitType, currentBusinessUnitSelectorFn, currentBusinessUnitsSelectorFn, setCurrentBusinessUnit } from '../../../login/login-slice';
+import { BusinessUnitType, currentBusinessUnitSelectorFn, userBusinessUnitsSelectorFn, setCurrentBusinessUnit } from '../../../login/login-slice';
 import { useEffect, useRef, useState } from 'react';
 import { AppDispatchType } from '../../../../app/store/store';
 import { Utils } from '../../../../utils/utils';
@@ -10,7 +10,7 @@ import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants'
 import { Messages } from '../../../../utils/messages';
 
 export function BusinessUnitsListModal() {
-    const currentBusinessUnitsSelector: BusinessUnitType[] = useSelector(currentBusinessUnitsSelectorFn) || []
+    const currentBusinessUnitsSelector: BusinessUnitType[] = useSelector(userBusinessUnitsSelectorFn) || []
     const currentBusinessUnitSelector: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn) || {}
     const dispatch: AppDispatchType = useDispatch()
     const [listBoxBusinessUnits, setListBoxBusinessUnits] = useState([])

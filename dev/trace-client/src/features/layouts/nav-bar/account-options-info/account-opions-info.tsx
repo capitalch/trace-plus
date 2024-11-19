@@ -3,7 +3,7 @@ import { IconMinusCircle } from "../../../../controls/icons/icon-minus-circle";
 import { IconPlusCircle } from "../../../../controls/icons/icon-plus-circle";
 import { MenuItemType, menuItemSelectorFn } from "../../layouts-slice";
 import { useDispatch, useSelector } from "react-redux";
-import { BusinessUnitType, LoginType, UserDetailsType, currentBusinessUnitSelectorFn, doLogout, setCurrentBusinessUnit, setCurrentBusinessUnits } from "../../../login/login-slice";
+import { BusinessUnitType, LoginType, UserDetailsType, currentBusinessUnitSelectorFn, doLogout, setCurrentBusinessUnit, setUserBusinessUnits } from "../../../login/login-slice";
 import { Utils } from "../../../../utils/utils";
 import { UserTypesEnum } from "../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType } from "../../../../app/store/store";
@@ -22,7 +22,6 @@ export function AccountOptionsInfo() {
     useEffect(() => {
         setBusinessUnit()
     }, [])
-
 
     return toShowAccountOptions && (<div className="ml-8 flex items-center bg-gray-500 rounded-full px-2 py-2">
         {/* Business unit */}
@@ -95,7 +94,7 @@ export function AccountOptionsInfo() {
                     bu = allBusinessUnits[0]
                 }
                 dispatch(setCurrentBusinessUnit(bu))
-                dispatch(setCurrentBusinessUnits(allBusinessUnits))
+                dispatch(setUserBusinessUnits(allBusinessUnits))
             } else { // throw error and logout
                 Utils.showAlertMessage('Information', Messages.messNoBusinessUnitsDefined)
                 dispatch(doLogout())
@@ -109,7 +108,7 @@ export function AccountOptionsInfo() {
                     bu = userBusinessUnits[0]
                 }
                 dispatch(setCurrentBusinessUnit(bu))
-                dispatch(setCurrentBusinessUnits(userBusinessUnits))
+                // dispatch(setUserBusinessUnits(userBusinessUnits))
             } else {
                 Utils.showAlertMessage('Information', Messages.messUserNotAssociatedWithBu)
                 dispatch(doLogout())
