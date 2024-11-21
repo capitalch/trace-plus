@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit'
 import { RootStateType } from '../../app/store/store'
 import { String } from 'lodash'
 
@@ -30,15 +30,26 @@ export const loginSlice = createSlice({
     },
 
     doLogout: (state: LoginType) => {
+      state.allBranches = undefined
       state.allBusinessUnits = undefined
+      state.allFinYears = undefined
       state.allSecuredControls = undefined
+      state.currentBranch = undefined
       state.currentBusinessUnit = undefined
+      state.currentFinYear = undefined
       state.isLoggedIn = false
       state.role = undefined
       state.token = undefined
       state.userBusinessUnits = undefined
       state.userDetails = undefined
       state.userSecuredControls = undefined
+    },
+
+    setCurrentBranch: (
+      state: LoginType,
+      action: PayloadAction<BranchType>
+    ) => {
+      state.currentBranch = action.payload
     },
 
     setCurrentBusinessUnit: (
@@ -50,6 +61,27 @@ export const loginSlice = createSlice({
         buCode: action.payload.buCode,
         buName: action.payload.buName
       }
+    },
+
+    setCurrentDateFormat: (
+      state: LoginType,
+      action: PayloadAction<string>
+    ) => {
+      state.currentDateFormat = action.payload
+    },
+
+    setCurrentFinYear: (
+      state: LoginType,
+      action: PayloadAction<FinYearType>
+    ) => {
+      state.currentFinYear = action.payload
+    },
+
+    setFinYearsBranches: (
+      state: LoginType
+      , action: PayloadAction<FinYearsBranchesType>) => {
+      state.allFinYears = action.payload.finYears
+      state.allBranches = action.payload.branches
     },
 
     setDecodedDbParamsObject: (
@@ -82,14 +114,23 @@ export const loginReducer = loginSlice.reducer
 export const {
   doLogin,
   doLogout,
+  setCurrentBranch,
   setCurrentBusinessUnit,
+  setCurrentDateFormat,
+  setCurrentFinYear,
   setDecodedDbParamsObject,
+  setFinYearsBranches,
   setUserBusinessUnits,
   setUid
 } = loginSlice.actions
 
 export type setUidActonType = {
   uid: string
+}
+
+export type FinYearsBranchesType = {
+  finYears: FinYearType[],
+  branches?: BranchType[]
 }
 
 export type UserDetailsType = {
@@ -99,7 +140,7 @@ export type UserDetailsType = {
   clientName?: string
   dbName?: string
   dbParams?: string
-  decodedDbParamsObject?: { [key: string]: string | undefined}
+  decodedDbParamsObject?: { [key: string]: string | undefined }
   hash?: string
   id?: number
   isUserActive?: boolean
@@ -137,8 +178,8 @@ export type BusinessUnitType = {
 
 export type FinYearType = {
   finYearId: number
-  startDate: Date
-  endDate: Date
+  startDate: string
+  endDate: string
 }
 
 export type RoleType = {
@@ -163,7 +204,7 @@ export type LoginType = {
   allSecuredControls?: SecuredControlType[]
   currentBranch?: BranchType
   currentBusinessUnit?: BusinessUnitType
-  // currentBusinessUnits?: BusinessUnitType[]
+  currentDateFormat?: string
   currentFinYear?: FinYearType
   isLoggedIn: boolean
   role?: RoleType
@@ -185,3 +226,37 @@ export const currentBusinessUnitSelectorFn = (state: RootStateType) =>
 
 export const userBusinessUnitsSelectorFn = (state: RootStateType) =>
   state.login.userBusinessUnits
+
+export const allFinYearsSelectorFn = (state: RootStateType) =>
+  state.login.allFinYears
+
+export const allBranchesSelectorFn = (state: RootStateType) =>
+  state.login.allBranches
+
+export const allFinYearsBranchesSelectorFn = createSelector(
+  [allFinYearsSelectorFn, allBranchesSelectorFn],
+  (allFinYears, allBranches) => ({
+    allFinYears: allFinYears,
+    allBranches: allBranches
+  }))
+
+export const currentFinYearSelectorFn = (state: RootStateType) =>
+  state.login.currentFinYear
+
+export const currentBranchSelectorFn = (state: RootStateType) =>
+  state.login.currentBranch
+
+export const currentDateFormatSelectorFn = (state: RootStateType) =>
+  state.login.currentDateFormat
+
+
+
+// selectors with createSelector memoised version
+// const selectLogin = (state: RootStateType) => state.login
+// export const allFinYearsBranchesSelectorFn = createSelector(
+//   [selectLogin], (login: LoginType) => (
+//     {
+//       allBranches: login.allBranches,
+//       allFinYears: login.allFinYears
+//     }
+//   ))

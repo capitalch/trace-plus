@@ -1,49 +1,47 @@
-// import { useSelector } from "react-redux"
-import { IconMinusCircle } from "../../../../controls/icons/icon-minus-circle"
-import { IconPlusCircle } from "../../../../controls/icons/icon-plus-circle"
-// import { BusinessUnitType, currentBusinessUnitSelectorFn } from "../../../login/login-slice"
-// import { useCallback, useEffect, useMemo } from "react"
-// import { RootStateType } from "../../../../app/store/store"
+import { shallowEqual, useDispatch, useSelector } from "react-redux"
+import { allFinYearsBranchesSelectorFn, BranchType, FinYearType, LoginType, setCurrentBranch, setCurrentFinYear } from "../../../login/login-slice"
+import { useEffect } from "react"
+import { Utils } from "../../../../utils/utils"
+import { AppDispatchType } from "../../../../app/store/store"
+import { FinYearsOptions } from "./fin-years-options"
+import { BranchesOptions } from "./branches-options"
 
 export function FinYearsBranchesOptions() {
-    // const selectedBu: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn) || {}
-    // const currentBusinessUnitSelector = useMemo(selectedBu,[selectedBu])
-    // useEffect(()=>{
-    //     if(currentBusinessUnitSelector.buCode){
-    //         console.log(currentBusinessUnitSelector.buCode)
-    //     }
-    // },[currentBusinessUnitSelector])
+    const allFinYearsBranchesSelector = useSelector(allFinYearsBranchesSelectorFn, shallowEqual)
+
+    const loginInfo: LoginType = Utils.getCurrentLoginInfo()
+    const dispatch: AppDispatchType = useDispatch()
+
+    useEffect(() => {
+        if (allFinYearsBranchesSelector.allFinYears) {
+            setCurrentFinYearBranch()
+        }
+    }, [allFinYearsBranchesSelector])
+
     return (
         <div className="flex items-center">
-            <div className="ml-4 flex items-center">
-                {/* Plus */}
-                <button>
-                    <IconPlusCircle className="h-7 w-7" />
-                </button>
-                {/* Financial year */}
-                <button className="w-70 ml-1 flex h-8 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
-                    {/* Badge section */}
-                    <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
-                        FY
-                    </div>
-                    {/* Text section */}
-                    <span className="ml-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">2024 (01/04/2024 - 31/03/2025)</span>
-                </button>
-                {/* minus */}
-                <button className="ml-1">
-                    <IconMinusCircle className="h-7 w-7" />
-                </button>
-            </div>
-
-            {/* Branches */}
-            <button className="w-70 ml-4 flex h-8 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
-                {/* Badge section */}
-                <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
-                    BR
-                </div>
-                {/* Text section */}
-                <span className="ml-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">Head office</span>
-            </button>
+            <FinYearsOptions />
+            <BranchesOptions />
         </div>
     )
+
+    function setCurrentFinYearBranch() {
+        const { allFinYears, allBranches } = allFinYearsBranchesSelector
+        const currentFinYearId: number = loginInfo?.userDetails?.lastUsedFinYearId || Utils.getCurrentFinYearId()
+        const currentBranchId: number = loginInfo?.userDetails?.lastUsedBranchId || 1
+        const currentFinYearObject: FinYearType | undefined = allFinYears?.find((f: FinYearType) =>
+            f.finYearId === currentFinYearId)
+        const currentBranchObject: BranchType | undefined = allBranches?.find((b: BranchType) => b.branchId === currentBranchId)
+        if (!currentBranchObject) {
+            // error
+            return
+        }
+        if(!currentFinYearObject){
+            //error
+            return
+        }
+
+        dispatch(setCurrentBranch(currentBranchObject))
+        dispatch(setCurrentFinYear(currentFinYearObject))
+    }
 }

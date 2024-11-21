@@ -55,7 +55,7 @@ export function BusinessUnitsListModal() {
         const cBus: any = currentBusinessUnitsSelector.map((x) => {
             return ({
                 id: x.buId,
-                text: `${x.buName}: ${x.buCode}`
+                text: `${x.buCode}: ${x.buName}`
             })
         })
         setListBoxBusinessUnits(cBus)

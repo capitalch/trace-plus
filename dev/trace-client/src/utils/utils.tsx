@@ -1,4 +1,5 @@
 import Swal from "sweetalert2"
+import dayjs from 'dayjs'
 import _ from "lodash"
 import { RootStateType, store } from "../app/store/store"
 import { Messages } from "./messages"
@@ -6,12 +7,14 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
-import { LoginType, UserDetailsType } from "../features/login/login-slice"
+import { FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
 import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
     decodeExtDbParams: decodeExtDbParams,
+    getCurrentFinYear: getCurrentFinYear,
+    getCurrentFinYearId: getCurrentFinYearId,
     getCurrentLoginInfo: getCurrentLoginInfo,
     getDbNameDbParams: getDbNameDbParams,
     getHostUrl: getHostUrl,
@@ -78,19 +81,37 @@ async function decodeExtDbParams(encodedDbParams: string) {
     }
 }
 
+function getCurrentFinYear(): FinYearType {
+    const today = dayjs()
+    const year: number = today.month() > 3 ? today.year() : today.year() - 1
+    const startDate: string = `${year}-04-01`
+    const endDate: string = `${year + 1}-03-31`
+    return ({
+        finYearId: year,
+        startDate: startDate,
+        endDate: endDate
+    })
+}
+
+function getCurrentFinYearId(): number {
+    const today = dayjs()
+    const year: number = today.month() > 3 ? today.year() : today.year() - 1
+    return (year)
+}
+
 function getCurrentLoginInfo() {
     const reduxState: RootStateType = store.getState()
     return (reduxState.login)
 }
 
-function getDbNameDbParams(): DbNameDbParamsType{
+function getDbNameDbParams(): DbNameDbParamsType {
     const loginInfo: LoginType = store.getState().login
     const userDetails: UserDetailsType = loginInfo?.userDetails || {}
     const dbNameDbParams: DbNameDbParamsType = {
         dbName: userDetails.dbName,
         dbParams: userDetails.decodedDbParamsObject
     }
-    return(dbNameDbParams)
+    return (dbNameDbParams)
 }
 
 function getHostUrl() {
@@ -375,6 +396,8 @@ export type DbNameDbParamsType = {
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
     decodeExtDbParams: (encodedDbParams: string) => any
+    getCurrentFinYear: () => FinYearType
+    getCurrentFinYearId: () => number
     getCurrentLoginInfo: () => LoginType
     getDbNameDbParams: () => DbNameDbParamsType
     getHostUrl: () => string

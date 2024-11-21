@@ -1,5 +1,5 @@
 class SqlAccounts:
-    get_settings_finYears_branches = """
+    get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"
 			from "BranchM"

@@ -19,7 +19,8 @@ def get_conn_info(
     dbName = Config.DB_SECURITY_DATABASE if dbName is None else dbName
     db_params = dbParams if db_params is None else db_params
     # Ensure db_params has the dbname key set to dbName if not already present
-    db_params.setdefault("dbname", dbName)
+    # db_params.setdefault("dbname", dbName)
+    db_params['dbname'] = dbName
     # db_params.update({"dbname": dbName}) # dbName and dbname are different
     connInfo = make_conninfo("", **db_params)
     return connInfo
