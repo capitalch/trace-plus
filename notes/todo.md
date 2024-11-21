@@ -1,6 +1,9 @@
+## Bug fix
+																- Super admin clients
+																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
 - Provide appropriate logging at server
-- Make provisions so that you can use demo and capital databases from traceServer
+															- Make provisions so that you can use demo and capital databases from traceServer
 															- Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 															- React router warning
 																- React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in 	early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.

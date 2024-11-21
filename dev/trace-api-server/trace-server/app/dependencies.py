@@ -139,6 +139,18 @@ class UserDetails:
         self.userName = userName
         self.userType = userType
 
+class SuperAdminUserDetails:
+    def __init__(
+        self,
+        mobileNo: str,
+        userEmail: str,
+        userName: str,
+        userType: str,
+    ):
+        self.mobileNo = mobileNo
+        self.userEmail = userEmail
+        self.userName = userName
+        self.userType = userType
 
 class UserClass:
     def __init__(
@@ -160,9 +172,10 @@ class UserClass:
 class SuperAdminUserClass:
     def __init__(self, userDetails: dict[str:str]):
         # self.userDetails = UserDetails(**userDetails)
-        self.userDetails = {
-            "userName": userDetails.get('userName'),
-            "userEmail": userDetails.get('userEmail'),
-            "mobileNo": userDetails.get('mobileNo'),
-            "userType": userDetails.get('userType')
-        }
+        self.userDetails = SuperAdminUserDetails(**userDetails)
+        # {
+        #     "userName": userDetails.get('userName'),
+        #     "userEmail": userDetails.get('userEmail'),
+        #     "mobileNo": userDetails.get('mobileNo'),
+        #     "userType": userDetails.get('userType')
+        # }

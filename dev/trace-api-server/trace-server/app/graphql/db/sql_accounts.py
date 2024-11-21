@@ -17,3 +17,7 @@ class SqlAccounts:
             , 'allFinYears', (select json_agg(row_to_json(b)) from cte2 b)
             , 'allSettings', (select json_agg(row_to_json(c)) from cte3 c)
 	)"""
+ 
+    test_connection = """
+        select 'ok' as "connection"
+    """

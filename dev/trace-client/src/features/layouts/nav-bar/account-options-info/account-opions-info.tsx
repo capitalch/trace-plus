@@ -46,7 +46,7 @@ export function AccountOptionsInfo() {
                 dispatch(setUserBusinessUnits(allBusinessUnits))
             } else { // throw error and logout
                 Utils.showAlertMessage('Information', Messages.messNoBusinessUnitsDefined)
-                dispatch(doLogout())
+                // dispatch(doLogout())
             }
         }
         if (userType === UserTypesEnum.BusinessUser) {

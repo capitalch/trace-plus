@@ -46,7 +46,8 @@ async def forgot_password_helper(request: Request):
             # Email exists; hence send mail with reset link
             resetLink = get_reset_link(request, clientId, email)
             subject = EmailMessages.email_subject_forgot_password_reset_link
-            body = EmailMessages.email_body_forgot_password_reset_link(resetLink)
+            body = EmailMessages.email_body_forgot_password_reset_link(
+                resetLink)
             await send_email(subject=subject, body=body, recipients=[email])
         else:
             # Error email does not exist in database
@@ -238,7 +239,8 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
         get_super_admin_details_from_config()
     )
     if (uidOrEmail == superAdminUserName) or (uidOrEmail == superAdminEmail):
-        isValidSuperAdmin = verify_password(password=password, hash=superAdminHash)
+        isValidSuperAdmin = verify_password(
+            password=password, hash=superAdminHash)
         if isValidSuperAdmin:
             superAdminUser = SuperAdminUserClass(
                 userDetails={

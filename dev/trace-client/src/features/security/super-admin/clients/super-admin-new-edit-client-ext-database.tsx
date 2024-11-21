@@ -1,9 +1,8 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, } from "react"
 import _ from 'lodash'
 import { useValidators } from "../../../../utils/validators-hook"
 import { useForm } from "react-hook-form"
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context"
-// import { GlobalContext } from "../../../../App"
 import { Messages } from "../../../../utils/messages"
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
@@ -17,7 +16,6 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
 import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
-// import {Button} from 'primereact/button'
 
 export function SuperAdminNewEditClientExtDatabase({
     clientCode
@@ -29,7 +27,7 @@ export function SuperAdminNewEditClientExtDatabase({
     , isActive = false
     , isExternalDb
 }: SuperAdminNewEditClientExtDatabaseType) {
-    const [active, setActive] = useState(false)
+    // const [active, setActive] = useState(false)
     const { checkNoSpaceOrSpecialChar, checkNoSpaceOrSpecialCharAllowDot, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, getValues, trigger, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched', criteriaMode: 'firstError',
@@ -166,7 +164,8 @@ export function SuperAdminNewEditClientExtDatabase({
                 {/* Is active  */}
                 <div className="flex items-center">
                     <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
-                        checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
+                        // checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
+                        {...registerIsClientActive} />
                     <label htmlFor="isActive" className="ml-3 cursor-pointer text-sm text-primary-500">Is this client active</label>
                 </div>
 
@@ -321,7 +320,7 @@ export function SuperAdminNewEditClientExtDatabase({
             port: data.port, //1
         }
         try {
-            const q: any = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
+            const q: any = GraphQLQueriesMap.genericQuery(data.dbName, {
                 sqlId: SqlIdsMap.testConnection,
                 dbParams: dbParams
             })

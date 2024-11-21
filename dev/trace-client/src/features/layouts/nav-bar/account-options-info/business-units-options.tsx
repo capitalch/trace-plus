@@ -21,7 +21,7 @@ export function BusinessUnitsOptions() {
     }, [currentBusinessUnitSelector])
 
     return (
-        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''}>
+        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter">
             <button onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
 
                 {/* Badge section */}
@@ -43,8 +43,7 @@ export function BusinessUnitsOptions() {
         const dbParams: string | undefined = userDetails?.dbParams
         let dbParamsObject: any
         if (isExternalDb && dbParams) {
-            const decodedDbParams = await Utils.decodeExtDbParams(dbParams)
-            dbParamsObject = JSON.parse(decodedDbParams)
+            dbParamsObject = await Utils.decodeExtDbParams(dbParams)
             dispatch(setDecodedDbParamsObject(dbParamsObject))
         }
         // If there is no current business unit then show message and logout

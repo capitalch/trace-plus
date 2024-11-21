@@ -17,6 +17,7 @@ from app.utils import decrypt
 
 logger = logging.getLogger(__name__)
 
+
 class ClientDetails(BaseModel):
     clientCode: str
     isActive: bool = False
@@ -29,12 +30,12 @@ async def create_bu(valueDict: dict) -> None:
     xData = valueDict["xData"]
     buCode = xData.get("buCode")
     clientId = xData.get("clientId")
-    
+
     logger.info(f"Fetching client details for clientId: {clientId}")
-    
+
     # Retrieve client details from the database
     client_result = await exec_sql(sql=SqlSecurity.get_client_details_on_id, sqlArgs={"id": clientId})
-    
+
     if not client_result:
         raise_app_http_exception(Messages.err_client_not_found, "e1025")
 
@@ -49,25 +50,25 @@ async def create_bu(valueDict: dict) -> None:
     # Handle external database logic if applicable
     if clientDetails.isExternalDb:
         # TODO: Implement logic to set dbParams when using external DB
-        if(not clientDetails.dbParams):
-            raise_app_http_exception(Messages.err_db_params_missing_in_ext_database, "e1027")
+        if (not clientDetails.dbParams):
+            raise_app_http_exception(
+                Messages.err_db_params_missing_in_ext_database, "e1027")
         # decode dbParams
         db_params_string = decrypt(clientDetails.dbParams)
         db_params = json.loads(db_params_string)
         # remove url from db_params
-        if('url' in db_params):
+        if ('url' in db_params):
             del db_params['url']
-        
 
     # Check if the database exists in case of not external database
-    if(not clientDetails.isExternalDb):
+    if (not clientDetails.isExternalDb):
         logger.info(f"Checking if database {clientDetails.dbName} exists.")
         db_exists_result = await exec_sql(
             db_params=db_params,
             sql=SqlSecurity.does_database_exist,
             sqlArgs={"dbName": clientDetails.dbName},
         )
-        
+
         does_db_exist = db_exists_result[0].get("doesExist", False)
         if not does_db_exist:
             raise_app_http_exception(Messages.err_db_not_exists, "e1027")
@@ -80,7 +81,7 @@ async def create_bu(valueDict: dict) -> None:
         sql=SqlSecurity.does_schema_exist_in_db,
         sqlArgs={"buCode": buCode},
     )
-    
+
     does_schema_exist = schema_exists_result[0].get("doesExist", False)
 
     # Create schema and execute SQL script if the schema doesn't exist
@@ -93,9 +94,10 @@ async def create_bu(valueDict: dict) -> None:
 
 async def create_schema_and_execute_script(db_name: str, bu_code: str, db_params) -> None:
     """Create schema and execute SQL script for the business unit."""
-    
-    logger.info(f"Creating schema and executing script for {bu_code} in database {db_name}.")
-    
+
+    logger.info(f"Creating schema and executing script for {
+                bu_code} in database {db_name}.")
+
     # Create the public schema if it doesn't exist
     await exec_sql_dml(
         db_params=db_params,
@@ -105,7 +107,7 @@ async def create_schema_and_execute_script(db_name: str, bu_code: str, db_params
 
     # Read and execute the SQL script from file
     script_path = Path(os.getcwd()) / "app/graphql/scripts/accounts.sql"
-    
+
     with script_path.open("r") as script_file:
         sql_script = script_file.read()
 

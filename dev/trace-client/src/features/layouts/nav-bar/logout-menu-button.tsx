@@ -29,7 +29,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     return (
         <ClickAwayListener onClickAway={handleOnClickAway} >
             <div>
-                <TooltipComponent content={getLogoutTooltipContent()}>
+                <TooltipComponent content={getLogoutTooltipContent()} position="LeftCenter">
                     <button onClick={handleShowDropdown}
                         className={clsx(className, 'flex px-4 gap-3 py-2 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400')}>
                         <span className="text-sm">{email}</span>
