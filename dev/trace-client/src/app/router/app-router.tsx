@@ -49,6 +49,15 @@ export const appRouter = createBrowserRouter([
         element: <Login />,
         errorElement: <ErrorPage />,
     }
-])
+], {
+    //Following settings to escape warning
+    future: {
+        v7_relativeSplatPath: true,
+        v7_fetcherPersist: true,
+        v7_normalizeFormMethod: true,
+        v7_partialHydration: true,
+        v7_skipActionErrorRevalidation: true
+    },
+})
 
 

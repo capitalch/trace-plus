@@ -159,6 +159,7 @@ class UserClass:
 
 class SuperAdminUserClass:
     def __init__(self, userDetails: dict[str:str]):
+        # self.userDetails = UserDetails(**userDetails)
         self.userDetails = {
             "userName": userDetails.get('userName'),
             "userEmail": userDetails.get('userEmail'),

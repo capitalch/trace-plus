@@ -1,37 +1,38 @@
 ## To do
 - Provide appropriate logging at server
-- Try tooltip for logout button from syncfusion tooltip. Necessary info about user
-- React router warning
-	- React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in 	early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-- Reconfigure the dbName in GraphQL queries and mutations
-	- Remove dynamic data / variable from the operation name and use dbName as parameter
-	- Do corresponding changes in queries and mutations at client and server
+- Make provisions so that you can use demo and capital databases from traceServer
+															- Try tooltip for logout button from syncfusion tooltip. Necessary info about user
+															- React router warning
+																- React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in 	early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+															- Reconfigure the dbName in GraphQL queries and mutations
+																- Remove dynamic data / variable from the operation name and use dbName as parameter
+																- Do corresponding changes in queries and mutations at client and server
 															- Login mechanism
 																- Server
 																	- Correct User class and all its initializations
 																- Client
 																	- Create initial state based on UserClass at server
 																	- Modify full life cycle
-- There is confusion for allBusinessUnits, currentBusinessUnits and userBusinessUnits
-	Maybe currentBusinessUnits is not required
-- fetchAccSettings may not be required during login. It may be incorporated in account-options-info after the bu is finalised.
-- AccountOptions
-	- Nav bar options
+															- There is confusion for allBusinessUnits, currentBusinessUnits and userBusinessUnits
+																Maybe currentBusinessUnits is not required
+															- fetchAccSettings may not be required during login. It may be incorporated in account-options-info after the bu is finalised.
+														- AccountOptions
+															- Nav bar options
 																- Bu: Full lifecycle
 																	- get all bu's associated with user: sorted: buId, buCode, buName
 																	- get lastUsedBuId
 																	- At client if lastUsedBuId not in list of BuIds select the first one
 																	- At client if no buId's associated with user, then show error and don't login
 																	- When a business unit is displayed show its code only. On mouse over show full bu name as tooltip
-	- acc options
-		- connection with accounts
-		- sql for all options with fy
-		- jsonResult
-	- FY: Full life cycle
-		- FySelection modal
-		- Check lastUsedFinYearId
-	- Branch: Full life cycle
-		- Selection modal
+																- acc options
+																	- connection with accounts
+																	- sql for all options with fy
+																	- jsonResult
+																- FY: Full life cycle
+																	- FySelection modal
+																	- Check lastUsedFinYearId
+																- Branch: Full life cycle
+																	- Selection modal
 	
 																- TreeGrid
 																	- Ondrop expand
@@ -138,9 +139,9 @@
 																		- Create new business unit button and its functionality
 																		- Create new user button and its functionality
 
-	- Associate secured controls with roles
-- Super admin
-	- Associate secured controls with roles
+																		- Associate secured controls with roles
+																	- Super admin
+																		- Associate secured controls with roles
 
 
 - Business user
