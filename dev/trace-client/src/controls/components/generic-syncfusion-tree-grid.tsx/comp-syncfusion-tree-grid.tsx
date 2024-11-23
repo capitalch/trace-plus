@@ -40,30 +40,7 @@ export function CompSyncfusionTreeGrid({
         }
         context.CompSyncFusionTreeGrid[instance].loadData = loadData
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
-        // if(gridRef.current){
-        //     const content = gridRef.current.grid.getContent()
-        //     const scrollPos = content.scrollTop
-        //     console.log(scrollPos)
-        // }
-        
-        // return (() => {
-        //     context.CompSyncFusionTreeGrid[instance].scrollPos = 300
-            
-        //     if (gridRef.current) {
-        //         context.CompSyncFusionTreeGrid[instance].scrollPos = gridRef.current.getContent().children[0].scrollTop
-        //     }
-        // })
     }, [])
-
-    // useEffect(() => {
-    //     if (gridRef.current) {
-    //         const content = gridRef.current.grid.getContent()
-    //         setTimeout(() => {
-    //             content.scrollTop = 400
-    //             content.scrollLeft = 0
-    //         }, 900);
-    //     }
-    // })
 
     if (loading) {
         return (<WidgetLoadingIndicator />)

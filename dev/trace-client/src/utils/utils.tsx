@@ -20,6 +20,7 @@ export const Utils: UtilsType = {
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
     getToken: getToken,
+    getUserDetails: getUserDetails,
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
     showAlertMessage: showAlertMessage,
@@ -131,6 +132,10 @@ function getReduxState(): RootStateType {
 function getToken() {
     const state: RootStateType = store.getState();
     return (state.login.token)
+}
+
+function getUserDetails(): UserDetailsType | undefined {
+    return (getCurrentLoginInfo().userDetails)
 }
 
 async function mutateGraphQL(q: any, queryName: string) {
@@ -314,12 +319,6 @@ function showOptionsSelect(message: string, option1: string, option2: string, ac
         denyButtonText: option2
     }).then(
         action
-        // (result) => {
-        // if (result.isConfirmed) {
-        //     onOptionSelect(option1);
-        // } else if (result.dismiss === Swal.DismissReason.cancel) {
-        //     onOptionSelect(option2);
-        // }}
     );
 }
 
@@ -403,6 +402,7 @@ type UtilsType = {
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined
+    getUserDetails: () => UserDetailsType | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
     showAlertMessage: (title: string, message: string) => void

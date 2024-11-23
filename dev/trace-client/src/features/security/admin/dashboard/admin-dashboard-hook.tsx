@@ -8,8 +8,6 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
 import { Utils } from "../../../../utils/utils";
 import { RootStateType } from "../../../../app/store/store";
-// import { SuperAdminDashBoardType } from "../../super-admin/dashboard/super-admin-dashboard-hook";
-// import { RootStateType } from "../../../../app/store/store";
 
 export function useAdminDashBoard() {
     const instance = DataInstancesMap.adminDashBoard

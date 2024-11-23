@@ -249,14 +249,3 @@ export const currentBranchSelectorFn = (state: RootStateType) =>
 export const currentDateFormatSelectorFn = (state: RootStateType) =>
   state.login.currentDateFormat
 
-
-
-// selectors with createSelector memoised version
-// const selectLogin = (state: RootStateType) => state.login
-// export const allFinYearsBranchesSelectorFn = createSelector(
-//   [selectLogin], (login: LoginType) => (
-//     {
-//       allBranches: login.allBranches,
-//       allFinYears: login.allFinYears
-//     }
-//   ))

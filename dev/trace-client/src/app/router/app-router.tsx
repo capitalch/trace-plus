@@ -17,6 +17,7 @@ import { AdminBusinessUsers } from "../../features/security/admin/business users
 import { AdminLinkUsersWithBu } from "../../features/security/admin/link-unlink-users/admin-link-users-with-bu";
 import { SuperAdminLinkSecuredControlsWithRoles } from "../../features/security/super-admin/link-unlink-secured-controls/super-admin-link-secured-controls-with-roles";
 import { AdminLinkSecuredControlsWithRoles } from "../../features/security/admin/link-unlink-secured-controls.tsx/admin-link-secured-controls-with-roles";
+import { TrialBalance } from "../../features/accounts/final-accounts/trial-balance";
 
 export const appRouter = createBrowserRouter([
     {
@@ -32,7 +33,7 @@ export const appRouter = createBrowserRouter([
                 { path: 'admin-business-users', element: <AdminBusinessUsers /> },
                 { path: 'admin-dashboard', element: <AdminDashBoard /> },
                 { path: 'admin-link-users', element: <AdminLinkUsersWithBu /> },
-                { path: 'admin-link-secured-controls-roles', element: <AdminLinkSecuredControlsWithRoles />},
+                { path: 'admin-link-secured-controls-roles', element: <AdminLinkSecuredControlsWithRoles /> },
                 { path: 'admin-roles', element: <AdminRoles /> },
                 { path: 'blogs', element: <Blogs /> },
                 { path: 'comp1', element: <Comp1 /> },
@@ -41,7 +42,9 @@ export const appRouter = createBrowserRouter([
                 { path: 'super-admin-dashboard', element: <SuperAdminDashboard /> },
                 { path: 'super-admin-roles', element: <SuperAdminRoles /> },
                 { path: 'super-admin-link-secured-controls-roles', element: <SuperAdminLinkSecuredControlsWithRoles /> },
-                { path: 'super-admin-secured-controls', element: <SuperAdminSecuredControls /> }
+                { path: 'super-admin-secured-controls', element: <SuperAdminSecuredControls /> },
+                { path: 'trial-balance', element: <TrialBalance /> }
+
             ]
     },
     {

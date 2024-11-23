@@ -30,4 +30,5 @@ export const SqlIdsMap = {
 
   // accounts
   getSettingsFinYearsBranches: 'get_settings_fin_years_branches',
+  getTrialBalance:'get_trial_balance',
 }

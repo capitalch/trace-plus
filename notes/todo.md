@@ -3,6 +3,10 @@
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
 - Provide appropriate logging at server
+- Trial balance
+	- Create test trial balance to fulfill all requirements
+	- Adjust DB code at client to adjust accounts database
+	
 															- Make provisions so that you can use demo and capital databases from traceServer
 															- Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 															- React router warning

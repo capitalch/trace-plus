@@ -129,7 +129,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '41',
           label: 'Trial balance',
-          path: '/blogs'
+          path: '/trial-balance'
         },
         {
           id: '42',
