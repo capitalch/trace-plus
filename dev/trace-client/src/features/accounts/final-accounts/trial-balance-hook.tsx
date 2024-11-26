@@ -10,7 +10,6 @@ import { BusinessUnitType, currentBusinessUnitSelectorFn, UserDetailsType } from
 export function useTrialBalance() {
     const instance = DataInstancesMap.trialBalance
     const userDetails: UserDetailsType = Utils.getUserDetails() || {}
-    // const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn) || {}
     const { dbName, decodedDbParamsObject, isExternalDb } = userDetails
     const args: GraphQLQueryArgsType = {

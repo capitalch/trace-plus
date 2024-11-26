@@ -3,6 +3,8 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 22-11-2024 - 25-11-2024
+	- Working on Trial Balance
 # 11-11-2024 - 21-11-2024
 	- Accounts options info in nav bar completed
 # 21-10-2024 - 10-11-2024

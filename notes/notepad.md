@@ -93,65 +93,178 @@ with recursive cte as (
             from cte2 a
                 order by "accType", "accName"
 
+## WIP 1
+SET search_path TO demounit1;
 
+with RECURSIVE "hier" as (
+    select "accId" , "parentId"
+        from cte2
+    UNION ALL
+    select a."id", a."parentId"
+        from "hier" h
+            join "AccM" a
+                on h."parentId" = a."id"
+),
+-- "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+"branchId" as (values (1::int)), "finYearId" as (values (2024)),
+cte1 as (
+    select d.id, "accId", 0.00 as "opening"
+        , CASE WHEN d."dc" = 'D' THEN d."amount" else 0.00 END as "debit"
+        , CASE WHEN d."dc" = 'C' THEN d."amount" else 0.00 END as "credit"
+        , "parentId"
+    from "TranH" h
+        join "TranD" d
+            on h.id = d."tranHeaderId"
+        join "AccM" a
+            on a.id = d."accId"
+    where "finYearId" = (table "finYearId")
+        and "branchId" = (table "branchId")
+    union all
+    select b.id, "accId"
+        , CASE WHEN "dc" = 'D' THEN amount ELSE -amount END as "opening"
+        , 0 as "debit"
+        , 0 as "credit"
+        , "parentId"
+    from "AccOpBal" b
+        join "AccM" a
+            on a.id = b."accId"
+        where "finYearId" = (table "finYearId")
+            and "branchId" = (table "branchId"))
+, cte2 as (
+    select "accId", SUM(opening) as "opening", SUM(debit)   as debit, SUM(credit) as credit, "parentId"
+        from cte1
+    group by "accId", "parentId"
+) select a.id, a."accName", a."accCode", opening, debit, credit from cte2 c
+    join "AccM" a
+        on a."id" = c."accId"
+-- select "accId", "accName", "accCode", SUM("opening") as "opening", SUM("debit") as "debit",SUM("credit") as "credit"
+--  from hier h
+--      join "AccM" a
+--          on a."id" = h."accId"
+--  GROUP BY "accId", "accCode", "accName"
+    order by "accId"
+## Work in progress 2
 set search_path to demounit1;
-WITH RECURSIVE cte_hierarchy AS (
-    -- Build the account hierarchy recursively
-    SELECT 
-        "id", "accCode", "accName", "accType", "parentId"
-    FROM "AccM"
-    WHERE "parentId" IS NULL
+-- with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+with "branchId" as (values (1::int)), "finYearId" as (values (2024)),
+cte1 as (
+    select d.id, "accId", 0.00 as "opening"
+            , 1 as "sign"
+            , '' as "opening_dc"
+            , CASE WHEN d."dc" = 'D' THEN d."amount" else 0.00 END as "debit"
+            , CASE WHEN d."dc" = 'C' THEN d."amount" else 0.00 END as "credit"
+            , "parentId"
+        from "TranH" h
+            join "TranD" d
+                on h.id = d."tranHeaderId"
+            join "AccM" a
+                on a.id = d."accId"
+        where "finYearId" = (table "finYearId")
+            and "branchId" = (table "branchId")
+    union all
+    select b.id, "accId"
+            , "amount" as "opening"
+            , CASE WHEN "dc" = 'D' THEN 1 ELSE -1 END as "sign"
+            , "dc" as "opening_dc"
+            , 0 as "debit"
+            , 0 as "credit"
+            , "parentId"
+        from "AccOpBal" b
+            join "AccM" a
+                on a.id = b."accId"
+            where "finYearId" = (table "finYearId")
+                and "branchId" = (table "branchId"))
+, cte2 as (
+    select "accId"
+            , SUM("opening" * "sign") as "opening"
+            , SUM("debit") as "debit"
+            , SUM("credit") as "credit"
+            , "parentId"
+        from cte1
+            group by "accId", "parentId"
+), cte3 as (
+    select a.id, a."accName", a."accCode", a."accType", a."accLeaf"
+            , array_agg(c."accId") as children
+            , SUM(c."opening") as "opening"
+            , SUM(c."debit") as "debit"
+            , SUM(c."credit") as "credit"
+        from "AccM" a
+            join cte2 c
+                on a."id" = c."parentId"
+        group by a.id, a."accName", a."accCode", a."accType", a."accLeaf"
+)
+    -- select * from cte3
+select  c2."accId", "accName", "accCode", "accType", "accLeaf"
+            , null as children
+            , ABS("opening") as "opening"
+            , CASE WHEN "opening" < 0 THEN 'C' ELSE 'D' END as "opening_dc"
+            , "debit"
+            , "credit"
+            , ABS("opening" + "debit" - "credit") as "closing"
+            , CASE WHEN ("opening" + "debit" - "credit") < 0 THEN 'C' ELSE 'D' END as "closing_dc"
+    from cte2 c2
+        join "AccM" a
+            on c2."accId" = a."id"
+    UNION ALL
+        select id, "accName", "accCode", "accType", "accLeaf"
+            , children
+            , "opening"
+            , CASE WHEN "opening" < 0 THEN 'C' ELSE 'D' END as "opening_dc"
+            , "debit"
+            , "credit"
+            , ABS("opening" + "debit" - "credit") as "closing"
+            , CASE WHEN ("opening" + "debit" - "credit") < 0 THEN 'C' ELSE 'D' END as "closing_dc"
+        from cte3
+        
+## Working one: Organized with AI
+SET search_path TO demounit1;
+WITH RECURSIVE cte AS (
+    SELECT "accId", "opening", "debit", "credit", "parentId"
+    FROM "TestD"
+    -- WHERE "accId" IN (5, 6)
     UNION ALL
     SELECT 
-        acc."id", acc."accCode", acc."accName", acc."accType", acc."parentId"
-    FROM "AccM" acc
-    INNER JOIN cte_hierarchy ch ON acc."parentId" = ch."id"
+        a."id" AS "accId", 
+        c.opening, 
+        c.debit, 
+        c.credit, 
+        a."parentId"
+    FROM cte c
+    JOIN "TestM" a
+        ON c."parentId" = a."id"
 ),
-cte_opening_balances AS (
-    -- Fetch opening balances for accounts
+cte2 AS (
     SELECT 
-        acc."id",
-        SUM(CASE WHEN ob."dc" = 'D' THEN ob."amount" ELSE -ob."amount" END) AS "opening_balance"
-    FROM "AccM" acc
-    LEFT JOIN "AccOpBal" ob ON acc."id" = ob."accId"
-    GROUP BY acc."id"
-),
-cte_transaction_sums AS (
-    -- Calculate debit and credit totals from transactions
-    SELECT 
-        acc."id",
-        SUM(CASE WHEN td."dc" = 'D' THEN td."amount" ELSE 0 END) AS "total_debit",
-        SUM(CASE WHEN td."dc" = 'C' THEN td."amount" ELSE 0 END) AS "total_credit"
-    FROM "AccM" acc
-    LEFT JOIN "TranD" td ON acc."id" = td."accId"
-    GROUP BY acc."id"
-),
-cte_trial_balance AS (
-    -- Combine hierarchy, opening balances, and transaction sums
-    SELECT 
-        h."id",
-        h."accCode",
-        h."accName",
-        h."accType",
-        h."parentId",
-        COALESCE(ob."opening_balance", 0) AS "opening_balance",
-        COALESCE(ts."total_debit", 0) AS "total_debit",
-        COALESCE(ts."total_credit", 0) AS "total_credit",
-        COALESCE(ob."opening_balance", 0) + COALESCE(ts."total_debit", 0) - COALESCE(ts."total_credit", 0) AS "closing_balance"
-    FROM cte_hierarchy h
-    LEFT JOIN cte_opening_balances ob ON h."id" = ob."id"
-    LEFT JOIN cte_transaction_sums ts ON h."id" = ts."id"
+        "accId", 
+        "accName", 
+        SUM(opening) AS opening, 
+        SUM(debit) AS debit, 
+        SUM(credit) AS credit, 
+        a."parentId"
+    FROM cte c
+    JOIN "TestM" a
+        ON a."id" = c."accId"
+    GROUP BY 
+        "accId", 
+        "accName", 
+        a."parentId"
 )
--- Select final data with hierarchy structure for TreeGrid
 SELECT 
-    "id",
-    "accCode",
-    "accName",
-    "accType",
-    "parentId",
-    "opening_balance",
-    "total_debit",
-    "total_credit",
-    "closing_balance"
-FROM cte_trial_balance
-ORDER BY "accType", "accName";
+    c."accId", 
+    c."accName", 
+    c.opening, 
+    c.debit, 
+    c.credit, 
+    c."parentId", 
+    array_agg(children."accId") AS children
+FROM cte2 c
+LEFT JOIN cte2 children
+    ON children."parentId" = c."accId"
+GROUP BY 
+    c."accId", 
+    c."accName", 
+    c.opening, 
+    c.debit, 
+    c.credit, 
+    c."parentId"
+ORDER BY c."accId";

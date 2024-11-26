@@ -17,3 +17,9 @@
 - Now the login screen automatically displays
 - We will use localstorage to store the accesstoken. So if the token is not expired then on hard page refresh(F5) the state of software will be maintained
 - It is advisable to keep the life of accessToken as 10 hours
+
+## ** Trial balanceSql query**
+- cte1: Union all TranD and AccOpBal join with AccM: Get accId, opening, debit, credit, parentId. Joining with AccM is necessary to get parentId. opening is + or -.
+- hier: Bottom up recursion: Base query on cte1: recurive part join cte1 c with AccM a on c.parentId = a.id. Get fields accId /id, opening, debit, credit, parentId. This ensures only 		requred rows from AccM
+- cte2: Apply aggregate function SUM on hier to get aggregated values. Get acciD, opening, debit, credit, parentId. Now we have all the required data except accName, chilren
+- Output: Join hier wth cte2 to get children field. Join with AccM to get accCode, accName, accType, accLeaf. Do necessary stuff like opening_dbcr, closing_dbcr, closing based on opening, debit, credit. Also do parent summing of all child records, so that parent amout is sum of all child amounts
