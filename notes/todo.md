@@ -4,8 +4,11 @@
 ## To do
 - Provide appropriate logging at server
 - Trial balance
-	- Create test trial balance to fulfill all requirements
-	- Adjust DB code at client to adjust accounts database
+					- Create Union all query from TranD and AccOpBal
+					- Create Recursive hier
+					- Create branchId and finYearId args
+	- Create SUM cte
+	- Create final query
 	
 															- Make provisions so that you can use demo and capital databases from traceServer
 															- Try tooltip for logout button from syncfusion tooltip. Necessary info about user
