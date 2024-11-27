@@ -11,6 +11,7 @@ export const GraphQLQueriesMap = {
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
   importSecuredControls: importSecuredControls,
+  trialBalance: trialBalance,
   updateClient: updateClient,
   updateUser: updateUser,
   hello: hello
@@ -79,6 +80,15 @@ function importSecuredControls(dbName: string, val: GraphQLUpdateArgsType) {
     `
 }
 
+function trialBalance(dbName: string, val: GraphQLQueryArgsType) {
+  const value = encodeObj(val)
+  return gql`
+        query TrialBalance {
+            trialBalance(dbName:"${dbName}", value:"${value}")
+        }
+    `
+}
+
 function updateClient(dbName: string, val: TraceDataObjectType) {
   const value = encodeObj(val)
   return gql`
@@ -114,7 +124,7 @@ function encodeObj(obj: any) {
 export type ChangePwdType = {
   currentPwd: string
   pwd: string
-  id: string | number |undefined
+  id: string | number | undefined
 }
 
 export type ChangeUidType = {
@@ -127,7 +137,7 @@ export type GraphQLQueryArgsType = {
   buCode?: string
   dbParams?: { [key: string]: any }
   [key: string]: any
-  sqlId: string
+  sqlId?: string
   sqlArgs?: { [key: string]: any }
 }
 

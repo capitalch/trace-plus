@@ -30,6 +30,7 @@ export const loginSlice = createSlice({
     },
 
     doLogout: (state: LoginType) => {
+      state.accSettings = undefined
       state.allBranches = undefined
       state.allBusinessUnits = undefined
       state.allFinYears = undefined
@@ -77,9 +78,10 @@ export const loginSlice = createSlice({
       state.currentFinYear = action.payload
     },
 
-    setFinYearsBranches: (
+    setFinYearsBranchesAccSettings: (
       state: LoginType
-      , action: PayloadAction<FinYearsBranchesType>) => {
+      , action: PayloadAction<FinYearsBranchesAccSettingsType>) => {
+      state.accSettings = action.payload.accSettings
       state.allFinYears = action.payload.finYears
       state.allBranches = action.payload.branches
     },
@@ -119,7 +121,7 @@ export const {
   setCurrentDateFormat,
   setCurrentFinYear,
   setDecodedDbParamsObject,
-  setFinYearsBranches,
+  setFinYearsBranchesAccSettings,
   setUserBusinessUnits,
   setUid
 } = loginSlice.actions
@@ -128,7 +130,8 @@ export type setUidActonType = {
   uid: string
 }
 
-export type FinYearsBranchesType = {
+export type FinYearsBranchesAccSettingsType = {
+  accSettings: AccSettingType[],
   finYears: FinYearType[],
   branches?: BranchType[]
 }

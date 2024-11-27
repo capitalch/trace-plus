@@ -1,5 +1,5 @@
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-import { BusinessUnitType, currentBusinessUnitSelectorFn, doLogout, LoginType, setCurrentDateFormat, setDecodedDbParamsObject, setFinYearsBranches, UserDetailsType } from "../../../login/login-slice"
+import { BusinessUnitType, currentBusinessUnitSelectorFn, doLogout, LoginType, setCurrentDateFormat, setDecodedDbParamsObject, setFinYearsBranchesAccSettings, UserDetailsType } from "../../../login/login-slice"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { Utils } from "../../../../utils/utils"
 import { BusinessUnitsListModal } from "./business-units-list-modal"
@@ -60,9 +60,9 @@ export function BusinessUnitsOptions() {
                 sqlArgs: {}
             });
             const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
-            const result: any = res?.data?.genericQuery?.[0]?.json_build_object
+            const result: any = res?.data?.genericQuery?.[0]?.jsonResult
             if (result) {
-                dispatch(setFinYearsBranches({ finYears: result.allFinYears, branches: result.allBranches }))
+                dispatch(setFinYearsBranchesAccSettings({ accSettings: result?.allSettings, finYears: result.allFinYears, branches: result.allBranches }))
                 dispatch(setCurrentDateFormat('DD/MM/YYYY'))
             }
         } catch (e: any) {

@@ -16,11 +16,12 @@ class SqlAccounts:
             'allBranches', (select json_agg(row_to_json(a)) from cte1 a)
             , 'allFinYears', (select json_agg(row_to_json(b)) from cte2 b)
             , 'allSettings', (select json_agg(row_to_json(c)) from cte3 c)
-	) """
+	) as "jsonResult" 
+    """
  
-    get_trial_balance = """
-        -- Recursive query to build the account hierarchy
-        with RECURSIVE hier AS (
+    get_trialBalance_balanceSheet_profitAndLoss = """
+        -- Recursive Query to Build Account Hierarchy
+        WITH RECURSIVE hier AS (
             SELECT 
                 "accId", 
                 "opening", 
@@ -28,7 +29,9 @@ class SqlAccounts:
                 "credit", 
                 "parentId"
             FROM cte1
+
             UNION ALL
+
             SELECT 
                 a."id" AS "accId", 
                 h."opening", 
@@ -38,11 +41,11 @@ class SqlAccounts:
             FROM hier h
             JOIN "AccM" a ON h."parentId" = a."id"
         ),
-        -- Define constants for branch and financial year
-        "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+        -- Constants for branch and financial year
+        -- "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+        "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
 
-        -- Prepare the base data for the recursive query
+        -- Base data preparation
         cte1 AS (
             SELECT 
                 d.id, 
@@ -56,7 +59,9 @@ class SqlAccounts:
             JOIN "AccM" a ON a.id = d."accId"
             WHERE h."finYearId" = (TABLE "finYearId")
             AND h."branchId" = (TABLE "branchId")
+
             UNION ALL
+
             SELECT 
                 b.id, 
                 b."accId",
@@ -92,37 +97,55 @@ class SqlAccounts:
                 a."accType", 
                 a."accLeaf", 
                 h."parentId"
+        ),
+
+        -- Calculate profit or loss
+        cte3 AS (
+            SELECT SUM(opening + debit - credit) AS "profitOrLoss"
+            FROM cte1 c
+            JOIN "AccM" a ON a."id" = c."accId"
+            WHERE "accType" IN ('A', 'L')
+        ),
+
+        -- Final aggregation
+        cte4 AS (
+            SELECT 
+                c."accId" AS id, 
+                c."accName", 
+                c."accCode",
+                c."accType",
+                ABS(c."opening") AS "opening", 
+                CASE WHEN c."opening" < 0 THEN 'C' ELSE 'D' END AS "opening_dc",
+                c."debit", 
+                c."credit",
+                ABS(c."closing") AS "closing",
+                CASE WHEN c."closing" < 0 THEN 'C' ELSE 'D' END AS "closing_dc",
+                c."parentId", 
+                ARRAY_AGG(child."accId") AS "children"
+            FROM cte2 c
+            LEFT JOIN cte2 child ON child."parentId" = c."accId"
+            GROUP BY 
+                c."accId", 
+                c."accName", 
+                c."accCode", 
+                c."opening", 
+                c."debit", 
+                c."credit", 
+                c."closing",
+                c."parentId",
+                c."accType"
+            ORDER BY 
+                c."accType", 
+                c."accName"
         )
 
-        -- Final query to aggregate and calculate children
-        SELECT 
-            c."accId" as id, 
-            c."accName", 
-            c."accCode",
-            c."accType",
-            ABS(c."opening") AS "opening", 
-            CASE WHEN c."opening" < 0 THEN 'C' ELSE 'D' END AS "opening_dc",
-            c."debit", 
-            c."credit",
-            ABS(c."closing") AS "closing",
-            CASE WHEN c."closing" < 0 THEN 'C' ELSE 'D' END AS "closing_dc",
-            c."parentId", 
-            ARRAY_AGG(child."accId") AS "children"
-        FROM cte2 c
-        LEFT JOIN cte2 child ON child."parentId" = c."accId"
-        GROUP BY 
-            c."accId", 
-            c."accName", 
-            c."accCode", 
-            c."opening", 
-            c."debit", 
-            c."credit", 
-            c."closing",
-            c."parentId",
-            c."accType"
-        ORDER BY 
-            c."accType", 
-            c."accName";
+        -- Build JSON result
+        SELECT JSON_BUILD_OBJECT(
+            'trialBalance', (SELECT JSON_AGG(a) FROM cte4 a),
+            'profitOrLoss', (SELECT "profitOrLoss" FROM cte3),
+            'balanceSheet', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('A', 'L')),
+            'profitAndLoss', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('E', 'I'))
+        ) AS "jsonResult"
     """
  
     test_connection = """

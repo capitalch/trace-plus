@@ -61,10 +61,6 @@ export const {
 
 type InitialStateType = {
   [key: string]: any
-  // {
-  //   data: any
-  //   lastNoOfRows: string
-  // }
 }
 
 type SetQueryHelperDataActionType = {

@@ -17,6 +17,7 @@ from app.graphql.graphql_helper import (
     generic_query_helper,
     generic_update_helper,
     import_secured_controls_helper,
+    trial_balance_helper,
     update_client_helper,
     update_user_helper,
 )
@@ -31,19 +32,14 @@ async def decode_ext_db_params(_, info, value=""):
     return await decode_ext_db_params_helper(info, value)
 
 
-@mutation.field("createBu")
-async def create_bu(_, info, value=""):
-    return await create_bu_helper(info, value)
-
-
 @query.field("genericQuery")
 async def generic_query(_, info, dbName="", value=""):
     return await generic_query_helper(info, dbName, value)
 
 
-@mutation.field("genericUpdate")
-async def generic_update(_, info, dbName="", value=""):
-    return await generic_update_helper(info,dbName, value)
+@query.field("trialBalance")
+async def trial_balance(_, info, dbName="", value=""):
+    return await trial_balance_helper(info, dbName, value)
 
 
 @mutation.field("changePwd")
@@ -54,6 +50,16 @@ async def change_pwd(_, info, value=""):
 @mutation.field("changeUid")
 async def change_uid(_, info, value):
     return await change_uid_helper(info, value)
+
+
+@mutation.field("createBu")
+async def create_bu(_, info, value=""):
+    return await create_bu_helper(info, value)
+
+
+@mutation.field("genericUpdate")
+async def generic_update(_, info, dbName="", value=""):
+    return await generic_update_helper(info, dbName, value)
 
 
 @mutation.field("importSecuredControls")

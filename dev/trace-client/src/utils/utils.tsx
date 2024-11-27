@@ -7,7 +7,7 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
-import { FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
+import { AccSettingType, FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
 import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
 
 export const Utils: UtilsType = {
@@ -20,6 +20,7 @@ export const Utils: UtilsType = {
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
     getToken: getToken,
+    getUnitInfo: getUnitInfo,
     getUserDetails: getUserDetails,
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
@@ -132,6 +133,12 @@ function getReduxState(): RootStateType {
 function getToken() {
     const state: RootStateType = store.getState();
     return (state.login.token)
+}
+
+function getUnitInfo(): UnitInfoType | undefined {
+    const accSettings: AccSettingType[] | undefined = getCurrentLoginInfo()?.accSettings
+    const accSetting: AccSettingType | undefined = accSettings?.find((s: AccSettingType) => s.key === 'unitInfo')
+    return (accSetting?.jData)
 }
 
 function getUserDetails(): UserDetailsType | undefined {
@@ -392,6 +399,20 @@ export type DbNameDbParamsType = {
     dbParams?: { [key: string]: string | undefined }
 }
 
+export type UnitInfoType = {
+    email?: string
+    gstin?: string
+    pin?: string
+    state?: string
+    webSite?: string
+    address1?: string
+    address2?: string
+    unitName?: string
+    landPhone?: string
+    shortName?: string
+    mobileNumber?: string
+}
+
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
     decodeExtDbParams: (encodedDbParams: string) => any
@@ -402,6 +423,7 @@ type UtilsType = {
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined
+    getUnitInfo: () => UnitInfoType | undefined
     getUserDetails: () => UserDetailsType | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any

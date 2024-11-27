@@ -1,6 +1,7 @@
 import json
 import logging
 from fastapi import status
+from typing import Literal
 from urllib.parse import unquote
 from app.config import Config
 from app.dependencies import AppHttpException
@@ -14,6 +15,7 @@ from app.messages import Messages, EmailMessages
 from app.mail import send_email
 from .db.helpers.psycopg_async_helper import exec_sql, exec_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
+from .db.sql_accounts import SqlAccounts
 from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
@@ -140,28 +142,6 @@ async def decode_ext_db_params_helper(info, value):
     return decodedDbParams
 
 
-async def generic_update_helper(info, dbName: str, value: str):
-    data = {}
-    try:
-        valueString = unquote(value)
-        valueDict = json.loads(valueString)
-        dbParams = valueDict.get("dbParams", None)
-        schema = valueDict.get("buCode", None)
-        # request = info.context.get("request", None)
-        # requestJson = await request.json()
-        # operationName = requestJson.get("operationName", None)
-        sqlObj = json.loads(valueString)
-        data = await exec_sql_object(
-            dbName=dbName, db_params=dbParams, schema=schema, sqlObject=sqlObj
-        )
-
-    except Exception as e:
-        # Need to return error as data. Raise error does not work with GraphQL
-        # At client check data for error attribut and take action accordingly
-        return create_graphql_exception(e)
-    return data
-
-
 async def generic_query_helper(info, dbName: str, value: str):
     data = {}
     try:
@@ -188,6 +168,25 @@ async def generic_query_helper(info, dbName: str, value: str):
     return data
 
 
+async def generic_update_helper(info, dbName: str, value: str):
+    data = {}
+    try:
+        valueString = unquote(value)
+        valueDict = json.loads(valueString)
+        dbParams = valueDict.get("dbParams", None)
+        schema = valueDict.get("buCode", None)
+        sqlObj = json.loads(valueString)
+        data = await exec_sql_object(
+            dbName=dbName, db_params=dbParams, schema=schema, sqlObject=sqlObj
+        )
+
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
+
 async def import_secured_controls_helper(info, value: str):
     data = {}
     try:
@@ -195,6 +194,21 @@ async def import_secured_controls_helper(info, value: str):
         json_data = json.loads(valueString)
         await import_secured_controls(json_data)
     except Exception as e:
+        return create_graphql_exception(e)
+    return data
+
+
+async def trial_balance_helper(info, dbName, value):
+    data = {}
+    try:
+        res = await trialBalance_balanceSheet_profitAndLoss(
+            dbName=dbName, value=value, type="TB"
+        )
+        flat_data = res[0].get("jsonResult").get("trialBalance")
+        data = build_nested_hierarchy_with_children(flat_data)
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
         return create_graphql_exception(e)
     return data
 
@@ -272,6 +286,27 @@ async def update_user_helper(info, value: str):
 
 # Local helper for helper methods
 
+# Generated from AI
+def build_nested_hierarchy_with_children(flat_data):
+    # Create a dictionary mapping account IDs to their respective data
+    id_to_node = {item["id"]: {**item, "children": []} for item in flat_data}
+
+    # Iterate over each record to assign children nodes
+    for item in flat_data:
+        for child_id in item.get("children", []):
+            if child_id in id_to_node:
+                id_to_node[item["id"]]["children"].append(id_to_node[child_id])
+
+    # Extract only the top-level nodes (those not referenced as children)
+    all_children_ids = {
+        child_id for item in flat_data for child_id in item.get("children", [])
+    }
+    roots = [
+        node for node_id, node in id_to_node.items() if node_id not in all_children_ids
+    ]
+
+    return roots
+
 
 def create_graphql_exception(e: Exception):
     mess = ""
@@ -291,6 +326,25 @@ def create_graphql_exception(e: Exception):
             }
         }
     }
+
+
+async def trialBalance_balanceSheet_profitAndLoss(
+    dbName: str, value: str, type: Literal["TB", "BS"]
+):
+    data = {}
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_trialBalance_balanceSheet_profitAndLoss
+    sqlArgs = valueDict.get("sqlArgs", {})
+    data = await exec_sql(
+        dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+    )
+    if type == "TB":
+        return data
+    if type == "BS":
+        return data
 
 
 async def send_mail_for_change_pwd(

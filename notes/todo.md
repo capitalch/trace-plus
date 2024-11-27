@@ -3,13 +3,29 @@
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
 - Provide appropriate logging at server
+- Show client name in admin screens
+- In Accounts Info modal windows title should be aligned with grid
 - Trial balance
-					- Create Union all query from TranD and AccOpBal
-					- Create Recursive hier
-					- Create branchId and finYearId args
-	- Create SUM cte
-	- Create final query
-	
+	- Client side
+		- generic treeGrid
+			- Set data instance for Trial balance
+		- Screen formatting
+		- company name
+		- Incorporation of generic treeGrid
+		- Footer aggregate
+		- Expand all
+		- Search
+		- Export
+		- This branch / all branches
+
+															- Trial balance at server
+															- Trial balance at client
+														- Trial babalce query
+															- Create Union all query from TranD and AccOpBal
+															- Create Recursive hier
+															- Create branchId and finYearId args
+															- Create SUM cte
+															- Create final query
 															- Make provisions so that you can use demo and capital databases from traceServer
 															- Try tooltip for logout button from syncfusion tooltip. Necessary info about user
 															- React router warning

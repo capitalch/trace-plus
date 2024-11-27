@@ -12,11 +12,10 @@ import { CompTypeAhead } from "../../controls/components/comp-type-ahead"
 import { Utils } from "../../utils/utils"
 import urlJoin from "url-join"
 import { ModalDialogA } from "../layouts/nav-bar/modal-dialogA"
-// import { useEffect } from "react"
 
 function Login() {
     const { handleSubmit, register, setValue, clearErrors, formState: { errors, } } = useForm({ mode: 'onTouched' })
-    const { handleForgotPassword, /*handleOnChangeClient,*/ handleTestSignIn, onSubmit } = useLogin(setValue)
+    const { handleForgotPassword, handleTestSignIn, onSubmit } = useLogin(setValue)
     const { checkPassword, checkUserNameOrEmail }: any = useValidators()
     const instance = 'user-login'
     const clientsUrl = urlJoin(Utils.getHostUrl(), 'login-clients')

@@ -10,7 +10,6 @@ import { Utils } from '../../utils/utils'
 import { AppDispatchType } from '../store/store'
 import { useDispatch } from 'react-redux'
 import { resetQueryHelperData, setQueryHelperData } from './query-helper-slice'
-// import { UserDetailsType } from '../../features/login/login-slice'
 
 export function useQueryHelper({
   addUniqueKeyToJson = false,
@@ -20,10 +19,7 @@ export function useQueryHelper({
   isExecQueryOnLoad = true
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
-  // const userDetails: UserDetailsType | undefined = Utils.getCurrentLoginInfo().userDetails
-  // const { dbName, dbParams, decodedDbParamsObject }: any = userDetails
 
-  // console.log(dbName, dbParams, decodedDbParamsObject)
   const [getGenericQueryData, { error, loading }] = useLazyQuery(
     GraphQLQueriesMap.genericQuery(dbName, getQueryArgs()),
     { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
