@@ -13,5 +13,5 @@ export const DataInstancesMap = {
   superAdminClients: 'super-admin-clients',
   superAdminRoles: 'super-admin-roles',
   superAdminSecuredControls: 'super-addmin-secured-controls',
-  // trialBalance:'trial-balance',
+  trialBalance:'trial-balance',
 }

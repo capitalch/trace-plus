@@ -1,7 +1,7 @@
 import json
 import logging
 from fastapi import status
-from typing import Literal
+from typing import Literal, List
 from urllib.parse import unquote
 from app.config import Config
 from app.dependencies import AppHttpException
@@ -199,13 +199,14 @@ async def import_secured_controls_helper(info, value: str):
 
 
 async def trial_balance_helper(info, dbName, value):
-    data = {}
+    data = []
     try:
         res = await trialBalance_balanceSheet_profitAndLoss(
             dbName=dbName, value=value, type="TB"
         )
         flat_data = res[0].get("jsonResult").get("trialBalance")
-        data = build_nested_hierarchy_with_children(flat_data)
+        if flat_data is not None:
+            data.append({"jsonResult":build_nested_hierarchy_with_children(flat_data)})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly

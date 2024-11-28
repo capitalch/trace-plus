@@ -88,3 +88,11 @@ https://apps.microsoft.com/detail/free-timer-app/9NK6ZKX5TV0G?hl=en-US&gl=US
 		- Good: https://uicolors.app/create
 		- Buttons examples: https://tailwindflex.com/tag/button
 		- Some more buttons: https://ordinarycoders.com/blog/article/7-tailwindcss-buttons
+
+## Meeting with Manju Bhabhi
+- Two Bu: Madyam, CapitalRajar
+	Mad: Sodpur, Behala branch
+	CapiRaj: Only one branch
+	AOSmith in Sales item search not coming correctly.
+- Behala bill showing in Sodepur: 142, 22
+- Sale bill 521: Sodepur was showing twice. Now not visible. Check if deleted

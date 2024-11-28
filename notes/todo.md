@@ -8,15 +8,17 @@
 - At logout make sure that redux store is initialized by using redux tools
 - Trial balance
 	- Client side
-		- generic treeGrid
-			- Set data instance for Trial balance
-		- Screen formatting
-		- company name
-		- Incorporation of generic treeGrid
+		- Change of branch not working
+														- generic treeGrid
+															- Set data instance for Trial balance
+															- Screen formatting
+															- company name
+															- Incorporation of generic treeGrid
 		- Footer aggregate
-		- Expand all
-		- Search
-		- Export
+															- Sorted data when expanded
+															- Expand all
+															- Search
+															- Export
 		- This branch / all branches
 
 															- Trial balance at server

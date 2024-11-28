@@ -6,18 +6,24 @@ import { RootStateType } from "../../../app/store/store";
 import { ColumnDirective } from "@syncfusion/ej2-react-treegrid";
 
 export function useCompSyncfusionTreeGrid({
-    addUniqueKeyToJson, columns, instance, isLoadOnInit, sqlId, sqlArgs
+    addUniqueKeyToJson, buCode, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs
 }: CompSyncfusionTreeGridType) {
+
     const args: GraphQLQueryArgsType = {
+        buCode: buCode,
+        dbParams: dbParams,
         sqlId: sqlId,
         sqlArgs: sqlArgs,
     }
 
     const { loadData, loading, } = useQueryHelper({
         addUniqueKeyToJson: addUniqueKeyToJson,
+        dbName: dbName,
         getQueryArgs: () => args,
+        graphQlQueryFromMap: graphQlQueryFromMap,
         instance: instance,
-        isExecQueryOnLoad: isLoadOnInit
+        isExecQueryOnLoad: isLoadOnInit,
+
     })
 
     const selectedData: any = useSelector((state: RootStateType) => {

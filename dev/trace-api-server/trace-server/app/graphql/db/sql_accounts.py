@@ -42,8 +42,8 @@ class SqlAccounts:
             JOIN "AccM" a ON h."parentId" = a."id"
         ),
         -- Constants for branch and financial year
-        -- "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-        "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+         "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+        --"branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
 
         -- Base data preparation
         cte1 AS (
@@ -97,6 +97,7 @@ class SqlAccounts:
                 a."accType", 
                 a."accLeaf", 
                 h."parentId"
+            
         ),
 
         -- Calculate profit or loss
@@ -121,7 +122,7 @@ class SqlAccounts:
                 ABS(c."closing") AS "closing",
                 CASE WHEN c."closing" < 0 THEN 'C' ELSE 'D' END AS "closing_dc",
                 c."parentId", 
-                ARRAY_AGG(child."accId") AS "children"
+                ARRAY_AGG(child."accId" ORDER BY child."accName") AS "children"
             FROM cte2 c
             LEFT JOIN cte2 child ON child."parentId" = c."accId"
             GROUP BY 

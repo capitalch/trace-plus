@@ -6,6 +6,7 @@ import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 // import { GlobalContext } from "../../../App"
 import { RootStateType } from "../../../app/store/store"
 import { Utils } from "../../../utils/utils"
+import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 
 export function CompSyncFusionGrid({
     aggregates,
@@ -155,7 +156,7 @@ export type CompSyncFusionGridType = {
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
     rowHeight?: number
-    sqlArgs: SqlArgsType
+    sqlArgs: GraphQLQueryArgsType // SqlArgsType
     sqlId: string
 }
 

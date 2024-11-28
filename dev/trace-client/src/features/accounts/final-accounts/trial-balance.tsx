@@ -1,108 +1,97 @@
-import { Aggregate, TreeGridComponent } from "@syncfusion/ej2-react-treegrid";
-import _ from 'lodash'
-import { CompContentContainer } from "../../../controls/components/comp-content-container";
-import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh";
-import { AggregateColumnDirective, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnDirective, ColumnsDirective, Inject, Toolbar } from "@syncfusion/ej2-react-grids";
-import { FinalAccountsType, setTrialBalance, trialBalanceSelectorFn } from "../accounts-slice";
-import { useDispatch, useSelector } from "react-redux";
-import { AccSettingType, BusinessUnitType, currentBusinessUnitSelectorFn, LoginType, UserDetailsType } from "../../login/login-slice";
+import { useSelector } from "react-redux";
+import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, UserDetailsType } from "../../login/login-slice";
 import { Utils } from "../../../utils/utils";
-import { AppDispatchType } from "../../../app/store/store";
-import { GraphQLQueriesMap, GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
-import { useEffect } from "react";
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
-import { CompSyncFusionGridToolbar } from "../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
+import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
+import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
+import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
+import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 
 export function TrialBalance() {
+    const instance: string = DataInstancesMap.trialBalance
+    // const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const userDetails: UserDetailsType = Utils.getUserDetails() || {}
     const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn) || {}
-    const { dbName, decodedDbParamsObject, isExternalDb } = userDetails
-    const dispatch: AppDispatchType = useDispatch()
-    const trialBalanceData: FinalAccountsType[] | undefined = useSelector(trialBalanceSelectorFn)
-
-    useEffect(() => {
-        loadData()
-    }, [])
-
+    const { dbName, decodedDbParamsObject, } = userDetails
+    const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn) 
+    const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn)
     return (
         <CompAccountsContainer>
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
-                <div className='flex flex-col w-min'>
-                    <CompSyncFusionGridToolbar className='' 
+                <div className='flex flex-col '>
+                    <CompSyncFusionTreeGridToolbar className='mt-2'
                         title='Trial Balance'
                         isLastNoOfRows={false}
-                        instance=""
+                        instance={instance}
+                    />
+                    <CompSyncfusionTreeGrid
+                        // aggregates={getBusinessUserssAggregates()}
+                        buCode={currentBusinessUnit.buCode}
+                        childMapping="children"
+                        className="mt-4"
+                        dbName={dbName}
+                        dbParams={decodedDbParamsObject}
+                        graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
+                        isLoadOnInit={true}
+                        sqlArgs={{
+                            branchId: currentBranch?.branchId || 0,
+                            finYearId: currentFinYear?.finYearId || 1900,
+                        }}
+                        columns={getColumns()}
+                        height="calc(100vh - 250px)"
+                        instance={instance}
+                        minWidth='600px'
+                        rowHeight={40}
+                        treeColumnIndex={0}
                     />
                 </div>
             </div>
         </CompAccountsContainer>
     )
 
-    // return (<CompContentContainer title='Trial balance'
-    //     CustomControl={() => <WidgetButtonRefresh handleRefresh={async () => await loadData()} />}>
-    //     {getContent()}
-    // </CompContentContainer>)
-
-    function getContent() {
-        return (<div>
-            <TreeGridComponent
-                dataSource={trialBalanceData}
-                childMapping="children"
-                treeColumnIndex={0}
-            // toolbar={['Search']}
-            >
-                <ColumnsDirective>
-                    {/* <ColumnDirective field="accCode" headerText="Account Code" width="120" textAlign="Left" /> */}
-                    <ColumnDirective field="accName" headerText="Account Name" width="200" textAlign="Left" />
-                    <ColumnDirective field="accType" headerText="Account Type" width="100" textAlign="Left" />
-                    <ColumnDirective field="opening" headerText="Opening Balance" width="150" textAlign="Right" format="N2" />
-                    <ColumnDirective field="debit" headerText="Debit" width="100" textAlign="Right" format="N2" />
-                    <ColumnDirective field="credit" headerText="Credit" width="100" textAlign="Right" format="N2" />
-                    <ColumnDirective field="closing" headerText="Closing Balance" width="150" textAlign="Right" format="N2" />
-                </ColumnsDirective>
-                {/* <AggregatesDirective>
-                <AggregateDirective>
-                    <AggregateColumnsDirective>
-                        <AggregateColumnDirective
-                            field="debit"
-                            type="Sum"
-                            format="N2"
-                            footerTemplate="Total Debit: {Sum}"
-                        />
-                        <AggregateColumnDirective
-                            field="credit"
-                            type="Sum"
-                            format="N2"
-                            footerTemplate="Total Credit: {Sum}"
-                        />
-                    </AggregateColumnsDirective>
-                </AggregateDirective>
-            </AggregatesDirective> */}
-                <Inject services={[Aggregate]} />
-            </TreeGridComponent>
-        </div>)
-    }
-
-
-
-    async function loadData() {
-        const args: GraphQLQueryArgsType = {
-            buCode: currentBusinessUnit.buCode,
-            dbParams: isExternalDb ? decodedDbParamsObject : undefined,
-            sqlArgs: {
-                branchId: 1,
-                finYearId: 2024
+    function getColumns(): SyncFusionTreeGridColumnType[] {
+        return ([
+            {
+                field: 'accName',
+                headerText: 'Acc Name',
+                width: 250,
+                textAlign: 'Left'
+            },
+            {
+                field: 'opening',
+                headerText: 'Opening',
+                width: 90,
+                textAlign: 'Right',
+                format:'N2'
+            },
+            {
+                field: 'debit',
+                headerText: 'Debits',
+                width: 90,
+                textAlign: 'Right',
+                format:'N2'
+            },
+            {
+                field: 'credit',
+                headerText: 'Credits',
+                width: 90,
+                textAlign: 'Right',
+                format:'N2'
+            },
+            {
+                field: 'closing',
+                headerText: 'Closing',
+                width: 90,
+                textAlign: 'Right',
+                format:'N2'
+            },
+            {
+                field:'accType',
+                headerText:'Type',
+                width:40,
+                textAlign:'Center'
             }
-        }
-        try {
-            const res: any = await Utils.queryGraphQL(
-                GraphQLQueriesMap.trialBalance(dbName || '', args), GraphQLQueriesMap.trialBalance.name
-            )
-            if (res?.data?.trialBalance) {
-                dispatch(setTrialBalance(res.data))
-            }
-        } catch (e: any) {
-            console.log(e?.message)
-        }
+
+        ])
     }
 }

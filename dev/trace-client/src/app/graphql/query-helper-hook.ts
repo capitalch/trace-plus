@@ -11,7 +11,7 @@ import { AppDispatchType } from '../store/store'
 import { useDispatch } from 'react-redux'
 import { resetQueryHelperData, setQueryHelperData } from './query-helper-slice'
 
-export function useQueryHelper({
+export function useQueryHelper ({
   addUniqueKeyToJson = false,
   dbName = GLOBAL_SECURITY_DATABASE_NAME,
   getQueryArgs,
@@ -20,8 +20,8 @@ export function useQueryHelper({
   isExecQueryOnLoad = true
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
-
-  const [getGenericQueryData, { error, loading }] = useLazyQuery(
+  const args: any = getQueryArgs()
+  const [getQueryData, { error, loading }] = useLazyQuery(
     graphQlQueryFromMap(dbName, getQueryArgs()),
     { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
   )
@@ -40,12 +40,15 @@ export function useQueryHelper({
     Utils.showErrorMessage(error)
   }
 
-  async function loadData() {
-    const result: any = await getGenericQueryData({ fetchPolicy: 'no-cache' })
-    if (result?.data?.genericQuery?.error?.content) {
-      Utils.showGraphQlErrorMessage(result.data.genericQuery.error.content)
+  async function loadData () {
+    const queryName: string = graphQlQueryFromMap.name
+    const result: any = await getQueryData({ fetchPolicy: 'no-cache' })
+    if (result?.data?.[queryName]?.error?.content) {
+      Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
     }
-    const data = _.isEmpty(result?.data?.genericQuery) ? [] : result.data.genericQuery
+    const data = _.isEmpty(result?.data?.[queryName])
+      ? []
+      : result.data[queryName]
     if (addUniqueKeyToJson) {
       if (data?.[0]?.jsonResult) {
         data[0].jsonResult = Utils.addUniqueKeysToJson(data[0].jsonResult)
@@ -65,7 +68,10 @@ type QueryHelperType = {
   addUniqueKeyToJson?: boolean
   dbName?: string
   getQueryArgs: () => GraphQLQueryArgsType
-  graphQlQueryFromMap?: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode
+  graphQlQueryFromMap?: (
+    dbName: string,
+    val: GraphQLQueryArgsType
+  ) => DocumentNode
   instance: string
   isExecQueryOnLoad?: boolean
 }

@@ -3,15 +3,21 @@ import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
+import { DocumentNode } from "graphql"
 
 export function CompSyncfusionTreeGrid({
     addUniqueKeyToJson = false,
     // allowRowDragAndDrop = false,
     allowSorting = false,
+    buCode = undefined,
     childMapping,
     className = '',
     columns,
     dataBound,
+    dbName,
+    dbParams,
+    graphQlQueryFromMap,
     gridDragAndDropSettings,
     height,
     instance,
@@ -25,7 +31,7 @@ export function CompSyncfusionTreeGrid({
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, childMapping, columns, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, buCode, childMapping, columns, dbName, dbParams,graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
@@ -158,7 +164,6 @@ export function CompSyncfusionTreeGrid({
             expandedKeys.push(args.data.pkey)
         }
     }
-
 }
 
 type GridDragAndDropSettingsType = {
@@ -173,10 +178,17 @@ export type CompSyncfusionTreeGridType = {
     addUniqueKeyToJson?: boolean
     allowRowDragAndDrop?: boolean
     allowSorting?: boolean
+    buCode?: string
     childMapping: string
     className?: string
     columns: SyncFusionTreeGridColumnType[]
     dataBound?: (args: any) => void
+    dbName?: string
+    dbParams?: { [key: string]: string | undefined },
+    graphQlQueryFromMap?: (
+        dbName: string,
+        val: GraphQLQueryArgsType
+    ) => DocumentNode,
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     height?: string
     instance: string
@@ -186,7 +198,7 @@ export type CompSyncfusionTreeGridType = {
     onRowDrop?: (args: any) => void
     rowHeight?: number
     sqlArgs: SqlArgsType
-    sqlId: string
+    sqlId?: string
     treeColumnIndex: number
 }
 
