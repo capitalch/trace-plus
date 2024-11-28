@@ -10,7 +10,7 @@ export function useCompSyncfusionTreeGrid({
 }: CompSyncfusionTreeGridType) {
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,
-        sqlArgs: sqlArgs
+        sqlArgs: sqlArgs,
     }
 
     const { loadData, loading, } = useQueryHelper({

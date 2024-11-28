@@ -5,6 +5,7 @@
 - Provide appropriate logging at server
 - Show client name in admin screens
 - In Accounts Info modal windows title should be aligned with grid
+- At logout make sure that redux store is initialized by using redux tools
 - Trial balance
 	- Client side
 		- generic treeGrid
