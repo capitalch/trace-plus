@@ -8,7 +8,8 @@
 - At logout make sure that redux store is initialized by using redux tools
 - Trial balance
 	- Client side
-		- Change of branch not working
+															- Show Dr / Cr using template column
+															- Change of branch not working
 														- generic treeGrid
 															- Set data instance for Trial balance
 															- Screen formatting

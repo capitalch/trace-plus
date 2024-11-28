@@ -51,7 +51,6 @@ export function AdminLinkUsersWithBu() {
                                 targetId: linksInstance
                             }}
                         hasCheckBoxSelection={true}
-                        // hasIndexColumn={true}
                         height="calc(100vh - 290px)"
                         instance={businessUsersInstance}
                         minWidth='600px'

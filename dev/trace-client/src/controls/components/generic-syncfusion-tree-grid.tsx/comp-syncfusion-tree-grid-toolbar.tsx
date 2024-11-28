@@ -32,11 +32,11 @@ export function CompSyncFusionTreeGridToolbar({
         isCollapsedStatePersist: false
     }
 
-    return (<div className={clsx("flex justify-between  align-middle", className)}>
-        <h2 className="mt-0 text-lg font-medium text-primary-500">{title}</h2>
+    return (<div className={clsx("flex justify-between items-center", className)}>
+        <label className="text-lg font-medium text-primary-500 mb-2">{title}</label>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
-
+            
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
                 <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
