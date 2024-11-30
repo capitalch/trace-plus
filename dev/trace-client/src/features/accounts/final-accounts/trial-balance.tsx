@@ -8,6 +8,9 @@ import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../c
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { useContext, useEffect } from "react";
+import { ReduxCompSwitch } from "../../../controls/components/redux-components/redux-comp-switch";
+import { reduxCompSwitchSelectorFn } from "../../../controls/components/redux-components/redux-comp-slice";
+import { RootStateType } from "../../../app/store/store";
 
 export function TrialBalance() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -18,7 +21,7 @@ export function TrialBalance() {
     const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
     const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
-
+    const isAllBranches: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, instance), shallowEqual) || false
     const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     useEffect(() => {
@@ -26,16 +29,19 @@ export function TrialBalance() {
         if (loadData) {
             loadData()
         }
-    }, [currentBusinessUnit, currentFinYear, currentBranch])
+    }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
 
     return (
         <CompAccountsContainer>
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col '>
                     <CompSyncFusionTreeGridToolbar className='mt-2'
+                        CustomControl={() => <ReduxCompSwitch instance={instance} className="mr-2" leftLabel="This branch" rightLabel="All branches" />}
                         title='Trial Balance'
                         isLastNoOfRows={false}
                         instance={instance}
+                        width="calc(100vw - 250px)" // This stops unnecessary flickers
+                        // minWidth='950px'
                     />
                     <CompSyncfusionTreeGrid
                         // aggregates={getBusinessUserssAggregates()}
@@ -47,13 +53,13 @@ export function TrialBalance() {
                         graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
                         isLoadOnInit={false}
                         sqlArgs={{
-                            branchId: currentBranch?.branchId || 0,
+                            branchId: isAllBranches ? null : currentBranch?.branchId || 0,
                             finYearId: currentFinYear?.finYearId || 1900,
                         }}
                         columns={getColumns()}
                         height="calc(100vh - 230px)"
                         instance={instance}
-                        minWidth='600px'
+                        minWidth='950px'
                         rowHeight={35}
                         treeColumnIndex={0}
                     />

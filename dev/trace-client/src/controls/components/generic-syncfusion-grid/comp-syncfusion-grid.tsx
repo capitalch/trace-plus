@@ -3,7 +3,6 @@ import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
-// import { GlobalContext } from "../../../App"
 import { RootStateType } from "../../../app/store/store"
 import { Utils } from "../../../utils/utils"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
@@ -11,7 +10,6 @@ import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-
 export function CompSyncFusionGrid({
     aggregates,
     className = '',
-    // clipMode = undefined,
     columns,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
@@ -63,7 +61,6 @@ export function CompSyncFusionGrid({
         <div style={{ minWidth: `${minWidth}` }}>
             <GridComponent
                 allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
-                // clipMode={clipMode}
                 allowPdfExport={true}
                 allowExcelExport={true}
                 allowResizing={true}
@@ -78,7 +75,6 @@ export function CompSyncFusionGrid({
                 height={height}
                 id={instance}
                 ref={gridRef}
-                // rowDataBound={onRowDataBound}
                 rowDragStart={gridDragAndDropSettings?.onRowDragStart}
                 rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
                 rowDrop={gridDragAndDropSettings?.onRowDrop}
@@ -125,10 +121,6 @@ export function CompSyncFusionGrid({
             gridRef.current.search(searchString)
         }
     }
-
-    // function onRowDataBound(args: any) {
-    //     // args.row.querySelector('td.e-rowdragdropcell').style.display = 'none';
-    // }
 }
 
 type GridDragAndDropSettingsType = {
@@ -143,7 +135,6 @@ type GridDragAndDropSettingsType = {
 export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
     className?: string
-    // clipMode?: 'Clip' | 'Ellipsis' | 'EllipsisWithTooltip' | undefined
     columns: SyncFusionGridColumnType[]
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean

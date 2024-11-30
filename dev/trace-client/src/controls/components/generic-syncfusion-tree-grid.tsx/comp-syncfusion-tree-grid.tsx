@@ -8,7 +8,6 @@ import { DocumentNode } from "graphql"
 
 export function CompSyncfusionTreeGrid({
     addUniqueKeyToJson = false,
-    // allowRowDragAndDrop = false,
     allowSorting = false,
     buCode = undefined,
     childMapping,
@@ -23,7 +22,6 @@ export function CompSyncfusionTreeGrid({
     instance,
     isLoadOnInit = true,
     minWidth = '1200px',
-    // onRowDrop,
     pageSize = 50,
     rowHeight = 20,
     sqlArgs,
@@ -74,11 +72,9 @@ export function CompSyncfusionTreeGrid({
                 allowTextWrap={true}
                 childMapping={childMapping}
                 className={className}
-                // clipMode='Ellipsis'
                 collapsed={onRowCollapsed}
                 created={onCreated}
                 dataSource={selectedData}
-                // enablePersistence={true}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
                 expanded={onRowEpanded}
                 gridLines="Both"
@@ -216,5 +212,5 @@ export type SyncFusionTreeGridColumnType = {
 }
 
 export type SqlArgsType = {
-    [key: string]: string | number
+    [key: string]: string | number | null
 }

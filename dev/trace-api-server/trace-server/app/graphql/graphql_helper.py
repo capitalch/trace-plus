@@ -279,6 +279,7 @@ async def update_user_helper(info, value: str):
                 tHash = getPasswordHash(pwd)
                 xData["hash"] = tHash
         data = await exec_sql_object(dbName=operationName, sqlObject=sqlObj)
+        # Mail settings: in config.py: Only effective as long as domain kushinfotech.in is working from milesweb. At present subscription is for 3 years till Nov 2027
         await send_mail_for_update_user(isUpdate, xData, pwd)
     except Exception as e:
         return create_graphql_exception(e)
@@ -358,6 +359,7 @@ async def send_mail_for_change_pwd(
         await send_email(subject=subject, body=body, recipients=recipients)
     except Exception as e:
         raise AppHttpException(
+            message="Error",
             detail=Messages.err_email_send_error_server,
             error_code="e1016",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -374,6 +376,7 @@ async def send_mail_for_change_uid(
         await send_email(subject=subject, body=body, recipients=recipients)
     except Exception as e:
         raise AppHttpException(
+            message="Error",
             detail=Messages.err_email_send_error_server,
             error_code="e1016",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -412,6 +415,7 @@ async def send_mail_for_update_user(isUpdate: bool, xData: any, pwd: str):
         await send_email(subject=subject, body=body, recipients=recipients)
     except Exception as e:
         raise AppHttpException(
+            message="Error",
             detail=Messages.err_email_send_error_server,
             error_code="e1016",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

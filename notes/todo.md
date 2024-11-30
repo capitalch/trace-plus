@@ -3,11 +3,17 @@
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
 - Provide appropriate logging at server
+- There are some issues related to bu and finyear when a new admin use logs in
 - Show client name in admin screens
 - In Accounts Info modal windows title should be aligned with grid
 - At logout make sure that redux store is initialized by using redux tools
+- Check why query execution taking longer time. Is is because of external database?
+- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
+- Provide client name and client code in the email when new Admin user is created in super admin
 - Trial balance
 	- Client side
+		- TreeGrid width not properly managed when screen size comes down
+															- When fetching, the screen diminishes and then expands
 															- Show Dr / Cr using template column
 															- Change of branch not working
 														- generic treeGrid
@@ -20,7 +26,7 @@
 															- Expand all
 															- Search
 															- Export
-		- This branch / all branches
+															- This branch / all branches
 
 															- Trial balance at server
 															- Trial balance at client

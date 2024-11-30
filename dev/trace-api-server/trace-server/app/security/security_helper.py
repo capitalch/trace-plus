@@ -162,7 +162,8 @@ async def login_helper(clientId, username, password):
         raise e
     except Exception as e:
         raise AppHttpException(
-            status_code=status.HTTP_401_UNAUTHORIZED, error_code="e1004", message=str(e)
+            status_code=status.HTTP_401_UNAUTHORIZED, error_code="e1004", 
+            message=str(e)
         )
 
 

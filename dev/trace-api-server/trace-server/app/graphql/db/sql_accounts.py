@@ -42,8 +42,8 @@ class SqlAccounts:
             JOIN "AccM" a ON h."parentId" = a."id"
         ),
         -- Constants for branch and financial year
-         "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-        --"branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+        "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
 
         -- Base data preparation
         cte1 AS (
@@ -58,8 +58,8 @@ class SqlAccounts:
             JOIN "TranD" d ON h.id = d."tranHeaderId"
             JOIN "AccM" a ON a.id = d."accId"
             WHERE h."finYearId" = (TABLE "finYearId")
-            AND h."branchId" = (TABLE "branchId")
-
+            -- AND h."branchId" = (TABLE "branchId")
+			AND (SELECT COALESCE((TABLE "branchId"), h."branchId") = h."branchId")
             UNION ALL
 
             SELECT 
@@ -72,7 +72,8 @@ class SqlAccounts:
             FROM "AccOpBal" b
             JOIN "AccM" a ON a.id = b."accId"
             WHERE b."finYearId" = (TABLE "finYearId")
-            AND b."branchId" = (TABLE "branchId")
+            --AND b."branchId" = (TABLE "branchId")
+			AND (SELECT COALESCE((TABLE "branchId"), b."branchId") = b."branchId")
         ),
 
         -- Summarize data at each hierarchy level

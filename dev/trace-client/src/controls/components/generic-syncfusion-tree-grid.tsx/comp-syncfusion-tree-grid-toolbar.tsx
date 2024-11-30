@@ -22,7 +22,9 @@ export function CompSyncFusionTreeGridToolbar({
     , isPdfExportAsLandscape = false
     , isRefresh = true
     , isSearch = true
+    , minWidth
     , title
+    , width
 }: CompSyncFusionTreeGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
 
@@ -32,11 +34,11 @@ export function CompSyncFusionTreeGridToolbar({
         isCollapsedStatePersist: false
     }
 
-    return (<div className={clsx("flex justify-between items-center", className)}>
-        <label className="text-lg font-medium text-primary-500 mb-2">{title}</label>
+    return (<div className={clsx("flex justify-between items-center", className)} style ={{minWidth:`${minWidth}`, width:`${width}`}}>
+        <label className="text-lg font-medium text-primary-500 mb-1">{title}</label>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
-            
+
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
                 <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
@@ -108,5 +110,7 @@ type CompSyncFusionTreeGridToolbarType = {
     isPdfExportAsLandscape?: boolean
     isRefresh?: boolean
     isSearch?: boolean
+    minWidth?:string
     title: string,
+    width?: string
 }
