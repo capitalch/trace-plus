@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from utils import router, LineItem, AppHttpException, securityRouter
 from utils.graphql import GraphQLApp
 
-
 class Item(BaseModel):
     name: str = "abc"
     price: float

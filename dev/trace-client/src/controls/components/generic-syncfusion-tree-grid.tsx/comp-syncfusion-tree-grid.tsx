@@ -1,13 +1,14 @@
-import { useContext, useEffect, useRef } from "react"
+import { FC, useContext, useEffect, useRef } from "react"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 
 export function CompSyncfusionTreeGrid({
     addUniqueKeyToJson = false,
+    aggregates,
     allowSorting = false,
     buCode = undefined,
     childMapping,
@@ -29,7 +30,7 @@ export function CompSyncfusionTreeGrid({
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, buCode, childMapping, columns, dbName, dbParams,graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, buCode, childMapping, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
@@ -90,11 +91,17 @@ export function CompSyncfusionTreeGrid({
                 rowDropSettings={rowDropOptions}
                 rowHeight={rowHeight}
                 searchSettings={searchOptions}
-                treeColumnIndex={treeColumnIndex}
-            >
+                treeColumnIndex={treeColumnIndex}>
                 <ColumnsDirective>
                     {getColumnDirectives()}
                 </ColumnsDirective>
+                {aggregates && <AggregatesDirective>
+                    <AggregateDirective>
+                        <AggregateColumnsDirective>
+
+                        </AggregateColumnsDirective>
+                    </AggregateDirective>
+                </AggregatesDirective>}
                 {/* <AggregatesDirective>
                     <AggregateDirective>
                         <AggregateColumnsDirective>
@@ -171,6 +178,7 @@ type GridDragAndDropSettingsType = {
 }
 
 export type CompSyncfusionTreeGridType = {
+    aggregates?: SyncFusionAggregateType[]
     addUniqueKeyToJson?: boolean
     allowRowDragAndDrop?: boolean
     allowSorting?: boolean
@@ -209,6 +217,13 @@ export type SyncFusionTreeGridColumnType = {
     type?: 'string' | 'number' | 'boolean' | 'date' | 'datetime'
     visible?: boolean
     width?: number
+}
+
+export type SyncFusionAggregateType = {
+    field: string
+    type?: 'Average' | 'Count' | 'Sum' | 'Min' | 'Max' | 'Custom'
+    footerTemplate?: FC
+    format?: 'N2' | 'N0'
 }
 
 export type SqlArgsType = {

@@ -40,7 +40,7 @@ export function AdminLinkUsersWithBu() {
                     />
                     <label className='mt-2 font-medium text-primary-300'>{Messages.messBusinessUsersDragFrom}</label>
                     <CompSyncFusionGrid
-                        aggregates={getBusinessUserssAggregates()}
+                        aggregates={getBusinessUsersAggregates()}
                         className="mt-4"
                         columns={getUsersColumns()}
                         gridDragAndDropSettings={
@@ -93,7 +93,7 @@ export function AdminLinkUsersWithBu() {
         </div>
     )
 
-    function getBusinessUserssAggregates(): SyncFusionAggregateType[] {
+    function getBusinessUsersAggregates(): SyncFusionAggregateType[] {
         return [{
             field: 'roleName',
             type: "Count",

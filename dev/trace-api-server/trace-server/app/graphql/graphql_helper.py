@@ -20,6 +20,8 @@ from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
 from app.graphql.handlers.import_secured_controls import import_secured_controls
+from .db.helpers.psycopg2_helper import exec_sql as exec_sql_psycopg2
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -340,9 +342,14 @@ async def trialBalance_balanceSheet_profitAndLoss(
     schema = valueDict.get("buCode", None)
     sql = SqlAccounts.get_trialBalance_balanceSheet_profitAndLoss
     sqlArgs = valueDict.get("sqlArgs", {})
+    
     data = await exec_sql(
         dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
     )
+
+    # data = exec_sql_psycopg2(
+    #     dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+    # )
     if type == "TB":
         return data
     if type == "BS":

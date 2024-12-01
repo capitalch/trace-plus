@@ -28,6 +28,7 @@ export function useCompSyncfusionTreeGrid({
 
     const selectedData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[instance]?.data?.[0]?.jsonResult
+        console.log(JSON.stringify(ret))
         return (ret)
     })
 

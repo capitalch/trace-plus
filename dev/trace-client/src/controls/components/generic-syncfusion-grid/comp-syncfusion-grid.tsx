@@ -54,8 +54,6 @@ export function CompSyncFusionGrid({
         operator: 'contains'
     }
 
-    // const rowDropOptions: RowDropSettingsModel = { targetID: gridDragAndDropSettings?.targetId }
-
     return (
         //The div container is important. The minWidth works with style only
         <div style={{ minWidth: `${minWidth}` }}>
@@ -86,7 +84,6 @@ export function CompSyncFusionGrid({
                 searchSettings={searchOptions}
                 selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
             >
-
                 <ColumnsDirective>
                     {getColumnDirectives()}
                 </ColumnsDirective>

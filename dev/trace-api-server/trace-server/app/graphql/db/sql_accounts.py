@@ -18,7 +18,7 @@ class SqlAccounts:
             , 'allSettings', (select json_agg(row_to_json(c)) from cte3 c)
 	) as "jsonResult" 
     """
- 
+    
     get_trialBalance_balanceSheet_profitAndLoss = """
         -- Recursive Query to Build Account Hierarchy
         WITH RECURSIVE hier AS (
@@ -29,9 +29,7 @@ class SqlAccounts:
                 "credit", 
                 "parentId"
             FROM cte1
-
             UNION ALL
-
             SELECT 
                 a."id" AS "accId", 
                 h."opening", 
@@ -43,7 +41,7 @@ class SqlAccounts:
         ),
         -- Constants for branch and financial year
         "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+         --"branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
 
         -- Base data preparation
         cte1 AS (
@@ -58,7 +56,6 @@ class SqlAccounts:
             JOIN "TranD" d ON h.id = d."tranHeaderId"
             JOIN "AccM" a ON a.id = d."accId"
             WHERE h."finYearId" = (TABLE "finYearId")
-            -- AND h."branchId" = (TABLE "branchId")
 			AND (SELECT COALESCE((TABLE "branchId"), h."branchId") = h."branchId")
             UNION ALL
 
@@ -102,11 +99,18 @@ class SqlAccounts:
         ),
 
         -- Calculate profit or loss
-        cte3 AS (
-            SELECT SUM(opening + debit - credit) AS "profitOrLoss"
+        cte3 AS ( SELECT
+			SUM(opening) as "sumOpening",
+			SUM(debit) as "sumDebits",
+			SUM(credit) as "sumCredits",
+			SUM(opening + debit - credit) as "sumClosing",
+			-SUM(CASE WHEN "accType" = 'L' THEN opening + debit - credit ELSE 0 END) AS "sumLiabs",
+			SUM(CASE WHEN "accType" = 'A' THEN opening + debit - credit ELSE 0 END) AS "sumAssets",
+			-SUM(CASE WHEN "accType" = 'I' THEN opening + debit - credit ELSE 0 END) AS "sumIncomes",
+			SUM(CASE WHEN "accType" = 'E' THEN opening + debit - credit ELSE 0 END) AS "sumExpences",
+			SUM(CASE WHEN "accType" in('L','A') THEN opening + debit - credit ELSE 0 END) as "profitOrLoss"
             FROM cte1 c
             JOIN "AccM" a ON a."id" = c."accId"
-            WHERE "accType" IN ('A', 'L')
         ),
 
         -- Final aggregation
@@ -140,13 +144,20 @@ class SqlAccounts:
                 c."accType", 
                 c."accName"
         )
-
         -- Build JSON result
         SELECT JSON_BUILD_OBJECT(
             'trialBalance', (SELECT JSON_AGG(a) FROM cte4 a),
             'profitOrLoss', (SELECT "profitOrLoss" FROM cte3),
             'balanceSheet', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('A', 'L')),
-            'profitAndLoss', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('E', 'I'))
+            'profitAndLoss', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('E', 'I')),
+			'sumLiabs', (select "sumLiabs" from cte3),
+			'sumAssets', (select "sumAssets" from cte3),
+			'sumIncomes', (select "sumIncomes" from cte3),
+			'sumExpences', (select "sumExpences" from cte3),
+			'sumOpening', (select "sumOpening" from cte3),
+			'sumClosing', (select "sumClosing" from cte3),
+			'sumDebits', (select "sumDebits" from cte3),
+			'sumCredits', (select "sumCredits" from cte3)
         ) AS "jsonResult"
     """
  

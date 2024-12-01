@@ -74,8 +74,3 @@ type QueryHelperType = {
   instance: string
   isExecQueryOnLoad?: boolean
 }
-
-// const [getGenericQueryData, { error, loading }] = useLazyQuery(
-//   GraphQLQueriesMap.genericQuery(dbName, getQueryArgs()),
-//   { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
-// )

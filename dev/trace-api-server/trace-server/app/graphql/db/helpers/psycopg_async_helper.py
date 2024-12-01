@@ -4,6 +4,8 @@ from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
 from app.config import Config
 from typing import Any
+from psycopg_pool import AsyncConnectionPool
+import psycopg
 
 dbParams: dict = {
     "user": Config.DB_USER,
@@ -21,6 +23,10 @@ def get_conn_info(
     # Ensure db_params has the dbname key set to dbName if not already present
     # db_params.setdefault("dbname", dbName)
     db_params['dbname'] = dbName
+    # for keepalive settings. Doing this helped overcoming error whens some queries which took more time would show server closed connection.
+    # After using keepalives, that error did not happen even once
+    db_params['keepalives'] = 1
+    db_params['keepalives_idle'] = 30
     # db_params.update({"dbname": dbName}) # dbName and dbname are different
     connInfo = make_conninfo("", **db_params)
     return connInfo
@@ -40,31 +46,39 @@ async def exec_sql(
 
 
 async def do_process(
-    connInfo, schema, dbName, sql, sqlArgs
-):  # Implementation without AsyncConnectionPool
+    connInfo: str, schema: str, dbName: str, sql: str, sqlArgs
+):
     records = []
     try:
-        async with await AsyncConnection.connect(connInfo) as aconn:
-            await aconn.execute(f"set search_path to {schema or 'public'}")
-            async with aconn.cursor(row_factory=dict_row) as acur:
-                await acur.execute(sql, sqlArgs)
-                # Following way dealing is required. Otherwise error
-                if acur.rowcount > 0:
-                    if(acur.description): # select statement
-                        records = await acur.fetchall()
-                    else: # insert update or delete statement
-                        records = acur.rowcount
-            await acur.close()
-            await aconn.commit()
-            await aconn.close()
+        # Establish connection
+        async with await AsyncConnection.connect(connInfo, row_factory=dict_row) as conn:
+            await conn.set_autocommit(False)
+            # Set the schema
+            schema_to_set = schema or "public"
+            async with conn.cursor() as cur:
+                await cur.execute(f"SET search_path TO {schema_to_set}")
+
+                # Execute the query
+                await cur.execute(sql, sqlArgs)
+
+                # Fetch data for SELECT queries or row count for DML
+                if cur.rowcount > 0:
+                    records = await cur.fetchall() if cur.description else cur.rowcount
+
+            # Commit changes
+            await conn.commit()
+
+        return records
+
     except OperationalError as e:
-        raise e
+        # OperationalError (e.g., connection issues)
+        raise RuntimeError(f"Database operation failed: {e}") from e
     except Exception as e:
-        raise e
-    return records
+        # General exception with additional context
+        raise RuntimeError(
+            f"Unexpected error during database operation: {e}") from e
 
 
-# Data manipulation language sql. No return value. Not inside a transaction
 async def exec_sql_dml(
     dbName: str = Config.DB_SECURITY_DATABASE,
     db_params: dict[str, str] = dbParams,
@@ -150,7 +164,8 @@ def get_sql(xData, tableName, fkeyName, fkeyValue):
     if xData.get("id", None):  # update
         sql, valuesTuple = get_update_sql(xData, tableName)
     else:  # insert
-        sql, valuesTuple = get_insert_sql(xData, tableName, fkeyName, fkeyValue)
+        sql, valuesTuple = get_insert_sql(
+            xData, tableName, fkeyName, fkeyValue)
     return (sql, valuesTuple)
 
 
@@ -162,7 +177,8 @@ def get_insert_sql(xData, tableName, fkeyName, fkeyValue):
 
     for idx, name in enumerate(fieldNamesList):
         fieldNamesList[idx] = f""" "{name}" """  # surround fields with ""
-    fieldsString = ",".join(fieldNamesList)  # f'''({','.join( fieldNamesList   )})'''
+    fieldsString = ",".join(
+        fieldNamesList)  # f'''({','.join( fieldNamesList   )})'''
 
     placeholderList = ["%s"] * fieldsCount
     placeholdersForValues = ", ".join(placeholderList)
@@ -204,3 +220,65 @@ async def process_deleted_ids(sqlObject, acur: Any):
     ret = ret.rstrip(",") + ")"
     sql = f"""delete from "{tableName}" where id in{ret}"""
     await acur.execute(sql)
+
+# async def do_process_old(
+#     connInfo, schema, dbName, sql, sqlArgs
+# ):
+#     records = []
+#     try:
+#         async with await AsyncConnection.connect(connInfo) as aconn:
+#             await aconn.set_autocommit(False)
+#             await aconn.execute(f"set search_path to {schema or 'public'}")
+#             async with aconn.cursor(row_factory=dict_row) as acur:
+#                 await acur.execute(sql, sqlArgs)
+#                 # Following way dealing is required. Otherwise error
+#                 if acur.rowcount > 0:
+#                     if (acur.description):  # select statement
+#                         records = await acur.fetchall()
+#                     else:  # insert update or delete statement
+#                         records = acur.rowcount
+#                 # await acur.close()
+#             await aconn.commit()
+#             # await acur.close()
+#             # await aconn.close()
+#     except OperationalError as e:
+#         raise e
+#     except Exception as e:
+#         raise e
+#     return records
+
+
+
+# async def do_process_pool(
+#     connInfo: str, schema: str, dbName: str, sql: str, sqlArgs
+# ):
+#     records = []
+#     schema_to_set = schema or "public"
+#     async with AsyncConnectionPool(conninfo=connInfo, min_size=1, max_size=300) as pool:
+#         try:
+#             # Acquire a connection from the dynamic pool
+#             async with pool.connection() as conn:
+#                 async with conn.cursor(row_factory=dict_row) as cur:
+#                     # Set schema
+#                     await cur.execute(f"SET search_path TO {schema_to_set}")
+
+#                     # Execute the query
+#                     await cur.execute(sql, sqlArgs)
+
+#                     # Fetch data for SELECT queries or row count for DML
+#                     if cur.rowcount > 0:
+#                         if cur.description:  # SELECT statement
+#                             records = await cur.fetchall()
+#                         else:  # INSERT/UPDATE/DELETE statement
+#                             records = cur.rowcount
+
+#                 # Commit changes
+#                 await conn.commit()
+
+#         except OperationalError as e:
+#             raise RuntimeError(f"Database operation failed: {e}") from e
+#         except Exception as e:
+#             raise RuntimeError(
+#                 f"Unexpected error during database operation: {e}") from e
+
+#     return records
