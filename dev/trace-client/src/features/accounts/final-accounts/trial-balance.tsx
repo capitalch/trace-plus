@@ -1,4 +1,5 @@
 import { shallowEqual, useSelector } from "react-redux";
+import { Decimal } from 'decimal.js'
 import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, UserDetailsType } from "../../login/login-slice";
 import { Utils } from "../../../utils/utils";
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
@@ -41,13 +42,13 @@ export function TrialBalance() {
                         isLastNoOfRows={false}
                         instance={instance}
                         width="calc(100vw - 250px)" // This stops unnecessary flickers
-                    // minWidth='950px'
                     />
                     <CompSyncfusionTreeGrid
                         aggregates={getTrialBalanceAggregates()}
                         buCode={currentBusinessUnit.buCode}
                         childMapping="children"
                         className=""
+                        dataBound={onDataBound}
                         dbName={dbName}
                         dbParams={decodedDbParamsObject}
                         graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
@@ -57,16 +58,23 @@ export function TrialBalance() {
                             finYearId: currentFinYear?.finYearId || 1900,
                         }}
                         columns={getColumns()}
-                        height="calc(100vh - 230px)"
+                        height="calc(100vh - 250px)"
                         instance={instance}
                         minWidth='950px'
-                        rowHeight={35}
                         treeColumnIndex={0}
                     />
                 </div>
             </div>
         </CompAccountsContainer>
     )
+
+    function onDataBound(e: any) {
+        // const ref: any = context.CompSyncFusionTreeGrid[instance]?.gridRef
+        // if(ref)
+        //     {
+        //         ref.current.refresh()
+        //     }
+    }
 
     function getColumns(): SyncFusionTreeGridColumnType[] {
         return ([
@@ -157,63 +165,27 @@ export function TrialBalance() {
                 type: 'Custom',
             }
         ])
-
     }
 
     function customDebitCreditAggregate(data: any, colType: string) {
-        const res: any = data.result
-            .filter((item: any) => !item.parentId) // Filter only top-level rows
-            .reduce((acc: number, current: any) => {
-                return acc + (current[colType])
-            }, 0)
-
-        // .reduce((acc: number, current: any) => {
-        //     const sign = (dcColName || '') === 'C' ? -1: 1
-        //     return (acc + (
-        //         (
-        //             sign
-        //         ) * current[colType]
-        //     ), 0)
-        // })
-        // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
-        // .toNumber(); // Convert back to a native number if needed
-        return (Math.abs(res))
-        // return(res)
-        // return (new Intl.NumberFormat('en-US', {
-        //     style: 'decimal',
-        //     minimumFractionDigits: 2,
-        //     maximumFractionDigits: 2,
-        // }).format(res));
+        const res: Decimal = data?.result
+            .filter((item: any) => !item?.parentId) // Filter only top-level rows
+            .reduce((acc: Decimal, current: any) => {
+                return acc.plus(new Decimal(current[colType] || 0)); // Use Decimal for addition
+            }, new Decimal(0)); // Initialize accumulator as Decimal
+        const formatter = Utils.getDecimalFormatter()
+        return formatter.format(res.abs().toNumber()); // Get the absolute value and convert back to a number
     }
 
     function customOpeningClosingAggregate(data: any, colType: string, dcColName: string) {
-        // let sign: number = 1
-        // if ((dcColName || '') === 'C') {
-        //     sign = -1
-        // }
-        const res: any = data.result
-            .filter((item: any) => !item.parentId) // Filter only top-level rows
-            .reduce((acc: number, current: any) => {
-                return acc + ((current[dcColName] === 'C' ? -1 : 1) * current[colType])
-            }, 0)
-
-        // .reduce((acc: number, current: any) => {
-        //     const sign = (dcColName || '') === 'C' ? -1: 1
-        //     return (acc + (
-        //         (
-        //             sign
-        //         ) * current[colType]
-        //     ), 0)
-        // })
-        // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
-        // .toNumber(); // Convert back to a native number if needed
-        return (Math.abs(res))
-        // return(res)
-        // return (new Intl.NumberFormat('en-US', {
-        //     style: 'decimal',
-        //     minimumFractionDigits: 2,
-        //     maximumFractionDigits: 2,
-        // }).format(res));
+        const res: Decimal = data?.result
+            .filter((item: any) => !item?.parentId) // Filter only top-level rows
+            .reduce((acc: Decimal, current: any) => {
+                const multiplier = current[dcColName] === 'C' ? -1 : 1; // Determine the multiplier based on condition
+                return acc.plus(new Decimal(multiplier).times(new Decimal(current[colType] || 0))); // Multiply and add with Decimal
+            }, new Decimal(0)); // Initialize accumulator as Decimal
+        const formatter = Utils.getDecimalFormatter()
+        return formatter.format(res.abs().toNumber()); // Get the absolute value and convert back to a number
     }
 
     function openingColumnTemplate(props: any) {
@@ -233,5 +205,16 @@ export function TrialBalance() {
         </div>
         return (ret)
     }
-
 }
+
+
+// .reduce((acc: number, current: any) => {
+//     const sign = (dcColName || '') === 'C' ? -1: 1
+//     return (acc + (
+//         (
+//             sign
+//         ) * current[colType]
+//     ), 0)
+// })
+// .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
+// .toNumber(); // Convert back to a native number if needed

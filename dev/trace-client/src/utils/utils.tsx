@@ -17,6 +17,7 @@ export const Utils: UtilsType = {
     getCurrentFinYearId: getCurrentFinYearId,
     getCurrentLoginInfo: getCurrentLoginInfo,
     getDbNameDbParams: getDbNameDbParams,
+    getDecimalFormatter: getDecimalFormatter,
     getHostUrl: getHostUrl,
     getReduxState: getReduxState,
     getToken: getToken,
@@ -114,6 +115,15 @@ function getDbNameDbParams(): DbNameDbParamsType {
         dbParams: userDetails.decodedDbParamsObject
     }
     return (dbNameDbParams)
+}
+
+function getDecimalFormatter() {
+    const formatter: any = new Intl.NumberFormat('en-US', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+    return (formatter)
 }
 
 function getHostUrl() {
@@ -420,6 +430,7 @@ type UtilsType = {
     getCurrentFinYearId: () => number
     getCurrentLoginInfo: () => LoginType
     getDbNameDbParams: () => DbNameDbParamsType
+    getDecimalFormatter: () => any
     getHostUrl: () => string
     getReduxState: () => RootStateType
     getToken: () => string | undefined

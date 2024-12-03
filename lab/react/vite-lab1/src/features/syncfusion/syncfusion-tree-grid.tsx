@@ -27,7 +27,7 @@ export function SyncfusionTreeGrid() {
         enableCollapseAll={true}
         expanded={onRowExpanded}
         gridLines="Both"
-        height='100%'
+        // height='100%'
         ref={gridRef}
         treeColumnIndex={0} // Specifies the index of the hierarchical column
       >

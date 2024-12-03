@@ -1,9 +1,9 @@
 import { FC, useContext, useEffect, useRef } from "react"
-import { Decimal } from 'decimal.js'
+// import { Decimal } from 'decimal.js'
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { Aggregate, AggregateColumnDirective, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 
@@ -25,7 +25,7 @@ export function CompSyncfusionTreeGrid({
     isLoadOnInit = true,
     minWidth = '1200px',
     pageSize = 50,
-    rowHeight = 20,
+    rowHeight,
     sqlArgs,
     sqlId,
     treeColumnIndex = 0
@@ -90,7 +90,7 @@ export function CompSyncfusionTreeGrid({
                 rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
                 rowDrop={gridDragAndDropSettings?.onRowDrop}
                 rowDropSettings={rowDropOptions}
-                rowHeight={rowHeight}
+                rowHeight={rowHeight} // When rowheight is undefined then footer row height looks good, otherwise this becomes small
                 searchSettings={searchOptions}
                 treeColumnIndex={treeColumnIndex}>
                 <ColumnsDirective>
@@ -125,20 +125,20 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    function customAggregateFn(data: any, colType: string, dcColName: string) {
-        const res: any = data.result
-            .filter((item: any) => !item.parentId) // Filter only top-level rows
-            .reduce((acc: number, current: any) => acc + ((current[dcColName] === 'C' ? -1 : 1) * current[colType]), 0)
-        // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
-        // .toNumber(); // Convert back to a native number if needed
-        return (Math.abs(res))
-        // return(res)
-        // return (new Intl.NumberFormat('en-US', {
-        //     style: 'decimal',
-        //     minimumFractionDigits: 2,
-        //     maximumFractionDigits: 2,
-        // }).format(res));
-    }
+    // function customAggregateFn(data: any, colType: string, dcColName: string) {
+    //     const res: any = data.result
+    //         .filter((item: any) => !item.parentId) // Filter only top-level rows
+    //         .reduce((acc: number, current: any) => acc + ((current[dcColName] === 'C' ? -1 : 1) * current[colType]), 0)
+    //     // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
+    //     // .toNumber(); // Convert back to a native number if needed
+    //     return (Math.abs(res))
+    //     // return(res)
+    //     // return (new Intl.NumberFormat('en-US', {
+    //     //     style: 'decimal',
+    //     //     minimumFractionDigits: 2,
+    //     //     maximumFractionDigits: 2,
+    //     // }).format(res));
+    // }
 
     function onCreated() {
         const expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
