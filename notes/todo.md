@@ -10,8 +10,11 @@
 - Check why query execution taking longer time. Is is because of external database?
 - Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Provide client name and client code in the email when new Admin user is created in super admin
+- When a new / update BU or Fy then it should be immediately updated to accounts info
 - Trial balance
 	- Client side
+		- Zero valued transactions should not be there
+		- Footer must have vertical padding
 		- TreeGrid width not properly managed when screen size comes down
 															- When fetching, the screen diminishes and then expands
 															- Show Dr / Cr using template column

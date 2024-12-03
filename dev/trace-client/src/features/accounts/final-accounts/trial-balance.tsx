@@ -4,7 +4,7 @@ import { Utils } from "../../../utils/utils";
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
-import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
+import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { useContext, useEffect } from "react";
@@ -41,10 +41,10 @@ export function TrialBalance() {
                         isLastNoOfRows={false}
                         instance={instance}
                         width="calc(100vw - 250px)" // This stops unnecessary flickers
-                        // minWidth='950px'
+                    // minWidth='950px'
                     />
                     <CompSyncfusionTreeGrid
-                        // aggregates={getBusinessUserssAggregates()}
+                        aggregates={getTrialBalanceAggregates()}
                         buCode={currentBusinessUnit.buCode}
                         childMapping="children"
                         className=""
@@ -113,6 +113,107 @@ export function TrialBalance() {
             }
 
         ])
+    }
+
+    function getTrialBalanceAggregates(): SyncFusionTreeGridAggregateColumnType[] {
+        return ([
+            {
+                columnName: 'accName',
+                field: 'accName',
+                format: 'N2',
+                type: 'Count',
+                footerTemplate: (props: any) => <span className="mr-3 h-20 font-semibold">{`Count: ${props.Count}`}</span>,
+            },
+            {
+                columnName: 'opening',
+                customAggregate: (data: any) => customOpeningClosingAggregate(data, 'opening', 'opening_dc'),
+                field: 'opening',
+                format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 py-2 font-semibold">{props.Custom}</span>,
+                type: 'Custom',
+            },
+            {
+                columnName: 'debit',
+                customAggregate: (data: any) => customDebitCreditAggregate(data, 'debit'),
+                field: 'debit',
+                format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
+                type: 'Custom',
+            },
+            {
+                columnName: 'credit',
+                customAggregate: (data: any) => customDebitCreditAggregate(data, 'credit'),
+                field: 'credit',
+                format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
+                type: 'Custom',
+            },
+            {
+                columnName: 'closing',
+                customAggregate: (data: any) => customOpeningClosingAggregate(data, 'closing', 'closing_dc'),
+                field: 'closing',
+                format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
+                type: 'Custom',
+            }
+        ])
+
+    }
+
+    function customDebitCreditAggregate(data: any, colType: string) {
+        const res: any = data.result
+            .filter((item: any) => !item.parentId) // Filter only top-level rows
+            .reduce((acc: number, current: any) => {
+                return acc + (current[colType])
+            }, 0)
+
+        // .reduce((acc: number, current: any) => {
+        //     const sign = (dcColName || '') === 'C' ? -1: 1
+        //     return (acc + (
+        //         (
+        //             sign
+        //         ) * current[colType]
+        //     ), 0)
+        // })
+        // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
+        // .toNumber(); // Convert back to a native number if needed
+        return (Math.abs(res))
+        // return(res)
+        // return (new Intl.NumberFormat('en-US', {
+        //     style: 'decimal',
+        //     minimumFractionDigits: 2,
+        //     maximumFractionDigits: 2,
+        // }).format(res));
+    }
+
+    function customOpeningClosingAggregate(data: any, colType: string, dcColName: string) {
+        // let sign: number = 1
+        // if ((dcColName || '') === 'C') {
+        //     sign = -1
+        // }
+        const res: any = data.result
+            .filter((item: any) => !item.parentId) // Filter only top-level rows
+            .reduce((acc: number, current: any) => {
+                return acc + ((current[dcColName] === 'C' ? -1 : 1) * current[colType])
+            }, 0)
+
+        // .reduce((acc: number, current: any) => {
+        //     const sign = (dcColName || '') === 'C' ? -1: 1
+        //     return (acc + (
+        //         (
+        //             sign
+        //         ) * current[colType]
+        //     ), 0)
+        // })
+        // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
+        // .toNumber(); // Convert back to a native number if needed
+        return (Math.abs(res))
+        // return(res)
+        // return (new Intl.NumberFormat('en-US', {
+        //     style: 'decimal',
+        //     minimumFractionDigits: 2,
+        //     maximumFractionDigits: 2,
+        // }).format(res));
     }
 
     function openingColumnTemplate(props: any) {

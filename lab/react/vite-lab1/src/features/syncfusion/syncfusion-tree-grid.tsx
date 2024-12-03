@@ -9,6 +9,7 @@ import {
   AggregateColumnDirective,
 } from "@syncfusion/ej2-react-treegrid";
 import { useRef } from "react";
+import { Decimal } from 'decimal.js'
 
 export function SyncfusionTreeGrid() {
 
@@ -40,7 +41,11 @@ export function SyncfusionTreeGrid() {
           <AggregateDirective showChildSummary={false}>
             <AggregateColumnsDirective >
               <AggregateColumnDirective field="opening" type='Custom' format='N2' columnName="opening" customAggregate={customFn} footerTemplate={(props: any) => <span>{props.Custom}</span>} />
-              <AggregateColumnDirective field="accName" type="Count" format='N2' footerTemplate={(props: any) => <span>{`Count: ${props.Count}`}</span>} />
+              <AggregateColumnDirective field="accName" type="Count" format='N2' footerTemplate={(props: any) => {
+                const formattedValue = new Intl.NumberFormat('en-US').format(props.Count);
+                return <span>{`Count: ${formattedValue}`}</span>;
+              }}
+              />
             </AggregateColumnsDirective>
           </AggregateDirective>
         </AggregatesDirective>
@@ -51,9 +56,15 @@ export function SyncfusionTreeGrid() {
   );
 
   function customFn(data: any) {
-    return data.result
+    const res: any = data.result
       .filter((item: any) => !item.parentItem) // Filter only top-level rows
-      .reduce((sum: number, item: any) => sum + item.opening, 0);
+      .reduce((sum: Decimal, item: any) => sum.plus(item.opening || 0), new Decimal(0))
+      .toNumber(); // Convert back to a native number if needed
+    return (new Intl.NumberFormat('en-US', {
+      style: 'decimal',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(res));
   }
 
   function handleExpandAll() {
@@ -70,7 +81,6 @@ export function SyncfusionTreeGrid() {
     expandedKeys.forEach((key: any) => {
       gridRef.current.expandByKey(key);
     });
-    // gridRef.current.expandAll()
   }
 
   function onRowCollapsed(args: any) {
@@ -129,7 +139,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 16,
             "children": [
-              
+
             ]
           },
           {
@@ -145,7 +155,7 @@ const data3 = [
             "closing_dc": "C",
             "parentId": 16,
             "children": [
-              
+
             ]
           },
           {
@@ -161,7 +171,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 16,
             "children": [
-              
+
             ]
           },
           {
@@ -177,7 +187,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 16,
             "children": [
-              
+
             ]
           },
           {
@@ -193,7 +203,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 16,
             "children": [
-              
+
             ]
           },
           {
@@ -209,7 +219,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 16,
             "children": [
-              
+
             ]
           },
           {
@@ -225,7 +235,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 16,
             "children": [
-              
+
             ]
           },
           {
@@ -241,7 +251,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 16,
             "children": [
-              
+
             ]
           }
         ]
@@ -272,7 +282,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 17,
             "children": [
-              
+
             ]
           }
         ]
@@ -303,7 +313,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 22,
             "children": [
-              
+
             ]
           },
           {
@@ -332,7 +342,7 @@ const data3 = [
                 "closing_dc": "D",
                 "parentId": 311,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -348,7 +358,7 @@ const data3 = [
                 "closing_dc": "D",
                 "parentId": 311,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -364,7 +374,7 @@ const data3 = [
                 "closing_dc": "D",
                 "parentId": 311,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -380,7 +390,7 @@ const data3 = [
                 "closing_dc": "D",
                 "parentId": 311,
                 "children": [
-                  
+
                 ]
               }
             ]
@@ -415,7 +425,7 @@ const data3 = [
         "closing_dc": "D",
         "parentId": 25,
         "children": [
-          
+
         ]
       }
     ]
@@ -446,7 +456,7 @@ const data3 = [
         "closing_dc": "D",
         "parentId": 26,
         "children": [
-          
+
         ]
       }
     ]
@@ -477,7 +487,7 @@ const data3 = [
         "closing_dc": "C",
         "parentId": 30,
         "children": [
-          
+
         ]
       }
     ]
@@ -521,7 +531,7 @@ const data3 = [
             "closing_dc": "D",
             "parentId": 3,
             "children": [
-              
+
             ]
           }
         ]
@@ -580,7 +590,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -596,7 +606,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -612,7 +622,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -628,7 +638,7 @@ const data3 = [
                 "closing_dc": "D",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -644,7 +654,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -660,7 +670,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -676,7 +686,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -692,7 +702,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -708,7 +718,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -724,7 +734,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -740,7 +750,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               },
               {
@@ -756,7 +766,7 @@ const data3 = [
                 "closing_dc": "C",
                 "parentId": 149,
                 "children": [
-                  
+
                 ]
               }
             ]
@@ -774,7 +784,7 @@ const data3 = [
             "closing_dc": "C",
             "parentId": 9,
             "children": [
-              
+
             ]
           },
           {
@@ -790,7 +800,7 @@ const data3 = [
             "closing_dc": "C",
             "parentId": 9,
             "children": [
-              
+
             ]
           },
           {
@@ -819,7 +829,7 @@ const data3 = [
                 "closing_dc": "D",
                 "parentId": 153,
                 "children": [
-                  
+
                 ]
               }
             ]

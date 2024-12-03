@@ -1,8 +1,9 @@
 import { FC, useContext, useEffect, useRef } from "react"
+import { Decimal } from 'decimal.js'
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { Aggregate, AggregateColumnDirective, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 
@@ -30,7 +31,7 @@ export function CompSyncfusionTreeGrid({
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, buCode, childMapping, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
@@ -96,22 +97,20 @@ export function CompSyncfusionTreeGrid({
                     {getColumnDirectives()}
                 </ColumnsDirective>
                 {aggregates && <AggregatesDirective>
-                    <AggregateDirective>
-                        <AggregateColumnsDirective>
-
+                    <AggregateDirective showChildSummary={false}>
+                        <AggregateColumnsDirective >
+                            {getAggregateColumnDirectives()}
+                            {/* <AggregateColumnDirective field="opening" type='Custom' format='N2' columnName="opening" customAggregate={(data: any) => customAggregateFn(data, 'opening', 'opening_dc')} footerTemplate={(props: any) => <span className="mr-2">{props.Custom}</span>} />
+                            <AggregateColumnDirective field="accName" type="Count" format='N2' footerTemplate={(props: any) =>
+                                <span>{`Count: ${props.Count}`}</span>
+                            } /> */}
                         </AggregateColumnsDirective>
                     </AggregateDirective>
                 </AggregatesDirective>}
-                {/* <AggregatesDirective>
-                    <AggregateDirective>
-                        <AggregateColumnsDirective>
-                            {getAggrColDirectives()}
-                        </AggregateColumnsDirective>
-                    </AggregateDirective>
-                </AggregatesDirective> */}
+
                 <Inject services={[
-                    // Aggregate,
-                    ExcelExport
+                    Aggregate
+                    , ExcelExport
                     , Filter // In treeGrid control Filter module is used in place of Search module. It works the same way
                     , InfiniteScroll
                     , Page
@@ -125,6 +124,21 @@ export function CompSyncfusionTreeGrid({
             </TreeGridComponent>
         </div>
     )
+
+    function customAggregateFn(data: any, colType: string, dcColName: string) {
+        const res: any = data.result
+            .filter((item: any) => !item.parentId) // Filter only top-level rows
+            .reduce((acc: number, current: any) => acc + ((current[dcColName] === 'C' ? -1 : 1) * current[colType]), 0)
+        // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
+        // .toNumber(); // Convert back to a native number if needed
+        return (Math.abs(res))
+        // return(res)
+        // return (new Intl.NumberFormat('en-US', {
+        //     style: 'decimal',
+        //     minimumFractionDigits: 2,
+        //     maximumFractionDigits: 2,
+        // }).format(res));
+    }
 
     function onCreated() {
         const expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
@@ -178,7 +192,7 @@ type GridDragAndDropSettingsType = {
 }
 
 export type CompSyncfusionTreeGridType = {
-    aggregates?: SyncFusionAggregateType[]
+    aggregates?: SyncFusionTreeGridAggregateColumnType[]
     addUniqueKeyToJson?: boolean
     allowRowDragAndDrop?: boolean
     allowSorting?: boolean
@@ -219,10 +233,12 @@ export type SyncFusionTreeGridColumnType = {
     width?: number
 }
 
-export type SyncFusionAggregateType = {
+export type SyncFusionTreeGridAggregateColumnType = {
+    columnName: string
+    customAggregate?: (data: any) => any
     field: string
     type?: 'Average' | 'Count' | 'Sum' | 'Min' | 'Max' | 'Custom'
-    footerTemplate?: FC
+    footerTemplate?: FC<any>
     format?: 'N2' | 'N0'
 }
 

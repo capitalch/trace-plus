@@ -25,11 +25,6 @@ type ReduxCompInitialStateType = {
     }
 }
 
-// type ReduxCompSwitchStateType = {
-//     instance: string
-//     switchState: boolean
-// }
-
 type ReduxCompSwitchActionStateType = {
     instance: string
     switchState: boolean

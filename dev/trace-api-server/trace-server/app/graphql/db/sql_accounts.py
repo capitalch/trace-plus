@@ -69,7 +69,6 @@ class SqlAccounts:
             FROM "AccOpBal" b
             JOIN "AccM" a ON a.id = b."accId"
             WHERE b."finYearId" = (TABLE "finYearId")
-            --AND b."branchId" = (TABLE "branchId")
 			AND (SELECT COALESCE((TABLE "branchId"), b."branchId") = b."branchId")
         ),
 

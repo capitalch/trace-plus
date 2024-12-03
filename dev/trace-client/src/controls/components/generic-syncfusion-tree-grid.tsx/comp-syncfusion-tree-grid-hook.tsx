@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
-import { CompSyncfusionTreeGridType, SyncFusionTreeGridColumnType } from "./comp-syncfusion-tree-grid";
+import { CompSyncfusionTreeGridType, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "./comp-syncfusion-tree-grid";
 import { RootStateType } from "../../../app/store/store";
-import { ColumnDirective } from "@syncfusion/ej2-react-treegrid";
+import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react-treegrid";
 
 export function useCompSyncfusionTreeGrid({
-    addUniqueKeyToJson, buCode, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs
+    addUniqueKeyToJson, aggregates, buCode, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs
 }: CompSyncfusionTreeGridType) {
 
     const args: GraphQLQueryArgsType = {
@@ -31,6 +31,23 @@ export function useCompSyncfusionTreeGrid({
         // console.log(JSON.stringify(ret))
         return (ret)
     })
+
+    function getAggregateColumnDirectives() {
+        const aggrColDirectives: any[] | undefined = aggregates?.map((aggr: SyncFusionTreeGridAggregateColumnType, index: number) => {
+            return (
+                <AggregateColumnDirective
+                    customAggregate={aggr.customAggregate}
+                    columnName={aggr.columnName}
+                    field={aggr.field}
+                    footerTemplate={aggr.footerTemplate}
+                    format={aggr.format}
+                    type={aggr.type}
+                    key={index}
+                />
+            )
+        })
+        return(aggrColDirectives)
+    }
 
     function getColumnDirectives() {
         const colDirectives: any[] = columns.map((col: SyncFusionTreeGridColumnType, index: number) => {
@@ -59,5 +76,5 @@ export function useCompSyncfusionTreeGrid({
         return (colDirectives)
     }
 
-    return ({ getColumnDirectives, loading, loadData, selectedData })
+    return ({getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData })
 }

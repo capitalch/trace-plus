@@ -24,6 +24,7 @@
     "@types/qs": "^6.9.16",
     "awesome-debounce-promise": "^2.1.0",
     "axios": "^1.7.7",
+    "decimal.js": "^10.4.3",
     "graphql": "^16.9.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.8.4",
