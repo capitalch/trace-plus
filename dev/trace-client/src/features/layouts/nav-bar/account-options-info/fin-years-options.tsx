@@ -43,6 +43,7 @@ export function FinYearsOptions() {
 
     function handleOnClickFinYears() {
         Utils.showHideModalDialogA({
+            className: 'ml-2',
             title: "Select a financial year",
             isOpen: true,
             element: <FinYearsListModal />,
@@ -51,7 +52,7 @@ export function FinYearsOptions() {
 
     function handleOnClickMinus() {
         if (!currentFinYear) {
-            Utils.showFailureAlertMessage({title:Messages.messFailure,message:Messages.errCurrentFinYear})
+            Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errCurrentFinYear })
             return
         }
         const newFinYearId = currentFinYear.finYearId - 1
@@ -66,7 +67,7 @@ export function FinYearsOptions() {
 
     function handleOnClickPlus() {
         if (!currentFinYear) {
-            Utils.showFailureAlertMessage({title:Messages.messFailure,message:Messages.errCurrentFinYear})
+            Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errCurrentFinYear })
             return
         }
         const newFinYearId = currentFinYear.finYearId + 1

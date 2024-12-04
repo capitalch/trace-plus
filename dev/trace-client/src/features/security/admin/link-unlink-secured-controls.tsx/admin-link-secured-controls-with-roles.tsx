@@ -27,7 +27,10 @@ export function AdminLinkSecuredControlsWithRoles() {
 
     return (
         <div className='flex flex-col ml-8'>
-            <label className="mt-6 text-xl font-semibold text-primary-400">Linking of secured controls with roles</label>
+            <div className='mt-6 flex justify-between items-center'>
+                <label className="text-xl font-semibold text-primary-400">Linking of secured controls with roles</label>
+                <label className=' text-primary-300 mr-6'>{Utils.getUserDetails()?.clientName}</label>
+            </div>
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
@@ -247,7 +250,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         )
     }
 
-    function getAutoLinkButton(props:any){
+    function getAutoLinkButton(props: any) {
         let ret = <></>
         if ((props.level === 0)) {
             ret = <TooltipComponent content={Messages.messAutoLinkBuiltinRoles}>
@@ -258,7 +261,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         return (ret)
     }
 
-    function handleOnClickAutoLinkFromBuiltinRoles(props:any){
+    function handleOnClickAutoLinkFromBuiltinRoles(props: any) {
         Utils.showHideModalDialogA({
             title: "Add secured controls from built-in roles",
             isOpen: true,

@@ -3,6 +3,8 @@
 																								- Error happening at side menu while small screen sizes
 
 ## History
+# 26-11-2024 - 04-12-2024
+	- Trial balance finished along with some general bug fixes
 # 22-11-2024 - 25-11-2024
 	- Working on Trial Balance
 # 11-11-2024 - 21-11-2024

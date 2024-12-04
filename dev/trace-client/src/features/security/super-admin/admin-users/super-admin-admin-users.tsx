@@ -1,6 +1,5 @@
 import { useContext } from "react"
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context"
-// import { GlobalContext } from "../../../../App"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { CompContentContainer } from "../../../../controls/components/comp-content-container"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar"
@@ -28,9 +27,9 @@ export function SuperAdminAdminUsers() {
             aggregates={getAggregates()}
             columns={getColumns()}
             hasIndexColumn={true}
-            height="calc(100vh - 240px)"
+            height="calc(100vh - 260px)"
             instance={instance}
-            rowHeight={40}
+            // rowHeight={40}
             sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
             sqlId={SqlIdsMap.allAdminUsers}
             onDelete={handleOnDelete}

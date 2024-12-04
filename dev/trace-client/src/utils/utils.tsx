@@ -19,6 +19,7 @@ export const Utils: UtilsType = {
     getDbNameDbParams: getDbNameDbParams,
     getDecimalFormatter: getDecimalFormatter,
     getHostUrl: getHostUrl,
+    getIntegerFormatter: getIntegerFormatter,
     getReduxState: getReduxState,
     getToken: getToken,
     getUnitInfo: getUnitInfo,
@@ -134,6 +135,15 @@ function getHostUrl() {
         url = window.location.href
     }
     return (url)
+}
+
+function getIntegerFormatter() {
+    const formatter: any = new Intl.NumberFormat('en-US', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    });
+    return (formatter)
 }
 
 function getReduxState(): RootStateType {
@@ -302,8 +312,9 @@ function showGraphQlErrorMessage(error: GraphQlErrorType) {
     })
 }
 
-function showHideModalDialogA({ isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
+function showHideModalDialogA({ className, isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
     const args: ShowModalDialogMessageArgsType = {
+        className: className,
         title: title,
         isOpen: isOpen,
         element: element,
@@ -392,12 +403,14 @@ type GraphQlErrorType = {
 }
 
 type ShowHideModalDialogType = {
+    className?: string
     isOpen: boolean
     title?: string | undefined
     element?: ReactElement
 }
 
 type ShowModalDialogMessageArgsType = {
+    className?: string
     title?: string | undefined
     isOpen: boolean
     element?: ReactElement
@@ -432,6 +445,7 @@ type UtilsType = {
     getDbNameDbParams: () => DbNameDbParamsType
     getDecimalFormatter: () => any
     getHostUrl: () => string
+    getIntegerFormatter: () => any
     getReduxState: () => RootStateType
     getToken: () => string | undefined
     getUnitInfo: () => UnitInfoType | undefined

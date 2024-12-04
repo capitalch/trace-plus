@@ -3,7 +3,6 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
-// import { GlobalContext } from "../../../../App";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
@@ -21,7 +20,7 @@ export function AdminBusinessUnits() {
     const instance = DataInstancesMap.adminBusinessUnits; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     return (
-        <CompContentContainer title='Admin business units'>
+        <CompContentContainer title='Admin business units' CustomControl={() => <label className="text-primary-300">{Utils.getUserDetails()?.clientName}</label>}>
             <CompSyncFusionGridToolbar
                 CustomControl={() => <AdminNewBusinessUnitButton dataInstance={instance} />}
                 title="Business units view"
@@ -33,9 +32,9 @@ export function AdminBusinessUnits() {
                 aggregates={getAggregates()}
                 columns={getColumns()}
                 hasIndexColumn={true}
-                height="calc(100vh - 240px)"
+                height="calc(100vh - 260px)"
                 instance={instance}
-                rowHeight={40}
+                // rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allBusinessUnits}
                 onDelete={handleOnDelete}

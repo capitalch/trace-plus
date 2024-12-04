@@ -1,5 +1,4 @@
 import { FC, useContext, useEffect, useRef } from "react"
-// import { Decimal } from 'decimal.js'
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
@@ -100,14 +99,9 @@ export function CompSyncfusionTreeGrid({
                     <AggregateDirective showChildSummary={false}>
                         <AggregateColumnsDirective >
                             {getAggregateColumnDirectives()}
-                            {/* <AggregateColumnDirective field="opening" type='Custom' format='N2' columnName="opening" customAggregate={(data: any) => customAggregateFn(data, 'opening', 'opening_dc')} footerTemplate={(props: any) => <span className="mr-2">{props.Custom}</span>} />
-                            <AggregateColumnDirective field="accName" type="Count" format='N2' footerTemplate={(props: any) =>
-                                <span>{`Count: ${props.Count}`}</span>
-                            } /> */}
                         </AggregateColumnsDirective>
                     </AggregateDirective>
                 </AggregatesDirective>}
-
                 <Inject services={[
                     Aggregate
                     , ExcelExport
@@ -124,21 +118,6 @@ export function CompSyncfusionTreeGrid({
             </TreeGridComponent>
         </div>
     )
-
-    // function customAggregateFn(data: any, colType: string, dcColName: string) {
-    //     const res: any = data.result
-    //         .filter((item: any) => !item.parentId) // Filter only top-level rows
-    //         .reduce((acc: number, current: any) => acc + ((current[dcColName] === 'C' ? -1 : 1) * current[colType]), 0)
-    //     // .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
-    //     // .toNumber(); // Convert back to a native number if needed
-    //     return (Math.abs(res))
-    //     // return(res)
-    //     // return (new Intl.NumberFormat('en-US', {
-    //     //     style: 'decimal',
-    //     //     minimumFractionDigits: 2,
-    //     //     maximumFractionDigits: 2,
-    //     // }).format(res));
-    // }
 
     function onCreated() {
         const expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []

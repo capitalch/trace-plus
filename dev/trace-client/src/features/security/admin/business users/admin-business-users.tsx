@@ -23,9 +23,9 @@ export function AdminBusinessUsers() {
     const context: GlobalContextType = useContext(GlobalContext);
     const instance = DataInstancesMap.adminBusinessUsers;
     const dispatch: AppDispatchType = useDispatch()
-    
+
     return (
-        <CompContentContainer title="Business users">
+        <CompContentContainer title="Business users" CustomControl={() => <label className="text-primary-300">{Utils.getUserDetails()?.clientName}</label>}>
             <CompSyncFusionGridToolbar
                 CustomControl={() => <AdminNewBusinessUserButton dataInstance={instance} />}
                 title="Business users view"
@@ -37,10 +37,10 @@ export function AdminBusinessUsers() {
                 aggregates={getAggregates()}
                 columns={getColumns()}
                 hasIndexColumn={true}
-                height="calc(100vh - 240px)"
+                height="calc(100vh - 260px)"
                 instance={instance}
-                rowHeight={40}
-                sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME,clientId:Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
+                // rowHeight={40}
+                sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allBusinessUsers}
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}

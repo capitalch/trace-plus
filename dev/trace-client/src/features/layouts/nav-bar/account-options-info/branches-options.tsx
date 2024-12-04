@@ -22,6 +22,7 @@ export function BranchesOptions() {
 
     function handleOnClickBranches() {
         Utils.showHideModalDialogA({
+            className:'ml-2',
             title: "Select a branch",
             isOpen: true,
             element: <BranchOptionsListModal />,

@@ -4,6 +4,8 @@ import { AppDispatchType, store } from "../../../app/store/store"
 import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../layouts-slice"
 import { SideMenu } from "./side-menu"
 import { IconMenuFold } from "../../../controls/icons/icon-menu-fold"
+import { LoginType, UserDetailsType } from "../../login/login-slice"
+import { Utils } from "../../../utils/utils"
 
 function SideBar() {
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
@@ -28,7 +30,8 @@ function SideBar() {
     }
 
     function getUserType(): string {
-        const uType: string = store.getState().login.userType || ''
+        const userDetails: UserDetailsType | undefined = Utils.getUserDetails()
+        const uType: string = userDetails?.userType || ''
         const logic: any = {
             B: 'Business user'
             , S: 'Super admin user'

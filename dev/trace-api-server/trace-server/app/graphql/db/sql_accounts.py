@@ -20,7 +20,6 @@ class SqlAccounts:
     """
     
     get_trialBalance_balanceSheet_profitAndLoss = """
-        -- Recursive Query to Build Account Hierarchy
         WITH RECURSIVE hier AS (
             SELECT 
                 "accId", 
@@ -41,7 +40,7 @@ class SqlAccounts:
         ),
         -- Constants for branch and financial year
         "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-         --"branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
 
         -- Base data preparation
         cte1 AS (
@@ -99,14 +98,14 @@ class SqlAccounts:
 
         -- Calculate profit or loss
         cte3 AS ( SELECT
-			SUM(opening) as "sumOpening",
-			SUM(debit) as "sumDebits",
-			SUM(credit) as "sumCredits",
-			SUM(opening + debit - credit) as "sumClosing",
-			-SUM(CASE WHEN "accType" = 'L' THEN opening + debit - credit ELSE 0 END) AS "sumLiabs",
-			SUM(CASE WHEN "accType" = 'A' THEN opening + debit - credit ELSE 0 END) AS "sumAssets",
-			-SUM(CASE WHEN "accType" = 'I' THEN opening + debit - credit ELSE 0 END) AS "sumIncomes",
-			SUM(CASE WHEN "accType" = 'E' THEN opening + debit - credit ELSE 0 END) AS "sumExpences",
+			-- SUM(opening) as "sumOpening",
+			-- SUM(debit) as "sumDebits",
+			-- SUM(credit) as "sumCredits",
+			-- SUM(opening + debit - credit) as "sumClosing",
+			-- -SUM(CASE WHEN "accType" = 'L' THEN opening + debit - credit ELSE 0 END) AS "sumLiabs",
+			-- SUM(CASE WHEN "accType" = 'A' THEN opening + debit - credit ELSE 0 END) AS "sumAssets",
+			-- -SUM(CASE WHEN "accType" = 'I' THEN opening + debit - credit ELSE 0 END) AS "sumIncomes",
+			-- SUM(CASE WHEN "accType" = 'E' THEN opening + debit - credit ELSE 0 END) AS "sumExpences",
 			SUM(CASE WHEN "accType" in('L','A') THEN opening + debit - credit ELSE 0 END) as "profitOrLoss"
             FROM cte1 c
             JOIN "AccM" a ON a."id" = c."accId"
@@ -129,6 +128,7 @@ class SqlAccounts:
                 ARRAY_AGG(child."accId" ORDER BY child."accName") AS "children"
             FROM cte2 c
             LEFT JOIN cte2 child ON child."parentId" = c."accId"
+            where (c.opening != 0) or (c.debit !=0 ) or (c.credit !=0 )
             GROUP BY 
                 c."accId", 
                 c."accName", 
@@ -148,15 +148,15 @@ class SqlAccounts:
             'trialBalance', (SELECT JSON_AGG(a) FROM cte4 a),
             'profitOrLoss', (SELECT "profitOrLoss" FROM cte3),
             'balanceSheet', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('A', 'L')),
-            'profitAndLoss', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('E', 'I')),
-			'sumLiabs', (select "sumLiabs" from cte3),
-			'sumAssets', (select "sumAssets" from cte3),
-			'sumIncomes', (select "sumIncomes" from cte3),
-			'sumExpences', (select "sumExpences" from cte3),
-			'sumOpening', (select "sumOpening" from cte3),
-			'sumClosing', (select "sumClosing" from cte3),
-			'sumDebits', (select "sumDebits" from cte3),
-			'sumCredits', (select "sumCredits" from cte3)
+            'profitAndLoss', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('E', 'I'))
+			-- , 'sumLiabs', (select "sumLiabs" from cte3),
+			-- 'sumAssets', (select "sumAssets" from cte3),
+			-- 'sumIncomes', (select "sumIncomes" from cte3),
+			-- 'sumExpences', (select "sumExpences" from cte3),
+			-- 'sumOpening', (select "sumOpening" from cte3),
+			-- 'sumClosing', (select "sumClosing" from cte3),
+			-- 'sumDebits', (select "sumDebits" from cte3),
+			-- 'sumCredits', (select "sumCredits" from cte3)
         ) AS "jsonResult"
     """
  

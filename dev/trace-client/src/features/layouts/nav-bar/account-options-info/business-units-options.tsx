@@ -74,6 +74,7 @@ export function BusinessUnitsOptions() {
 
     function handleOnClickBusinessUnit() {
         Utils.showHideModalDialogA({
+            className: 'ml-2',
             title: "Select a business unit",
             isOpen: true,
             element: <BusinessUnitsListModal />,

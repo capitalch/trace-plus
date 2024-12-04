@@ -21,7 +21,7 @@ export function AdminRoles() {
     const instance = DataInstancesMap.adminRoles;
     const dispatch: AppDispatchType = useDispatch()
     return (
-        <CompContentContainer title='Admin roles'>
+        <CompContentContainer title='Admin roles' CustomControl={() => <label className="text-primary-300">{Utils.getUserDetails()?.clientName}</label>}>
             <CompSyncFusionGridToolbar
                 CustomControl={() => <AdminNewRoleButton dataInstance={instance} />}
                 title="Roles view"
@@ -33,9 +33,9 @@ export function AdminRoles() {
                 aggregates={getAggregates()}
                 columns={getColumns()}
                 hasIndexColumn={true}
-                height="calc(100vh - 240px)"
+                height="calc(100vh - 260px)"
                 instance={instance}
-                rowHeight={40}
+                // rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allAdminRoles}
                 onDelete={handleOnDelete}

@@ -6,6 +6,7 @@ import { CompModalDialog } from "../../../controls/components/comp-modal-dialog"
 export function ModalDialogA() {
     const instanceName: string = 'A'
     const meta = useRef<ModalDialogMetaType>({
+        className: '',
         isOpen: false,
         title: '',
         element: <></>
@@ -17,6 +18,7 @@ export function ModalDialogA() {
             meta.current.title = d.data.title
             meta.current.isOpen = d.data.isOpen
             meta.current.element = d.data.element
+            meta.current.className = d.data.className
             setRefresh({})
         })
         return (() => {
@@ -25,11 +27,12 @@ export function ModalDialogA() {
     }, [])
 
     return (
-        <CompModalDialog body={meta.current.element} title={meta.current.title} isOpen={meta.current.isOpen} instanceName={instanceName} />
+        <CompModalDialog body={meta.current.element} className={meta.current.className} title={meta.current.title} isOpen={meta.current.isOpen} instanceName={instanceName} />
     )
 }
 
 type ModalDialogMetaType = {
+    className: string
     isOpen: boolean
     title: string
     element: any

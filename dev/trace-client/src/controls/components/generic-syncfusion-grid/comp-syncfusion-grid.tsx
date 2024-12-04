@@ -21,7 +21,7 @@ export function CompSyncFusionGrid({
     onDelete = undefined,
     onEdit = undefined,
     onPreview = undefined,
-    rowHeight = 30,
+    rowHeight,
     sqlArgs,
     sqlId
 }: CompSyncFusionGridType) {

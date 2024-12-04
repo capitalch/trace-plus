@@ -2,20 +2,33 @@
 																- Super admin clients
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
-- Provide appropriate logging at server
-- There are some issues related to bu and finyear when a new admin use logs in
-- Show client name in admin screens
-- In Accounts Info modal windows title should be aligned with grid
-- At logout make sure that redux store is initialized by using redux tools
-- Check why query execution taking longer time. Is is because of external database?
-- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-- Provide client name and client code in the email when new Admin user is created in super admin
-- When a new / update BU or Fy then it should be immediately updated to accounts info
+- General
+	- TreeGrid width not properly managed when screen size comes down
+	- Provide appropriate logging at server
+															- Bottom left User type shows unknown
+	- At logout make sure that redux store is initialized by using redux tools
+	- Accounts
+		- When opening balance is not zero show a warning the apening balances do not match
+															- In accounts title, right side show client name in dim
+- Admin
+															- Admin, Super admin menu all grids bottom summary rowHeight to be made undefined, so that it becomes proper height summary
+	- There are some issues related to bu and finyear when a new admin use logs in
+															- Show client name in admin screens
+															- In Accounts Info modal windows title should be aligned with grid
+	- Provide client name and client code in the email when new Admin user is created in super admin
+	- When a new / update BU or Fy then it should be immediately updated to accounts info
+	- When admin user logs in: From db get physical BU's and prompt to add if not present
+															- Check why query execution taking longer time. Is is because of external database?
+															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Trial balance
 	- Client side
-		- Zero valued transactions should not be there
-		- Footer must have vertical padding
-		- TreeGrid width not properly managed when screen size comes down
+															- Formatting of count
+														- Collapse / Expand not showsapp loader
+														- Export to PDF has following issues
+															- Bottom summary is zaro
+															- There is no formatting for closing values
+															- Zero valued transactions should not be there
+															- Footer must have vertical padding
 															- When fetching, the screen diminishes and then expands
 															- Show Dr / Cr using template column
 															- Change of branch not working
@@ -24,7 +37,7 @@
 															- Screen formatting
 															- company name
 															- Incorporation of generic treeGrid
-		- Footer aggregate
+															- Footer aggregate
 															- Sorted data when expanded
 															- Expand all
 															- Search

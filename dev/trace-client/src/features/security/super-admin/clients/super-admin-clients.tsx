@@ -23,33 +23,16 @@ export function SuperAdminClients() {
                 className="mt-4"
                 aggregates={getAggregates()}
                 columns={getColumns()}
-                height="calc(100vh - 240px)"
+                height="calc(100vh - 260px)"
                 instance={instance}
-                rowHeight={40}
+                // rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
                 sqlId={SqlIdsMap.allClients}
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
-            // onPreview={handleOnPreview}
             />
         </CompContentContainer>
     )
-
-    // async function decodeExtDbParams(encodedDbParams: string) {
-    //     const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams)
-    //     const qName = GraphQLQueriesMap.decodeExtDbParams.name
-    //     try {
-    //         const res: any = await Utils.queryGraphQL(q, qName)
-    //         const dbParamsString = res?.data?.[qName]
-    //         const dbParams: object = JSON.parse(dbParamsString)
-    //         if (_.isEmpty(dbParams)) {
-    //             throw new Error(Messages.errExtDbParamsFormatError)
-    //         }
-    //         return (dbParams)
-    //     } catch (e: any) {
-    //         Utils.showErrorMessage(e)
-    //     }
-    // }
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([

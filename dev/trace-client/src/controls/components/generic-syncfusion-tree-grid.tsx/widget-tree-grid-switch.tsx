@@ -1,5 +1,7 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
+import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-react-popups';
+import { Utils } from "../../../utils/utils";
 
 export function WidgetTreeGridSwitch({
     instance
@@ -32,10 +34,14 @@ export function WidgetTreeGridSwitch({
             return
         }
         if (e.target?.checked) {
-            gridRef.current.expandAll()
+            setTimeout(() => {
+                gridRef.current.expandAll(); // Hide the spinner
+            }, 100);
             context.CompSyncFusionTreeGrid[instance].isCollapsed = false
         } else {
-            gridRef.current.collapseAll()
+            setTimeout(() => {
+                gridRef.current.collapseAll(); // Hide the spinner
+            }, 100);
             context.CompSyncFusionTreeGrid[instance].isCollapsed = true
         }
         setRefresh({})

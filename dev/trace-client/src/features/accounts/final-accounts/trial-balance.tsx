@@ -23,7 +23,8 @@ export function TrialBalance() {
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
     const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, instance), shallowEqual) || false
-    const formatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const decFormatter = Utils.getDecimalFormatter()
+    const intFormatter = Utils.getIntegerFormatter()
 
     useEffect(() => {
         const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
@@ -48,7 +49,6 @@ export function TrialBalance() {
                         buCode={currentBusinessUnit.buCode}
                         childMapping="children"
                         className=""
-                        dataBound={onDataBound}
                         dbName={dbName}
                         dbParams={decodedDbParamsObject}
                         graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
@@ -67,14 +67,6 @@ export function TrialBalance() {
             </div>
         </CompAccountsContainer>
     )
-
-    function onDataBound(e: any) {
-        // const ref: any = context.CompSyncFusionTreeGrid[instance]?.gridRef
-        // if(ref)
-        //     {
-        //         ref.current.refresh()
-        //     }
-    }
 
     function getColumns(): SyncFusionTreeGridColumnType[] {
         return ([
@@ -111,6 +103,7 @@ export function TrialBalance() {
                 headerText: 'Closing',
                 width: 90,
                 textAlign: 'Right',
+                format: 'N2',
                 template: closingColumnTemplate
             },
             {
@@ -130,30 +123,30 @@ export function TrialBalance() {
                 field: 'accName',
                 format: 'N2',
                 type: 'Count',
-                footerTemplate: (props: any) => <span className="mr-3 h-20 font-semibold">{`Count: ${props.Count}`}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 h-20 font-semibold">{`Count: ${intFormatter.format(props.Count)}`}</span>,
             },
             {
                 columnName: 'opening',
                 customAggregate: (data: any) => customOpeningClosingAggregate(data, 'opening', 'opening_dc'),
                 field: 'opening',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 py-2 font-semibold">{props.Custom}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 py-2 font-semibold">{decFormatter.format(props.Custom)}</span>,
                 type: 'Custom',
             },
             {
                 columnName: 'debit',
                 customAggregate: (data: any) => customDebitCreditAggregate(data, 'debit'),
                 field: 'debit',
-                format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
+                // format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
                 type: 'Custom',
             },
             {
                 columnName: 'credit',
                 customAggregate: (data: any) => customDebitCreditAggregate(data, 'credit'),
                 field: 'credit',
-                format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
+                // format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
                 type: 'Custom',
             },
             {
@@ -161,37 +154,35 @@ export function TrialBalance() {
                 customAggregate: (data: any) => customOpeningClosingAggregate(data, 'closing', 'closing_dc'),
                 field: 'closing',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
                 type: 'Custom',
             }
         ])
     }
 
     function customDebitCreditAggregate(data: any, colType: string) {
-        const res: Decimal = data?.result
+        const res: Decimal = (data?.result || data) // when you pdf or excel export then figures are available in data and not in data.result
             .filter((item: any) => !item?.parentId) // Filter only top-level rows
             .reduce((acc: Decimal, current: any) => {
                 return acc.plus(new Decimal(current[colType] || 0)); // Use Decimal for addition
             }, new Decimal(0)); // Initialize accumulator as Decimal
-        const formatter = Utils.getDecimalFormatter()
-        return formatter.format(res.abs().toNumber()); // Get the absolute value and convert back to a number
+        return(res.abs().toNumber()); // Get the absolute value and convert back to a number
     }
 
     function customOpeningClosingAggregate(data: any, colType: string, dcColName: string) {
-        const res: Decimal = data?.result
+        const res: Decimal =( data?.result || data) // when you pdf or excel export then figures are available in data and not in data.result
             .filter((item: any) => !item?.parentId) // Filter only top-level rows
             .reduce((acc: Decimal, current: any) => {
                 const multiplier = current[dcColName] === 'C' ? -1 : 1; // Determine the multiplier based on condition
                 return acc.plus(new Decimal(multiplier).times(new Decimal(current[colType] || 0))); // Multiply and add with Decimal
             }, new Decimal(0)); // Initialize accumulator as Decimal
-        const formatter = Utils.getDecimalFormatter()
-        return formatter.format(res.abs().toNumber()); // Get the absolute value and convert back to a number
+        return (res.abs().toNumber()); // Get the absolute value and convert back to a number
     }
 
     function openingColumnTemplate(props: any) {
         const clName: string = `font-bold text-md ${props.opening_dc === 'D' ? 'text-blue-500' : 'text-red-500'}`
         const ret = <div>
-            <span>{formatter.format(props.opening)}</span>
+            <span>{decFormatter.format(props.opening)}</span>
             <span className={clName}>{props.opening_dc === 'D' ? ' Dr' : ' Cr'}</span>
         </div>
         return (ret)
@@ -200,21 +191,9 @@ export function TrialBalance() {
     function closingColumnTemplate(props: any) {
         const clName: string = `font-bold text-md ${props.closing_dc === 'D' ? 'text-blue-500' : 'text-red-500'}`
         const ret = <div>
-            <span>{formatter.format(props.closing)}</span>
+            <span>{decFormatter.format(props.closing)}</span>
             <span className={clName}>{props.closing_dc === 'D' ? ' Dr' : ' Cr'}</span>
         </div>
         return (ret)
     }
 }
-
-
-// .reduce((acc: number, current: any) => {
-//     const sign = (dcColName || '') === 'C' ? -1: 1
-//     return (acc + (
-//         (
-//             sign
-//         ) * current[colType]
-//     ), 0)
-// })
-// .reduce((sum: Decimal, item: any) => sum.plus(item[colType] || 0), new Decimal(0))
-// .toNumber(); // Convert back to a native number if needed

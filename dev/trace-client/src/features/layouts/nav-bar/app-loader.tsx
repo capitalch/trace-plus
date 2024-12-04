@@ -19,7 +19,7 @@ export function AppLoader() {
     }, [])
 
     return (
-        meta.current.isOpen ? <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+        meta.current.isOpen ? <div className="fixed inset-0 z-150 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
             <WidgetLoadingIndicator />
         </div> : <></>)
 }
