@@ -215,6 +215,21 @@ async def trial_balance_helper(info, dbName, value):
         return create_graphql_exception(e)
     return data
 
+async def balance_sheet_profit_loss_helper(info, dbName, value):
+    data = []
+    try:
+        res = await trialBalance_balanceSheet_profitAndLoss(
+            dbName=dbName, value=value, type="TB"
+        )
+        flat_data = res[0].get("jsonResult")
+        if flat_data is not None:
+            data.append({"jsonResult":build_nested_hierarchy_with_children(flat_data)})
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
 
 async def update_client_helper(info, value: str):
     data = {}
@@ -340,16 +355,11 @@ async def trialBalance_balanceSheet_profitAndLoss(
     valueDict = json.loads(valueString)
     dbParams = valueDict.get("dbParams", None)
     schema = valueDict.get("buCode", None)
-    sql = SqlAccounts.get_trialBalance_balanceSheet_profitAndLoss
+    sql = SqlAccounts.get_trialBalance
     sqlArgs = valueDict.get("sqlArgs", {})
-    
     data = await exec_sql(
         dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
     )
-
-    # data = exec_sql_psycopg2(
-    #     dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
-    # )
     if type == "TB":
         return data
     if type == "BS":

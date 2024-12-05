@@ -1,4 +1,114 @@
 class SqlAccounts:
+
+    get_balanceSheet_profitLoss = '''
+    WITH RECURSIVE hier AS (
+            SELECT 
+                "accId", 
+                "opening", 
+                "debit", 
+                "credit", 
+                "parentId"
+            FROM cte1
+            UNION ALL
+            SELECT 
+                a."id" AS "accId", 
+                h."opening", 
+                h."debit", 
+                h."credit", 
+                a."parentId"
+            FROM hier h
+            JOIN "AccM" a ON h."parentId" = a."id"
+        ),
+        -- Constants for branch and financial year
+        "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+        -- Base data preparation
+        cte1 AS (
+            SELECT 
+                d.id, 
+                d."accId", 
+                0.00 AS "opening",
+                CASE WHEN d."dc" = 'D' THEN d."amount" ELSE 0.00 END AS "debit",
+                CASE WHEN d."dc" = 'C' THEN d."amount" ELSE 0.00 END AS "credit",
+                a."parentId"
+            FROM "TranH" h
+            JOIN "TranD" d ON h.id = d."tranHeaderId"
+            JOIN "AccM" a ON a.id = d."accId"
+            WHERE h."finYearId" = (TABLE "finYearId")
+			AND (SELECT COALESCE((TABLE "branchId"), h."branchId") = h."branchId")
+            UNION ALL
+            SELECT 
+                b.id, 
+                b."accId",
+                CASE WHEN b."dc" = 'D' THEN b."amount" ELSE -b."amount" END AS "opening",
+                0.00 AS "debit",
+                0.00 AS "credit",
+                a."parentId"
+            FROM "AccOpBal" b
+            JOIN "AccM" a ON a.id = b."accId"
+            WHERE b."finYearId" = (TABLE "finYearId")
+			AND (SELECT COALESCE((TABLE "branchId"), b."branchId") = b."branchId")
+        ),
+
+        -- Summarize data at each hierarchy level
+        cte2 AS (
+            SELECT 
+                h."accId", 
+                a."accName", 
+                a."accType", 
+                h."parentId",
+                SUM(h."opening") AS "opening", 
+                SUM(h."debit") AS "debit",
+                SUM(h."credit") AS "credit",
+                SUM(h."opening" + h."debit" - h."credit") AS "closing"
+            FROM hier h
+            JOIN "AccM" a ON a."id" = h."accId"
+            GROUP BY 
+                h."accId", 
+                a."accName", 
+                a."accType", 
+                h."parentId"
+        ),
+
+        -- Calculate profit or loss
+        cte3 AS ( SELECT
+			SUM(CASE WHEN "accType" in('L','A') THEN opening + debit - credit ELSE 0 END) as "profitOrLoss"
+            FROM cte1 c
+            JOIN "AccM" a ON a."id" = c."accId"
+        ),
+
+        -- Final aggregation
+        cte4 AS (
+            SELECT 
+                c."accId" AS id, 
+                c."accName", 
+                c."accType",
+                ABS(c."closing") AS "closing",
+                CASE WHEN c."closing" < 0 THEN 'C' ELSE 'D' END AS "closing_dc",
+                c."parentId", 
+                ARRAY_AGG(child."accId" ORDER BY child."accName") AS "children"
+            FROM cte2 c
+            LEFT JOIN cte2 child ON child."parentId" = c."accId"
+            where (c.closing != 0)
+            GROUP BY 
+                c."accId", 
+                c."accName",
+                c."closing",
+                c."parentId",
+                c."accType"
+            ORDER BY 
+                c."accType", 
+                c."accName"
+        )
+        -- Build JSON result
+        SELECT JSON_BUILD_OBJECT(
+			'profitOrLoss', (SELECT "profitOrLoss" FROM cte3),
+			'liabilities', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'L'),
+			'assets', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'A'),
+			'expenses', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'E'),
+			'incomes', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'I')
+        ) AS "jsonResult"
+    '''
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"
@@ -19,7 +129,7 @@ class SqlAccounts:
 	) as "jsonResult" 
     """
     
-    get_trialBalance_balanceSheet_profitAndLoss = """
+    get_trialBalance = """
         WITH RECURSIVE hier AS (
             SELECT 
                 "accId", 

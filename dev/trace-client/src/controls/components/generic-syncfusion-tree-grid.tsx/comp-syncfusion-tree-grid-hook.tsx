@@ -6,7 +6,17 @@ import { RootStateType } from "../../../app/store/store";
 import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react-treegrid";
 
 export function useCompSyncfusionTreeGrid({
-    addUniqueKeyToJson, aggregates, buCode, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs
+    addUniqueKeyToJson
+    , aggregates
+    , buCode
+    , columns
+    , dbName
+    , dbParams
+    , graphQlQueryFromMap
+    , instance
+    , isLoadOnInit
+    , sqlId
+    , sqlArgs
 }: CompSyncfusionTreeGridType) {
 
     const args: GraphQLQueryArgsType = {

@@ -8,6 +8,8 @@ import { reduxCompSwitchSelectorFn } from "../../../controls/components/redux-co
 import { RootStateType } from "../../../app/store/store"
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
 import { ReduxCompSwitch } from "../../../controls/components/redux-components/redux-comp-switch"
+import { WidgetTooltip } from "../../../controls/widgets/widget-tooltip"
+import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
 
 export function BalanceSheet() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -32,9 +34,9 @@ export function BalanceSheet() {
 
     return (<CompAccountsContainer>
         {/* Header */}
-        <div className="flex items-center mt-4">
-            <label className="font-medium">Balance sheet</label>
-            <ReduxCompSwitch className="mt-1" instance={DataInstancesMap.balanceSheet} leftLabel="This branch" rightLabel="All branches" />
+        <div className="flex items-center mt-5 justify-between">
+            <label className="font-medium text-lg text-primary-500">Balance sheet</label>
+            <ReduxCompSwitch className="mt-1 mr-6" instance={DataInstancesMap.balanceSheet} leftLabel="This branch" rightLabel="All branches" />
         </div>
     </CompAccountsContainer>)
 }

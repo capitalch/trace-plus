@@ -1,4 +1,5 @@
 export const DataInstancesMap = {
+  balanceSheetProfitLoss:'balance-sheet-profit-loss',
   adminBusinessUnits: 'admin-business-units',
   adminBusinessUsers: 'admin-business-users',
   adminDashBoard: 'admin-dashboard',
@@ -14,6 +15,6 @@ export const DataInstancesMap = {
   superAdminRoles: 'super-admin-roles',
   superAdminSecuredControls: 'super-addmin-secured-controls',
   trialBalance: 'trial-balance',
-  balanceSheet: 'balance-sheet',
-  profitLoss: 'profit-loss'
+  // balanceSheet: 'balance-sheet',
+  // profitLoss: 'profit-loss'
 }

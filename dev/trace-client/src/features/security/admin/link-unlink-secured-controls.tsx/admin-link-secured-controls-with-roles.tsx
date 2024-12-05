@@ -35,7 +35,6 @@ export function AdminLinkSecuredControlsWithRoles() {
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
                         className='mt-4'
-                        // CustomControl={() => <WidgetTooltip title='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 h-8 px-2 mb-2 text-xs' /></WidgetTooltip>}
                         minWidth='300px'
                         title=''
                         isLastNoOfRows={false}

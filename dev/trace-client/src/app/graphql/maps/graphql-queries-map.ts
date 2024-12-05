@@ -2,9 +2,10 @@ import { gql } from '@apollo/client'
 import _ from 'lodash'
 import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enums'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../global-constants'
-import { DocumentNode} from 'graphql'
+import { DocumentNode } from 'graphql'
 
 export const GraphQLQueriesMap: GraphQLQueriesMapType = {
+  balanceSheetProfitLoss: balanceSheetProfitLoss,
   changePwd: changePwd,
   changeUid: changeUid,
   createBu: createBu,
@@ -18,7 +19,19 @@ export const GraphQLQueriesMap: GraphQLQueriesMapType = {
   hello: hello
 }
 
-function changePwd(val: ChangePwdType): DocumentNode {
+function balanceSheetProfitLoss (
+  dbName: string,
+  val: GraphQLQueryArgsType
+): DocumentNode {
+  const value = encodeObj(val)
+  return gql`
+        query BalanceSheetProfitLoss {
+          balanceSheetProfitLoss(dbName:"${dbName}", value:"${value}")
+        }
+    `
+}
+
+function changePwd (val: ChangePwdType): DocumentNode {
   const value = encodeObj(val)
   return gql`
         mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
@@ -27,7 +40,7 @@ function changePwd(val: ChangePwdType): DocumentNode {
     `
 }
 
-function changeUid(val: ChangeUidType): DocumentNode {
+function changeUid (val: ChangeUidType): DocumentNode {
   const value = encodeObj(val)
   return gql`
         mutation ${GLOBAL_SECURITY_DATABASE_NAME} {
@@ -36,7 +49,7 @@ function changeUid(val: ChangeUidType): DocumentNode {
     `
 }
 
-function createBu(dbName: string, val: TraceDataObjectType): DocumentNode {
+function createBu (dbName: string, val: TraceDataObjectType): DocumentNode {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} { 
@@ -45,7 +58,7 @@ function createBu(dbName: string, val: TraceDataObjectType): DocumentNode {
     `
 }
 
-function decodeExtDbParams(val: string): DocumentNode {
+function decodeExtDbParams (val: string): DocumentNode {
   // does not hit database
   const q = gql`
     query  {
@@ -54,7 +67,7 @@ function decodeExtDbParams(val: string): DocumentNode {
   return q
 }
 
-function genericQuery(dbName: string, val: GraphQLQueryArgsType): DocumentNode {
+function genericQuery (dbName: string, val: GraphQLQueryArgsType): DocumentNode {
   const value = encodeObj(val)
   return gql`
         query GenericQuery {
@@ -63,7 +76,10 @@ function genericQuery(dbName: string, val: GraphQLQueryArgsType): DocumentNode {
     `
 }
 
-function genericUpdate(dbName: string, val: GraphQLUpdateArgsType): DocumentNode {
+function genericUpdate (
+  dbName: string,
+  val: GraphQLUpdateArgsType
+): DocumentNode {
   const value = encodeObj(val) // dbName below is transferred as operationName
   return gql`
         mutation GenericUpdate { 
@@ -72,7 +88,10 @@ function genericUpdate(dbName: string, val: GraphQLUpdateArgsType): DocumentNode
     `
 }
 
-function importSecuredControls(dbName: string, val: GraphQLUpdateArgsType): DocumentNode {
+function importSecuredControls (
+  dbName: string,
+  val: GraphQLUpdateArgsType
+): DocumentNode {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} { 
@@ -81,7 +100,7 @@ function importSecuredControls(dbName: string, val: GraphQLUpdateArgsType): Docu
     `
 }
 
-function trialBalance(dbName: string, val: GraphQLQueryArgsType): DocumentNode {
+function trialBalance (dbName: string, val: GraphQLQueryArgsType): DocumentNode {
   const value = encodeObj(val)
   return gql`
         query TrialBalance {
@@ -90,7 +109,7 @@ function trialBalance(dbName: string, val: GraphQLQueryArgsType): DocumentNode {
     `
 }
 
-function updateClient(dbName: string, val: TraceDataObjectType): DocumentNode {
+function updateClient (dbName: string, val: TraceDataObjectType): DocumentNode {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} {
@@ -99,7 +118,7 @@ function updateClient(dbName: string, val: TraceDataObjectType): DocumentNode {
     `
 }
 
-function updateUser(dbName: string, val: TraceDataObjectType): DocumentNode {
+function updateUser (dbName: string, val: TraceDataObjectType): DocumentNode {
   const value = encodeObj(val)
   return gql`
         mutation ${dbName} {
@@ -108,13 +127,13 @@ function updateUser(dbName: string, val: TraceDataObjectType): DocumentNode {
     `
 }
 
-function hello(): DocumentNode {
+function hello (): DocumentNode {
   return gql`
     query hello
   `
 }
 
-function encodeObj(obj: any) {
+function encodeObj (obj: any) {
   let ret = ''
   if (!_.isEmpty(obj)) {
     ret = encodeURI(JSON.stringify(obj))
@@ -150,13 +169,20 @@ export type GraphQLUpdateArgsType = {
 }
 
 export type GraphQLQueriesMapType = {
+  balanceSheetProfitLoss: (
+    dbName: string,
+    val: GraphQLQueryArgsType
+  ) => DocumentNode
   changePwd: (val: ChangePwdType) => DocumentNode
   changeUid: (val: ChangeUidType) => DocumentNode
   createBu: (dbName: string, val: TraceDataObjectType) => DocumentNode
   decodeExtDbParams: (val: string) => DocumentNode
   genericQuery: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode
   genericUpdate: (dbName: string, val: GraphQLUpdateArgsType) => DocumentNode
-  importSecuredControls: (dbName: string, val: GraphQLUpdateArgsType) => DocumentNode
+  importSecuredControls: (
+    dbName: string,
+    val: GraphQLUpdateArgsType
+  ) => DocumentNode
   trialBalance: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode
   updateClient: (dbName: string, val: TraceDataObjectType) => DocumentNode
   updateUser: (dbName: string, val: TraceDataObjectType) => DocumentNode
