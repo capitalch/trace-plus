@@ -7,6 +7,7 @@ export const DataInstancesMap = {
   adminRoles: 'admin-roles',
   adminSecuredControls: 'admin-secured-controls',
   adminSecuredControlsLinkRoles: 'admin-ecured-controls-link-roles',
+  liabilities:'liabilities',
   securedControls: 'secured-controls',
   securedControlsLinkRoles: 'secured-controls-link-roles',
   superAdminAdminUsers: 'super-admin-admin-users',
@@ -15,6 +16,7 @@ export const DataInstancesMap = {
   superAdminRoles: 'super-admin-roles',
   superAdminSecuredControls: 'super-addmin-secured-controls',
   trialBalance: 'trial-balance',
+  
   // balanceSheet: 'balance-sheet',
   // profitLoss: 'profit-loss'
 }

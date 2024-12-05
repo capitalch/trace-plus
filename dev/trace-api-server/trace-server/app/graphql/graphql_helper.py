@@ -217,13 +217,30 @@ async def trial_balance_helper(info, dbName, value):
 
 async def balance_sheet_profit_loss_helper(info, dbName, value):
     data = []
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_balanceSheet_profitLoss
+    sqlArgs = valueDict.get("sqlArgs", {})
     try:
-        res = await trialBalance_balanceSheet_profitAndLoss(
-            dbName=dbName, value=value, type="TB"
-        )
+        res = await exec_sql(
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs)
         flat_data = res[0].get("jsonResult")
         if flat_data is not None:
-            data.append({"jsonResult":build_nested_hierarchy_with_children(flat_data)})
+            liabilities = build_nested_hierarchy_with_children(flat_data.get("liabilities"))
+            assets = build_nested_hierarchy_with_children(flat_data.get("assets"))
+            expenses = build_nested_hierarchy_with_children(flat_data.get("expenses"))
+            incomes = build_nested_hierarchy_with_children(flat_data.get("incomes"))
+            data.append({
+                "jsonResult":{
+                    "liabilities": liabilities,
+                    "assets": assets,
+                    "expenses": expenses,
+                    "incomes": incomes
+                }
+            })
+            # data.append({"jsonResult":build_nested_hierarchy_with_children(flat_data)})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly

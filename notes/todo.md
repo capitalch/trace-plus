@@ -22,6 +22,11 @@
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - BS and PL
 	- Client side
+		- data instances liabilities,  assets, expenses, incomes
+		- useEffect: loadData: queryGraphQl-> redux dispatch and set data instances
+		- selector functions in treeGrid to show liabs, assets
+
+		 
 													- Trial balance
 														- Client side
 															- Formatting of count

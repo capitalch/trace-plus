@@ -15,6 +15,7 @@ export function CompSyncfusionTreeGrid({
     className = '',
     columns,
     dataBound,
+    dataSource,
     dbName,
     dbParams,
     graphQlQueryFromMap,
@@ -75,7 +76,7 @@ export function CompSyncfusionTreeGrid({
                 className={className}
                 collapsed={onRowCollapsed}
                 created={onCreated}
-                dataSource={selectedData}
+                dataSource={dataSource || selectedData}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
                 expanded={onRowEpanded}
                 gridLines="Both"
@@ -179,6 +180,7 @@ export type CompSyncfusionTreeGridType = {
     childMapping: string
     className?: string
     columns: SyncFusionTreeGridColumnType[]
+    dataSource?: any
     dataBound?: (args: any) => void
     dbName?: string
     dbParams?: { [key: string]: string | undefined },
