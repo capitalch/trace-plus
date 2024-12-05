@@ -134,12 +134,12 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '42',
           label: 'Balance sheet',
-          path: '/blogs'
+          path: '/balance-sheet'
         },
         {
           id: '43',
           label: 'PL account',
-          path: '/blogs'
+          path: '/profit-loss'
         },
         {
           id: '44',

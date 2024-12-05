@@ -18,6 +18,8 @@ import { AdminLinkUsersWithBu } from "../../features/security/admin/link-unlink-
 import { SuperAdminLinkSecuredControlsWithRoles } from "../../features/security/super-admin/link-unlink-secured-controls/super-admin-link-secured-controls-with-roles";
 import { AdminLinkSecuredControlsWithRoles } from "../../features/security/admin/link-unlink-secured-controls.tsx/admin-link-secured-controls-with-roles";
 import { TrialBalance } from "../../features/accounts/final-accounts/trial-balance";
+import { BalanceSheet } from "../../features/accounts/final-accounts/balance-sheet";
+import { ProfitLoss } from "../../features/accounts/final-accounts/profit-loss";
 
 export const appRouter = createBrowserRouter([
     {
@@ -43,8 +45,9 @@ export const appRouter = createBrowserRouter([
                 { path: 'super-admin-roles', element: <SuperAdminRoles /> },
                 { path: 'super-admin-link-secured-controls-roles', element: <SuperAdminLinkSecuredControlsWithRoles /> },
                 { path: 'super-admin-secured-controls', element: <SuperAdminSecuredControls /> },
-                { path: 'trial-balance', element: <TrialBalance /> }
-
+                { path: 'trial-balance', element: <TrialBalance /> },
+                { path: 'balance-sheet', element: <BalanceSheet /> },
+                { path: 'profit-loss', element: <ProfitLoss /> }
             ]
     },
     {

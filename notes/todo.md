@@ -20,8 +20,10 @@
 	- When admin user logs in: From db get physical BU's and prompt to add if not present
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-- Trial balance
+- BS and PL
 	- Client side
+													- Trial balance
+														- Client side
 															- Formatting of count
 														- Collapse / Expand not showsapp loader
 														- Export to PDF has following issues
