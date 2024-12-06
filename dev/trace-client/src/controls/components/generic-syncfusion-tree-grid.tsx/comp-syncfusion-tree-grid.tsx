@@ -196,7 +196,7 @@ export type CompSyncfusionTreeGridType = {
     pageSize?: number
     onRowDrop?: (args: any) => void
     rowHeight?: number
-    sqlArgs: SqlArgsType
+    sqlArgs?: SqlArgsType
     sqlId?: string
     treeColumnIndex: number
 }

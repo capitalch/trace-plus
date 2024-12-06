@@ -20,11 +20,23 @@
 	- When admin user logs in: From db get physical BU's and prompt to add if not present
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-- BS and PL
+- BS
+	- Server side
+		- Organize code for trial balance and BS
 	- Client side
-		- data instances liabilities,  assets, expenses, incomes
-		- useEffect: loadData: queryGraphQl-> redux dispatch and set data instances
-		- selector functions in treeGrid to show liabs, assets
+		- Toolbar
+			- This branch / All branches
+			- Search
+			- Refresh
+		- UI
+			- Two grids
+			- remove search and refresh
+			- Responsive
+			- Profit incorporation in grid
+			- Aggregates
+														- data instances liabilities,  assets, expenses, incomes
+														- useEffect: loadData: queryGraphQl-> redux dispatch and set data instances
+														- selector functions in treeGrid to show liabs, assets
 
 		 
 													- Trial balance

@@ -37,44 +37,55 @@ export function BalanceSheet() {
     })
 
     useEffect(() => {
-        loadData()
+        loadData(liabsInstance)
     }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
 
 
     return (<CompAccountsContainer>
+
         {/* Header */}
         <div className="flex items-center mt-5 justify-between">
             <label className="font-medium text-lg text-primary-500">Balance sheet</label>
-            {/* <ReduxCompSwitch className="mt-1 mr-6" instance={DataInstancesMap.balanceSheet} leftLabel="This branch" rightLabel="All branches" /> */}
+            <ReduxCompSwitch className="mt-1 mr-6" instance={instance} leftLabel="This branch" rightLabel="All branches" />
         </div>
-        <div className="flex flex-col">
-            <CompSyncFusionTreeGridToolbar className='mt-2'
-                // CustomControl={() => <ReduxCompSwitch instance={instance} className="mr-2" leftLabel="This branch" rightLabel="All branches" />}
-                title='Liabilities'
-                isLastNoOfRows={false}
-                instance={liabsInstance}
-                width="calc(100vw - 250px)" // This stops unnecessary flickers
-            />
-            <CompSyncfusionTreeGrid
-                // aggregates={getTrialBalanceAggregates()}
-                buCode={currentBusinessUnit.buCode}
-                childMapping="children"
-                className=""
-                dataSource={selectedData}
-                dbName={dbName}
-                dbParams={decodedDbParamsObject}
-                // graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
-                isLoadOnInit={false}
-                sqlArgs={{
-                    branchId: isAllBranches ? null : currentBranch?.branchId || 0,
-                    finYearId: currentFinYear?.finYearId || 1900,
-                }}
-                columns={getColumns()}
-                height="calc(100vh - 260px)"
-                instance={liabsInstance}
-                minWidth='950px'
-                treeColumnIndex={0}
-            />
+
+        {/* Two horizontal grids */}
+        <div className="flex items-center">
+
+            {/* Liabilities */}
+            <div className="flex flex-col">
+                <CompSyncFusionTreeGridToolbar className='mt-2'
+                    // CustomControl={() => <ReduxCompSwitch instance={instance} className="mr-2" leftLabel="This branch" rightLabel="All branches" />}
+                    title='Liabilities'
+                    isLastNoOfRows={false}
+                    isRefresh={false}
+                    instance={liabsInstance}
+                    isSearch={false}
+                    width="calc(100vw - 250px)" // This stops unnecessary flickers
+                />
+                <CompSyncfusionTreeGrid
+                    // aggregates={getTrialBalanceAggregates()}
+                    buCode={currentBusinessUnit.buCode}
+                    childMapping="children"
+                    className=""
+                    dataSource={selectedData}
+                    dbName={dbName}
+                    dbParams={decodedDbParamsObject}
+                    isLoadOnInit={false}
+                    // sqlArgs={{
+                    //     branchId: isAllBranches ? null : currentBranch?.branchId || 0,
+                    //     finYearId: currentFinYear?.finYearId || 1900,
+                    // }}
+                    columns={getColumns()}
+                    height="calc(100vh - 260px)"
+                    instance={liabsInstance}
+                    minWidth='650px'
+                    treeColumnIndex={0}
+                />
+            </div>
+
+            {/* Assets */}
+
         </div>
     </CompAccountsContainer>)
 
@@ -105,16 +116,16 @@ export function BalanceSheet() {
         return (ret)
     }
 
-    async function loadData() {
+    async function loadData(gridInstance: string) {
         const queryName: string = GraphQLQueriesMap.balanceSheetProfitLoss.name
 
         const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
-            Utils.getUserDetails()?.dbName || '',
+            dbName || '',
             {
                 buCode: loginInfo.currentBusinessUnit?.buCode,
-                dbParams: loginInfo.userDetails?.decodedDbParamsObject,
+                dbParams: decodedDbParamsObject,
                 sqlArgs: {
-                    branchId: loginInfo.currentBranch?.branchId,
+                    branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
                     finYearId: loginInfo.currentFinYear?.finYearId
                 },
             }
@@ -122,10 +133,9 @@ export function BalanceSheet() {
         try {
             const res: any = await Utils.queryGraphQL(q, queryName)
             const jsonResult: any = res?.data[queryName][0]?.jsonResult
-            // const liabilities: any[] = jsonResult?.liabilities
             dispatch(setQueryHelperData({
-                instance: 'liabilities',
-                data: jsonResult?.liabilities
+                instance: gridInstance,
+                data: jsonResult?.[gridInstance]
             }))
             console.log(res)
         } catch (e: any) {
