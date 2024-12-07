@@ -14,11 +14,12 @@ import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map
 import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
+import { ReduxComponentsInstances } from "../../../controls/components/redux-components/redux-components-instances"
 
 export function BalanceSheet() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const context: GlobalContextType = useContext(GlobalContext)
-    const instance: string = DataInstancesMap.balanceSheetProfitLoss
+    // const instance: string = DataInstancesMap.balanceSheetProfitLoss
     const userDetails: UserDetailsType = Utils.getUserDetails() || {}
     const dispatch: AppDispatchType = useDispatch()
     const liabsInstance = DataInstancesMap.liabilities
@@ -27,7 +28,7 @@ export function BalanceSheet() {
     const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
     const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
-    const isAllBranches: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, instance), shallowEqual) || false
+    const isAllBranches: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, ReduxComponentsInstances.reduxCompSwitchBalanceSheet), shallowEqual) || false
     const decFormatter = Utils.getDecimalFormatter()
     // const intFormatter = Utils.getIntegerFormatter()
 
@@ -46,7 +47,12 @@ export function BalanceSheet() {
         {/* Header */}
         <div className="flex items-center mt-5 justify-between">
             <label className="font-medium text-lg text-primary-500">Balance sheet</label>
-            <ReduxCompSwitch className="mt-1 mr-6" instance={instance} leftLabel="This branch" rightLabel="All branches" />
+            <div className="flex items-center">
+                <ReduxCompSwitch className="mt-1 mr-6" instance={ReduxComponentsInstances.reduxCompSwitchBalanceSheet} leftLabel="This branch" rightLabel="All branches" />
+                <WidgetTooltip title="Refresh">
+                    <WidgetButtonRefresh handleRefresh={doRefresh} />
+                </WidgetTooltip>
+            </div>
         </div>
 
         {/* Two horizontal grids */}
@@ -72,10 +78,6 @@ export function BalanceSheet() {
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     isLoadOnInit={false}
-                    // sqlArgs={{
-                    //     branchId: isAllBranches ? null : currentBranch?.branchId || 0,
-                    //     finYearId: currentFinYear?.finYearId || 1900,
-                    // }}
                     columns={getColumns()}
                     height="calc(100vh - 260px)"
                     instance={liabsInstance}
@@ -116,6 +118,16 @@ export function BalanceSheet() {
         return (ret)
     }
 
+    async function doRefresh() {
+        await loadData(liabsInstance)
+        // const state: RootStateType = Utils.getReduxState()
+        // const searchString = state.queryHelper[instance].searchString
+        // const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+        // if (searchString) {
+        //     gridRef.current.search(searchString)
+        // }
+    }
+
     async function loadData(gridInstance: string) {
         const queryName: string = GraphQLQueriesMap.balanceSheetProfitLoss.name
 
@@ -131,6 +143,10 @@ export function BalanceSheet() {
             }
         )
         try {
+            setTimeout(() => {
+                Utils.showAppLoader(true)
+            }, 100);
+            
             const res: any = await Utils.queryGraphQL(q, queryName)
             const jsonResult: any = res?.data[queryName][0]?.jsonResult
             dispatch(setQueryHelperData({
@@ -140,6 +156,8 @@ export function BalanceSheet() {
             console.log(res)
         } catch (e: any) {
             console.log(e)
+        } finally {
+            Utils.showAppLoader(false)
         }
     }
 }

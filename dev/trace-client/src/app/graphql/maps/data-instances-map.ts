@@ -1,5 +1,5 @@
 export const DataInstancesMap = {
-  balanceSheetProfitLoss:'balance-sheet-profit-loss',
+  // balanceSheetProfitLoss:'balance-sheet-profit-loss',
   adminBusinessUnits: 'admin-business-units',
   adminBusinessUsers: 'admin-business-users',
   adminDashBoard: 'admin-dashboard',

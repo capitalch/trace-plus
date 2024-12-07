@@ -115,7 +115,6 @@ export function CompSyncfusionTreeGrid({
                     , Sort
                     , Toolbar
                 ]} />
-
             </TreeGridComponent>
         </div>
     )

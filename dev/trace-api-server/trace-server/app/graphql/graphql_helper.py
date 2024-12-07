@@ -228,10 +228,10 @@ async def balance_sheet_profit_loss_helper(info, dbName, value):
             dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs)
         flat_data = res[0].get("jsonResult")
         if flat_data is not None:
-            liabilities = build_nested_hierarchy_with_children(flat_data.get("liabilities"))
-            assets = build_nested_hierarchy_with_children(flat_data.get("assets"))
-            expenses = build_nested_hierarchy_with_children(flat_data.get("expenses"))
-            incomes = build_nested_hierarchy_with_children(flat_data.get("incomes"))
+            liabilities = build_nested_hierarchy_with_children(flat_data.get("liabilities")) if flat_data.get("liabilities") is not None else None
+            assets = build_nested_hierarchy_with_children(flat_data.get("assets")) if flat_data.get("assets") is not None else None
+            expenses = build_nested_hierarchy_with_children(flat_data.get("expenses")) if flat_data.get("expenses") is not None else None
+            incomes = build_nested_hierarchy_with_children(flat_data.get("incomes")) if flat_data.get("incomes") is not None else None
             data.append({
                 "jsonResult":{
                     "liabilities": liabilities,

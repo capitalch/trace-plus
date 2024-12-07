@@ -13,7 +13,9 @@ import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
     decodeExtDbParams: decodeExtDbParams,
+    getCompanyName: getCompanyName,
     getCurrentFinYear: getCurrentFinYear,
+    getCurrentFinYearFormattedDateRange: getCurrentFinYearFormattedDateRange,
     getCurrentFinYearId: getCurrentFinYearId,
     getCurrentLoginInfo: getCurrentLoginInfo,
     getDbNameDbParams: getDbNameDbParams,
@@ -85,6 +87,11 @@ async function decodeExtDbParams(encodedDbParams: string) {
     }
 }
 
+function getCompanyName(): string {
+    const unitInfo: UnitInfoType | undefined = getUnitInfo()
+    return (unitInfo?.unitName || '')
+}
+
 function getCurrentFinYear(): FinYearType {
     const today = dayjs()
     const year: number = today.month() > 3 ? today.year() : today.year() - 1
@@ -95,6 +102,16 @@ function getCurrentFinYear(): FinYearType {
         startDate: startDate,
         endDate: endDate
     })
+}
+
+function getCurrentFinYearFormattedDateRange() {
+    const accSettings: AccSettingType[] | undefined = getCurrentLoginInfo()?.accSettings
+    const generalSettings: AccSettingType | undefined = accSettings?.find((s: AccSettingType) => s.key === 'generalSettings')
+    const dateFormat: string = generalSettings?.jData?.dateFormat || 'DD/MM/YYYY'
+    const finYear: FinYearType = getCurrentLoginInfo().currentFinYear || getCurrentFinYear()
+    const startDate: string = dayjs(finYear.startDate).format(dateFormat)
+    const endDate: string = dayjs(finYear.endDate).format(dateFormat)
+    return (`${startDate} - ${endDate}`)
 }
 
 function getCurrentFinYearId(): number {
@@ -191,7 +208,7 @@ async function mutateGraphQL(q: any, queryName: string) {
 
 async function queryGraphQL(q: any, queryName: string) {
     try {
-        showAppLoader(true)
+        Utils.showAppLoader(true)
         const client = getApolloClient()
         const result: any = await client.query({
             query: q
@@ -208,7 +225,7 @@ async function queryGraphQL(q: any, queryName: string) {
 }
 
 function showAppLoader(val: boolean) {
-    ibukiEmit('SHOW-APP-LOADER', val)
+    // ibukiEmit('SHOW-APP-LOADER', val)
 }
 
 function showAlertMessage(title: string, message: string) {
@@ -439,7 +456,9 @@ export type UnitInfoType = {
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
     decodeExtDbParams: (encodedDbParams: string) => any
+    getCompanyName: () => string
     getCurrentFinYear: () => FinYearType
+    getCurrentFinYearFormattedDateRange: () => string
     getCurrentFinYearId: () => number
     getCurrentLoginInfo: () => LoginType
     getDbNameDbParams: () => DbNameDbParamsType

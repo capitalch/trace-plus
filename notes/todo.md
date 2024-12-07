@@ -8,6 +8,7 @@
 															- Bottom left User type shows unknown
 	- At logout make sure that redux store is initialized by using redux tools
 	- Accounts
+		- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
 		- When opening balance is not zero show a warning the apening balances do not match
 															- In accounts title, right side show client name in dim
 - Admin
@@ -28,6 +29,7 @@
 			- This branch / All branches
 			- Search
 			- Refresh
+															- title in pdf export
 		- UI
 			- Two grids
 			- remove search and refresh
@@ -42,6 +44,7 @@
 													- Trial balance
 														- Client side
 															- Formatting of count
+														- Pdf export title
 														- Collapse / Expand not showsapp loader
 														- Export to PDF has following issues
 															- Bottom summary is zaro

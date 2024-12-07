@@ -11,11 +11,13 @@ import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
 import { WidgetTreeGridSwitch } from "./widget-tree-grid-switch"
 import clsx from "clsx"
+import { FinYearType, LoginType } from "../../../features/login/login-slice"
 
 export function CompSyncFusionTreeGridToolbar({
     className
     , CustomControl = undefined
     , instance = ''
+    , isAllBranches = false
     , isCsvExport = true
     , isExcelExport = true
     , isPdfExport = true
@@ -27,14 +29,35 @@ export function CompSyncFusionTreeGridToolbar({
     , width
 }: CompSyncFusionTreeGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
-
+    // const loginInfo: LoginType = Utils.getCurrentLoginInfo()
+    // const branchName: string = loginInfo.currentBranch?.branchName || ''
+    // const finYear: FinYearType | undefined = loginInfo.currentFinYear
+    // const header: string = ''
     const pdfExportProperties: TreeGridPdfExportProperties = {
         fileName: 'trace-export.pdf',
+        header: {
+            fromTop: 0,
+            height: 50,
+            contents: [
+                {
+                    type: 'Text',
+                    value: `${Utils.getCompanyName()}, Branch: ${isAllBranches ? 'All branches' : Utils.getCurrentLoginInfo().currentBranch?.branchName || ''}`,
+                    position: { x: 0, y: 0 },
+                    style: { textBrushColor: '#000000', fontSize: 16 }
+                },
+                {
+                    type: 'Text',
+                    value: `${title}: (${Utils.getCurrentFinYearFormattedDateRange()})`,
+                    position: { x: 0, y: 20 },
+                    style: { textBrushColor: '#000000', fontSize: 14 }
+                }
+            ]
+        },
+        isCollapsedStatePersist: false,
         pageOrientation: isPdfExportAsLandscape ? 'Landscape' : 'Portrait',
-        isCollapsedStatePersist: false
     }
 
-    return (<div className={clsx("flex justify-between items-center", className)} style ={{minWidth:`${minWidth}`, width:`${width}`}}>
+    return (<div className={clsx("flex justify-between items-center", className)} style={{ minWidth: `${minWidth}`, width: `${width}` }}>
         <label className="text-lg font-medium text-primary-500 mb-1">{title}</label>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
@@ -71,9 +94,9 @@ export function CompSyncFusionTreeGridToolbar({
 
             {/* Expand / Collapse switch */}
             <WidgetTreeGridSwitch
+            className="mr-2"
                 instance={instance}
-                leftLabel="Collapse"
-                rightLabel="Expand"
+                leftLabel="Expand"
             />
 
             {/* Search */}
@@ -103,6 +126,7 @@ type CompSyncFusionTreeGridToolbarType = {
     className: string
     CustomControl?: FC
     instance: string
+    isAllBranches?: boolean
     isCsvExport?: boolean
     isExcelExport?: boolean
     isLastNoOfRows?: boolean
@@ -110,7 +134,7 @@ type CompSyncFusionTreeGridToolbarType = {
     isPdfExportAsLandscape?: boolean
     isRefresh?: boolean
     isSearch?: boolean
-    minWidth?:string
+    minWidth?: string
     title: string,
     width?: string
 }

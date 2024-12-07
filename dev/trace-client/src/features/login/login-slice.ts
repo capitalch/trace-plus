@@ -163,7 +163,7 @@ export type AccSettingType = {
   settingsId: number
   key: string
   textValue: string
-  jData: object
+  jData: any
   intValue: number
 }
 
