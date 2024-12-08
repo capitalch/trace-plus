@@ -23,7 +23,7 @@ export function CompSyncfusionTreeGrid({
     height,
     instance,
     isLoadOnInit = true,
-    minWidth = '1200px',
+    minWidth = '600px',
     pageSize = 50,
     rowHeight,
     sqlArgs,

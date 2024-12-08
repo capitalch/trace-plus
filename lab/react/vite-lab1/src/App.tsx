@@ -38,7 +38,8 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { ReactSelectTypeAhead } from './features/react-select/react-select-type-ahead'
 // import { ReactSelectTypeAheadAsync1 } from './features/react-select/react-select-type-ahead-async1'
 // import { ReactSelectAsync } from './features/react-select/react-select-async'
-import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
+// import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
+import { TreeGrid2 } from './features/syncfusion/tree-grid2'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -90,9 +91,10 @@ function App() {
       {/* <ApolloGraphQL03112024 /> */}
       {/* <ReactSelectTypeAheadAsync1 /> */}
       {/* <ReactSelectAsync /> */}
-      <SyncfusionTreeGrid />
+      {/* <SyncfusionTreeGrid /> */}
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
+      <TreeGrid2 />
     </GlobalContext.Provider>
   )
 }

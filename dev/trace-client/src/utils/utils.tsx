@@ -9,6 +9,8 @@ import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
 import { AccSettingType, FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
 import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
+import { showReduxCompAppLoader } from "../controls/redux-components/redux-comp-slice"
+import { ReduxComponentsInstances } from "../controls/redux-components/redux-components-instances"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
@@ -29,7 +31,7 @@ export const Utils: UtilsType = {
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
     showAlertMessage: showAlertMessage,
-    showAppLoader: showAppLoader,
+    // showAppLoader: showAppLoader,
     showConfirmDialog: showConfirmDialog,
     showCustomMessage: showCustomMessage,
     showDeleteConfirmDialog: showDeleteConfirmDialog,
@@ -184,7 +186,10 @@ function getUserDetails(): UserDetailsType | undefined {
 
 async function mutateGraphQL(q: any, queryName: string) {
     try {
-        showAppLoader(true)
+        store.dispatch(showReduxCompAppLoader({
+            instance: ReduxComponentsInstances.reduxCompAppLoader,
+            toShow: true
+        }))
         const client = getApolloClient()
         const result: any = await client.mutate({
             mutation: q
@@ -202,13 +207,19 @@ async function mutateGraphQL(q: any, queryName: string) {
     }
 
     finally {
-        showAppLoader(false)
+        store.dispatch(showReduxCompAppLoader({
+            instance: ReduxComponentsInstances.reduxCompAppLoader,
+            toShow: false
+        }))
     }
 }
 
 async function queryGraphQL(q: any, queryName: string) {
     try {
-        Utils.showAppLoader(true)
+        store.dispatch(showReduxCompAppLoader({
+            instance: ReduxComponentsInstances.reduxCompAppLoader,
+            toShow: true
+        }))
         const client = getApolloClient()
         const result: any = await client.query({
             query: q
@@ -220,13 +231,16 @@ async function queryGraphQL(q: any, queryName: string) {
         }
         return (result)
     } finally {
-        showAppLoader(false)
+        store.dispatch(showReduxCompAppLoader({
+            instance: ReduxComponentsInstances.reduxCompAppLoader,
+            toShow: false
+        }))
     }
 }
 
-function showAppLoader(val: boolean) {
-    // ibukiEmit('SHOW-APP-LOADER', val)
-}
+// function showAppLoader(val: boolean) {
+//     ibukiEmit('SHOW-APP-LOADER', val)
+// }
 
 function showAlertMessage(title: string, message: string) {
     Swal.fire({
@@ -477,7 +491,7 @@ type UtilsType = {
     showDeleteConfirmDialog: (onConfirm: () => void) => void
     showFailureAlertMessage: (alertMessage: AlertMessageType) => void
     showSuccessAlertMessage: (alertMessage: AlertMessageType, callback?: () => void) => void
-    showAppLoader: (val: boolean) => void
+    // showAppLoader: (val: boolean) => void
     showErrorMessage: (error?: any, errorCode?: string, errorMessage?: string) => void
     showHideModalDialogA: (options: ShowHideModalDialogType) => void
     showHideModalDialogB: (options: ShowHideModalDialogType) => void

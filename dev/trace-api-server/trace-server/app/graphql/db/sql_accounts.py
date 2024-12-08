@@ -109,6 +109,7 @@ class SqlAccounts:
 			'incomes', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'I')
         ) AS "jsonResult"
     '''
+
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"
@@ -208,14 +209,6 @@ class SqlAccounts:
 
         -- Calculate profit or loss
         cte3 AS ( SELECT
-			-- SUM(opening) as "sumOpening",
-			-- SUM(debit) as "sumDebits",
-			-- SUM(credit) as "sumCredits",
-			-- SUM(opening + debit - credit) as "sumClosing",
-			-- -SUM(CASE WHEN "accType" = 'L' THEN opening + debit - credit ELSE 0 END) AS "sumLiabs",
-			-- SUM(CASE WHEN "accType" = 'A' THEN opening + debit - credit ELSE 0 END) AS "sumAssets",
-			-- -SUM(CASE WHEN "accType" = 'I' THEN opening + debit - credit ELSE 0 END) AS "sumIncomes",
-			-- SUM(CASE WHEN "accType" = 'E' THEN opening + debit - credit ELSE 0 END) AS "sumExpences",
 			SUM(CASE WHEN "accType" in('L','A') THEN opening + debit - credit ELSE 0 END) as "profitOrLoss"
             FROM cte1 c
             JOIN "AccM" a ON a."id" = c."accId"
@@ -256,17 +249,7 @@ class SqlAccounts:
         -- Build JSON result
         SELECT JSON_BUILD_OBJECT(
             'trialBalance', (SELECT JSON_AGG(a) FROM cte4 a),
-            'profitOrLoss', (SELECT "profitOrLoss" FROM cte3),
-            'balanceSheet', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('A', 'L')),
-            'profitAndLoss', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" IN ('E', 'I'))
-			-- , 'sumLiabs', (select "sumLiabs" from cte3),
-			-- 'sumAssets', (select "sumAssets" from cte3),
-			-- 'sumIncomes', (select "sumIncomes" from cte3),
-			-- 'sumExpences', (select "sumExpences" from cte3),
-			-- 'sumOpening', (select "sumOpening" from cte3),
-			-- 'sumClosing', (select "sumClosing" from cte3),
-			-- 'sumDebits', (select "sumDebits" from cte3),
-			-- 'sumCredits', (select "sumCredits" from cte3)
+            'profitOrLoss', (SELECT "profitOrLoss" FROM cte3)
         ) AS "jsonResult"
     """
  

@@ -202,10 +202,15 @@ async def import_secured_controls_helper(info, value: str):
 
 async def trial_balance_helper(info, dbName, value):
     data = []
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_trialBalance
+    sqlArgs = valueDict.get("sqlArgs", {})
     try:
-        res = await trialBalance_balanceSheet_profitAndLoss(
-            dbName=dbName, value=value, type="TB"
-        )
+        res = await exec_sql(
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs)
         flat_data = res[0].get("jsonResult").get("trialBalance")
         if flat_data is not None:
             data.append({"jsonResult":build_nested_hierarchy_with_children(flat_data)})
@@ -228,19 +233,20 @@ async def balance_sheet_profit_loss_helper(info, dbName, value):
             dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs)
         flat_data = res[0].get("jsonResult")
         if flat_data is not None:
+            profitOrLoss = flat_data.get("profitOrLoss")
             liabilities = build_nested_hierarchy_with_children(flat_data.get("liabilities")) if flat_data.get("liabilities") is not None else None
             assets = build_nested_hierarchy_with_children(flat_data.get("assets")) if flat_data.get("assets") is not None else None
             expenses = build_nested_hierarchy_with_children(flat_data.get("expenses")) if flat_data.get("expenses") is not None else None
             incomes = build_nested_hierarchy_with_children(flat_data.get("incomes")) if flat_data.get("incomes") is not None else None
             data.append({
                 "jsonResult":{
+                    "profitOrLoss": profitOrLoss,
                     "liabilities": liabilities,
                     "assets": assets,
                     "expenses": expenses,
                     "incomes": incomes
                 }
             })
-            # data.append({"jsonResult":build_nested_hierarchy_with_children(flat_data)})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
@@ -340,7 +346,6 @@ def build_nested_hierarchy_with_children(flat_data):
     roots = [
         node for node_id, node in id_to_node.items() if node_id not in all_children_ids
     ]
-
     return roots
 
 
@@ -362,26 +367,6 @@ def create_graphql_exception(e: Exception):
             }
         }
     }
-
-
-async def trialBalance_balanceSheet_profitAndLoss(
-    dbName: str, value: str, type: Literal["TB", "BS"]
-):
-    data = {}
-    valueString = unquote(value)
-    valueDict = json.loads(valueString)
-    dbParams = valueDict.get("dbParams", None)
-    schema = valueDict.get("buCode", None)
-    sql = SqlAccounts.get_trialBalance
-    sqlArgs = valueDict.get("sqlArgs", {})
-    data = await exec_sql(
-        dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
-    )
-    if type == "TB":
-        return data
-    if type == "BS":
-        return data
-
 
 async def send_mail_for_change_pwd(
     companyName: str, email: str, pwd: str, userName: str

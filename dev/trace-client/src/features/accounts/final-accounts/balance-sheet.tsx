@@ -1,28 +1,31 @@
-import { useContext, useEffect } from "react"
-import { GlobalContext, GlobalContextType } from "../../../app/global-context"
+import { ChangeEvent, useContext, useEffect } from "react"
+import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
 import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, LoginType, UserDetailsType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { reduxCompSwitchSelectorFn } from "../../../controls/components/redux-components/redux-comp-slice"
+import { reduxCompSwitchSelectorFn } from "../../../controls/redux-components/redux-comp-slice"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
-import { ReduxCompSwitch } from "../../../controls/components/redux-components/redux-comp-switch"
-import { WidgetTooltip } from "../../../controls/widgets/widget-tooltip"
+import { ReduxCompSwitch } from "../../../controls/redux-components/redux-comp-switch"
 import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map"
 import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
-import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
-import { ReduxComponentsInstances } from "../../../controls/components/redux-components/redux-components-instances"
+import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
+import { ReduxComponentsInstances } from "../../../controls/redux-components/redux-components-instances"
+import { TooltipComponent } from "@syncfusion/ej2-react-popups"
+import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
+import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 
 export function BalanceSheet() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-    const context: GlobalContextType = useContext(GlobalContext)
-    // const instance: string = DataInstancesMap.balanceSheetProfitLoss
     const userDetails: UserDetailsType = Utils.getUserDetails() || {}
+    const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
-    const liabsInstance = DataInstancesMap.liabilities
+    const balanceSheetInstance: string = DataInstancesMap.balanceSheet
+    const liabsInstance: string = DataInstancesMap.liabilities
+    const assetsInstance: string = DataInstancesMap.assets
     const { dbName, decodedDbParamsObject, } = userDetails
 
     const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
@@ -30,87 +33,110 @@ export function BalanceSheet() {
     const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, ReduxComponentsInstances.reduxCompSwitchBalanceSheet), shallowEqual) || false
     const decFormatter = Utils.getDecimalFormatter()
-    // const intFormatter = Utils.getIntegerFormatter()
+    const intFormatter = Utils.getIntegerFormatter()
 
-    const selectedData: any = useSelector((state: RootStateType) => {
+    const liabsData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[liabsInstance]?.data
         return (ret)
     })
 
+    const assetsData: any = useSelector((state: RootStateType) => {
+        const ret: any = state.queryHelper[assetsInstance]?.data
+        return (ret)
+    })
+
     useEffect(() => {
-        loadData(liabsInstance)
+        loadData()
     }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
 
-
-    return (<CompAccountsContainer>
+    return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
 
         {/* Header */}
-        <div className="flex items-center mt-5 justify-between">
-            <label className="font-medium text-lg text-primary-500">Balance sheet</label>
-            <div className="flex items-center">
-                <ReduxCompSwitch className="mt-1 mr-6" instance={ReduxComponentsInstances.reduxCompSwitchBalanceSheet} leftLabel="This branch" rightLabel="All branches" />
-                <WidgetTooltip title="Refresh">
-                    <WidgetButtonRefresh handleRefresh={doRefresh} />
-                </WidgetTooltip>
-            </div>
-        </div>
+
 
         {/* Two horizontal grids */}
-        <div className="flex items-center">
+        <div className="flex items-center mt-2 gap-8" >
 
             {/* Liabilities */}
             <div className="flex flex-col">
                 <CompSyncFusionTreeGridToolbar className='mt-2'
-                    // CustomControl={() => <ReduxCompSwitch instance={instance} className="mr-2" leftLabel="This branch" rightLabel="All branches" />}
-                    title='Liabilities'
+                    isAllBranches={isAllBranches}
                     isLastNoOfRows={false}
                     isRefresh={false}
                     instance={liabsInstance}
                     isSearch={false}
-                    width="calc(100vw - 250px)" // This stops unnecessary flickers
+                    title='Liabilities'
                 />
                 <CompSyncfusionTreeGrid
-                    // aggregates={getTrialBalanceAggregates()}
+                    aggregates={getAggregates()}
                     buCode={currentBusinessUnit.buCode}
                     childMapping="children"
                     className=""
-                    dataSource={selectedData}
+                    dataSource={liabsData}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     isLoadOnInit={false}
-                    columns={getColumns()}
+                    columns={getColumns('L')}
                     height="calc(100vh - 260px)"
                     instance={liabsInstance}
-                    minWidth='650px'
                     treeColumnIndex={0}
                 />
             </div>
 
             {/* Assets */}
+            <div className="flex flex-col">
+                <CompSyncFusionTreeGridToolbar className='mt-2'
+                    isAllBranches={isAllBranches}
+                    isLastNoOfRows={false}
+                    isRefresh={false}
+                    instance={assetsInstance}
+                    isSearch={false}
+                    title='Assets'
+                />
+                <CompSyncfusionTreeGrid
+                    aggregates={getAggregates()}
+                    buCode={currentBusinessUnit.buCode}
+                    childMapping="children"
+                    className=""
+                    dataSource={assetsData}
+                    dbName={dbName}
+                    dbParams={decodedDbParamsObject}
+                    isLoadOnInit={false}
+                    columns={getColumns('A')}
+                    height="calc(100vh - 260px)"
+                    instance={assetsInstance}
+                    treeColumnIndex={0}
+                />
+            </div>
 
         </div>
     </CompAccountsContainer>)
 
-    function getColumns(): SyncFusionTreeGridColumnType[] {
-        return ([
-            {
-                field: 'accName',
-                headerText: 'Acc Name',
-                width: 250,
-                textAlign: 'Left'
-            },
-            {
-                field: 'closing',
-                headerText: 'Closing',
-                width: 90,
-                textAlign: 'Right',
-                format: 'N2',
-                template: closingColumnTemplate
-            },
-        ])
+    function assetsClosingColumnTemplate(props: any) {
+        const ret = <div>
+            <span>{props.closing_dc === 'C' ? '-' : ''}</span>
+            <span>{decFormatter.format(props.closing)}</span>
+        </div>
+        return (ret)
     }
 
-    function closingColumnTemplate(props: any) {
+    function CustomControl() {
+        return (<div className="flex items-center justify-between">
+            <label className="font-medium text-xl text-primary-300">Balance Sheet</label>
+
+            {/* All branches */}
+            <ReduxCompSwitch className="ml-4 mt-1 mr-4" instance={ReduxComponentsInstances.reduxCompSwitchBalanceSheet} leftLabel="All branches" />
+
+            <CompSyncFusionTreeGridSearchBox instance={balanceSheetInstance} handleOnChange={handleOnChangeSearchText} />
+            {/* Refresh */}
+            <TooltipComponent content='Refresh' className="ml-2">
+                <WidgetButtonRefresh handleRefresh={doRefresh} />
+            </TooltipComponent>
+
+        </div>)
+    }
+
+    function liabsClosingColumnTemplate(props: any) {
         const ret = <div>
             <span>{props.closing_dc === 'D' ? '-' : ''}</span>
             <span>{decFormatter.format(props.closing)}</span>
@@ -118,17 +144,68 @@ export function BalanceSheet() {
         return (ret)
     }
 
-    async function doRefresh() {
-        await loadData(liabsInstance)
-        // const state: RootStateType = Utils.getReduxState()
-        // const searchString = state.queryHelper[instance].searchString
-        // const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-        // if (searchString) {
-        //     gridRef.current.search(searchString)
-        // }
+    function customClosingAggregate(data: any, colType: string, dcColName: string) {
+        const res: Decimal = (data?.result || data) // when you pdf or excel export then figures are available in data and not in data.result
+            .filter((item: any) => !item?.parentId) // Filter only top-level rows
+            .reduce((acc: Decimal, current: any) => {
+                const multiplier = current[dcColName] === 'C' ? -1 : 1; // Determine the multiplier based on condition
+                return acc.plus(new Decimal(multiplier).times(new Decimal(current[colType] || 0))); // Multiply and add with Decimal
+            }, new Decimal(0)); // Initialize accumulator as Decimal
+        return (res.abs().toNumber()); // Get the absolute value and convert back to a number
     }
 
-    async function loadData(gridInstance: string) {
+    async function doRefresh() {
+        await loadData()
+    }
+
+    function getColumns(type: string): SyncFusionTreeGridColumnType[] {
+        return ([
+            {
+                field: 'accName',
+                headerText: 'Account Name',
+                width: 70,
+                textAlign: 'Left'
+            },
+            {
+                field: 'closing',
+                headerText: 'Closing',
+                width: 20,
+                textAlign: 'Right',
+                format: 'N2',
+                template: type === 'L' ? liabsClosingColumnTemplate : assetsClosingColumnTemplate
+            },
+        ])
+    }
+
+    function getAggregates(): SyncFusionTreeGridAggregateColumnType[] {
+        return ([
+            {
+                columnName: 'accName',
+                field: 'accName',
+                format: 'N2',
+                type: 'Count',
+                footerTemplate: (props: any) => <span className="mr-3 h-20 font-semibold">{`Count: ${intFormatter.format(props.Count)}`}</span>,
+            },
+            {
+                columnName: 'closing',
+                customAggregate: (data: any) => customClosingAggregate(data, 'closing', 'closing_dc'),
+                field: 'closing',
+                format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                type: 'Custom',
+            }
+        ])
+    }
+
+    function handleOnChangeSearchText(event: ChangeEvent<HTMLInputElement>): void {
+        const gridRefLiabs: any = context.CompSyncFusionTreeGrid[liabsInstance].gridRef
+        gridRefLiabs.current.search(event.target.value)
+
+        const gridRefAssets: any = context.CompSyncFusionTreeGrid[assetsInstance].gridRef
+        gridRefAssets.current.search(event.target.value)
+    }
+
+    async function loadData() {
         const queryName: string = GraphQLQueriesMap.balanceSheetProfitLoss.name
 
         const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
@@ -143,21 +220,24 @@ export function BalanceSheet() {
             }
         )
         try {
-            setTimeout(() => {
-                Utils.showAppLoader(true)
-            }, 100);
-            
             const res: any = await Utils.queryGraphQL(q, queryName)
             const jsonResult: any = res?.data[queryName][0]?.jsonResult
+            const profitOrLoss = jsonResult?.profitOrLoss
+            if (profitOrLoss < 0) {
+                jsonResult[assetsInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
+            } else {
+                jsonResult[liabsInstance].push({ accName: 'Profit for the year', closing: Math.abs(profitOrLoss), closing_dc: 'C', parentId: null })
+            }
             dispatch(setQueryHelperData({
-                instance: gridInstance,
-                data: jsonResult?.[gridInstance]
+                instance: liabsInstance,
+                data: jsonResult?.[liabsInstance]
             }))
-            console.log(res)
+            dispatch(setQueryHelperData({
+                instance: assetsInstance,
+                data: jsonResult?.[assetsInstance]
+            }))
         } catch (e: any) {
             console.log(e)
-        } finally {
-            Utils.showAppLoader(false)
         }
     }
 }

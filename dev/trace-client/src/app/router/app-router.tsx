@@ -20,6 +20,7 @@ import { AdminLinkSecuredControlsWithRoles } from "../../features/security/admin
 import { TrialBalance } from "../../features/accounts/final-accounts/trial-balance";
 import { BalanceSheet } from "../../features/accounts/final-accounts/balance-sheet";
 import { ProfitLoss } from "../../features/accounts/final-accounts/profit-loss";
+import { GeneralLedger } from "../../features/accounts/final-accounts/general-ledger";
 
 export const appRouter = createBrowserRouter([
     {
@@ -47,7 +48,8 @@ export const appRouter = createBrowserRouter([
                 { path: 'super-admin-secured-controls', element: <SuperAdminSecuredControls /> },
                 { path: 'trial-balance', element: <TrialBalance /> },
                 { path: 'balance-sheet', element: <BalanceSheet /> },
-                { path: 'profit-loss', element: <ProfitLoss /> }
+                { path: 'profit-loss', element: <ProfitLoss /> },
+                { path: 'general-ledger', element: <GeneralLedger /> },
             ]
     },
     {

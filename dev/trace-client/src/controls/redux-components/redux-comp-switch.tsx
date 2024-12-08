@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
-import { AppDispatchType, RootStateType } from "../../../app/store/store"
+import { AppDispatchType, RootStateType } from "../../app/store/store"
 import { changeReduxCompSwitch, reduxCompSwitchSelectorFn } from "./redux-comp-slice"
 import clsx from "clsx"
 

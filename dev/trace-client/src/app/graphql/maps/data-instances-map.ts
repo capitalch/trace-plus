@@ -1,5 +1,4 @@
 export const DataInstancesMap = {
-  // balanceSheetProfitLoss:'balance-sheet-profit-loss',
   adminBusinessUnits: 'admin-business-units',
   adminBusinessUsers: 'admin-business-users',
   adminDashBoard: 'admin-dashboard',
@@ -7,7 +6,13 @@ export const DataInstancesMap = {
   adminRoles: 'admin-roles',
   adminSecuredControls: 'admin-secured-controls',
   adminSecuredControlsLinkRoles: 'admin-ecured-controls-link-roles',
-  liabilities:'liabilities',
+  assets: 'assets',
+  balanceSheet: 'balance-sheet',
+  expenses: 'expenses',
+  generalLedger:'general-ledger',
+  incomes: 'incomes',
+  liabilities: 'liabilities',
+  profitLoss: 'profit-loss',
   securedControls: 'secured-controls',
   securedControlsLinkRoles: 'secured-controls-link-roles',
   superAdminAdminUsers: 'super-admin-admin-users',
@@ -15,8 +20,5 @@ export const DataInstancesMap = {
   superAdminClients: 'super-admin-clients',
   superAdminRoles: 'super-admin-roles',
   superAdminSecuredControls: 'super-addmin-secured-controls',
-  trialBalance: 'trial-balance',
-  
-  // balanceSheet: 'balance-sheet',
-  // profitLoss: 'profit-loss'
+  trialBalance: 'trial-balance'
 }

@@ -11,7 +11,6 @@ import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
 import { WidgetTreeGridSwitch } from "./widget-tree-grid-switch"
 import clsx from "clsx"
-import { FinYearType, LoginType } from "../../../features/login/login-slice"
 
 export function CompSyncFusionTreeGridToolbar({
     className
@@ -24,17 +23,14 @@ export function CompSyncFusionTreeGridToolbar({
     , isPdfExportAsLandscape = false
     , isRefresh = true
     , isSearch = true
+    , isTitleVisible = true
     , minWidth
     , title
     , width
 }: CompSyncFusionTreeGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    // const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-    // const branchName: string = loginInfo.currentBranch?.branchName || ''
-    // const finYear: FinYearType | undefined = loginInfo.currentFinYear
-    // const header: string = ''
     const pdfExportProperties: TreeGridPdfExportProperties = {
-        fileName: 'trace-export.pdf',
+        fileName: `${title}-${Utils.getCompanyName()}-${isAllBranches ? 'All branches' : Utils.getCurrentLoginInfo().currentBranch?.branchName || ''}-${Utils.getCurrentFinYearFormattedDateRange()}.pdf`,
         header: {
             fromTop: 0,
             height: 50,
@@ -58,7 +54,7 @@ export function CompSyncFusionTreeGridToolbar({
     }
 
     return (<div className={clsx("flex justify-between items-center", className)} style={{ minWidth: `${minWidth}`, width: `${width}` }}>
-        <label className="text-lg font-medium text-primary-500 mb-1">{title}</label>
+        {<label className="text-lg font-medium text-primary-500 mb-1">{isTitleVisible ? title : ''}</label>}
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
 
@@ -94,7 +90,7 @@ export function CompSyncFusionTreeGridToolbar({
 
             {/* Expand / Collapse switch */}
             <WidgetTreeGridSwitch
-            className="mr-2"
+                className="mr-2"
                 instance={instance}
                 leftLabel="Expand"
             />
@@ -133,6 +129,7 @@ type CompSyncFusionTreeGridToolbarType = {
     isPdfExport?: boolean
     isPdfExportAsLandscape?: boolean
     isRefresh?: boolean
+    isTitleVisible?: boolean
     isSearch?: boolean
     minWidth?: string
     title: string,

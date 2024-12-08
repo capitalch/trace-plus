@@ -2,12 +2,11 @@ import _ from 'lodash'
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../app/store/store";
 import { ChangeEvent, useContext, useEffect, useMemo } from "react";
-// import { GlobalContext } from "../../../App";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { setSearchString } from '../../../app/graphql/query-helper-slice';
 import { IconSearch } from '../../icons/icon-search';
 
-export function CompSyncFusionTreeGridSearchBox({ instance }: CompSyncFusionTreeGridSearchBoxType) {
+export function CompSyncFusionTreeGridSearchBox({ handleOnChange, instance }: CompSyncFusionTreeGridSearchBoxType) {
     const dispatch: AppDispatchType = useDispatch()
     const context: GlobalContextType = useContext(GlobalContext)
     const selectedSearchString: string = useSelector((state: RootStateType) => state.queryHelper[instance]?.searchString)
@@ -15,7 +14,11 @@ export function CompSyncFusionTreeGridSearchBox({ instance }: CompSyncFusionTree
     const onTextChange = useMemo( // For debounce
         () =>
             _.debounce((e: ChangeEvent<HTMLInputElement>) => {
-                handleOnChange(e);
+                if (handleOnChange) {
+                    handleOnChange(e)
+                } else {
+                    handleOnChangeLocal(e)
+                }
             }, 1200),
         []
     )
@@ -35,12 +38,13 @@ export function CompSyncFusionTreeGridSearchBox({ instance }: CompSyncFusionTree
         </div>
     )
 
-    function handleOnChange(event: ChangeEvent<HTMLInputElement>) {        
+    function handleOnChangeLocal(event: ChangeEvent<HTMLInputElement>) {
         const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
         gridRef.current.search(event.target.value)
     }
 }
 
 type CompSyncFusionTreeGridSearchBoxType = {
+    handleOnChange?: (event: ChangeEvent<HTMLInputElement>) => void
     instance: string
 }

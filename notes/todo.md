@@ -12,30 +12,30 @@
 		- When opening balance is not zero show a warning the apening balances do not match
 															- In accounts title, right side show client name in dim
 - Admin
-															- Admin, Super admin menu all grids bottom summary rowHeight to be made undefined, so that it becomes proper height summary
 	- There are some issues related to bu and finyear when a new admin use logs in
-															- Show client name in admin screens
-															- In Accounts Info modal windows title should be aligned with grid
 	- Provide client name and client code in the email when new Admin user is created in super admin
 	- When a new / update BU or Fy then it should be immediately updated to accounts info
 	- When admin user logs in: From db get physical BU's and prompt to add if not present
+															- Admin, Super admin menu all grids bottom summary rowHeight to be made undefined, so that it becomes proper height summary
+															- Show client name in admin screens
+															- In Accounts Info modal windows title should be aligned with grid
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-- BS
-	- Server side
-		- Organize code for trial balance and BS
-	- Client side
-		- Toolbar
-			- This branch / All branches
-			- Search
-			- Refresh
+												- BS
+													- Server side
+														- Organize code for trial balance and BS
+													- Client side
+														- Toolbar
+															- This branch / All branches
+															- Search
+															- Refresh
 															- title in pdf export
-		- UI
-			- Two grids
-			- remove search and refresh
-			- Responsive
-			- Profit incorporation in grid
-			- Aggregates
+														- UI
+														- Two grids
+														- remove search and refresh
+														- Responsive
+														- Profit incorporation in grid
+														- Aggregates
 														- data instances liabilities,  assets, expenses, incomes
 														- useEffect: loadData: queryGraphQl-> redux dispatch and set data instances
 														- selector functions in treeGrid to show liabs, assets

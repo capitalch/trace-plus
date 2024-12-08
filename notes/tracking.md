@@ -1,8 +1,21 @@
-## Bugs
-																								- Side menu matter not collapsing
-																								- Error happening at side menu while small screen sizes
+## Target
+- Dec 2024
+	- General ledger		: 15-12-2024
+	- Bank Reconcillation	: 22-12-2024
+	- Masters: Accounts		: 31-12-2024
+- Jan 2025
+	- Unit info, General settings: Opening balances, Branches, Financial years: 12-01-2025
+	- Common utilities, Exports	: 19-01-2025
+	- Vouchers				: 31-01-2025
+- Feb 2025
+	- Inventory				: 28-02-2025
+- Mar 2025
+	- sales / purchases		: 31-03-2025
+- Bug fixes etc.
 
 ## History
+# 05-12-2024 - 08-12-2024
+	- BS and PL finished
 # 26-11-2024 - 04-12-2024
 	- Trial balance finished along with some general bug fixes
 # 22-11-2024 - 25-11-2024

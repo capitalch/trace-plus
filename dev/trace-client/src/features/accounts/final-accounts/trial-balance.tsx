@@ -9,10 +9,10 @@ import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusi
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { useContext, useEffect } from "react";
-import { ReduxCompSwitch } from "../../../controls/components/redux-components/redux-comp-switch";
-import { reduxCompSwitchSelectorFn } from "../../../controls/components/redux-components/redux-comp-slice";
+import { ReduxCompSwitch } from "../../../controls/redux-components/redux-comp-switch";
+import { reduxCompSwitchSelectorFn } from "../../../controls/redux-components/redux-comp-slice";
 import { RootStateType } from "../../../app/store/store";
-import { ReduxComponentsInstances } from "../../../controls/components/redux-components/redux-components-instances";
+import { ReduxComponentsInstances } from "../../../controls/redux-components/redux-components-instances";
 
 export function TrialBalance() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -35,7 +35,7 @@ export function TrialBalance() {
     }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
 
     return (
-        <CompAccountsContainer>
+        <CompAccountsContainer CustomControl={() => <label className="text-xl text-primary-300 mt-1 font-medium">Trial Balance</label>}>
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col '>
                     <CompSyncFusionTreeGridToolbar className='mt-2'
@@ -43,6 +43,7 @@ export function TrialBalance() {
                         title='Trial Balance'
                         isAllBranches={isAllBranches}
                         isLastNoOfRows={false}
+                        isTitleVisible={false}
                         instance={instance}
                         width="calc(100vw - 250px)" // This stops unnecessary flickers
                     />
@@ -74,7 +75,7 @@ export function TrialBalance() {
         return ([
             {
                 field: 'accName',
-                headerText: 'Acc Name',
+                headerText: 'Account Name',
                 width: 250,
                 textAlign: 'Left'
             },

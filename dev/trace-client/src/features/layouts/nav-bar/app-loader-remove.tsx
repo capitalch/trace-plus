@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { WidgetLoadingIndicator } from "../../../controls/widgets/widget-loading-indicator";
 import { ibukiFilterOn } from "../../../utils/ibuki";
 
-export function AppLoader() {
+export function AppLoaderRemove() {
     const [, setRefresh] = useState({})
     const meta: any = useRef({
         isOpen: false

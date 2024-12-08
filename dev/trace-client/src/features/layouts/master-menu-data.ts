@@ -144,7 +144,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: '44',
           label: 'General ledger',
-          path: '/blogs'
+          path: '/general-ledger'
         }
       ]
     },
