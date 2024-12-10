@@ -110,3 +110,15 @@ When due to some error in program, somewhere some exception is generated and it 
     ```
 ## Authentication graphql
 - Free from authentication is /graphql/exempted
+
+## find duplicate autoRefNo in TranH table
+set search_path to demounit1;
+WITH DuplicateRefs AS (
+    SELECT "autoRefNo"
+    FROM "TranH"
+    GROUP BY "autoRefNo"
+    HAVING COUNT(*) > 1
+)
+SELECT *
+FROM "TranH"
+WHERE "autoRefNo" IN (SELECT "autoRefNo" FROM DuplicateRefs);

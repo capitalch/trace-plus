@@ -8,6 +8,7 @@ import { RootStateType } from "../../../app/store/store"
 import { reduxCompSwitchSelectorFn } from "../../../controls/redux-components/redux-comp-slice"
 import { ReduxComponentsInstances } from "../../../controls/redux-components/redux-components-instances"
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
+import { ReduxCompLedgerSubledger } from "../../../controls/redux-components/redux-comp-ledger-subledger"
 
 export function GeneralLedger() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -22,7 +23,7 @@ export function GeneralLedger() {
     const decFormatter = Utils.getDecimalFormatter()
     const intFormatter = Utils.getIntegerFormatter()
 
-    return (<CompAccountsContainer CustomControl={() => <label className="text-xl text-primary-300 mt-1 font-medium">General Ledger</label>}>
-        <div>GeneralLedger</div>
+    return (<CompAccountsContainer >
+        <ReduxCompLedgerSubledger className="mt-4 w-64" />
     </CompAccountsContainer>)
 }

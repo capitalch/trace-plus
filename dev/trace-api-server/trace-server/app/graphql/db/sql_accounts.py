@@ -110,6 +110,13 @@ class SqlAccounts:
         ) AS "jsonResult"
     '''
 
+    get_ledger_leaf_accounts = '''
+        select id, "accName", "accLeaf"
+            from "AccM"
+                where "accLeaf" in ('L','Y')
+            order by "accName"
+    '''
+
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"
@@ -128,6 +135,15 @@ class SqlAccounts:
             , 'allFinYears', (select json_agg(row_to_json(b)) from cte2 b)
             , 'allSettings', (select json_agg(row_to_json(c)) from cte3 c)
 	) as "jsonResult" 
+    """
+    
+    get_subledger_accounts = """
+        with "accId" as (values (%(accId)s::int))
+         -- with "accId" AS (VALUES (1::int))
+            select id, "accName", "accLeaf"
+                from "AccM"
+                    where "parentId" = (table "accId")
+                order by "accName"
     """
     
     get_trialBalance = """

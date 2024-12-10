@@ -21,7 +21,30 @@
 															- In Accounts Info modal windows title should be aligned with grid
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-												- BS
+- General ledger
+	- SQL queries
+	- LedgerSubledger control
+		- SQL
+		- View current balance
+		- Refresh this control
+		- Logic
+			- Populate top select with accName, id where accLeaf = 'L','Y' 
+			- On change top select if 'L' then populate 2nd select with 'S' of 'L' else finalSelected accId
+			- On change 2nd select populate finalSelected accId
+	- UI
+		- Header
+		- Grid
+			- Data view
+			- Daily summary
+			- Col balance
+			- Reverse
+			- Refresh
+			- Export
+	- PDF output
+	- Grid
+		- Aggregate
+- BS
+	BS and PL heading to go up in match with trial balance
 													- Server side
 														- Organize code for trial balance and BS
 													- Client side

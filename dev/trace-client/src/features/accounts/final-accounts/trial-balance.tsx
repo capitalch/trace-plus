@@ -35,7 +35,7 @@ export function TrialBalance() {
     }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
 
     return (
-        <CompAccountsContainer CustomControl={() => <label className="text-xl text-primary-300 mt-1 font-medium">Trial Balance</label>}>
+        <CompAccountsContainer>
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col '>
                     <CompSyncFusionTreeGridToolbar className='mt-2'
@@ -43,7 +43,7 @@ export function TrialBalance() {
                         title='Trial Balance'
                         isAllBranches={isAllBranches}
                         isLastNoOfRows={false}
-                        isTitleVisible={false}
+                        // isTitleVisible={false}
                         instance={instance}
                         width="calc(100vw - 250px)" // This stops unnecessary flickers
                     />
