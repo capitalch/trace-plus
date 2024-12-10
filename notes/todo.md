@@ -29,8 +29,14 @@
 		- Refresh this control
 		- Logic
 			- Populate top select with accName, id where accLeaf = 'L','Y' 
-			- On change top select if 'L' then populate 2nd select with 'S' of 'L' else finalSelected accId
-			- On change 2nd select populate finalSelected accId
+				- Use queryHelper
+			- On change top select if 'L' then 
+				- populate 2nd select using queryGraphQl 
+			- else
+				- dispatch setFinalAccId and exit
+			- On change 2nd setFinalAccId
+		- To do
+			- When first select is selected 'Y', 2nd select should clear
 	- UI
 		- Header
 		- Grid

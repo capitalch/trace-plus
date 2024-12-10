@@ -26,7 +26,9 @@ const reduxCompSlice = createSlice({
       state: ReduxCompInitialStateType,
       action: PayloadAction<ReduxCompLedgerSubledgerActionType>) => {
       const instance: string = action.payload.instance
-      state.reduxCompLedgerSubledger[instance] = {}
+      if (!state.reduxCompLedgerSubledger[instance]) {
+        state.reduxCompLedgerSubledger[instance] = {}
+      }
       state.reduxCompLedgerSubledger[instance].finalAccId = action.payload.finalAccId
     },
 
@@ -34,7 +36,9 @@ const reduxCompSlice = createSlice({
       state: ReduxCompInitialStateType,
       action: PayloadAction<ReduxCompLedgerSubledgerActionType>) => {
       const instance: string = action.payload.instance
-      state.reduxCompLedgerSubledger[instance] = {}
+      if (!state.reduxCompLedgerSubledger[instance]) {
+        state.reduxCompLedgerSubledger[instance] = {}
+      }
       state.reduxCompLedgerSubledger[instance].ledgerAccId = action.payload.ledgerAccId
     },
 
@@ -42,7 +46,9 @@ const reduxCompSlice = createSlice({
       state: ReduxCompInitialStateType,
       action: PayloadAction<ReduxCompLedgerSubledgerActionType>) => {
       const instance: string = action.payload.instance
-      state.reduxCompLedgerSubledger[instance] = {}
+      if (!state.reduxCompLedgerSubledger[instance]) {
+        state.reduxCompLedgerSubledger[instance] = {}
+      }
       state.reduxCompLedgerSubledger[instance].subLedgerData = action.payload.subLedgerData
     },
 
@@ -107,12 +113,31 @@ type ReduxCompSwitchActionStateType = {
 }
 
 // selectors
+// reduxCompSwitch
 export const reduxCompSwitchSelectorFn = (
   state: RootStateType,
   instance: string
 ) => state.reduxComp.reduxCompSwitch[instance]
 
+// reduxCompAppLoader
 export const reduxCompAppLoaderSelectorFn = (
   state: RootStateType,
   instance: string
 ) => state.reduxComp.reduxCompAppLoader[instance]
+
+// reduxCompLedgerSubledger
+// finalAccId
+export const reduxCompLedgerSubledgerFinalAccIdFn = (
+  state: RootStateType,
+  instance: string
+) => state.reduxComp.reduxCompLedgerSubledger[instance].finalAccId
+// ledgerAccId
+export const reduxCompLedgerSubledgerLedgerAccIdFn = (
+  state: RootStateType,
+  instance: string
+) => state.reduxComp.reduxCompLedgerSubledger[instance].ledgerAccId
+// subledgerData
+export const reduxCompLedgerSubledgerDataForSubledgerFn = (
+  state: RootStateType,
+  instance: string
+) => state.reduxComp.reduxCompLedgerSubledger[instance]?.subLedgerData
