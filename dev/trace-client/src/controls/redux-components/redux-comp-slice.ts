@@ -11,7 +11,6 @@ const reduxCompSlice = createSlice({
   name: 'reduxComp',
   initialState: initialState,
   reducers: {
-
     // ReduxCompAppLoader
     showReduxCompAppLoader: (
       state: ReduxCompInitialStateType,
@@ -22,34 +21,54 @@ const reduxCompSlice = createSlice({
     },
 
     // ReduxCompLedgerSubledger
-    setReduxCompLedgerSubledgerFinalAccId: (
+    setReduxCompLedgerSubledgerHasError: (
       state: ReduxCompInitialStateType,
-      action: PayloadAction<ReduxCompLedgerSubledgerActionType>) => {
+      action: PayloadAction<ReduxCompLedgerSubledgerActionType>
+    ) => {
       const instance: string = action.payload.instance
       if (!state.reduxCompLedgerSubledger[instance]) {
-        state.reduxCompLedgerSubledger[instance] = {}
+        state.reduxCompLedgerSubledger[instance] = { hasError: false }
       }
-      state.reduxCompLedgerSubledger[instance].finalAccId = action.payload.finalAccId
+      state.reduxCompLedgerSubledger[instance].hasError =
+        action.payload.hasError 
+    },
+
+    setReduxCompLedgerSubledgerFinalAccId: (
+      state: ReduxCompInitialStateType,
+      action: PayloadAction<ReduxCompLedgerSubledgerActionType>
+    ) => {
+      const instance: string = action.payload.instance
+      if (!state.reduxCompLedgerSubledger[instance]) {
+        state.reduxCompLedgerSubledger[instance] = { hasError: false }
+      }
+      state.reduxCompLedgerSubledger[instance].finalAccId =
+        action.payload.finalAccId
+      state.reduxCompLedgerSubledger[instance].hasError = false
     },
 
     setReduxCompLedgerSubledgerLedgerAccId: (
       state: ReduxCompInitialStateType,
-      action: PayloadAction<ReduxCompLedgerSubledgerActionType>) => {
+      action: PayloadAction<ReduxCompLedgerSubledgerActionType>
+    ) => {
       const instance: string = action.payload.instance
       if (!state.reduxCompLedgerSubledger[instance]) {
-        state.reduxCompLedgerSubledger[instance] = {}
+        state.reduxCompLedgerSubledger[instance] = { hasError: false }
       }
-      state.reduxCompLedgerSubledger[instance].ledgerAccId = action.payload.ledgerAccId
+      state.reduxCompLedgerSubledger[instance].ledgerAccId =
+        action.payload.ledgerAccId
+      state.reduxCompLedgerSubledger[instance].hasError = true
     },
 
     setReduxCompLedgerSubledgerDataForSubledger: (
       state: ReduxCompInitialStateType,
-      action: PayloadAction<ReduxCompLedgerSubledgerActionType>) => {
+      action: PayloadAction<ReduxCompLedgerSubledgerActionType>
+    ) => {
       const instance: string = action.payload.instance
       if (!state.reduxCompLedgerSubledger[instance]) {
-        state.reduxCompLedgerSubledger[instance] = {}
+        state.reduxCompLedgerSubledger[instance] = { hasError: false }
       }
-      state.reduxCompLedgerSubledger[instance].subLedgerData = action.payload.subLedgerData
+      state.reduxCompLedgerSubledger[instance].subLedgerData =
+        action.payload.subLedgerData
     },
 
     // ReduxCompSwitch
@@ -59,18 +78,19 @@ const reduxCompSlice = createSlice({
     ) => {
       const instance: string = action.payload.instance
       state.reduxCompSwitch[instance] = action.payload.switchState
-    },
-
+    }
   }
 })
 
 export const reduxCompReducer = reduxCompSlice.reducer
 export const {
-  changeReduxCompSwitch
-  , setReduxCompLedgerSubledgerFinalAccId
-  , setReduxCompLedgerSubledgerLedgerAccId
-  , setReduxCompLedgerSubledgerDataForSubledger
-  , showReduxCompAppLoader } = reduxCompSlice.actions
+  changeReduxCompSwitch,
+  setReduxCompLedgerSubledgerFinalAccId,
+  setReduxCompLedgerSubledgerHasError,
+  setReduxCompLedgerSubledgerLedgerAccId,
+  setReduxCompLedgerSubledgerDataForSubledger,
+  showReduxCompAppLoader
+} = reduxCompSlice.actions
 
 type ReduxCompInitialStateType = {
   reduxCompSwitch: {
@@ -81,8 +101,8 @@ type ReduxCompInitialStateType = {
   }
   reduxCompLedgerSubledger: {
     [key: string]: {
-      // isError?: boolean
       finalAccId?: number | undefined
+      hasError: boolean
       ledgerAccId?: number | undefined
       subLedgerData?: ReduxCompLedgerSubledgerAccountType[]
     }
@@ -97,6 +117,7 @@ type ReduxCompAppLoaderActionType = {
 type ReduxCompLedgerSubledgerActionType = {
   instance: string
   finalAccId?: number | undefined
+  hasError: boolean
   ledgerAccId?: number | undefined
   subLedgerData?: ReduxCompLedgerSubledgerAccountType[]
 }
@@ -131,6 +152,11 @@ export const reduxCompLedgerSubledgerFinalAccIdFn = (
   state: RootStateType,
   instance: string
 ) => state.reduxComp.reduxCompLedgerSubledger[instance].finalAccId
+// hasError
+export const reduxCompLedgerSubledgerLedgerHasErrorFn = (
+  state: RootStateType,
+  instance: string
+) => state.reduxComp.reduxCompLedgerSubledger[instance]?.hasError
 // ledgerAccId
 export const reduxCompLedgerSubledgerLedgerAccIdFn = (
   state: RootStateType,

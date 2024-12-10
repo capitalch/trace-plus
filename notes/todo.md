@@ -28,15 +28,20 @@
 		- View current balance
 		- Refresh this control
 		- Logic
-			- Populate top select with accName, id where accLeaf = 'L','Y' 
-				- Use queryHelper
-			- On change top select if 'L' then 
-				- populate 2nd select using queryGraphQl 
-			- else
-				- dispatch setFinalAccId and exit
-			- On change 2nd setFinalAccId
+															- Populate top select with accName, id where accLeaf = 'L','Y' 
+																- Use queryHelper
+															- On change top select if 'L' then 
+																- populate 2nd select using queryGraphQl 
+															- else
+																- dispatch setFinalAccId and exit
+															- On change 2nd setFinalAccId
 		- To do
-			- When first select is selected 'Y', 2nd select should clear
+			- Maybe use single reducer function to set all states
+			- Border
+			- Error property
+															- When 1st select 'Y', 2nd select disabled
+															- When 1st select 'L', 2nd select enabled and border red and error
+															- When first select is selected 'Y', 2nd select should clear
 	- UI
 		- Header
 		- Grid
