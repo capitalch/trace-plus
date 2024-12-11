@@ -1,16 +1,16 @@
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatchType, RootStateType } from "../../app/store/store"
-import { changeReduxCompSwitch, reduxCompSwitchSelectorFn } from "./redux-comp-slice"
+import { setCompSwitchState, selectCompSwitchStateFn } from "./comp-slice"
 import clsx from "clsx"
 
-export function ReduxCompSwitch({
+export function CompSwitch({
     className,
     instance,
     leftLabel,
     rightLabel
-}: ReduxCompSwitchType) {
+}: CompSwitchType) {
     const dispatch: AppDispatchType = useDispatch()
-    const isChecked: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, instance)) || false
+    const isChecked: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance)) || false
     return (
         <label className={clsx("inline-flex cursor-pointer items-center", className)}>
             <span className="mr-2 text-sm font-medium text-gray-500">{leftLabel}</span>
@@ -21,14 +21,14 @@ export function ReduxCompSwitch({
     )
 
     function handleOnChangeSwitch(e: any) {
-        dispatch(changeReduxCompSwitch({
+        dispatch(setCompSwitchState({
             instance: instance,
             switchState: e.target?.checked
         }))
     }
 }
 
-type ReduxCompSwitchType = {
+type CompSwitchType = {
     className?: string
     instance: string
     leftLabel?: string

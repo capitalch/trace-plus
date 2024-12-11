@@ -3,14 +3,14 @@ import { useNavBar } from "./nav-bar-hook"
 import { LogoutMenuButton } from "./logout-menu-button"
 import { ModalDialogA } from "./modal-dialogA"
 import { IconMenuUnfold } from "../../../controls/icons/icon-menu-unfold"
-import { ReduxCompAppLoader } from "../../../controls/redux-components/redux-comp-app-loader"
-import { ReduxComponentsInstances } from "../../../controls/redux-components/redux-components-instances"
-import { reduxCompAppLoaderSelectorFn } from "../../../controls/redux-components/redux-comp-slice"
+import { CompAppLoader } from "../../../controls/redux-components/comp-app-loader"
+import { CompInstances } from "../../../controls/redux-components/comp-instances"
+import { compAppLoaderVisibilityFn } from "../../../controls/redux-components/comp-slice"
 import { RootStateType } from "../../../app/store/store"
 import { useSelector } from "react-redux"
 
 function NavBar() {
-    const toShowAppLoader: boolean = useSelector((state: RootStateType) => reduxCompAppLoaderSelectorFn(state, ReduxComponentsInstances.reduxCompAppLoader))
+    const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
     const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
 
     return (
@@ -27,7 +27,7 @@ function NavBar() {
             <LogoutMenuButton />
             <ModalDialogA />
             {/* <AppLoader /> */}
-            {toShowAppLoader && <ReduxCompAppLoader />}
+            {isVisibleAppLoader && <CompAppLoader />}
         </div>)
 }
 export { NavBar }

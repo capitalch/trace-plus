@@ -4,16 +4,16 @@ import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
 import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, LoginType, UserDetailsType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { reduxCompSwitchSelectorFn } from "../../../controls/redux-components/redux-comp-slice"
+import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
-import { ReduxCompSwitch } from "../../../controls/redux-components/redux-comp-switch"
+import { CompSwitch } from "../../../controls/redux-components/comp-switch"
 import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map"
 import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
-import { ReduxComponentsInstances } from "../../../controls/redux-components/redux-components-instances"
+import { CompInstances } from "../../../controls/redux-components/comp-instances"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
@@ -31,7 +31,7 @@ export function BalanceSheet() {
     const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
     const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
-    const isAllBranches: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, ReduxComponentsInstances.reduxCompSwitchBalanceSheet), shallowEqual) || false
+    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchBalanceSheet), shallowEqual) || false
     const decFormatter = Utils.getDecimalFormatter()
     const intFormatter = Utils.getIntegerFormatter()
 
@@ -50,9 +50,7 @@ export function BalanceSheet() {
     }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
 
     return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
-
         {/* Header */}
-
 
         {/* Two horizontal grids */}
         <div className="flex items-center mt-2 gap-8" >
@@ -108,7 +106,6 @@ export function BalanceSheet() {
                     treeColumnIndex={0}
                 />
             </div>
-
         </div>
     </CompAccountsContainer>)
 
@@ -125,7 +122,7 @@ export function BalanceSheet() {
             <label className="font-medium text-xl text-primary-300">Balance Sheet</label>
 
             {/* All branches */}
-            <ReduxCompSwitch className="ml-4 mt-1 mr-4" instance={ReduxComponentsInstances.reduxCompSwitchBalanceSheet} leftLabel="All branches" />
+            <CompSwitch className="ml-4 mt-1 mr-4" instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
 
             <CompSyncFusionTreeGridSearchBox instance={balanceSheetInstance} handleOnChange={handleOnChangeSearchText} />
             {/* Refresh */}

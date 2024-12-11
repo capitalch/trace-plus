@@ -1,5 +1,5 @@
 import Select, { components } from 'react-select'
-import { ReduxComponentsInstances } from "./redux-components-instances"
+import { CompInstances } from "./comp-instances"
 import clsx from 'clsx'
 import { useQueryHelper } from '../../app/graphql/query-helper-hook'
 import { BranchType, BusinessUnitType, currentBusinessUnitSelectorFn, FinYearType, UserDetailsType } from '../../features/login/login-slice'
@@ -8,22 +8,21 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { SqlIdsMap } from '../../app/graphql/maps/sql-ids-map'
 import { AppDispatchType, RootStateType } from '../../app/store/store'
 import { WidgetLoadingIndicator } from '../widgets/widget-loading-indicator'
-import { reduxCompLedgerSubledgerAccountBalancedFn, reduxCompLedgerSubledgerDataForSubledgerFn, reduxCompLedgerSubledgerFinalAccIdFn, reduxCompLedgerSubledgerLedgerHasErrorFn, setReduxCompLedgerSubledgerAccountBalance, setReduxCompLedgerSubledgerDataForSubledger, setReduxCompLedgerSubledgerFinalAccId, setReduxCompLedgerSubledgerHasError, setReduxCompLedgerSubledgerLedgerAccId } from './redux-comp-slice'
-import { GraphQLQueriesMap } from '../../app/graphql/maps/graphql-queries-map'
+import { selectLedgerSubledgerFieldFn, updateLedgerSubledger } from './comp-slice'
 import { SqlArgsType } from '../components/generic-syncfusion-grid/comp-syncfusion-grid'
 import { useRef, useState } from 'react'
 import { IconRefresh } from '../icons/icon-refresh'
 import { TooltipComponent } from '@syncfusion/ej2-react-popups'
 
-export function ReduxCompLedgerSubledger({
+export function LedgerSubledger({
     className,
     heading = '',
     isAllBranches = false,
     showAccountBalance = false,
     sqlArgs,
     sqlId
-}: ReduxCompLedgerSubledgerType) {
-    const instance: string = ReduxComponentsInstances.reduxCompLedgerSubledgerGeneralLedger
+}: LedgerSubledgerType) {
+    const instance: string = CompInstances.ledgerSubledgerGeneralLedger
     const dispatch: AppDispatchType = useDispatch()
     const userDetails: UserDetailsType = Utils.getUserDetails() || {}
     const currentFinYear: FinYearType = Utils.getCurrentLoginInfo().currentFinYear || Utils.getCurrentFinYear()
@@ -38,11 +37,11 @@ export function ReduxCompLedgerSubledger({
     ) || {}
     const ledgerOrLeafAccounts: any = useSelector((state: RootStateType) =>
         state.queryHelper[instance]?.data)
-    const subledgerData: any = useSelector((state: RootStateType) => reduxCompLedgerSubledgerDataForSubledgerFn(state, instance))
-    const hasError: boolean | undefined = useSelector((state: RootStateType) => reduxCompLedgerSubledgerLedgerHasErrorFn(state, instance))
-    const accountBalance: number = useSelector((state: RootStateType) => reduxCompLedgerSubledgerAccountBalancedFn(state, instance))
-
+    const subledgerData: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'subLedgerData'))
+    const hasError: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'hasError'))
+    const accountBalance: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'accountBalance'))
     const decimalFormatter: any = Utils.getDecimalFormatter()
+
     const { loading, loadData } = useQueryHelper({ // Load data for first select
         instance: instance,
         isExecQueryOnLoad: true,
@@ -64,14 +63,14 @@ export function ReduxCompLedgerSubledger({
         {/* Header */}
         <div className='h-6 bg-slate-50 flex text-sm items-center'>
             <label className='font-medium text-primary-400'>{heading}</label>
-            <TooltipComponent className='ml-auto mt-2' content='Refresh' position='RightCenter'>
-                <button onClick={loadData}>
+            <TooltipComponent className='ml-auto mt-2' content='Refresh' position='TopCenter'>
+                <button onClick={handleOnClickRefresh}>
                     <IconRefresh className='text-blue-500 h-5 w-5' />
                 </button>
             </TooltipComponent>
             <span className='ml-auto'>
                 <label className='font-medium text-blue-400'>{decimalFormatter.format(Math.abs(accountBalance))}</label>
-                <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>
+                {showAccountBalance && <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>}
             </span>
         </div>
         <div className={`${hasError ? 'border-[3px] border-red-500' : 'border-none'}`}>
@@ -136,6 +135,17 @@ export function ReduxCompLedgerSubledger({
         })
     }
 
+    function handleOnClickRefresh() {
+        loadData()
+        dispatch(updateLedgerSubledger({
+            instance: instance,
+            updates: {
+                accountBalance: 0,
+                hasError: true
+            },
+        }))
+    }
+
     async function fetchAccountBalance(accId: number) {
         const res: any = await Utils.doGenericQuery({
             buCode: currentBusinessUnit.buCode || '',
@@ -148,38 +158,49 @@ export function ReduxCompLedgerSubledger({
             },
             sqlId: SqlIdsMap.getAccountBalance,
         })
-        dispatch(setReduxCompLedgerSubledgerAccountBalance({
+        dispatch(updateLedgerSubledger({
             instance: instance,
-            accountBalance: res?.[0].accountBalance || 0,
-            hasError: false
+            updates: {
+                accountBalance: res?.[0]?.accountBalance || 0,
+                hasError: false
+            }
         }))
-        console.log(res)
     }
 
     function handleOnChangeFirstSelect(e: any) {
         clearSecondSelect()
         if (!e) { // Clear button clicked
             setSecondSelectDisabled(true)
-            dispatch(setReduxCompLedgerSubledgerDataForSubledger({
+            dispatch(updateLedgerSubledger({
                 instance: instance,
-                subLedgerData: [],
-                hasError: true
+                updates: {
+                    accountBalance: 0,
+                    subLedgerData: [],
+                    hasError: true
+                }
             }))
             return
         }
         if (e.accLeaf === 'Y') {
             setSecondSelectDisabled(true)
-            dispatch(setReduxCompLedgerSubledgerFinalAccId({
+            dispatch(updateLedgerSubledger({
                 instance: instance,
-                finalAccId: e.id,
-                hasError: false,
-                subLedgerData: [],
+                updates: {
+                    finalAccId: e.id,
+                    hasError: false,
+                    subLedgerData: []
+                }
             }))
             fetchAccountBalance(e.id)
         } else {
             setSecondSelectDisabled(false)
             loadSecondSelectOptions(e.id) // load second select
-            dispatch(setReduxCompLedgerSubledgerHasError({ instance: instance, hasError: true }))
+            dispatch(updateLedgerSubledger({
+                instance: instance,
+                updates: {
+                    hasError: true,
+                }
+            }))
         }
     }
 
@@ -187,10 +208,12 @@ export function ReduxCompLedgerSubledger({
         if (!e) {
             return
         }
-        dispatch(setReduxCompLedgerSubledgerLedgerAccId({
+        dispatch(updateLedgerSubledger({
             instance: instance,
-            finalAccId: e.id,
-            hasError: false
+            updates: {
+                hasError: false,
+                finalAccId: e.id
+            }
         }))
         fetchAccountBalance(e.id)
     }
@@ -205,18 +228,17 @@ export function ReduxCompLedgerSubledger({
             },
             sqlId: SqlIdsMap.getSubledgerAccounts,
         })
-        dispatch(
-            setReduxCompLedgerSubledgerDataForSubledger(
-                {
-                    instance: instance,
-                    hasError: true,
-                    subLedgerData: res || []
-                }
-            ))
+        dispatch(updateLedgerSubledger({
+            instance: instance,
+            updates: {
+                subLedgerData: res || [],
+                hasError: true
+            }
+        }))
     }
 }
 
-type ReduxCompLedgerSubledgerType = {
+type LedgerSubledgerType = {
     className?: string
     heading: string
     isAllBranches: boolean

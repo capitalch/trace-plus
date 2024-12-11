@@ -9,10 +9,10 @@ import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusi
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { useContext, useEffect } from "react";
-import { ReduxCompSwitch } from "../../../controls/redux-components/redux-comp-switch";
-import { reduxCompSwitchSelectorFn } from "../../../controls/redux-components/redux-comp-slice";
+import { CompSwitch } from "../../../controls/redux-components/comp-switch";
+import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice";
 import { RootStateType } from "../../../app/store/store";
-import { ReduxComponentsInstances } from "../../../controls/redux-components/redux-components-instances";
+import { CompInstances } from "../../../controls/redux-components/comp-instances";
 
 export function TrialBalance() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -23,7 +23,7 @@ export function TrialBalance() {
     const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
     const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
-    const isAllBranches: boolean = useSelector((state: RootStateType) => reduxCompSwitchSelectorFn(state, ReduxComponentsInstances.reduxCompSwitchTrialBalance), shallowEqual) || false
+    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchTrialBalance), shallowEqual) || false
     const decFormatter = Utils.getDecimalFormatter()
     const intFormatter = Utils.getIntegerFormatter()
 
@@ -39,7 +39,7 @@ export function TrialBalance() {
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col '>
                     <CompSyncFusionTreeGridToolbar className='mt-2'
-                        CustomControl={() => <ReduxCompSwitch instance={ReduxComponentsInstances.reduxCompSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
+                        CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
                         title='Trial Balance'
                         isAllBranches={isAllBranches}
                         isLastNoOfRows={false}

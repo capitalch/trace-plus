@@ -9,8 +9,8 @@ import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
 import { AccSettingType, FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
 import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
-import { showReduxCompAppLoader } from "../controls/redux-components/redux-comp-slice"
-import { ReduxComponentsInstances } from "../controls/redux-components/redux-components-instances"
+import { showCompAppLoader } from "../controls/redux-components/comp-slice"
+import { CompInstances } from "../controls/redux-components/comp-instances"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
@@ -29,6 +29,7 @@ export const Utils: UtilsType = {
     getToken: getToken,
     getUnitInfo: getUnitInfo,
     getUserDetails: getUserDetails,
+    isNotNullOrUndefined: isNotNullOrUndefined,
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
     showAlertMessage: showAlertMessage,
@@ -203,11 +204,15 @@ function getUserDetails(): UserDetailsType | undefined {
     return (getCurrentLoginInfo().userDetails)
 }
 
+function isNotNullOrUndefined<T>(value: T | null | undefined): boolean {
+    return ((value !== null) && (value !== undefined))
+}
+
 async function mutateGraphQL(q: any, queryName: string) {
     try {
-        store.dispatch(showReduxCompAppLoader({
-            instance: ReduxComponentsInstances.reduxCompAppLoader,
-            toShow: true
+        store.dispatch(showCompAppLoader({
+            instance: CompInstances.compAppLoader,
+            isVisible: true
         }))
         const client = getApolloClient()
         const result: any = await client.mutate({
@@ -226,18 +231,18 @@ async function mutateGraphQL(q: any, queryName: string) {
     }
 
     finally {
-        store.dispatch(showReduxCompAppLoader({
-            instance: ReduxComponentsInstances.reduxCompAppLoader,
-            toShow: false
+        store.dispatch(showCompAppLoader({
+            instance: CompInstances.compAppLoader,
+            isVisible: false
         }))
     }
 }
 
 async function queryGraphQL(q: any, queryName: string) {
     try {
-        store.dispatch(showReduxCompAppLoader({
-            instance: ReduxComponentsInstances.reduxCompAppLoader,
-            toShow: true
+        store.dispatch(showCompAppLoader({
+            instance: CompInstances.compAppLoader,
+            isVisible: true
         }))
         const client = getApolloClient()
         const result: any = await client.query({
@@ -250,9 +255,9 @@ async function queryGraphQL(q: any, queryName: string) {
         }
         return (result)
     } finally {
-        store.dispatch(showReduxCompAppLoader({
-            instance: ReduxComponentsInstances.reduxCompAppLoader,
-            toShow: false
+        store.dispatch(showCompAppLoader({
+            instance: CompInstances.compAppLoader,
+            isVisible: false
         }))
     }
 }
@@ -519,6 +524,7 @@ type UtilsType = {
     getReduxState: () => RootStateType
     getToken: () => string | undefined
     getUnitInfo: () => UnitInfoType | undefined
+    isNotNullOrUndefined: (value: any) => boolean
     getUserDetails: () => UserDetailsType | undefined
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
