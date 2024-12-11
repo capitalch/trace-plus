@@ -1,5 +1,31 @@
 class SqlAccounts:
 
+    get_account_balance = '''
+     with "accId" as (values (%(accId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int))
+     --with "accId" AS (VALUES (117::int)), "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int))
+        , cte1 as (
+            SELECT "accId"
+                , SUM(CASE WHEN d.dc = 'D' THEN d.amount ELSE -d.amount END) amount
+                    FROM "TranH" h
+                        join "TranD" d
+                            on h.id = d."tranHeaderId"
+                        where  "accId" = (table "accId") 
+                            and "finYearId" = (table "finYearId")
+                            and (select COALESCE((TABLE "branchId"), "branchId") = "branchId")
+                    GROUP BY "accId"
+            UNION
+            SELECT "accId"
+                , (CASE WHEN a.dc = 'D' THEN a.amount ELSE -a.amount END ) amount
+                        from "AccOpBal" a
+                    where  "accId" = (table "accId") 
+                        and "finYearId" = (table "finYearId")
+                        and (select COALESCE((TABLE "branchId"), "branchId") = "branchId")
+            )
+            select  SUM(amount) as "accountBalance"
+                from cte1
+            Group by "accId"
+    '''
+    
     get_balanceSheet_profitLoss = '''
     WITH RECURSIVE hier AS (
             SELECT 

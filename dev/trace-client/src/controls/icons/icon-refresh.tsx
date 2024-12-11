@@ -1,7 +1,7 @@
 // icon:icon-refresh | Heroicons UI https://github.com/sschoger/heroicons-ui | Steve Schoger
 // import * as React from "react";
 
-export function IconIconRefresh(props: any) {
+export function IconRefresh(props: any) {
   return (
     <svg
       viewBox="0 0 24 24"

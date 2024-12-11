@@ -24,6 +24,6 @@ export function GeneralLedger() {
     const intFormatter = Utils.getIntegerFormatter()
 
     return (<CompAccountsContainer >
-        <ReduxCompLedgerSubledger className="mt-4 w-64" />
+        <ReduxCompLedgerSubledger className="mt-4 w-64" heading="General ledger" />
     </CompAccountsContainer>)
 }

@@ -15,6 +15,7 @@ import { ReduxComponentsInstances } from "../controls/redux-components/redux-com
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
     decodeExtDbParams: decodeExtDbParams,
+    doGenericQuery: doGenericQuery,
     getCompanyName: getCompanyName,
     getCurrentFinYear: getCurrentFinYear,
     getCurrentFinYearFormattedDateRange: getCurrentFinYearFormattedDateRange,
@@ -87,6 +88,24 @@ async function decodeExtDbParams(encodedDbParams: string) {
     } catch (e: any) {
         Utils.showErrorMessage(e)
     }
+}
+
+async function doGenericQuery({
+    buCode
+    , dbName
+    , dbParams
+    , sqlArgs
+    , sqlId
+}: DoGenericQueryType) {
+    const res: any = await queryGraphQL(
+        GraphQLQueriesMap.genericQuery(
+            dbName || '', {
+            buCode: buCode,
+            dbParams: dbParams,
+            sqlArgs: sqlArgs,
+            sqlId: sqlId
+        }), GraphQLQueriesMap.genericQuery.name)
+    return (res?.data?.[GraphQLQueriesMap.genericQuery.name])
 }
 
 function getCompanyName(): string {
@@ -453,6 +472,18 @@ export type DbNameDbParamsType = {
     dbParams?: { [key: string]: string | undefined }
 }
 
+export type DoGenericQueryType = {
+    sqlId: string
+    sqlArgs?: {
+        [key: string]: any
+    }
+    buCode: string
+    dbName: string
+    dbParams?: {
+        [key: string]: any
+    }
+}
+
 export type UnitInfoType = {
     email?: string
     gstin?: string
@@ -470,6 +501,12 @@ export type UnitInfoType = {
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
     decodeExtDbParams: (encodedDbParams: string) => any
+    doGenericQuery: ({ sqlId
+        , buCode
+        , sqlArgs
+        , dbName
+        , dbParams
+    }: DoGenericQueryType) => any
     getCompanyName: () => string
     getCurrentFinYear: () => FinYearType
     getCurrentFinYearFormattedDateRange: () => string
@@ -491,7 +528,6 @@ type UtilsType = {
     showDeleteConfirmDialog: (onConfirm: () => void) => void
     showFailureAlertMessage: (alertMessage: AlertMessageType) => void
     showSuccessAlertMessage: (alertMessage: AlertMessageType, callback?: () => void) => void
-    // showAppLoader: (val: boolean) => void
     showErrorMessage: (error?: any, errorCode?: string, errorMessage?: string) => void
     showHideModalDialogA: (options: ShowHideModalDialogType) => void
     showHideModalDialogB: (options: ShowHideModalDialogType) => void

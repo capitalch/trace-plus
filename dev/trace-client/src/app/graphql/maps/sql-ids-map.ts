@@ -29,6 +29,7 @@ export const SqlIdsMap = {
   testConnection: 'test_connection',
 
   // accounts
+  getAccountBalance:'get_account_balance',
   getLedgerLeafAccounts: 'get_ledger_leaf_accounts',
   getSettingsFinYearsBranches: 'get_settings_fin_years_branches',
   getSubledgerAccounts: 'get_subledger_accounts',
