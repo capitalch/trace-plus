@@ -1,8 +1,8 @@
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
-import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
+import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { SuperAdminNewClientButtons } from "./super-admin-new-client-buttons";
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditClient } from "./super-admin-new-edit-client";

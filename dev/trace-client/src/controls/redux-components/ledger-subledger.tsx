@@ -5,7 +5,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { SqlIdsMap } from '../../app/graphql/maps/sql-ids-map'
 import { AppDispatchType, RootStateType } from '../../app/store/store'
 import { selectLedgerSubledgerFieldFn, updateLedgerSubledger } from './comp-slice'
-import { SqlArgsType } from '../components/generic-syncfusion-grid/comp-syncfusion-grid'
+import { SqlArgsType } from '../components/syncfusion-grid/comp-syncfusion-grid'
 import { useEffect, useRef, useState } from 'react'
 import { IconRefresh } from '../icons/icon-refresh'
 import { TooltipComponent } from '@syncfusion/ej2-react-popups'
@@ -49,7 +49,7 @@ export function LedgerSubledger({
         {/* Header */}
         <div className='h-6 bg-slate-50 flex text-md items-center'>
             <label className='font-medium text-primary-400'>{heading}</label>
-            <TooltipComponent className='ml-auto mt-2' content='Refresh' position='TopCenter'>
+            <TooltipComponent className='ml-8 mt-2' content='Refresh' position='TopCenter'>
                 <button onClick={handleOnClickRefresh}>
                     <IconRefresh className='text-blue-500 h-5 w-5' />
                 </button>

@@ -11,6 +11,7 @@ export function CompSyncFusionGrid({
     aggregates,
     className = '',
     columns,
+    dataSource,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
@@ -22,7 +23,7 @@ export function CompSyncFusionGrid({
     onEdit = undefined,
     onPreview = undefined,
     rowHeight,
-    sqlArgs,
+    sqlArgs = {},
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -67,7 +68,7 @@ export function CompSyncFusionGrid({
                 allowTextWrap={true}
                 className={className}
                 created={onCreated}
-                dataSource={selectedData || []}
+                dataSource={dataSource || selectedData || []}
                 enablePersistence={false}
                 gridLines="Both"
                 height={height}
@@ -133,6 +134,7 @@ export type CompSyncFusionGridType = {
     aggregates?: SyncFusionAggregateType[]
     className?: string
     columns: SyncFusionGridColumnType[]
+    dataSource?: any
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
@@ -144,8 +146,8 @@ export type CompSyncFusionGridType = {
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
     rowHeight?: number
-    sqlArgs: GraphQLQueryArgsType // SqlArgsType
-    sqlId: string
+    sqlArgs?: GraphQLQueryArgsType // SqlArgsType
+    sqlId?: string
 }
 
 export type SyncFusionAggregateType = {

@@ -20,8 +20,10 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
     } else if (selectedLastNoOfRows === '') {
         lastNoOfRows = null
     }
-    sqlArgs.noOfRows = lastNoOfRows
-
+    if(sqlArgs){
+        sqlArgs.noOfRows = lastNoOfRows
+    }
+    
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,
         sqlArgs: sqlArgs

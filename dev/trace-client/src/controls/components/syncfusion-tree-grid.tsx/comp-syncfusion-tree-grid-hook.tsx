@@ -33,7 +33,6 @@ export function useCompSyncfusionTreeGrid({
         graphQlQueryFromMap: graphQlQueryFromMap,
         instance: instance,
         isExecQueryOnLoad: isLoadOnInit,
-
     })
 
     const selectedData: any = useSelector((state: RootStateType) => {

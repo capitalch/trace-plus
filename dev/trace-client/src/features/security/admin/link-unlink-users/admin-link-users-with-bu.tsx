@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
+import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { GlobalContext, GlobalContextType } from '../../../../app/global-context';
 import { useContext } from 'react';
@@ -13,9 +13,9 @@ import { GraphQLQueriesMap } from '../../../../app/graphql/maps/graphql-queries-
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants';
 import { TraceDataObjectType } from '../../../../utils/global-types-interfaces-enums';
 import { Messages } from '../../../../utils/messages';
-import { CompSyncFusionTreeGridToolbar } from '../../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar';
-import { CompSyncFusionGridToolbar } from '../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar';
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from '../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid';
+import { CompSyncFusionTreeGridToolbar } from '../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar';
+import { CompSyncFusionGridToolbar } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar';
+import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid';
 import { AdminNewBusinessUserButton } from '../business users/admin-new-business-user-button';
 import { WidgetTooltip } from '../../../../controls/widgets/widget-tooltip';
 import { AdminNewBusinessUnitButton } from '../business-units/admin-new-business-unit-button';

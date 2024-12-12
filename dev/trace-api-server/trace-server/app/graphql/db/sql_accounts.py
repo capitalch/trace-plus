@@ -90,7 +90,7 @@ class SqlAccounts:
         'accName', (SELECT "accName" FROM cte1),
         'opBalance', (SELECT json_agg(a) FROM cte2 a),
         'transactions', (SELECT json_agg(a) FROM cte3 a),
-        'sum', (SELECT json_agg(a) FROM cte5 a))
+        'sum', (SELECT json_agg(a) FROM cte5 a)) as "jsonResult"
     '''
     
     get_balanceSheet_profitLoss = '''

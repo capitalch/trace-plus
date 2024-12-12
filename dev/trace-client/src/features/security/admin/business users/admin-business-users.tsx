@@ -2,12 +2,12 @@ import { useContext } from "react";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
-import { CompSyncFusionGridToolbar } from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid-toolbar";
+import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import {
     CompSyncFusionGrid,
     SyncFusionAggregateType,
     SyncFusionGridColumnType,
-} from "../../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid";
+} from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";

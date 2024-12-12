@@ -1,8 +1,8 @@
 import { Decimal } from 'decimal.js'
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
-import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
-import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
+import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
+import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
 import { useEffect } from "react";
 import { CompSwitch } from "../../../controls/redux-components/comp-switch";
