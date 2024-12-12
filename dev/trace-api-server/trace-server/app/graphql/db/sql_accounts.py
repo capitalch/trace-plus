@@ -27,59 +27,70 @@ class SqlAccounts:
     '''
     
     get_account_ledger = '''
-    --with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "accId" as (values(%(accId)s::int))
-	with "branchId" as (values (1::int)), "finYearId" as (values (2024)), "accId" as (values(129::int))
-	, cte1 as (
-		select "accName"
-			from "AccM"
-				where id = (table "accId"))
-	, cte2 as (
-		select CASE WHEN "dc" = 'D' then "amount" ELSE 0.00 END as "debit"
-			, CASE WHEN "dc" = 'C' then "amount" ELSE 0.00 END as "credit"
-			, "branchCode"
-			from "AccOpBal" a
-				join "BranchM" b
-					on b.id = a."branchId"
-				where a."accId"	= (table "accId")
-					and "finYearId" = (table "finYearId")
-					and (SELECT COALESCE((TABLE "branchId"), "branchId") = "branchId"))
-	, cte3 as (
-		select "tranDate", "tranType", "autoRefNo", "userRefNo"
-			, d."remarks" as "lineRemarks", "lineRefNo", "branchCode", h."remarks"
-			, CASE WHEN "dc" = 'D' then "amount" ELSE 0.00 END as "debit"
-			, CASE WHEN "dc" = 'C' then "amount" ELSE 0.00 END as "credit"
-			, (select string_agg("instrNo",',') from "TranD" t1 where h.id = t1."tranHeaderId") as "instrNo"
-			, (select string_agg(distinct "accName",', ') 
-				from "TranD" t1
-					join "AccM" a1
-						on a1."id" = t1."accId"
-					where h."id" = t1."tranHeaderId" 
-						and "dc" <> d."dc") as "otherAccounts"
-			from --"AccM" a
-				 "TranD" d
-				--	on a.id = d."accId"
-				join "TranH" h
-					on h.id = d."tranHeaderId"
-				join "BranchM" b
-					on b.id = h."branchId"
-				join "TranTypeM" t
-					on t.id = h."tranTypeId"
-			where d."accId" = (table "accId")
-				and "finYearId" = (table "finYearId")
-				AND (SELECT COALESCE((TABLE "branchId"), "branchId") = "branchId"))
-		, cte4 as (
-			select "debit", "credit" from cte2
-				union all
-			select "debit", "credit" from cte3)
-		, cte5 as (
-			select SUM("debit") as "debits", SUM("credit") as "credits"
-				from cte4)
-		select json_build_object(
-			'accName', (SELECT "accName" FROM cte1)
-			, 'opBalance', (SELECT json_agg(a) from cte2 a)
-			, 'transactions', (SELECT json_agg(a) from cte3 a)
-			, 'sum', (SELECT json_agg(a) from cte5 a)
-		)
+    with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "accId" as (values(%(accId)s::int)),
+	--with "branchId" as (values (1::int)), "finYearId" as (values (2024)), "accId" as (values(129::int)),
+    cte1 AS (
+        SELECT "accName"
+        FROM "AccM"
+        WHERE "id" = (TABLE "accId")
+    ),
+    cte2 AS (
+        SELECT 
+            CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END AS "debit",
+            CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END AS "credit",
+            "branchCode"
+        FROM "AccOpBal" a
+        JOIN "BranchM" b ON b."id" = a."branchId"
+        WHERE a."accId" = (TABLE "accId")
+          AND "finYearId" = (TABLE "finYearId")
+          AND COALESCE((TABLE "branchId"), a."branchId") = a."branchId"
+    ),
+    cte3 AS (
+        SELECT 
+            "tranDate",
+            "tranType",
+            "autoRefNo",
+            "userRefNo",
+            d."remarks" AS "lineRemarks",
+            "lineRefNo",
+            "branchCode",
+            h."remarks",
+            CASE WHEN d."dc" = 'D' THEN d."amount" ELSE 0.00 END AS "debit",
+            CASE WHEN d."dc" = 'C' THEN d."amount" ELSE 0.00 END AS "credit",
+            (
+                SELECT string_agg("instrNo", ',')
+                FROM "TranD" t1
+                WHERE h."id" = t1."tranHeaderId"
+            ) AS "instrNo",
+            (
+                SELECT string_agg(DISTINCT a1."accName", ', ')
+                FROM "TranD" t1
+                JOIN "AccM" a1 ON a1."id" = t1."accId"
+                WHERE h."id" = t1."tranHeaderId"
+                  AND t1."dc" <> d."dc"
+            ) AS "otherAccounts"
+        FROM "TranD" d
+        JOIN "TranH" h ON h."id" = d."tranHeaderId"
+        JOIN "BranchM" b ON b."id" = h."branchId"
+        JOIN "TranTypeM" t ON t."id" = h."tranTypeId"
+        WHERE d."accId" = (TABLE "accId")
+          AND h."finYearId" = (TABLE "finYearId")
+          AND COALESCE((TABLE "branchId"), h."branchId") = h."branchId"
+    ),
+    cte4 AS (
+        SELECT "debit", "credit" FROM "cte2"
+        UNION ALL
+        SELECT "debit", "credit" FROM "cte3"
+    ),
+    cte5 AS (
+        SELECT SUM("debit") AS "debits", SUM("credit") AS "credits"
+        FROM "cte4"
+    )
+    SELECT json_build_object(
+        'accName', (SELECT "accName" FROM cte1),
+        'opBalance', (SELECT json_agg(a) FROM cte2 a),
+        'transactions', (SELECT json_agg(a) FROM cte3 a),
+        'sum', (SELECT json_agg(a) FROM cte5 a))
     '''
     
     get_balanceSheet_profitLoss = '''

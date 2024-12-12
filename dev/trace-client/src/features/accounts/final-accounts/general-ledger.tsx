@@ -1,39 +1,57 @@
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
-import { Utils } from "../../../utils/utils"
-import { BranchType, BusinessUnitType, FinYearType, UserDetailsType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn } from "../../login/login-slice"
+// import { Utils } from "../../../utils/utils"
+// import { BranchType, BusinessUnitType, FinYearType, UserDetailsType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn } from "../../login/login-slice"
 import { shallowEqual, useSelector } from "react-redux"
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
 import { LedgerSubledger } from "../../../controls/redux-components/ledger-subledger"
 import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map"
 import { CompSwitch } from "../../../controls/redux-components/comp-switch"
 import { CompSyncFusionGrid } from "../../../controls/components/generic-syncfusion-grid/comp-syncfusion-grid"
-import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice"
+import { selectCompSwitchStateFn, selectLedgerSubledgerFieldFn } from "../../../controls/redux-components/comp-slice"
 import { RootStateType } from "../../../app/store/store"
 import { useUtilsInfo } from "../../../utils/utils-info-hook"
+import { useQueryHelper } from "../../../app/graphql/query-helper-hook"
+import { WidgetLoadingIndicator } from "../../../controls/widgets/widget-loading-indicator"
+import { useEffect } from "react"
+import { CompInstances } from "../../../controls/redux-components/comp-instances"
 
 export function GeneralLedger() {
-    // const context: GlobalContextType = useContext(GlobalContext)
     const instance: string = DataInstancesMap.generalLedger
-    // const userDetails: UserDetailsType = Utils.getUserDetails() || {}
-    // const { dbName, decodedDbParamsObject, } = userDetails
+    const selectedAccId: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'finalAccId'), shallowEqual)
+    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
+    // const selectedData: any[] = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
 
-    // const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
-    // const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
-    // const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
-    // const decFormatter = Utils.getDecimalFormatter()
-    // const intFormatter = Utils.getIntegerFormatter()
 
-    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance))
     const {
         branchId
         , buCode
-        , context
+        // , context
         , dbName
         , decodedDbParamsObject
-        , decFormatter
+        // , decFormatter
         , finYearId
-        , intFormatter
+        // , intFormatter
     } = useUtilsInfo()
+
+    const { loading, loadData } = useQueryHelper({
+        instance: instance,
+        isExecQueryOnLoad: false,
+        dbName: dbName,
+        getQueryArgs: () => ({
+            buCode: buCode,
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getAccountLedger,
+            sqlArgs: {
+                finYearId: finYearId,
+                branchId: isAllBranches ? undefined : branchId,
+                accId: selectedAccId
+            }
+        })
+    })
+
+    if (loading) {
+        return (<WidgetLoadingIndicator />)
+    }
 
     return (<CompAccountsContainer >
         <div className="flex items-center">
@@ -42,6 +60,7 @@ export function GeneralLedger() {
             <LedgerSubledger
                 className="mt-4 w-64 ml-auto mr-6"
                 heading="All accounts"
+                instance={instance}
                 isAllBranches={isAllBranches}
                 showAccountBalance={true}
                 sqlId={SqlIdsMap.getLedgerLeafAccounts} />

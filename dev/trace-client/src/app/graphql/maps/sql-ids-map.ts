@@ -11,27 +11,32 @@ export const SqlIdsMap = {
   getAdminRoleOnRoleNameClientId: 'get_admin_role_on_roleName_clientId',
   getAdminRolesSecuredControlsLink: 'get_admin_roles_securedControls_link',
   getAllClientNamesNoArgs: 'get_all_client_names_no_args',
-  getAllRoleNamesOnClientIdWithBuiltinRoles: 'get_all_role_names_on_clientId_with_builtin_roles',
+  getAllRoleNamesOnClientIdWithBuiltinRoles:
+    'get_all_role_names_on_clientId_with_builtin_roles',
   getBuiltinRoles: 'get_builtin_roles',
   getBuOnBuCodeAndClientId: 'get_bu_on_buCode_and_clientId',
   getBuUsersLink: 'get_bu_users_link',
   getClientOnClientCode: 'get_client_on_clientCode',
   getClientOnClientName: 'get_client_on_clientName',
   getRolesSecuredControlsLink: 'get_roles_securedControls_link',
-  getSecuredControlsNotLinkedWithRoleId: 'get_securedControls_not_linked_with_roleId',
+  getSecuredControlsNotLinkedWithRoleId:
+    'get_securedControls_not_linked_with_roleId',
   getSuperAdminRoleOnRoleName: 'get_super_admin_role_on_role_name',
   getSuperAdminControlOnControlName: 'get_super_admin_control_on_control_name',
   getUserIdOnClientIdEmail: 'get_userId_on_clientId_and_email',
   getUserIdOnClientIdUid: 'get_userId_on_clientId_and_uid',
-  getUsersNotLinkedWithBuIdExcludeAdmin: 'get_users_not_linked_with_buId_exclude_admin',
-  insertSecuredControlsFromBuiltinRole: 'insert_securedControls_from_builtin_role',
+  getUsersNotLinkedWithBuIdExcludeAdmin:
+    'get_users_not_linked_with_buId_exclude_admin',
+  insertSecuredControlsFromBuiltinRole:
+    'insert_securedControls_from_builtin_role',
   superAdminDashBoard: 'get_super_admin_dashboard',
   testConnection: 'test_connection',
 
   // accounts
-  getAccountBalance:'get_account_balance',
+  getAccountBalance: 'get_account_balance',
+  getAccountLedger: 'get_account_ledger',
   getLedgerLeafAccounts: 'get_ledger_leaf_accounts',
   getSettingsFinYearsBranches: 'get_settings_fin_years_branches',
   getSubledgerAccounts: 'get_subledger_accounts',
-  getTrialBalance: 'get_trial_balance',
+  getTrialBalance: 'get_trial_balance'
 }

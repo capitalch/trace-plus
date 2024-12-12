@@ -1,7 +1,7 @@
-import { ChangeEvent, useContext, useEffect } from "react"
+import { ChangeEvent, useEffect } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
-import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, LoginType, UserDetailsType } from "../../login/login-slice"
+import { LoginType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice"
@@ -16,7 +16,6 @@ import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusi
 import { CompInstances } from "../../../controls/redux-components/comp-instances"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
-import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useUtilsInfo } from "../../../utils/utils-info-hook"
 
 export function BalanceSheet() {
@@ -207,7 +206,6 @@ export function BalanceSheet() {
 
     async function loadData() {
         const queryName: string = GraphQLQueriesMap.balanceSheetProfitLoss.name
-
         const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
             dbName || '',
             {

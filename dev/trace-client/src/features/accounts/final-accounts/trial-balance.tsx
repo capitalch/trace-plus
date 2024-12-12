@@ -25,6 +25,7 @@ export function TrialBalance() {
         , finYearId
         , intFormatter
     } = useUtilsInfo()
+    
     useEffect(() => {
         const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
         if (loadData) {

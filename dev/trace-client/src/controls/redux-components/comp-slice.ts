@@ -8,6 +8,7 @@ const initialState: ReduxCompStateType = {
   ledgerSubledger: {
     [CompInstances.ledgerSubledgerGeneralLedger]: {
       accountBalance: 0,
+      finalAccId:undefined,
       hasError: true
     }
   }
@@ -85,11 +86,12 @@ type LedgerSubledgerInstanceType = {
   finalAccId?: number
   hasError: boolean
   ledgerAccId?: number
+  ledgerandLeafData?: AccountType[]
   subLedgerData?: AccountType[]
 }
 
 type AccountType = {
-  accLeaf: 'S'
+  accLeaf: 'S' | 'L' | 'Y'
   accName: string
   id: number
 }

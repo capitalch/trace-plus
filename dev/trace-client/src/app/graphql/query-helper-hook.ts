@@ -20,7 +20,7 @@ export function useQueryHelper({
   isExecQueryOnLoad = true
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
-  const [getQueryData, { error, loading }] = useLazyQuery(
+  const [getQueryData, { error, loading,  }, ] = useLazyQuery(
     graphQlQueryFromMap(dbName, getQueryArgs()),
     { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
   )

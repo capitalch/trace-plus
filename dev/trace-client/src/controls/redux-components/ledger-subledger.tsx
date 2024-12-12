@@ -1,62 +1,48 @@
 import Select, { components } from 'react-select'
-import { CompInstances } from "./comp-instances"
 import clsx from 'clsx'
-import { useQueryHelper } from '../../app/graphql/query-helper-hook'
-import { BranchType, BusinessUnitType, currentBusinessUnitSelectorFn, FinYearType, UserDetailsType } from '../../features/login/login-slice'
 import { Utils } from '../../utils/utils'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { SqlIdsMap } from '../../app/graphql/maps/sql-ids-map'
 import { AppDispatchType, RootStateType } from '../../app/store/store'
-import { WidgetLoadingIndicator } from '../widgets/widget-loading-indicator'
 import { selectLedgerSubledgerFieldFn, updateLedgerSubledger } from './comp-slice'
 import { SqlArgsType } from '../components/generic-syncfusion-grid/comp-syncfusion-grid'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IconRefresh } from '../icons/icon-refresh'
 import { TooltipComponent } from '@syncfusion/ej2-react-popups'
+import { useUtilsInfo } from '../../utils/utils-info-hook'
 
 export function LedgerSubledger({
     className,
     heading = '',
+    instance,
     isAllBranches = false,
     showAccountBalance = false,
     sqlArgs,
     sqlId
 }: LedgerSubledgerType) {
-    const instance: string = CompInstances.ledgerSubledgerGeneralLedger
     const dispatch: AppDispatchType = useDispatch()
-    const userDetails: UserDetailsType = Utils.getUserDetails() || {}
-    const currentFinYear: FinYearType = Utils.getCurrentLoginInfo().currentFinYear || Utils.getCurrentFinYear()
-    const currentBranch: BranchType | undefined = Utils.getCurrentLoginInfo().currentBranch
     const [isSecondSelectDisabled, setSecondSelectDisabled] = useState(true)
-    const { dbName, decodedDbParamsObject, } = userDetails
+    const firstSelectRef: any = useRef(null)
     const secondSelectRef: any = useRef(null)
 
     // Selectors
-    const currentBusinessUnit: BusinessUnitType = useSelector(
-        currentBusinessUnitSelectorFn, shallowEqual
-    ) || {}
-    const ledgerOrLeafAccounts: any = useSelector((state: RootStateType) =>
-        state.queryHelper[instance]?.data)
-    const subledgerData: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'subLedgerData'))
-    const hasError: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'hasError'))
-    const accountBalance: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'accountBalance'))
-    const decimalFormatter: any = Utils.getDecimalFormatter()
+    const ledgerAndLeafData: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'ledgerandLeafData'), shallowEqual)
+    const subledgerData: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'subLedgerData'), shallowEqual)
+    const hasError: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'hasError'), shallowEqual)
+    const accountBalance: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'accountBalance'), shallowEqual)
 
-    const { loading, loadData } = useQueryHelper({ // Load data for first select
-        instance: instance,
-        isExecQueryOnLoad: true,
-        dbName: dbName,
-        getQueryArgs: () => ({
-            buCode: currentBusinessUnit.buCode,
-            dbParams: decodedDbParamsObject,
-            sqlId: sqlId || SqlIdsMap.getLedgerLeafAccounts,
-            sqlArgs: sqlArgs
-        })
-    })
+    const {
+        branchId
+        , buCode
+        , dbName
+        , decFormatter
+        , decodedDbParamsObject
+        , finYearId
+    } = useUtilsInfo()
 
-    if (loading) {
-        return (<WidgetLoadingIndicator className='ml-6 mt-6' />)
-    }
+    useEffect(() => {
+        loadFirstSelectOptions()
+    }, [])
 
     return (<div className={clsx('flex flex-col w-60', className,)} >
 
@@ -69,7 +55,7 @@ export function LedgerSubledger({
                 </button>
             </TooltipComponent>
             <span className='ml-auto'>
-                <label className='font-medium text-blue-400'>{decimalFormatter.format(Math.abs(accountBalance))}</label>
+                <label className='font-medium text-blue-400'>{decFormatter.format(Math.abs(accountBalance))}</label>
                 {showAccountBalance && <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>}
             </span>
         </div>
@@ -83,8 +69,9 @@ export function LedgerSubledger({
                 menuPlacement="auto"
                 menuShouldScrollIntoView={false}
                 onChange={handleOnChangeFirstSelect}
-                options={ledgerOrLeafAccounts}
+                options={ledgerAndLeafData}
                 placeholder='Select account'
+                ref={firstSelectRef}
                 styles={getStyles()}
             />
             <Select
@@ -136,11 +123,13 @@ export function LedgerSubledger({
     }
 
     function handleOnClickRefresh() {
-        loadData()
+        // loadData()
+        loadFirstSelectOptions()
         dispatch(updateLedgerSubledger({
             instance: instance,
             updates: {
                 accountBalance: 0,
+                finalAccId: undefined,
                 hasError: true
             },
         }))
@@ -148,13 +137,13 @@ export function LedgerSubledger({
 
     async function fetchAccountBalance(accId: number) {
         const res: any = await Utils.doGenericQuery({
-            buCode: currentBusinessUnit.buCode || '',
+            buCode: buCode || '',
             dbName: dbName || '',
             dbParams: decodedDbParamsObject || {},
             sqlArgs: {
-                branchId: isAllBranches ? undefined : currentBranch?.branchId,
+                branchId: isAllBranches ? null : branchId,
                 accId: accId,
-                finYearId: currentFinYear?.finYearId,
+                finYearId: finYearId,
             },
             sqlId: SqlIdsMap.getAccountBalance,
         })
@@ -175,6 +164,7 @@ export function LedgerSubledger({
                 instance: instance,
                 updates: {
                     accountBalance: 0,
+                    finalAccId: undefined,
                     subLedgerData: [],
                     hasError: true
                 }
@@ -198,6 +188,8 @@ export function LedgerSubledger({
             dispatch(updateLedgerSubledger({
                 instance: instance,
                 updates: {
+                    accountBalance: 0,
+                    finalAccId: undefined,
                     hasError: true,
                 }
             }))
@@ -218,9 +210,30 @@ export function LedgerSubledger({
         fetchAccountBalance(e.id)
     }
 
+    async function loadFirstSelectOptions() {
+        const res: AccountType[] = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject || {},
+            sqlArgs: sqlArgs,
+            sqlId: sqlId || SqlIdsMap.getLedgerLeafAccounts,
+        })
+        firstSelectRef.current.setValue(null)
+        dispatch(updateLedgerSubledger({
+            instance: instance,
+            updates: {
+                accountBalance: 0,
+                finalAccId: undefined,
+                hasError: true,
+                ledgerandLeafData: res,
+                subLedgerData: []
+            }
+        }))
+    }
+
     async function loadSecondSelectOptions(accId: number) {
         const res: any = await Utils.doGenericQuery({
-            buCode: currentBusinessUnit.buCode || '',
+            buCode: buCode || '',
             dbName: dbName || '',
             dbParams: decodedDbParamsObject || {},
             sqlArgs: {
@@ -241,6 +254,7 @@ export function LedgerSubledger({
 type LedgerSubledgerType = {
     className?: string
     heading: string
+    instance: string
     isAllBranches: boolean
     showAccountBalance: boolean
     sqlArgs?: SqlArgsType
