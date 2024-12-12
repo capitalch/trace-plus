@@ -26,6 +26,79 @@ class SqlAccounts:
             Group by "accId"
     '''
     
+    get_account_ledger = '''
+    with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "id" as (values(%(id)s::int)),
+	--with "branchId" as (values (1::int)), "finYearId" as (values (2024)), "id" as (values(129::int)),
+	cte as(
+			select "accName" from "AccM"
+				where "id" = (table "id")
+		), cte1 as (
+			select
+			CASE WHEN "dc" = 'D' then "amount" ELSE 0.00 END as "debit"
+			, CASE WHEN "dc" = 'C' then "amount" ELSE 0.00 END as "credit"
+			, "dc"
+			, "branchCode"
+			from "AccM" a
+				join "AccOpBal" b
+					on a."id" = b."accId"
+				join "BranchM" c
+					on c.id = b."branchId"
+			where a."id" = (table "id")
+				and "finYearId" = (table "finYearId") 
+			--and "branchId" = (table "branchId")
+			AND (SELECT COALESCE((TABLE "branchId"), "branchId") = "branchId")
+		), cte2 as(
+			select
+			CASE WHEN "dc" = 'D' then "amount" ELSE 0.00 END as "debit"
+			, CASE WHEN "dc" = 'C' then "amount" ELSE 0.00 END as "credit"
+			, "dc"
+			, "tranDate"
+			, "tranTypeId"
+			, "userRefNo"
+			, h."remarks"
+			, (select "tranType" from "TranTypeM" where "id" = h."tranTypeId") as "tranType"
+			, (select string_agg(distinct "accName",', ') 
+				from "TranD" t1
+					join "AccM" a1
+						on a1."id" = t1."accId"
+					where h."id" = t1."tranHeaderId" 
+						and "dc" <> t."dc") as "otherAccounts" 
+			, "autoRefNo"
+			, "accName"
+			, t."remarks" as "lineRemarks"
+			, "lineRefNo"
+			, (select string_agg("instrNo",',') from "TranD" t1 where h.id = t1."tranHeaderId") as "instrNo"
+			, h."id"
+			, "branchCode"
+			from "AccM" a
+				join "TranD" as t
+					on a."id" = t."accId"
+				join "TranH" as h
+					on t."tranHeaderId" = h."id"
+				join "BranchM" b
+					on b."id" = h."branchId"
+			where a."id" = (table "id")
+					and "finYearId" = (table "finYearId") 
+			--and "branchId" = (table "branchId")
+			AND (SELECT COALESCE((TABLE "branchId"), "branchId") = "branchId")
+				order by "tranDate", t."id"
+		), cte3 as (
+			select "debit", "credit" from cte1
+				union all
+			select "debit", "credit" from cte2
+		), cte4 as (
+			select SUM("debit") as "debit", SUM("credit") as "credit"
+				from cte3
+		)
+		SELECT
+			json_build_object(
+				'accName', (SELECT "accName" FROM cte a)
+				, 'opBalance', (SELECT row_to_json(b) FROM cte1 b)
+				, 'transactions',(SELECT json_agg(row_to_json(c)) FROM cte2 c)
+				, 'sum', (SELECT json_agg(row_to_json(d)) from cte4 d)
+			) as "jsonResult"
+    '''
+    
     get_balanceSheet_profitLoss = '''
     WITH RECURSIVE hier AS (
             SELECT 

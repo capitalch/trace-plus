@@ -61,7 +61,7 @@ export function LedgerSubledger({
     return (<div className={clsx('flex flex-col w-60', className,)} >
 
         {/* Header */}
-        <div className='h-6 bg-slate-50 flex text-sm items-center'>
+        <div className='h-6 bg-slate-50 flex text-md items-center'>
             <label className='font-medium text-primary-400'>{heading}</label>
             <TooltipComponent className='ml-auto mt-2' content='Refresh' position='TopCenter'>
                 <button onClick={handleOnClickRefresh}>

@@ -17,23 +17,26 @@ import { CompInstances } from "../../../controls/redux-components/comp-instances
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
+import { useUtilsInfo } from "../../../utils/utils-info-hook"
 
 export function BalanceSheet() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-    const userDetails: UserDetailsType = Utils.getUserDetails() || {}
-    const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
     const balanceSheetInstance: string = DataInstancesMap.balanceSheet
     const liabsInstance: string = DataInstancesMap.liabilities
     const assetsInstance: string = DataInstancesMap.assets
-    const { dbName, decodedDbParamsObject, } = userDetails
-
-    const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
-    const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
-    const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchBalanceSheet), shallowEqual) || false
-    const decFormatter = Utils.getDecimalFormatter()
-    const intFormatter = Utils.getIntegerFormatter()
+
+    const {
+        branchId
+        , buCode
+        , context
+        , dbName
+        , decodedDbParamsObject
+        , decFormatter
+        , finYearId
+        , intFormatter
+    } = useUtilsInfo()
 
     const liabsData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[liabsInstance]?.data
@@ -47,7 +50,7 @@ export function BalanceSheet() {
 
     useEffect(() => {
         loadData()
-    }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
+    }, [buCode, finYearId, branchId, isAllBranches])
 
     return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
         {/* Header */}
@@ -67,7 +70,7 @@ export function BalanceSheet() {
                 />
                 <CompSyncfusionTreeGrid
                     aggregates={getAggregates()}
-                    buCode={currentBusinessUnit.buCode}
+                    buCode={buCode}
                     childMapping="children"
                     className=""
                     dataSource={liabsData}
@@ -93,7 +96,7 @@ export function BalanceSheet() {
                 />
                 <CompSyncfusionTreeGrid
                     aggregates={getAggregates()}
-                    buCode={currentBusinessUnit.buCode}
+                    buCode={buCode}
                     childMapping="children"
                     className=""
                     dataSource={assetsData}

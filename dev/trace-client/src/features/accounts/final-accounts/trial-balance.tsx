@@ -1,38 +1,36 @@
-import { shallowEqual, useSelector } from "react-redux";
 import { Decimal } from 'decimal.js'
-import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, UserDetailsType } from "../../login/login-slice";
-import { Utils } from "../../../utils/utils";
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
 import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
-import { GlobalContext, GlobalContextType } from "../../../app/global-context";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { CompSwitch } from "../../../controls/redux-components/comp-switch";
-import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice";
-import { RootStateType } from "../../../app/store/store";
 import { CompInstances } from "../../../controls/redux-components/comp-instances";
+import { useUtilsInfo } from "../../../utils/utils-info-hook";
+import { shallowEqual, useSelector } from 'react-redux';
+import { RootStateType } from '../../../app/store/store';
+import { selectCompSwitchStateFn } from '../../../controls/redux-components/comp-slice';
 
 export function TrialBalance() {
-    const context: GlobalContextType = useContext(GlobalContext)
     const instance: string = DataInstancesMap.trialBalance
-    const userDetails: UserDetailsType = Utils.getUserDetails() || {}
-    const { dbName, decodedDbParamsObject, } = userDetails
-
-    const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
-    const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
-    const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchTrialBalance), shallowEqual) || false
-    const decFormatter = Utils.getDecimalFormatter()
-    const intFormatter = Utils.getIntegerFormatter()
-
+    const {
+        branchId
+        , buCode
+        , context
+        , dbName
+        , decodedDbParamsObject
+        , decFormatter
+        , finYearId
+        , intFormatter
+    } = useUtilsInfo()
     useEffect(() => {
         const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
         if (loadData) {
             loadData()
         }
-    }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
+    }, [buCode, finYearId, branchId, isAllBranches])
 
     return (
         <CompAccountsContainer>
@@ -43,13 +41,12 @@ export function TrialBalance() {
                         title='Trial Balance'
                         isAllBranches={isAllBranches}
                         isLastNoOfRows={false}
-                        // isTitleVisible={false}
                         instance={instance}
                         width="calc(100vw - 250px)" // This stops unnecessary flickers
                     />
                     <CompSyncfusionTreeGrid
                         aggregates={getTrialBalanceAggregates()}
-                        buCode={currentBusinessUnit.buCode}
+                        buCode={buCode}
                         childMapping="children"
                         className=""
                         dbName={dbName}
@@ -57,8 +54,8 @@ export function TrialBalance() {
                         graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
                         isLoadOnInit={false}
                         sqlArgs={{
-                            branchId: isAllBranches ? null : currentBranch?.branchId || 0,
-                            finYearId: currentFinYear?.finYearId || 1900,
+                            branchId: isAllBranches ? null : branchId || 0,
+                            finYearId: finYearId || 1900,
                         }}
                         columns={getColumns()}
                         height="calc(100vh - 250px)"

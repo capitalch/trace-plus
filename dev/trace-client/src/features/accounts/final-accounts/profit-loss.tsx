@@ -1,7 +1,7 @@
-import { ChangeEvent, useContext, useEffect } from "react"
+import { ChangeEvent, useEffect } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
-import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, LoginType, UserDetailsType } from "../../login/login-slice"
+import { LoginType, UserDetailsType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice"
@@ -16,24 +16,15 @@ import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusi
 import { CompInstances } from "../../../controls/redux-components/comp-instances"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/generic-syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
-import { GlobalContext, GlobalContextType } from "../../../app/global-context"
+import { useUtilsInfo } from "../../../utils/utils-info-hook"
 
 export function ProfitLoss() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-    const userDetails: UserDetailsType = Utils.getUserDetails() || {}
-    const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
     const profitLossInstance: string = DataInstancesMap.profitLoss
     const expensesInstance: string = DataInstancesMap.expenses
     const incomesInstance: string = DataInstancesMap.incomes
-    const { dbName, decodedDbParamsObject, } = userDetails
-
-    const currentBusinessUnit: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
-    const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn, shallowEqual)
-    const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchProfitLoss), shallowEqual) || false
-    const decFormatter = Utils.getDecimalFormatter()
-    const intFormatter = Utils.getIntegerFormatter()
 
     const expensesData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[expensesInstance]?.data
@@ -44,10 +35,20 @@ export function ProfitLoss() {
         const ret: any = state.queryHelper[incomesInstance]?.data
         return (ret)
     })
+    const {
+        branchId
+        , buCode
+        , context
+        , dbName
+        , decodedDbParamsObject
+        , decFormatter
+        , finYearId
+        , intFormatter
+    } = useUtilsInfo()
 
     useEffect(() => {
         loadData()
-    }, [currentBusinessUnit, currentFinYear, currentBranch, isAllBranches])
+    }, [buCode, finYearId, branchId, isAllBranches])
 
     return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
 
@@ -66,7 +67,7 @@ export function ProfitLoss() {
                 />
                 <CompSyncfusionTreeGrid
                     aggregates={getAggregates()}
-                    buCode={currentBusinessUnit.buCode}
+                    buCode={buCode}
                     childMapping="children"
                     className=""
                     dataSource={expensesData}
@@ -92,7 +93,7 @@ export function ProfitLoss() {
                 />
                 <CompSyncfusionTreeGrid
                     aggregates={getAggregates()}
-                    buCode={currentBusinessUnit.buCode}
+                    buCode={buCode}
                     childMapping="children"
                     className=""
                     dataSource={incomesData}
