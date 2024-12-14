@@ -33,9 +33,9 @@ export function CompSyncFusionGrid({
 
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionGrid[instance]) {
-            context.CompSyncFusionGrid[instance] = { 
+            context.CompSyncFusionGrid[instance] = {
                 gridRef: undefined,
-                loadData: undefined, 
+                loadData: undefined,
             }
         }
         context.CompSyncFusionGrid[instance].loadData = loadData
@@ -57,58 +57,64 @@ export function CompSyncFusionGrid({
 
     return (
         //The div container is important. The minWidth works with style only
-        <div style={{ minWidth: `${minWidth}` }}>
-            <GridComponent
-                allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
-                allowPdfExport={true}
-                allowExcelExport={true}
-                allowResizing={true}
-                allowSorting={true}
-                allowSelection={true}
-                allowTextWrap={true}
-                className={className}
-                created={onCreated}
-                dataSource={dataSource || selectedData || []}
-                enablePersistence={false}
-                gridLines="Both"
-                height={height}
-                id={instance}
-                ref={gridRef}
-                rowDragStart={gridDragAndDropSettings?.onRowDragStart}
-                rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
-                rowDrop={gridDragAndDropSettings?.onRowDrop}
-                rowDropSettings={{
-                    targetID: gridDragAndDropSettings?.targetId || undefined,
+        <div style={{ minWidth: `${minWidth}`, width:'100%' }} >
+            <div style= {{width:'100%'}}>
+                <GridComponent
+                    allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
+                    allowPdfExport={true}
+                    allowExcelExport={true}
+                    allowResizing={true}
 
-                }}
-                rowHeight={rowHeight}
-                searchSettings={searchOptions}
-                selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
-            >
-                <ColumnsDirective>
-                    {getColumnDirectives()}
-                </ColumnsDirective>
-                {aggregates && <AggregatesDirective>
-                    <AggregateDirective>
-                        <AggregateColumnsDirective>
-                            {getAggrColDirectives()}
-                        </AggregateColumnsDirective>
-                    </AggregateDirective>
-                </AggregatesDirective>}
-                <Inject services={[
-                    Aggregate
-                    , ExcelExport
-                    , InfiniteScroll
-                    , PdfExport
-                    , Resize
-                    , RowDD
-                    , Search
-                    , Selection
-                    , Sort
-                    , Toolbar
-                ]} />
+                    // width= '150%'
 
-            </GridComponent>
+                    allowSorting={true}
+                    allowSelection={true}
+                    allowTextWrap={true}
+                    className={className}
+                    created={onCreated}
+                    dataSource={dataSource || selectedData || []}
+                    enablePersistence={false}
+                    gridLines="Both"
+                    height={height}
+                    id={instance}
+                    ref={gridRef}
+                    rowDragStart={gridDragAndDropSettings?.onRowDragStart}
+                    rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
+                    rowDrop={gridDragAndDropSettings?.onRowDrop}
+                    rowDropSettings={{
+                        targetID: gridDragAndDropSettings?.targetId || undefined,
+
+                    }}
+                    rowHeight={rowHeight}
+                    searchSettings={searchOptions}
+                    selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
+                // style={{width:'2000px'}}
+                >
+                    <ColumnsDirective>
+                        {getColumnDirectives()}
+                    </ColumnsDirective>
+                    {aggregates && <AggregatesDirective>
+                        <AggregateDirective>
+                            <AggregateColumnsDirective>
+                                {getAggrColDirectives()}
+                            </AggregateColumnsDirective>
+                        </AggregateDirective>
+                    </AggregatesDirective>}
+                    <Inject services={[
+                        Aggregate
+                        , ExcelExport
+                        , InfiniteScroll
+                        , PdfExport
+                        , Resize
+                        , RowDD
+                        , Search
+                        , Selection
+                        , Sort
+                        , Toolbar
+                    ]} />
+
+                </GridComponent>
+            </div>
         </div>
     )
 

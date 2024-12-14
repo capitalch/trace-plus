@@ -2,12 +2,14 @@ import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej
 import { testData } from "./test-data";
 
 export function SyncfusionGrid() {
-    return (<div>
-        <GridComponent
+    return (
+        <div className="bg-red-400">
+            <div className="w-[3000px] h-[10px] bg-slate-200">
+                {/* <GridComponent
             className="mt-2"
             gridLines="Both"
             // width={"98%"} 
-            height='calc(100vh - 280px)'
+            // height='calc(100vh - 280px)'
             dataSource={testData}>
             <ColumnsDirective>
                 <ColumnDirective field='OrderID' headerText='Order ID' width='120' textAlign="Right" />
@@ -15,6 +17,8 @@ export function SyncfusionGrid() {
                 <ColumnDirective field='ShipCity' headerText='Ship City' width='150' />
                 <ColumnDirective field='ShipName' headerText='Ship Name' width='150' />
             </ColumnsDirective>
-        </GridComponent>
-    </div>)
+        </GridComponent> */}
+            </div>
+        </div>
+    )
 }

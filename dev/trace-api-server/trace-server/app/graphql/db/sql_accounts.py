@@ -38,7 +38,7 @@ class SqlAccounts:
         SELECT 
             CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END AS "debit",
             CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END AS "credit",
-            "branchCode"
+            "branchName"
         FROM "AccOpBal" a
         JOIN "BranchM" b ON b."id" = a."branchId"
         WHERE a."accId" = (TABLE "accId")
@@ -46,14 +46,14 @@ class SqlAccounts:
           AND COALESCE((TABLE "branchId"), a."branchId") = a."branchId"
     ),
     cte3 AS (
-        SELECT 
+        SELECT d.id,
             "tranDate",
             "tranType",
             "autoRefNo",
             "userRefNo",
             d."remarks" AS "lineRemarks",
             "lineRefNo",
-            "branchCode",
+            "branchName",
             h."remarks",
             CASE WHEN d."dc" = 'D' THEN d."amount" ELSE 0.00 END AS "debit",
             CASE WHEN d."dc" = 'C' THEN d."amount" ELSE 0.00 END AS "credit",

@@ -40,6 +40,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { ReactSelectAsync } from './features/react-select/react-select-async'
 // import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
 import { TreeGrid2 } from './features/syncfusion/tree-grid2'
+import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -94,7 +95,8 @@ function App() {
       {/* <SyncfusionTreeGrid /> */}
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
-      <TreeGrid2 />
+      {/* <TreeGrid2 /> */}
+      <SyncfusionGrid />
     </GlobalContext.Provider>
   )
 }

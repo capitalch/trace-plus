@@ -22,12 +22,27 @@
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - General ledger
-	- SQL queries
-	- LedgerSubledger control
-		- SQL
-		- View current balance
-		- Refresh this control
-		- Logic
+- UI
+	- Header
+		- Acc name to show
+	- Grid
+		- Format date and decimals
+		- Show all columns
+		- Speed up for large data
+		- Aggregate
+		- Data view
+		- Daily summary
+		- Col balance
+		- Reverse
+		- Refresh
+		- Export
+	- PDF output
+															- SQL queries
+														- LedgerSubledger control
+															- SQL
+															- View current balance
+															- Refresh this control
+															- Logic
 															- Populate top select with accName, id where accLeaf = 'L','Y' 
 																- Use queryHelper
 															- On change top select if 'L' then 
@@ -35,25 +50,13 @@
 															- else
 																- dispatch setFinalAccId and exit
 															- On change 2nd setFinalAccId
-		- To do
-			- Maybe use single reducer function to set all states
-			- Border
-			- Error property
+														- To do
+															- Maybe use single reducer function to set all states
+															- Border
+															- Error property
 															- When 1st select 'Y', 2nd select disabled
 															- When 1st select 'L', 2nd select enabled and border red and error
 															- When first select is selected 'Y', 2nd select should clear
-	- UI
-		- Header
-		- Grid
-			- Data view
-			- Daily summary
-			- Col balance
-			- Reverse
-			- Refresh
-			- Export
-	- PDF output
-	- Grid
-		- Aggregate
 - BS
 	BS and PL heading to go up in match with trial balance
 													- Server side

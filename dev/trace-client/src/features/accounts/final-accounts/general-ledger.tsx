@@ -21,8 +21,8 @@ import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
 export function GeneralLedger() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
-    const selectedAccId: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'finalAccId'), shallowEqual)
-    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
+    const selectedAccId: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'finalAccId'))
+    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance))
     const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
 
     const {
@@ -36,22 +36,6 @@ export function GeneralLedger() {
         // , intFormatter
     } = useUtilsInfo()
 
-    // const { loading, loadData } = useQueryHelper({
-    //     instance: instance,
-    //     isExecQueryOnLoad: false,
-    //     dbName: dbName,
-    //     getQueryArgs: () => ({
-    //         buCode: buCode,
-    //         dbParams: decodedDbParamsObject,
-    //         sqlId: SqlIdsMap.getAccountLedger,
-    //         sqlArgs: {
-    //             finYearId: finYearId,
-    //             branchId: isAllBranches ? undefined : branchId,
-    //             accId: selectedAccId
-    //         }
-    //     })
-    // })
-
     useEffect(() => {
         if (selectedAccId) {
             loadData()
@@ -64,15 +48,11 @@ export function GeneralLedger() {
         }
     }, [selectedAccId, isAllBranches])
 
-    // if (loading) {
-    //     return (<WidgetLoadingIndicator />)
-    // }
-
     return (<CompAccountsContainer >
-        <div className="flex items-center mt-8">
-            <div className="flex flex-col">
+        <div className="flex items-center mt-6">
+            <div className="flex flex-col w-72">
                 <label className="text-lg font-medium text-primary-400">General ledger</label>
-                {/* <label>Party     ffffffffffffffffffff ffffffffffff yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy fgggggggggggg</label> */}
+                <label className="text-blue-500 font-medium">{selectedData?.accName}</label>
             </div>
             <CompSwitch leftLabel="All branches" instance={instance} className="ml-auto" />
             <CompSyncFusionGridToolbar
@@ -91,13 +71,15 @@ export function GeneralLedger() {
         </div>
 
         <CompSyncFusionGrid
-            className="mr-6 mt-4"
+            className="mr-6 mt-4 w-[2000px]"
             columns={getColumns()}
-            dataSource={selectedData?.jsonResult?.transactions}
+            dataSource={selectedData?.transactions}
             hasIndexColumn={true}
-            height="calc(100vh - 280px)"
+            // height="calc(100vh - 280px)"
+            height="calc(100vh - 320px)"
             instance={instance}
             isLoadOnInit={false}
+            // minWidth="2000"
         />
     </CompAccountsContainer>)
 
@@ -114,7 +96,69 @@ export function GeneralLedger() {
                 headerText: "Ref no",
                 width: 50,
                 textAlign: 'Left'
-            }
+            },
+            {
+                field: "debit",
+                headerText: "Debits",
+                width: 50,
+                format:'N2',
+                textAlign: 'Right'
+            },
+            {
+                field: "credit",
+                headerText: "Credits",
+                width: 50,
+                format: 'N2',
+                textAlign: 'Right'
+            },
+            {
+                field: "otherAccounts",
+                headerText: "Other accounts",
+                width: 100,
+                textAlign: 'Left'
+            },
+            {
+                field: "instrNo",
+                headerText: "Instrument",
+                width: 70,
+                textAlign: 'Left'
+            },
+            {
+                field: "userRefNo",
+                headerText: "User ref",
+                width: 50,
+                textAlign: 'Left'
+            },
+            {
+                field: "remarks",
+                headerText: "Remarks",
+                width: 150,
+                textAlign: 'Left'
+            },
+            {
+                field: "lineRefNo",
+                headerText: "Line ref",
+                width: 100,
+                textAlign: 'Left'
+            },
+            {
+                field: "lineRemarks",
+                headerText: "Line remarks",
+                width: 100,
+                textAlign: 'Left'
+            },
+            {
+                field: "branchName",
+                headerText: "Branch",
+                width: 70,
+                textAlign: 'Left'
+            },
+            {
+                field: "id",
+                headerText: "Id",
+                width: 50,
+                textAlign: 'Left'
+            },
         ])
     }
 
@@ -132,8 +176,27 @@ export function GeneralLedger() {
         })
         dispatch(setQueryHelperData({
             instance: instance,
-            data: res?.[0]?.jsonResult?.transactions
+            data: res?.[0]?.jsonResult
         }))
     }
-
 }
+
+// const { loading, loadData } = useQueryHelper({
+//     instance: instance,
+//     isExecQueryOnLoad: false,
+//     dbName: dbName,
+//     getQueryArgs: () => ({
+//         buCode: buCode,
+//         dbParams: decodedDbParamsObject,
+//         sqlId: SqlIdsMap.getAccountLedger,
+//         sqlArgs: {
+//             finYearId: finYearId,
+//             branchId: isAllBranches ? undefined : branchId,
+//             accId: selectedAccId
+//         }
+//     })
+// })
+
+// if (loading) {
+//     return (<WidgetLoadingIndicator />)
+// }
