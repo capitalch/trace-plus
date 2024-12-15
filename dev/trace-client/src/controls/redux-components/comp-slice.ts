@@ -3,8 +3,9 @@ import { RootStateType } from '../../app/store/store'
 // import { CompInstances } from './comp-instances'
 
 const initialState: ReduxCompStateType = {
-  compSwitch: {},
   compAppLoader: {},
+  compCheckBox: {},
+  compSwitch: {},
   ledgerSubledger: {
     // [CompInstances.ledgerSubledgerGeneralLedger]: {
     //   accountBalance: 0,
@@ -50,10 +51,19 @@ const compSlice = createSlice({
       })
       Object.entries(updates).forEach(([key, value]) => {
         // if (key in state.ledgerSubledger[instance]) {
-          const li:any = state.ledgerSubledger[instance]
-          li[key] = value
+        const li: any = state.ledgerSubledger[instance]
+        li[key] = value
         // }
       });
+    },
+
+    // CompCheckBox
+    setCompCheckBoxState: (
+      state: ReduxCompStateType,
+      action: PayloadAction<{ instance: string; checkBoxState: boolean }>
+    ) => {
+      const instance: string = action.payload.instance
+      state.compCheckBox[instance] = action.payload.checkBoxState
     },
 
     // CompSwitch
@@ -69,6 +79,7 @@ const compSlice = createSlice({
 
 export const reduxCompReducer = compSlice.reducer
 export const {
+  setCompCheckBoxState,
   setCompSwitchState,
   showCompAppLoader,
   updateLedgerSubledger
@@ -76,8 +87,9 @@ export const {
 
 //Types
 type ReduxCompStateType = {
-  compSwitch: Record<string, boolean>
   compAppLoader: Record<string, boolean>
+  compCheckBox: Record<string, boolean>
+  compSwitch: Record<string, boolean>
   ledgerSubledger: Record<string, LedgerSubledgerInstanceType>
 }
 
@@ -97,6 +109,12 @@ type AccountType = {
 }
 
 // selectors
+// compCheckBox
+export const selectCompCheckBoxStateFn = (
+  state: RootStateType,
+  instance: string
+) => state.reduxComp.compCheckBox[instance]
+
 // compSwitch: Retrieves the switch state of the component
 export const selectCompSwitchStateFn = (
   state: RootStateType,
