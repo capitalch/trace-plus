@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootStateType } from '../../app/store/store'
-import { CompInstances } from './comp-instances'
+// import { CompInstances } from './comp-instances'
 
 const initialState: ReduxCompStateType = {
   compSwitch: {},
   compAppLoader: {},
   ledgerSubledger: {
-    [CompInstances.ledgerSubledgerGeneralLedger]: {
-      accountBalance: 0,
-      finalAccId:undefined,
-      hasError: true
-    }
+    // [CompInstances.ledgerSubledgerGeneralLedger]: {
+    //   accountBalance: 0,
+    //   finalAccId:undefined,
+    //   hasError: true
+    // }
   }
 }
 

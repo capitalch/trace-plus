@@ -42,6 +42,18 @@ export function LedgerSubledger({
 
     useEffect(() => {
         loadFirstSelectOptions()
+        return (() => { //cleanup
+            dispatch(updateLedgerSubledger({
+                instance: instance,
+                updates: {
+                    accountBalance: 0,
+                    finalAccId: undefined,
+                    hasError: true,
+                    ledgerandLeafData: [],
+                    subLedgerData: []
+                }
+            }))
+        })
     }, [])
 
     return (<div className={clsx('flex flex-col w-60', className,)} >

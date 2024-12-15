@@ -1,6 +1,6 @@
 import { FC, } from "react"
 import { GraphQLQueryArgsType, } from "../../../app/graphql/maps/graphql-queries-map";
-import { CompSyncFusionGridType, SyncFusionAggregateType, SyncFusionGridColumnType } from "./comp-syncfusion-grid";
+import { CompSyncFusionGridType, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "./comp-syncfusion-grid";
 import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react-grids";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
@@ -20,10 +20,10 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
     } else if (selectedLastNoOfRows === '') {
         lastNoOfRows = null
     }
-    if(sqlArgs){
+    if (sqlArgs) {
         sqlArgs.noOfRows = lastNoOfRows
     }
-    
+
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,
         sqlArgs: sqlArgs
@@ -44,8 +44,10 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
         const defaultFooterTemplate: FC = (props: any) => <span><b>{props.Sum}</b></span>
         let ds: any[] = []
         if (aggregates && aggregates.length > 0) {
-            ds = aggregates.map((aggr: SyncFusionAggregateType, index: number) => {
+            ds = aggregates.map((aggr: SyncFusionGridAggregateType, index: number) => {
                 return (<AggregateColumnDirective
+                    customAggregate={aggr?.customAggregate}
+                    columnName={aggr.columnName}
                     key={index}
                     field={aggr.field}
                     type={aggr.type}
@@ -60,15 +62,15 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
     function getColumnDirectives() {
         const colDirectives: any[] = columns.map((col: SyncFusionGridColumnType, index: number) => {
             return (<ColumnDirective
-                field={col.field}
                 clipMode="EllipsisWithTooltip"
+                field={col.field}
+                format={col.format}
                 headerText={col.headerText}
                 key={index}
                 textAlign={col.textAlign}
                 template={col.template}
                 type={col.type}
                 width={col.width}
-                format={col.format}
             />)
         })
 
@@ -108,10 +110,10 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
                 field=''
                 headerText='#'
                 template={indexColumnTemplate}
-                width={25}
+                width={70}
             />)
         }
-        if(hasCheckBoxSelection){
+        if (hasCheckBoxSelection) {
             colDirectives.unshift(<ColumnDirective key='X' type="checkbox" width='50' />)
         }
         return (colDirectives)

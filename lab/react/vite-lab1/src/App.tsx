@@ -39,7 +39,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { ReactSelectTypeAheadAsync1 } from './features/react-select/react-select-type-ahead-async1'
 // import { ReactSelectAsync } from './features/react-select/react-select-async'
 // import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
-import { TreeGrid2 } from './features/syncfusion/tree-grid2'
+// import { TreeGrid2 } from './features/syncfusion/tree-grid2'
 import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'

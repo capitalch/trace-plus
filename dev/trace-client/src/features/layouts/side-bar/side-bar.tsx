@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux"
 import clsx from "clsx"
-import { AppDispatchType, store } from "../../../app/store/store"
+import { AppDispatchType} from "../../../app/store/store"
 import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../layouts-slice"
 import { SideMenu } from "./side-menu"
 import { IconMenuFold } from "../../../controls/icons/icon-menu-fold"
-import { LoginType, UserDetailsType } from "../../login/login-slice"
+import { UserDetailsType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 
 function SideBar() {

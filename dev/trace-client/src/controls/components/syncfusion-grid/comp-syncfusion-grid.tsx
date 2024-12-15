@@ -6,6 +6,8 @@ import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { RootStateType } from "../../../app/store/store"
 import { Utils } from "../../../utils/utils"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
+import { useSelector } from "react-redux"
+import { isSideBarOpenSelectorFn } from "../../../features/layouts/layouts-slice"
 
 export function CompSyncFusionGrid({
     aggregates,
@@ -18,6 +20,7 @@ export function CompSyncFusionGrid({
     height,
     isLoadOnInit = true,
     instance,
+    loadData,
     minWidth = '1200px',
     onDelete = undefined,
     onEdit = undefined,
@@ -27,8 +30,9 @@ export function CompSyncFusionGrid({
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, hasCheckBoxSelection, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
-
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, hasCheckBoxSelection, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
+    const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
+    const maxWidth = isSideBarOpenSelector ? 'calc(100vw - 240px - 12px)' : 'calc(100vw - 62px)'
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
@@ -38,7 +42,7 @@ export function CompSyncFusionGrid({
                 loadData: undefined,
             }
         }
-        context.CompSyncFusionGrid[instance].loadData = loadData
+        context.CompSyncFusionGrid[instance].loadData = loadData || loadDataLocal
         context.CompSyncFusionGrid[instance].gridRef = gridRef
         return (() => {
             console.log('Syncfusion cleanup')
@@ -56,66 +60,57 @@ export function CompSyncFusionGrid({
     }
 
     return (
-        //The div container is important. The minWidth works with style only
-        <div style={{ minWidth: `${minWidth}`, width:'100%' }} >
-            <div style= {{width:'100%'}}>
-                <GridComponent
-                    allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
-                    allowPdfExport={true}
-                    allowExcelExport={true}
-                    allowResizing={true}
+        <GridComponent style={{ maxWidth: maxWidth, minWidth: minWidth }}
+            allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
+            allowPdfExport={true}
+            allowExcelExport={true}
+            allowResizing={true}
+            allowSorting={true}
+            allowSelection={true}
+            allowTextWrap={true}
+            className={className}
+            created={onCreated}
+            dataSource={dataSource || selectedData || []}
+            enablePersistence={false}
+            gridLines="Both"
+            height={height}
+            id={instance}
+            ref={gridRef}
+            rowDragStart={gridDragAndDropSettings?.onRowDragStart}
+            rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
+            rowDrop={gridDragAndDropSettings?.onRowDrop}
+            rowDropSettings={{
+                targetID: gridDragAndDropSettings?.targetId || undefined,
 
-                    // width= '150%'
+            }}
+            rowHeight={rowHeight}
+            searchSettings={searchOptions}
+            selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
+        >
+            <ColumnsDirective>
+                {getColumnDirectives()}
+            </ColumnsDirective>
+            {aggregates && <AggregatesDirective>
+                <AggregateDirective>
+                    <AggregateColumnsDirective>
+                        {getAggrColDirectives()}
+                    </AggregateColumnsDirective>
+                </AggregateDirective>
+            </AggregatesDirective>}
+            <Inject services={[
+                Aggregate
+                , ExcelExport
+                , InfiniteScroll
+                , PdfExport
+                , Resize
+                , RowDD
+                , Search
+                , Selection
+                , Sort
+                , Toolbar
+            ]} />
 
-                    allowSorting={true}
-                    allowSelection={true}
-                    allowTextWrap={true}
-                    className={className}
-                    created={onCreated}
-                    dataSource={dataSource || selectedData || []}
-                    enablePersistence={false}
-                    gridLines="Both"
-                    height={height}
-                    id={instance}
-                    ref={gridRef}
-                    rowDragStart={gridDragAndDropSettings?.onRowDragStart}
-                    rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
-                    rowDrop={gridDragAndDropSettings?.onRowDrop}
-                    rowDropSettings={{
-                        targetID: gridDragAndDropSettings?.targetId || undefined,
-
-                    }}
-                    rowHeight={rowHeight}
-                    searchSettings={searchOptions}
-                    selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
-                // style={{width:'2000px'}}
-                >
-                    <ColumnsDirective>
-                        {getColumnDirectives()}
-                    </ColumnsDirective>
-                    {aggregates && <AggregatesDirective>
-                        <AggregateDirective>
-                            <AggregateColumnsDirective>
-                                {getAggrColDirectives()}
-                            </AggregateColumnsDirective>
-                        </AggregateDirective>
-                    </AggregatesDirective>}
-                    <Inject services={[
-                        Aggregate
-                        , ExcelExport
-                        , InfiniteScroll
-                        , PdfExport
-                        , Resize
-                        , RowDD
-                        , Search
-                        , Selection
-                        , Sort
-                        , Toolbar
-                    ]} />
-
-                </GridComponent>
-            </div>
-        </div>
+        </GridComponent>
     )
 
     function onCreated() {
@@ -137,7 +132,7 @@ type GridDragAndDropSettingsType = {
 }
 
 export type CompSyncFusionGridType = {
-    aggregates?: SyncFusionAggregateType[]
+    aggregates?: SyncFusionGridAggregateType[]
     className?: string
     columns: SyncFusionGridColumnType[]
     dataSource?: any
@@ -147,6 +142,7 @@ export type CompSyncFusionGridType = {
     height?: string
     instance: string
     isLoadOnInit?: boolean
+    loadData?: () => void
     minWidth?: string
     onDelete?: (id: string) => void
     onEdit?: (args: any) => void
@@ -156,9 +152,11 @@ export type CompSyncFusionGridType = {
     sqlId?: string
 }
 
-export type SyncFusionAggregateType = {
+export type SyncFusionGridAggregateType = {
+    columnName: string
+    customAggregate?: (data: any) => any
     field: string
-    type?: 'Average' | 'Count' | 'Sum' | 'Min' | 'Max'
+    type?: 'Average' | 'Count' | 'Sum' | 'Min' | 'Max' | 'Custom'
     footerTemplate?: FC
     format?: 'N2' | 'N0'
 }

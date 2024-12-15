@@ -3,6 +3,7 @@
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
 - General
+	- Warning: [8840:15064:1215/090856.959:ERROR:CONSOLE(0)] "The source list for Content Security Policy directive 'frame-src' contains a source with an invalid path: '/?ncedge=1&features=-'. The query component, including the '?', will be ignored.", source: about:blank (0)
 	- TreeGrid width not properly managed when screen size comes down
 	- Provide appropriate logging at server
 															- Bottom left User type shows unknown
@@ -23,19 +24,23 @@
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - General ledger
 - UI
-	- Header
-		- Acc name to show
+														- Header
+															- Acc name to show
 	- Grid
-		- Format date and decimals
-		- Show all columns
-		- Speed up for large data
-		- Aggregate
-		- Data view
+															- Opening
+															- Closing
+															- Format date and decimals
+															- Show columns
+															- AppLoader problem
+															- Aggregate
 		- Daily summary
 		- Col balance
 		- Reverse
-		- Refresh
+															- Refresh button
 		- Export
+															- Maintaining state in react-select
+		- Get rid of component instances
+
 	- PDF output
 															- SQL queries
 														- LedgerSubledger control

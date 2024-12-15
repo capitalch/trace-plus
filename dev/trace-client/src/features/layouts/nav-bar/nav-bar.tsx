@@ -15,8 +15,7 @@ function NavBar() {
 
     return (
         // Top Nav bar
-        <div className="flex items-center justify-between h-12 bg-primary-500">
-
+        <div className="flex items-center h-12 bg-primary-500 overflow-hidden">
             <div className="flex items-center text-lg text-white">
                 <button onClick={handleShowSideBar} className={clsx(getMenuShowHideClass(), 'mx-2')}>
                     <IconMenuUnfold className='h-6' />
@@ -24,7 +23,7 @@ function NavBar() {
                 {getMenuButtons()}
                 {getBuFyBranchInfo()}
             </div>
-            <LogoutMenuButton />
+            <LogoutMenuButton className="ml-auto" />
             <ModalDialogA />
             {/* <AppLoader /> */}
             {isVisibleAppLoader && <CompAppLoader />}

@@ -27,8 +27,8 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const email: string | undefined = loginInfo.userDetails?.userEmail
     return (
-        <ClickAwayListener onClickAway={handleOnClickAway} >
-            <div>
+        <ClickAwayListener onClickAway={handleOnClickAway}>
+            <div className="ml-auto">
                 <TooltipComponent content={getLogoutTooltipContent()} position="LeftCenter">
                     <button onClick={handleShowDropdown}
                         className={clsx(className, 'flex px-4 gap-3 py-2 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400')}>

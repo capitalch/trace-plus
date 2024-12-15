@@ -17,6 +17,7 @@ export const Utils: UtilsType = {
     decodeExtDbParams: decodeExtDbParams,
     doGenericQuery: doGenericQuery,
     getCompanyName: getCompanyName,
+    getCurrentDateFormat: getCurrentDateFormat,
     getCurrentFinYear: getCurrentFinYear,
     getCurrentFinYearFormattedDateRange: getCurrentFinYearFormattedDateRange,
     getCurrentFinYearId: getCurrentFinYearId,
@@ -95,6 +96,7 @@ async function doGenericQuery({
     buCode
     , dbName
     , dbParams
+    , instance
     , sqlArgs
     , sqlId
 }: DoGenericQueryType) {
@@ -105,13 +107,20 @@ async function doGenericQuery({
             dbParams: dbParams,
             sqlArgs: sqlArgs,
             sqlId: sqlId
-        }), GraphQLQueriesMap.genericQuery.name)
+        }), GraphQLQueriesMap.genericQuery.name, instance)
     return (res?.data?.[GraphQLQueriesMap.genericQuery.name])
 }
 
 function getCompanyName(): string {
     const unitInfo: UnitInfoType | undefined = getUnitInfo()
     return (unitInfo?.unitName || '')
+}
+
+function getCurrentDateFormat() {
+    const accSettings: AccSettingType[] | undefined = getCurrentLoginInfo()?.accSettings
+    const generalSettings: AccSettingType | undefined = accSettings?.find((s: AccSettingType) => s.key === 'generalSettings')
+    const dateFormat: string = generalSettings?.jData?.dateFormat || 'dd/MM/YYYY'
+    return (dateFormat)
 }
 
 function getCurrentFinYear(): FinYearType {
@@ -238,10 +247,10 @@ async function mutateGraphQL(q: any, queryName: string) {
     }
 }
 
-async function queryGraphQL(q: any, queryName: string) {
+async function queryGraphQL(q: any, queryName: string, instance?: string) {
     try {
         store.dispatch(showCompAppLoader({
-            instance: CompInstances.compAppLoader,
+            instance: instance || CompInstances.compAppLoader,
             isVisible: true
         }))
         const client = getApolloClient()
@@ -256,15 +265,11 @@ async function queryGraphQL(q: any, queryName: string) {
         return (result)
     } finally {
         store.dispatch(showCompAppLoader({
-            instance: CompInstances.compAppLoader,
+            instance: instance || CompInstances.compAppLoader,
             isVisible: false
         }))
     }
 }
-
-// function showAppLoader(val: boolean) {
-//     ibukiEmit('SHOW-APP-LOADER', val)
-// }
 
 function showAlertMessage(title: string, message: string) {
     Swal.fire({
@@ -487,6 +492,7 @@ export type DoGenericQueryType = {
     dbParams?: {
         [key: string]: any
     }
+    instance?: string
 }
 
 export type UnitInfoType = {
@@ -513,6 +519,7 @@ type UtilsType = {
         , dbParams
     }: DoGenericQueryType) => any
     getCompanyName: () => string
+    getCurrentDateFormat: () => string
     getCurrentFinYear: () => FinYearType
     getCurrentFinYearFormattedDateRange: () => string
     getCurrentFinYearId: () => number

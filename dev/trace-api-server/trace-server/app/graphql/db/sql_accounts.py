@@ -76,6 +76,7 @@ class SqlAccounts:
         WHERE d."accId" = (TABLE "accId")
           AND h."finYearId" = (TABLE "finYearId")
           AND COALESCE((TABLE "branchId"), h."branchId") = h."branchId"
+        ORDER BY "tranDate", id
     ),
     cte4 AS (
         SELECT "debit", "credit" FROM "cte2"
