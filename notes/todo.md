@@ -35,12 +35,14 @@
 															- Aggregate
 		- Opening bal start date hard coded
 		- Daily summary
-		- Col balance
-		- Reverse
+			- Highlight
+			- Start date hard coded
+			- Removal of summary when unchecked
+															- Col balance
+															- Reverse
 															- Refresh button
 		- Export
 															- Maintaining state in react-select
-		- Get rid of component instances
 
 	- PDF output
 															- SQL queries

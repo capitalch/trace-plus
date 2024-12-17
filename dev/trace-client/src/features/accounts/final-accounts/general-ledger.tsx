@@ -32,8 +32,9 @@ export function GeneralLedger() {
     
     const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
    
-    const meta: any = useRef({
-        transactions: []
+    const meta: any = useRef<{transactions: TranType[], transactionsCopy:TranType[]}>({
+        transactions: [],
+        transactionsCopy: []
     })
     
     const {
@@ -123,7 +124,7 @@ export function GeneralLedger() {
             {
                 columnName: 'autoRefNo',
                 field: 'autoRefNo',
-                format: 'N2',
+                format: 'N0',
                 type: 'Count',
                 footerTemplate: (props: any) => <span>Count:{` ${props?.Count || 0}`}</span>
             },
@@ -255,10 +256,57 @@ export function GeneralLedger() {
         }
         formatBalanceData()
         doReverseSortOnTranDate()
+        showSummaryRow()
     }
 
     function showSummaryRow(){
+        const toShowSummaryRow: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxSummaryLedger] || false
+        if(toShowSummaryRow) {
+            let clonedTransactions:TranType[] = meta.current.transactions.map((x: any) => ({ ...x }))
+            const summaryRows: TranType[] = getSummaryRows()
+            clonedTransactions = clonedTransactions.concat(summaryRows)
+            clonedTransactions = _.sortBy(clonedTransactions,['tranDate'])
+            console.log(clonedTransactions)
+            meta.current.transactions = clonedTransactions
+        }
+    }
 
+    function getSummaryRows(): TranType[] {
+        const summary: TranType[] = []
+        const acc: TranType = {
+            tranDate: '2024-04-01',
+            debit: 0,
+            credit: 0,
+            opening: 0,
+            closing: 0
+        }
+
+        for (const item of meta.current.transactions) {
+            if (item.tranDate === acc.tranDate) {
+                acc.debit = acc.debit + item.debit
+                acc.credit = acc.credit + item.credit
+            } else {
+                acc.closing = (acc.opening || 0) + acc.debit - acc.credit
+                acc.otherAccounts = getFormattedToDrCr(acc.opening || 0,'Opening')
+                acc.instrNo = getFormattedToDrCr(acc.closing || 0,'Closing')
+                acc.autoRefNo = 'Summary'
+                summary.push({ ...acc })
+                // reset acc
+                acc.tranDate = item.tranDate
+                acc.opening = acc.closing
+                acc.credit = item.credit
+                acc.debit = item.debit
+                acc.otherAccounts = getFormattedToDrCr(acc.opening || 0,'Opening')
+                acc.instrNo = getFormattedToDrCr(acc.closing || 0,'Closing')
+                acc.autoRefNo = 'Summary'
+            }
+        }
+        summary.push({ ...acc })
+        return (summary)
+
+        function getFormattedToDrCr(value: number, type: string) {
+            return (`${type}: ${Math.abs(value)} ${(value < 0 ? 'Cr' : 'Dr')}`)
+        }
     }
 
     function doReverseSortOnTranDate(){
@@ -273,7 +321,7 @@ export function GeneralLedger() {
 
     function formatBalanceData(){
         const transactions: any = meta?.current?.transactions
-        // console.log(JSON.stringify(transactions))
+        // console.dir(JSON.stringify(transactions,null,2))
         const toShowBalance: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxBalanceLedger] || false
         let bal: Decimal = new Decimal(0)
         const clonedTransactions = transactions.map((x:any)=>({...x}))
@@ -329,6 +377,24 @@ export function GeneralLedger() {
             data: jsonResult
         }))
     }
+}
+
+type TranType = {
+    opening?: number
+    closing?: number
+    id?: string
+    tranDate?: string
+    tranType?: string
+    autoRefNo?: string
+    userRefNo?: string
+    lineRemarks?: string
+    lineRefNo?: string
+    branchName?: string
+    remarks?: string
+    debit: number
+    credit: number
+    instrNo?: string
+    otherAccounts?: string
 }
 
 // jsonResult.transactions.forEach((tran: any) => {

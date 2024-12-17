@@ -1,4 +1,5 @@
-import transactions from './tran-data.json'
+import _ from 'lodash'
+import { transactions } from './tran-data'
 
 export function InjectSummary() {
     return (<div className="m-4 flex flex-col">
@@ -7,28 +8,48 @@ export function InjectSummary() {
     </div>)
 
     function handleInjectSummary() {
-        const clonedTransactions = transactions.map((x: any) => ({ ...x }))
+        let clonedTransactions = transactions.map((x: any) => ({ ...x }))
+        const summary: TranType[] = getSummaryRows()
+        clonedTransactions = clonedTransactions.concat(summary)
+        clonedTransactions = _.sortBy(clonedTransactions,['tranDate'])
+        console.log(clonedTransactions)
     }
 
-    function getSummaryRows() {
-        const clonedTransactions: TranType[] = transactions.map((x: any) => ({ ...x }))
+    function getSummaryRows(): TranType[] {
         const summary: TranType[] = []
         const acc: TranType = {
-            tranDate: '',
+            tranDate: '2024-04-01',
             debit: 0,
             credit: 0,
             opening: 0,
             closing: 0
         }
 
-        for (let item of clonedTransactions) {
-            if(item.tranDate === acc.tranDate){
+        for (let item of transactions) {
+            if (item.tranDate === acc.tranDate) {
                 acc.debit = acc.debit + item.debit
                 acc.credit = acc.credit + item.credit
             } else {
-                acc.closing = acc.debit - acc.credit
+                acc.closing = (acc.opening || 0) + acc.debit - acc.credit
+                acc.otherAccounts = getFormattedToDrCr(acc.opening || 0,'Opening')
+                acc.instrNo = getFormattedToDrCr(acc.closing || 0,'Closing')
+                acc.autoRefNo = 'Summary'
+                summary.push({ ...acc })
+                // reset acc
                 acc.tranDate = item.tranDate
+                acc.opening = acc.closing
+                acc.credit = item.credit
+                acc.debit = item.debit
+                acc.otherAccounts = getFormattedToDrCr(acc.opening || 0,'Opening')
+                acc.instrNo = getFormattedToDrCr(acc.closing || 0,'Closing')
+                acc.autoRefNo = 'Summary'
             }
+        }
+        summary.push({ ...acc })
+        return (summary)
+
+        function getFormattedToDrCr(value: number, type: string) {
+            return (`${type}: ${Math.abs(value)} ${(value < 0 ? 'Cr' : 'Dr')}`)
         }
     }
 }
