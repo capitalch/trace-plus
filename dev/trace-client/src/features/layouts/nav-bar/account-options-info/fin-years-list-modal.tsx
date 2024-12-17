@@ -12,7 +12,7 @@ import { Messages } from '../../../../utils/messages';
 
 export function FinYearsListModal() {
     const allFinYears: FinYearType[] = useSelector(allFinYearsSelectorFn) || [];
-    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getCurrentFinYear()
+    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const currentDateFormat: string = useSelector(currentDateFormatSelectorFn) || ''
 
     const dispatch: AppDispatchType = useDispatch();

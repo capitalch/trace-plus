@@ -56,7 +56,7 @@ export function LedgerSubledger({
         })
     }, [])
 
-    return (<div className={clsx('flex flex-col w-60', className,)} >
+    return (<div className={clsx('flex flex-col w-60 min-w-[250px]', className,)} >
 
         {/* Header */}
         <div className='h-6 bg-slate-50 flex text-md items-center'>

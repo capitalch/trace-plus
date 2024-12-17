@@ -33,6 +33,7 @@
 															- Show columns
 															- AppLoader problem
 															- Aggregate
+		- Opening bal start date hard coded
 		- Daily summary
 		- Col balance
 		- Reverse

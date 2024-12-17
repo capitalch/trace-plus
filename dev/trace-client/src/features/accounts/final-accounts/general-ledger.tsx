@@ -1,4 +1,5 @@
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
+import _ from 'lodash'
 import Decimal, { } from 'decimal.js'
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
@@ -9,7 +10,7 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, selectLedgerSubledgerFieldFn } from "../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { useUtilsInfo } from "../../../utils/utils-info-hook"
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { CompSyncFusionGridToolbar } from "../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
 import { Utils } from "../../../utils/utils"
 import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
@@ -18,14 +19,23 @@ import { CompCheckBox } from "../../../controls/redux-components/comp-checkbox"
 import { CompInstances } from "../../../controls/redux-components/comp-instances"
 
 export function GeneralLedger() {
+    const [,setRefresh] = useState({})
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
     const selectedAccId: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'finalAccId'))
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance))
-    const toShowBalance: boolean = useSelector((state:RootStateType)=> selectCompCheckBoxStateFn(state,CompInstances.compCheckBoxBalance))
+    
+    const toShowBalance: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxBalanceLedger))
+    const toShowReverse: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxReverseLedger))
+    const toShowSummaryRow: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxSummaryLedger))
+    
     const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
-
+   
+    const meta: any = useRef({
+        transactions: []
+    })
+    
     const {
         branchId
         , buCode
@@ -46,19 +56,26 @@ export function GeneralLedger() {
                 gridRef.current.dataSource = []
             }
         }
-    }, [selectedAccId, isAllBranches, toShowBalance])
+    }, [selectedAccId, isAllBranches,])
+
+    useEffect(()=>{
+        formatTransactionData()
+        setRefresh({})
+    },[toShowBalance, toShowReverse, toShowSummaryRow])
 
     return (
         <CompAccountsContainer>
-            <div className="flex items-center mt-6">
+            <div className="flex items-center mt-6 min-w-[1200px]">
                 <div className="flex flex-col w-72">
                     <label className="text-lg font-medium text-primary-400">General ledger</label>
                     <label className="text-blue-500 font-medium">{selectedData?.accName}</label>
                 </div>
-                <CompCheckBox label="Balance" instance={CompInstances.compCheckBoxBalance} />
-                <CompCheckBox label="Reverse" instance={CompInstances.compCheckBoxBalance} />
-                <CompCheckBox label="Summary" instance={CompInstances.compCheckBoxBalance} />
-                <CompSwitch leftLabel="All branches" instance={instance} className="" />
+                <div className="flex flex-col items-end flex-wrap mr-8 min-w-[150px]">
+                    <CompCheckBox label="Show balance" instance={CompInstances.compCheckBoxBalanceLedger} />
+                    <CompCheckBox label="Show reverse" instance={CompInstances.compCheckBoxReverseLedger} />
+                    <CompCheckBox label="Show summary" instance={CompInstances.compCheckBoxSummaryLedger} />
+                </div>
+                <CompSwitch leftLabel="All branches" instance={instance} className="ml-auto" />
                 <CompSyncFusionGridToolbar
                     title=""
                     isLastNoOfRows={false}
@@ -78,7 +95,8 @@ export function GeneralLedger() {
                 aggregates={getAggregates()}
                 className="mr-6 mt-4"
                 columns={getColumns()}
-                dataSource={selectedData?.transactions}
+                // dataSource={selectedData?.transactions}
+                dataSource={meta?.current?.transactions || []}
                 hasIndexColumn={false}
                 height="calc(100vh - 300px)"
                 instance={instance}
@@ -94,7 +112,7 @@ export function GeneralLedger() {
     function calculateClosing(props: any) {
         const debits: Decimal = new Decimal(props?.aggregates?.['debit - sum'] || 0)
         const credits: Decimal = new Decimal(props?.aggregates?.['credit - sum'] || 0)
-        
+
         const closing: any = debits.minus(credits).toNumber()
         const clos: any = `${decFormatter.format(Math.abs(closing))} ${(closing < 0) ? 'Cr' : 'Dr'}`
         return (clos)
@@ -173,12 +191,12 @@ export function GeneralLedger() {
                 type: 'number'
             },
             {
-                field:'balance',
-                headerText:'Balance',
+                field: 'balance',
+                headerText: 'Balance',
                 width: 150,
-                format:'N2',
-                textAlign:'Right',
-                type:'number'
+                format: 'N2',
+                textAlign: 'Right',
+                type: 'number'
             },
             {
                 field: "tranType",
@@ -231,18 +249,51 @@ export function GeneralLedger() {
         ])
     }
 
-    function addBalanceField(transactions:any[]){
+    function formatTransactionData() {
+        if(_.isEmpty(meta?.current?.transactions)){
+            return
+        }
+        formatBalanceData()
+        doReverseSortOnTranDate()
+    }
+
+    function showSummaryRow(){
+
+    }
+
+    function doReverseSortOnTranDate(){
+        const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+        const toShowReverse: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxReverseLedger] || false
+        if(toShowReverse){
+            gridRef.current.sortColumn('tranDate', 'Descending')
+        } else {
+            gridRef.current.sortColumn('tranDate', 'Ascending')
+        }
+    }
+
+    function formatBalanceData(){
+        const transactions: any = meta?.current?.transactions
+        // console.log(JSON.stringify(transactions))
+        const toShowBalance: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxBalanceLedger] || false
         let bal: Decimal = new Decimal(0)
-        transactions.forEach((tran: any)=>{
-            tran.balance = bal.plus(tran.debit).minus(tran.credit).toNumber()
-            bal = new Decimal(tran.balance)
-        })
+        const clonedTransactions = transactions.map((x:any)=>({...x}))
+        if (toShowBalance) {
+            clonedTransactions.forEach((tran: any) => {
+                tran.balance = bal.plus(tran.debit).minus(tran.credit).toNumber();
+                bal = new Decimal(tran.balance);
+            });
+        } else {
+            clonedTransactions.forEach((tran: any) => {
+                tran.balance = '';
+            });
+        }
+        
+        meta.current.transactions = clonedTransactions
     }
 
     async function loadData() {
         const finalAccId: number = Utils.getReduxState().reduxComp.ledgerSubledger[instance].finalAccId || 0
         const hasAllBranches: boolean = Utils.getReduxState().reduxComp.compSwitch[instance] || false
-        const toShowBalance: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxBalance] || false
         if (!finalAccId) {
             return
         }
@@ -268,17 +319,11 @@ export function GeneralLedger() {
 
         if (jsonResult?.transactions) {
             jsonResult.transactions.unshift(...formattedOpBals)
-            // jsonResult.transactions.forEach((tran: any) => {
-            //     tran.debit = (tran.debit === 0) ? '' : tran.debit
-            //     tran.credit = (tran.credit === 0) ? '' : tran.credit
-            // })
         } else {
             jsonResult.transactions = formattedOpBals
-        }
-        if(toShowBalance){
-            addBalanceField(jsonResult.transactions)
-        }
-        
+        }        
+        meta.current.transactions = _.cloneDeep(jsonResult.transactions)
+        formatTransactionData()
         dispatch(setQueryHelperData({
             instance: instance,
             data: jsonResult
@@ -286,6 +331,11 @@ export function GeneralLedger() {
     }
 }
 
+// jsonResult.transactions.forEach((tran: any) => {
+            //     tran.debit = (tran.debit === 0) ? '' : tran.debit
+            //     tran.credit = (tran.credit === 0) ? '' : tran.credit
+            // })
+            
 // const { loading, loadData } = useQueryHelper({
 //     instance: instance,
 //     isExecQueryOnLoad: false,

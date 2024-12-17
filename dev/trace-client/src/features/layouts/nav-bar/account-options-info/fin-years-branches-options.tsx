@@ -27,7 +27,7 @@ export function FinYearsBranchesOptions() {
 
     function setCurrentFinYearBranch() {
         const { allFinYears, allBranches } = allFinYearsBranchesSelector
-        const currentFinYearId: number = loginInfo?.userDetails?.lastUsedFinYearId || Utils.getCurrentFinYearId()
+        const currentFinYearId: number = loginInfo?.userDetails?.lastUsedFinYearId || Utils.getRunningFinYearId()
         const currentBranchId: number = loginInfo?.userDetails?.lastUsedBranchId || 1
         const currentFinYearObject: FinYearType | undefined = allFinYears?.find((f: FinYearType) =>
             f.finYearId === currentFinYearId)

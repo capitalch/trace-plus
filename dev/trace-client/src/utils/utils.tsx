@@ -18,15 +18,17 @@ export const Utils: UtilsType = {
     doGenericQuery: doGenericQuery,
     getCompanyName: getCompanyName,
     getCurrentDateFormat: getCurrentDateFormat,
-    getCurrentFinYear: getCurrentFinYear,
+    // getCurrentFinYear: getCurrentFinYear,
     getCurrentFinYearFormattedDateRange: getCurrentFinYearFormattedDateRange,
-    getCurrentFinYearId: getCurrentFinYearId,
+    // getCurrentFinYearId: getCurrentFinYearId,
     getCurrentLoginInfo: getCurrentLoginInfo,
     getDbNameDbParams: getDbNameDbParams,
     getDecimalFormatter: getDecimalFormatter,
     getHostUrl: getHostUrl,
     getIntegerFormatter: getIntegerFormatter,
     getReduxState: getReduxState,
+    getRunningFinYear: getRunningFinYear,
+    getRunningFinYearId: getRunningFinYearId,
     getToken: getToken,
     getUnitInfo: getUnitInfo,
     getUserDetails: getUserDetails,
@@ -123,33 +125,33 @@ function getCurrentDateFormat() {
     return (dateFormat)
 }
 
-function getCurrentFinYear(): FinYearType {
-    const today = dayjs()
-    const year: number = today.month() > 3 ? today.year() : today.year() - 1
-    const startDate: string = `${year}-04-01`
-    const endDate: string = `${year + 1}-03-31`
-    return ({
-        finYearId: year,
-        startDate: startDate,
-        endDate: endDate
-    })
-}
+// function getCurrentFinYear(): FinYearType {
+//     const today = dayjs()
+//     const year: number = today.month() > 3 ? today.year() : today.year() - 1
+//     const startDate: string = `${year}-04-01`
+//     const endDate: string = `${year + 1}-03-31`
+//     return ({
+//         finYearId: year,
+//         startDate: startDate,
+//         endDate: endDate
+//     })
+// }
 
 function getCurrentFinYearFormattedDateRange() {
     const accSettings: AccSettingType[] | undefined = getCurrentLoginInfo()?.accSettings
     const generalSettings: AccSettingType | undefined = accSettings?.find((s: AccSettingType) => s.key === 'generalSettings')
     const dateFormat: string = generalSettings?.jData?.dateFormat || 'DD/MM/YYYY'
-    const finYear: FinYearType = getCurrentLoginInfo().currentFinYear || getCurrentFinYear()
+    const finYear: FinYearType = getCurrentLoginInfo().currentFinYear || getRunningFinYear()
     const startDate: string = dayjs(finYear.startDate).format(dateFormat)
     const endDate: string = dayjs(finYear.endDate).format(dateFormat)
     return (`${startDate} - ${endDate}`)
 }
 
-function getCurrentFinYearId(): number {
-    const today = dayjs()
-    const year: number = today.month() > 3 ? today.year() : today.year() - 1
-    return (year)
-}
+// function getCurrentFinYearId(): number {
+//     const today = dayjs()
+//     const year: number = today.month() > 3 ? today.year() : today.year() - 1
+//     return (year)
+// }
 
 function getCurrentLoginInfo() {
     const reduxState: RootStateType = store.getState()
@@ -196,6 +198,24 @@ function getIntegerFormatter() {
 
 function getReduxState(): RootStateType {
     return (store.getState())
+}
+
+function getRunningFinYear(): FinYearType {
+    const today = dayjs()
+    const year: number = today.month() > 3 ? today.year() : today.year() - 1
+    const startDate: string = `${year}-04-01`
+    const endDate: string = `${year + 1}-03-31`
+    return ({
+        finYearId: year,
+        startDate: startDate,
+        endDate: endDate
+    })
+}
+
+function getRunningFinYearId(): number {
+    const today = dayjs()
+    const year: number = today.month() > 3 ? today.year() : today.year() - 1
+    return (year)
 }
 
 function getToken() {
@@ -520,15 +540,17 @@ type UtilsType = {
     }: DoGenericQueryType) => any
     getCompanyName: () => string
     getCurrentDateFormat: () => string
-    getCurrentFinYear: () => FinYearType
+    // getCurrentFinYear: () => FinYearType
     getCurrentFinYearFormattedDateRange: () => string
-    getCurrentFinYearId: () => number
+    // getCurrentFinYearId: () => number
     getCurrentLoginInfo: () => LoginType
     getDbNameDbParams: () => DbNameDbParamsType
     getDecimalFormatter: () => any
     getHostUrl: () => string
     getIntegerFormatter: () => any
     getReduxState: () => RootStateType
+    getRunningFinYear: () => FinYearType
+    getRunningFinYearId: () => number
     getToken: () => string | undefined
     getUnitInfo: () => UnitInfoType | undefined
     isNotNullOrUndefined: (value: any) => boolean
