@@ -1,4 +1,4 @@
-import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD } from "@syncfusion/ej2-react-grids"
+import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids"
 import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
@@ -25,6 +25,7 @@ export function CompSyncFusionGrid({
     onDelete = undefined,
     onEdit = undefined,
     onPreview = undefined,
+    onRowDataBound,
     rowHeight,
     sqlArgs = {},
     sqlId
@@ -76,6 +77,7 @@ export function CompSyncFusionGrid({
             height={height}
             id={instance}
             ref={gridRef}
+            rowDataBound={onRowDataBound}
             rowDragStart={gridDragAndDropSettings?.onRowDragStart}
             rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
             rowDrop={gridDragAndDropSettings?.onRowDrop}
@@ -147,6 +149,7 @@ export type CompSyncFusionGridType = {
     onDelete?: (id: string) => void
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
+    onRowDataBound?: (args: RowDataBoundEventArgs) => void
     rowHeight?: number
     sqlArgs?: GraphQLQueryArgsType // SqlArgsType
     sqlId?: string

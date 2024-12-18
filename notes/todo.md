@@ -23,28 +23,35 @@
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - General ledger
-- UI
+	- Reverse not working fine
+														- Cleanup and optimize
+															- Checkbox instances reset
+	- Exports
+		- PDF
+		- Excel and CSV
+														- UI
 														- Header
 															- Acc name to show
-	- Grid
+														- Grid
 															- Opening
 															- Closing
 															- Format date and decimals
 															- Show columns
 															- AppLoader problem
 															- Aggregate
-		- Opening bal start date hard coded
-		- Daily summary
-			- Highlight
-			- Start date hard coded
-			- Removal of summary when unchecked
+															- Opening bal start date hard coded
+															- Decimal arithmetic
+														- Daily summary
+															- Issue when no opening balance
+															- Issue when only opening balance and no transactions
+															- Last transaction perhaps not considered
+															- Highlight
+															- Start date hard coded
+															- Removal of summary when unchecked
 															- Col balance
 															- Reverse
 															- Refresh button
-		- Export
 															- Maintaining state in react-select
-
-	- PDF output
 															- SQL queries
 														- LedgerSubledger control
 															- SQL

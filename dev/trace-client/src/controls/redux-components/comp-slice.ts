@@ -1,19 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootStateType } from '../../app/store/store'
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootStateType } from "../../app/store/store";
 // import { CompInstances } from './comp-instances'
 
 const initialState: ReduxCompStateType = {
   compAppLoader: {},
   compCheckBox: {},
   compSwitch: {},
-  ledgerSubledger: {
-    // [CompInstances.ledgerSubledgerGeneralLedger]: {
-    //   accountBalance: 0,
-    //   finalAccId:undefined,
-    //   hasError: true
-    // }
-  }
-}
+  ledgerSubledger: {},
+};
 
 const initializeNestedState = <T>(
   state: Record<string, T>,
@@ -26,7 +20,7 @@ const initializeNestedState = <T>(
 };
 
 const compSlice = createSlice({
-  name: 'reduxComp',
+  name: "reduxComp",
   initialState: initialState,
   reducers: {
     // CompAppLoader
@@ -34,36 +28,45 @@ const compSlice = createSlice({
       state: ReduxCompStateType,
       action: PayloadAction<{ instance: string; isVisible: boolean }>
     ) => {
-      const instance: string = action.payload.instance
-      state.compAppLoader[instance] = action.payload.isVisible
+      const instance: string = action.payload.instance;
+      state.compAppLoader[instance] = action.payload.isVisible;
     },
 
     // LedgerSubledger
-    updateLedgerSubledger: (state: ReduxCompStateType
-      , action: PayloadAction<{
-        instance: string
-        updates: Partial<LedgerSubledgerInstanceType>
-      }>) => {
+    updateLedgerSubledger: (
+      state: ReduxCompStateType,
+      action: PayloadAction<{
+        instance: string;
+        updates: Partial<LedgerSubledgerInstanceType>;
+      }>
+    ) => {
       const { instance, updates } = action.payload;
       initializeNestedState(state.ledgerSubledger, instance, {
         accountBalance: 0,
-        hasError: true
-      })
+        hasError: true,
+      });
       Object.entries(updates).forEach(([key, value]) => {
-        // if (key in state.ledgerSubledger[instance]) {
-        const li: any = state.ledgerSubledger[instance]
-        li[key] = value
-        // }
+        const li: any = state.ledgerSubledger[instance];
+        li[key] = value;
       });
     },
 
     // CompCheckBox
     setCompCheckBoxState: (
       state: ReduxCompStateType,
-      action: PayloadAction<{ instance: string; checkBoxState: boolean }>
+      action: PayloadAction<{
+        instance: string | string[];
+        checkBoxState: boolean;
+      }>
     ) => {
-      const instance: string = action.payload.instance
-      state.compCheckBox[instance] = action.payload.checkBoxState
+      let instance: string | string[] = action.payload.instance;
+      if (!Array.isArray(instance)) {
+        instance = [instance];
+      }
+      for (const ins of instance) {
+        state.compCheckBox[ins] = action.payload.checkBoxState;
+      }
+      // state.compCheckBox[instance] = action.payload.checkBoxState;
     },
 
     // CompSwitch
@@ -71,66 +74,65 @@ const compSlice = createSlice({
       state: ReduxCompStateType,
       action: PayloadAction<{ instance: string; switchState: boolean }>
     ) => {
-      const instance: string = action.payload.instance
-      state.compSwitch[instance] = action.payload.switchState
-    }
-  }
-})
+      const instance: string = action.payload.instance;
+      state.compSwitch[instance] = action.payload.switchState;
+    },
+  },
+});
 
-export const reduxCompReducer = compSlice.reducer
+export const reduxCompReducer = compSlice.reducer;
 export const {
   setCompCheckBoxState,
   setCompSwitchState,
   showCompAppLoader,
-  updateLedgerSubledger
-} = compSlice.actions
+  updateLedgerSubledger,
+} = compSlice.actions;
 
 //Types
 type ReduxCompStateType = {
-  compAppLoader: Record<string, boolean>
-  compCheckBox: Record<string, boolean>
-  compSwitch: Record<string, boolean>
-  ledgerSubledger: Record<string, LedgerSubledgerInstanceType>
-}
+  compAppLoader: Record<string, boolean>;
+  compCheckBox: Record<string, boolean>;
+  compSwitch: Record<string, boolean>;
+  ledgerSubledger: Record<string, LedgerSubledgerInstanceType>;
+};
 
 type LedgerSubledgerInstanceType = {
-  accountBalance: number
-  finalAccId?: number
-  hasError: boolean
-  ledgerAccId?: number
-  ledgerandLeafData?: AccountType[]
-  subLedgerData?: AccountType[]
-}
+  accountBalance: number;
+  finalAccId?: number;
+  hasError: boolean;
+  ledgerAccId?: number;
+  ledgerandLeafData?: AccountType[];
+  subLedgerData?: AccountType[];
+};
 
 type AccountType = {
-  accLeaf: 'S' | 'L' | 'Y'
-  accName: string
-  id: number
-}
+  accLeaf: "S" | "L" | "Y";
+  accName: string;
+  id: number;
+};
 
 // selectors
 // compCheckBox
 export const selectCompCheckBoxStateFn = (
   state: RootStateType,
   instance: string
-) => state.reduxComp.compCheckBox[instance]
+) => state.reduxComp.compCheckBox[instance];
 
 // compSwitch: Retrieves the switch state of the component
 export const selectCompSwitchStateFn = (
   state: RootStateType,
   instance: string
-) => state.reduxComp.compSwitch[instance]
+) => state.reduxComp.compSwitch[instance];
 
 // CompAppLoader: Retrieves the visibility state of a specific app loader
 export const compAppLoaderVisibilityFn = (
   state: RootStateType,
   instance: string
-) => state.reduxComp.compAppLoader[instance] || false
+) => state.reduxComp.compAppLoader[instance] || false;
 
 // ledgerSubledger
 export const selectLedgerSubledgerFieldFn = (
-  state: RootStateType
-  , instance: string
-  , key: keyof LedgerSubledgerInstanceType
-) => state.reduxComp.ledgerSubledger[instance]?.[key]
-
+  state: RootStateType,
+  instance: string,
+  key: keyof LedgerSubledgerInstanceType
+) => state.reduxComp.ledgerSubledger[instance]?.[key];

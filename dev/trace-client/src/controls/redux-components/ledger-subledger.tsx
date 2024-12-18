@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from 'react'
 import { IconRefresh } from '../icons/icon-refresh'
 import { TooltipComponent } from '@syncfusion/ej2-react-popups'
 import { useUtilsInfo } from '../../utils/utils-info-hook'
+import { currentFinYearSelectorFn, FinYearType } from '../../features/login/login-slice'
 
 export function LedgerSubledger({
     className,
@@ -21,6 +22,7 @@ export function LedgerSubledger({
     sqlId
 }: LedgerSubledgerType) {
     const dispatch: AppDispatchType = useDispatch()
+    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear() //Utils.getCurrentLoginInfo().currentFinYear || Utils.getRunningFinYear()
     const [isSecondSelectDisabled, setSecondSelectDisabled] = useState(true)
     const firstSelectRef: any = useRef(null)
     const secondSelectRef: any = useRef(null)
@@ -37,7 +39,7 @@ export function LedgerSubledger({
         , dbName
         , decFormatter
         , decodedDbParamsObject
-        , finYearId
+        // , finYearId
     } = useUtilsInfo()
 
     useEffect(() => {
@@ -54,7 +56,7 @@ export function LedgerSubledger({
                 }
             }))
         })
-    }, [])
+    }, [currentFinYear])
 
     return (<div className={clsx('flex flex-col w-60 min-w-[250px]', className,)} >
 
@@ -155,7 +157,7 @@ export function LedgerSubledger({
             sqlArgs: {
                 branchId: isAllBranches ? null : branchId,
                 accId: accId,
-                finYearId: finYearId,
+                finYearId: currentFinYear.finYearId,
             },
             sqlId: SqlIdsMap.getAccountBalance,
         })
