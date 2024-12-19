@@ -23,7 +23,8 @@
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - General ledger
-	- Reverse not working fine
+	- Thorough checkup
+														- Reverse not working fine
 														- Cleanup and optimize
 															- Checkbox instances reset
 	- Exports

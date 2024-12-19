@@ -17,6 +17,7 @@ export function CompSyncFusionGridToolbar({
     className
     , CustomControl = undefined
     , instance = ''
+    , isAllBranches
     , isCsvExport = true
     , isExcelExport = true
     , isLastNoOfRows = false
@@ -24,7 +25,7 @@ export function CompSyncFusionGridToolbar({
     , isPdfExportAsLandscape = false
     , isRefresh = true
     , isSearch = true
-    , minWidth='1200px'
+    , minWidth = '1200px'
     , title
 }: CompSyncFusionGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -36,11 +37,29 @@ export function CompSyncFusionGridToolbar({
     }
 
     const pdfExportProperties: PdfExportProperties = {
-        fileName: 'trace-export.pdf',
+        fileName: `${title}-${Utils.getCompanyName()}-${isAllBranches ? 'All branches' : Utils.getCurrentLoginInfo().currentBranch?.branchName || ''}-${Utils.getCurrentFinYearFormattedDateRange()}.pdf`,
+        header: {
+            fromTop: 0,
+            height: 50,
+            contents: [
+                {
+                    type: 'Text',
+                    value: `${Utils.getCompanyName()}, Branch: ${isAllBranches ? 'All branches' : Utils.getCurrentLoginInfo().currentBranch?.branchName || ''}`,
+                    position: { x: 0, y: 0 },
+                    style: { textBrushColor: '#000000', fontSize: 16 }
+                },
+                {
+                    type: 'Text',
+                    value: `${title}: (${Utils.getCurrentFinYearFormattedDateRange()})`,
+                    position: { x: 0, y: 20 },
+                    style: { textBrushColor: '#000000', fontSize: 14 }
+                }
+            ]
+        },
         pageOrientation: isPdfExportAsLandscape ? 'Landscape' : 'Portrait'
     }
 
-    return (<div className={clsx("flex items-center justify-between",className)} style ={{minWidth:`${minWidth}`}}>
+    return (<div className={clsx("flex items-center justify-between", className)} style={{ minWidth: `${minWidth}` }}>
         <h2 className="mt-0 text-lg font-medium text-primary-500">{title}</h2>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
@@ -57,8 +76,8 @@ export function CompSyncFusionGridToolbar({
 
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
-                <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
-                    const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+                <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={async () => {
+                    const gridRef: any = await context.CompSyncFusionGrid[instance].gridRef
                     gridRef.current.pdfExport(pdfExportProperties)
                 }}>
                     <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
@@ -69,7 +88,11 @@ export function CompSyncFusionGridToolbar({
             {isExcelExport && <WidgetTooltip title="Excel export">
                 <button className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
-                    gridRef.current.excelExport()
+                    gridRef.current.excelExport({
+                        includeHeader: true,
+                        includeFooter: false, // This excludes footer aggregates
+                        // dataSource: data.filter((row) => !row.isAggregate), // Filter out aggregate rows
+                    })
                 }}>
                     <IconFileExcel className="m-auto h-6 w-6 text-green-600" />
                 </button>
@@ -93,7 +116,7 @@ export function CompSyncFusionGridToolbar({
                 <WidgetButtonRefresh handleRefresh={async () => {
                     const loadData: any = context.
                         CompSyncFusionGrid[instance].loadData
-                    if(loadData){
+                    if (loadData) {
                         await loadData()
                     }
                     const state: RootStateType = Utils.getReduxState()
@@ -119,6 +142,7 @@ type CompSyncFusionGridToolbarType = {
     className?: string
     CustomControl?: FC
     instance: string
+    isAllBranches?: boolean
     isCsvExport?: boolean
     isExcelExport?: boolean
     isLastNoOfRows?: boolean
@@ -126,6 +150,6 @@ type CompSyncFusionGridToolbarType = {
     isPdfExportAsLandscape?: boolean
     isRefresh?: boolean
     isSearch?: boolean
-    minWidth?:string
+    minWidth?: string
     title: string,
 }

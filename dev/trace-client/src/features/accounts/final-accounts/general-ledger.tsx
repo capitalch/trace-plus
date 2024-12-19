@@ -194,6 +194,7 @@ export function GeneralLedger() {
                 width: 100,
                 textAlign: 'Left',
                 type: 'date',
+                // format:'yyyy-MM-dd'
                 format: Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
             },
             {
@@ -316,6 +317,9 @@ export function GeneralLedger() {
         } else {
             jsonResult.transactions = formattedOpBals
         }
+        jsonResult.transactions = jsonResult?.transactions || []
+        // Add index field for reversing
+        jsonResult.transactions.forEach((item: any, index: number) => item.index = index + 1)
         meta.current.transactionsCopy = jsonResult.transactions.map((x: any) => ({ ...x }))
         formatData()
         dispatch(setQueryHelperData({
@@ -344,6 +348,8 @@ export function GeneralLedger() {
         } else {
             meta.current.transactions = clonedTransactions
         }
+        // Indexing
+        (meta.current.transactions as TranType[]).forEach((item: TranType, index: number) => item.index = index + 1)
     }
 
     function getSummaryRows(): TranType[] {
@@ -395,12 +401,11 @@ export function GeneralLedger() {
     }
 
     function showReverse() {
-        const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
         const toShowReverse: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxReverseLedger] || false
-        if (toShowReverse) {
-            gridRef.current.sortColumn('tranDate', 'Descending')
-        } else {
-            gridRef.current.sortColumn('tranDate', 'Ascending')
+        if(toShowReverse){
+            meta.current.transactions = _.orderBy(meta.current.transactions, ['index'], ['desc'])
+            // Reindex
+            meta.current.transactions.forEach((item: TranType, index: number) => item.index = index + 1)
         }
     }
 
@@ -446,6 +451,7 @@ type DecTranType = {
 }
 
 type TranType = {
+    index?: number
     opening?: number
     closing?: number
     id?: string

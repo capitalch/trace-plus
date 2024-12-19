@@ -83,7 +83,6 @@ export function CompSyncFusionGrid({
             rowDrop={gridDragAndDropSettings?.onRowDrop}
             rowDropSettings={{
                 targetID: gridDragAndDropSettings?.targetId || undefined,
-
             }}
             rowHeight={rowHeight}
             searchSettings={searchOptions}
