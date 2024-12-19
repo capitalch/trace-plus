@@ -7,6 +7,8 @@
 - Stock transactions op balance error
 - Sales report does not show sales return
 ## New features to include
+- Include TAN No and Pan No
+- Include branch address and GST No in Branch
 - Same party ref-no should be unique
 - Inter branch transfer
 - Branches same bank account provision

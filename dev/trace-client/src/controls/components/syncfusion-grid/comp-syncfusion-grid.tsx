@@ -69,10 +69,13 @@ export function CompSyncFusionGrid({
             allowSorting={true}
             allowSelection={true}
             allowTextWrap={true}
+            // beforeExcelExport={handleBeforeExcelExport}
             className={className}
             created={onCreated}
             dataSource={dataSource || selectedData || []}
             enablePersistence={false}
+            // excelQueryCellInfo={handleExcelQueryCellInfo}
+            // excelAggregateQueryCellInfo={handleExcelQueryCellInfo}
             gridLines="Both"
             height={height}
             id={instance}
@@ -113,6 +116,18 @@ export function CompSyncFusionGrid({
 
         </GridComponent>
     )
+
+    // function handleBeforeExcelExport(args: any) {
+    //     console.log(args.gridObject.dataSource)
+    //     // args.cancel = true
+    //     // Filter out aggregate rows from the export data
+    // }
+
+    // function handleExcelQueryCellInfo(args: any) {
+    //     if(args.row.isAggregateRow) {
+    //         args.cancel = true
+    //     }
+    // }
 
     function onCreated() {
         const state: RootStateType = Utils.getReduxState()

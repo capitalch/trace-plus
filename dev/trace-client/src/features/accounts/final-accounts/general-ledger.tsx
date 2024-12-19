@@ -128,9 +128,10 @@ export function GeneralLedger() {
 
     function calculateClosing() {
         const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))
-        const r: number = +ret.toFixed(2)
-        const dbCr = r < 0 ? 'Cr' : 'Dr'
-        return (`${decFormatter.format(Math.abs(r))} ${dbCr}`)
+        const r: number = ret.toNumber()
+        return (r)
+        // const dbCr = r < 0 ? 'Cr' : 'Dr'
+        // return (`${decFormatter.format(Math.abs(r))} ${dbCr}`)
     }
 
     function calculateCount() {
@@ -139,14 +140,15 @@ export function GeneralLedger() {
 
     function calculateCredits() {
         const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.credit || 0)), new Decimal(0))
-        const r: number = +ret.toFixed(2)
-        return (decFormatter.format(r))
+        const r: number = ret.toNumber()
+        return (r)
     }
 
     function calculateDebits() {
         const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.debit || 0)), new Decimal(0))
-        const r: number = +ret.toFixed(2)
-        return (decFormatter.format(r))
+        const r: number = ret.toNumber()
+        return (r)
+        // return (decFormatter.format(r))
     }
 
     function getAggregates(): SyncFusionGridAggregateType[] {
@@ -165,7 +167,8 @@ export function GeneralLedger() {
                 format: 'N2',
                 type: 'Custom',
                 customAggregate: calculateDebits,
-                footerTemplate: (props: any) => <span>{`${props?.['debit - custom'] || 0}`}</span>
+                // footerTemplate: (props: any) => props?.['debit - custom'] || 0
+                footerTemplate: (props: any) => <span>{`${decFormatter.format(props?.['debit - custom'] || 0)}`}</span>
             },
             {
                 columnName: 'credit',
@@ -173,7 +176,7 @@ export function GeneralLedger() {
                 format: 'N2',
                 type: 'Custom',
                 customAggregate: calculateCredits,
-                footerTemplate: (props: any) => <span>{`${props?.['credit - custom'] || 0}`}</span>
+                footerTemplate: (props: any) => <span>{`${decFormatter.format(props?.['credit - custom'] || 0)}`}</span>
             },
             {
                 columnName: 'instrNo',
@@ -181,7 +184,7 @@ export function GeneralLedger() {
                 format: 'N2',
                 type: 'Custom',
                 customAggregate: calculateClosing,
-                footerTemplate: (props: any) => <span>Closing:{` ${props?.['instrNo - custom'] || 0}`}</span>
+                footerTemplate: (props: any) => <span>Closing:{` ${decFormatter.format(Math.abs(props?.['instrNo - custom'] || 0))} ${props?.['instrNo - custom'] < 0 ? 'Cr' : 'Dr'}`}</span>
             }
         ])
     }
@@ -402,7 +405,7 @@ export function GeneralLedger() {
 
     function showReverse() {
         const toShowReverse: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxReverseLedger] || false
-        if(toShowReverse){
+        if (toShowReverse) {
             meta.current.transactions = _.orderBy(meta.current.transactions, ['index'], ['desc'])
             // Reindex
             meta.current.transactions.forEach((item: TranType, index: number) => item.index = index + 1)
