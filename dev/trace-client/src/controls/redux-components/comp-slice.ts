@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootStateType } from "../../app/store/store";
-// import { CompInstances } from './comp-instances'
 
 const initialState: ReduxCompStateType = {
   compAppLoader: {},
@@ -66,7 +65,6 @@ const compSlice = createSlice({
       for (const ins of instance) {
         state.compCheckBox[ins] = action.payload.checkBoxState;
       }
-      // state.compCheckBox[instance] = action.payload.checkBoxState;
     },
 
     // CompSwitch

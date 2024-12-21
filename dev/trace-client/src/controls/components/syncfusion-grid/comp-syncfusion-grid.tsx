@@ -79,6 +79,8 @@ export function CompSyncFusionGrid({
             gridLines="Both"
             height={height}
             id={instance}
+            // beforePdfExport={handleBeforePdfExport}
+            // pdfQueryCellInfo={handlePdfQueryCellInfo}
             ref={gridRef}
             rowDataBound={onRowDataBound}
             rowDragStart={gridDragAndDropSettings?.onRowDragStart}
@@ -116,6 +118,14 @@ export function CompSyncFusionGrid({
 
         </GridComponent>
     )
+
+    // function handlePdfQueryCellInfo(args: any){
+    //     console.log(args)
+    // }
+
+    // function handleBeforePdfExport(args: any){
+    //     console.log(args.gridObject.dataSource)
+    // }
 
     // function handleBeforeExcelExport(args: any) {
     //     console.log(args.gridObject.dataSource)

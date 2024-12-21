@@ -57,7 +57,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
                     }
                 </TooltipComponent>
             </div>
-        </ClickAwayListener>
+         </ClickAwayListener>
     )
 
     function getLogoutTooltipContent(): string {

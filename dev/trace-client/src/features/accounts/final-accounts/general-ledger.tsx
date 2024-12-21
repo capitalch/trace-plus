@@ -19,9 +19,14 @@ import { CompCheckBox } from "../../../controls/redux-components/comp-checkbox"
 import { CompInstances } from "../../../controls/redux-components/comp-instances"
 import { currentFinYearSelectorFn, FinYearType } from "../../login/login-slice"
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids"
+import dayjs from "dayjs"
+import ReactSlidingPane from "react-sliding-pane"
+import { PDFViewer } from "@react-pdf/renderer"
+import { GeneralLedgerPdf } from "./general-ledger-pdf"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
+    const [isPaneOpen, setIsPaneOpen] = useState(false);
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear() //Utils.getCurrentLoginInfo().currentFinYear || Utils.getRunningFinYear()
@@ -34,7 +39,7 @@ export function GeneralLedger() {
     const toShowSummaryRow: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxSummaryLedger))
 
     const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
-
+    const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
     const meta: any = useRef<{ transactions: TranType[], transactionsCopy: TranType[] }>({
         transactions: [],
         transactionsCopy: []
@@ -91,6 +96,7 @@ export function GeneralLedger() {
                     <CompCheckBox label="Daily summary" instance={CompInstances.compCheckBoxSummaryLedger} />
                 </div>
                 <CompSwitch leftLabel="All branches" instance={instance} className="ml-auto" />
+                <button className="bg-slate-200" onClick={() => setIsPaneOpen(true)}>pdf</button>
                 <CompSyncFusionGridToolbar
                     title=""
                     isLastNoOfRows={false}
@@ -121,6 +127,20 @@ export function GeneralLedger() {
             />
             {/* Separate instance of appLoader is needed otherwise it clashes with global appLoader with instance compAppLoader */}
             {isVisibleAppLoader && <CompAppLoader />}
+
+            {/* Sliding Pane */}
+            {/* <ReactSlidingPane
+                isOpen={isPaneOpen}
+                title="General Ledger Report"
+                from="right" // Slide in from the right
+                width="80%" // Adjust width as needed
+                onRequestClose={() => setIsPaneOpen(false)} // Close the pane
+            > */}
+                {/* PDF Viewer inside the sliding pane */}
+                <PDFViewer style={{ width: '100%', height: '90vh' }}>
+                    <GeneralLedgerPdf />
+                </PDFViewer>
+            {/* </ReactSlidingPane> */}
 
         </CompAccountsContainer>
     )
@@ -196,9 +216,9 @@ export function GeneralLedger() {
                 headerText: "Date",
                 width: 100,
                 textAlign: 'Left',
-                type: 'date',
-                // format:'yyyy-MM-dd'
-                format: Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
+                type: 'string', // Pdf export allows string only. So not used Date type. For PDF export only used template
+                format: currentDateFormat,
+                template: (props: any) => dayjs(props.tranDate).format(Utils.getCurrentDateFormat())
             },
             {
                 field: "autoRefNo",
