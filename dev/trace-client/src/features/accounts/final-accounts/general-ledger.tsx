@@ -23,6 +23,8 @@ import dayjs from "dayjs"
 import ReactSlidingPane from "react-sliding-pane"
 import { PDFViewer } from "@react-pdf/renderer"
 import { GeneralLedgerPdf } from "./general-ledger-pdf"
+import { TooltipComponent } from "@syncfusion/ej2-react-popups"
+import { IconFilePdf } from "../../../controls/icons/icon-file-pdf"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
@@ -68,7 +70,7 @@ export function GeneralLedger() {
     }, [selectedAccId, isAllBranches, currentFinYear])
 
     useEffect(() => {
-        return (() => {
+        return (() => { //cleanup
             dispatch(setCompCheckBoxState({
                 instance: [CompInstances.compCheckBoxBalanceLedger
                     , CompInstances.compCheckBoxReverseLedger
@@ -96,11 +98,15 @@ export function GeneralLedger() {
                     <CompCheckBox label="Daily summary" instance={CompInstances.compCheckBoxSummaryLedger} />
                 </div>
                 <CompSwitch leftLabel="All branches" instance={instance} className="ml-auto" />
-                <button className="bg-slate-200" onClick={() => setIsPaneOpen(true)}>pdf</button>
+                {/* <button className="bg-slate-200" onClick={() => setIsPaneOpen(true)}>pdf</button> */}
                 <CompSyncFusionGridToolbar
+                    CustomControl={() => <TooltipComponent content='Pdf view'>
+                        <button onClick={() => setIsPaneOpen(true)}><IconFilePdf className="text-red-600 h-6 w-6" /></button>
+                    </TooltipComponent>}
                     title=""
                     isLastNoOfRows={false}
                     instance={instance}
+                    isPdfExport={false}
                     minWidth="500px"
                 />
                 <LedgerSubledger
@@ -129,18 +135,20 @@ export function GeneralLedger() {
             {isVisibleAppLoader && <CompAppLoader />}
 
             {/* Sliding Pane */}
-            {/* <ReactSlidingPane
+            <ReactSlidingPane
+                className="bg-gray-300"
                 isOpen={isPaneOpen}
-                title="General Ledger Report"
+                title="Ledger View"
                 from="right" // Slide in from the right
+                // hideHeader={true}
                 width="80%" // Adjust width as needed
                 onRequestClose={() => setIsPaneOpen(false)} // Close the pane
-            > */}
+            >
                 {/* PDF Viewer inside the sliding pane */}
-                <PDFViewer style={{ width: '100%', height: '90vh' }}>
-                    <GeneralLedgerPdf />
+                <PDFViewer style={{ width: '100%', height: '100%' }}>
+                    <GeneralLedgerPdf accName={selectedData?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} />
                 </PDFViewer>
-            {/* </ReactSlidingPane> */}
+            </ReactSlidingPane>
 
         </CompAccountsContainer>
     )
@@ -150,8 +158,6 @@ export function GeneralLedger() {
         const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))
         const r: number = ret.toNumber()
         return (r)
-        // const dbCr = r < 0 ? 'Cr' : 'Dr'
-        // return (`${decFormatter.format(Math.abs(r))} ${dbCr}`)
     }
 
     function calculateCount() {
@@ -168,7 +174,6 @@ export function GeneralLedger() {
         const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.debit || 0)), new Decimal(0))
         const r: number = ret.toNumber()
         return (r)
-        // return (decFormatter.format(r))
     }
 
     function getAggregates(): SyncFusionGridAggregateType[] {
@@ -462,7 +467,7 @@ export function GeneralLedger() {
     }
 }
 
-type DecTranType = {
+export type DecTranType = {
     tranDate?: string
     opening: Decimal
     closing: Decimal
@@ -473,7 +478,7 @@ type DecTranType = {
     autoRefNo?: string
 }
 
-type TranType = {
+export type TranType = {
     index?: number
     opening?: number
     closing?: number

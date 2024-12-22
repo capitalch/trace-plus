@@ -13,7 +13,6 @@ export function resetGlobalContext(globalContext: GlobalContextType) {
 }
 
 export type GlobalContextType = {
-  // app: 
   CompSyncFusionGrid: {
     [key: string]: {
       gridRef?: any

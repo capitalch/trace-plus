@@ -14,14 +14,13 @@
 @import '@syncfusion/ej2-buttons/styles/material.css';
 @import '@syncfusion/ej2-inputs/styles/material.css';
 
+
+@import 'react-sliding-pane/dist/react-sliding-pane.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
         
 @layer components {
-
-  /* .full-width {
-    @apply w-[100vw] h-10 ml-0
-  } */
 
 }

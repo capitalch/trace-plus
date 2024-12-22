@@ -1,78 +1,102 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { TranType } from "./general-ledger";
+import { UnitInfoType, Utils } from "../../../utils/utils";
+import Decimal from "decimal.js";
+import { BranchType } from "../../login/login-slice";
+import dayjs from "dayjs";
+import { useUtilsInfo } from "../../../utils/utils-info-hook";
 
-export function GeneralLedgerPdf() {
+export function GeneralLedgerPdf({ accName, isAllBranches, transactions }: GeneralLedgerPdfType) {
+    const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
+    const dateRange: string = Utils.getCurrentFinYearFormattedDateRange()
+    const currentBranch: BranchType | undefined = Utils.getCurrentBranch()
+    const currentDateFormat: string = Utils.getCurrentDateFormat() || 'dd/MM/yyyy'
+    // const { decFormatter } = useUtilsInfo()
     const { totalDebits, totalCredits, closingBalance } = calculateTotals(transactions);
     return (
         <Document>
             <Page size="A4" style={styles.page}>
                 {/* Header */}
-                <View style={styles.header}>
-                    <Text style={styles.companyInfo}>
-                        My Company Name
-                        {"\n"}123 Business Street
-                        {"\n"}City, State, ZIP
-                    </Text>
-                    <Text style={styles.ledgerInfo}>
-                        Ledger Account: General Ledger
-                        {"\n"}Report Date: {new Date().toLocaleDateString()}
-                    </Text>
+                <View style={styles.header} fixed>
+                    {/* Company info */}
+                    <View style={styles.companyInfo}>
+                        <Text style={styles.companyName}>{unitInfo.unitName}</Text>
+                        <Text>{isAllBranches ? '' : 'Branch: ' + currentBranch?.branchName}</Text>
+                        <Text style={{ marginTop: 4 }}>
+                            {''.concat(
+                                unitInfo.gstin ? 'GSTIN: ' + unitInfo.gstin : '',
+                                unitInfo.address1 ? ' Address:' + (unitInfo.address1 || '') : '',
+                                ' ', (unitInfo.address2 || ''),
+                                unitInfo.pin ? ' Pin: ' + unitInfo.pin : '',
+                                unitInfo.email ? ' Email: ' + unitInfo.email : '',
+                                unitInfo.landPhone ? ' Ph: ' + unitInfo.landPhone : '',
+                                unitInfo.mobileNumber ? ' Mob: ' + unitInfo.mobileNumber : '',
+                                unitInfo.webSite ? ' Web: ' + unitInfo.webSite : '',
+                                unitInfo.state ? ' State: ' + unitInfo.state : ''
+                            )}
+                        </Text>
+                    </View>
+                    {/* ledger info */}
+                    <View style={styles.ledgerInfo}>
+                        <Text style={{ fontWeight: 'bold', fontSize: '14' }}>Ledger account</Text>
+                        <Text style={styles.ledgerName}>{accName}</Text>
+                        <Text style={{ fontWeight: 'bold', marginTop: 4 }}>{dateRange}</Text>
+                    </View>
                 </View>
-
-                {/* Table Header */}
-                <View style={styles.tableHeader}>
-                    <Text style={styles.tableColNarrow}>Date</Text>
-                    <Text style={styles.tableColNarrow}>Ref-No</Text>
-                    <Text style={styles.tableColWide}>Account</Text>
-                    <Text style={styles.tableCol}>Debits</Text>
-                    <Text style={styles.tableCol}>Credits</Text>
-                    <Text style={styles.tableColWide}>Info</Text>
+                {/* Table header */}
+                <View style={styles.tableHeader} fixed>
+                    <Text style={{ width: 50 }}>Date</Text>
+                    <Text style={{ width: 80, marginLeft: 5 }}>Ref</Text>
+                    <Text style={{ width: 110 }}>Account</Text>
+                    <Text style={{ width: 65, textAlign: 'right' }}>Debits</Text>
+                    <Text style={{ width: 65, textAlign: 'right' }}>Credits</Text>
+                    <Text style={{ width: 50, marginLeft: 15 }}>Type</Text>
+                    <Text style={{ width: 115,}}>Info</Text>
                 </View>
-
-                {/* Table Rows */}
-                {transactions.map((txn, index) => (
-                    <View key={index} style={styles.tableRow}>
-                        <Text style={styles.tableColNarrow}>{txn.date}</Text>
-                        <Text style={styles.tableColNarrow}>{txn.refNo}</Text>
-                        <Text style={styles.tableColWide}>{txn.account}</Text>
-                        <Text style={styles.tableCol}>{txn.debits.toFixed(2)}</Text>
-                        <Text style={styles.tableCol}>{txn.credits.toFixed(2)}</Text>
-                        <Text style={styles.tableColWide}>{txn.info}</Text>
+                {/* Table rows */}
+                {transactions.map((tran: TranType, index: number) => (
+                    <View style={styles.tableRow} key={index}>
+                        <Text style={{ width: 50 }}>{dayjs(tran.tranDate).format(currentDateFormat)}</Text>
+                        <Text style={{ width: 80, marginLeft: 5 }}>{tran.autoRefNo}</Text>
+                        <Text style={{ width: 110 }}>{tran.otherAccounts}</Text>
+                        <Text style={{ width: 65, textAlign: 'right' }}>{tran.debit ? tran.debit.toFixed(2) : ''}</Text>
+                        <Text style={{ width: 65, textAlign: 'right' }}>{tran.credit ? tran.credit.toFixed(2) : ''}</Text>
+                        <Text style={{ width: 50, marginLeft: 15 }}>{tran.tranType}</Text>
+                        <Text style={{ width: 115,}}>{tran.instrNo}</Text>
                     </View>
                 ))}
 
                 {/* Totals Row */}
                 <View style={styles.totalsRow}>
-                    <Text style={styles.totalText}>Total</Text>
-                    <Text style={styles.tableCol}>{totalDebits.toFixed(2)}</Text>
-                    <Text style={styles.tableCol}>{totalCredits.toFixed(2)}</Text>
+
                 </View>
 
                 {/* Closing Balance */}
                 <Text style={styles.closingBalance}>
-                    Closing Balance: {closingBalance.toFixed(2)}
+                    Closing Balance: {closingBalance}
                 </Text>
             </Page>
         </Document>
     );
 }
 
-// Mock data
-const transactions: any[] = [
-    { date: '2024-01-01', refNo: '1001', account: 'Cash', debits: 2000, credits: 0, info: 'Initial Deposit' },
-    { date: '2024-01-02', refNo: '1002', account: 'Sales', debits: 0, credits: 500, info: 'Sold Goods' },
-    { date: '2024-01-03', refNo: '1003', account: 'Expenses', debits: 300, credits: 0, info: 'Office Supplies' },
-];
-
 // Function to calculate totals
-const calculateTotals = (transactions: any[]) => {
-    let totalDebits = 0;
-    let totalCredits = 0;
-    transactions.forEach((txn) => {
-        totalDebits += txn.debits;
-        totalCredits += txn.credits;
-    });
-    return { totalDebits, totalCredits, closingBalance: totalDebits - totalCredits };
-};
+function calculateTotals(transactions: TranType[]): { totalDebits: number, totalCredits: number, closingBalance: number } {
+    const ret: DebitCreditType = transactions.reduce(
+        (sum: DebitCreditType, current: TranType) => ({
+            debit: sum.debit.plus(current.debit),
+            credit: sum.credit.plus(current.credit),
+        }),
+        {
+            debit: new Decimal(0),
+            credit: new Decimal(0),
+        }
+    );
+    const totalDebits: number = ret.debit.toNumber()
+    const totalCredits: number = ret.credit.toNumber()
+    const closingBalance: number = ret.debit.minus(ret.credit).toNumber()
+    return ({ totalDebits, totalCredits, closingBalance })
+}
 
 // Styles for the PDF document
 const styles = StyleSheet.create({
@@ -85,40 +109,60 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        paddingBottom: 15,
+        borderBottom: '1px solid black',
     },
     companyInfo: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '60%'
+    },
+    companyName: {
         fontSize: 12,
         fontWeight: 'bold',
     },
     ledgerInfo: {
-        fontSize: 12,
         textAlign: 'right',
+        width: '35%',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    ledgerName: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        marginTop: 8
+    },
+    table: {
+
     },
     tableHeader: {
+        display: 'flex',
         flexDirection: 'row',
         borderBottom: '1px solid black',
-        paddingBottom: 5,
+        paddingVertical: 5,
+        fontWeight: 'bold',
+        marginBottom: 5,
     },
     tableRow: {
         flexDirection: 'row',
         paddingVertical: 3,
+        fontSize: 9
     },
-    tableCol: {
-        flex: 1,
-        textAlign: 'left',
-        padding: 2,
-    },
-    tableColNarrow: {
-        flex: 0.5,
-        textAlign: 'left',
-        padding: 2,
-    },
-    tableColWide: {
-        flex: 2,
-        textAlign: 'left',
-        padding: 2,
-    },
+    // tableCol: {
+    //     flex: 1,
+    //     textAlign: 'left',
+    //     padding: 2,
+    // },
+    // tableColNarrow: {
+    //     flex: 0.5,
+    //     textAlign: 'left',
+    //     padding: 2,
+    // },
+    // tableColWide: {
+    //     flex: 2,
+    //     textAlign: 'left',
+    //     padding: 2,
+    // },
     totalsRow: {
         flexDirection: 'row',
         borderTop: '1px solid black',
@@ -136,3 +180,14 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
 });
+
+type GeneralLedgerPdfType = {
+    accName: string
+    isAllBranches: boolean
+    transactions: TranType[]
+}
+
+type DebitCreditType = {
+    debit: Decimal
+    credit: Decimal
+}

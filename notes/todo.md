@@ -29,6 +29,13 @@
 															- Checkbox instances reset
 	- Exports
 		- PDF
+			- Formatting debits, credits for 1000 separator
+			- Page no
+			- Total debits / Credits
+			- Closing bal
+														- Heading on each page
+			- Info column restructure
+			- Check whether at time of closing, fetching of data?
 		- Excel and CSV
 														- UI
 														- Header

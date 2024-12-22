@@ -7,7 +7,7 @@ import { ReactElement } from "react"
 import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
-import { AccSettingType, FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
+import { AccSettingType, BranchType, FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
 import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
 import { showCompAppLoader } from "../controls/redux-components/comp-slice"
 import { CompInstances } from "../controls/redux-components/comp-instances"
@@ -17,6 +17,7 @@ export const Utils: UtilsType = {
     decodeExtDbParams: decodeExtDbParams,
     doGenericQuery: doGenericQuery,
     getCompanyName: getCompanyName,
+    getCurrentBranch: getCurrentBranch,
     getCurrentDateFormat: getCurrentDateFormat,
     // getCurrentFinYear: getCurrentFinYear,
     getCurrentFinYearFormattedDateRange: getCurrentFinYearFormattedDateRange,
@@ -116,6 +117,10 @@ async function doGenericQuery({
 function getCompanyName(): string {
     const unitInfo: UnitInfoType | undefined = getUnitInfo()
     return (unitInfo?.unitName || '')
+}
+
+function getCurrentBranch(): BranchType | undefined {
+    return (getCurrentLoginInfo().currentBranch)
 }
 
 function getCurrentDateFormat() {
@@ -539,6 +544,7 @@ type UtilsType = {
         , dbParams
     }: DoGenericQueryType) => any
     getCompanyName: () => string
+    getCurrentBranch: () => BranchType | undefined
     getCurrentDateFormat: () => string
     getCurrentFinYearFormattedDateRange: () => string
     getCurrentLoginInfo: () => LoginType
