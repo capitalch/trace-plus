@@ -125,7 +125,7 @@ export function GeneralLedger() {
                 // dataSource={selectedData?.transactions}
                 dataSource={meta?.current?.transactions || []}
                 hasIndexColumn={false}
-                height="calc(100vh - 300px)"
+                height="calc(100vh - 280px)"
                 instance={instance}
                 isLoadOnInit={false}
                 loadData={loadData}
@@ -479,6 +479,7 @@ export type DecTranType = {
 }
 
 export type TranType = {
+    branchCode?: string
     index?: number
     opening?: number
     closing?: number

@@ -1,6 +1,6 @@
 ## Target
 - Dec 2024
-	- General ledger		: 15-12-2024
+																			- General ledger		: 22-12-2024
 	- Bank Reconcillation	: 22-12-2024
 	- Masters: Accounts		: 31-12-2024
 - Jan 2025

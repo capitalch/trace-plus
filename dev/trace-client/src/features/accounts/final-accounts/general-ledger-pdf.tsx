@@ -4,14 +4,12 @@ import { UnitInfoType, Utils } from "../../../utils/utils";
 import Decimal from "decimal.js";
 import { BranchType } from "../../login/login-slice";
 import dayjs from "dayjs";
-import { useUtilsInfo } from "../../../utils/utils-info-hook";
 
 export function GeneralLedgerPdf({ accName, isAllBranches, transactions }: GeneralLedgerPdfType) {
     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
     const dateRange: string = Utils.getCurrentFinYearFormattedDateRange()
     const currentBranch: BranchType | undefined = Utils.getCurrentBranch()
     const currentDateFormat: string = Utils.getCurrentDateFormat() || 'dd/MM/yyyy'
-    // const { decFormatter } = useUtilsInfo()
     const { totalDebits, totalCredits, closingBalance } = calculateTotals(transactions);
     return (
         <Document>
@@ -51,7 +49,7 @@ export function GeneralLedgerPdf({ accName, isAllBranches, transactions }: Gener
                     <Text style={{ width: 65, textAlign: 'right' }}>Debits</Text>
                     <Text style={{ width: 65, textAlign: 'right' }}>Credits</Text>
                     <Text style={{ width: 50, marginLeft: 15 }}>Type</Text>
-                    <Text style={{ width: 115,}}>Info</Text>
+                    <Text style={{ width: 115, }}>Info</Text>
                 </View>
                 {/* Table rows */}
                 {transactions.map((tran: TranType, index: number) => (
@@ -59,22 +57,46 @@ export function GeneralLedgerPdf({ accName, isAllBranches, transactions }: Gener
                         <Text style={{ width: 50 }}>{dayjs(tran.tranDate).format(currentDateFormat)}</Text>
                         <Text style={{ width: 80, marginLeft: 5 }}>{tran.autoRefNo}</Text>
                         <Text style={{ width: 110 }}>{tran.otherAccounts}</Text>
-                        <Text style={{ width: 65, textAlign: 'right' }}>{tran.debit ? tran.debit.toFixed(2) : ''}</Text>
-                        <Text style={{ width: 65, textAlign: 'right' }}>{tran.credit ? tran.credit.toFixed(2) : ''}</Text>
+                        <Text style={{ width: 65, textAlign: 'right' }}>{tran.debit ? Utils.toDecimalFormat(tran.debit) : ''}</Text>
+                        <Text style={{ width: 65, textAlign: 'right' }}>{tran.credit ? Utils.toDecimalFormat(tran.credit) : ''}</Text>
                         <Text style={{ width: 50, marginLeft: 15 }}>{tran.tranType}</Text>
-                        <Text style={{ width: 115,}}>{tran.instrNo}</Text>
+                        <Text style={{ width: 115, }}>{
+                            ''.concat(
+                                tran.branchCode || '',
+                                ': ',
+                                tran.userRefNo || '',
+                                ' ',
+                                tran.instrNo || '',
+                                ' ',
+                                tran.remarks || '',
+                                ' ',
+                                tran.lineRefNo || '',
+                                ' ',
+                                tran.lineRemarks || ''
+                            )
+                        }</Text>
                     </View>
                 ))}
 
                 {/* Totals Row */}
                 <View style={styles.totalsRow}>
-
+                    <Text style={[styles.totalText, { width: 210 }]}>Total</Text>
+                    <Text style={[styles.totalText, { width: 95, marginLeft: 4 }]}>{Utils.toDecimalFormat(totalDebits)}</Text>
+                    <Text style={[styles.totalText, { width: 95, textAlign: 'left', marginLeft: 20 }]}>{Utils.toDecimalFormat(totalCredits)}</Text>
                 </View>
 
                 {/* Closing Balance */}
                 <Text style={styles.closingBalance}>
-                    Closing Balance: {closingBalance}
+                    Closing Balance: {`${Utils.toDecimalFormat(Math.abs(closingBalance))} ${closingBalance < 0 ? 'Cr' : 'Dr'}`}
                 </Text>
+
+                {/* page no */}
+                <Text
+                    style={styles.pageNumber}
+                    render={({ pageNumber, totalPages }: any) =>
+                        `${pageNumber} / ${totalPages}`
+                    }
+                    fixed></Text>
             </Page>
         </Document>
     );
@@ -109,7 +131,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingBottom: 15,
+        paddingBottom: 10,
         borderBottom: '1px solid black',
     },
     companyInfo: {
@@ -132,9 +154,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 8
     },
-    table: {
-
-    },
     tableHeader: {
         display: 'flex',
         flexDirection: 'row',
@@ -145,24 +164,18 @@ const styles = StyleSheet.create({
     },
     tableRow: {
         flexDirection: 'row',
-        paddingVertical: 3,
+        paddingVertical: 2,
         fontSize: 9
     },
-    // tableCol: {
-    //     flex: 1,
-    //     textAlign: 'left',
-    //     padding: 2,
-    // },
-    // tableColNarrow: {
-    //     flex: 0.5,
-    //     textAlign: 'left',
-    //     padding: 2,
-    // },
-    // tableColWide: {
-    //     flex: 2,
-    //     textAlign: 'left',
-    //     padding: 2,
-    // },
+    pageNumber: {
+        position: 'absolute',
+        fontSize: 8,
+        bottom: 8,
+        left: 0,
+        right: 0,
+        textAlign: 'center',
+        color: 'grey',
+    },
     totalsRow: {
         flexDirection: 'row',
         borderTop: '1px solid black',
@@ -170,7 +183,6 @@ const styles = StyleSheet.create({
         paddingTop: 5,
     },
     totalText: {
-        flex: 3.5,
         textAlign: 'right',
         fontWeight: 'bold',
     },

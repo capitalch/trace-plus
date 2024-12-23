@@ -35,7 +35,7 @@ export function TrialBalance() {
 
     return (
         <CompAccountsContainer>
-            <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
+            <div className='flex gap-8' >
                 <div className='flex flex-col '>
                     <CompSyncFusionTreeGridToolbar className='mt-2'
                         CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
@@ -49,7 +49,7 @@ export function TrialBalance() {
                         aggregates={getTrialBalanceAggregates()}
                         buCode={buCode}
                         childMapping="children"
-                        className=""
+                        className="mr-6"
                         dbName={dbName}
                         dbParams={decodedDbParamsObject}
                         graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}

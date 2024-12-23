@@ -9,7 +9,7 @@
 															- Bottom left User type shows unknown
 	- At logout make sure that redux store is initialized by using redux tools
 	- Accounts
-		- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
+															- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
 		- When opening balance is not zero show a warning the apening balances do not match
 															- In accounts title, right side show client name in dim
 - Admin
@@ -22,21 +22,33 @@
 															- In Accounts Info modal windows title should be aligned with grid
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-- General ledger
-	- Thorough checkup
+- Bank Recon
+	- UI
+		- Start up
+		- Screen layout
+		- Select bank
+		- Set opening balance
+		- Rearrange
+		- Refresh
+		- Submit
+		- Grid edit feature
+	- Server side
+		- Sql query
+		- Save data
+													- General ledger
+														- Thorough checkup
 														- Reverse not working fine
 														- Cleanup and optimize
 															- Checkbox instances reset
-	- Exports
-		- PDF
-			- Formatting debits, credits for 1000 separator
-			- Page no
-			- Total debits / Credits
-			- Closing bal
+												- Exports
+													- PDF
+														- Formatting debits, credits for 1000 separator
+														- Page no
+														- Total debits / Credits
+														- Closing bal
 														- Heading on each page
-			- Info column restructure
-			- Check whether at time of closing, fetching of data?
-		- Excel and CSV
+														- Info column restructure
+													- Excel and CSV
 														- UI
 														- Header
 															- Acc name to show

@@ -54,6 +54,7 @@ class SqlAccounts:
             d."remarks" AS "lineRemarks",
             "lineRefNo",
             "branchName",
+            "branchCode",
             h."remarks",
             CASE WHEN d."dc" = 'D' THEN d."amount" ELSE 0.00 END AS "debit",
             CASE WHEN d."dc" = 'C' THEN d."amount" ELSE 0.00 END AS "credit",
