@@ -60,7 +60,7 @@ export function CompSyncFusionGridToolbar({
     }
 
     return (<div className={clsx("flex items-center justify-between", className)} style={{ minWidth: `${minWidth}` }}>
-        <h2 className="mt-0 text-lg font-medium text-primary-500">{title}</h2>
+        <label className="mt-0 text-lg font-medium text-primary-500 inline-block whitespace-nowrap overflow-hidden text-ellipsis">{title}</label>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
 

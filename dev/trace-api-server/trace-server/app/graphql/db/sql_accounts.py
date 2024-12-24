@@ -90,12 +90,22 @@ class SqlAccounts:
     --    FROM "cte4"
     --)
     SELECT json_build_object(
-        'accName', (SELECT "accName" FROM cte1),
-        'opBalance', (SELECT json_agg(a) FROM cte2 a),
-        'transactions', (SELECT json_agg(a) FROM cte3 a)
-        --,
-        --'sum', (SELECT json_agg(a) FROM cte5 a)
-    ) as "jsonResult"
+            'accName', (SELECT "accName" FROM cte1),
+            'opBalance', (SELECT json_agg(a) FROM cte2 a),
+            'transactions', (SELECT json_agg(a) FROM cte3 a)
+            --,
+            --'sum', (SELECT json_agg(a) FROM cte5 a)
+        ) as "jsonResult"
+    '''
+    
+    get_all_banks = '''
+        select a."id" as "accId", "accName"
+            from "AccM" a 
+                join "AccClassM" c
+                    on c."id" = a."classId"			
+        where "accClass" = 'bank'
+            and "accLeaf" in ('Y', 'S')
+        order by "accName"
     '''
     
     get_balanceSheet_profitLoss = '''

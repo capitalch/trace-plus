@@ -24,14 +24,19 @@
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Bank Recon
 	- UI
-		- Start up
-		- Screen layout
+															- Start up
+															- Screen layout
 		- Select bank
+		- Grid populate
 		- Set opening balance
 		- Rearrange
 		- Refresh
 		- Submit
-		- Grid edit feature
+		- Grid
+			- layout columns
+			- aggreagtes
+			- Populate 
+			- edit feature
 	- Server side
 		- Sql query
 		- Save data

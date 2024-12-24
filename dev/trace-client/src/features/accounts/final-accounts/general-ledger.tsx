@@ -122,7 +122,6 @@ export function GeneralLedger() {
                 aggregates={getAggregates()}
                 className="mr-6 mt-4"
                 columns={getColumns()}
-                // dataSource={selectedData?.transactions}
                 dataSource={meta?.current?.transactions || []}
                 hasIndexColumn={false}
                 height="calc(100vh - 280px)"
