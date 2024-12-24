@@ -79,22 +79,10 @@ class SqlAccounts:
           AND COALESCE((TABLE "branchId"), h."branchId") = h."branchId"
         ORDER BY "tranDate", id
     )
-    --,
-    --cte4 AS (
-    --    SELECT "debit", "credit" FROM "cte2"
-    --    UNION ALL
-    --    SELECT "debit", "credit" FROM "cte3"
-    --),
-    --cte5 AS (
-    --    SELECT SUM("debit") AS "debits", SUM("credit") AS "credits"
-    --    FROM "cte4"
-    --)
     SELECT json_build_object(
             'accName', (SELECT "accName" FROM cte1),
             'opBalance', (SELECT json_agg(a) FROM cte2 a),
             'transactions', (SELECT json_agg(a) FROM cte3 a)
-            --,
-            --'sum', (SELECT json_agg(a) FROM cte5 a)
         ) as "jsonResult"
     '''
     

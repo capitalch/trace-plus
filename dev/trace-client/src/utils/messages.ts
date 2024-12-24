@@ -7,18 +7,21 @@ const Messages = {
   errAtMost30Chars: 'Should be at most 30 chars long',
   errAtMost50Chars: 'Should be at most 50 chars long',
   errAtMost150Chars: 'Should be at most 150 chars long',
-  errBuCodeExists: 'This business unit code already exists for the current client',
+  errBuCodeExists:
+    'This business unit code already exists for the current client',
   errCannotBeZero: 'Cannot have zero values',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
   errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
   errCurrentAndNewPwdCannotBeSame: 'Current and new passwords cannot be same',
-  errCurrentFinYear:"There was some error in current financial year",
+  errCurrentFinYear: 'There was some error in current financial year',
   errEmailExistsForClient: 'This email already exists for the current client',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
-  errFailFetchingDataFromAccounts: 'Failed in fetching data from accounts database. Hence logging out',
-  errIncrementedFinYearNotExists:'Incremented financial year does not exist. Please create a new financial year in the accounts',
+  errFailFetchingDataFromAccounts:
+    'Failed in fetching data from accounts database. Hence logging out',
+  errIncrementedFinYearNotExists:
+    'Incremented financial year does not exist. Please create a new financial year in the accounts',
   errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidClientName: 'Invalid client name',
   errInvalidEmail: 'Invalid email',
@@ -31,16 +34,18 @@ const Messages = {
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
   errSameCurrentUidAndNewUid: 'Current uid and new uid cannot be same',
-  errSameCurrentPwdAndNewPwd: 'Current password and new password cannot be same',
-  errSuperAdminRoleNameExists: "Super admin role name alrady exists",
-  errSuperAdminControlNameExists: "Super admin control name already exists",
+  errSameCurrentPwdAndNewPwd:
+    'Current password and new password cannot be same',
+  errSuperAdminRoleNameExists: 'Super admin role name alrady exists',
+  errSuperAdminControlNameExists: 'Super admin control name already exists',
   errUidExistsForClient: 'This uid already exists for the current client',
   errUnknown: 'An unknown error occurred in the operation',
   errRequired: 'This value is required',
 
   messAutoLinkBuiltinRoles: 'Add controls from built-in roles',
-  messBranchSuccessfullySelected: "The branch was successfully selected",
-  messBusinessUsersUnlinkSuccess: 'The selected business users were unlinked successfully',
+  messBranchSuccessfullySelected: 'The branch was successfully selected',
+  messBusinessUsersUnlinkSuccess:
+    'The selected business users were unlinked successfully',
   messBuCode:
     'Business unit code can be between 4 characters and 50 characters',
   messBuName:
@@ -53,46 +58,64 @@ const Messages = {
     'Client name should be between 6 characters and 50 characters',
   messDbConnFailure: 'Database connection was failed',
   messDbConnSuccessful: 'Database connection was successful',
-  messExistingLinksDropHere: 'Existing Bu`s with links (Drop the dragged row here)',
-  messExistingRolesWithLinksDropHere: "Existing roles with links (Drop the dragged row here)",
-  messFinYearSuccessfullySelected: "The financial year was successfully selected",
-  messFinYearSuccessfullyChanged: "The financial year was successfully changed",
+  messExistingLinksDropHere:
+    'Existing Bu`s with links (Drop the dragged row here)',
+  messExistingRolesWithLinksDropHere:
+    'Existing roles with links (Drop the dragged row here)',
+  messFinYearSuccessfullySelected:
+    'The financial year was successfully selected',
+  messFinYearSuccessfullyChanged: 'The financial year was successfully changed',
   messFailure: 'Failure',
-  messLinkSecuredControl: "Link a secured control with this role",
-  messNothingToDo: "Nothing to do",
-  messNotAllowed: "This operation is not allowed",
-  messNoBusinessUnitsDefined: "No business units are defined for this client. Admin must define at least one business unit",
+  messLinkSecuredControl: 'Link a secured control with this role',
+  messNothingToDo: 'Nothing to do',
+  messNotAllowed: 'This operation is not allowed',
+  messNoBusinessUnitsDefined:
+    'No business units are defined for this client. Admin must define at least one business unit',
   messOperationNotAllowed: 'This operation is not allowed',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',
   messRoleName: 'Role name should be a string without any special character',
-  messResetLinkSendFail: 'Could not send reset link to the email address provided by you',
-  messResetLinkSendSuccess: "Successfully sent the email with the reset link",
-  messSecuredControlsDragFrom: "Available secured controls (Drag a row)",
-  messSecuredControlExists: "Secured control already exists in the role",
-  messSecuredControlName: 'Secured control name should be a string without any space or special character',
-  messSecuredControlsUnlinkSuccess: 'The selected secured controls were unlinked successfully',
+  messResetLinkSendFail:
+    'Could not send reset link to the email address provided by you',
+  messResetLinkSendSuccess: 'Successfully sent the email with the reset link',
+  messSecuredControlsDragFrom: 'Available secured controls (Drag a row)',
+  messSecuredControlExists: 'Secured control already exists in the role',
+  messSecuredControlName:
+    'Secured control name should be a string without any space or special character',
+  messSecuredControlsUnlinkSuccess:
+    'The selected secured controls were unlinked successfully',
   messSelectClientName: 'Type first 6 chars to select a client name',
+  messSelectBank: 'Select a bank by clicking the button below',
   messSuccess: 'Successfull',
   messSureToProceed: 'Are you sure to proceed?',
-  messSureOnUnLinkSecuredControl: "Are you sure to unlink this secured control?",
-  messSureOnUnLinkAllSecuredControls: "Are you sure to unlink all secured controls from this role?",
-  messSureOnUnLinkAllBusinessUsers: "Are you sure to unlink all business users from this business unit (bu)?",
-  messSureOnUnLinkSecuredControlBody: "The selected secured control will be unlinked from the role. The secured control will not be deleted.",
-  messSureOnUnLinkBusinessUsersBody: "The selected business users will be unlinked from the business unit. The business user will not be deleted.",
-  messSureOnUnLinkAllSecuredControlsBody: "All secured controls will be unlinked from this role. The secured controls will not be deleted.",
+  messSureOnUnLinkSecuredControl:
+    'Are you sure to unlink this secured control?',
+  messSureOnUnLinkAllSecuredControls:
+    'Are you sure to unlink all secured controls from this role?',
+  messSureOnUnLinkAllBusinessUsers:
+    'Are you sure to unlink all business users from this business unit (bu)?',
+  messSureOnUnLinkSecuredControlBody:
+    'The selected secured control will be unlinked from the role. The secured control will not be deleted.',
+  messSureOnUnLinkBusinessUsersBody:
+    'The selected business users will be unlinked from the business unit. The business user will not be deleted.',
+  messSureOnUnLinkAllSecuredControlsBody:
+    'All secured controls will be unlinked from this role. The secured controls will not be deleted.',
   messSureUnlinkUser: 'Are you sure to unlink this user?',
-  messSureUnlinkUserBody: 'The selected user will only be unlinked from the business unit. The user will not be deleted.',
+  messSureUnlinkUserBody:
+    'The selected user will only be unlinked from the business unit. The user will not be deleted.',
   messUnlinkSecuredControl: 'Unlink this secured control from role',
   messUnlinkAllSecuredControl: 'Unlink all secured controls from this role',
-  messUnlinkAllBusinessUsers: 'Unlink all business users from this business unit (bu)',
+  messUnlinkAllBusinessUsers:
+    'Unlink all business users from this business unit (bu)',
   messUidExists: 'This uid already exists for current client',
   messUidHelper: 'At least 4 characters long | no space | no special char',
-  messUnableToConnectToServer: 'Unable to connect to server. Server may be offline',
+  messUnableToConnectToServer:
+    'Unable to connect to server. Server may be offline',
   messUserExists: 'User already exists in the business unit',
   messUserNameEmailHelper:
     'UID: At least 4 characters long | no space | no special char or valid email',
-  messUserNotAssociatedWithBu: 'Current user is not associated with any business unit',
+  messUserNotAssociatedWithBu:
+    'Current user is not associated with any business unit',
   messUserWillBeAdded: 'Dragged used will be added to the business unit',
   messUserUnlinkedSuccess: 'The selected user was unlinked successfully'
 }

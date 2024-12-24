@@ -26,7 +26,10 @@
 	- UI
 															- Start up
 															- Screen layout
-		- Select bank
+														- Select bank
+															- Default select already selected bank
+															- On select dispatch id and name
+															- display name of bank on select otherwise in red show select a bank by clicking the button
 		- Grid populate
 		- Set opening balance
 		- Rearrange

@@ -14,6 +14,9 @@ import { Utils } from "../../../../utils/utils"
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { SelectBankModal } from "./select-bank-modal"
+import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
+import { Messages } from "../../../../utils/messages"
+import { BankReconCustomControls } from "./bank-recon-custom-controls"
 // import { useUtilsInfo } from "../../../utils/utils-info-hook"
 
 export function BankRecon() {
@@ -21,7 +24,8 @@ export function BankRecon() {
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
-    
+    const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)
+
     const { buCode
         // , context
         , dbName
@@ -31,9 +35,7 @@ export function BankRecon() {
         // , intFormatter
     } = useUtilsInfo()
 
-    
-
-    return (<CompAccountsContainer MiddleCustomControl={()=><label>Bank</label>}>
+    return (<CompAccountsContainer MiddleCustomControl={() => getHeader()}>
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             CustomControl={() => <BankReconCustomControls instance={instance} />}
             minWidth="1000px"
@@ -68,9 +70,18 @@ export function BankRecon() {
                 width: 100,
                 textAlign: 'Left',
                 type: 'string',
-
             }
         ])
+    }
+
+    function getHeader() {
+        let ret: any = undefined
+        if (selectedBank.accName) {
+            ret = <label className="font-bold text-blue-500 text-lg">{selectedBank.accName}</label>
+        } else {
+            ret = <label className="font-bold text-red-500 text-xl">{Messages.messSelectBank}</label>
+        }
+        return (ret)
     }
 
     async function loadData() {
@@ -88,54 +99,6 @@ export function BankRecon() {
         console.log(res)
         // const jsonResult = res?.[0]?.jsonResult
         // const opBals: any[] = jsonResult?.opBalance || []
-        
+
     }
 }
-
-function BankReconCustomControls({ instance }: BankReconCustomControlType) {
-    console.log(instance)
-    return (
-        <div className="flex gap-4 mr-4 flex-wrap">
-            <button type="button" onClick={handleSelectBank}
-                className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                <IconSelect className="text-white w-6 h-6 mr-2" />
-                Select Bank
-            </button>
-            <button type="button" className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-primary-500 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                <IconOpen className="text-white w-6 h-6 mr-2" />
-                Opening</button>
-            <button type="button" className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-secondary-500 hover:bg-secondary-800 focus:ring-4 focus:outline-none focus:ring-secondary-300 rounded-lg text-center dark:bg-secondary-600 dark:hover:bg-secondary-700 dark:focus:ring-secondary-800">
-                <IconArrange className="text-white w-6 h-6 mr-2" /> Rearrange
-            </button>
-            <button type="button" className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">
-                <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
-        </div>
-    )
-
-    function handleSelectBank(){
-        Utils.showHideModalDialogA({
-            className: 'ml-2',
-            title: "Select a bank",
-            isOpen: true,
-            element: <SelectBankModal />,
-        })
-    }
-}
-
-type BankReconCustomControlType = {
-    instance: string
-}
-
-
-// const { loadData, loading } = useQueryHelper({
-//     instance: instance,
-//     dbName: dbName,
-//     isExecQueryOnLoad: false,
-//     getQueryArgs: () => ({
-//         buCode: buCode, 
-//         dbParams: decodedDbParamsObject, 
-//         sqlArgs: {
-//             finYearId:finYearId
-//         }
-//     })
-// })
