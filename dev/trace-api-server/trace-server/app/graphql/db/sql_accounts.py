@@ -206,7 +206,7 @@ class SqlAccounts:
         ) AS "jsonResult"
     '''
     
-    get_bank_recon = '''
+    get_bank_recon = ''' --optimized by ai
     with "finYearId" as (values (%(finYearId)s::int)), "accId" as (values(%(accId)s::int)), "startDate" 
     as (values(%(startDate)s::date)), "endDate" as (values(%(endDate)s::date)),
     --WITH "finYearId" AS (VALUES (2024)), "accId" AS (VALUES (310::int)), "startDate" AS (VALUES ('2024-04-01'::date)), 
