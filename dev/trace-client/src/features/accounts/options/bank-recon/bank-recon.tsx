@@ -1,30 +1,25 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
-// import { useQueryHelper } from "../../../app/graphql/query-helper-hook"
 import { AppDispatchType, RootStateType } from "../../../../app/store/store"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
 import { CompSyncFusionGrid, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
-import { IconArrange } from "../../../../controls/icons/icon-arrange"
-import { IconOpen } from "../../../../controls/icons/icon-open"
-import { IconSelect } from "../../../../controls/icons/icon-select"
-import { IconSubmit } from "../../../../controls/icons/icon-submit"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { Utils } from "../../../../utils/utils"
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
-import { SelectBankModal } from "./select-bank-modal"
 import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
 import { Messages } from "../../../../utils/messages"
 import { BankReconCustomControls } from "./bank-recon-custom-controls"
-// import { useUtilsInfo } from "../../../utils/utils-info-hook"
+import { useEffect } from "react"
 
 export function BankRecon() {
     const instance: string = DataInstancesMap.bankRecon
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
+
     const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
-    const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)
+    const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn, shallowEqual)
 
     const { buCode
         // , context
@@ -34,6 +29,12 @@ export function BankRecon() {
         , finYearId
         // , intFormatter
     } = useUtilsInfo()
+
+    useEffect(() => {
+        if (selectedBank.accId) {
+            loadData()
+        }
+    }, [selectedBank])
 
     return (<CompAccountsContainer MiddleCustomControl={() => getHeader()}>
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
@@ -57,7 +58,7 @@ export function BankRecon() {
             instance={instance}
             isLoadOnInit={false}
             minWidth="600px"
-        // loadData={loadData}
+            loadData={loadData}
         // onRowDataBound={onRowDataBound}
         />
     </CompAccountsContainer>)
@@ -85,20 +86,22 @@ export function BankRecon() {
     }
 
     async function loadData() {
+        const accId: number = Utils.getReduxState().accounts.bankRecon.selectedBank.accId ||0
         const res: any = await Utils.doGenericQuery({
             buCode: buCode || '',
             dbName: dbName || '',
             dbParams: decodedDbParamsObject || {},
             instance: instance,
             sqlArgs: {
-                // accId: finalAccId,
+                accId: accId,
                 finYearId: finYearId,
+                startDate: currentFinYear.startDate,
+                endDate: currentFinYear.endDate
             },
-            sqlId: SqlIdsMap.getAccountLedger
+            sqlId: SqlIdsMap.getBankRecon
         })
         console.log(res)
         // const jsonResult = res?.[0]?.jsonResult
         // const opBals: any[] = jsonResult?.opBalance || []
-
     }
 }

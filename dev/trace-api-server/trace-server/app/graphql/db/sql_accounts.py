@@ -205,6 +205,65 @@ class SqlAccounts:
 			'incomes', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'I')
         ) AS "jsonResult"
     '''
+    
+    get_bank_recon = '''
+    with "finYearId" as (values (%(finYearId)s::int)), "accId" as (values(%(accId)s::int)), "startDate" 
+    as (values(%(startDate)s::date)), "endDate" as (values(%(endDate)s::date)),
+	-- with "finYearId" as (values (2024)), "accId" as (values(310::int)), "startDate" as (values('2024-04-01'::date)),
+	 	--"endDate" as (values('2025-03-31'::date)),
+     
+	cte1 as (select 
+            d."id" as "tranDetailsId",
+            h."id"
+            , "tranDate"
+            , "tranTypeId"
+            , "userRefNo"
+            , h."remarks"
+            , "autoRefNo"
+            , "lineRefNo"
+            , "instrNo"
+            , d."remarks" as "lineRemarks"
+            , CASE WHEN "dc" = 'D' then "amount" ELSE 0 END as "credit"
+            , CASE WHEN "dc" = 'C' then "amount" ELSE 0 END as "debit"
+            , x."clearDate", "clearRemarks", x."id" as "bankReconId"
+            , x."clearDate" as "origClearDate"
+            , "clearRemarks" as "origClearRemarks"
+                from "TranD" d
+                    left outer join "ExtBankReconTranD" x
+                        on d."id" = x."tranDetailsId"
+                    join "TranH" h
+                        on h."id" = d."tranHeaderId"
+            where "accId" = (table "accId")
+                and "finYearId" = (table "finYearId") 
+                or x."clearDate" between (table "startDate") and (table "endDate")
+            order by "clearDate", "tranDate", h."id"
+        ), 
+        cte2 as (
+            select
+            CASE WHEN "dc" = 'D' then "amount" ELSE 0.00 END as "debit"
+            , CASE WHEN "dc" = 'C' then "amount" ELSE 0.00 END as "credit"
+            , "dc"
+            from "BankOpBal"
+                where "accId" = (table "accId")
+                    and "finYearId" = (table "finYearId")),
+		cte3 as (
+			select c1.* 
+			, (
+				select string_agg("accName", ' ,')
+					from "TranD" d1
+						join "AccM" a
+							on a."id" = d1."accId"
+					where d1."tranHeaderId" = c1."id"
+						and "accId" <> (table "accId")
+				) as "accNames"
+			from cte1 c1
+                order by "clearDate","tranDate", "id"
+		)
+        select json_build_object(
+            'bankRecon', (SELECT json_agg(row_to_json(a)) from cte3 a)
+            , 'opBalance', (SELECT row_to_json(b) from cte2 b)
+        ) as "jsonResult"
+    '''
 
     get_ledger_leaf_accounts = '''
         select id, "accName", "accLeaf"
