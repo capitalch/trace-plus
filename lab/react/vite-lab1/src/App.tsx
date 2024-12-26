@@ -98,9 +98,9 @@ function App() {
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
       {/* <TreeGrid2 /> */}
-      {/* <SyncfusionGrid /> */}
+      <SyncfusionGrid />
       {/* <InjectSummary /> */}
-      <SlidingPaneViewer />
+      {/* <SlidingPaneViewer /> */}
     </GlobalContext.Provider>
   )
 }

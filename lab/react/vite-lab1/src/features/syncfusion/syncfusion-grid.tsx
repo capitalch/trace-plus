@@ -1,4 +1,4 @@
-import { ColumnDirective, ColumnsDirective, GridComponent } from "@syncfusion/ej2-react-grids";
+import { ColumnDirective, ColumnsDirective, Edit, GridComponent, Inject, Toolbar } from "@syncfusion/ej2-react-grids";
 import { testData } from "./test-data";
 
 export function SyncfusionGrid() {
@@ -12,7 +12,6 @@ export function SyncfusionGrid() {
                 <GridComponent
                     className="mt-2"
                     gridLines="Both"
-                    // width={"150%"} 
                     height='calc(100vh - 280px)'
                     dataSource={testData}>
                     <ColumnsDirective>
@@ -22,6 +21,7 @@ export function SyncfusionGrid() {
                         <ColumnDirective field='ShipName' headerText='Ship Name'  />
                         <ColumnDirective field='ShipCountry' headerText='Ship Country' width='150' />
                     </ColumnsDirective>
+                    <Inject services={[Edit, Toolbar]} />
                 </GridComponent>
             </div>
         </div>
