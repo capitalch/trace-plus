@@ -24,24 +24,34 @@
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Bank Recon
 	- UI
+															- Balance column
 															- Start up
 															- Screen layout
 														- Select bank
 															- Default select already selected bank
 															- On select dispatch id and name
 															- display name of bank on select otherwise in red show select a bank by clicking the button
-		- Grid populate
+															- Grid populate
 		- Set opening balance
 		- Rearrange
-		- Refresh
+														- Refresh
 		- Submit
 		- Grid
-			- layout columns
 			- aggreagtes
-			- Populate 
 			- edit feature
+				- Clear date
+				- Clear remarks
+														- Format
+															- Date
+															- debit credit
+															- Info
+															- balance
+															- layout columns
+			
+															- Populate 
+			
 	- Server side
-		- Sql query
+														- Sql query
 		- Save data
 													- General ledger
 														- Thorough checkup

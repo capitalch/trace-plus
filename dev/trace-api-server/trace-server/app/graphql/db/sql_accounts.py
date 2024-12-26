@@ -263,7 +263,7 @@ class SqlAccounts:
         ORDER BY 
             c1."clearDate", c1."tranDate", c1."headerId")
     select json_build_object(
-            'bankRecon', (SELECT json_agg(row_to_json(a)) from cte3 a)
+            'bankRecon', (SELECT json_agg(a) from cte3 a)
             , 'opBalance', (SELECT row_to_json(b) from cte2 b)
             ) as "jsonResult"
     '''
