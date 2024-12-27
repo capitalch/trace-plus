@@ -17,7 +17,6 @@
 @import "../node_modules/@syncfusion/ej2-popups/styles/material.css";
 @import "../node_modules/@syncfusion/ej2-react-calendars/styles/material.css";
 
-
 @import 'react-sliding-pane/dist/react-sliding-pane.css';
 
 @tailwind base;
@@ -27,3 +26,10 @@
 @layer components {
 
 }
+
+.custom-css {
+    background: #d7f0f4;
+    font-style: italic;
+    color:navy;
+    width: auto;
+  }

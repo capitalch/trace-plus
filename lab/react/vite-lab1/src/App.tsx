@@ -43,6 +43,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid'
 import { InjectSummary } from './features/Misc/inject-summary'
 import { SlidingPaneViewer } from './features/react-sliding-pane/slide-pane-viewer'
+import { EditGrid } from './features/syncfusion/edit-grid'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -98,9 +99,10 @@ function App() {
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
       {/* <TreeGrid2 /> */}
-      <SyncfusionGrid />
+      {/* <SyncfusionGrid /> */}
       {/* <InjectSummary /> */}
       {/* <SlidingPaneViewer /> */}
+      <EditGrid />
     </GlobalContext.Provider>
   )
 }
