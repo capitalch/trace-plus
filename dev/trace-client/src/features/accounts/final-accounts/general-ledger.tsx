@@ -138,17 +138,14 @@ export function GeneralLedger() {
                 className="bg-gray-300"
                 isOpen={isPaneOpen}
                 title="Ledger View"
-                from="right" // Slide in from the right
-                // hideHeader={true}
-                width="80%" // Adjust width as needed
-                onRequestClose={() => setIsPaneOpen(false)} // Close the pane
-            >
+                from="right"
+                width="80%"
+                onRequestClose={() => setIsPaneOpen(false)}>
                 {/* PDF Viewer inside the sliding pane */}
                 <PDFViewer style={{ width: '100%', height: '100%' }}>
                     <GeneralLedgerPdf accName={selectedData?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} />
                 </PDFViewer>
             </ReactSlidingPane>
-
         </CompAccountsContainer>
     )
 

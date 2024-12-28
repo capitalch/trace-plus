@@ -1,4 +1,4 @@
-import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids"
+import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDataBoundEventArgs, Edit } from "@syncfusion/ej2-react-grids"
 import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
@@ -14,7 +14,9 @@ export function CompSyncFusionGrid({
     className = '',
     columns,
     dataSource,
+    editSettings,
     gridDragAndDropSettings,
+    handleCellEdit,
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
     height,
@@ -69,10 +71,12 @@ export function CompSyncFusionGrid({
             allowSorting={true}
             allowSelection={true}
             allowTextWrap={true}
+            cellEdit={handleCellEdit}
             // beforeExcelExport={handleBeforeExcelExport}
             className={className}
             created={onCreated}
             dataSource={dataSource || selectedData || []}
+            editSettings={editSettings}
             enablePersistence={false}
             // excelQueryCellInfo={handleExcelQueryCellInfo}
             // excelAggregateQueryCellInfo={handleExcelQueryCellInfo}
@@ -105,6 +109,7 @@ export function CompSyncFusionGrid({
             </AggregatesDirective>}
             <Inject services={[
                 Aggregate
+                , Edit
                 , ExcelExport
                 , InfiniteScroll
                 , PdfExport
@@ -162,7 +167,13 @@ export type CompSyncFusionGridType = {
     className?: string
     columns: SyncFusionGridColumnType[]
     dataSource?: any
+    editSettings?: {
+        allowEditing: boolean
+        mode: 'Batch' | 'Dialog' | 'Normal'
+        showConfirmDialog: boolean
+    }
     gridDragAndDropSettings?: GridDragAndDropSettingsType
+    handleCellEdit?: (args: any) => void
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
     height?: string
@@ -189,12 +200,24 @@ export type SyncFusionGridAggregateType = {
 }
 
 export type SyncFusionGridColumnType = {
+    allowEditing?: boolean
+    customAttributes?: {
+        [key: string]: string
+    }
+    edit?: {
+        [key: string]: {
+            [key: string]: string
+        }
+    }
+    editType?: 'datepickeredit' | 'textedit'
     field: string
     format?: string
-    headerText: string
+    headerText?: string
+    isPrimaryKey?: boolean
     template?: any
     textAlign?: 'Center' | 'Justify' | 'Left' | 'Right'
     type?: 'string' | 'number' | 'boolean' | 'date' | 'datetime'
+    visible?: boolean
     width?: number
 }
 

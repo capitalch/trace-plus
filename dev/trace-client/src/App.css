@@ -26,3 +26,11 @@
 .e-icon-errordrop {
     display: none !important;
   }
+
+  /* Syncfusion grid edit column background color */
+  .grid-col-edit {
+    background: #d7f0f4;
+    font-style: italic;
+    color:navy;
+    /* width: auto; */
+  }

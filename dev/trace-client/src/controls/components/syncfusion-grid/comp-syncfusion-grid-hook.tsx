@@ -62,14 +62,20 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
     function getColumnDirectives() {
         const colDirectives: any[] = columns.map((col: SyncFusionGridColumnType, index: number) => {
             return (<ColumnDirective
+                allowEditing={col?.allowEditing}
                 clipMode="EllipsisWithTooltip"
+                customAttributes={col?.customAttributes}
+                edit={col?.edit}
+                editType={col?.editType}
                 field={col.field}
                 format={col.format}
-                headerText={col.headerText}
+                headerText={col?.headerText}
+                isPrimaryKey={col?.isPrimaryKey}
                 key={index}
-                textAlign={col.textAlign}
                 template={col.template}
+                textAlign={col.textAlign}
                 type={col.type}
+                visible={col?.visible}
                 width={col.width}
             />)
         })

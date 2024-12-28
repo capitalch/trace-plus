@@ -37,10 +37,15 @@
 														- Refresh
 		- Submit
 		- Grid
-			- aggreagtes
-			- edit feature
-				- Clear date
-				- Clear remarks
+			- delete
+														- Horizontal Scrollbar like general ledger
+														- aggreagtes
+														- edit feature
+															- Background color
+															- primary key column
+															- default tranDate if empty
+															- Clear date
+															- Clear remarks
 														- Format
 															- Date
 															- debit credit

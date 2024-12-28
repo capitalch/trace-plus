@@ -6,10 +6,20 @@ import { IconSubmit } from "../../../../controls/icons/icon-submit"
 import { Utils } from "../../../../utils/utils"
 import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
 import { SelectBankModal } from "./select-bank-modal"
+import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 
-export function BankReconCustomControls({ instance }: BankReconCustomControlType) {
+export function BankReconCustomControls({ instance, meta }: BankReconCustomControlType) {
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)
     const isDisabled: boolean = selectedBank.accId ? false : true
+    const {
+        // buCode
+        context
+        // , dbName
+        // , decodedDbParamsObject
+        // , decFormatter
+        // , finYearId
+        // , intFormatter
+    } = useUtilsInfo()
     console.log(instance)
     return (
         <div className="flex gap-4 mr-4 flex-wrap">
@@ -24,10 +34,42 @@ export function BankReconCustomControls({ instance }: BankReconCustomControlType
             <button type="button" disabled={isDisabled} className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-secondary-500 hover:bg-secondary-800 focus:ring-4 focus:outline-none focus:ring-secondary-300 rounded-lg text-center dark:bg-secondary-600 dark:hover:bg-secondary-700 dark:focus:ring-secondary-800 disabled:bg-secondary-200">
                 <IconArrange className="text-white w-6 h-6 mr-2" /> Rearrange
             </button>
-            <button type="button" disabled={isDisabled} className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
+            <button onClick={handleOnSubmit} type="button" disabled={isDisabled} className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
                 <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
         </div>
     )
+
+    function getChangedData() {
+        const changedrows: any[] = (meta.current.rows as any[]).filter((row: any) => (
+            (row.origClearDate !== row.clearDate)
+            || (row.origClearRemarks !== row.clearRemarks)
+        ))
+        const changedData: any[] = changedrows.map((item: any) => {
+            const it: any = {
+                clearDate: item.clearDate,
+                clearRemarks: item.clearRemarks,
+                tranDetailsId: item.tranDetailsId,
+                id: item.bankReconId
+            }
+            if (!it.id) {
+                it.id = undefined
+            }
+            return (it)
+        })
+        return (changedData)
+    }
+
+    function handleOnSubmit() {
+        const gridRef = context.CompSyncFusionGrid[instance].gridRef
+        gridRef.current.endEdit()
+        const sqlObject: any = {
+            tableName: 'ExtBankReconTranD',
+            data: getChangedData()
+        }
+        console.log(sqlObject)
+        // gridRef.current.saveChanges()
+        // console.log(meta.current.rows)
+    }
 
     function handleSelectBank() {
         Utils.showHideModalDialogA({
@@ -41,4 +83,5 @@ export function BankReconCustomControls({ instance }: BankReconCustomControlType
 
 type BankReconCustomControlType = {
     instance: string
+    meta: any
 }

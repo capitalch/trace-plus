@@ -23,38 +23,20 @@ export function EditGrid() {
             format: "dd/MM/yyyy", // Set the date format
         },
     };
-    const dateEditTemplate = (args: any) => {
-        return (
-            <DatePickerComponent
-                value={args.OrderDate}
-                placeholder="Select a date"
-                onChange={(e: any) => {
-                    const index: number = args.index
-                    meta.current.sampleData[index].OrderDate = e.value
-                    setRefresh({})
-                    // const updatedData: any = {};
-                    // updatedData[args.column.field] = e.value; // Update the specific field with the new value
 
-                    // Assign the updated data back to args
-                    // Object.assign(args, updatedData); // Merge updatedData into args
-                }}
-                format='dd-MM-yyyy'
-                showClearButton={true}
-            />
-        );
-    };
-    // const editParams = { mode: "Dialog" }; // Mode: 'Normal', 'Batch', or 'Dialog'
     return (
         <div className="flex flex-col m-4">
             <button className="bg-slate-200 px-5 py-1 w-40" onClick={() => {
                 console.log(meta.current.sampleData)
             }}>Check data</button>
-            <GridComponent 
+            <GridComponent
+                actionBegin={handleActionBegin}
+                cellEdit={handleCellEdit}
                 queryCellInfo={handleQueryCellInfo}
                 dataSource={meta.current.sampleData}
                 editSettings={{
                     allowEditing: true,
-                    mode: "Batch"
+                    mode: "Normal"
                 }}
                 gridLines="Both"
                 ref={gridRef}
@@ -69,16 +51,10 @@ export function EditGrid() {
                         headerText="Order Date"
                         width="80"
                         customAttributes={{
-                            class:'custom-css',
-                            width: '2000px'
+                            class: 'custom-css',
                         }}
-                    // customAttributes={(args:any) => ({
-                    //     style: { backgroundColor: args.isEdited ? '#FFDDC1' : 'transparent' },
-                    //     title: args.isEdited ? 'Edited' : 'Not Edited'
-                    //   })}
-                    // editTemplate={dateEditTemplate}
                     />
-                    <ColumnDirective field="OrderID" headerText="Order ID" isPrimaryKey={true} width="120"  />
+                    <ColumnDirective field="OrderID" headerText="Order ID" isPrimaryKey={true} width="120" />
                     <ColumnDirective field="CustomerName" headerText="Customer Name" width="150" allowEditing={true} />
                     <ColumnDirective field="Freight" headerText="Freight" textAlign="Right" width="120" />
                 </ColumnsDirective>
@@ -87,8 +63,32 @@ export function EditGrid() {
         </div>
     );
 
-    function handleQueryCellInfo(args:any){
+    function handleQueryCellInfo(args: any) {
         console.log(args)
+    }
 
+    function handleActionBegin(args: any) {
+        console.log(args)
+    }
+
+    function handleCellEdit(args: any) {
+        console.log(args)
+        args.rowData.OrderDate = new Date()
     }
 }
+
+// const dateEditTemplate = (args: any) => {
+//     return (
+//         <DatePickerComponent
+//             value={args.OrderDate}
+//             placeholder="Select a date"
+//             onChange={(e: any) => {
+//                 const index: number = args.index
+//                 meta.current.sampleData[index].OrderDate = e.value
+//                 setRefresh({})
+//             }}
+//             format='dd-MM-yyyy'
+//             showClearButton={true}
+//         />
+//     );
+// };
