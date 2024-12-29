@@ -3,6 +3,7 @@ import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessU
 import { Utils } from "./utils"
 import { GlobalContext, GlobalContextType } from "../app/global-context"
 import { useContext } from "react"
+import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
 
 export function useUtilsInfo() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -17,6 +18,7 @@ export function useUtilsInfo() {
     const buCode: string | undefined = currentBusinessUnit.buCode
     const finYearId: number | undefined = currentFinYear?.finYearId
     const branchId: number | undefined = currentBranch?.branchId
+    const genericUpdateQueryName: string = GraphQLQueriesMap.genericUpdate.name;
     return ({
         branchId
         , buCode
@@ -25,6 +27,7 @@ export function useUtilsInfo() {
         , decodedDbParamsObject
         , decFormatter
         , finYearId
+        , genericUpdateQueryName
         , intFormatter
     })
 }

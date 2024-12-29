@@ -21,16 +21,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {}
+@layer components {
+}
 
 .e-icon-errordrop {
-    display: none !important;
-  }
+  display: none !important;
+}
 
-  /* Syncfusion grid edit column background color */
-  .grid-col-edit {
-    background: #d7f0f4;
-    font-style: italic;
-    color:navy;
-    /* width: auto; */
-  }
+/* Syncfusion grid edit column background color */
+.grid-col-edit {
+  background: #d7f0f4;
+  font-style: italic;
+  color: navy;
+}
+
+/* Syncfusion tooltip background color */
+.custom-tooltip {
+  background-color: gray !important; /* Light blue color */
+  color: #000; /* Text color */
+}

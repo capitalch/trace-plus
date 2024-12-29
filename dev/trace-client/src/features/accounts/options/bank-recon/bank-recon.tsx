@@ -1,6 +1,6 @@
-import { shallowEqual, useSelector } from "react-redux"
+import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
-import { RootStateType } from "../../../../app/store/store"
+import { AppDispatchType, RootStateType } from "../../../../app/store/store"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
@@ -8,7 +8,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { Utils } from "../../../../utils/utils"
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
-import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
+import { bankReconSelectedBankFn, selectBank, SelectedBankType } from "../../accounts-slice"
 import { Messages } from "../../../../utils/messages"
 import { BankReconCustomControls } from "./bank-recon-custom-controls"
 import { useEffect, useRef, useState } from "react"
@@ -21,7 +21,7 @@ import _ from "lodash"
 export function BankRecon() {
     const [, setRefresh] = useState({})
     const instance: string = DataInstancesMap.bankRecon
-    // const dispatch: AppDispatchType = useDispatch()
+    const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
     // const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
@@ -29,7 +29,7 @@ export function BankRecon() {
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
 
     const { buCode
-        // , context
+        , context
         , dbName
         , decodedDbParamsObject
         // , decFormatter
@@ -46,6 +46,12 @@ export function BankRecon() {
             loadData()
         }
     }, [selectedBank])
+
+    useEffect(() => {
+        return (() => {
+            dispatch(selectBank({ accId: undefined, accName: '' })) //cleanup
+        })
+    }, [])
 
     const datePickerParams = {
         params: {
@@ -75,14 +81,14 @@ export function BankRecon() {
                 mode: 'Batch',
                 showConfirmDialog: false
             }}
-            handleCellEdit={handleCellEdit}
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
             instance={instance}
             isLoadOnInit={false}
-            minWidth="1400px"
             loadData={loadData}
-        // onRowDataBound={onRowDataBound}
+            minWidth="1400px"
+            onCellEdit={onCellEdit}
+            onRowDataBound={onRowDataBound}
         />
         {isVisibleAppLoader && <CompAppLoader />}
     </CompAccountsContainer>)
@@ -226,20 +232,18 @@ export function BankRecon() {
         return (ret)
     }
 
-    function handleCellEdit(args: any) { // clearDate set as tranDate
+    function onCellEdit(args: any) { // clearDate set as tranDate
         if (!args?.value) {
             args.rowData['clearDate'] = args?.rowData?.['tranDate']
         }
     }
 
-    // function handleOnClickTestData(){
-    //     const gridRef = context.CompSyncFusionGrid[instance].gridRef
-    //     gridRef.current.endEdit()
-    //     // gridRef.current.saveChanges()
-    //     console.log(meta.current.rows)
-    // }
-
     async function loadData() {
+        const gridRef = context.CompSyncFusionGrid[instance].gridRef
+        if (gridRef) {
+            gridRef.current.endEdit()
+            gridRef.current.refresh() // required. Otherwise grid is not updated when edit is performed
+        }
         const accId: number = Utils.getReduxState().accounts.bankRecon.selectedBank.accId || 0
         const res: any = await Utils.doGenericQuery({
             buCode: buCode || '',
@@ -270,7 +274,7 @@ export function BankRecon() {
             jsonResult.bankRecon.forEach((item: BankReconType, index: number) => {
                 item.info = ''.concat(item.remarks ?? '', ' ', item.lineRefNo ?? '', ' ', item.lineRemarks ?? '')
                 item.index = index + 1
-                const tempBal = bal.plus(item.debit).minus(item.credit).toNumber()
+                const tempBal = bal.plus(item.debit || new Decimal(0)).minus(item.credit || new Decimal(0)).toNumber()
                 item.balance = `${Utils.toDecimalFormat(Math.abs(tempBal))} ${tempBal < 0 ? 'Cr' : 'Dr'}`
                 bal = new Decimal(tempBal)
             })
@@ -278,17 +282,19 @@ export function BankRecon() {
         } else {
             jsonResult.bankRecon = [formattedOpBalance]
         }
-        jsonResult.bankRecon = _.orderBy(jsonResult.bankRecon, ['index'], ['desc'])
-        meta.current.rows = [...jsonResult.bankRecon]
+        (jsonResult.bankRecon as any[]) = _.orderBy(jsonResult.bankRecon, ['index'], ['desc'])
+        meta.current.rows = jsonResult.bankRecon.map((x: any) => ({ ...x })) //_.cloneDeep(jsonResult.bankRecon) //
         setRefresh({})
-        // dispatch(setQueryHelperData({
-        //     instance: instance,
-        //     data: jsonResult.bankRecon as BankReconType[]
-        // }))
+    }
+
+    function onRowDataBound(args: any) {
+        if((args.data.origClearDate !== args.data.clearDate) ||(args.data.clearRemarks !== args.data.clearRemarks)) {
+            args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
+        }
     }
 }
 
-type BankReconType = {
+export type BankReconType = {
     accNames?: string
     balance?: any
     bankReconId?: number
@@ -316,25 +322,3 @@ type OpBalanceType = {
     dc: 'D' | 'C'
     debit: number
 }
-
-// {
-//     field: 'remarks',
-//     headerText: 'Remarks',
-//     width: 150,
-//     textAlign: 'Left',
-//     type: 'string'
-// },
-// {
-//     field: 'lineRefNo',
-//     headerText: 'Line ref',
-//     width: 100,
-//     textAlign: 'Left',
-//     type: 'string'
-// },
-// {
-//     field: 'lineRemarks',
-//     headerText: 'Line remarks',
-//     width: 100,
-//     textAlign: 'Left',
-//     type: 'string'
-// },

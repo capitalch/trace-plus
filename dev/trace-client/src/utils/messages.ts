@@ -71,6 +71,7 @@ const Messages = {
   messNotAllowed: 'This operation is not allowed',
   messNoBusinessUnitsDefined:
     'No business units are defined for this client. Admin must define at least one business unit',
+  messOpBalClearDateChangeNotAllowed:'Opening balance clear date cannot be changed',
   messOperationNotAllowed: 'This operation is not allowed',
   messPasswordHelper: 'At least 8 characters long | 1 digit | 1 special char',
   messRecordDeleted: 'The record was successfully deleted',

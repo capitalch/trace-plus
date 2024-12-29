@@ -166,6 +166,8 @@ export type GraphQLUpdateArgsType = {
   [key: string]: any
   tableName?: string
   deletedIds?: [string]
+  xData?:any
+  buCode?: string
 }
 
 export type GraphQLQueriesMapType = {

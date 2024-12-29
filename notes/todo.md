@@ -32,10 +32,15 @@
 															- On select dispatch id and name
 															- display name of bank on select otherwise in red show select a bank by clicking the button
 															- Grid populate
+															- set opening balance not editable
 		- Set opening balance
-		- Rearrange
+			- Create Modal UI
+			- Submit functionality
+			- Existing value
+														- Rearrange
+														- cancel
 														- Refresh
-		- Submit
+														- Submit
 		- Grid
 			- delete
 														- Horizontal Scrollbar like general ledger
@@ -55,9 +60,9 @@
 			
 															- Populate 
 			
-	- Server side
+													- Server side
 														- Sql query
-		- Save data
+														- Save data
 													- General ledger
 														- Thorough checkup
 														- Reverse not working fine

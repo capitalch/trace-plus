@@ -16,7 +16,6 @@ export function CompSyncFusionGrid({
     dataSource,
     editSettings,
     gridDragAndDropSettings,
-    handleCellEdit,
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
     height,
@@ -24,6 +23,7 @@ export function CompSyncFusionGrid({
     instance,
     loadData,
     minWidth = '1200px',
+    onCellEdit,
     onDelete = undefined,
     onEdit = undefined,
     onPreview = undefined,
@@ -71,7 +71,8 @@ export function CompSyncFusionGrid({
             allowSorting={true}
             allowSelection={true}
             allowTextWrap={true}
-            cellEdit={handleCellEdit}
+            // beginEdit={handleBeginEdit}
+            cellEdit={onCellEdit}
             // beforeExcelExport={handleBeforeExcelExport}
             className={className}
             created={onCreated}
@@ -120,28 +121,11 @@ export function CompSyncFusionGrid({
                 , Sort
                 , Toolbar
             ]} />
-
         </GridComponent>
     )
 
-    // function handlePdfQueryCellInfo(args: any){
+    // function handleBeginEdit(args: any){
     //     console.log(args)
-    // }
-
-    // function handleBeforePdfExport(args: any){
-    //     console.log(args.gridObject.dataSource)
-    // }
-
-    // function handleBeforeExcelExport(args: any) {
-    //     console.log(args.gridObject.dataSource)
-    //     // args.cancel = true
-    //     // Filter out aggregate rows from the export data
-    // }
-
-    // function handleExcelQueryCellInfo(args: any) {
-    //     if(args.row.isAggregateRow) {
-    //         args.cancel = true
-    //     }
     // }
 
     function onCreated() {
@@ -173,7 +157,6 @@ export type CompSyncFusionGridType = {
         showConfirmDialog: boolean
     }
     gridDragAndDropSettings?: GridDragAndDropSettingsType
-    handleCellEdit?: (args: any) => void
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
     height?: string
@@ -181,6 +164,7 @@ export type CompSyncFusionGridType = {
     isLoadOnInit?: boolean
     loadData?: () => void
     minWidth?: string
+    onCellEdit?: (args: any) => void
     onDelete?: (id: string) => void
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
