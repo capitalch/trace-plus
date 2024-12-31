@@ -38,6 +38,7 @@
     "react-dom": "^19.0.0",
     "react-draggable": "^4.4.6",
     "react-hook-form": "^7.54.1",
+    "react-number-format": "^5.4.3",
     "react-redux": "^9.2.0",
     "react-responsive": "^10.0.0",
     "react-router-dom": "^7.0.2",

@@ -14,7 +14,7 @@ import { BankReconCustomControls } from "./bank-recon-custom-controls"
 import { useEffect, useRef, useState } from "react"
 import { compAppLoaderVisibilityFn } from "../../../../controls/redux-components/comp-slice"
 import { CompAppLoader } from "../../../../controls/redux-components/comp-app-loader"
-// import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice"
+
 import Decimal from "decimal.js"
 import _ from "lodash"
 
@@ -24,7 +24,6 @@ export function BankRecon() {
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
-    // const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn, shallowEqual)
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
 
@@ -32,9 +31,7 @@ export function BankRecon() {
         , context
         , dbName
         , decodedDbParamsObject
-        // , decFormatter
         , finYearId
-        // , intFormatter
     } = useUtilsInfo()
 
     const meta: any = useRef({

@@ -1,6 +1,6 @@
 class SqlAccounts:
 
-    get_account_balance = '''
+    get_account_balance = """
      with "accId" as (values (%(accId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int))
      --with "accId" AS (VALUES (117::int)), "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int))
         , cte1 as (
@@ -24,9 +24,9 @@ class SqlAccounts:
             select  SUM(amount) as "accountBalance"
                 from cte1
             Group by "accId"
-    '''
-    
-    get_account_ledger = '''
+    """
+
+    get_account_ledger = """
     with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "accId" as (values(%(accId)s::int)),
 	--with "branchId" as (values (1::int)), "finYearId" as (values (2024)), "accId" as (values(129::int)),
     cte1 AS (
@@ -84,9 +84,9 @@ class SqlAccounts:
             'opBalance', (SELECT json_agg(a) FROM cte2 a),
             'transactions', (SELECT json_agg(a) FROM cte3 a)
         ) as "jsonResult"
-    '''
-    
-    get_all_banks = '''
+    """
+
+    get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 
                 join "AccClassM" c
@@ -94,9 +94,9 @@ class SqlAccounts:
         where "accClass" = 'bank'
             and "accLeaf" in ('Y', 'S')
         order by "accName"
-    '''
-    
-    get_balanceSheet_profitLoss = '''
+    """
+
+    get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 
                 "accId", 
@@ -204,9 +204,16 @@ class SqlAccounts:
 			'expenses', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'E'),
 			'incomes', (SELECT JSON_AGG(a) FROM cte4 a WHERE "accType" = 'I')
         ) AS "jsonResult"
-    '''
-    
-    get_bank_recon = ''' --optimized by ai
+    """
+
+    get_bank_op_balance = """
+        select "id", "amount", "dc"
+            from "BankOpBal"
+                where "accId" = %(accId)s
+                    and "finYearId" = %(finYearId)s
+    """
+
+    get_bank_recon = """ --optimized by ai
     with "finYearId" as (values (%(finYearId)s::int)), "accId" as (values(%(accId)s::int)), "startDate" 
     as (values(%(startDate)s::date)), "endDate" as (values(%(endDate)s::date)),
     --WITH "finYearId" AS (VALUES (2024)), "accId" AS (VALUES (310::int)), "startDate" AS (VALUES ('2024-04-01'::date)), 
@@ -266,14 +273,14 @@ class SqlAccounts:
             'bankRecon', (SELECT json_agg(a) from cte3 a)
             , 'opBalance', (SELECT row_to_json(b) from cte2 b)
             ) as "jsonResult"
-    '''
+    """
 
-    get_ledger_leaf_accounts = '''
+    get_ledger_leaf_accounts = """
         select id, "accName", "accLeaf"
             from "AccM"
                 where "accLeaf" in ('L','Y')
             order by "accName"
-    '''
+    """
 
     get_settings_fin_years_branches = """
         with cte1 as (
@@ -294,7 +301,7 @@ class SqlAccounts:
             , 'allSettings', (select json_agg(row_to_json(c)) from cte3 c)
 	) as "jsonResult" 
     """
-    
+
     get_subledger_accounts = """
         with "accId" as (values (%(accId)s::int))
          -- with "accId" AS (VALUES (1::int))
@@ -303,7 +310,7 @@ class SqlAccounts:
                     where "parentId" = (table "accId")
                 order by "accName"
     """
-    
+
     get_trialBalance = """
         WITH RECURSIVE hier AS (
             SELECT 
@@ -426,7 +433,7 @@ class SqlAccounts:
             'profitOrLoss', (SELECT "profitOrLoss" FROM cte3)
         ) AS "jsonResult"
     """
- 
+
     test_connection = """
         select 'ok' as "connection"
     """

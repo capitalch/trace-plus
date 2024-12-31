@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { FocusEvent, useRef, useState } from "react";
 import { GridComponent, ColumnsDirective, ColumnDirective, Edit, Inject, Toolbar } from "@syncfusion/ej2-react-grids";
 import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
+import InputMask from "react-input-mask";
+import { NumericFormat } from 'react-number-format'
 
 export function EditGrid() {
     const [, setRefresh] = useState({})
@@ -26,9 +28,15 @@ export function EditGrid() {
 
     return (
         <div className="flex flex-col m-4">
-            <button className="bg-slate-200 px-5 py-1 w-40" onClick={() => {
-                console.log(meta.current.sampleData)
-            }}>Check data</button>
+            {/* react-input-mask */}
+            <InputMask mask="9999999999.99" className="w-28 h-8 text-right" alwaysShowMask={false} />
+            {/* react-number-format */}
+            <NumericFormat className="text-right w-28 h-8" allowNegative={false}
+                decimalScale={2}
+                fixedDecimalScale={true} thousandsGroupStyle="thousand"
+                thousandSeparator=','
+                onFocus={handleOnFocus}
+            />
             <GridComponent
                 actionBegin={handleActionBegin}
                 cellEdit={handleCellEdit}
@@ -62,6 +70,10 @@ export function EditGrid() {
             </GridComponent>
         </div>
     );
+
+    function handleOnFocus(event: FocusEvent<HTMLInputElement>): void {
+        event.target.select()
+    }
 
     function handleQueryCellInfo(args: any) {
         console.log(args)

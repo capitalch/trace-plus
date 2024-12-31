@@ -8,7 +8,7 @@ import { ibukiEmit } from "./ibuki"
 import { IbukiMessages } from "./ibukiMessages"
 import { getApolloClient } from "../app/graphql/apollo-client"
 import { AccSettingType, BranchType, FinYearType, LoginType, UserDetailsType } from "../features/login/login-slice"
-import { GraphQLQueriesMap } from "../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLUpdateArgsType } from "../app/graphql/maps/graphql-queries-map"
 import { showCompAppLoader } from "../controls/redux-components/comp-slice"
 import { CompInstances } from "../controls/redux-components/comp-instances"
 
@@ -110,6 +110,16 @@ async function doGenericQuery({
             sqlId: sqlId
         }), GraphQLQueriesMap.genericQuery.name, instance)
     return (res?.data?.[GraphQLQueriesMap.genericQuery.name])
+}
+
+async function doGenericUpdate({ buCode, sqlArgs, tableName }: DoGenericUpdateType) {
+    const userDetails: UserDetailsType = Utils.getUserDetails() || {}
+    const { dbName, decodedDbParamsObject, } = userDetails
+    
+    const traceDataObject: GraphQLUpdateArgsType = {
+        tableName: tableName,
+
+    }
 }
 
 function getCompanyName(): string {
@@ -474,7 +484,7 @@ function showFailureAlertMessage(alertMessage: AlertMessageType) {
 }
 
 function toDecimalFormat(s: any) {
-    s= s ?? ''
+    s = s ?? ''
     if (s === '') {
         return s
     }
@@ -532,6 +542,12 @@ export type DoGenericQueryType = {
         [key: string]: any
     }
     instance?: string
+}
+
+export type DoGenericUpdateType = {
+    buCode: string
+    sqlArgs?: Record<string, any>[],
+    tableName: string
 }
 
 export type UnitInfoType = {

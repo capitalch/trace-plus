@@ -26,7 +26,7 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
         , decodedDbParamsObject
         , genericUpdateQueryName
     } = useUtilsInfo()
-    // console.log(instance)
+    
     return (
         <div className="flex gap-4 mr-4 flex-wrap">
             <TooltipComponent content='Select a bank from list of banks' className="text-sm" cssClass="custom-tooltip">
@@ -39,7 +39,7 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
             <TooltipComponent content='Set opening balance of the bank' className="text-sm" cssClass="custom-tooltip">
                 <button type="button" onClick={handleOpBalance} disabled={isDisabled} className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-primary-500 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:bg-primary-200">
                     <IconOpen className="text-white w-6 h-6 mr-2" />
-                    Opening</button>
+                    Opening bal</button>
             </TooltipComponent>
             <TooltipComponent content='Rearrange without saving' className="text-sm" cssClass="custom-tooltip">
                 <button type="button" onClick={handleReArrange} disabled={isDisabled} className="px-5 py-2 font-medium text-white inline-flex items-center bg-secondary-500 hover:bg-secondary-800 focus:ring-4 focus:outline-none focus:ring-secondary-300 rounded-lg text-center dark:bg-secondary-600 dark:hover:bg-secondary-700 dark:focus:ring-secondary-800 disabled:bg-secondary-200">
@@ -104,21 +104,14 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
     function handleReArrange() {
         const gridRef = context.CompSyncFusionGrid[instance].gridRef
         gridRef.current.endEdit()
-        // let rows: any[] = meta.current.rows.map((x: any) => ({ ...x }))
+        
         const rows: BankReconType[] = _.orderBy(meta.current.rows, ['clearDate', 'tranDate', 'index']) // , ['desc', 'desc', 'desc']
         updateBalance(rows)
-        // rows = _.orderBy(rows, [
-        //     (item: any) =>
-        //         item.clearDate ? dayjs(item.clearDate) : dayjs('9999-01-01'),
-        //     (item: any) =>
-        //         item.tranDate ? dayjs(item.tranDate) : dayjs('9999-01-01'),
-        //     'id',
-        // ])
+        
         rows.reverse()
         meta.current.rows = rows.map((x: any) => ({ ...x }))
         gridRef.current.dataSource = []
         gridRef.current.dataSource = meta.current.rows
-        // gridRef.current.refresh()
     }
 
     async function handleOnSubmit() {
