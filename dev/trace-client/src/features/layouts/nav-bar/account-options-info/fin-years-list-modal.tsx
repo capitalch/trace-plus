@@ -9,6 +9,7 @@ import { TraceDataObjectType } from '../../../../utils/global-types-interfaces-e
 import { GraphQLQueriesMap } from '../../../../app/graphql/maps/graphql-queries-map';
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants';
 import { Messages } from '../../../../utils/messages';
+import { DatabaseTablesMap } from '../../../../app/graphql/maps/database-tables-map';
 
 export function FinYearsListModal() {
     const allFinYears: FinYearType[] = useSelector(allFinYearsSelectorFn) || [];
@@ -67,7 +68,7 @@ export function FinYearsListModal() {
     async function saveLastUsedFinYearId(finYearId: number) {
         const userId: number | undefined = Utils.getCurrentLoginInfo().userDetails?.id;
         const traceDataObject: TraceDataObjectType = {
-            tableName: 'UserM',
+            tableName: DatabaseTablesMap.UserM,
             xData: {
                 id: userId,
                 lastUsedFinYearId: finYearId

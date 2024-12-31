@@ -17,6 +17,7 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 // import { GlobalContext } from "../../../../App"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 
 export function SuperAdminNewEditClient({
     clientCode
@@ -151,7 +152,7 @@ export function SuperAdminNewEditClient({
     async function onSubmit(data: FormDataType) {
         const dbName1: string = data.dbName || `${data.clientCode}_accounts` // If dbname is already there, it does not change
         const traceDataObject: TraceDataObjectType = {
-            tableName: 'ClientM'
+            tableName: DatabaseTablesMap.ClientM
             , xData: {
                 ...data
                 , dbName: dbName1

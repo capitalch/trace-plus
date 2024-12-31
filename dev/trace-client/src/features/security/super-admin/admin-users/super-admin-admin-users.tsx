@@ -3,7 +3,7 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { CompContentContainer } from "../../../../controls/components/comp-content-container"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { Utils } from "../../../../utils/utils"
@@ -11,6 +11,7 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import { Messages } from "../../../../utils/messages"
 import { SuperAdminNewAdminUserButton } from "./super-admin-new-admin-user-button"
 import { SuperAdminNewEditAdminUser } from "./super-admin-new-edit-admin-user"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 
 export function SuperAdminAdminUsers() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -37,9 +38,9 @@ export function SuperAdminAdminUsers() {
         />
     </CompContentContainer>);
 
-    function getAggregates(): SyncFusionAggregateType[] {
+    function getAggregates(): SyncFusionGridAggregateType[] {
         return ([
-            { type: 'Count', field: 'clientName', format: 'N0', footerTemplate: clientNameAggrTemplate }
+            { columnName: 'clientName', type: 'Count', field: 'clientName', format: 'N0', footerTemplate: clientNameAggrTemplate }
         ])
     }
 
@@ -99,7 +100,7 @@ export function SuperAdminAdminUsers() {
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: 'UserM',
+            tableName: DatabaseTablesMap.UserM,
             deletedIds: [id]
         })
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called

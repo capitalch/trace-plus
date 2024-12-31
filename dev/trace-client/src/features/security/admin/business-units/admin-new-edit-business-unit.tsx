@@ -15,6 +15,7 @@ import { Utils } from "../../../../utils/utils";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AdminNewEditBusinessUnit({
     buCode,
@@ -130,7 +131,7 @@ export function AdminNewEditBusinessUnit({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: "BuM",
+            tableName: DatabaseTablesMap.BuM,
             xData: {
                 ...data,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId

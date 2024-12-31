@@ -17,6 +17,7 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 // import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AdminNewEditRole({
     descr,
@@ -101,7 +102,7 @@ export function AdminNewEditRole({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: "RoleM",
+            tableName: DatabaseTablesMap.RoleM,
             xData: {
                 ...data,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0

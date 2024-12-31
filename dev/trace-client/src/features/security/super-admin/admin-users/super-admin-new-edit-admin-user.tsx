@@ -15,6 +15,7 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 // import { GlobalContext } from "../../../../App";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function SuperAdminNewEditAdminUser({
     clientId,
@@ -168,7 +169,7 @@ export function SuperAdminNewEditAdminUser({
             return
         }
         const traceDataObject: TraceDataObjectType = {
-            tableName: "UserM",
+            tableName: DatabaseTablesMap.UserM,
             xData: {
                 ...data,
             }

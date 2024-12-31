@@ -12,6 +12,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import _ from 'lodash'
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AdminLinkSecuredControlWithRoleModal({ roleId, instance }: AdminLinkSecuredControlWithRoleModalType) {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -78,7 +79,7 @@ export function AdminLinkSecuredControlWithRoleModal({ roleId, instance }: Admin
         }
 
         const traceDataObject: TraceDataObjectType = {
-            tableName: "RoleSecuredControlX",
+            tableName: DatabaseTablesMap.RoleSecuredControlX,
             xData: {
                 ...data,
                 roleId: roleId

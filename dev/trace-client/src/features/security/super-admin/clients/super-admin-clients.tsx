@@ -2,7 +2,7 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { SuperAdminNewClientButtons } from "./super-admin-new-client-buttons";
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditClient } from "./super-admin-new-edit-client";
@@ -12,6 +12,7 @@ import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function SuperAdminClients() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -74,7 +75,7 @@ export function SuperAdminClients() {
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: 'ClientM',
+            tableName: DatabaseTablesMap.ClientM,
             deletedIds: [id]
         })
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
@@ -131,9 +132,9 @@ export function SuperAdminClients() {
         return (<input type="checkbox" readOnly checked={props.isExternalDb} />)
     }
 
-    function getAggregates(): SyncFusionAggregateType[] {
+    function getAggregates(): SyncFusionGridAggregateType[] {
         return ([
-            { type: 'Count', field: 'clientCode', format: 'N0', footerTemplate: clientCodeAggrTemplate }
+            {columnName:'clientCode', type: 'Count', field: 'clientCode', format: 'N0', footerTemplate: clientCodeAggrTemplate }
         ])
     }
 

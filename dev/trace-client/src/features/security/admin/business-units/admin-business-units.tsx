@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
@@ -14,6 +14,7 @@ import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit";
 import { AppDispatchType } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AdminBusinessUnits() {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -43,9 +44,9 @@ export function AdminBusinessUnits() {
         </CompContentContainer>
     );
 
-    function getAggregates(): SyncFusionAggregateType[] {
+    function getAggregates(): SyncFusionGridAggregateType[] {
         return [
-            { type: 'Count', field: 'buCode', format: 'N0', footerTemplate: buCodeAggrTemplate }
+            {columnName:'buCode', type: 'Count', field: 'buCode', format: 'N0', footerTemplate: buCodeAggrTemplate }
         ];
     }
 
@@ -74,7 +75,7 @@ export function AdminBusinessUnits() {
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: 'BuM',
+            tableName: DatabaseTablesMap.BuM,
             deletedIds: [id]
         });
         Utils.showDeleteConfirmDialog(doDelete);

@@ -17,6 +17,7 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 // import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function SuperAdminNewEditSecuredControl({
     controlName,
@@ -141,7 +142,7 @@ export function SuperAdminNewEditSecuredControl({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: "SecuredControlM",
+            tableName: DatabaseTablesMap.SecuredControlM,
             xData: {
                 ...data,
             }

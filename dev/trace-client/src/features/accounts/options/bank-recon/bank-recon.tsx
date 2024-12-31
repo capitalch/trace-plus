@@ -67,7 +67,7 @@ export function BankRecon() {
             isLastNoOfRows={false}
             instance={instance}
         />
-        {/* <button onClick={handleOnClickTestData} className="w-20">Test data</button> */}
+        
         <CompSyncFusionGrid
             aggregates={getAggregates()}
             className="mr-6 mt-4"
@@ -81,10 +81,12 @@ export function BankRecon() {
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
             instance={instance}
+            
             isLoadOnInit={false}
             loadData={loadData}
             minWidth="1400px"
             onCellEdit={onCellEdit}
+            onDelete={handleOnDelete}
             onRowDataBound={onRowDataBound}
         />
         {isVisibleAppLoader && <CompAppLoader />}
@@ -227,6 +229,10 @@ export function BankRecon() {
             ret = <label className="font-bold text-red-500 text-xl">{Messages.messSelectBank}</label>
         }
         return (ret)
+    }
+
+    async function handleOnDelete(){
+        
     }
 
     function onCellEdit(args: any) { // clearDate set as tranDate

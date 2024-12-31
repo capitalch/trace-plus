@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 // import { GlobalContext } from "../../../../App";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
@@ -15,6 +15,7 @@ import { AdminNewEditRole } from "./admin-new-edit-role";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { AppDispatchType } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AdminRoles() {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -44,9 +45,9 @@ export function AdminRoles() {
         </CompContentContainer>
     );
 
-    function getAggregates(): SyncFusionAggregateType[] {
+    function getAggregates(): SyncFusionGridAggregateType[] {
         return [
-            { type: 'Count', field: 'roleName', format: 'N0', footerTemplate: roleNameAggrTemplate }
+            {columnName:'roleName', type: 'Count', field: 'roleName', format: 'N0', footerTemplate: roleNameAggrTemplate }
         ];
     }
 
@@ -74,7 +75,7 @@ export function AdminRoles() {
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: 'RoleM',
+            tableName: DatabaseTablesMap.RoleM,
             deletedIds: [id],
         });
         Utils.showDeleteConfirmDialog(doDelete);

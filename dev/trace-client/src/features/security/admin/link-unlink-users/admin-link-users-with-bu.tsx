@@ -15,10 +15,11 @@ import { TraceDataObjectType } from '../../../../utils/global-types-interfaces-e
 import { Messages } from '../../../../utils/messages';
 import { CompSyncFusionTreeGridToolbar } from '../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar';
 import { CompSyncFusionGridToolbar } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar';
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid';
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid';
 import { AdminNewBusinessUserButton } from '../business users/admin-new-business-user-button';
 import { WidgetTooltip } from '../../../../controls/widgets/widget-tooltip';
 import { AdminNewBusinessUnitButton } from '../business-units/admin-new-business-unit-button';
+import { DatabaseTablesMap } from '../../../../app/graphql/maps/database-tables-map';
 
 export function AdminLinkUsersWithBu() {
     const businessUsersInstance = DataInstancesMap.adminBusinessUsers
@@ -96,8 +97,9 @@ export function AdminLinkUsersWithBu() {
         </div>
     )
 
-    function getBusinessUsersAggregates(): SyncFusionAggregateType[] {
+    function getBusinessUsersAggregates(): SyncFusionGridAggregateType[] {
         return [{
+            columnName:'roleName',
             field: 'roleName',
             type: "Count",
             format: "N0",
@@ -157,7 +159,7 @@ export function AdminLinkUsersWithBu() {
                     buId: buId
                 }))
             const traceDataObject: TraceDataObjectType = {
-                tableName: "UserBuX",
+                tableName: DatabaseTablesMap.UserBuX,
                 xData
             };
 
@@ -296,7 +298,7 @@ export function AdminLinkUsersWithBu() {
             , Messages.messSureUnlinkUserBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: "UserBuX",
+                    tableName: DatabaseTablesMap.UserBuX,
                     deletedIds: [props.id],
                 };
                 try {
@@ -318,7 +320,7 @@ export function AdminLinkUsersWithBu() {
             , Messages.messSureOnUnLinkBusinessUsersBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: "UserBuX",
+                    tableName: DatabaseTablesMap.UserBuX,
                     deletedIds: getAllIds(),
                 };
                 try {

@@ -1,35 +1,31 @@
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
-// import { MaskedTextBoxComponent, NumericTextBoxComponent } from "@syncfusion/ej2-react-inputs"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
-import { AppDispatchType, RootStateType } from "../../../../app/store/store"
+import { RootStateType } from "../../../../app/store/store"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator"
-// import { InputNumber } from "primereact/inputnumber"
-// import { InputMask } from "primereact/inputmask"
 import { NumericFormat } from "react-number-format"
-import { FocusEvent, useState } from "react"
+import { FocusEvent, useEffect, useState } from "react"
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns"
 import { IconSubmit } from "../../../../controls/icons/icon-submit"
-import { GraphQLQueriesMap, GraphQLUpdateArgsType } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Utils } from "../../../../utils/utils"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 
 export function BankReconOpBalance() {
-    // const dispatch: AppDispatchType = useDispatch()
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)
     const instance: string = DataInstancesMap.bankReconOpBalance
-    const { buCode
+    const { context
+        , buCode
         , dbName
         , decodedDbParamsObject
         , finYearId
-        , genericUpdateQueryName
     } = useUtilsInfo()
     const bankOpBalance: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data)
     const opBal: bankOpBalanceType = bankOpBalance?.[0]
-    const [selectedDcValue, setSelectedDcValue]: any = useState<string | null>(opBal?.dc);
-    const [amount, setAmount]: any = useState<number | null>(opBal?.amount)
+    const [selectedDcValue, setSelectedDcValue]: any = useState<string | null>(null);
+    const [amount, setAmount]: any = useState<number | null>(0)
     const { loading } = useQueryHelper({
         instance: instance,
         dbName: dbName,
@@ -45,6 +41,11 @@ export function BankReconOpBalance() {
         })
     })
 
+    useEffect(() => {
+        setAmount(opBal?.amount || 0)
+        setSelectedDcValue(opBal?.dc)
+    }, [opBal?.amount, opBal?.dc])
+
     if (loading) {
         return (<WidgetLoadingIndicator />)
     }
@@ -59,18 +60,19 @@ export function BankReconOpBalance() {
                 thousandsGroupStyle="thousand"
                 thousandSeparator=','
                 value={amount || 0}
-                onChange={(event: any) => {
-                    setAmount(event.target.value)
+                // onChange={(event: any) => {
+                //     setAmount(event.target.value)
+                // }}
+                onValueChange={(values) => {
+                    setAmount(values.value)
                 }}
             />
             <DropDownListComponent
-                // className="ml-6"
                 dataSource={[{ value: 'D', text: 'Debit' }, { value: 'C', text: 'Credit' }]}
                 fields={{ text: 'text', value: 'value' }}
                 onChange={(event: any) => {
-                    setSelectedDcValue(event.itemData.value)
+                    setSelectedDcValue(event.target.value)
                 }}
-
                 popupHeight='100px'
                 value={selectedDcValue}
                 width={100}
@@ -87,24 +89,21 @@ export function BankReconOpBalance() {
 
     async function handleOnSubmit() {
         try {
-            const traceDataObject: GraphQLUpdateArgsType = {
-                tableName: 'ExtBankReconTranD',
-                dbParams: decodedDbParamsObject,
-                xData: {
-                    accId: selectedBank?.accId,
-                    amount: amount,
-                    dc: selectedDcValue,
-                    finYearId: finYearId,
-                    id: opBal?.id,
-                },
-                buCode: buCode
+            const xData: Record<string, any> = {
+                accId: selectedBank?.accId,
+                amount: amount,
+                dc: selectedDcValue,
+                finYearId: finYearId,
+                id: opBal?.id,
             }
-            const q: any = GraphQLQueriesMap.genericUpdate(
-                dbName || '',
-                traceDataObject
-            )
-            await Utils.mutateGraphQL(q, genericUpdateQueryName)
-            // dispatch op balance
+            await Utils.doGenericUpdate({
+                buCode: buCode || '',
+                tableName: DatabaseTablesMap.BankOpBal,
+                xData: xData
+            })
+            const loadData: any = context.CompSyncFusionGrid[DataInstancesMap.bankRecon].loadData
+            await loadData()
+            Utils.showHideModalDialogA({ isOpen: false })
         } catch (e: any) {
             console.log(e)
         }

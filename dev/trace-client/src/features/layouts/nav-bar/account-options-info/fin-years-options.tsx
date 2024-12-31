@@ -10,6 +10,7 @@ import { Messages } from "../../../../utils/messages";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function FinYearsOptions() {
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn)
@@ -83,7 +84,7 @@ export function FinYearsOptions() {
     async function saveLastUsedFinYearId(finYearId: number) {
         const userId: number | undefined = Utils.getCurrentLoginInfo().userDetails?.id;
         const traceDataObject: TraceDataObjectType = {
-            tableName: 'UserM',
+            tableName: DatabaseTablesMap.UserM,
             xData: {
                 id: userId,
                 lastUsedFinYearId: finYearId

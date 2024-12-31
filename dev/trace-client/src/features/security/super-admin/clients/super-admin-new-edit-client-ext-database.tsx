@@ -16,6 +16,7 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
 import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 
 export function SuperAdminNewEditClientExtDatabase({
     clientCode
@@ -359,7 +360,7 @@ export function SuperAdminNewEditClientExtDatabase({
             url: data?.url
         }
         const traceDataObject: TraceDataObjectType = {
-            tableName: 'ClientM' // When id is present then considered as update
+            tableName: DatabaseTablesMap.ClientM // When id is present then considered as update
             , xData: {
                 id: data?.id
                 , clientCode: data?.clientCode

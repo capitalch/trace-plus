@@ -28,7 +28,6 @@ export const { selectBank } = accountsSlice.actions
 
 export type AccountsInitialStateType = {
   bankRecon: { selectedBank: SelectedBankType }
-  // trialBalance?: FinalAccountsType[]
 }
 
 export type SelectedBankType = {
@@ -39,5 +38,3 @@ export type SelectedBankType = {
 // selectors
 export const bankReconSelectedBankFn = (state: RootStateType) =>
   state.accounts.bankRecon.selectedBank
-// export const trialBalanceSelectorFn = (state: RootStateType)=>
-//     state.accounts.trialBalance

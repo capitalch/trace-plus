@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
@@ -19,6 +19,7 @@ import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { AdminLinkSecuredControlWithRoleModal } from "./admin-link-secured-control-with-role-modal";
 import { IconAutoLink } from "../../../../controls/icons/icon-auto-link";
 import { AdminAutoLinkSecuredControlsFromBuiltinRolesModal } from "./admin-auto-link-secured-controls-from-builtin-roles-modal";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.adminSecuredControls
@@ -86,8 +87,9 @@ export function AdminLinkSecuredControlsWithRoles() {
             </div>
         </div>)
 
-    function getSecuredControlsAggregates(): SyncFusionAggregateType[] {
+    function getSecuredControlsAggregates(): SyncFusionGridAggregateType[] {
         return [{
+            columnName:'controlName',
             field: 'controlName',
             type: "Count",
             format: "N0",
@@ -166,7 +168,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     roleId: roleId
                 }))
             const traceDataObject: TraceDataObjectType = {
-                tableName: "RoleSecuredControlX",
+                tableName: DatabaseTablesMap.RoleSecuredControlX,
                 xData
             };
 
@@ -308,7 +310,7 @@ export function AdminLinkSecuredControlsWithRoles() {
             , Messages.messSureOnUnLinkSecuredControlBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: "RoleSecuredControlX",
+                    tableName: DatabaseTablesMap.RoleSecuredControlX,
                     deletedIds: [props.id],
                 };
                 try {
@@ -330,7 +332,7 @@ export function AdminLinkSecuredControlsWithRoles() {
             , Messages.messSureOnUnLinkAllSecuredControlsBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: "RoleSecuredControlX",
+                    tableName: DatabaseTablesMap.RoleSecuredControlX,
                     deletedIds: getAllIds(),
                 };
                 try {

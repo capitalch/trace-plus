@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
-import { CompSyncFusionGrid, SyncFusionAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 // import { GlobalContext } from "../../../../App";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
@@ -12,6 +12,7 @@ import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditRole } from "./super-admin-new-edit-role";
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function SuperAdminRoles() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -37,9 +38,9 @@ export function SuperAdminRoles() {
         />
     </CompContentContainer>);
 
-    function getAggregates(): SyncFusionAggregateType[] {
+    function getAggregates(): SyncFusionGridAggregateType[] {
         return ([
-            { type: 'Count', field: 'roleName', format: 'N0', footerTemplate: roleNameAggrTemplate }
+            {columnName:'roleName', type: 'Count', field: 'roleName', format: 'N0', footerTemplate: roleNameAggrTemplate }
         ])
     }
 
@@ -68,7 +69,7 @@ export function SuperAdminRoles() {
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: 'RoleM',
+            tableName: DatabaseTablesMap.RoleM,
             deletedIds: [id]
         })
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called

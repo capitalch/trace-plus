@@ -165,7 +165,7 @@ export type GraphQLUpdateArgsType = {
   dbParams?: { [key: string]: any }
   [key: string]: any
   tableName?: string
-  deletedIds?: [string]
+  deletedIds?: string[] | number[]
   xData?:any
   buCode?: string
 }

@@ -5,7 +5,7 @@ import { CompContentContainer } from "../../../../controls/components/comp-conte
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import {
     CompSyncFusionGrid,
-    SyncFusionAggregateType,
+    SyncFusionGridAggregateType,
     SyncFusionGridColumnType,
 } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
@@ -18,6 +18,7 @@ import { AdminNewEditBusinessUser } from "./admin-new-edit-business-user";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { AppDispatchType } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AdminBusinessUsers() {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -48,9 +49,9 @@ export function AdminBusinessUsers() {
         </CompContentContainer>
     );
 
-    function getAggregates(): SyncFusionAggregateType[] {
+    function getAggregates(): SyncFusionGridAggregateType[] {
         return [
-            { type: "Count", field: "roleName", format: "N0", footerTemplate: roleNameAggrTemplate },
+            {columnName:'roleName', type: "Count", field: "roleName", format: "N0", footerTemplate: roleNameAggrTemplate },
         ];
     }
 
@@ -110,7 +111,7 @@ export function AdminBusinessUsers() {
 
     async function handleOnDelete(id: string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: "UserM",
+            tableName: DatabaseTablesMap.UserM,
             deletedIds: [id],
         });
         Utils.showDeleteConfirmDialog(doDelete);

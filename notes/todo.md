@@ -33,10 +33,10 @@
 															- display name of bank on select otherwise in red show select a bank by clicking the button
 															- Grid populate
 															- set opening balance not editable
-		- Set opening balance
-			- Create Modal UI
-			- Submit functionality
-			- Existing value
+													- Set opening balance
+														- Create Modal UI
+														- Submit functionality
+														- Existing value
 														- Rearrange
 														- cancel
 														- Refresh

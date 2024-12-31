@@ -15,6 +15,7 @@ import { BankReconType } from "./bank-recon"
 import Decimal from "decimal.js"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { BankReconOpBalance } from "./bank-recon-op-balance"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 
 export function BankReconCustomControls({ instance, meta }: BankReconCustomControlType) {
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)
@@ -126,7 +127,7 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
                 return
             }
             const traceDataObject: GraphQLUpdateArgsType = {
-                tableName: 'ExtBankReconTranD',
+                tableName: DatabaseTablesMap.ExtBankReconTranD,
                 dbParams: decodedDbParamsObject,
                 xData: [...xData],
                 buCode: buCode

@@ -15,7 +15,9 @@ import { CompInstances } from "../controls/redux-components/comp-instances"
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
     decodeExtDbParams: decodeExtDbParams,
+    doGenericDelete: doGenericDelete,
     doGenericQuery: doGenericQuery,
+    doGenericUpdate: doGenericUpdate,
     getCompanyName: getCompanyName,
     getCurrentBranch: getCurrentBranch,
     getCurrentDateFormat: getCurrentDateFormat,
@@ -93,6 +95,23 @@ async function decodeExtDbParams(encodedDbParams: string) {
     }
 }
 
+async function doGenericDelete({ buCode, tableName, deletedIds }: DoGenericDeleteType) {
+    const userDetails: UserDetailsType = Utils.getUserDetails() || {}
+    const { dbName, decodedDbParamsObject, } = userDetails
+    const traceDataObject: GraphQLUpdateArgsType = {
+        tableName: tableName,
+        dbParams: decodedDbParamsObject,
+        buCode: buCode,
+        deletedIds: deletedIds,
+    }
+    const q: any = GraphQLQueriesMap.genericUpdate(
+        dbName || '',
+        traceDataObject
+    )
+    const queryName: string = GraphQLQueriesMap.genericUpdate.name
+    const res: any = await mutateGraphQL(q, queryName)
+    return (res)
+}
 async function doGenericQuery({
     buCode
     , dbName
@@ -112,14 +131,22 @@ async function doGenericQuery({
     return (res?.data?.[GraphQLQueriesMap.genericQuery.name])
 }
 
-async function doGenericUpdate({ buCode, sqlArgs, tableName }: DoGenericUpdateType) {
+async function doGenericUpdate({ buCode, tableName, xData }: DoGenericUpdateType) {
     const userDetails: UserDetailsType = Utils.getUserDetails() || {}
     const { dbName, decodedDbParamsObject, } = userDetails
-    
     const traceDataObject: GraphQLUpdateArgsType = {
         tableName: tableName,
-
+        dbParams: decodedDbParamsObject,
+        xData: xData,
+        buCode: buCode,
     }
+    const q: any = GraphQLQueriesMap.genericUpdate(
+        dbName || '',
+        traceDataObject
+    )
+    const queryName: string = GraphQLQueriesMap.genericUpdate.name
+    const res: any = await mutateGraphQL(q, queryName)
+    return (res)
 }
 
 function getCompanyName(): string {
@@ -531,6 +558,12 @@ export type DbNameDbParamsType = {
     dbParams?: { [key: string]: string | undefined }
 }
 
+export type DoGenericDeleteType = {
+    buCode: string
+    tableName: string
+    deletedIds: string[] | number[]
+}
+
 export type DoGenericQueryType = {
     sqlId: string
     sqlArgs?: {
@@ -546,8 +579,8 @@ export type DoGenericQueryType = {
 
 export type DoGenericUpdateType = {
     buCode: string
-    sqlArgs?: Record<string, any>[],
     tableName: string
+    xData: Record<string, any>[] | Record<string, any>
 }
 
 export type UnitInfoType = {
@@ -567,12 +600,14 @@ export type UnitInfoType = {
 type UtilsType = {
     addUniqueKeysToJson: (data: any) => any
     decodeExtDbParams: (encodedDbParams: string) => any
+    doGenericDelete: ({ buCode, tableName, deletedIds }: DoGenericDeleteType) => any
     doGenericQuery: ({ sqlId
         , buCode
         , sqlArgs
         , dbName
         , dbParams
     }: DoGenericQueryType) => any
+    doGenericUpdate: ({ buCode, tableName, xData }: DoGenericUpdateType) => any
     getCompanyName: () => string
     getCurrentBranch: () => BranchType | undefined
     getCurrentDateFormat: () => string
