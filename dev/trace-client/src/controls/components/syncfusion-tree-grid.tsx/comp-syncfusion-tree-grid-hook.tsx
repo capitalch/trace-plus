@@ -10,6 +10,7 @@ export function useCompSyncfusionTreeGrid({
     , aggregates
     , buCode
     , columns
+    , dataPath
     , dbName
     , dbParams
     , graphQlQueryFromMap
@@ -36,7 +37,8 @@ export function useCompSyncfusionTreeGrid({
     })
 
     const selectedData: any = useSelector((state: RootStateType) => {
-        const ret: any = state.queryHelper[instance]?.data?.[0]?.jsonResult
+        const tRet: any = state.queryHelper[instance]?.data?.[0]?.jsonResult
+        const ret = dataPath ? tRet?.[dataPath] : tRet
         return (ret)
     })
 
@@ -54,7 +56,7 @@ export function useCompSyncfusionTreeGrid({
                 />
             )
         })
-        return(aggrColDirectives)
+        return (aggrColDirectives)
     }
 
     function getColumnDirectives() {
@@ -84,5 +86,5 @@ export function useCompSyncfusionTreeGrid({
         return (colDirectives)
     }
 
-    return ({getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData })
+    return ({ getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData })
 }

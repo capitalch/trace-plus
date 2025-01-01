@@ -84,17 +84,17 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
             colDirectives.unshift(<ColumnDirective
                 key='D'
                 field=''
-                headerText=''
+                headerText='D'
                 template={deleteTemplate}
-                width={12}
+                width={30}
             />)
         }
 
         if (onPreview) {
             colDirectives.unshift(<ColumnDirective
-                key='D'
+                key='P'
                 field=''
-                headerText=''
+                headerText='P'
                 template={previewTemplate}
                 width={12}
             />)
@@ -104,7 +104,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
             colDirectives.unshift(<ColumnDirective
                 key='E'
                 field=''
-                headerText=''
+                headerText='E'
                 template={editTemplate}
                 width={12}
                 textAlign="Center"
@@ -127,12 +127,13 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
 
     function deleteTemplate(props: any) {
         return (
-            <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+            <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} 
+            className="w-4 h-4 rounded-md bg-slate-100 hover:bg-slate-300" onClick={() => {
                 if (onDelete) {
                     onDelete(props.id)
                 }
             }}>
-                <IconDelete className="w-4 h-4 m-auto mt-1 text-red-600" />
+                <IconDelete className="w-3 h-3 m-auto mt-1 text-red-600" />
             </Button>)
     }
 

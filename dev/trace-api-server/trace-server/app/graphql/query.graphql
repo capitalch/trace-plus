@@ -1,4 +1,5 @@
 type Query {
+    accountsMaster(dbName: String, value: String): Generic
     balanceSheetProfitLoss(dbName: String, value: String): Generic
     decodeExtDbParams(value: String): Generic
     genericQuery(dbName: String, value: String): Generic

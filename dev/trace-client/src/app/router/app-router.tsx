@@ -22,6 +22,7 @@ import { BalanceSheet } from "../../features/accounts/final-accounts/balance-she
 import { ProfitLoss } from "../../features/accounts/final-accounts/profit-loss";
 import { GeneralLedger } from "../../features/accounts/final-accounts/general-ledger";
 import { BankRecon } from "../../features/accounts/options/bank-recon/bank-recon";
+import { AccountsMaster } from "../../features/accounts/masters/accounts/accounts-master";
 
 export const appRouter = createBrowserRouter([
     {
@@ -51,7 +52,8 @@ export const appRouter = createBrowserRouter([
                 { path: 'balance-sheet', element: <BalanceSheet /> },
                 { path: 'profit-loss', element: <ProfitLoss /> },
                 { path: 'general-ledger', element: <GeneralLedger /> },
-                { path: 'bank-recon', element: <BankRecon /> }
+                { path: 'bank-recon', element: <BankRecon /> },
+                { path: 'accounts-master', element: <AccountsMaster /> }
             ]
     },
     {

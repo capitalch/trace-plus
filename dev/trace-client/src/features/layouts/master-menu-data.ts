@@ -101,7 +101,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "33",
           label: "Accounts",
-          path: "/blogs",
+          path: "/accounts-master",
         },
         {
           id: "34",

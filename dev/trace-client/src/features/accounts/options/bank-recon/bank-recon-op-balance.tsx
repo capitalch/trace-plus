@@ -60,9 +60,6 @@ export function BankReconOpBalance() {
                 thousandsGroupStyle="thousand"
                 thousandSeparator=','
                 value={amount || 0}
-                // onChange={(event: any) => {
-                //     setAmount(event.target.value)
-                // }}
                 onValueChange={(values) => {
                     setAmount(values.value)
                 }}

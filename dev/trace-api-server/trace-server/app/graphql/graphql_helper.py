@@ -210,15 +210,17 @@ async def trial_balance_helper(info, dbName, value):
     sqlArgs = valueDict.get("sqlArgs", {})
     try:
         res = await exec_sql(
-            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs)
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+        )
         flat_data = res[0].get("jsonResult").get("trialBalance")
         if flat_data is not None:
-            data.append({"jsonResult":build_nested_hierarchy_with_children(flat_data)})
+            data.append({"jsonResult": build_nested_hierarchy_with_children(flat_data)})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
         return create_graphql_exception(e)
     return data
+
 
 async def balance_sheet_profit_loss_helper(info, dbName, value):
     data = []
@@ -230,23 +232,69 @@ async def balance_sheet_profit_loss_helper(info, dbName, value):
     sqlArgs = valueDict.get("sqlArgs", {})
     try:
         res = await exec_sql(
-            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs)
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+        )
         flat_data = res[0].get("jsonResult")
         if flat_data is not None:
             profitOrLoss = flat_data.get("profitOrLoss")
-            liabilities = build_nested_hierarchy_with_children(flat_data.get("liabilities")) if flat_data.get("liabilities") is not None else None
-            assets = build_nested_hierarchy_with_children(flat_data.get("assets")) if flat_data.get("assets") is not None else None
-            expenses = build_nested_hierarchy_with_children(flat_data.get("expenses")) if flat_data.get("expenses") is not None else None
-            incomes = build_nested_hierarchy_with_children(flat_data.get("incomes")) if flat_data.get("incomes") is not None else None
-            data.append({
-                "jsonResult":{
-                    "profitOrLoss": profitOrLoss,
-                    "liabilities": liabilities,
-                    "assets": assets,
-                    "expenses": expenses,
-                    "incomes": incomes
+            liabilities = (
+                build_nested_hierarchy_with_children(flat_data.get("liabilities"))
+                if flat_data.get("liabilities") is not None
+                else None
+            )
+            assets = (
+                build_nested_hierarchy_with_children(flat_data.get("assets"))
+                if flat_data.get("assets") is not None
+                else None
+            )
+            expenses = (
+                build_nested_hierarchy_with_children(flat_data.get("expenses"))
+                if flat_data.get("expenses") is not None
+                else None
+            )
+            incomes = (
+                build_nested_hierarchy_with_children(flat_data.get("incomes"))
+                if flat_data.get("incomes") is not None
+                else None
+            )
+            data.append(
+                {
+                    "jsonResult": {
+                        "profitOrLoss": profitOrLoss,
+                        "liabilities": liabilities,
+                        "assets": assets,
+                        "expenses": expenses,
+                        "incomes": incomes,
+                    }
                 }
-            })
+            )
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
+
+async def accounts_master_helper(info, dbName, value):
+    data = []
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_accounts_master
+    sqlArgs = valueDict.get("sqlArgs", {})
+    try:
+        res = await exec_sql(
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+        )
+        flat_data = res[0].get("jsonResult")
+        if flat_data is not None:
+            accountsMaster = (
+                build_nested_hierarchy_with_children(flat_data.get("accountsMaster"))
+                if flat_data.get("accountsMaster") is not None
+                else None
+            )
+        data.append({"jsonResult": {"accountsMaster": accountsMaster}})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
@@ -328,6 +376,7 @@ async def update_user_helper(info, value: str):
 
 # Local helper for helper methods
 
+
 # Generated from AI
 def build_nested_hierarchy_with_children(flat_data):
     # Create a dictionary mapping account IDs to their respective data
@@ -335,13 +384,19 @@ def build_nested_hierarchy_with_children(flat_data):
 
     # Iterate over each record to assign children nodes
     for item in flat_data:
-        for child_id in item.get("children", []):
+        children = item.get("children", [])  #
+        if children is None:  # Handle None case
+            continue
+        for child_id in children:
             if child_id in id_to_node:
                 id_to_node[item["id"]]["children"].append(id_to_node[child_id])
 
     # Extract only the top-level nodes (those not referenced as children)
     all_children_ids = {
-        child_id for item in flat_data for child_id in item.get("children", [])
+        # child_id for item in flat_data for child_id in item.get("children", [])
+        child_id
+        for item in flat_data
+        for child_id in (item.get("children") or [])
     }
     roots = [
         node for node_id, node in id_to_node.items() if node_id not in all_children_ids
@@ -367,6 +422,7 @@ def create_graphql_exception(e: Exception):
             }
         }
     }
+
 
 async def send_mail_for_change_pwd(
     companyName: str, email: str, pwd: str, userName: str

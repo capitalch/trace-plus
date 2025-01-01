@@ -35,8 +35,8 @@ export function TrialBalance() {
 
     return (
         <CompAccountsContainer>
-            <div className='flex gap-8' >
-                <div className='flex flex-col '>
+            {/* <div className='flex gap-8' > */}
+                {/* <div className='flex flex-col'> */}
                     <CompSyncFusionTreeGridToolbar className='mt-2'
                         CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
                         title='Trial Balance'
@@ -59,13 +59,13 @@ export function TrialBalance() {
                             finYearId: finYearId || 1900,
                         }}
                         columns={getColumns()}
-                        height="calc(100vh - 250px)"
+                        height="calc(100vh - 230px)"
                         instance={instance}
                         minWidth='950px'
                         treeColumnIndex={0}
                     />
-                </div>
-            </div>
+                {/* </div> */}
+            {/* </div> */}
         </CompAccountsContainer>
     )
 

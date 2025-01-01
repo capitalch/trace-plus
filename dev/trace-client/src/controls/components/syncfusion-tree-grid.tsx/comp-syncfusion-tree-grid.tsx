@@ -15,6 +15,7 @@ export function CompSyncfusionTreeGrid({
     className = '',
     columns,
     dataBound,
+    dataPath,
     dataSource,
     dbName,
     dbParams,
@@ -31,7 +32,7 @@ export function CompSyncfusionTreeGrid({
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
@@ -179,6 +180,7 @@ export type CompSyncfusionTreeGridType = {
     childMapping: string
     className?: string
     columns: SyncFusionTreeGridColumnType[]
+    dataPath?: string
     dataSource?: any
     dataBound?: (args: any) => void
     dbName?: string

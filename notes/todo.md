@@ -22,8 +22,26 @@
 															- In Accounts Info modal windows title should be aligned with grid
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-- Bank Recon
-	- UI
+- Misc
+	- In 2022-23 demo, trial balance op bal show NAN
+	- In all grids show a margin of 10 px from bottom
+
+- Master accounts
+															- Startup
+															- Server
+																- SQL
+	- client
+		- Treegrid toolbox
+		- Treegrid populate
+		- Grid
+			- Columns
+			- Aggr columns / Summary
+			- Add child
+			- edit self
+			- delete
+
+												- Bank Recon
+													- UI
 															- Balance column
 															- Start up
 															- Screen layout
@@ -41,8 +59,8 @@
 														- cancel
 														- Refresh
 														- Submit
-		- Grid
-			- delete
+													- Grid
+														- delete
 														- Horizontal Scrollbar like general ledger
 														- aggreagtes
 														- edit feature
@@ -120,8 +138,8 @@
 															- When 1st select 'Y', 2nd select disabled
 															- When 1st select 'L', 2nd select enabled and border red and error
 															- When first select is selected 'Y', 2nd select should clear
-- BS
-	BS and PL heading to go up in match with trial balance
+												- BS
+													BS and PL heading to go up in match with trial balance
 													- Server side
 														- Organize code for trial balance and BS
 													- Client side

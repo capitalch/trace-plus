@@ -86,6 +86,105 @@ class SqlAccounts:
         ) as "jsonResult"
     """
 
+
+    # get_accounts_master1 = """
+    #     with cte1 as (
+    #         select a."id", "accCode", "accName", "parentId", "accType", "isPrimary", "accLeaf","classId", "accClass"
+    #         , x."id" as "extBusinessContactsAccMId"
+    #         , e."isAutoSubledger"
+    #         , (select array_agg(id) from "AccM" m where a."id" = m."parentId" ) as "children"
+            
+	# 		, CASE WHEN ("accClass" in('debtor', 'creditor', 'loan')) and ("accLeaf" in('Y','S'))  then true else false END as "addressable"
+	# 		, CASE WHEN x."id" is not null then true else false END as "isAddressExists"
+    #             from "AccM" a 
+	# 				join "AccClassM" c
+    #                 	on a."classId" = c."id" 
+	# 				left outer join "ExtBusinessContactsAccM" x
+	# 					on a."id" = x."accId"
+    #                 left outer join "ExtMiscAccM" e
+    #                     on a."id" = e."accId"
+	# 			order by  "accName", "accType", a."id"
+    #     ),
+    #     cte2 as (
+    #         select a."id", "accCode", "accName", "accType", "accLeaf", "classId", "accClass"
+    #             from "AccM" a join "AccClassM" c on a."classId" = c."id"
+    #                 where "accLeaf" in ('N', 'L')
+    #                     order by "accName"
+    #     )
+    #     SELECT
+    #         json_build_object(
+    #             'accountsMaster', (SELECT json_agg(row_to_json(a)) from cte1 a)
+    #             , 'groupsLedgers', (SELECT json_agg(row_to_json(b)) from cte2 b)
+    #         ) as "jsonResult"
+    # """
+
+    get_accounts_master = """
+    -- modified by AI
+        WITH RECURSIVE "children_cte" AS (
+    SELECT 
+        "parentId" AS "parent_id", 
+        ARRAY_AGG("id") AS "child_ids"
+    FROM 
+        "AccM"
+    GROUP BY 
+        "parentId"
+    ),
+    cte1 AS (
+        SELECT 
+            a."id", 
+            "accCode", 
+            "accName", 
+            "parentId", 
+            "accType", 
+            "isPrimary", 
+            "accLeaf", 
+            "classId", 
+            "accClass",
+            x."id" AS "extBusinessContactsAccMId",
+            e."isAutoSubledger",
+            cte."child_ids" AS "children",
+            CASE 
+                WHEN "accClass" IN ('debtor', 'creditor', 'loan') AND "accLeaf" IN ('Y', 'S') THEN TRUE 
+                ELSE FALSE 
+            END AS "addressable",
+            CASE 
+                WHEN x."id" IS NOT NULL THEN TRUE 
+                ELSE FALSE 
+            END AS "isAddressExists"
+        FROM 
+            "AccM" a
+        LEFT JOIN 
+            "children_cte" cte ON a."id" = cte."parent_id"
+        JOIN 
+            "AccClassM" c ON a."classId" = c."id"
+        LEFT JOIN 
+            "ExtBusinessContactsAccM" x ON a."id" = x."accId"
+        LEFT JOIN 
+            "ExtMiscAccM" e ON a."id" = e."accId"
+    ),
+    cte2 AS (
+        SELECT 
+            a."id", 
+            "accCode", 
+            "accName", 
+            "accType", 
+            "accLeaf", 
+            "classId", 
+            "accClass"
+        FROM 
+            "AccM" a
+        JOIN 
+            "AccClassM" c ON a."classId" = c."id"
+        WHERE 
+            "accLeaf" IN ('N', 'L')
+    )
+    SELECT 
+        json_build_object(
+            'accountsMaster', (SELECT json_agg(row_to_json(a)) FROM cte1 a),
+            'groupsLedgers', (SELECT json_agg(row_to_json(b)) FROM cte2 b)
+        ) AS "jsonResult"
+    """
+    
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 
@@ -221,7 +320,7 @@ class SqlAccounts:
     cte1 AS (
         SELECT 
             d."id" AS "tranDetailsId",
-            h."id" AS "headerId",
+            h."id",
             "tranDate",
             "tranTypeId",
             "userRefNo",
@@ -266,9 +365,9 @@ class SqlAccounts:
         SELECT c1.*, p."accNames"
         FROM cte1 c1
         LEFT JOIN precomputed_acc_names p 
-            ON p."tranHeaderId" = c1."headerId"
+            ON p."tranHeaderId" = c1."id"
         ORDER BY 
-            c1."clearDate", c1."tranDate", c1."headerId")
+            c1."clearDate", c1."tranDate", c1."id")
     select json_build_object(
             'bankRecon', (SELECT json_agg(a) from cte3 a)
             , 'opBalance', (SELECT row_to_json(b) from cte2 b)

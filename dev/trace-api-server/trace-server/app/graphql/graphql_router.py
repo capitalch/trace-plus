@@ -10,6 +10,7 @@ from ariadne.asgi import GraphQL
 
 # from fastapi.middleware.cors import CORSMiddleware
 from app.graphql.graphql_helper import (
+    accounts_master_helper,
     balance_sheet_profit_loss_helper,
     change_pwd_helper,
     change_uid_helper,
@@ -27,9 +28,16 @@ type_defs = load_schema_from_path(".")
 query = QueryType()
 mutation = MutationType()
 
+
+@query.field("accountsMaster")
+async def accounts_master(_, info, dbName="", value=""):
+    return await accounts_master_helper(info, dbName, value)
+
+
 @query.field("balanceSheetProfitLoss")
 async def balance_sheet_profit_loss(_, info, dbName="", value=""):
     return await balance_sheet_profit_loss_helper(info, dbName, value)
+
 
 @query.field("decodeExtDbParams")
 async def decode_ext_db_params(_, info, value=""):

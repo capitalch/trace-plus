@@ -13,5 +13,5 @@ export const DatabaseTablesMap = {
     // accounts
     BankOpBal:'BankOpBal',
     ExtBankReconTranD:'ExtBankReconTranD',
-
+    TranH: 'TranH'
 }

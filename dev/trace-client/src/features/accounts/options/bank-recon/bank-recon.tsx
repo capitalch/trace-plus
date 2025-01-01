@@ -17,6 +17,7 @@ import { CompAppLoader } from "../../../../controls/redux-components/comp-app-lo
 
 import Decimal from "decimal.js"
 import _ from "lodash"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 
 export function BankRecon() {
     const [, setRefresh] = useState({})
@@ -67,7 +68,7 @@ export function BankRecon() {
             isLastNoOfRows={false}
             instance={instance}
         />
-        
+
         <CompSyncFusionGrid
             aggregates={getAggregates()}
             className="mr-6 mt-4"
@@ -81,7 +82,7 @@ export function BankRecon() {
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
             instance={instance}
-            
+
             isLoadOnInit={false}
             loadData={loadData}
             minWidth="1400px"
@@ -126,7 +127,6 @@ export function BankRecon() {
                 textAlign: 'Left',
                 type: 'date',
                 format: currentDateFormat,
-                // template: (props: any) => dayjs(props.tranDate).format(Utils.getCurrentDateFormat())
             },
             {
                 allowEditing: false,
@@ -231,8 +231,20 @@ export function BankRecon() {
         return (ret)
     }
 
-    async function handleOnDelete(){
-        
+    async function handleOnDelete(id: string) {
+        Utils.showDeleteConfirmDialog(() => {
+            console.log(id)
+            try {
+                Utils.doGenericDelete({
+                    buCode: buCode || '',
+                    tableName: DatabaseTablesMap.TranH,
+                    deletedIds: [id]
+                })
+                loadData()
+            } catch (e: any) {
+                console.log(e)
+            }
+        })
     }
 
     function onCellEdit(args: any) { // clearDate set as tranDate
@@ -291,7 +303,7 @@ export function BankRecon() {
     }
 
     function onRowDataBound(args: any) {
-        if((args.data.origClearDate !== args.data.clearDate) ||(args.data.clearRemarks !== args.data.clearRemarks)) {
+        if ((args.data.origClearDate !== args.data.clearDate) || (args.data.clearRemarks !== args.data.clearRemarks)) {
             args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
         }
     }
