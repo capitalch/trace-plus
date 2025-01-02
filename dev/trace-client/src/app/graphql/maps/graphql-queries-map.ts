@@ -13,6 +13,7 @@ export const GraphQLQueriesMap: GraphQLQueriesMapType = {
   decodeExtDbParams: decodeExtDbParams,
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
+  genericUpdateQuery:genericUpdateQuery,
   importSecuredControls: importSecuredControls,
   trialBalance: trialBalance,
   updateClient: updateClient,
@@ -101,6 +102,18 @@ function genericUpdate(
     `;
 }
 
+function genericUpdateQuery(
+  dbName: string,
+  val: GraphQLUpdateQueryArgsType
+): DocumentNode {
+  const value = encodeObj(val);
+  return gql`
+        mutation GenericUpdateQuery {
+            genericUpdateQuery(dbName:"${dbName}", value:"${value}")
+        }
+    `;
+}
+
 function importSecuredControls(
   dbName: string,
   val: GraphQLUpdateArgsType
@@ -183,6 +196,14 @@ export type GraphQLUpdateArgsType = {
   buCode?: string;
 };
 
+export type GraphQLUpdateQueryArgsType = {
+  buCode?: string;
+  dbParams?: { [key: string]: any };
+  [key: string]: any;
+  sqlId?: string;
+  sqlArgs?: { [key: string]: any };
+};
+
 export type GraphQLQueriesMapType = {
   accountsMaster: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode;
   balanceSheetProfitLoss: (
@@ -195,6 +216,10 @@ export type GraphQLQueriesMapType = {
   decodeExtDbParams: (val: string) => DocumentNode;
   genericQuery: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode;
   genericUpdate: (dbName: string, val: GraphQLUpdateArgsType) => DocumentNode;
+  genericUpdateQuery: (
+    dbName: string,
+    val: GraphQLUpdateQueryArgsType
+  ) => DocumentNode;
   importSecuredControls: (
     dbName: string,
     val: GraphQLUpdateArgsType

@@ -87,102 +87,72 @@ class SqlAccounts:
     """
 
 
-    # get_accounts_master1 = """
-    #     with cte1 as (
-    #         select a."id", "accCode", "accName", "parentId", "accType", "isPrimary", "accLeaf","classId", "accClass"
-    #         , x."id" as "extBusinessContactsAccMId"
-    #         , e."isAutoSubledger"
-    #         , (select array_agg(id) from "AccM" m where a."id" = m."parentId" ) as "children"
-            
-	# 		, CASE WHEN ("accClass" in('debtor', 'creditor', 'loan')) and ("accLeaf" in('Y','S'))  then true else false END as "addressable"
-	# 		, CASE WHEN x."id" is not null then true else false END as "isAddressExists"
-    #             from "AccM" a 
-	# 				join "AccClassM" c
-    #                 	on a."classId" = c."id" 
-	# 				left outer join "ExtBusinessContactsAccM" x
-	# 					on a."id" = x."accId"
-    #                 left outer join "ExtMiscAccM" e
-    #                     on a."id" = e."accId"
-	# 			order by  "accName", "accType", a."id"
-    #     ),
-    #     cte2 as (
-    #         select a."id", "accCode", "accName", "accType", "accLeaf", "classId", "accClass"
-    #             from "AccM" a join "AccClassM" c on a."classId" = c."id"
-    #                 where "accLeaf" in ('N', 'L')
-    #                     order by "accName"
-    #     )
-    #     SELECT
-    #         json_build_object(
-    #             'accountsMaster', (SELECT json_agg(row_to_json(a)) from cte1 a)
-    #             , 'groupsLedgers', (SELECT json_agg(row_to_json(b)) from cte2 b)
-    #         ) as "jsonResult"
-    # """
-
     get_accounts_master = """
     -- modified by AI
         WITH RECURSIVE "children_cte" AS (
-    SELECT 
-        "parentId" AS "parent_id", 
-        ARRAY_AGG("id") AS "child_ids"
-    FROM 
-        "AccM"
-    GROUP BY 
-        "parentId"
-    ),
-    cte1 AS (
         SELECT 
-            a."id", 
-            "accCode", 
-            "accName", 
-            "parentId", 
-            "accType", 
-            "isPrimary", 
-            "accLeaf", 
-            "classId", 
-            "accClass",
-            x."id" AS "extBusinessContactsAccMId",
-            e."isAutoSubledger",
-            cte."child_ids" AS "children",
-            CASE 
-                WHEN "accClass" IN ('debtor', 'creditor', 'loan') AND "accLeaf" IN ('Y', 'S') THEN TRUE 
-                ELSE FALSE 
-            END AS "addressable",
-            CASE 
-                WHEN x."id" IS NOT NULL THEN TRUE 
-                ELSE FALSE 
-            END AS "isAddressExists"
+            "parentId" AS "parent_id", 
+            ARRAY_AGG("id") AS "child_ids"
         FROM 
-            "AccM" a
-        LEFT JOIN 
-            "children_cte" cte ON a."id" = cte."parent_id"
-        JOIN 
-            "AccClassM" c ON a."classId" = c."id"
-        LEFT JOIN 
-            "ExtBusinessContactsAccM" x ON a."id" = x."accId"
-        LEFT JOIN 
-            "ExtMiscAccM" e ON a."id" = e."accId"
-    ),
-    cte2 AS (
+            "AccM"
+        GROUP BY 
+            "parentId"
+        ),
+        cte1 AS (
+            SELECT 
+                a."id", 
+                "accCode", 
+                "accName", 
+                "parentId", 
+                "accType", 
+                "isPrimary", 
+                "accLeaf", 
+                "classId", 
+                "accClass",
+                x."id" AS "extBusinessContactsAccMId",
+                e."isAutoSubledger",
+                cte."child_ids" AS "children",
+                CASE 
+                    WHEN "accClass" IN ('debtor', 'creditor', 'loan') AND "accLeaf" IN ('Y', 'S') THEN TRUE 
+                    ELSE FALSE 
+                END AS "addressable",
+                CASE 
+                    WHEN x."id" IS NOT NULL THEN TRUE 
+                    ELSE FALSE 
+                END AS "isAddressExists"
+            FROM 
+                "AccM" a
+            LEFT JOIN 
+                "children_cte" cte ON a."id" = cte."parent_id"
+            JOIN 
+                "AccClassM" c ON a."classId" = c."id"
+            LEFT JOIN 
+                "ExtBusinessContactsAccM" x ON a."id" = x."accId"
+            LEFT JOIN 
+                "ExtMiscAccM" e ON a."id" = e."accId"
+            order by  "accName", "accType", a."id"
+        ),
+        cte2 AS (
+            SELECT 
+                a."id", 
+                "accCode", 
+                "accName", 
+                "accType", 
+                "accLeaf", 
+                "classId", 
+                "accClass"
+            FROM 
+                "AccM" a
+            JOIN 
+                "AccClassM" c ON a."classId" = c."id"
+            WHERE 
+                "accLeaf" IN ('N', 'L')
+        )
         SELECT 
-            a."id", 
-            "accCode", 
-            "accName", 
-            "accType", 
-            "accLeaf", 
-            "classId", 
-            "accClass"
-        FROM 
-            "AccM" a
-        JOIN 
-            "AccClassM" c ON a."classId" = c."id"
-        WHERE 
-            "accLeaf" IN ('N', 'L')
-    )
-    SELECT 
-        json_build_object(
-            'accountsMaster', (SELECT json_agg(row_to_json(a)) FROM cte1 a),
-            'groupsLedgers', (SELECT json_agg(row_to_json(b)) FROM cte2 b)
-        ) AS "jsonResult"
+            json_build_object(
+                'accountsMaster', (SELECT json_agg(a) FROM cte1 a),
+                'groupsLedgers', (SELECT json_agg(b) FROM cte2 b)
+            ) AS "jsonResult"
     """
     
     get_all_banks = """
@@ -535,4 +505,19 @@ class SqlAccounts:
 
     test_connection = """
         select 'ok' as "connection"
+    """
+
+
+    upsert_auto_subledger = """
+        with "accId" as (values(%(accId)s::int)), "isAutoSubledger" as (values(%(isAutoSubledger)s::boolean)),
+        --with "accId" as (values(346::int)), "isAutoSubledger" as (values(false::boolean)),
+        upsert AS (
+            UPDATE "ExtMiscAccM"
+            SET "isAutoSubledger" = (table "isAutoSubledger")
+            WHERE "accId" = (table "accId")
+            RETURNING "id"
+        )
+        INSERT INTO "ExtMiscAccM" ("accId", "isAutoSubledger")
+        SELECT (table "accId"), (table "isAutoSubledger")
+        WHERE NOT EXISTS (SELECT 1 FROM upsert)
     """

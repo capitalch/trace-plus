@@ -18,6 +18,7 @@ from app.graphql.graphql_helper import (
     decode_ext_db_params_helper,
     generic_query_helper,
     generic_update_helper,
+    generic_update_query_helper,
     import_secured_controls_helper,
     trial_balance_helper,
     update_client_helper,
@@ -74,6 +75,11 @@ async def generic_update(_, info, dbName="", value=""):
     return await generic_update_helper(info, dbName, value)
 
 
+@mutation.field("genericUpdateQuery")
+async def generic_update_query(_, info, dbName="", value=""):
+    return await generic_update_query_helper(info, dbName, value)
+
+
 @mutation.field("importSecuredControls")
 async def import_secured_controls(_, info, value):
     return await import_secured_controls_helper(info, value)
@@ -87,6 +93,7 @@ async def update_client(_, info, value=""):
 @mutation.field("updateUser")
 async def update_user(_, info, value=""):
     return await update_user_helper(info, value)
+
 
 
 @query.field("hello")

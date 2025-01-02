@@ -189,6 +189,32 @@ async def generic_update_helper(info, dbName: str, value: str):
     return data
 
 
+async def generic_update_query_helper(info, dbName: str, value: str):
+    data = {}
+    try:
+        valueString = unquote(value)
+        valueDict = json.loads(valueString)
+        dbParams = valueDict.get("dbParams", None)
+        schema = valueDict.get("buCode", None)
+        sqlId = valueDict.get("sqlId", None)
+        sqlQueryObject = getSqlQueryObject(dbName)
+        sql = getattr(sqlQueryObject, sqlId, None)
+        sqlArgs = valueDict.get("sqlArgs", {})
+        data = await exec_sql(
+            dbName=dbName, 
+            db_params=dbParams, 
+            schema=schema, 
+            sql = sql,
+            sqlArgs=sqlArgs,
+        )
+
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
+
 async def import_secured_controls_helper(info, value: str):
     data = {}
     try:

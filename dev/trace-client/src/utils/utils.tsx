@@ -18,6 +18,7 @@ export const Utils: UtilsType = {
     doGenericDelete: doGenericDelete,
     doGenericQuery: doGenericQuery,
     doGenericUpdate: doGenericUpdate,
+    doGenericUpdateQuery: doGenericUpdateQuery,
     getCompanyName: getCompanyName,
     getCurrentBranch: getCurrentBranch,
     getCurrentDateFormat: getCurrentDateFormat,
@@ -112,6 +113,7 @@ async function doGenericDelete({ buCode, tableName, deletedIds }: DoGenericDelet
     const res: any = await mutateGraphQL(q, queryName)
     return (res)
 }
+
 async function doGenericQuery({
     buCode
     , dbName
@@ -147,6 +149,25 @@ async function doGenericUpdate({ buCode, tableName, xData }: DoGenericUpdateType
     const queryName: string = GraphQLQueriesMap.genericUpdate.name
     const res: any = await mutateGraphQL(q, queryName)
     return (res)
+}
+
+async function doGenericUpdateQuery({
+    buCode
+    , dbName
+    , dbParams
+    // , instance
+    , sqlArgs
+    , sqlId
+}: DoGenericUpdateQueryType) {
+    const res: any = await mutateGraphQL(
+        GraphQLQueriesMap.genericUpdateQuery(
+            dbName || '', {
+            buCode: buCode,
+            dbParams: dbParams,
+            sqlArgs: sqlArgs,
+            sqlId: sqlId
+        }), GraphQLQueriesMap.genericUpdateQuery.name)
+    return (res?.data?.[GraphQLQueriesMap.genericUpdateQuery.name])
 }
 
 function getCompanyName(): string {
@@ -583,6 +604,19 @@ export type DoGenericUpdateType = {
     xData: Record<string, any>[] | Record<string, any>
 }
 
+export type DoGenericUpdateQueryType = {
+    sqlId: string
+    sqlArgs?: {
+        [key: string]: any
+    }
+    buCode: string
+    dbName: string
+    dbParams?: {
+        [key: string]: any
+    }
+    instance?: string
+}
+
 export type UnitInfoType = {
     email?: string
     gstin?: string
@@ -608,6 +642,12 @@ type UtilsType = {
         , dbParams
     }: DoGenericQueryType) => any
     doGenericUpdate: ({ buCode, tableName, xData }: DoGenericUpdateType) => any
+    doGenericUpdateQuery: ({ sqlId
+        , buCode
+        , sqlArgs
+        , dbName
+        , dbParams
+    }: DoGenericUpdateQueryType) => any
     getCompanyName: () => string
     getCurrentBranch: () => BranchType | undefined
     getCurrentDateFormat: () => string
