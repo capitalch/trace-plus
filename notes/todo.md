@@ -26,6 +26,7 @@
 	- In 2022-23 demo, trial balance op bal show NAN
 	- In all grids show a margin of 10 px from bottom
 	- Grid fix up sizes for edit, delete and preview buttons
+	- Check Capichow bank recon double entry
 
 - Master accounts
 															- Startup
@@ -36,8 +37,8 @@
 																- Treegrid populate
 		- Address click
 			- Add modify address through modal form
-		- Auto subledger
-			- click implement
+															- Auto subledger
+																- click implement
 																- Proper disablement
 		- Grid
 																- Columns

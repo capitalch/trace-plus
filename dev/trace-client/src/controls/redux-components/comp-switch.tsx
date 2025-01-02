@@ -18,7 +18,7 @@ export function CompSwitch({
     const isChecked: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance)) || false
 
     useEffect(() => {
-        dispatch(setCompSwitchState({ instance: instance, switchState: defaultValue }))
+        dispatch(setCompSwitchState({ instance: instance, switchState: Boolean(defaultValue) }))
     }, [defaultValue, dispatch, instance])
 
     return ( // help by ai

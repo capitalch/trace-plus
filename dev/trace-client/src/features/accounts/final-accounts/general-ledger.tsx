@@ -124,7 +124,7 @@ export function GeneralLedger() {
                 columns={getColumns()}
                 dataSource={meta?.current?.transactions || []}
                 hasIndexColumn={false}
-                height="calc(100vh - 280px)"
+                height="calc(100vh - 300px)"
                 instance={instance}
                 isLoadOnInit={false}
                 loadData={loadData}
