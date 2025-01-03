@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useState } from "react"
+import { ChangeEvent, ReactElement, useEffect, useState } from "react"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
@@ -6,26 +6,28 @@ import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../.
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-import { CompInstances } from "../../../../controls/redux-components/comp-instances"
-import { CompSwitch } from "../../../../controls/redux-components/comp-switch"
 import { Utils } from "../../../../utils/utils"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import ReactSlidingPane from "react-sliding-pane"
+import { GenericSwitch } from "./generic-switch"
 
 export function AccountsMaster() {
     const instance: string = DataInstancesMap.accountsMaster
     const [isPaneOpen, setIsPaneOpen] = useState(false);
     const {
         buCode
-        // , context
+        , context
         , dbName
         , decodedDbParamsObject
     } = useUtilsInfo()
 
-    return (<CompAccountsContainer>
+    useEffect(() => {
+        //cleanup
+        return (() => resetScrollPos())
+    }, [])
 
+    return (<CompAccountsContainer>
         <CompSyncFusionTreeGridToolbar className="mt-2"
-            // CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
             title='Accounts master'
             isLastNoOfRows={false}
             instance={instance}
@@ -37,6 +39,7 @@ export function AccountsMaster() {
             buCode={buCode}
             childMapping="children"
             className="mr-6"
+            dataBound={onDataBound}
             dataPath="accountsMaster"
             dbName={dbName}
             dbParams={decodedDbParamsObject}
@@ -163,26 +166,19 @@ export function AccountsMaster() {
         return (logicObject?.[props.accType] || '')
     }
 
-    function autoSubledgerTemplate(props: AccountsMasterType) {
-        const instance = `${CompInstances.compSwitchAccountsMasterRow}-${props.id}` // instance is unique for each row
-        const isVisible: boolean = (props.accLeaf === 'L') && props.accClass === 'debtor'
+    function autoSubledgerTemplate(props: AccountsMasterType) {const isVisible: boolean = (props.accLeaf === 'L') && props.accClass === 'debtor'
         const isDisabled: boolean = (props?.children && (props.children.length > 0)) ? true : false
-        if(props.id=== 160){
-            console.log(props)
-        }
-        return (isVisible && <CompSwitch
-            customData={{ accId: props.id }}
-            defaultValue={props.isAutoSubledger}
-            instance={instance}
-            isDisabled={isDisabled}
+        return (isVisible && <GenericSwitch
+            customData={props}
+            defaultChecked={props.isAutoSubledger}
+            disabled={isDisabled}
             onChange={handleOnChangeCompSwitch}
         />)
     }
 
-    async function handleOnChangeCompSwitch(event: ChangeEvent<HTMLInputElement>, customData?: any) {
+    async function handleOnChangeCompSwitch(event: ChangeEvent<HTMLInputElement>, props: AccountsMasterType) {
         let isSuccess: boolean = false
-        const accId: number = customData?.accId
-        console.log(event.target.checked, event.target.value)
+        const accId: number = props.id
         try {
             const res: any = await Utils.doGenericUpdateQuery({
                 buCode: buCode || '',
@@ -198,7 +194,40 @@ export function AccountsMaster() {
         } catch (e: any) {
             console.log(e)
         }
+        const loadData = context.CompSyncFusionTreeGrid[instance].loadData
+        const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
+        if (gridRef?.current) {
+            saveScrollPosition(gridRef)
+        }
+        if (loadData) {
+            await loadData()
+        }
         return (isSuccess)
+    }
+
+    function saveScrollPosition(gridRef: any) {
+        const treeGridElement = gridRef?.current?.grid?.getContent();
+        if (treeGridElement) {
+            const scrollableContainer = treeGridElement.querySelector('.e-content'); // Adjust selector if needed
+            context.CompSyncFusionTreeGrid[instance].scrollPos = scrollableContainer.scrollTop
+        }
+    }
+
+    function restoreScrollPosition() {
+        const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
+        const treeGridElement = gridRef?.current?.grid?.getContent();
+        if (treeGridElement) {
+            const scrollableContainer = treeGridElement.querySelector('.e-content');
+            scrollableContainer.scrollTop = context.CompSyncFusionTreeGrid[instance].scrollPos
+        }
+    }
+
+    function resetScrollPos() {
+        context.CompSyncFusionTreeGrid[instance].scrollPos = 0
+    }
+
+    function onDataBound() {
+        restoreScrollPosition()
     }
 }
 
@@ -212,7 +241,7 @@ export type AccountsMasterType = {
     children?: [AccountsMasterType | null] | null
     classId?: number
     extBusinessContactsAccMId?: number
-    id?: number
+    id: number
     isAddressExists?: boolean
     isAutoSubledger?: boolean
     isPrimary: boolean

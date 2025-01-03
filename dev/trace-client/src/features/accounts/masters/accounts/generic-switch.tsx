@@ -1,0 +1,44 @@
+import clsx from "clsx"
+import { ChangeEvent } from "react"
+// import { AccountsMasterType } from "./accounts-master"
+
+export function GenericSwitch({
+    customData,
+    defaultChecked,
+    disabled,
+    onChange,
+    // props
+}: GenericSwitchType) {
+    return (
+        <label className={clsx("inline-flex items-center cursor-pointer", disabled && "opacity-50 cursor-not-allowed")}>
+            <input
+                type="checkbox"
+                defaultChecked={defaultChecked}
+                disabled={disabled}
+                onChange={onChange ? (event: ChangeEvent<HTMLInputElement>) => onChange(event, customData) : undefined}
+                className="peer sr-only"
+            />
+            <div
+                className={clsx(
+                    "relative w-11 h-6 rounded-full transition-all",
+                    "peer-checked:bg-blue-600 bg-primary-200",
+                    disabled ? "bg-gray-300" : "",
+                    "after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:transition-all",
+                    "peer-checked:after:translate-x-full",
+                    disabled
+                        ? "after:bg-gray-400 after:border-gray-500"
+                        : "after:bg-white after:border-gray-300",
+                    "after:border after:content-['']"
+                )}
+            ></div>
+        </label>
+    )
+}
+
+export type GenericSwitchType = {
+    customData?: any
+    defaultChecked?: boolean
+    disabled: boolean
+    onChange?: (event: ChangeEvent<HTMLInputElement>, customData?: any) => void
+    // props: AccountsMasterType
+}
