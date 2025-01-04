@@ -158,3 +158,8 @@ export const selectLedgerSubledgerFieldFn = (
   instance: string,
   key: keyof LedgerSubledgerInstanceType
 ) => state.reduxComp.ledgerSubledger[instance]?.[key];
+
+// sliding pane
+export const selectSlidingPaneStateFn = (
+  state: RootStateType
+) => state.reduxComp.slidingPane;

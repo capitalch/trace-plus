@@ -5,7 +5,7 @@ import { ModalDialogA } from "./modal-dialogA"
 import { IconMenuUnfold } from "../../../controls/icons/icon-menu-unfold"
 import { CompAppLoader } from "../../../controls/redux-components/comp-app-loader"
 import { CompInstances } from "../../../controls/redux-components/comp-instances"
-import { closeSlidingPane, compAppLoaderVisibilityFn } from "../../../controls/redux-components/comp-slice"
+import { closeSlidingPane, compAppLoaderVisibilityFn, selectSlidingPaneStateFn } from "../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { useDispatch, useSelector } from "react-redux"
 import ReactSlidingPane from "react-sliding-pane"
@@ -13,6 +13,7 @@ import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/
 
 function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
+    const slidingPaneState = useSelector(selectSlidingPaneStateFn)
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
     const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
 
@@ -33,7 +34,7 @@ function NavBar() {
             {isVisibleAppLoader && <CompAppLoader />}
 
             {/* react sliding pane */}
-            <ReactSlidingPane onRequestClose={() => dispatch(closeSlidingPane())}>
+            <ReactSlidingPane isOpen={slidingPaneState.isOpen} onRequestClose={() => dispatch(closeSlidingPane())}>
                 <SlidingPaneMap.contactAndAddresses></SlidingPaneMap.contactAndAddresses>
             </ReactSlidingPane>
         </div>)

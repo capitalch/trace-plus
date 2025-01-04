@@ -7,7 +7,7 @@ export const treeGridUtils: TreeGridUtilsType = {
     },
 
     restoreScrollPos(context: GlobalContextType, instance: string) {
-        const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+        const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
         const treeGridElement = gridRef?.current?.grid?.getContent();
         if (treeGridElement) {
             const scrollableContainer = treeGridElement.querySelector('.e-content');
@@ -16,7 +16,7 @@ export const treeGridUtils: TreeGridUtilsType = {
     },
 
     saveScrollPos(context: GlobalContextType, instance: string) {
-        const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+        const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
         const treeGridElement = gridRef?.current?.grid?.getContent();
         if (treeGridElement) {
             const scrollableContainer = treeGridElement.querySelector('.e-content'); // Adjust selector if needed
