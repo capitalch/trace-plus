@@ -1,19 +1,25 @@
-import { ChangeEvent, ReactElement, useEffect, useState } from "react"
+import { ChangeEvent, ReactElement, useEffect, } from "react"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
-import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
+import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { Utils } from "../../../../utils/utils"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
-import ReactSlidingPane from "react-sliding-pane"
+// import ReactSlidingPane from "react-sliding-pane"
 import { GenericSwitch } from "./generic-switch"
+import { AppDispatchType } from "../../../../app/store/store"
+import { useDispatch } from "react-redux"
+import { SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
+import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
+// import { SlidingPaneIdentifiers, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
 
 export function AccountsMaster() {
+    const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.accountsMaster
-    const [isPaneOpen, setIsPaneOpen] = useState(false);
+    // const [isPaneOpen, setIsPaneOpen] = useState(false);
     const {
         buCode
         , context
@@ -23,7 +29,7 @@ export function AccountsMaster() {
 
     useEffect(() => {
         //cleanup
-        return (() => resetScrollPos())
+        return (() => Utils.treeGridUtils.resetScrollPos(context, instance))
     }, [])
 
     return (<CompAccountsContainer>
@@ -35,7 +41,7 @@ export function AccountsMaster() {
         />
 
         <CompSyncfusionTreeGrid
-            // aggregates={getTrialBalanceAggregates()}
+            aggregates={getAggregates()}
             buCode={buCode}
             childMapping="children"
             className="mr-6"
@@ -46,22 +52,21 @@ export function AccountsMaster() {
             graphQlQueryFromMap={GraphQLQueriesMap.accountsMaster}
             isLoadOnInit={true}
             columns={getColumns()}
-            height="calc(100vh - 215px)"
+            height="calc(100vh - 245px)"
             instance={instance}
             minWidth='950px'
             treeColumnIndex={0}
         />
-        {/* Sliding Pane */}
-        <ReactSlidingPane
+
+        {/* <ReactSlidingPane
             className="bg-gray-300"
             isOpen={isPaneOpen}
             title="Ledger View"
             from="right"
             width="80%"
             onRequestClose={() => setIsPaneOpen(false)}>
-            {/* PDF Viewer inside the sliding pane */}
             <div></div>
-        </ReactSlidingPane>
+        </ReactSlidingPane> */}
     </CompAccountsContainer>)
 
     function getColumns(): SyncFusionTreeGridColumnType[] {
@@ -129,7 +134,7 @@ export function AccountsMaster() {
             filled = 'Filled'
         }
         const comp: ReactElement = <TooltipComponent content='No address provided'>
-            <button onClick={() => setIsPaneOpen(true)} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
+            <button onClick={() => setIsPaneOpen()} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
                 {/* Badge section */}
                 {(filled === 'Filled') && <div className="rounded-full bg-blue-800 px-2 py-1 text-xs font-bold text-white">
                     A
@@ -166,17 +171,29 @@ export function AccountsMaster() {
         return (logicObject?.[props.accType] || '')
     }
 
-    function autoSubledgerTemplate(props: AccountsMasterType) {const isVisible: boolean = (props.accLeaf === 'L') && props.accClass === 'debtor'
+    function autoSubledgerTemplate(props: AccountsMasterType) {
+        const isVisible: boolean = (props.accLeaf === 'L') && props.accClass === 'debtor'
         const isDisabled: boolean = (props?.children && (props.children.length > 0)) ? true : false
         return (isVisible && <GenericSwitch
             customData={props}
             defaultChecked={props.isAutoSubledger}
             disabled={isDisabled}
-            onChange={handleOnChangeCompSwitch}
+            onChange={handleOnChangeSwitch}
         />)
     }
 
-    async function handleOnChangeCompSwitch(event: ChangeEvent<HTMLInputElement>, props: AccountsMasterType) {
+    function getAggregates(): SyncFusionTreeGridAggregateColumnType[] {
+        return ([
+            {
+                columnName: 'accName',
+                field: 'accName',
+                type: 'Count',
+                footerTemplate: (props: any) => `Count: ${props['accName - count']}`,
+            }
+        ])
+    }
+
+    async function handleOnChangeSwitch(event: ChangeEvent<HTMLInputElement>, props: AccountsMasterType) {
         let isSuccess: boolean = false
         const accId: number = props.id
         try {
@@ -197,7 +214,7 @@ export function AccountsMaster() {
         const loadData = context.CompSyncFusionTreeGrid[instance].loadData
         const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
         if (gridRef?.current) {
-            saveScrollPosition(gridRef)
+            Utils.treeGridUtils.saveScrollPos(context, instance)
         }
         if (loadData) {
             await loadData()
@@ -205,29 +222,12 @@ export function AccountsMaster() {
         return (isSuccess)
     }
 
-    function saveScrollPosition(gridRef: any) {
-        const treeGridElement = gridRef?.current?.grid?.getContent();
-        if (treeGridElement) {
-            const scrollableContainer = treeGridElement.querySelector('.e-content'); // Adjust selector if needed
-            context.CompSyncFusionTreeGrid[instance].scrollPos = scrollableContainer.scrollTop
-        }
-    }
-
-    function restoreScrollPosition() {
-        const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
-        const treeGridElement = gridRef?.current?.grid?.getContent();
-        if (treeGridElement) {
-            const scrollableContainer = treeGridElement.querySelector('.e-content');
-            scrollableContainer.scrollTop = context.CompSyncFusionTreeGrid[instance].scrollPos
-        }
-    }
-
-    function resetScrollPos() {
-        context.CompSyncFusionTreeGrid[instance].scrollPos = 0
-    }
-
     function onDataBound() {
-        restoreScrollPosition()
+        Utils.treeGridUtils.restoreScrollPos(context, instance)
+    }
+
+    function setIsPaneOpen() {
+        dispatch(openSlidingPane(SlidingPaneMap.contactAndAddresses.name))
     }
 }
 

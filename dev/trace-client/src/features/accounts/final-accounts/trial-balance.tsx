@@ -25,7 +25,7 @@ export function TrialBalance() {
         , finYearId
         , intFormatter
     } = useUtilsInfo()
-    
+
     useEffect(() => {
         const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
         if (loadData) {
@@ -35,37 +35,33 @@ export function TrialBalance() {
 
     return (
         <CompAccountsContainer>
-            {/* <div className='flex gap-8' > */}
-                {/* <div className='flex flex-col'> */}
-                    <CompSyncFusionTreeGridToolbar className='mt-2'
-                        CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
-                        title='Trial Balance'
-                        isAllBranches={isAllBranches}
-                        isLastNoOfRows={false}
-                        instance={instance}
-                        width="calc(100vw - 250px)" // This stops unnecessary flickers
-                    />
-                    <CompSyncfusionTreeGrid
-                        aggregates={getTrialBalanceAggregates()}
-                        buCode={buCode}
-                        childMapping="children"
-                        className="mr-6"
-                        dbName={dbName}
-                        dbParams={decodedDbParamsObject}
-                        graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
-                        isLoadOnInit={false}
-                        sqlArgs={{
-                            branchId: isAllBranches ? null : branchId || 0,
-                            finYearId: finYearId || 1900,
-                        }}
-                        columns={getColumns()}
-                        height="calc(100vh - 230px)"
-                        instance={instance}
-                        minWidth='950px'
-                        treeColumnIndex={0}
-                    />
-                {/* </div> */}
-            {/* </div> */}
+            <CompSyncFusionTreeGridToolbar className='mt-2'
+                CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
+                title='Trial Balance'
+                isAllBranches={isAllBranches}
+                isLastNoOfRows={false}
+                instance={instance}
+                width="calc(100vw - 250px)" // This stops unnecessary flickers
+            />
+            <CompSyncfusionTreeGrid
+                aggregates={getTrialBalanceAggregates()}
+                buCode={buCode}
+                childMapping="children"
+                className="mr-6"
+                dbName={dbName}
+                dbParams={decodedDbParamsObject}
+                graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
+                isLoadOnInit={false}
+                sqlArgs={{
+                    branchId: isAllBranches ? null : branchId || 0,
+                    finYearId: finYearId || 1900,
+                }}
+                columns={getColumns()}
+                height="calc(100vh - 230px)"
+                instance={instance}
+                minWidth='950px'
+                treeColumnIndex={0}
+            />
         </CompAccountsContainer>
     )
 

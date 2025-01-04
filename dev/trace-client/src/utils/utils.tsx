@@ -11,6 +11,8 @@ import { AccSettingType, BranchType, FinYearType, LoginType, UserDetailsType } f
 import { GraphQLQueriesMap, GraphQLUpdateArgsType } from "../app/graphql/maps/graphql-queries-map"
 import { showCompAppLoader } from "../controls/redux-components/comp-slice"
 import { CompInstances } from "../controls/redux-components/comp-instances"
+import { treeGridUtils, TreeGridUtilsType } from "./tree-grid-utils"
+import { gridUtils, GridUtilsType } from "./grid-utils"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
@@ -34,6 +36,7 @@ export const Utils: UtilsType = {
     getToken: getToken,
     getUnitInfo: getUnitInfo,
     getUserDetails: getUserDetails,
+    gridUtils: gridUtils,
     isNotNullOrUndefined: isNotNullOrUndefined,
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
@@ -50,6 +53,7 @@ export const Utils: UtilsType = {
     showSaveMessage: showSaveMessage,
     showSuccessAlertMessage: showSuccessAlertMessage,
     toDecimalFormat: toDecimalFormat,
+    treeGridUtils: treeGridUtils
 }
 
 function addUniqueKeysToJson(data: any) { // Created by AI
@@ -186,18 +190,6 @@ function getCurrentDateFormat() {
     return (dateFormat)
 }
 
-// function getCurrentFinYear(): FinYearType {
-//     const today = dayjs()
-//     const year: number = today.month() > 3 ? today.year() : today.year() - 1
-//     const startDate: string = `${year}-04-01`
-//     const endDate: string = `${year + 1}-03-31`
-//     return ({
-//         finYearId: year,
-//         startDate: startDate,
-//         endDate: endDate
-//     })
-// }
-
 function getCurrentFinYearFormattedDateRange() {
     const accSettings: AccSettingType[] | undefined = getCurrentLoginInfo()?.accSettings
     const generalSettings: AccSettingType | undefined = accSettings?.find((s: AccSettingType) => s.key === 'generalSettings')
@@ -207,12 +199,6 @@ function getCurrentFinYearFormattedDateRange() {
     const endDate: string = dayjs(finYear.endDate).format(dateFormat)
     return (`${startDate} - ${endDate}`)
 }
-
-// function getCurrentFinYearId(): number {
-//     const today = dayjs()
-//     const year: number = today.month() > 3 ? today.year() : today.year() - 1
-//     return (year)
-// }
 
 function getCurrentLoginInfo() {
     const reduxState: RootStateType = store.getState()
@@ -664,6 +650,7 @@ type UtilsType = {
     getUnitInfo: () => UnitInfoType | undefined
     isNotNullOrUndefined: (value: any) => boolean
     getUserDetails: () => UserDetailsType | undefined
+    gridUtils: GridUtilsType
     mutateGraphQL: (q: any, queryName: string) => any
     queryGraphQL: (q: any, queryName: string) => any
     showAlertMessage: (title: string, message: string) => void
@@ -679,4 +666,6 @@ type UtilsType = {
     showOptionsSelect: (message: string, option1: string, option2: string, action: (result: any) => void) => void
     showSaveMessage: () => void
     toDecimalFormat: (s: any) => string
+    treeGridUtils: TreeGridUtilsType
 }
+

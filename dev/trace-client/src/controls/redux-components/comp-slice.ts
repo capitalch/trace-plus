@@ -6,6 +6,10 @@ const initialState: ReduxCompStateType = {
   compCheckBox: {},
   compSwitch: {},
   ledgerSubledger: {},
+  slidingPane: {
+    identifier: "",
+    isOpen: false,
+  },
 };
 
 const initializeNestedState = <T>(
@@ -75,11 +79,27 @@ const compSlice = createSlice({
       const instance: string = action.payload.instance;
       state.compSwitch[instance] = action.payload.switchState;
     },
+
+    // sliding pane
+    openSlidingPane: (
+      state: ReduxCompStateType,
+      action: PayloadAction<string>
+    ) => {
+      state.slidingPane.isOpen = true;
+      state.slidingPane.identifier = action.payload;
+    },
+    closeSlidingPane: (
+      state: ReduxCompStateType) => {
+      state.slidingPane.isOpen = false;
+    },
+
   },
 });
 
 export const reduxCompReducer = compSlice.reducer;
 export const {
+  closeSlidingPane,
+  openSlidingPane,
   setCompCheckBoxState,
   setCompSwitchState,
   showCompAppLoader,
@@ -92,6 +112,10 @@ type ReduxCompStateType = {
   compCheckBox: Record<string, boolean>;
   compSwitch: Record<string, boolean>;
   ledgerSubledger: Record<string, LedgerSubledgerInstanceType>;
+  slidingPane: {
+    identifier: string;
+    isOpen: boolean;
+  };
 };
 
 type LedgerSubledgerInstanceType = {

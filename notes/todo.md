@@ -33,6 +33,11 @@
 															- Server
 																- SQL
 	- client
+		- Implement react-sliding-pane globally
+			- Place it in Navbar
+			- create reducers
+			- create map
+		- rename generic-switch to comp-generic-switch
 																- Treegrid toolbox
 																- Treegrid populate
 		- Address click
@@ -42,7 +47,8 @@
 																- Proper disablement
 		- Grid
 																- Columns
-			- Aggr columns / Summary
+																- Maintain scrollPos in treeGrid
+																- Aggr columns / Summary
 			- Add child
 			- edit self
 			- delete
