@@ -8,18 +8,16 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { Utils } from "../../../../utils/utils"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
-// import ReactSlidingPane from "react-sliding-pane"
 import { GenericSwitch } from "./generic-switch"
 import { AppDispatchType } from "../../../../app/store/store"
 import { useDispatch } from "react-redux"
-import { SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
+import { SlidingPaneEnum, } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
-// import { SlidingPaneIdentifiers, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
 
 export function AccountsMaster() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.accountsMaster
-    // const [isPaneOpen, setIsPaneOpen] = useState(false);
+
     const {
         buCode
         , context
@@ -57,16 +55,6 @@ export function AccountsMaster() {
             minWidth='950px'
             treeColumnIndex={0}
         />
-
-        {/* <ReactSlidingPane
-            className="bg-gray-300"
-            isOpen={isPaneOpen}
-            title="Ledger View"
-            from="right"
-            width="80%"
-            onRequestClose={() => setIsPaneOpen(false)}>
-            <div></div>
-        </ReactSlidingPane> */}
     </CompAccountsContainer>)
 
     function getColumns(): SyncFusionTreeGridColumnType[] {
@@ -227,7 +215,7 @@ export function AccountsMaster() {
     }
 
     function setIsPaneOpen() {
-        dispatch(openSlidingPane(SlidingPaneMap.contactAndAddresses.name))
+        dispatch(openSlidingPane(SlidingPaneEnum.contactAndAddresses))
     }
 }
 

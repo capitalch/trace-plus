@@ -1,30 +1,30 @@
-import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import _ from 'lodash'
 import Decimal, { } from 'decimal.js'
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
-import { LedgerSubledger } from "../../../controls/redux-components/ledger-subledger"
-import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map"
-import { CompSwitch } from "../../../controls/redux-components/comp-switch"
-import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
-import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, selectLedgerSubledgerFieldFn, setCompCheckBoxState } from "../../../controls/redux-components/comp-slice"
-import { AppDispatchType, RootStateType } from "../../../app/store/store"
-import { useUtilsInfo } from "../../../utils/utils-info-hook"
+import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
+import { LedgerSubledger } from "../../../../controls/redux-components/ledger-subledger"
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { CompSwitch } from "../../../../controls/redux-components/comp-switch"
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
+import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, selectLedgerSubledgerFieldFn, setCompCheckBoxState } from "../../../../controls/redux-components/comp-slice"
+import { AppDispatchType, RootStateType } from "../../../../app/store/store"
+import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { useEffect, useRef, useState } from "react"
-import { CompSyncFusionGridToolbar } from "../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
-import { Utils } from "../../../utils/utils"
-import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
-import { CompAppLoader } from "../../../controls/redux-components/comp-app-loader"
-import { CompCheckBox } from "../../../controls/redux-components/comp-checkbox"
-import { CompInstances } from "../../../controls/redux-components/comp-instances"
-import { currentFinYearSelectorFn, FinYearType } from "../../login/login-slice"
+import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
+import { Utils } from "../../../../utils/utils"
+import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice"
+import { CompAppLoader } from "../../../../controls/redux-components/comp-app-loader"
+import { CompCheckBox } from "../../../../controls/redux-components/comp-checkbox"
+import { CompInstances } from "../../../../controls/redux-components/comp-instances"
+import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids"
 import dayjs from "dayjs"
 import ReactSlidingPane from "react-sliding-pane"
 import { PDFViewer } from "@react-pdf/renderer"
 import { GeneralLedgerPdf } from "./general-ledger-pdf"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-import { IconFilePdf } from "../../../controls/icons/icon-file-pdf"
+import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
@@ -148,7 +148,6 @@ export function GeneralLedger() {
             </ReactSlidingPane>
         </CompAccountsContainer>
     )
-
 
     function calculateClosing() {
         const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))

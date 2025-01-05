@@ -20,7 +20,7 @@ import { AdminLinkSecuredControlsWithRoles } from "../../features/security/admin
 import { TrialBalance } from "../../features/accounts/final-accounts/trial-balance";
 import { BalanceSheet } from "../../features/accounts/final-accounts/balance-sheet";
 import { ProfitLoss } from "../../features/accounts/final-accounts/profit-loss";
-import { GeneralLedger } from "../../features/accounts/final-accounts/general-ledger";
+import { GeneralLedger } from "../../features/accounts/final-accounts/general-ledger/general-ledger";
 import { BankRecon } from "../../features/accounts/options/bank-recon/bank-recon";
 import { AccountsMaster } from "../../features/accounts/masters/accounts/accounts-master";
 

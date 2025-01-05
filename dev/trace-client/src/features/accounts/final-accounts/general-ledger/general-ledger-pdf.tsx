@@ -1,8 +1,8 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { TranType } from "./general-ledger";
-import { UnitInfoType, Utils } from "../../../utils/utils";
+import { UnitInfoType, Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
-import { BranchType } from "../../login/login-slice";
+import { BranchType } from "../../../login/login-slice";
 import dayjs from "dayjs";
 
 export function GeneralLedgerPdf({ accName, isAllBranches, transactions }: GeneralLedgerPdfType) {

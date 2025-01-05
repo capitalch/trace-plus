@@ -10,13 +10,16 @@ import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { useDispatch, useSelector } from "react-redux"
 import ReactSlidingPane from "react-sliding-pane"
 import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/sliding-pane-map"
+import { FC} from "react"
 
 function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
-    const slidingPaneState = useSelector(selectSlidingPaneStateFn)
+    const {isOpen, identifier} = useSelector(selectSlidingPaneStateFn) // for sliding pane
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
     const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
-
+    // console.log(identifier)
+    const SlidingPaneChildComp: FC = SlidingPaneMap[identifier]
+    // const x: FC = SlidingPaneMap[identifier]
     return (
         // Top Nav bar
         <div className="flex items-center h-12 bg-primary-500 overflow-hidden">
@@ -34,9 +37,13 @@ function NavBar() {
             {isVisibleAppLoader && <CompAppLoader />}
 
             {/* react sliding pane */}
-            <ReactSlidingPane isOpen={slidingPaneState.isOpen} onRequestClose={() => dispatch(closeSlidingPane())}>
-                <SlidingPaneMap.contactAndAddresses></SlidingPaneMap.contactAndAddresses>
-            </ReactSlidingPane>
+            {identifier && <ReactSlidingPane 
+            isOpen={isOpen} 
+            onRequestClose={() => dispatch(closeSlidingPane())}
+            width="90%"
+            >
+                <SlidingPaneChildComp></SlidingPaneChildComp>
+            </ReactSlidingPane>}
         </div>)
 }
 export { NavBar }
