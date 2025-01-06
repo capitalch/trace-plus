@@ -1,12 +1,22 @@
-import { FC } from "react";
-import { ContactAndAddresses } from "../../../features/accounts/masters/accounts/contact-and-addresses";
+import { FC, } from "react";
+import { ContactAndAddresses, } from "../../../features/accounts/masters/accounts/contact-and-addresses";
 
-export const SlidingPaneMap: { [key: string]: FC } = {
-    contactAndAddresses: ContactAndAddresses
+
+export const SlidingPaneMap: SlidingPaneMapType = {
+    contactAndAddresses: {
+        content: ContactAndAddresses,
+        props: { accId: 0 }
+    }
 }
 
 export enum SlidingPaneEnum {
     contactAndAddresses = 'contactAndAddresses'
     ,
 }
-// export type ExampleKeys = keyof typeof SlidingPaneMap
+
+export type SlidingPaneMapType = {
+    [key: string]: {
+        content: FC<any>;
+        props: any;
+    }
+}

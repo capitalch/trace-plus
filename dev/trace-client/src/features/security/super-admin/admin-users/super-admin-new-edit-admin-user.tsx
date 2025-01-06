@@ -12,7 +12,6 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
-// import { GlobalContext } from "../../../../App";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";

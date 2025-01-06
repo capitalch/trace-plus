@@ -33,15 +33,23 @@
 															- Server
 																- SQL
 	- client
-		- Implement react-sliding-pane globally
-			- Place it in Navbar
-			- create reducers
-			- create map
+															- Implement react-sliding-pane globally
+																- Place it in Navbar
+																- create reducers
+																- create map
+		- sliding pane provide title, widthPerc or absolute
 		- rename generic-switch to comp-generic-switch
 																- Treegrid toolbox
 																- Treegrid populate
 		- Address click
 			- Add modify address through modal form
+				- Provide all fields
+				- Register and validate
+				- Error handling
+				- Submit functionality
+				- Add address
+				- remove address
+				- Give a total address count
 															- Auto subledger
 																- click implement
 																- Proper disablement

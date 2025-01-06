@@ -9,6 +9,8 @@ const initialState: ReduxCompStateType = {
   slidingPane: {
     identifier: "",
     isOpen: false,
+    title: "",
+    width: "90%",
   },
 };
 
@@ -83,16 +85,16 @@ const compSlice = createSlice({
     // sliding pane
     openSlidingPane: (
       state: ReduxCompStateType,
-      action: PayloadAction<string>
+      action: PayloadAction<SlidingPanePayloadActionType>
     ) => {
       state.slidingPane.isOpen = true;
-      state.slidingPane.identifier = action.payload;
+      state.slidingPane.identifier = action.payload.identifier;
+      state.slidingPane.title = action.payload.title;
+      state.slidingPane.width = action.payload?.width || "90%";
     },
-    closeSlidingPane: (
-      state: ReduxCompStateType) => {
+    closeSlidingPane: (state: ReduxCompStateType) => {
       state.slidingPane.isOpen = false;
     },
-
   },
 });
 
@@ -115,6 +117,8 @@ type ReduxCompStateType = {
   slidingPane: {
     identifier: string;
     isOpen: boolean;
+    title: string;
+    width: string;
   };
 };
 
@@ -131,6 +135,12 @@ type AccountType = {
   accLeaf: "S" | "L" | "Y";
   accName: string;
   id: number;
+};
+
+type SlidingPanePayloadActionType = {
+  identifier: string;
+  title: string;
+  width?: string;
 };
 
 // selectors
@@ -160,6 +170,5 @@ export const selectLedgerSubledgerFieldFn = (
 ) => state.reduxComp.ledgerSubledger[instance]?.[key];
 
 // sliding pane
-export const selectSlidingPaneStateFn = (
-  state: RootStateType
-) => state.reduxComp.slidingPane;
+export const selectSlidingPaneStateFn = (state: RootStateType) =>
+  state.reduxComp.slidingPane;

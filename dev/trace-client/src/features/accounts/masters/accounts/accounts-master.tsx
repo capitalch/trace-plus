@@ -5,13 +5,13 @@ import { CompAccountsContainer } from "../../../../controls/components/comp-acco
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
-import { TooltipComponent } from "@syncfusion/ej2-react-popups"
+// import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { Utils } from "../../../../utils/utils"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { GenericSwitch } from "./generic-switch"
 import { AppDispatchType } from "../../../../app/store/store"
 import { useDispatch } from "react-redux"
-import { SlidingPaneEnum, } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
+import { SlidingPaneEnum, SlidingPaneMap, } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
 
 export function AccountsMaster() {
@@ -121,8 +121,9 @@ export function AccountsMaster() {
         if (props?.isAddressExists) {
             filled = 'Filled'
         }
-        const comp: ReactElement = <TooltipComponent content='No address provided'>
-            <button onClick={() => setIsPaneOpen()} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
+        const comp: ReactElement = 
+        // <TooltipComponent content={`${(filled === 'Filled') ? 'Address already provided' : 'Address required'}`}>
+            <button onClick={() => setIsPaneOpen(props.id)} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
                 {/* Badge section */}
                 {(filled === 'Filled') && <div className="rounded-full bg-blue-800 px-2 py-1 text-xs font-bold text-white">
                     A
@@ -132,7 +133,7 @@ export function AccountsMaster() {
                     {filled}
                 </span>
             </button>
-        </TooltipComponent>
+        // </TooltipComponent>
         if (props.addressable) {
             ret = comp
         }
@@ -214,8 +215,13 @@ export function AccountsMaster() {
         Utils.treeGridUtils.restoreScrollPos(context, instance)
     }
 
-    function setIsPaneOpen() {
-        dispatch(openSlidingPane(SlidingPaneEnum.contactAndAddresses))
+    function setIsPaneOpen(id: number) {
+        SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props.accId = id
+        dispatch(openSlidingPane({
+            identifier: SlidingPaneEnum.contactAndAddresses,
+            title:'Contact and addresses',
+            width: '400px'
+        }))
     }
 }
 
