@@ -43,15 +43,15 @@
 																- Treegrid populate
 		- Address click
 			- Add modify address through modal form
-				- load data from server and populate
+				- load data from server and populate when edit
 																- Provide all fields
-				- Register and validate all
-					- State code validation
+															- Register and validate all
+																- State code validation
 				- Error handling
 				- Submit functionality
-				- Add address
-				- remove address
-				- Give a total address count
+																- Add address
+																- remove address
+																- Give a total address count
 															- Auto subledger
 																- click implement
 																- Proper disablement

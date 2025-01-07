@@ -86,7 +86,6 @@ class SqlAccounts:
         ) as "jsonResult"
     """
 
-
     get_accounts_master = """
     -- modified by AI
         WITH RECURSIVE "children_cte" AS (
@@ -506,7 +505,6 @@ class SqlAccounts:
     test_connection = """
         select 'ok' as "connection"
     """
-
 
     upsert_auto_subledger = """
         with "accId" as (values(%(accId)s::int)), "isAutoSubledger" as (values(%(isAutoSubledger)s::boolean)),

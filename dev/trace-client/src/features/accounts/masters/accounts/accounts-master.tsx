@@ -122,7 +122,7 @@ export function AccountsMaster() {
         }
         const comp: ReactElement = 
         // <TooltipComponent content={`${(filled === 'Filled') ? 'Address already provided' : 'Address required'}`}>
-            <button onClick={() => setIsPaneOpen(props.id)} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
+            <button onClick={() => setIsPaneOpen(props.id, isAddressExists)} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
                 {/* Badge section */}
                 {(filled === 'Filled') && <div className="rounded-full bg-blue-800 px-2 py-1 text-xs font-bold text-white">
                     A
@@ -214,12 +214,13 @@ export function AccountsMaster() {
         Utils.treeGridUtils.restoreScrollPos(context, instance)
     }
 
-    function setIsPaneOpen(id: number) {
+    function setIsPaneOpen(id: number, isAddressExists: boolean) {
         SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props.accId = id
+        SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props.isAddressExists = isAddressExists
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.contactAndAddresses,
             title:'Contact and addresses',
-            width: '400px'
+            width: '600px'
         }))
     }
 }
