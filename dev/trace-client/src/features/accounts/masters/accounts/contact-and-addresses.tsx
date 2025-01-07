@@ -5,12 +5,11 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { Messages } from "../../../../utils/messages";
+import { useValidators } from "../../../../utils/validators-hook";
 
 export function ContactAndAddresses({ props }: ContactAndAddressesType) {
     console.log(props.accId)
-    // const context: GlobalContextType = useContext(GlobalContext);
-    // const { accId } = props
-    // console.log(accId)
+    const { checkNoSpaceOrSpecialChar, checkNoSpecialChar, checkEmail, checkGstin, checkMobileNo } = useValidators()
     const {
         register,
         control,
@@ -77,7 +76,12 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. John Doe"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("contactName", { required: Messages.errRequired })}
+                    {...register("contactName", {
+                        required: Messages.errRequired,
+                        validate: {
+                            valdateContactName: checkNoSpecialChar
+                        }
+                    })}
                 />
                 {errors.contactName && <WidgetFormErrorMessage errorMessage={errors.contactName.message} />}
             </label>
@@ -89,8 +93,14 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. johnDoe"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("contactCode", { required: Messages.errRequired })}
+                    {...register("contactCode", {
+                        required: Messages.errRequired,
+                        validate: {
+                            validateContactCode: checkNoSpaceOrSpecialChar
+                        }
+                    })}
                 />
+                {errors.contactCode && <WidgetFormErrorMessage errorMessage={errors.contactCode.message} />}
             </label>
 
             <label className="flex flex-col font-medium text-primary-400">
@@ -100,7 +110,11 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. 1234567890"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("mobileNumber", )}
+                    {...register("mobileNumber", {
+                        validate: {
+                            validateMobileNo: checkMobileNo
+                        }
+                    })}
                 />
                 {errors.mobileNumber && <WidgetFormErrorMessage errorMessage={errors.mobileNumber.message} />}
             </label>
@@ -112,7 +126,11 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. 1234567890"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("otherMobileNumber", )}
+                    {...register("otherMobileNumber", {
+                        validate: {
+                            validateOtherMobileNo: checkMobileNo
+                        }
+                    })}
                 />
                 {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />}
             </label>
@@ -124,7 +142,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. 1234567890"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("landPhone", )}
+                    {...register("landPhone",)}
                 />
                 {/* {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />} */}
             </label>
@@ -136,9 +154,13 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. a@c.com"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("email", )}
+                    {...register("email", {
+                        validate: {
+                            validateEmail: checkEmail
+                        }
+                    })}
                 />
-                {/* {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />} */}
+                {errors.email && <WidgetFormErrorMessage errorMessage={errors.email.message} />}
             </label>
 
             <label className="flex flex-col font-medium text-primary-400">
@@ -148,9 +170,13 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. a@c.com"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("otherEmail", )}
+                    {...register("otherEmail", {
+                        validate: {
+                            validateOtherEmail: checkEmail
+                        }
+                    })}
                 />
-                {/* {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />} */}
+                {errors.otherEmail && <WidgetFormErrorMessage errorMessage={errors.otherEmail.message} />}
             </label>
 
             <label className="flex flex-col font-medium text-primary-400">
@@ -160,9 +186,8 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="Description"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("descr", )}
+                    {...register("descr",)}
                 />
-                {/* {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />} */}
             </label>
 
             <label className="flex flex-col font-medium text-primary-400">
@@ -172,9 +197,13 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. 22AAAAA0000A1Z5"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("gstin", )}
+                    {...register("gstin", {
+                        validate: {
+                            validateGstin: checkGstin
+                        }
+                    })}
                 />
-                {/* {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />} */}
+                {errors.gstin && <WidgetFormErrorMessage errorMessage={errors.gstin.message} />}
             </label>
 
             <label className="flex flex-col font-medium text-primary-400">
@@ -184,9 +213,9 @@ export function ContactAndAddresses({ props }: ContactAndAddressesType) {
                     placeholder="e.g. 19"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register("gstin", )}
+                    {...register("gstin",)}
                 />
-                {/* {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />} */}
+                {errors.stateCode && <WidgetFormErrorMessage errorMessage={errors.stateCode.message} />}
             </label>
 
             {/* Addresses */}

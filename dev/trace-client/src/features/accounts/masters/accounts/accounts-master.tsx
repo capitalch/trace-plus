@@ -5,7 +5,6 @@ import { CompAccountsContainer } from "../../../../controls/components/comp-acco
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
-// import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { Utils } from "../../../../utils/utils"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { GenericSwitch } from "./generic-switch"

@@ -37,14 +37,16 @@
 																- Place it in Navbar
 																- create reducers
 																- create map
-		- sliding pane provide title, widthPerc or absolute
+																- sliding pane provide title, widthPerc or absolute
 		- rename generic-switch to comp-generic-switch
 																- Treegrid toolbox
 																- Treegrid populate
 		- Address click
 			- Add modify address through modal form
-				- Provide all fields
-				- Register and validate
+				- load data from server and populate
+																- Provide all fields
+				- Register and validate all
+					- State code validation
 				- Error handling
 				- Submit functionality
 				- Add address

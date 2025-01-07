@@ -17,6 +17,14 @@ function useValidators() {
     return (error)
   }
 
+  function checkGstin(input: string){
+    let error = undefined
+    if (!isValidGstin(input)) {
+      error = Messages.errInvalidGstin
+    }
+    return (error)
+  }
+
   function checkMobileNo(input: string) {
     let error = undefined
     const regex = /^(\+91[\-\s]?)?[6-9]\d{9}$/
@@ -136,6 +144,7 @@ function useValidators() {
 
   return {
     checkEmail,
+    checkGstin,
     checkMobileNo,
     checkNoSpaceOrSpecialChar,
     checkNoSpaceOrSpecialCharAllowDot,
@@ -151,6 +160,11 @@ function useValidators() {
   function isValidEmail(input: string) {
     const ret = input.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
     return ret
+  }
+
+  function isValidGstin(input: string){
+    const ret = input.match(/^([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+$/)
+    return(ret)
   }
 }
 export { useValidators }

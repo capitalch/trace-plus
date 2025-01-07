@@ -25,6 +25,7 @@ const Messages = {
   errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidClientName: 'Invalid client name',
   errInvalidEmail: 'Invalid email',
+  errInvalidGstin:'Invalid GSTIN no',
   errInvalidMobileNo: 'Invalid mobile no',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errMustBePositive: 'Must be a positive number',
