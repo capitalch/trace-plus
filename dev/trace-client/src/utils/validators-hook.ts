@@ -25,6 +25,15 @@ function useValidators() {
     return (error)
   }
 
+  function checkGstStateCode(input: string){
+    let error = undefined
+    const regex = /^[1-9][0-9]?$/
+    if (!regex.test(input)) {
+      error = Messages.errInvalidGstStateCode
+    }
+    return (error)
+  }
+
   function checkMobileNo(input: string) {
     let error = undefined
     const regex = /^(\+91[\-\s]?)?[6-9]\d{9}$/
@@ -80,6 +89,15 @@ function useValidators() {
       error = Messages.errNoSpecialChar
     }
     return error
+  }
+
+  function checkPinCode(input: string){
+    let error = undefined
+    const regex = /^[1-9][0-9]{5}$/
+    if (!regex.test(input)) {
+      error = Messages.errInvalidPinCode
+    }
+    return (error)
   }
 
   function checkRequired(input: string) {
@@ -145,11 +163,13 @@ function useValidators() {
   return {
     checkEmail,
     checkGstin,
+    checkGstStateCode,
     checkMobileNo,
     checkNoSpaceOrSpecialChar,
     checkNoSpaceOrSpecialCharAllowDot,
     checkNoSpecialChar,
     checkPassword,
+    checkPinCode,
     checkUrl,
     checkUserNameOrEmail,
     shouldBePositive,
