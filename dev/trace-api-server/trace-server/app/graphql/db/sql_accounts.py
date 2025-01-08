@@ -153,7 +153,7 @@ class SqlAccounts:
                 'groupsLedgers', (SELECT json_agg(b) FROM cte2 b)
             ) AS "jsonResult"
     """
-    
+
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 
@@ -341,6 +341,12 @@ class SqlAccounts:
             'bankRecon', (SELECT json_agg(a) from cte3 a)
             , 'opBalance', (SELECT row_to_json(b) from cte2 b)
             ) as "jsonResult"
+    """
+
+    get_extBusinessContactsAccM = """
+    select * 
+	    from "ExtBusinessContactsAccM"
+		    where "id" = %(id)s
     """
 
     get_ledger_leaf_accounts = """

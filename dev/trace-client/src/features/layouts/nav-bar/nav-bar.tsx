@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux"
 import ReactSlidingPane from "react-sliding-pane"
 import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { FC } from "react"
-// import { FC } from "react"
 
 function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
@@ -21,7 +20,7 @@ function NavBar() {
 
     const SlidingPaneChildComp: FC<any> = SlidingPaneMap[identifier]?.content
     const slidingPaneChildCompProps: any = SlidingPaneMap[identifier]?.props
-    // const x: FC = SlidingPaneMap[identifier]
+    
     return (
         // Top Nav bar
         <div className="flex items-center h-12 bg-primary-500 overflow-hidden">
