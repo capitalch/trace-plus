@@ -121,7 +121,8 @@ export function AccountsMaster() {
             filled = 'Filled'
         }
         const comp: ReactElement =
-            <button onClick={() => setIsPaneOpen(props.extBusinessContactsAccMId || 0)} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
+            <button onClick={() =>
+                setIsPaneOpen(props.id || 0, props.isAddressExists)} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow">
                 {/* Badge section */}
                 {(filled === 'Filled') && <div className="rounded-full bg-blue-800 px-2 py-1 text-xs font-bold text-white">
                     A
@@ -212,17 +213,18 @@ export function AccountsMaster() {
         Utils.treeGridUtils.restoreScrollPos(context, instance)
     }
 
-    function setIsPaneOpen(extId: number) {
-        SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props.extId = extId || 0
+    function setIsPaneOpen(accId: number, isAddressExists: boolean | undefined) {
+        SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props.accId = accId || 0
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.contactAndAddresses,
-            title: extId ? 'Edit contact and addresses' : 'New contact and addresses',
+            title: isAddressExists ? 'Edit contact and addresses' : 'New contact and addresses',
             width: '600px'
         }))
     }
 }
 
 export type AccountsMasterType = {
+    // accId: number
     accClass?: string
     accCode?: string
     accLeaf: 'Y' | 'N' | 'L' | 'S'

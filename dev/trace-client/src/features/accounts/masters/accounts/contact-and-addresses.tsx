@@ -10,16 +10,21 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import _ from "lodash";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
+import { AppDispatchType } from "../../../../app/store/store";
+import { useDispatch } from "react-redux";
 
 export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
-    const { extId } = props
+    const dispatch: AppDispatchType = useDispatch()
+    const { accId } = props
     const instance: string = DataInstancesMap.contactsAndAddresses
     useEffect(() => {
-        if (extId) {
+        if (accId) {
             loadData()
         }
     }, [])
-    const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const {
         checkEmail
         , checkGstin
@@ -35,10 +40,11 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         handleSubmit,
         setValue,
         formState: { errors, isSubmitting },
-    } = useForm({
+    } = useForm<ContactAndAddressesType>({
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
+            id: undefined,
             contactName: "",
             contactCode: "",
             mobileNumber: "",
@@ -52,6 +58,8 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
             addresses: [{ address1: "", address2: "", pin: "", city: "", state: "", country: "" }],
         },
     });
+
+    // register('id', {})
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -323,7 +331,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                         <button
                             type="button"
                             onClick={() => remove(index)}
-                            className="text-red-500 text-sm text-left">
+                            className="text-lime-500 text-sm text-left">
                             Remove this address
                         </button>
                     </div>
@@ -351,7 +359,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                 instance: instance,
                 sqlId: SqlIdsMap.getExtBusinessContactsAccM,
                 sqlArgs: {
-                    id: extId
+                    accId: accId
                 },
             })
             if ((!_.isEmpty(res)) && (Array.isArray(res)) && (res.length > 0)) {
@@ -363,6 +371,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
     }
 
     function populateData(res: ContactAndAddressesType) {
+        setValue("id", res.id)
         setValue("contactName", res.contactName || '');
         setValue("contactCode", res.contactCode || '');
         setValue("mobileNumber", res.mobileNumber || '');
@@ -373,7 +382,11 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         setValue("descr", res.descr || '');
         setValue("gstin", res.gstin || '');
         setValue("stateCode", res.stateCode || '');
-        const addresses: AddressType[] | undefined = res.addresses
+        // const jAddress: string | undefined = res.jAddress
+        const addresses: AddressType[] | undefined = res.jAddress
+        // if(jAddress){
+        //     addresses  = JSON.parse(jAddress)
+        // }
         if (addresses && (addresses.length > 0)) {
             addresses.forEach((address: AddressType, index: number) => {
                 setValue(`addresses.${index}.address1`, address.address1)
@@ -387,50 +400,76 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
     }
 
     async function onSubmit(data: ContactAndAddressesType) {
-        data.mobileNumber = data.mobileNumber || undefined
-        data.otherMobileNumber = data.otherMobileNumber || undefined
-        data.email = data.email || undefined
-        data.otherEmail = data.otherEmail || undefined
-        data.landPhone = data.landPhone || undefined
-        data.descr = data.descr || undefined
-        data.gstin = data.gstin || undefined
-        data.stateCode = data.stateCode || undefined
-        // Replace '' with null in data
-        // Perform save or update logic
-        console.log(data);
-        // await loadData();
+        const xData: any = {}
+        xData.contactName = data.contactName
+        xData.contactCode = data.contactCode
+        xData.mobileNumber = data.mobileNumber || undefined
+        xData.otherMobileNumber = data.otherMobileNumber || undefined
+        xData.email = data.email || undefined
+        xData.otherEmail = data.otherEmail || undefined
+        xData.landPhone = data.landPhone || undefined
+        xData.descr = data.descr || undefined
+        xData.gstin = data.gstin || undefined
+        xData.stateCode = data.stateCode || undefined
+        xData.accId = accId
+        xData.id = data.id
+        if (data?.addresses && data.addresses.length > 0) {
+            data.addresses.forEach((address: any,) => {
+                address.address2 = address.address2 || undefined
+                address.country = address.country || undefined
+            })
+            xData.jAddress = JSON.stringify(data.addresses)
+        }
+        // console.log(xData)
+        try {
+            Utils.doGenericUpdate({
+                buCode: buCode || '',
+                tableName: DatabaseTablesMap.ExtBusinessContactsAccM,
+                xData: xData
+            })
+            dispatch(closeSlidingPane())
+            Utils.showSaveMessage();
+            const loadDataAccountsMaster = context.CompSyncFusionTreeGrid[DataInstancesMap.accountsMaster].loadData
+            if (loadDataAccountsMaster) {
+                loadDataAccountsMaster()
+            }
+        } catch (e: any) {
+            console.log(e)
+        }
     }
 }
 
 export type ContactAndAddressesPropsType = {
     props: {
-        extId: number
+        accId: number
     }
 }
 
 // Types
 export type ContactAndAddressesType = {
+    accId?: number
     contactName: string;
     contactCode: string;
-    mobileNumber?: string | undefined;
-    otherMobileNumber?: string;
-    landPhone?: string;
-    email?: string;
-    otherEmail?: string;
-    descr?: string;
-    gstin?: string;
-    stateCode?: string;
-    addresses?: AddressType[];
-    id?: string;
+    mobileNumber: string;
+    otherMobileNumber: string;
+    landPhone: string;
+    email: string;
+    otherEmail: string;
+    descr: string;
+    gstin: string;
+    stateCode: string;
+    addresses: AddressType[];
+    jAddress?: AddressType[];
+    id: number;
 };
 
 export type AddressType = {
     address1: string;
-    address2?: string;
+    address2: string;
     pin: string;
     city: string;
     state: string;
-    country?: string;
+    country: string;
 };
 
 

@@ -8,10 +8,9 @@ export const DatabaseTablesMap = {
     UserBuX:'UserBuX',
     UserM:'UserM',
 
-
-
     // accounts
     BankOpBal:'BankOpBal',
     ExtBankReconTranD:'ExtBankReconTranD',
-    TranH: 'TranH'
+    TranH: 'TranH',
+    ExtBusinessContactsAccM:'ExtBusinessContactsAccM'
 }

@@ -5,7 +5,7 @@ import { ContactAndAddresses, } from "../../../features/accounts/masters/account
 export const SlidingPaneMap: SlidingPaneMapType = {
     contactAndAddresses: {
         content: ContactAndAddresses,
-        props: { extId: 0 }
+        props: { accId: 0 }
     }
 }
 
@@ -18,7 +18,7 @@ export type SlidingPaneMapType = {
     [key: string]: {
         content: FC<any>;
         props: {
-            extId: number
+            accId: number
         }
     }
 }

@@ -346,7 +346,7 @@ class SqlAccounts:
     get_extBusinessContactsAccM = """
     select * 
 	    from "ExtBusinessContactsAccM"
-		    where "id" = %(id)s
+		    where "accId" = %(accId)s
     """
 
     get_ledger_leaf_accounts = """
