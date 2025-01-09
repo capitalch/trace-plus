@@ -214,6 +214,7 @@ export function AccountsMaster() {
     }
 
     function setIsPaneOpen(accId: number, isAddressExists: boolean | undefined) {
+        Utils.treeGridUtils.saveScrollPos(context, instance) // Save scroll pos for contact and addresses
         SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props.accId = accId || 0
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.contactAndAddresses,
@@ -224,7 +225,6 @@ export function AccountsMaster() {
 }
 
 export type AccountsMasterType = {
-    // accId: number
     accClass?: string
     accCode?: string
     accLeaf: 'Y' | 'N' | 'L' | 'S'

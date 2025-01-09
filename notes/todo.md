@@ -27,6 +27,7 @@
 	- In all grids show a margin of 10 px from bottom
 	- Grid fix up sizes for edit, delete and preview buttons
 	- Check Capichow bank recon double entry
+	- In ledger subledger do a direct search on party name inside subledger
 
 - Master accounts
 															- Startup
@@ -41,15 +42,19 @@
 		- rename generic-switch to comp-generic-switch
 																- Treegrid toolbox
 																- Treegrid populate
-		- Address click
-			- After saving of contacts, restore scroll position in accounts master
-			- Add modify address through modal form
-				- load data from server and populate when edit
+		- Contact and addresses
+			- Submit functionality
+																- Make email optional
+			- After saving of contacts
+																- Restore scroll position in accounts master
+																- Accounts master should show filled instead of empty
+				- provision to delete contact and address
+															- Add modify address through modal form
+																- load data from server and populate when edit
 																- Provide all fields
 															- Register and validate all
 																- State code validation
-				- Error handling
-				- Submit functionality
+																- Error handling
 																- Add address
 																- remove address
 																- Give a total address count

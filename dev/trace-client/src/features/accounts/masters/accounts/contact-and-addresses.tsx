@@ -37,6 +37,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
     const {
         register,
         control,
+        getValues,
         handleSubmit,
         setValue,
         formState: { errors, isSubmitting },
@@ -59,18 +60,21 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         },
     });
 
-    // register('id', {})
-
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'addresses'
     })
-
+    // const id = getValues()?.id
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-auto"
-        >
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-auto">
+            <button
+                type="button"
+                onClick={deleteContact}
+                className="text-amber-500 text-sm text-left col-span-2">
+                Permanently delete this contact along with address
+            </button>
             <label className="flex flex-col font-medium text-primary-800">
                 <span className="font-bold">Contact Name <WidgetAstrix /></span>
                 <input
@@ -350,6 +354,14 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
 
     );
 
+    async function deleteContact() {
+        Utils.showDeleteConfirmDialog(
+            () => {
+                console.log('abc')
+            }
+        )
+    }
+
     async function loadData() {
         try {
             const res: ContactAndAddressesType[] = await Utils.doGenericQuery({
@@ -382,11 +394,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         setValue("descr", res.descr || '');
         setValue("gstin", res.gstin || '');
         setValue("stateCode", res.stateCode || '');
-        // const jAddress: string | undefined = res.jAddress
         const addresses: AddressType[] | undefined = res.jAddress
-        // if(jAddress){
-        //     addresses  = JSON.parse(jAddress)
-        // }
         if (addresses && (addresses.length > 0)) {
             addresses.forEach((address: AddressType, index: number) => {
                 setValue(`addresses.${index}.address1`, address.address1)
@@ -422,7 +430,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         }
         // console.log(xData)
         try {
-            Utils.doGenericUpdate({
+            await Utils.doGenericUpdate({
                 buCode: buCode || '',
                 tableName: DatabaseTablesMap.ExtBusinessContactsAccM,
                 xData: xData
@@ -431,7 +439,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
             Utils.showSaveMessage();
             const loadDataAccountsMaster = context.CompSyncFusionTreeGrid[DataInstancesMap.accountsMaster].loadData
             if (loadDataAccountsMaster) {
-                loadDataAccountsMaster()
+                await loadDataAccountsMaster()
             }
         } catch (e: any) {
             console.log(e)
