@@ -5,7 +5,10 @@ import { ContactAndAddresses, } from "../../../features/accounts/masters/account
 export const SlidingPaneMap: SlidingPaneMapType = {
     contactAndAddresses: {
         content: ContactAndAddresses,
-        props: { accId: 0 }
+        props: {
+            accId: 0,
+            isAddressExists: false
+        }
     }
 }
 
@@ -19,6 +22,7 @@ export type SlidingPaneMapType = {
         content: FC<any>;
         props: {
             accId: number
+            isAddressExists: boolean
         }
     }
 }

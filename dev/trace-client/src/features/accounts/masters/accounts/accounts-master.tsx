@@ -12,6 +12,8 @@ import { AppDispatchType } from "../../../../app/store/store"
 import { useDispatch } from "react-redux"
 import { SlidingPaneEnum, SlidingPaneMap, } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
+import { IconPlus } from "../../../../controls/icons/icon-plus"
+import { AccountsNewGroupModal } from "./accounts-new-group-modal"
 
 export function AccountsMaster() {
     const dispatch: AppDispatchType = useDispatch()
@@ -56,6 +58,24 @@ export function AccountsMaster() {
         />
     </CompAccountsContainer>)
 
+    function actionHeaderTemplate() {
+        return (<div className="flex justify-center items-center h-full">
+            <button onClick={handleActionHeaderOnClick}
+                className="e-btn flex w-full font-semibold text-blue-500 items-center rounded-md hover:text-blue-700 hover:bg-blue-50 border-none  focus:bg-blue-50 focus:text-blue-500">
+                <IconPlus className="w-4 h-4 mr-4" />
+                ADD GROUP
+            </button>
+        </div>)
+    }
+
+    function handleActionHeaderOnClick(){
+        Utils.showHideModalDialogA({
+            title: "New group account",
+            isOpen: true,
+            element: <AccountsNewGroupModal />,
+        })
+    }
+
     function getColumns(): SyncFusionTreeGridColumnType[] {
         return ([
             {
@@ -63,6 +83,11 @@ export function AccountsMaster() {
                 headerText: 'Account Name',
                 width: 250,
                 textAlign: 'Left'
+            },
+            {
+                field: '',
+                headerTemplate: actionHeaderTemplate,
+                width: 200,
             },
             {
                 field: 'accCode',
@@ -215,7 +240,9 @@ export function AccountsMaster() {
 
     function setIsPaneOpen(accId: number, isAddressExists: boolean | undefined) {
         Utils.treeGridUtils.saveScrollPos(context, instance) // Save scroll pos for contact and addresses
-        SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props.accId = accId || 0
+        const props = SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props
+        props.accId = accId || 0
+        props.isAddressExists = isAddressExists || false
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.contactAndAddresses,
             title: isAddressExists ? 'Edit contact and addresses' : 'New contact and addresses',

@@ -42,13 +42,13 @@
 		- rename generic-switch to comp-generic-switch
 																- Treegrid toolbox
 																- Treegrid populate
-		- Contact and addresses
-			- Submit functionality
+													- Contact and addresses
+														- Submit functionality
 																- Make email optional
-			- After saving of contacts
+															- After saving of contacts
 																- Restore scroll position in accounts master
 																- Accounts master should show filled instead of empty
-				- provision to delete contact and address
+																- provision to delete contact and address
 															- Add modify address through modal form
 																- load data from server and populate when edit
 																- Provide all fields
@@ -65,6 +65,11 @@
 																- Columns
 																- Maintain scrollPos in treeGrid
 																- Aggr columns / Summary
+			- Add group
+																- Modal
+				- Form
+				- Validation
+				- Save
 			- Add child
 			- edit self
 			- delete

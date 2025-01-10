@@ -205,6 +205,7 @@ export type CompSyncfusionTreeGridType = {
 export type SyncFusionTreeGridColumnType = {
     field: string
     format?: string
+    headerTemplate?: any
     headerText?: string
     isPrimaryKey?: boolean
     key?: string

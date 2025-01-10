@@ -62,17 +62,18 @@ export function useCompSyncfusionTreeGrid({
     function getColumnDirectives() {
         const colDirectives: any[] = columns.map((col: SyncFusionTreeGridColumnType, index: number) => {
             return (<ColumnDirective
-                field={col.field}
                 clipMode="EllipsisWithTooltip"
+                field={col.field}
+                format={col.format}
+                headerTemplate={col.headerTemplate}
                 headerText={col.headerText}
                 isPrimaryKey={col.isPrimaryKey}
                 key={index}
-                textAlign={col.textAlign}
                 template={col.template}
+                textAlign={col.textAlign}
                 type={col.type}
-                width={col.width}
-                format={col.format}
                 visible={col.visible}
+                width={col.width}
             />)
         })
         if (addUniqueKeyToJson) {

@@ -17,13 +17,15 @@ import { useDispatch } from "react-redux";
 
 export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
     const dispatch: AppDispatchType = useDispatch()
-    const { accId } = props
+    const { accId, isAddressExists } = props
     const instance: string = DataInstancesMap.contactsAndAddresses
+
     useEffect(() => {
         if (accId) {
             loadData()
         }
     }, [])
+    
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const {
         checkEmail
@@ -60,21 +62,21 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         },
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove, replace } = useFieldArray({
         control,
         name: 'addresses'
     })
-    // const id = getValues()?.id
+
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
             className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-auto">
-            <button
+            {isAddressExists && <button
                 type="button"
                 onClick={deleteContact}
                 className="text-amber-500 text-sm text-left col-span-2">
                 Permanently delete this contact along with address
-            </button>
+            </button>}
             <label className="flex flex-col font-medium text-primary-800">
                 <span className="font-bold">Contact Name <WidgetAstrix /></span>
                 <input
@@ -354,10 +356,28 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
 
     );
 
+    async function closePane() {
+        dispatch(closeSlidingPane())
+        Utils.showSaveMessage();
+        const loadDataAccountsMaster = context.CompSyncFusionTreeGrid[DataInstancesMap.accountsMaster].loadData
+        if (loadDataAccountsMaster) {
+            await loadDataAccountsMaster()
+        }
+    }
+
     async function deleteContact() {
         Utils.showDeleteConfirmDialog(
-            () => {
-                console.log('abc')
+            async () => {
+                try {
+                    await Utils.doGenericDelete({
+                        buCode: buCode || '',
+                        tableName: DatabaseTablesMap.ExtBusinessContactsAccM,
+                        deletedIds: [getValues().id]
+                    })
+                    await closePane()
+                } catch (e: any) {
+                    console.log(e)
+                }
             }
         )
     }
@@ -382,31 +402,6 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         }
     }
 
-    function populateData(res: ContactAndAddressesType) {
-        setValue("id", res.id)
-        setValue("contactName", res.contactName || '');
-        setValue("contactCode", res.contactCode || '');
-        setValue("mobileNumber", res.mobileNumber || '');
-        setValue("otherMobileNumber", res.otherMobileNumber || '');
-        setValue("landPhone", res.landPhone || '');
-        setValue("email", res.email || '');
-        setValue("otherEmail", res.otherEmail || '');
-        setValue("descr", res.descr || '');
-        setValue("gstin", res.gstin || '');
-        setValue("stateCode", res.stateCode || '');
-        const addresses: AddressType[] | undefined = res.jAddress
-        if (addresses && (addresses.length > 0)) {
-            addresses.forEach((address: AddressType, index: number) => {
-                setValue(`addresses.${index}.address1`, address.address1)
-                setValue(`addresses.${index}.address2`, address.address2 || '')
-                setValue(`addresses.${index}.pin`, address.pin)
-                setValue(`addresses.${index}.city`, address.city)
-                setValue(`addresses.${index}.state`, address.state)
-                setValue(`addresses.${index}.country`, address.country || '')
-            })
-        }
-    }
-
     async function onSubmit(data: ContactAndAddressesType) {
         const xData: any = {}
         xData.contactName = data.contactName
@@ -428,21 +423,50 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
             })
             xData.jAddress = JSON.stringify(data.addresses)
         }
-        // console.log(xData)
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
                 tableName: DatabaseTablesMap.ExtBusinessContactsAccM,
                 xData: xData
             })
-            dispatch(closeSlidingPane())
-            Utils.showSaveMessage();
-            const loadDataAccountsMaster = context.CompSyncFusionTreeGrid[DataInstancesMap.accountsMaster].loadData
-            if (loadDataAccountsMaster) {
-                await loadDataAccountsMaster()
-            }
+            await closePane()
         } catch (e: any) {
             console.log(e)
+        }
+    }
+
+    function populateData(res: ContactAndAddressesType) {
+        setValue("id", res.id)
+        setValue("contactName", res.contactName || '');
+        setValue("contactCode", res.contactCode || '');
+        setValue("mobileNumber", res.mobileNumber || '');
+        setValue("otherMobileNumber", res.otherMobileNumber || '');
+        setValue("landPhone", res.landPhone || '');
+        setValue("email", res.email || '');
+        setValue("otherEmail", res.otherEmail || '');
+        setValue("descr", res.descr || '');
+        setValue("gstin", res.gstin || '');
+        setValue("stateCode", res.stateCode || '');
+        const addresses: AddressType[] | undefined = res.jAddress
+        if (addresses && (addresses.length > 0)) {
+            replace(addresses.map(address => ({
+                address1: address.address1 || '',
+                address2: address.address2 || '',
+                pin: address.pin || '',
+                city: address.city || '',
+                state: address.state || '',
+                country: address.country || '',
+            })));
+            // addresses.forEach((address: AddressType, index: number) => {
+            // Use `replace` from useFieldArray
+
+            // setValue(`addresses.${index}.address1`, address.address1)
+            // setValue(`addresses.${index}.address2`, address.address2 || '')
+            // setValue(`addresses.${index}.pin`, address.pin)
+            // setValue(`addresses.${index}.city`, address.city)
+            // setValue(`addresses.${index}.state`, address.state)
+            // setValue(`addresses.${index}.country`, address.country || '')
+            // })
         }
     }
 }
@@ -450,6 +474,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
 export type ContactAndAddressesPropsType = {
     props: {
         accId: number
+        isAddressExists: boolean
     }
 }
 
@@ -479,31 +504,3 @@ export type AddressType = {
     state: string;
     country: string;
 };
-
-
-// useEffect(() => {
-// setValue("contactName", contactName || "");
-// setValue("contactCode", contactCode || "");
-// setValue("mobileNumber", mobileNumber || "");
-// setValue("otherMobileNumber", otherMobileNumber || "");
-// setValue("landPhone", landPhone || "");
-// setValue("email", email || "");
-// setValue("otherEmail", otherEmail || "");
-// setValue("descr", descr || "");
-// setValue("gstin", gstin || "");
-// setValue("stateCode", stateCode || "");
-//     setValue("addresses", addresses || [{ address1: "", address2: "", pin: "", city: "", state: "", country: "" }]);
-//   }, [
-//     contactName,
-//     contactCode,
-//     mobileNumber,
-//     otherMobileNumber,
-//     landPhone,
-//     email,
-//     otherEmail,
-//     descr,
-//     gstin,
-//     stateCode,
-//     addresses,
-//     setValue,
-//   ]);
