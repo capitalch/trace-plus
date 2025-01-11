@@ -14,6 +14,10 @@ import { SlidingPaneEnum, SlidingPaneMap, } from "../../../../controls/redux-com
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
 import { IconPlus } from "../../../../controls/icons/icon-plus"
 import { AccountsNewGroupModal } from "./accounts-new-group-modal"
+import { IconEdit } from "../../../../controls/icons/icon-edit"
+import { IconEdit1 } from "../../../../controls/icons/icon-edit1"
+import { IconDelete } from "../../../../controls/icons/icon-delete"
+import { IconCross } from "../../../../controls/icons/icon-cross"
 
 export function AccountsMaster() {
     const dispatch: AppDispatchType = useDispatch()
@@ -66,14 +70,43 @@ export function AccountsMaster() {
                 ADD GROUP
             </button>
         </div>)
+        function handleActionHeaderOnClick() {
+            Utils.showHideModalDialogA({
+                title: "New group account",
+                isOpen: true,
+                element: <AccountsNewGroupModal />,
+            })
+        }
     }
 
-    function handleActionHeaderOnClick(){
-        Utils.showHideModalDialogA({
-            title: "New group account",
-            isOpen: true,
-            element: <AccountsNewGroupModal />,
-        })
+    function actionTemplate(props: AccountsMasterType) {
+        
+        return (<div className="flex justify-center items-center h-full">
+            <button onClick={handeleOnClickAddChild} className="flex font-medium justify-center items-center text-xs text-blue-600">
+                <IconPlus className="w-3 h-3 mr-1.5" />
+                ADD CHILD
+            </button>
+            <button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-green-600">
+                <IconEdit1 className="w-3 h-3 mr-1.5" />
+                EDIT SELF
+            </button>
+            <button onClick={handeleOnClickDel} className="flex font-medium justify-center items-center ml-4 text-xs text-red-600">
+                <IconCross className="w-4 h-4 mr-1" />
+                Del
+            </button>
+        </div>)
+
+        function handeleOnClickAddChild() {
+
+        }
+
+        function handeleOnClickEditSelf() {
+
+        }
+
+        function handeleOnClickDel() {
+
+        }
     }
 
     function getColumns(): SyncFusionTreeGridColumnType[] {
@@ -87,7 +120,8 @@ export function AccountsMaster() {
             {
                 field: '',
                 headerTemplate: actionHeaderTemplate,
-                width: 200,
+                template: actionTemplate,
+                width: 250,
             },
             {
                 field: 'accCode',

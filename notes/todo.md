@@ -62,18 +62,19 @@
 																- click implement
 																- Proper disablement
 		- Grid
-																- Columns
-																- Maintain scrollPos in treeGrid
-																- Aggr columns / Summary
-			- Add group
-																- Modal
-				- Form
-				- Validation
-				- Save
 			- Add child
 			- edit self
 			- delete
-
+																- Columns
+																- Maintain scrollPos in treeGrid
+																- Aggr columns / Summary
+															- Add group
+																- load data
+																- on change Acc type change class drop down
+																- Save
+																- Modal
+																- Form
+																- Validation
 												- Bank Recon
 													- UI
 															- Balance column

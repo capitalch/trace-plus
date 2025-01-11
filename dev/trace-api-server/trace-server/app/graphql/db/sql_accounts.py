@@ -154,6 +154,7 @@ class SqlAccounts:
             ) AS "jsonResult"
     """
 
+    
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 

@@ -152,7 +152,6 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
                     {...register("landPhone",)}
                 />
-                {/* {errors.otherMobileNumber && <WidgetFormErrorMessage errorMessage={errors.otherMobileNumber.message} />} */}
             </label>
 
             <label className="flex flex-col font-medium text-primary-800">
