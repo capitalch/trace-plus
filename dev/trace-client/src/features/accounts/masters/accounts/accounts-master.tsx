@@ -13,11 +13,12 @@ import { useDispatch } from "react-redux"
 import { SlidingPaneEnum, SlidingPaneMap, } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
 import { IconPlus } from "../../../../controls/icons/icon-plus"
-import { AccountsNewGroupModal } from "./accounts-new-group-modal"
-import { IconEdit } from "../../../../controls/icons/icon-edit"
+import { AccountsAddGroupModal } from "./accounts-add-group-modal"
 import { IconEdit1 } from "../../../../controls/icons/icon-edit1"
-import { IconDelete } from "../../../../controls/icons/icon-delete"
 import { IconCross } from "../../../../controls/icons/icon-cross"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { AccountsAddChildModal } from "./accounts-add-child-modal"
+import { AccountsEditSelfModal } from "./accounts-edit-self-modal"
 
 export function AccountsMaster() {
     const dispatch: AppDispatchType = useDispatch()
@@ -63,49 +64,78 @@ export function AccountsMaster() {
     </CompAccountsContainer>)
 
     function actionHeaderTemplate() {
-        return (<div className="flex justify-center items-center h-full">
+        return (<div className="flex justify-start items-center h-full">
             <button onClick={handleActionHeaderOnClick}
-                className="e-btn flex w-full font-semibold text-blue-500 items-center rounded-md hover:text-blue-700 hover:bg-blue-50 border-none  focus:bg-blue-50 focus:text-blue-500">
+                className="e-btn flex w-full justify-start font-semibold text-blue-500 items-center rounded-md hover:text-blue-700 hover:bg-blue-50 border-none  focus:bg-blue-50 focus:text-blue-500">
                 <IconPlus className="w-4 h-4 mr-4" />
                 ADD GROUP
             </button>
         </div>)
         function handleActionHeaderOnClick() {
             Utils.showHideModalDialogA({
-                title: "New group account",
+                title: "Add group account",
                 isOpen: true,
-                element: <AccountsNewGroupModal />,
+                element: <AccountsAddGroupModal />,
             })
         }
     }
 
     function actionTemplate(props: AccountsMasterType) {
-        
-        return (<div className="flex justify-center items-center h-full">
-            <button onClick={handeleOnClickAddChild} className="flex font-medium justify-center items-center text-xs text-blue-600">
+        const isDelButtonVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) // Not visible for primary and those having children
+        const isEditButtonVisible: boolean = !props.isPrimary
+        const isAddChildButtonVisible: boolean = ['L', 'N'].includes(props.accLeaf)
+
+        return (<div className="flex items-center h-full justify-start">
+
+            {/* Add child */}
+            {isAddChildButtonVisible && <button onClick={handeleOnClickAddChild} className="flex font-medium justify-center items-center text-xs text-blue-700">
                 <IconPlus className="w-3 h-3 mr-1.5" />
                 ADD CHILD
-            </button>
-            <button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-green-600">
+            </button>}
+
+            {/* Edit self */}
+            {isEditButtonVisible && <button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-green-700">
                 <IconEdit1 className="w-3 h-3 mr-1.5" />
                 EDIT SELF
-            </button>
-            <button onClick={handeleOnClickDel} className="flex font-medium justify-center items-center ml-4 text-xs text-red-600">
+            </button>}
+
+            {/* Delete */}
+            {isDelButtonVisible && <button onClick={handeleOnClickDelete} className="flex font-medium justify-center items-center ml-4 text-xs text-red-700">
                 <IconCross className="w-4 h-4 mr-1" />
-                Del
-            </button>
+                DEL
+            </button>}
         </div>)
 
         function handeleOnClickAddChild() {
-
+            Utils.showHideModalDialogA({
+                title: `Add child for ${props.accName}`,
+                isOpen: true,
+                element: <AccountsAddChildModal />,
+            })
         }
 
         function handeleOnClickEditSelf() {
-
+            Utils.showHideModalDialogA({
+                title: `Edit ${props.accName}`,
+                isOpen: true,
+                element: <AccountsEditSelfModal />,
+            })
         }
 
-        function handeleOnClickDel() {
-
+        function handeleOnClickDelete() {
+            Utils.showDeleteConfirmDialog(async () => {
+                try {
+                    await Utils.doGenericDelete({
+                        buCode: buCode || '',
+                        deletedIds: [props.id],
+                        tableName: DatabaseTablesMap.AccM
+                    })
+                    Utils.showSaveMessage()
+                    loadDataWithSavedScrollPos()
+                } catch (e: any) {
+                    console.log(e)
+                }
+            })
         }
     }
 
@@ -257,6 +287,19 @@ export function AccountsMaster() {
         } catch (e: any) {
             console.log(e)
         }
+        loadDataWithSavedScrollPos()
+        // const loadData = context.CompSyncFusionTreeGrid[instance].loadData
+        // const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
+        // if (gridRef?.current) {
+        //     Utils.treeGridUtils.saveScrollPos(context, instance)
+        // }
+        // if (loadData) {
+        //     await loadData()
+        // }
+        return (isSuccess)
+    }
+
+    async function loadDataWithSavedScrollPos() {
         const loadData = context.CompSyncFusionTreeGrid[instance].loadData
         const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
         if (gridRef?.current) {
@@ -265,7 +308,6 @@ export function AccountsMaster() {
         if (loadData) {
             await loadData()
         }
-        return (isSuccess)
     }
 
     function onDataBound() {
@@ -295,6 +337,7 @@ export type AccountsMasterType = {
     children?: [AccountsMasterType | null] | null
     classId?: number
     extBusinessContactsAccMId?: number
+    hasChildRecords?: boolean
     id: number
     isAddressExists?: boolean
     isAutoSubledger?: boolean

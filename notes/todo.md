@@ -63,8 +63,19 @@
 																- Proper disablement
 		- Grid
 			- Add child
+				- Creates a new child
+																- Not visible for leaf and subledger. AccLeaf = Y, S
+				- fields: AccountCode, accountName, accountLevel: dropdown (group, leaf, ledger)
+				- If current ac is group: allow group, ledger, leaf as accLeaf in drop down
+				- if current ac is ledger only allow subledger
 			- edit self
-			- delete
+																- Not for primary
+				- Fields: accountCode, accName, parentAccount: dropdown: shows level, class and acc name in dropdown
+				- Allows to change parent. Any parent can be assigned
+				- Check feasibility of subledger vs leaf transfer and vice versa
+															- delete
+																- Not allowed for primary and those having children: hasChildRecords
+																- Delete functionality
 																- Columns
 																- Maintain scrollPos in treeGrid
 																- Aggr columns / Summary

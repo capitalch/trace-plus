@@ -10,7 +10,7 @@ import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 
-export function AccountsNewGroupModal() {
+export function AccountsAddGroupModal() {
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { context, buCode } = useUtilsInfo()
 
