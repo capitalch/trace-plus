@@ -20,3 +20,5 @@ select a.id, "accClass", "accLeaf", "accName",
             where
                 "accLeaf" in('L','N')
             order by "accLeaf", "accClass", "accName"
+
+updateBlock_editAccount
