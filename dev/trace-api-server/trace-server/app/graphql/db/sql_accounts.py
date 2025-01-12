@@ -148,23 +148,10 @@ class SqlAccounts:
             LEFT JOIN 
                 "ExtMiscAccM" e ON a."id" = e."accId"
             order by  "accName", "accType", a."id"
-        ),
-        cte2 AS (
-            select a.id, "accClass", "accLeaf", "accName", 
-            CASE WHEN "accLeaf" = 'L' THEN 'Ledger' ELSE 'Group' END || ': ' || "accClass" || ': ' || "accName"
-                as "fullName"
-            from
-                "AccM" a
-                    join "AccClassM" c
-                        on c.id = a."classId"
-            where
-                "accLeaf" in('L','N')
-            order by "accLeaf", "accClass", "accName"
         )
         SELECT 
             json_build_object(
-                'accountsMaster', (SELECT json_agg(a) FROM cte1 a),
-                'groupsLedgers', (SELECT json_agg(b) FROM cte2 b)
+                'accountsMaster', (SELECT json_agg(a) FROM cte1 a)
             ) AS "jsonResult"
     """
 

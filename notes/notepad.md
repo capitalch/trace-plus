@@ -9,3 +9,14 @@ I have following tables in an accounting system PostgreSql. I want to create tri
 2) AccOpBal: For opening balances of accounts: id, accId, dc(D for Debits, C for Credits), amount
 3) TranD: For transaction details: id, accId, dc (D for Debits, C for Credits), amount
 Create a trial balance query to be consumed by Syncfusion TreeGrid. It should be hierarchal. The parentId column defines the hierarchy in AccM table
+
+select a.id, "accClass", "accLeaf", "accName", 
+            CASE WHEN "accLeaf" = 'L' THEN 'Ledger' ELSE 'Group' END || ': ' || "accClass" || ': ' || "accName"
+                as "fullName"
+            from
+                "AccM" a
+                    join "AccClassM" c
+                        on c.id = a."classId"
+            where
+                "accLeaf" in('L','N')
+            order by "accLeaf", "accClass", "accName"
