@@ -4,15 +4,21 @@ import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { Messages } from "../../../../utils/messages";
 import { useValidators } from "../../../../utils/validators-hook";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
+import { IbukiMessages } from "../../../../utils/ibukiMessages";
+import _ from "lodash";
+import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 
 export function AccountsAddGroupModal() {
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { context, buCode } = useUtilsInfo()
+    const { context, buCode, dbName, decodedDbParamsObject } = useUtilsInfo()
 
     const accountTypeOptions = [
         { label: 'Asset', value: 'A' },
@@ -23,13 +29,35 @@ export function AccountsAddGroupModal() {
 
     const {
         register,
+        clearErrors,
         handleSubmit,
+        setError,
+        trigger,
         watch,
         formState: { errors, isSubmitting },
-        // setValue,
-    } = useForm<FormValues>({ mode: 'onTouched', criteriaMode: 'all' });
+    } = useForm<FormValuesType>({ mode: 'onTouched', criteriaMode: 'all' });
 
     const accountType = watch('accountType');
+
+    useEffect(() => {
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-ACC-CODE'], 1200).subscribe(async (d: any) => {
+            const isValid = await trigger('accountCode')
+            if (isValid) {
+                validateAccCodeAtServer(d.data)
+            }
+        })
+        const subs2 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-ACC-NAME"], 1600).subscribe(async (d: any) => {
+            const isValid = await trigger('accountName')
+            if (isValid) {
+                validateAccNameAtServer(d.data)
+            }
+        })
+
+        return (() => {
+            subs1.unsubscribe()
+            subs2.unsubscribe()
+        })
+    }, [])
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-auto min-w-72">
@@ -46,6 +74,9 @@ export function AccountsAddGroupModal() {
                         required: Messages.errRequired,
                         validate: {
                             validateAccountCode: checkNoSpaceOrSpecialChar
+                        },
+                        onChange: (e: any) => {
+                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-ACC-CODE'], { accCode: e.target.value })
                         }
                     })}
                 />
@@ -64,6 +95,9 @@ export function AccountsAddGroupModal() {
                         required: Messages.errRequired,
                         validate: {
                             validateAccountName: checkNoSpecialChar
+                        },
+                        onChange: (e: any) => {
+                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-ACC-NAME'], { accName: e.target.value })
                         }
                     })}
                 />
@@ -98,8 +132,12 @@ export function AccountsAddGroupModal() {
 
             {/* Submit Button */}
             <div className="mt-4 flex justify-start">
-                <WidgetButtonSubmitFullWidth label="Save" disabled={isSubmitting} />
+                <WidgetButtonSubmitFullWidth label="Save" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
             </div>
+
+            <span>
+                {showServerValidationError()}
+            </span>
         </form>
     );
 
@@ -114,8 +152,8 @@ export function AccountsAddGroupModal() {
         return (classMappingOptions)
     }
 
-    async function onSubmit(data: FormValues) {
-        const xData: any = {}
+    async function onSubmit(data: FormValuesType) {
+        const xData: XDataObjectType = {}
         xData.accCode = data.accountCode
         xData.accName = data.accountName
         xData.accType = data.accountType
@@ -140,9 +178,61 @@ export function AccountsAddGroupModal() {
             console.log(e)
         }
     }
+
+    function showServerValidationError() {
+        let Ret = <></>
+        if (errors?.root?.accCode) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.accCode.message} />
+        } else if (errors?.root?.accName) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.accName.message} />
+        } else {
+            Ret = <WidgetFormHelperText helperText='&nbsp;' />
+        }
+        return (Ret)
+    }
+
+    async function validateAccCodeAtServer(value: { accCode: string }) {
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.doesAccCodeExist,
+            sqlArgs: {
+                accCode: value?.accCode
+            }
+        })
+        if (res?.[0]?.exists) {
+            setError('root.accCode', {
+                type: 'serverError',
+                message: Messages.errAccCodeExists
+            })
+        } else {
+            clearErrors('root.accCode')
+        }
+    }
+
+    async function validateAccNameAtServer(value: { accName: string }) {
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.doesAccNameExist,
+            sqlArgs: {
+                accName: value?.accName
+            }
+        })
+        if (res?.[0]?.exists) {
+            setError('root.accName', {
+                type: 'serverError',
+                message: Messages.errAccNameExists
+            })
+        } else {
+            clearErrors('root.accName')
+        }
+    }
 }
 
-type FormValues = {
+type FormValuesType = {
     accountCode: string;
     accountName: string;
     accountType: string;

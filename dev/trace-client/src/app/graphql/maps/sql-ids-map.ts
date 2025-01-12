@@ -33,6 +33,8 @@ export const SqlIdsMap = {
   testConnection: "test_connection",
 
   // accounts
+  doesAccCodeExist: 'does_acc_code_exist',
+  doesAccNameExist: 'does_acc_name_exist',
   getAccountBalance: "get_account_balance",
   getAccountLedger: "get_account_ledger",
   getAllBanks: "get_all_banks",

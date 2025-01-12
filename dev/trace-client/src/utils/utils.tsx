@@ -13,6 +13,7 @@ import { showCompAppLoader } from "../controls/redux-components/comp-slice"
 import { CompInstances } from "../controls/redux-components/comp-instances"
 import { treeGridUtils, TreeGridUtilsType } from "./tree-grid-utils"
 import { gridUtils, GridUtilsType } from "./grid-utils"
+import { GlobalContextType } from "../app/global-context"
 
 export const Utils: UtilsType = {
     addUniqueKeysToJson: addUniqueKeysToJson,
@@ -38,6 +39,7 @@ export const Utils: UtilsType = {
     getUserDetails: getUserDetails,
     gridUtils: gridUtils,
     isNotNullOrUndefined: isNotNullOrUndefined,
+    loadDataInTreeGridWithSavedScrollPos: loadDataInTreeGridWithSavedScrollPos,
     mutateGraphQL: mutateGraphQL,
     queryGraphQL: queryGraphQL,
     showAlertMessage: showAlertMessage,
@@ -282,6 +284,17 @@ function getUserDetails(): UserDetailsType | undefined {
 
 function isNotNullOrUndefined<T>(value: T | null | undefined): boolean {
     return ((value !== null) && (value !== undefined))
+}
+
+async function loadDataInTreeGridWithSavedScrollPos(context: GlobalContextType, instance: string) {
+    const loadData = context.CompSyncFusionTreeGrid[instance].loadData
+    const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
+    if (gridRef?.current) {
+        treeGridUtils.saveScrollPos(context, instance)
+    }
+    if (loadData) {
+        await loadData()
+    }
 }
 
 async function mutateGraphQL(q: any, queryName: string) {
@@ -649,6 +662,7 @@ type UtilsType = {
     getToken: () => string | undefined
     getUnitInfo: () => UnitInfoType | undefined
     isNotNullOrUndefined: (value: any) => boolean
+    loadDataInTreeGridWithSavedScrollPos: (context: GlobalContextType, instance: string) => void
     getUserDetails: () => UserDetailsType | undefined
     gridUtils: GridUtilsType
     mutateGraphQL: (q: any, queryName: string) => any

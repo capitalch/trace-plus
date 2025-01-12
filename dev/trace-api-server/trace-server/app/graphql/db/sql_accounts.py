@@ -1,5 +1,23 @@
 class SqlAccounts:
 
+    does_acc_code_exist = """
+        with "accCode" as (values (%(accCode)s::text))
+        --with "accCode" AS (VALUES ('CashInHand1'::text))
+        SELECT EXISTS (
+            SELECT 1
+                FROM "AccM"
+            WHERE LOWER("accCode") = LOWER((table "accCode")))
+    """
+
+    does_acc_name_exist = """
+    with "accName" as (values (%(accName)s::text))
+        --with "accName" AS (VALUES ('Cash-In-Hand'::text))
+        SELECT EXISTS (
+            SELECT 1
+                FROM "AccM"
+            WHERE LOWER("accName") = LOWER((table "accName")))
+    """
+
     get_account_balance = """
      with "accId" as (values (%(accId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int))
      --with "accId" AS (VALUES (117::int)), "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int))
@@ -132,20 +150,16 @@ class SqlAccounts:
             order by  "accName", "accType", a."id"
         ),
         cte2 AS (
-            SELECT 
-                a."id", 
-                "accCode", 
-                "accName", 
-                "accType", 
-                "accLeaf", 
-                "classId", 
-                "accClass"
-            FROM 
+            select a.id, "accClass", "accLeaf", "accName", 
+            CASE WHEN "accLeaf" = 'L' THEN 'Ledger' ELSE 'Group' END || ': ' || "accClass" || ': ' || "accName"
+                as "fullName"
+            from
                 "AccM" a
-            JOIN 
-                "AccClassM" c ON a."classId" = c."id"
-            WHERE 
-                "accLeaf" IN ('N', 'L')
+                    join "AccClassM" c
+                        on c.id = a."classId"
+            where
+                "accLeaf" in('L','N')
+            order by "accLeaf", "accClass", "accName"
         )
         SELECT 
             json_build_object(
@@ -154,7 +168,6 @@ class SqlAccounts:
             ) AS "jsonResult"
     """
 
-    
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 

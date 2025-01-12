@@ -11,7 +11,7 @@ export type TraceDataObjectType = {
   xData?: XDataObjectType[] | XDataObjectType
 }
 
-type XDataObjectType = {
+export type XDataObjectType = {
   [key: string]: string | number | boolean | any
   details?: TraceDataObjectType[]
 }

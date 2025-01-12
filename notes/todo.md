@@ -62,12 +62,13 @@
 																- click implement
 																- Proper disablement
 		- Grid
-			- Add child
-				- Creates a new child
+															- Add child
+																- Server validation for accCode, accName
+																- Creates a new child
 																- Not visible for leaf and subledger. AccLeaf = Y, S
-				- fields: AccountCode, accountName, accountLevel: dropdown (group, leaf, ledger)
-				- If current ac is group: allow group, ledger, leaf as accLeaf in drop down
-				- if current ac is ledger only allow subledger
+																- fields: AccountCode, accountName, accountLevel: dropdown (group, leaf, ledger)
+																- If current ac is group: allow group, ledger, leaf as accLeaf in drop down
+																- if current ac is ledger only allow subledger
 			- edit self
 																- Not for primary
 				- Fields: accountCode, accName, parentAccount: dropdown: shows level, class and acc name in dropdown
@@ -79,7 +80,11 @@
 																- Columns
 																- Maintain scrollPos in treeGrid
 																- Aggr columns / Summary
-															- Add group
+														- Add group
+															- Server validation for accCode, accName
+																- validateAccCodeAtServer
+																- validateAccNameAtServer
+																- showServerValidationError
 																- load data
 																- on change Acc type change class drop down
 																- Save

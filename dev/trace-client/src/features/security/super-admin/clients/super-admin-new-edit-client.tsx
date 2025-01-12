@@ -14,7 +14,6 @@ import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context"
-// import { GlobalContext } from "../../../../App"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
@@ -139,9 +138,7 @@ export function SuperAdminNewEditClient({
                 <div className='mt-4 flex justify-start'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
-                {/* <button type="button" onClick={() => {
-                    console.log(errors)
-                }}>Test</button> */}
+            
                 <span>
                     {showServerValidationError()}
                 </span>

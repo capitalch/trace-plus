@@ -110,7 +110,7 @@ export function AccountsMaster() {
             Utils.showHideModalDialogA({
                 title: `Add child for ${props.accName}`,
                 isOpen: true,
-                element: <AccountsAddChildModal />,
+                element: <AccountsAddChildModal accId={props.id} accLeaf={props.accLeaf} accType={props.accType} classId={props.classId} />,
             })
         }
 
@@ -118,7 +118,13 @@ export function AccountsMaster() {
             Utils.showHideModalDialogA({
                 title: `Edit ${props.accName}`,
                 isOpen: true,
-                element: <AccountsEditSelfModal />,
+                element: <AccountsEditSelfModal
+                    accId={props.id}
+                    accClass={props.accClass}
+                    accCode={props.accCode}
+                    accLeaf={props.accLeaf as 'L' | 'N'}
+                    accName={props.accName}
+                    parentId={props.parentId} />,
             })
         }
 
@@ -131,7 +137,7 @@ export function AccountsMaster() {
                         tableName: DatabaseTablesMap.AccM
                     })
                     Utils.showSaveMessage()
-                    loadDataWithSavedScrollPos()
+                    Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)
                 } catch (e: any) {
                     console.log(e)
                 }
@@ -287,27 +293,8 @@ export function AccountsMaster() {
         } catch (e: any) {
             console.log(e)
         }
-        loadDataWithSavedScrollPos()
-        // const loadData = context.CompSyncFusionTreeGrid[instance].loadData
-        // const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
-        // if (gridRef?.current) {
-        //     Utils.treeGridUtils.saveScrollPos(context, instance)
-        // }
-        // if (loadData) {
-        //     await loadData()
-        // }
+        Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)
         return (isSuccess)
-    }
-
-    async function loadDataWithSavedScrollPos() {
-        const loadData = context.CompSyncFusionTreeGrid[instance].loadData
-        const gridRef: any = context?.CompSyncFusionTreeGrid?.[instance]?.gridRef
-        if (gridRef?.current) {
-            Utils.treeGridUtils.saveScrollPos(context, instance)
-        }
-        if (loadData) {
-            await loadData()
-        }
     }
 
     function onDataBound() {
@@ -328,18 +315,19 @@ export function AccountsMaster() {
 }
 
 export type AccountsMasterType = {
-    accClass?: string
-    accCode?: string
+    accClass: string
+    accCode: string
     accLeaf: 'Y' | 'N' | 'L' | 'S'
-    accName?: string
+    accName: string
     accType: 'A' | 'L' | 'E' | 'I'
     addressable?: boolean
     children?: [AccountsMasterType | null] | null
-    classId?: number
+    classId: number
     extBusinessContactsAccMId?: number
     hasChildRecords?: boolean
     id: number
     isAddressExists?: boolean
     isAutoSubledger?: boolean
     isPrimary: boolean
+    parentId: number
 }

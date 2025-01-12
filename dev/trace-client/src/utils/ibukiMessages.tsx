@@ -1,5 +1,7 @@
 export const IbukiMessages = {
     'Functionality:SourceComponent:DestinationComponent+fieldName': crypto.randomUUID(),
+    'DEBOUNCE-ACC-CODE': 'DEBOUNCE-ACC-CODE',
+    'DEBOUNCE-ACC-NAME': 'DEBOUNCE-ACC-NAME',
     'DEBOUNCE-BU-CODE': 'DEBOUNCE-BU-CODE',
     'DEBOUNCE-CLIENT-CODE': 'DEBOUNCE-CLIENT-CODE',
     'DEBOUNCE-CLIENT-NAME': 'DEBOUNCE-CLIENT-NAME',
@@ -11,10 +13,10 @@ export const IbukiMessages = {
     'SHOW-MODAL-DIALOG-': crypto.randomUUID(),
 }
 
-type IbukiMessageType = {
-    [key: string]: string
-}
+// type IbukiMessageType = {
+//     [key: string]: string
+// }
 
-interface IbukiMessageT  {
-    [key: string]: string
-}
+// interface IbukiMessageT  {
+//     [key: string]: string
+// }
