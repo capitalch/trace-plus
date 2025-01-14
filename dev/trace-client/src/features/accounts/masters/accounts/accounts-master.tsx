@@ -90,13 +90,13 @@ export function AccountsMaster() {
             {/* Add child */}
             {isAddChildButtonVisible && <button onClick={handeleOnClickAddChild} className="flex font-medium justify-center items-center text-xs text-blue-700">
                 <IconPlus className="w-3 h-3 mr-1.5" />
-                ADD CHILD
+                CHILD
             </button>}
 
             {/* Edit self */}
             {isEditButtonVisible && <button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-green-700">
                 <IconEdit1 className="w-3 h-3 mr-1.5" />
-                EDIT SELF
+                EDIT
             </button>}
 
             {/* Delete */}
@@ -119,11 +119,14 @@ export function AccountsMaster() {
                 title: `Edit ${props.accName}`,
                 isOpen: true,
                 element: <AccountsEditSelfModal
-                    accId={props.id}
-                    accClass={props.accClass}
                     accCode={props.accCode}
-                    accLeaf={props.accLeaf as 'L' | 'N'}
+                    accId={props.id}
+                    accLeaf={props.accLeaf}
                     accName={props.accName}
+                    hasChildRecords={props.hasChildRecords}
+                    parentAccLeaf={props.parentAccLeaf}
+                    parentAccType={props.parentAccType}
+                    parentClassId={props.parentClassId}
                     parentId={props.parentId} />,
             })
         }
@@ -324,10 +327,13 @@ export type AccountsMasterType = {
     children?: [AccountsMasterType | null] | null
     classId: number
     extBusinessContactsAccMId?: number
-    hasChildRecords?: boolean
+    hasChildRecords: boolean
     id: number
     isAddressExists?: boolean
     isAutoSubledger?: boolean
     isPrimary: boolean
+    parentAccLeaf: 'N' | 'L'
+    parentAccType: 'A' | 'L' | 'E' | 'I'
+    parentClassId: number
     parentId: number
 }

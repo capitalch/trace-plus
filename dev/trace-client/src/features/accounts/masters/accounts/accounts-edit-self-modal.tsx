@@ -17,13 +17,16 @@ import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget
 import _ from "lodash";
 
 export function AccountsEditSelfModal({
-    accId,
-    accClass,
     accCode,
+    accId,
     accLeaf,
     accName,
+    hasChildRecords,
+    parentAccLeaf,
+    parentAccType,
+    parentClassId,
     parentId, }: AccountsEditSelfModalType) {
-        
+
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { buCode, context, } = useUtilsInfo()
     const {
@@ -33,7 +36,15 @@ export function AccountsEditSelfModal({
         // setError,
         // trigger,
         formState: { errors, isSubmitting },
-    } = useForm<FormValuesType>({ mode: 'onTouched', criteriaMode: 'all' });
+    } = useForm<FormValuesType>({
+        mode: 'onTouched',
+        criteriaMode: 'all',
+        defaultValues: {
+            accountCode: accCode,
+            accountName: accName,
+            parentAccount: parentId
+        }
+    });
 
 
     return (<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-auto min-w-72">
@@ -103,12 +114,14 @@ export function AccountsEditSelfModal({
     }
 }
 type AccountsEditSelfModalType = {
-    accId: number
-    accClass: string
     accCode: string
-    accLeaf: 'L' | 'N'
+    accId: number
+    accLeaf: 'L' | 'N' | 'Y' | 'S'
     accName: string
-    // accParent: string
+    hasChildRecords: boolean
+    parentAccLeaf: 'L' | 'N'
+    parentAccType: 'A' | 'L' | 'E' | 'I'
+    parentClassId: number
     parentId: number
 }
 
