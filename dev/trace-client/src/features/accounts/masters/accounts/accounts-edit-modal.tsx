@@ -34,13 +34,9 @@ export function AccountsEditModal({
     const [selectedParent, setSelectedParent] = useState<AccountsEditModalType | null>(null)
     const {
         register,
-        // clearErrors,
         handleSubmit,
         setValue,
-        // setError,
-        // trigger,
-        // watch,
-        formState: { errors, isDirty, isSubmitting },
+        formState: {dirtyFields, errors, isDirty, isSubmitting },
     } = useForm<FormValuesType>({
         mode: 'onTouched',
         criteriaMode: 'all',
@@ -121,7 +117,7 @@ export function AccountsEditModal({
                     required: Messages.errRequired
                 })}
                 onChange={handleOnChangeParentId}
-                ref={null}
+                ref={null} // required for react-hook-form to work with
                 selectedValue={parentId}
             />
             {errors.parentAccount && <WidgetFormErrorMessage errorMessage={errors.parentAccount.message} />}
@@ -140,6 +136,7 @@ export function AccountsEditModal({
     }
 
     async function onSubmit(data: FormValuesType) {
+        console.log(dirtyFields.parentAccount)
         if (!isDirty) {
             Utils.showAlertMessage('Warning', Messages.messNothingToDo)
             return
