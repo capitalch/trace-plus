@@ -16,6 +16,30 @@
     L                   N                   Y           NA
     L                   N                   N           NA
     L                   N                   L           NA
+
+
+    L                   L                   S           Parent id changes but remains as ledger 1) doCopyM
+    N                   N                   N           Parent id changes but remains as Group 1) doCopyC
+    N                   N                   L           Parent id changes but remains as Group 1) doCopyC
+    N                   N                   Y           Parent id changes but remains as Group 1) doCopyM
+
+- Client logic before submit
+    - component is passed parentId, parentAccLeaf, parentAccType, parentClassId, accId, accLeaf, hasChildren, accCode, accName
+    - use react-select. OnChange parent get newParentAccLeaf
+        if(parentAccLeaf === 'N' && newParentAccLeaf === L)
+            change xData.accType to S
+            doCopyM
+        if(NLN or NLL)
+            if(hasChildren) 
+                error message
+        else
+            change xData.accType to S
+            doCopyM
+        if(LNS)
+            change xData.accType to Y
+            doCopyM
+
+
 - Client logic
     - If not dirty then show message and return
     - if(hasChildRecords) and new parentId's accLeaf === 'L'
