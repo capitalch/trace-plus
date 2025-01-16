@@ -128,3 +128,21 @@ update_leaf_status AS (
 )
 -- Final SELECT to ensure all updates execute
 SELECT 1;
+
+
+## Recursive CTE example
+WITH RECURSIVE child_cte AS (
+    -- Start with the given parent ID (direct children)
+    SELECT id
+    FROM "AccM"
+    WHERE "parentId" = %(parentId)s
+
+    UNION ALL
+
+    -- Recursively get the children of the children (grandchildren and beyond)
+    SELECT a.id
+    FROM "AccM" a
+    INNER JOIN child_cte c ON a."parentId" = c.id
+)
+SELECT ARRAY_AGG(id) AS child_ids
+FROM child_cte;

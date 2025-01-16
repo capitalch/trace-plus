@@ -12,6 +12,7 @@ export type TraceDataObjectType = {
 }
 
 export type XDataObjectType = {
+  id?: number
   [key: string]: string | number | boolean | any
   details?: TraceDataObjectType[]
 }

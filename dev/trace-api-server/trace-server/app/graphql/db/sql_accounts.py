@@ -106,64 +106,63 @@ class SqlAccounts:
 
     get_accounts_master = """
     -- modified by AI
-        WITH RECURSIVE "children_cte" AS (
+    WITH RECURSIVE "children_cte" AS (
     SELECT 
         "parentId" AS "parent_id", 
         ARRAY_AGG("id") AS "child_ids"
     FROM 
         "AccM"
     GROUP BY 
-        "parentId"
-),
-cte1 AS (
-    SELECT 
-        a."id", 
-        a."accCode", 
-        a."accName", 
-        a."parentId", 
-        a."accType", 
-        a."isPrimary", 
-        a."accLeaf", 
-        a."classId", 
-        c."accClass",
-
-        -- Optimized parentAccLeaf with JOIN
-        p."accLeaf" AS "parentAccLeaf",
-		p."classId" AS "parentClassId",
-		p."accType" AS "parentAccType",
-        x."id" AS "extBusinessContactsAccMId",
-        e."isAutoSubledger",
-        cte."child_ids" AS "children",
-
-        -- Simplified CASE for addressable
-        (c."accClass" IN ('debtor', 'creditor', 'loan') AND a."accLeaf" IN ('Y', 'S')) AS "addressable",
-
-        -- Simplified CASE for isAddressExists
-        (x."id" IS NOT NULL) AS "isAddressExists"
-
-            FROM 
-                "AccM" a
-
-            -- JOIN instead of subquery for parentAccLeaf
-            LEFT JOIN 
-                "AccM" p ON a."parentId" = p."id"
-
-            LEFT JOIN 
-                "children_cte" cte ON a."id" = cte."parent_id"
-
-            JOIN 
-                "AccClassM" c ON a."classId" = c."id"
-
-            LEFT JOIN 
-                "ExtBusinessContactsAccM" x ON a."id" = x."accId"
-
-            LEFT JOIN 
-                "ExtMiscAccM" e ON a."id" = e."accId"
-        )
+        "parentId"),
+    cte1 AS (
         SELECT 
-            json_build_object(
-                'accountsMaster', (SELECT json_agg(a) FROM cte1 a)
-            ) AS "jsonResult"
+            a."id", 
+            a."accCode", 
+            a."accName", 
+            a."parentId", 
+            a."accType", 
+            a."isPrimary", 
+            a."accLeaf", 
+            a."classId", 
+            c."accClass",
+
+            -- Optimized parentAccLeaf with JOIN
+            p."accLeaf" AS "parentAccLeaf",
+            p."classId" AS "parentClassId",
+            p."accType" AS "parentAccType",
+            x."id" AS "extBusinessContactsAccMId",
+            e."isAutoSubledger",
+            cte."child_ids" AS "children",
+
+            -- Simplified CASE for addressable
+            (c."accClass" IN ('debtor', 'creditor', 'loan') AND a."accLeaf" IN ('Y', 'S')) AS "addressable",
+
+            -- Simplified CASE for isAddressExists
+            (x."id" IS NOT NULL) AS "isAddressExists"
+
+                FROM 
+                    "AccM" a
+
+                -- JOIN instead of subquery for parentAccLeaf
+                LEFT JOIN 
+                    "AccM" p ON a."parentId" = p."id"
+
+                LEFT JOIN 
+                    "children_cte" cte ON a."id" = cte."parent_id"
+
+                JOIN 
+                    "AccClassM" c ON a."classId" = c."id"
+
+                LEFT JOIN 
+                    "ExtBusinessContactsAccM" x ON a."id" = x."accId"
+
+                LEFT JOIN 
+                    "ExtMiscAccM" e ON a."id" = e."accId"
+            )
+            SELECT 
+                json_build_object(
+                    'accountsMaster', (SELECT json_agg(a) FROM cte1 a)
+                ) AS "jsonResult"
     """
 
     get_account_parent_options = """

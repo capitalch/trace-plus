@@ -53,6 +53,34 @@
 - We will use localstorage to store the accesstoken. So if the token is not expired then on hard page refresh(F5) the state of software will be maintained
 - It is advisable to keep the life of accessToken as 10 hours
 
+## Data format sample for master details JSON data
+{
+  tableName: 'name of table'
+  xData: [
+    {
+      col1: 'col1 value'
+      col2: 'col2 value'
+        ...
+    }
+  ],
+  xDetails: [
+    {
+      "tableName": "name of details table",
+      "fkeyName": "tranHeaderId",
+      "xData": [
+        {
+          col1: 'col1 value'
+          col2: 'col2 value'
+        ...
+        }
+      ],
+      "deletedIds": [1,2,3...],
+      "xDetails": [
+          ... further nesting
+      ]
+    }
+  ]
+}
 ## ** Trial balance Sql query** Documentation by AI
 
 Step 1: Recursive Query to Build Account Hierarchy

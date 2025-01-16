@@ -28,7 +28,7 @@
 	- Grid fix up sizes for edit, delete and preview buttons
 	- Check Capichow bank recon double entry
 	- In ledger subledger do a direct search on party name inside subledger
-
+	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
 - Master accounts
 															- Startup
 															- Server
