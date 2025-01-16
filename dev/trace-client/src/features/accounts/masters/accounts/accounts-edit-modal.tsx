@@ -1,4 +1,5 @@
 // import { useEffect } from "react";
+// import Select, { components } from 'react-select'
 import { useForm } from "react-hook-form";
 // import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
 // import { IbukiMessages } from "../../../../utils/ibukiMessages";
@@ -15,27 +16,37 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import _ from "lodash";
+import { CompReactSelect } from "../../../../controls/components/comp-react-select";
+import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../../../../app/store/store";
+import { useState } from "react";
 
-export function AccountsEditSelfModal({
+export function AccountsEditModal({
     accCode,
     accId,
     accLeaf,
     accName,
+    accType,
     hasChildRecords,
-    parentAccLeaf,
-    parentAccType,
-    parentClassId,
-    parentId, }: AccountsEditSelfModalType) {
+    parentId, }: AccountsEditModalType) {
 
+    const instance = DataInstancesMap.accountsEditModal
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
-    const { buCode, context, } = useUtilsInfo()
+    const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo()
+    const parentOptions: ParentOptionsType[] = useSelector((state: RootStateType) => state.queryHelper[instance]?.data)
+    const [selectedParent, setSelectedParent] = useState<AccountsEditModalType | null>(null)
     const {
         register,
         // clearErrors,
         handleSubmit,
+        setValue,
         // setError,
         // trigger,
-        formState: { errors, isSubmitting },
+        // watch,
+        formState: { errors, isDirty, isSubmitting },
     } = useForm<FormValuesType>({
         mode: 'onTouched',
         criteriaMode: 'all',
@@ -46,8 +57,28 @@ export function AccountsEditSelfModal({
         }
     });
 
+    const { loading } = useQueryHelper({
+        instance: DataInstancesMap.accountsEditModal,
+        dbName: dbName,
+        isExecQueryOnLoad: true,
+        getQueryArgs: () => ({
+            buCode: buCode,
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getAccountParentOptions,
+            sqlArgs: {
+                accType: accType
+            }
+        })
+    })
 
-    return (<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-auto min-w-72">
+    // const selectedParent = watch('parentAccount')
+
+    if (loading) {
+        return (<WidgetLoadingIndicator />)
+    }
+
+    return (<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 min-w-72 w-96">
+
         {/* Account Code */}
         <label className="flex flex-col font-medium text-primary-400">
             <span className="font-bold">Account Code <WidgetAstrix /></span>
@@ -84,6 +115,24 @@ export function AccountsEditSelfModal({
             {errors.accountName && <WidgetFormErrorMessage errorMessage={errors.accountName.message} />}
         </label>
 
+        {/* Account parent */}
+        <label className="flex flex-col font-medium text-primary-400">
+            <span className="font-bold">Account Parent <WidgetAstrix /></span>
+            <CompReactSelect
+                menuPlacement='top'
+                staticOptions={parentOptions}
+                optionLabelName="fullName"
+                optionValueName="accId"
+                {...register('parentAccount', {
+                    required: Messages.errRequired
+                })}
+                onChange={handleOnChangeParentId}
+                ref={null}
+                selectedValue={parentId}
+            />
+            {errors.parentAccount && <WidgetFormErrorMessage errorMessage={errors.parentAccount.message} />}
+        </label>
+
         {/* Submit Button */}
         <div className="mt-4 flex justify-start">
             <WidgetButtonSubmitFullWidth label="Save" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
@@ -91,18 +140,40 @@ export function AccountsEditSelfModal({
 
     </form>)
 
+    function handleOnChangeParentId(selectedObject: AccountsEditModalType) {
+        setValue('parentAccount', selectedObject.accId, { shouldDirty: true })
+        setSelectedParent(selectedObject)
+    }
+
     async function onSubmit(data: FormValuesType) {
+        if (!isDirty) {
+            Utils.showAlertMessage('Warning', Messages.messNothingToDo)
+            return
+        }
+        if (hasChildRecords && (selectedParent?.accLeaf === 'L')) {
+            Utils.showAlertMessage('Warning', Messages.errExistingAccountHasChildren)
+            return
+        }
+        console.log(selectedParent)
         const xData: XDataObjectType = {
             accCode: data.accountCode,
             accName: data.accountName,
-            // parentId: accId,
+            parentId: selectedParent?.accId,
+            accId: accId,
+            accLeaf: accLeaf
+        }
+        if ((selectedParent?.accLeaf === 'N') && (accLeaf === 'S')) {
+            xData.accLeaf = 'Y'
+        }
+        if (selectedParent?.accLeaf === 'L') {
+            xData.accLeaf = 'S'
         }
         try {
-            await Utils.doGenericUpdate({
-                buCode: buCode || '',
-                tableName: DatabaseTablesMap.AccM,
-                xData: xData
-            })
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || '',
+            //     tableName: DatabaseTablesMap.AccM,
+            //     xData: xData
+            // })
             Utils.loadDataInTreeGridWithSavedScrollPos(context, DataInstancesMap.accountsMaster)
             Utils.showSaveMessage();
             Utils.showHideModalDialogA({
@@ -113,15 +184,16 @@ export function AccountsEditSelfModal({
         }
     }
 }
-type AccountsEditSelfModalType = {
+type AccountsEditModalType = {
     accCode: string
     accId: number
     accLeaf: 'L' | 'N' | 'Y' | 'S'
     accName: string
+    accType: 'A' | 'L' | 'E' | 'I'
     hasChildRecords: boolean
-    parentAccLeaf: 'L' | 'N'
-    parentAccType: 'A' | 'L' | 'E' | 'I'
-    parentClassId: number
+    // parentAccLeaf: 'L' | 'N'
+    // parentAccType: 'A' | 'L' | 'E' | 'I'
+    // parentClassId: number
     parentId: number
 }
 
@@ -130,3 +202,12 @@ type FormValuesType = {
     accountName: string;
     parentAccount: number;
 };
+
+type ParentOptionsType = {
+    accClass: string
+    accId: number
+    accLeaf: 'L' | 'N'
+    accName: string
+    accType: 'A' | 'L' | 'E' | 'I'
+    fullName: string
+}

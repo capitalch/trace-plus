@@ -3,18 +3,23 @@ import Select from "react-select";
 import _ from 'lodash'
 
 export function CompReactSelect({
-    getOptions
+    className
+    , getOptions
+    , menuPlacement
     , onChange
     , optionLabelName
     , optionValueName
     , placeHolder
     , selectedValue
+    , staticOptions
 }: CompReactSelectType) {
     const [options, setOptions] = useState([])
     const selectRef: any = useRef(null)
 
     useEffect(() => {
-        getOptions(setOptions)
+        if (getOptions) {
+            getOptions(setOptions)
+        }
     }, [])
 
     useEffect(() => {
@@ -23,11 +28,19 @@ export function CompReactSelect({
         }
     }, [options])
 
+    useEffect(() => {
+        if (!_.isEmpty(staticOptions)) {
+            setOptions(staticOptions)
+        }
+    }, [staticOptions])
+
     return (<Select
+        className={className}
         // escapeClearsValue={true} //Does not work
         getOptionLabel={(option: any) => option[optionLabelName]}
         getOptionValue={(option: any) => option[optionValueName]}
         // isClearable={true} //Does not work
+        menuPlacement={menuPlacement || 'auto'}
         onChange={onChange}
         options={options}
         ref={selectRef}
@@ -60,11 +73,14 @@ export function CompReactSelect({
 }
 
 type CompReactSelectType = {
-    getOptions: (setOptions: (args: any) => void) => void
+    className?: string
+    getOptions?: (setOptions: (args: any) => void) => void
+    menuPlacement?: 'top' | 'bottom' | 'auto'
     onChange: ((selectedObject: any) => void)
     optionLabelName: string
     optionValueName: string
     placeHolder?: string
     ref: any
     selectedValue: any
+    staticOptions?: any
 }

@@ -16,37 +16,25 @@
     L                   N                   Y           NA
     L                   N                   N           NA
     L                   N                   L           NA
-- Logic
-    - Client logic before submit
-        - component is passed parentId, parentAccLeaf, parentAccType, parentClassId, accId, accLeaf, hasChildren, accCode, accName
-        - use react-select. OnChange parent get newParentAccLeaf
-            if(parentAccLeaf === 'N' && newParentAccLeaf === L)
-                change xData.accType to S
-                doCopyM
-            if(NLN or NLL)
-                if(hasChildren) 
-                    error message
-            else
-                change xData.accType to S
-                doCopyM
-            if(LNS)
-                change xData.accType to Y
-                doCopyM
-    - Deprecated        
-            - args: accCode, accName, id, parentId
-            - get classId as parentClassId, accType as parentAccType for %parentId
-            - get current parentId as old parentId and hasChildren for %id
-            - Update accCode, accName, for %id in AccM with %accCode, %accName
-            - if oldParentId is not same as %parentId then only continue
-                                                                                    - An S or Y cannot be changed to N or L for %id
-            - if parentId's accLeaf is L and id has children then not allowed
-                otherwise change id's accLeaf to S
-            - update AccM set parentId = %parentId for id
-            - update AccM set classId = parentClassId, accType = parentAccType 
-                where id = %id  doCopyM
-            - get all children and subchildren of %id
-            - recursively update AccM set classId = parentClassId, accType = parentAccType
-                for all children and subChildren    doCopyC
+- Client logic
+    - If not dirty then show message and return
+    - if(hasChildRecords) and new parentId's accLeaf === 'L'
+        show message as not allowed because this account has children
+- Server logic     
+    - args: accCode, accName, id, parentId
+    - get classId as parentClassId, accType as parentAccType for %parentId
+                                                    - get current parentId as old parentId and hasChildren for %id
+    - Update accCode, accName, for %id in AccM with %accCode, %accName
+                                                    - if oldParentId is not same as %parentId then only continue
+                                                                            - An S or Y cannot be changed to N or L for %id
+    - if parentId's accLeaf is L and id has children then not allowed
+        otherwise change id's accLeaf to S
+    - update AccM set parentId = %parentId for id
+    - update AccM set classId = parentClassId, accType = parentAccType 
+        where id = %id  doCopyM
+    - get all children and subchildren of %id
+    - recursively update AccM set classId = parentClassId, accType = parentAccType
+        for all children and subChildren    doCopyC
 ## Client side side menu
 - In SideMenu.tsx find current menuItem from redux selector and get corresponding menu data from master-menu-data.ts
 ## **Authentication mechanism**

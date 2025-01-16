@@ -71,7 +71,7 @@
 																- if current ac is ledger only allow subledger
 			- edit self
 																- Not for primary
-				- Fields: accountCode, accName, parentAccount: dropdown: shows level, class and acc name in dropdown
+				- Fields: accountCode, accName, parentAccount: dropdown: shows type as asset or liab, level, class and acc name in dropdown
 				- Allows to change parent. Any parent can be assigned
 				- Check feasibility of subledger vs leaf transfer and vice versa
 															- delete

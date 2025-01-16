@@ -18,7 +18,7 @@ import { IconEdit1 } from "../../../../controls/icons/icon-edit1"
 import { IconCross } from "../../../../controls/icons/icon-cross"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 import { AccountsAddChildModal } from "./accounts-add-child-modal"
-import { AccountsEditSelfModal } from "./accounts-edit-self-modal"
+import { AccountsEditModal } from "./accounts-edit-modal"
 
 export function AccountsMaster() {
     const dispatch: AppDispatchType = useDispatch()
@@ -118,15 +118,13 @@ export function AccountsMaster() {
             Utils.showHideModalDialogA({
                 title: `Edit ${props.accName}`,
                 isOpen: true,
-                element: <AccountsEditSelfModal
+                element: <AccountsEditModal
                     accCode={props.accCode}
                     accId={props.id}
                     accLeaf={props.accLeaf}
                     accName={props.accName}
+                    accType={props.accType}
                     hasChildRecords={props.hasChildRecords}
-                    parentAccLeaf={props.parentAccLeaf}
-                    parentAccType={props.parentAccType}
-                    parentClassId={props.parentClassId}
                     parentId={props.parentId} />,
             })
         }
@@ -332,8 +330,8 @@ export type AccountsMasterType = {
     isAddressExists?: boolean
     isAutoSubledger?: boolean
     isPrimary: boolean
-    parentAccLeaf: 'N' | 'L'
-    parentAccType: 'A' | 'L' | 'E' | 'I'
-    parentClassId: number
+    // parentAccLeaf: 'N' | 'L'
+    // parentAccType: 'A' | 'L' | 'E' | 'I'
+    // parentClassId: number
     parentId: number
 }

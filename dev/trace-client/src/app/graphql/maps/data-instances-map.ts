@@ -1,4 +1,5 @@
 export const DataInstancesMap = {
+  accountsEditModal:'accounts-edit-modal',
   accountsMaster: "accounts-master",
   adminBusinessUnits: "admin-business-units",
   adminBusinessUsers: "admin-business-users",

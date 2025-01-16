@@ -20,6 +20,7 @@ const Messages = {
   errEmailExistsForClient: 'This email already exists for the current client',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
+  errExistingAccountHasChildren:'The existing account has children. You cannot change parent account to ledger type',
   errFailFetchingDataFromAccounts:
     'Failed in fetching data from accounts database. Hence logging out',
   errIncrementedFinYearNotExists:

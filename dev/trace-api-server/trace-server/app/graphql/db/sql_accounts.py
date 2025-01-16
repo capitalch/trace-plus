@@ -166,6 +166,40 @@ cte1 AS (
             ) AS "jsonResult"
     """
 
+    get_account_parent_options = """
+        with "accType" as (values (%(accType)s::text))
+        --WITH "accType" AS (VALUES ('L'))
+        SELECT 
+            a.id as "accId", 
+            "accClass", 
+            "accLeaf", 
+            "accName",
+            "accType",
+            CASE
+                WHEN "accType" = 'A' then 'Asset'
+				WHEN "accType" = 'L' then 'Liab'
+				WHEN "accType" = 'I' then 'Income'
+				WHEN "accType" = 'E' then 'Expence'
+            END || ': ' ||
+            CASE 
+                WHEN "accLeaf" = 'L' THEN 'Ledger' 
+                ELSE 'Group' 
+            END || ': ' || "accClass" || ': ' || "accName" AS "fullName"
+        FROM 
+            "AccM" a
+            JOIN "AccClassM" c ON c.id = a."classId"
+        WHERE 
+            "accLeaf" IN ('L', 'N')
+            AND (
+                CASE 
+                    WHEN (table "accType") IN ('L', 'A') THEN a."accType" IN ('L', 'A')
+                    ELSE a."accType" IN ('E', 'I')
+                END
+            )
+        ORDER BY 
+          "accType", "accLeaf", "accClass", "accName"
+    """
+
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 
