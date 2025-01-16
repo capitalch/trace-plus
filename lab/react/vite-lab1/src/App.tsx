@@ -44,6 +44,7 @@ import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid'
 import { InjectSummary } from './features/Misc/inject-summary'
 import { SlidingPaneViewer } from './features/react-sliding-pane/slide-pane-viewer'
 import { EditGrid } from './features/syncfusion/edit-grid'
+import { Spinners } from './features/spinners/spinners'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -102,7 +103,8 @@ function App() {
       {/* <SyncfusionGrid /> */}
       {/* <InjectSummary /> */}
       {/* <SlidingPaneViewer /> */}
-      <EditGrid />
+      {/* <EditGrid /> */}
+      <Spinners />
     </GlobalContext.Provider>
   )
 }

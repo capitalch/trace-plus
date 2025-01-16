@@ -10,16 +10,23 @@ I have following tables in an accounting system PostgreSql. I want to create tri
 3) TranD: For transaction details: id, accId, dc (D for Debits, C for Credits), amount
 Create a trial balance query to be consumed by Syncfusion TreeGrid. It should be hierarchal. The parentId column defines the hierarchy in AccM table
 
-select a.id, "accClass", "accLeaf", "accName", 
-            CASE WHEN "accLeaf" = 'L' THEN 'Ledger' ELSE 'Group' END || ': ' || "accClass" || ': ' || "accName"
-                as "fullName"
-            from
-                "AccM" a
-                    join "AccClassM" c
-                        on c.id = a."classId"
-            where
-                "accLeaf" in('L','N')
-            order by "accLeaf", "accClass", "accName"
+# Recursive query
+WITH RECURSIVE acc_hierarchy AS (
+    -- Anchor member: start with the given ID
+    SELECT id, accName, parentId
+    FROM "AccM"
+    WHERE id = %(id)s  -- Replace %(id)s with the desired ID
+
+    UNION ALL
+
+    -- Recursive member: find all children
+    SELECT a.id, a."accName", a."parentId"
+    FROM "AccM" a
+    INNER JOIN acc_hierarchy ah ON a."parentId" = ah.id
+)
+SELECT * 
+FROM acc_hierarchy;
+
 
 updateBlock_editAccount
 do $$

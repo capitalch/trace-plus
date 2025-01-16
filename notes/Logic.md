@@ -23,6 +23,12 @@
     N                   N                   L           Parent id changes but remains as Group 1) doCopyC
     N                   N                   Y           Parent id changes but remains as Group 1) doCopyM
 
+- Server logic
+    - args are %id, %parentId, %accCode, %accName, %accLeaf, %isParentChanged
+    - update AccM set accCode, accName, parentId, accLeaf where id = %accId
+    - get parent accType, classId into parentAccType, parentClassId where id = @parentId
+    - if %isParentChanged then
+        copy parentAccType, parentclassId to record where id = %accId and all recursive children
 - Client logic before submit
     - component is passed parentId, parentAccLeaf, parentAccType, parentClassId, accId, accLeaf, hasChildren, accCode, accName
     - use react-select. OnChange parent get newParentAccLeaf

@@ -557,6 +557,10 @@ class SqlAccounts:
         select 'ok' as "connection"
     """
 
+    update_accounts_master = """
+
+    """
+
     upsert_auto_subledger = """
         with "accId" as (values(%(accId)s::int)), "isAutoSubledger" as (values(%(isAutoSubledger)s::boolean)),
         --with "accId" as (values(346::int)), "isAutoSubledger" as (values(false::boolean)),

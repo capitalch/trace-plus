@@ -1,16 +1,9 @@
-import { TwoSeventyRing } from 'react-svg-spinners'
-
-export function WidgetLoadingIndicator({
-    className
-}: WidgetLoadingIndicatorType) {
+export function WidgetLoadingIndicator(
+) {
 
     return (
-        <div className={className || 'm-auto'}>
-            <TwoSeventyRing color="#7c3aed" width={45} height={45} />
+        <div className="flex items-center justify-center mt-24">
+            <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
     )
-}
-
-type WidgetLoadingIndicatorType = {
-    className?: string
 }

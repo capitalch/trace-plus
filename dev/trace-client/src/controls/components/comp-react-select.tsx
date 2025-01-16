@@ -64,8 +64,9 @@ export function CompReactSelect({
             }),
             option: (defaultStyles: any) => ({
                 ...defaultStyles,
-                paddingTop: '2px',
-                paddingBottom: '2px',
+                paddingTop: '4px',
+                paddingBottom: '4px',
+                paddingLeft: '10px',
                 fontSize: '14px',
             }),
         })

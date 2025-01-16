@@ -46,5 +46,6 @@ export const SqlIdsMap = {
   getSettingsFinYearsBranches: "get_settings_fin_years_branches",
   getSubledgerAccounts: "get_subledger_accounts",
   getTrialBalance: "get_trial_balance",
+  updateAccountsMaster: "update_accounts_master",
   upsertAutoSubledger: "upsert_auto_subledger",
 };

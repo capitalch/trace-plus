@@ -145,7 +145,7 @@ export function AccountsEditModal({
             Utils.showAlertMessage('Warning', Messages.errExistingAccountHasChildren)
             return
         }
-        console.log(selectedParent)
+        // console.log(selectedParent)
         const xData: XDataObjectType = {
             accCode: data.accountCode,
             accName: data.accountName,
@@ -159,6 +159,19 @@ export function AccountsEditModal({
         if (selectedParent?.accLeaf === 'L') {
             xData.accLeaf = 'S'
         }
+        xData.hasParentIdChanged = Boolean(dirtyFields.parentAccount)
+        Utils.doGenericUpdateQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            sqlId: SqlIdsMap.updateAccountsMaster,
+            dbParams: decodedDbParamsObject,
+            sqlArgs: {
+                accCode:data.accountCode,
+                accName: data.accountName,
+                parentId: data.parentAccount,
+                
+            }
+        })
         try {
             // await Utils.doGenericUpdate({
             //     buCode: buCode || '',
