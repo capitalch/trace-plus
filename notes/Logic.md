@@ -1,3 +1,16 @@
+# Test script
+- Change of accCode and accName: Abm sales 1 to normal                              : Check changes in accCode and accName                                          :: OK
+- LLS: Change abm sales from goods creditor to service creditor and back            : AccType and accClass of abm sales changes. But here no change                 :: OK
+- LNS: Change abm sales parent from goods creditor to Sundry creditors              : Change accLeaf to Y (Leaf)                                                    :: OK
+- NLY: Abm sales back from sundry creditors to goods creditors                      : Change accLeaf to S (subledger)                                               :: OK
+- NLL: Change parent of Goods creditors from sundry creditors to Service creditors  : Since goods creditors has children, hence not allowed                         :: OK
+- NLL: Change parent of Misc creditors from Sundry creditors to loans from private parties     : Check misc creditors accLeaf = 'S' and class and accType also changed accordingly::OK
+
+- NNY: Change interfoto parent from sundry creditors to current liabilities         : accType and accClass changes but here no changes                              ::OK
+- NNY: Change InterFoto back to sundry creditors                                                                                                                    ::OK
+- NLN: Change parent of Misc credtors group from sundry creditors to loans from private parties: Check misc creditors accLeaf = 'S' and class and accType also changed accordingly
+- NNN: Change parent of Misc parties group1 from sundry creditors to Loans liability : Check that class and accType of misc parties group1 and group11 changes
+- NNL: Change parent of Misc parties group2 from sundry creditors to Loans liability : Check that class and accType of misc parties group2 and group22 changes
 ## for parent change in AccM
 - accLeaf: Y, N, L, S
 - Parent can be N: Group, L: Ledger
@@ -6,28 +19,28 @@
 - doCopyC   : recursively copy parent's accType and classId to all my children and subchildren
 -   Possible conditions: Only happens when parent is changed: NA conditions below do not exist
     
-    parentAccLeaf    newParentAccLeaf    myAccLeaf
-    N                   L                   S           NA
-    N                   L                   Y           Parent from group to ledger 1) Change me from Y to S 2) doCopyM
-    N                   L                   N           Parent from group to ledger 1) Don't allow if me has children 2) Otherwise change me to S 3) doCopyM
-    N                   L                   L           Parent from group to ledger 1) Don't allow if me has children 2) Otherwise change me to S 4) doCopyM
+        parentAccLeaf    newParentAccLeaf    myAccLeaf
+        N                   L                   S           NA
+NLY     N                   L                   Y           Parent from group to ledger 1) Change me from Y to S 2) doCopyM
+NLN     N                   L                   N           Parent from group to ledger 1) Don't allow if me has children 2) Otherwise change me to S 3) doCopyM
+NLL     N                   L                   L           Parent from group to ledger 1) Don't allow if me has children 2) Otherwise change me to S 4) doCopyM
 
-    L                   N                   S           Parent from ledger to group 1) Change me to Y 2) doCopyM
-    L                   N                   Y           NA
-    L                   N                   N           NA
-    L                   N                   L           NA
+LNS     L                   N                   S           Parent from ledger to group 1) Change me to Y 2) doCopyM
+        L                   N                   Y           NA
+        L                   N                   N           NA
+        L                   N                   L           NA
 
 
-    L                   L                   S           Parent id changes but remains as ledger 1) doCopyM
-    N                   N                   N           Parent id changes but remains as Group 1) doCopyC
-    N                   N                   L           Parent id changes but remains as Group 1) doCopyC
-    N                   N                   Y           Parent id changes but remains as Group 1) doCopyM
+LLS     L                   L                   S           Parent id changes but remains as ledger 1) doCopyM
+NNN     N                   N                   N           Parent id changes but remains as Group 1) doCopyC
+        N                   N                   L           Parent id changes but remains as Group 1) doCopyC
+NNY     N                   N                   Y           Parent id changes but remains as Group 1) doCopyM
 
 - Server logic
-    - args are %id, %parentId, %accCode, %accName, %accLeaf, %isParentChanged
+    - args are %id, %parentId, %accCode, %accName, %accLeaf, %hasParentChanged
     - update AccM set accCode, accName, parentId, accLeaf where id = %accId
     - get parent accType, classId into parentAccType, parentClassId where id = @parentId
-    - if %isParentChanged then
+    - if %hasParentChanged then
         copy parentAccType, parentclassId to record where id = %accId and all recursive children
 - Client logic before submit
     - component is passed parentId, parentAccLeaf, parentAccType, parentClassId, accId, accLeaf, hasChildren, accCode, accName

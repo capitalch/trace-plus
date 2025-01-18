@@ -10,6 +10,63 @@ I have following tables in an accounting system PostgreSql. I want to create tri
 3) TranD: For transaction details: id, accId, dc (D for Debits, C for Credits), amount
 Create a trial balance query to be consumed by Syncfusion TreeGrid. It should be hierarchal. The parentId column defines the hierarchy in AccM table
 
+# final query
+WITH RECURSIVE hier AS (
+    -- Anchor member: start with the given ID
+    SELECT id
+    FROM "AccM"
+    WHERE id = (table "accId")
+    
+    UNION ALL
+    
+    -- Recursive member: find all child nodes
+    SELECT a.id
+    FROM "AccM" a
+    INNER JOIN hier h ON a."parentId" = h.id
+),
+
+-- Input values for the update operation
+--"accId" as (values(%(accId)s::int)),
+--"parentId" as (values(%(parentId)s::int)),
+--"accCode" as (values(%(accCode)s::text)), 
+--"accName" as (values(%(accName)s::text)),
+--"accLeaf" as (values(%(accLeaf)s::text)), 
+--"hasParentChanges" as (values(%(hasParentChanged)s::boolean)),
+"accId" AS (VALUES (154::int)),
+"parentId" AS (VALUES (149::int)),
+"accCode" AS (VALUES ('abmSalesPvtLtd1'::text)),
+"accName" AS (VALUES ('ABM Sales pvt Ltd1'::text)),
+"accLeaf" AS (VALUES ('L'::text)),
+"hasParentChanges" AS (VALUES (true::boolean)),
+
+-- Fetch parent account type and class ID
+parent_info AS (
+    SELECT "accType", "classId"
+    FROM "AccM"
+    WHERE id = (table "parentId")
+),
+
+-- Update the main account record
+update_accM AS (
+    UPDATE "AccM"
+    SET "accCode" = (table "accCode"),
+        "accName" = (table "accName"),
+        "parentId" = (table "parentId"),
+        "accLeaf" = (table "accLeaf")
+    WHERE id = (table "accId")
+),
+
+-- Conditionally update child records if the parent has changed
+update_children AS (
+    UPDATE "AccM"
+    SET "accType" = (SELECT "accType" FROM parent_info),
+        "classId" = (SELECT "classId" FROM parent_info)
+    WHERE id IN (SELECT id FROM hier)
+      AND (SELECT * FROM "hasParentChanges") = TRUE  -- Conditional execution
+)
+
+SELECT 1
+
 # Recursive query
 WITH RECURSIVE acc_hierarchy AS (
     -- Anchor member: start with the given ID

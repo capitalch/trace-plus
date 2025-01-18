@@ -556,9 +556,64 @@ class SqlAccounts:
     test_connection = """
         select 'ok' as "connection"
     """
-
+    
     update_accounts_master = """
+        do $$
+        DECLARE children INT[];
+        DECLARE oldParentId INT;
+        DECLARE parentClassId INT;
+        DECLARE parentAccType CHAR(1);
+        DECLARE oldAccType CHAR(1);
+        DECLARE parentAccLeaf CHAR(1);
+        DECLARE oldAccLeaf CHAR(1);
+        begin
+            update "AccM" 
+                set "accCode" = %(accCode)s
+                , "accName" = %(accName)s
+                    where "id" = %(accId)s;
+        end $$;
+    """
 
+    update_accounts_master1 = """
+            WITH RECURSIVE hier AS (
+        -- Anchor member: start with the given ID
+        SELECT id
+        FROM "AccM"
+        WHERE id = (table "accId")
+        UNION ALL
+        -- Recursive member: find all child nodes
+        SELECT a.id
+        FROM "AccM" a
+        INNER JOIN hier h ON a."parentId" = h.id),
+
+        --Input values for the update operation
+        "accId" as (values(%(accId)s::int)),
+        "parentId" as (values(%(parentId)s::int)),
+        "accCode" as (values(%(accCode)s::text)), 
+        "accName" as (values(%(accName)s::text)),
+        "accLeaf" as (values(%(accLeaf)s::text)), 
+        "hasParentChanged" as (values(%(hasParentChanged)s::boolean)),
+        --"accId" AS (VALUES (362::int)),
+        --"parentId" AS (VALUES (123::int)),
+        --"accCode" AS (VALUES ('miscCreditors'::text)),
+        --"accName" AS (VALUES ('Misc creditors'::text)),
+        --"accLeaf" AS (VALUES ('S'::text)),
+        --"hasParentChanged" AS (VALUES (true::boolean)),
+
+        -- Fetch parent account type and class ID
+        parent_info AS (
+            SELECT "accType", "classId"
+            FROM "AccM"
+            WHERE id = (table "parentId")
+        )
+        UPDATE "AccM"
+        SET "accCode" = (table "accCode"),
+            "accName" = (table "accName"),
+            "parentId" = (table "parentId"),
+            "accLeaf" = (table "accLeaf"),
+            "accType" = CASE WHEN (SELECT * FROM "hasParentChanged") = true THEN (SELECT "accType" FROM parent_info) ELSE "accType" END,
+            "classId" = CASE WHEN (SELECT * FROM "hasParentChanged") = true THEN (SELECT "classId" FROM parent_info) ELSE "classId" END
+        WHERE id = (table "accId") OR id IN (SELECT id FROM hier)
     """
 
     upsert_auto_subledger = """

@@ -4,7 +4,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { Utils } from "../../../../utils/utils";
 import { Messages } from "../../../../utils/messages";
-import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+// import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 // import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
@@ -36,7 +36,7 @@ export function AccountsEditModal({
         register,
         handleSubmit,
         setValue,
-        formState: {dirtyFields, errors, isDirty, isSubmitting },
+        formState: { dirtyFields, errors, isDirty, isSubmitting },
     } = useForm<FormValuesType>({
         mode: 'onTouched',
         criteriaMode: 'all',
@@ -145,39 +145,31 @@ export function AccountsEditModal({
             Utils.showAlertMessage('Warning', Messages.errExistingAccountHasChildren)
             return
         }
-        // console.log(selectedParent)
-        const xData: XDataObjectType = {
-            accCode: data.accountCode,
-            accName: data.accountName,
-            parentId: selectedParent?.accId,
-            accId: accId,
-            accLeaf: accLeaf
-        }
+        let newAccLeaf = accLeaf
         if ((selectedParent?.accLeaf === 'N') && (accLeaf === 'S')) {
-            xData.accLeaf = 'Y'
+            newAccLeaf = 'Y'
         }
         if (selectedParent?.accLeaf === 'L') {
-            xData.accLeaf = 'S'
+            newAccLeaf = 'S'
         }
-        xData.hasParentIdChanged = Boolean(dirtyFields.parentAccount)
-        Utils.doGenericUpdateQuery({
-            buCode: buCode || '',
-            dbName: dbName || '',
-            sqlId: SqlIdsMap.updateAccountsMaster,
-            dbParams: decodedDbParamsObject,
-            sqlArgs: {
-                accCode:data.accountCode,
-                accName: data.accountName,
-                parentId: data.parentAccount,
-                
-            }
-        })
+        // xData.hasParentIdChanged = Boolean(dirtyFields.parentAccount)
         try {
-            // await Utils.doGenericUpdate({
-            //     buCode: buCode || '',
-            //     tableName: DatabaseTablesMap.AccM,
-            //     xData: xData
-            // })
+            const res = await Utils.doGenericUpdateQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                sqlId: SqlIdsMap.updateAccountsMaster,
+                dbParams: decodedDbParamsObject,
+                sqlArgs: {
+                    
+                    accCode: data.accountCode,
+                    // accLeaf: newAccLeaf,
+                    accName: data.accountName,
+                    accId: accId,
+                    // parentId: selectedParent?.accId,
+                    // hasParentChanged: Boolean(dirtyFields.parentAccount)
+                }
+            })
+            console.log(res)
             Utils.loadDataInTreeGridWithSavedScrollPos(context, DataInstancesMap.accountsMaster)
             Utils.showSaveMessage();
             Utils.showHideModalDialogA({
@@ -195,9 +187,6 @@ type AccountsEditModalType = {
     accName: string
     accType: 'A' | 'L' | 'E' | 'I'
     hasChildRecords: boolean
-    // parentAccLeaf: 'L' | 'N'
-    // parentAccType: 'A' | 'L' | 'E' | 'I'
-    // parentClassId: number
     parentId: number
 }
 
@@ -215,3 +204,12 @@ type ParentOptionsType = {
     accType: 'A' | 'L' | 'E' | 'I'
     fullName: string
 }
+
+// console.log(selectedParent)
+// const xData: XDataObjectType = {
+//     accCode: data.accountCode,
+//     accName: data.accountName,
+//     parentId: selectedParent?.accId,
+//     accId: accId,
+//     accLeaf: accLeaf
+// }
