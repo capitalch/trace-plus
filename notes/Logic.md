@@ -8,7 +8,8 @@
 
 - NNY: Change interfoto parent from sundry creditors to current liabilities         : accType and accClass changes but here no changes                              ::OK
 - NNY: Change InterFoto back to sundry creditors                                                                                                                    ::OK
-- NLN: Change parent of Misc credtors group from sundry creditors to loans from private parties: Check misc creditors accLeaf = 'S' and class and accType also changed accordingly
+- NLN: Change parent of Misc credtors group from sundry creditors to loans from private parties: Check misc creditors accLeaf = 'S' and class and accType also changed accordingly::OK
+
 - NNN: Change parent of Misc parties group1 from sundry creditors to Loans liability : Check that class and accType of misc parties group1 and group11 changes
 - NNL: Change parent of Misc parties group2 from sundry creditors to Loans liability : Check that class and accType of misc parties group2 and group22 changes
 ## for parent change in AccM
