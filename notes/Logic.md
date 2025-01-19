@@ -4,14 +4,13 @@
 - LNS: Change abm sales parent from goods creditor to Sundry creditors              : Change accLeaf to Y (Leaf)                                                    :: OK
 - NLY: Abm sales back from sundry creditors to goods creditors                      : Change accLeaf to S (subledger)                                               :: OK
 - NLL: Change parent of Goods creditors from sundry creditors to Service creditors  : Since goods creditors has children, hence not allowed                         :: OK
-- NLL: Change parent of Misc creditors from Sundry creditors to loans from private parties     : Check misc creditors accLeaf = 'S' and class and accType also changed accordingly::OK
+- NLL: Change parent of Misc creditors from Sundry creditors to loans from private parties     : Check misc creditors accLeaf = 'S' and class and accType also changed accordingly:: OK
+- NNY: Change interfoto parent from sundry creditors to current liabilities         : accType and accClass changes but here no changes                              :: OK
+- NNY: Change InterFoto back to sundry creditors                                                                                                                    :: OK
+- NLN: Change parent of Misc credtors group from sundry creditors to loans from private parties: Check misc creditors accLeaf = 'S' and class and accType also changed accordingly:: OK
 
-- NNY: Change interfoto parent from sundry creditors to current liabilities         : accType and accClass changes but here no changes                              ::OK
-- NNY: Change InterFoto back to sundry creditors                                                                                                                    ::OK
-- NLN: Change parent of Misc credtors group from sundry creditors to loans from private parties: Check misc creditors accLeaf = 'S' and class and accType also changed accordingly::OK
-
-- NNN: Change parent of Misc parties group1 from sundry creditors to Loans liability : Check that class and accType of misc parties group1 and group11 changes
-- NNL: Change parent of Misc parties group2 from sundry creditors to Loans liability : Check that class and accType of misc parties group2 and group22 changes
+- NNN: Change parent of Misc parties group1 from sundry creditors to Loans liability : Check that class and accType of misc parties group1 and group11 changes      :: OK
+- NNL: Change parent of Misc parties group2 from sundry creditors to Loans liability : Check that class and accType of misc parties group2 and group22 changes      :: OK
 ## for parent change in AccM
 - accLeaf: Y, N, L, S
 - Parent can be N: Group, L: Ledger
@@ -59,26 +58,6 @@ NNY     N                   N                   Y           Parent id changes bu
             change xData.accType to Y
             doCopyM
 
-
-- Client logic
-    - If not dirty then show message and return
-    - if(hasChildRecords) and new parentId's accLeaf === 'L'
-        show message as not allowed because this account has children
-- Server logic     
-    - args: accCode, accName, id, parentId
-    - get classId as parentClassId, accType as parentAccType for %parentId
-                                                    - get current parentId as old parentId and hasChildren for %id
-    - Update accCode, accName, for %id in AccM with %accCode, %accName
-                                                    - if oldParentId is not same as %parentId then only continue
-                                                                            - An S or Y cannot be changed to N or L for %id
-    - if parentId's accLeaf is L and id has children then not allowed
-        otherwise change id's accLeaf to S
-    - update AccM set parentId = %parentId for id
-    - update AccM set classId = parentClassId, accType = parentAccType 
-        where id = %id  doCopyM
-    - get all children and subchildren of %id
-    - recursively update AccM set classId = parentClassId, accType = parentAccType
-        for all children and subChildren    doCopyC
 ## Client side side menu
 - In SideMenu.tsx find current menuItem from redux selector and get corresponding menu data from master-menu-data.ts
 ## **Authentication mechanism**

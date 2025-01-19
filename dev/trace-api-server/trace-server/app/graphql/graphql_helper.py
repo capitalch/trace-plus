@@ -207,6 +207,15 @@ async def generic_update_query_helper(info, dbName: str, value: str):
             sql = sql,
             sqlArgs=sqlArgs,
         )
+        # data = exec_sql_psycopg2(
+        #     dbName=dbName, 
+        #     db_params=dbParams, 
+        #     schema=schema, 
+        #     sql = sql,
+        #     sqlArgs=sqlArgs,
+        # )
+
+
 
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL

@@ -1,3 +1,6 @@
+from psycopg import connect, sql
+
+
 class SqlAccounts:
 
     does_acc_code_exist = """
@@ -158,6 +161,7 @@ class SqlAccounts:
 
                 LEFT JOIN 
                     "ExtMiscAccM" e ON a."id" = e."accId"
+                --ORDER by a."accType", c."accClass", a."accName", a."accCode"
             )
             SELECT 
                 json_build_object(
@@ -556,65 +560,52 @@ class SqlAccounts:
     test_connection = """
         select 'ok' as "connection"
     """
-    
-    update_accounts_master = """
+
+    def update_accounts_master(params): return sql.SQL("""
         do $$
-        DECLARE children INT[];
-        DECLARE oldParentId INT;
-        DECLARE parentClassId INT;
-        DECLARE parentAccType CHAR(1);
-        DECLARE oldAccType CHAR(1);
-        DECLARE parentAccLeaf CHAR(1);
-        DECLARE oldAccLeaf CHAR(1);
+        DECLARE 
+            children INT[];
+            parentClassId INT;
+            parentAccType CHAR(1);
         begin
             update "AccM" 
-                set "accCode" = %(accCode)s
-                , "accName" = %(accName)s
-                    where "id" = %(accId)s;
+                set "accCode" = {accCode}
+                , "accName" = {accName}
+                , "parentId" = {parentId}
+                , "accLeaf" = {accLeaf}
+                    where "id" = {accId};
+                                                       
+            select "classId", "accType" 
+                into parentClassId, parentAccType 
+                from "AccM" 
+                where "id" = {parentId};
+                                                       
+            if {hasParentChanged} then
+                WITH RECURSIVE hier AS (
+                    SELECT id
+                    FROM "AccM"
+                    WHERE id = {accId}
+                        UNION ALL
+                    SELECT a.id
+                    FROM "AccM" a
+                    INNER JOIN hier h ON a."parentId" = h.id)
+                select array_agg(id) into children from hier;
+                
+                update "AccM"
+                    set "accType" = parentAccType,
+                    "classId" = parentClassId
+                where id = any(children);
+                                                       
+            end if;
         end $$;
-    """
-
-    update_accounts_master1 = """
-            WITH RECURSIVE hier AS (
-        -- Anchor member: start with the given ID
-        SELECT id
-        FROM "AccM"
-        WHERE id = (table "accId")
-        UNION ALL
-        -- Recursive member: find all child nodes
-        SELECT a.id
-        FROM "AccM" a
-        INNER JOIN hier h ON a."parentId" = h.id),
-
-        --Input values for the update operation
-        "accId" as (values(%(accId)s::int)),
-        "parentId" as (values(%(parentId)s::int)),
-        "accCode" as (values(%(accCode)s::text)), 
-        "accName" as (values(%(accName)s::text)),
-        "accLeaf" as (values(%(accLeaf)s::text)), 
-        "hasParentChanged" as (values(%(hasParentChanged)s::boolean)),
-        --"accId" AS (VALUES (362::int)),
-        --"parentId" AS (VALUES (123::int)),
-        --"accCode" AS (VALUES ('miscCreditors'::text)),
-        --"accName" AS (VALUES ('Misc creditors'::text)),
-        --"accLeaf" AS (VALUES ('S'::text)),
-        --"hasParentChanged" AS (VALUES (true::boolean)),
-
-        -- Fetch parent account type and class ID
-        parent_info AS (
-            SELECT "accType", "classId"
-            FROM "AccM"
-            WHERE id = (table "parentId")
-        )
-        UPDATE "AccM"
-        SET "accCode" = (table "accCode"),
-            "accName" = (table "accName"),
-            "parentId" = (table "parentId"),
-            "accLeaf" = (table "accLeaf"),
-            "accType" = CASE WHEN (SELECT * FROM "hasParentChanged") = true THEN (SELECT "accType" FROM parent_info) ELSE "accType" END,
-            "classId" = CASE WHEN (SELECT * FROM "hasParentChanged") = true THEN (SELECT "classId" FROM parent_info) ELSE "classId" END
-        WHERE id = (table "accId") OR id IN (SELECT id FROM hier)
-    """
+    """).format(
+        accId=sql.Literal(params["accId"]),
+        parentId=sql.Literal(params["parentId"]),
+        accCode=sql.Literal(params["accCode"]),
+        accName=sql.Literal(params["accName"]),
+        accLeaf=sql.Literal(params["accLeaf"]),
+        hasParentChanged=sql.Literal(params["hasParentChanged"])
+    )
 
     upsert_auto_subledger = """
         with "accId" as (values(%(accId)s::int)), "isAutoSubledger" as (values(%(isAutoSubledger)s::boolean)),

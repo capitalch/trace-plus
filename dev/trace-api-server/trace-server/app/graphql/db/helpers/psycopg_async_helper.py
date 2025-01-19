@@ -4,6 +4,7 @@ from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
 from app.config import Config
 from typing import Any
+from types import FunctionType
 from psycopg_pool import AsyncConnectionPool
 import psycopg
 
@@ -59,7 +60,10 @@ async def do_process(
                 await cur.execute(f"SET search_path TO {schema_to_set}")
 
                 # Execute the query
-                await cur.execute(sql, sqlArgs)
+                if(isinstance(sql, FunctionType)):
+                    await cur.execute(sql(sqlArgs))
+                else:
+                    await cur.execute(sql, sqlArgs)
 
                 # Fetch data for SELECT queries or row count for DML
                 if cur.rowcount > 0:

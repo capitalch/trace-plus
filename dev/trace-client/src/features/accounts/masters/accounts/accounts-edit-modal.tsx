@@ -4,8 +4,6 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { Utils } from "../../../../utils/utils";
 import { Messages } from "../../../../utils/messages";
-// import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-// import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
@@ -60,8 +58,6 @@ export function AccountsEditModal({
             }
         })
     })
-
-    // const selectedParent = watch('parentAccount')
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -152,7 +148,7 @@ export function AccountsEditModal({
         if (selectedParent?.accLeaf === 'L') {
             newAccLeaf = 'S'
         }
-        // xData.hasParentIdChanged = Boolean(dirtyFields.parentAccount)
+        
         try {
             const res = await Utils.doGenericUpdateQuery({
                 buCode: buCode || '',
@@ -162,11 +158,11 @@ export function AccountsEditModal({
                 sqlArgs: {
                     
                     accCode: data.accountCode,
-                    // accLeaf: newAccLeaf,
+                    accLeaf: newAccLeaf,
                     accName: data.accountName,
                     accId: accId,
-                    // parentId: selectedParent?.accId,
-                    // hasParentChanged: Boolean(dirtyFields.parentAccount)
+                    parentId: selectedParent?.accId,
+                    hasParentChanged: Boolean(dirtyFields.parentAccount)
                 }
             })
             console.log(res)

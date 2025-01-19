@@ -158,7 +158,7 @@ export function AccountsMaster() {
                 field: '',
                 headerTemplate: actionHeaderTemplate,
                 template: actionTemplate,
-                width: 250,
+                width: 200,
             },
             {
                 field: 'accCode',
