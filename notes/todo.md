@@ -29,17 +29,24 @@
 	- Check Capichow bank recon double entry
 	- In ledger subledger do a direct search on party name inside subledger
 	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
-- Master accounts
+	- rename generic-switch to comp-generic-switch in Master accounts
+	- Company-info
+															- Init
+															- Form UI
+		- Validation
+		- populate data
+		- submit data
+												- Master accounts
 															- Startup
 															- Server
 																- SQL
-	- client
+														- client
 															- Implement react-sliding-pane globally
 																- Place it in Navbar
 																- create reducers
 																- create map
 																- sliding pane provide title, widthPerc or absolute
-		- rename generic-switch to comp-generic-switch
+		
 																- Treegrid toolbox
 																- Treegrid populate
 													- Contact and addresses
@@ -61,7 +68,7 @@
 															- Auto subledger
 																- click implement
 																- Proper disablement
-		- Grid
+														- Grid
 															- Add child
 																- Server validation for accCode, accName
 																- Creates a new child
@@ -69,11 +76,11 @@
 																- fields: AccountCode, accountName, accountLevel: dropdown (group, leaf, ledger)
 																- If current ac is group: allow group, ledger, leaf as accLeaf in drop down
 																- if current ac is ledger only allow subledger
-			- edit self
-																- Not for primary
-				- Fields: accountCode, accName, parentAccount: dropdown: shows type as asset or liab, level, class and acc name in dropdown
-				- Allows to change parent. Any parent can be assigned
-				- Check feasibility of subledger vs leaf transfer and vice versa
+															- edit self
+																												- Not for primary
+																- Fields: accountCode, accName, parentAccount: dropdown: shows type as asset or liab, level, class and acc name in dropdown
+																- Allows to change parent. Any parent can be assigned
+																- Check feasibility of subledger vs leaf transfer and vice versa
 															- delete
 																- Not allowed for primary and those having children: hasChildRecords
 																- Delete functionality
@@ -91,8 +98,8 @@
 																- Modal
 																- Form
 																- Validation
-												- Bank Recon
-													- UI
+													- Bank Recon
+														- UI
 															- Balance column
 															- Start up
 															- Screen layout

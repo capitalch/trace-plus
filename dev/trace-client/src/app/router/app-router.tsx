@@ -23,7 +23,7 @@ import { ProfitLoss } from "../../features/accounts/final-accounts/profit-loss";
 import { GeneralLedger } from "../../features/accounts/final-accounts/general-ledger/general-ledger";
 import { BankRecon } from "../../features/accounts/options/bank-recon/bank-recon";
 import { AccountsMaster } from "../../features/accounts/masters/accounts/accounts-master";
-import { CompanyInfo } from "../../features/accounts/masters/company-info";
+import { CompanyInfo } from "../../features/accounts/masters/company-info/company-info";
 
 export const appRouter = createBrowserRouter([
     {

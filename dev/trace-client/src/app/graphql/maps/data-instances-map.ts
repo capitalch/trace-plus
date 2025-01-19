@@ -1,5 +1,5 @@
 export const DataInstancesMap = {
-  accountsEditModal:'accounts-edit-modal',
+  accountsEditModal: "accounts-edit-modal",
   accountsMaster: "accounts-master",
   adminBusinessUnits: "admin-business-units",
   adminBusinessUsers: "admin-business-users",
@@ -13,7 +13,8 @@ export const DataInstancesMap = {
   balanceSheet: "balance-sheet",
   bankRecon: "bank-recon",
   bankReconOpBalance: "bank-recon-op-balance",
-  contactsAndAddresses:'contacts-and-addresses',
+  companyInfo: "company-info",
+  contactsAndAddresses: "contacts-and-addresses",
   expenses: "expenses",
   generalLedger: "general-ledger",
   incomes: "incomes",
