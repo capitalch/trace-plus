@@ -8,19 +8,24 @@ import { useForm } from "react-hook-form";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
+import { Messages } from "../../../../utils/messages";
+import { validate } from "graphql";
 
 export function CompanyInfo() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.companyInfo
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const {
-        checkEmail
+        checkAddress
+        , checkEmail
         , checkGstin
         , checkGstStateCode
-        , checkMobileNo
+        , checkLandPhones
+        , checkMobileNos
         , checkNoSpaceOrSpecialChar
         , checkNoSpecialChar
         , checkPinCode
+        , checkUrl
     } = useValidators()
 
     const {
@@ -60,7 +65,10 @@ export function CompanyInfo() {
                         type="text"
                         placeholder="e.g. Main Office"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('unitName', { required: 'Unit Name is required' })}
+                        {...register('unitName', {
+                            required: Messages.errRequired,
+                            validate: checkNoSpecialChar
+                        })}
                     />
                     {errors.unitName && <WidgetFormErrorMessage errorMessage={errors.unitName.message} />}
                 </label>
@@ -71,7 +79,10 @@ export function CompanyInfo() {
                         type="text"
                         placeholder="e.g. MO"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('shortName', { required: 'Short Name is required' })}
+                        {...register('shortName', {
+                            required: Messages.errRequired,
+                            validate: checkNoSpaceOrSpecialChar
+                        })}
                     />
                     {errors.shortName && <WidgetFormErrorMessage errorMessage={errors.shortName.message} />}
                 </label>
@@ -82,7 +93,10 @@ export function CompanyInfo() {
                         type="text"
                         placeholder="e.g. 123 Main Street"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('address1', { required: 'Address 1 is required' })}
+                        {...register('address1', {
+                            required: Messages.errRequired,
+                            validate: checkAddress
+                        })}
                     />
                     {errors.address1 && <WidgetFormErrorMessage errorMessage={errors.address1.message} />}
                 </label>
@@ -93,8 +107,11 @@ export function CompanyInfo() {
                         type="text"
                         placeholder="e.g. Apartment 4B"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('address2')}
+                        {...register('address2', {
+                            validate: checkAddress
+                        })}
                     />
+                    {errors.address2 && <WidgetFormErrorMessage errorMessage={errors.address2.message} />}
                 </label>
 
                 <label className="flex flex-col font-medium text-primary-800">
@@ -102,8 +119,9 @@ export function CompanyInfo() {
                     <input
                         type="number"
                         placeholder="e.g. 123456"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('pin', { required: 'PIN is required' })}
+                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300
+                        [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [appearance:textfield]" // classname from perplexity ai
+                        {...register('pin', { required: Messages.errRequired, validate: checkPinCode })}
                     />
                     {errors.pin && <WidgetFormErrorMessage errorMessage={errors.pin.message} />}
                 </label>
@@ -125,11 +143,8 @@ export function CompanyInfo() {
                         placeholder="e.g. email@example.com"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
                         {...register('email', {
-                            required: 'Email is required',
-                            pattern: {
-                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                message: 'Invalid email address',
-                            },
+                            required: Messages.errRequired,
+                            validate: checkEmail
                         })}
                     />
                     {errors.email && <WidgetFormErrorMessage errorMessage={errors.email.message} />}
@@ -141,27 +156,36 @@ export function CompanyInfo() {
                         type="text"
                         placeholder="e.g. 22AAAAA0000A1Z5"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('gstin')}
+                        {...register('gstin', {
+                            validate: checkGstin
+                        })}
                     />
+                    {errors.gstin && <WidgetFormErrorMessage errorMessage={errors.gstin.message} />}
                 </label>
 
                 <label className="flex flex-col font-medium text-primary-800">
-                    <span className="font-bold">Land Phone</span>
+                    <span className="font-bold">Land Phones</span>
                     <input
                         type="tel"
-                        placeholder="e.g. 01122334455"
+                        placeholder="e.g. 01122334455, 03322280608"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('landPhone')}
+                        {...register('landPhone', {
+                            validate: checkLandPhones
+                        })}
                     />
+                    {errors.landPhone && <WidgetFormErrorMessage errorMessage={errors.landPhone.message} />}
                 </label>
 
                 <label className="flex flex-col font-medium text-primary-800">
-                    <span className="font-bold">Mobile Number <WidgetAstrix /></span>
+                    <span className="font-bold">Mobile Numbers <WidgetAstrix /></span>
                     <input
                         type="tel"
-                        placeholder="e.g. 9876543210"
+                        placeholder="e.g. 9876543210, 9832077665"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('mobileNumber', { required: 'Mobile Number is required' })}
+                        {...register('mobileNumber', {
+                            required: Messages.errRequired,
+                            validate: checkMobileNos
+                        })}
                     />
                     {errors.mobileNumber && <WidgetFormErrorMessage errorMessage={errors.mobileNumber.message} />}
                 </label>
@@ -172,8 +196,9 @@ export function CompanyInfo() {
                         type="url"
                         placeholder="e.g. https://example.com"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
-                        {...register('webSite')}
+                        {...register('webSite', { validate: checkUrl })}
                     />
+                    {errors.webSite && <WidgetFormErrorMessage errorMessage={errors.webSite.message} />}
                 </label>
 
                 <div className="mt-7 flex justify-center">
@@ -196,7 +221,7 @@ type CompanyInfoType = {
     id: number | null
     landPhone?: string
     mobileNumber: string
-    pin: number | undefined
+    pin: string
     shortName: string
     state?: string
     unitName: string

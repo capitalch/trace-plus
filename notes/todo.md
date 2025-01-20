@@ -34,6 +34,8 @@
 															- Init
 															- Form UI
 		- Validation
+															- Remove Inc and Dec from pin
+			- State to include options
 		- populate data
 		- submit data
 												- Master accounts

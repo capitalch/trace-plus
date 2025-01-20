@@ -1,111 +1,155 @@
-import { Messages } from './messages'
+import { Messages } from "./messages";
 
 function useValidators() {
-  function checkAtLeast8Chars(input: string) {
-    let error = undefined
-    if (input.length < 8) {
-      error = Messages.errAtLeast8Chars
+  function checkAddress(input: string | undefined) {
+    let error = undefined;
+    if (input) {
+      const regex = /^[a-zA-Z0-9\s,./\\():#&[]]*$/;
+      if (!regex.test(input)) {
+        error = Messages.errInvalidAddress;
+      }
     }
-    return error
+    return error;
+  }
+
+  function checkAtLeast8Chars(input: string) {
+    let error = undefined;
+    if (input.length < 8) {
+      error = Messages.errAtLeast8Chars;
+    }
+    return error;
   }
 
   function checkEmail(input: string) {
-    let error = undefined
+    let error = undefined;
     if (!isValidEmail(input)) {
-      error = Messages.errInvalidEmail
+      error = Messages.errInvalidEmail;
     }
-    return (error)
+    return error;
   }
 
-  function checkGstin(input: string){
-    let error = undefined
-    if (!isValidGstin(input)) {
-      error = Messages.errInvalidGstin
+  function checkGstin(input: string | undefined) {
+    let error = undefined;
+    if (input) {
+      if (!isValidGstin(input)) {
+        error = Messages.errInvalidGstin;
+      }
     }
-    return (error)
+    return error;
   }
 
-  function checkGstStateCode(input: string){
-    let error = undefined
-    const regex = /^[1-9][0-9]?$/
+  function checkGstStateCode(input: string) {
+    let error = undefined;
+    const regex = /^[1-9][0-9]?$/;
     if (!regex.test(input)) {
-      error = Messages.errInvalidGstStateCode
+      error = Messages.errInvalidGstStateCode;
     }
-    return (error)
+    return error;
+  }
+
+  function checkLandPhone(input: string | undefined) {
+    let error = undefined;
+    if (input) {
+      const regex = /^(?:\+91|91)?\s?\d{3,5}\s?\d{6,8}$/;
+      if (!regex.test(input)) {
+        error = Messages.errInvalidLandPhone;
+      }
+    }
+    return error;
+  }
+
+  function checkLandPhones(input: string | undefined) {
+    let error = undefined;
+    if (input) {
+      const regex = /^(?:\+91|91)?\s?\d{3,5}\s?\d{6,8}(?:[\s,](?:\+91|91)?\s?\d{3,5}\s?\d{6,8})*$/
+      if (!regex.test(input)) {
+        error = Messages.errInvalidLandPhone;
+      }
+    }
+    return error;
   }
 
   function checkMobileNo(input: string) {
-    let error = undefined
-    const regex = /^(\+91[\-\s]?)?[6-9]\d{9}$/
+    let error = undefined;
+    const regex = /^(?:\+91|91)?\s?\d{10}$/;
     if (!regex.test(input)) {
-      error = Messages.errInvalidMobileNo
+      error = Messages.errInvalidMobileNo;
     }
-    return (error)
+    return error;
+  }
+
+  function checkMobileNos(input: string) {
+    let error = undefined;
+    const regex = /^(?:\+91|91)?\s?\d{10}(?:[\s,](?:\+91|91)?\s?\d{10})*$/;
+    if (!regex.test(input)) {
+      error = Messages.errInvalidMobileNo;
+    }
+    return error;
   }
 
   function checkMustHaveOneDigit(input: string) {
-    let error = undefined
+    let error = undefined;
     if (input.search(/[0-9]/) < 0) {
-      error = Messages.errMustHaveOneDigit
+      error = Messages.errMustHaveOneDigit;
     }
-    return error
+    return error;
   }
 
   function checkMustHaveOneLetter(input: string) {
-    let error = undefined
+    let error = undefined;
     if (input.search(/[a-z]/i) < 0) {
-      error = Messages.errMustHaveOneLetter
+      error = Messages.errMustHaveOneLetter;
     }
-    return error
+    return error;
   }
 
   function checkMustHaveOneSpecialChar(input: string) {
-    let error = undefined
+    let error = undefined;
     if (input.search(/[!@#\\$%\\^&\\*_`~]/) < 0) {
-      error = Messages.errMustHaveOneSpecialChar
+      error = Messages.errMustHaveOneSpecialChar;
     }
-    return error
+    return error;
   }
 
   function checkNoSpaceOrSpecialChar(input: string) {
-    let error = undefined
+    let error = undefined;
     if (input.search(/^[\w-_]*$/) < 0) {
-      error = Messages.errNoSpceOrSpecialChar
+      error = Messages.errNoSpceOrSpecialChar;
     }
-    return error
+    return error;
   }
 
   function checkNoSpaceOrSpecialCharAllowDot(input: string) {
-    let error = undefined
+    let error = undefined;
     if (input.search(/^[\w-_.]*$/) < 0) {
-      error = Messages.errNoSpceOrSpecialChar
+      error = Messages.errNoSpceOrSpecialChar;
     }
-    return error
+    return error;
   }
 
   function checkNoSpecialChar(input: string) {
-    let error = undefined
+    let error = undefined;
     if (input.search(/[^\w\s-_]/) > 0) {
-      error = Messages.errNoSpecialChar
+      error = Messages.errNoSpecialChar;
     }
-    return error
+    return error;
   }
 
-  function checkPinCode(input: string){
-    let error = undefined
-    const regex = /^[1-9][0-9]{5}$/
+  function checkPinCode(input: string) {
+    let error = undefined;
+    const regex = /^[1-9][0-9]{5}$/;
     if (!regex.test(input)) {
-      error = Messages.errInvalidPinCode
+      error = Messages.errInvalidPinCode;
     }
-    return (error)
+    return error;
   }
 
   function checkRequired(input: string) {
-    let error = undefined
+    let error = undefined;
     if (input.length === 0) {
-      error = Messages.errRequired
+      error = Messages.errRequired;
     }
-    return error
+    return error;
   }
 
   function checkPassword(input: string) {
@@ -114,57 +158,63 @@ function useValidators() {
       checkAtLeast8Chars(input) ||
       checkMustHaveOneLetter(input) ||
       checkMustHaveOneDigit(input) ||
-      checkMustHaveOneSpecialChar(input)
-    return error
+      checkMustHaveOneSpecialChar(input);
+    return error;
   }
 
   function checkUserNameOrEmail(input: string) {
     //should be alphanumeric, non empty and no space in between or email
-    let error = undefined
+    let error = undefined;
     if (!isValidEmail(input)) {
-      error = checkRequired(input) || checkNoSpaceOrSpecialChar(input)
+      error = checkRequired(input) || checkNoSpaceOrSpecialChar(input);
     }
     if (error) {
-      error = Messages.errInvalidUserNameOrEmail
+      error = Messages.errInvalidUserNameOrEmail;
     }
-    return error
+    return error;
   }
 
-  function checkUrl(input: string) {
-    let error = undefined
+  function checkUrl(input: string | undefined) {
+    let error = undefined;
     if (!input) {
-      return error
+      return error;
     }
-    const regex = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/\S*)?$/
+    const regex =
+      /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/\S*)?$/;
     if (!regex.test(input)) {
-      error = Messages.errInputMustBeUrl
+      error = Messages.errInputMustBeUrl;
     }
-    return error
+    return error;
   }
 
   function shouldBePositive(input: number) {
-    let error = undefined
-    const inp: number = +input
+    let error = undefined;
+    const inp: number = +input;
     if (inp < 0) {
-      error = Messages.errMustBePositive
+      error = Messages.errMustBePositive;
     }
-    return error
+    return error;
   }
 
   function shouldNotBeZero(input: number) {
-    let error = undefined
-    const inp: number = +input
+    let error = undefined;
+    const inp: number = +input;
     if (inp === 0) {
-      error = Messages.errCannotBeZero
+      error = Messages.errCannotBeZero;
     }
-    return error
+    return error;
   }
 
   return {
+    checkAddress,
+    checkAtLeast8Chars,
     checkEmail,
     checkGstin,
     checkGstStateCode,
+    checkLandPhone,
+    checkLandPhones,
     checkMobileNo,
+    checkMobileNos,
     checkNoSpaceOrSpecialChar,
     checkNoSpaceOrSpecialCharAllowDot,
     checkNoSpecialChar,
@@ -173,18 +223,20 @@ function useValidators() {
     checkUrl,
     checkUserNameOrEmail,
     shouldBePositive,
-    shouldNotBeZero
-  }
+    shouldNotBeZero,
+  };
 
   // Helper methods
   function isValidEmail(input: string) {
-    const ret = input.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
-    return ret
+    const ret = input.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+    return ret;
   }
 
-  function isValidGstin(input: string){
-    const ret = input.match(/^([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+$/)
-    return(ret)
+  function isValidGstin(input: string) {
+    const ret = input.match(
+      /^([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+$/
+    );
+    return ret;
   }
 }
-export { useValidators }
+export { useValidators };

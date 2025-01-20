@@ -26,10 +26,12 @@ const Messages = {
   errIncrementedFinYearNotExists:
     'Incremented financial year does not exist. Please create a new financial year in the accounts',
   errInputMustBeUrl: 'Input must be a valid URL',
+  errInvalidAddress:"Invalid address format",
   errInvalidClientName: 'Invalid client name',
   errInvalidEmail: 'Invalid email',
   errInvalidGstin:'Invalid GSTIN no',
   errInvalidGstStateCode:'Invalid state code',
+  errInvalidLandPhone:'Invalid land phone',
   errInvalidMobileNo: 'Invalid mobile no',
   errInvalidPinCode:'Invalid pin code',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',

@@ -14,6 +14,12 @@
 - Bug fixes etc.
 
 ## History
+# 01-01-2025 - 19-01-2025
+	- Master accounts
+# 23-12-2024 - 31-12-2024
+	- Bank reconcillation
+# 09-12-2024 - 22-12-2024
+	- General ledger
 # 05-12-2024 - 08-12-2024
 	- BS and PL finished
 # 26-11-2024 - 04-12-2024
