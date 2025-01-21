@@ -32,7 +32,8 @@
 	- rename generic-switch to comp-generic-switch in Master accounts
 - General settings
 															- Init
-	- form ui
+															- form ui
+	- populate data
 	- validation
 	- submit
 												- Company-info

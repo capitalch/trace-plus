@@ -29,6 +29,7 @@ export const Utils: UtilsType = {
     getCurrentLoginInfo: getCurrentLoginInfo,
     getDbNameDbParams: getDbNameDbParams,
     getDecimalFormatter: getDecimalFormatter,
+    getGeneralSettings: getGeneralSettings,
     getHostUrl: getHostUrl,
     getIntegerFormatter: getIntegerFormatter,
     getReduxState: getReduxState,
@@ -224,6 +225,12 @@ function getDecimalFormatter() {
         maximumFractionDigits: 2,
     });
     return (formatter)
+}
+
+function getGeneralSettings(): GeneralSettingsType {
+    const accSettings: AccSettingType[] | undefined = getCurrentLoginInfo()?.accSettings
+    const accSetting: AccSettingType | undefined = accSettings?.find((s: AccSettingType) => s.key === 'generalSettings')
+    return (accSetting?.jData)
 }
 
 function getHostUrl() {
@@ -551,6 +558,12 @@ type AlertMessageType = {
     message: string
 }
 
+export type GeneralSettingsType = {
+    dateFormat: string
+    autoLogoutTimeInMins: number | null
+    auditLockDate: string | null
+}
+
 type GraphQlErrorType = {
     detail: string
     error_code: string
@@ -654,6 +667,7 @@ type UtilsType = {
     getCurrentLoginInfo: () => LoginType
     getDbNameDbParams: () => DbNameDbParamsType
     getDecimalFormatter: () => any
+    getGeneralSettings: () => GeneralSettingsType
     getHostUrl: () => string
     getIntegerFormatter: () => any
     getReduxState: () => RootStateType

@@ -17,6 +17,7 @@ export const DataInstancesMap = {
   contactsAndAddresses: "contacts-and-addresses",
   expenses: "expenses",
   generalLedger: "general-ledger",
+  generalSettings:"general-settings",
   incomes: "incomes",
   liabilities: "liabilities",
   profitLoss: "profit-loss",

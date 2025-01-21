@@ -221,9 +221,6 @@ export function CompanyInfo() {
                 <div className="mt-7 flex justify-center">
                     <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
                 </div>
-                {/* <button type="button" className="p-2 bg-gray-200" onClick={()=>{
-                    navigate('/')
-                }}>Navigate</button> */}
             </form>
         </CompAccountsContainer>
     )
@@ -277,17 +274,3 @@ export function CompanyInfo() {
         }
     }
 }
-
-// type CompanyInfoType = {
-//     address1: string
-//     address2?: string
-//     email: string
-//     gstin?: string
-//     landPhone?: string
-//     mobileNumber: string
-//     pin: string
-//     shortName: string
-//     state?: string
-//     unitName: string
-//     webSite?: string
-// }

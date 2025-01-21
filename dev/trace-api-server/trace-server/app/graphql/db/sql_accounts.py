@@ -624,6 +624,25 @@ class SqlAccounts:
         WHERE NOT EXISTS (SELECT 1 FROM upsert)
     """
 
+    def upsert_general_settings(params):
+        return sql.SQL(
+            """
+        do $$
+        begin
+            if exists( 
+                select 1 from "Settings"	
+                    where "key" = 'generalSettings') then
+                        update "Settings"
+                            set "jData" = {jData}
+                                where "key" = 'generalSettings';
+            else
+            insert into "Settings" ("id", "key", "jData", "intValue")
+                    values (3, 'generalSettings', {jData}, 0);
+            end if;
+        end $$;
+    """
+        ).format(jData=sql.Literal(params["jData"]))
+
     def upsert_unit_info(params):
         return sql.SQL(
             """
