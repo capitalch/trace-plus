@@ -24,6 +24,7 @@ import { GeneralLedger } from "../../features/accounts/final-accounts/general-le
 import { BankRecon } from "../../features/accounts/options/bank-recon/bank-recon";
 import { AccountsMaster } from "../../features/accounts/masters/accounts/accounts-master";
 import { CompanyInfo } from "../../features/accounts/masters/company-info/company-info";
+import { GeneralSettings } from "../../features/accounts/masters/general-settings";
 
 export const appRouter = createBrowserRouter([
     {
@@ -55,7 +56,8 @@ export const appRouter = createBrowserRouter([
                 { path: 'general-ledger', element: <GeneralLedger /> },
                 { path: 'bank-recon', element: <BankRecon /> },
                 { path: 'accounts-master', element: <AccountsMaster /> },
-                { path: 'company-info', element: <CompanyInfo /> }
+                { path: 'company-info', element: <CompanyInfo /> },
+                { path: 'general-settings', element: <GeneralSettings /> }
             ]
     },
     {

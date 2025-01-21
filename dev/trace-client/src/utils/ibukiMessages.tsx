@@ -12,11 +12,3 @@ export const IbukiMessages = {
     'SHOW-MODAL-DIALOG-B': 'SHOW-MODAL-DIALOG-B',
     'SHOW-MODAL-DIALOG-': crypto.randomUUID(),
 }
-
-// type IbukiMessageType = {
-//     [key: string]: string
-// }
-
-// interface IbukiMessageT  {
-//     [key: string]: string
-// }

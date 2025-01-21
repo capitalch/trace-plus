@@ -30,7 +30,12 @@
 	- In ledger subledger do a direct search on party name inside subledger
 	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
 	- rename generic-switch to comp-generic-switch in Master accounts
-	- Company-info
+- General settings
+															- Init
+	- form ui
+	- validation
+	- submit
+												- Company-info
 															- Init
 															- Form UI
 														- Validation
@@ -38,8 +43,8 @@
 															- Remove Inc and Dec from pin
 															- State to include options
 															- populate data
-		- submit data
-			- rename toggle to accountsInfoChanged
+														- submit data
+															- rename toggle to accountsInfoChanged
 												- Master accounts
 															- Startup
 															- Server

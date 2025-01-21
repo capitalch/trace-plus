@@ -14,6 +14,8 @@
 - Bug fixes etc.
 
 ## History
+# 20-01-2025 - 21-01-2025
+	- Completed company-info
 # 01-01-2025 - 19-01-2025
 	- Master accounts
 # 23-12-2024 - 31-12-2024

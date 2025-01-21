@@ -8,7 +8,7 @@ const initialState: AccountsInitialStateType = {
       accName: "",
     },
   },
-  toggleAccountsInfoFlag: 0,
+  accSettingsChanged: 0,
 };
 
 const accountsSlice = createSlice({
@@ -23,18 +23,18 @@ const accountsSlice = createSlice({
       state.bankRecon.selectedBank = action.payload;
     },
 
-    toggleAccountsInfo: (state: AccountsInitialStateType) => {
-      state.toggleAccountsInfoFlag = Date.now();
+    changeAccSettings: (state: AccountsInitialStateType) => {
+      state.accSettingsChanged = Date.now();
     },
   },
 });
 
 export const accountsReducer = accountsSlice.reducer;
-export const { selectBank, toggleAccountsInfo } = accountsSlice.actions;
+export const { selectBank, changeAccSettings } = accountsSlice.actions;
 
 export type AccountsInitialStateType = {
   bankRecon: { selectedBank: SelectedBankType };
-  toggleAccountsInfoFlag: number;
+  accSettingsChanged: number;
 };
 
 export type SelectedBankType = {

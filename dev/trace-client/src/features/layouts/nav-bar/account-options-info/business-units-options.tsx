@@ -9,24 +9,23 @@ import { Messages } from "../../../../utils/messages"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { useNavigate } from "react-router-dom"
-// import { toggleAccountsInfoFn } from "../../../accounts/accounts-slice"
+import { setSideBarSelectedChildId } from "../../layouts-slice"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
     const currentBusinessUnitSelector: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-    const selectToggleAccountInfo = useSelector((state: RootStateType) => state.accounts.toggleAccountsInfoFlag)
-    console.log(selectToggleAccountInfo)
+    const selectAccSettingsChanged = useSelector((state: RootStateType) => state.accounts.accSettingsChanged) // to reload this component when accSettings like unitInfo changes
 
     useEffect(() => {
         if (currentBusinessUnitSelector.buCode) {
             fetchAccDetails()
         }
-    }, [currentBusinessUnitSelector, selectToggleAccountInfo])
+    }, [currentBusinessUnitSelector, selectAccSettingsChanged])
 
     return (
-        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectToggleAccountInfo)}>
+        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectAccSettingsChanged)}>
             <button onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
 
                 {/* Badge section */}
@@ -70,7 +69,9 @@ export function BusinessUnitsOptions() {
                 dispatch(setFinYearsBranchesAccSettings({ accSettings: result?.allSettings, finYears: result.allFinYears, branches: result.allBranches }))
                 dispatch(setCurrentDateFormat('DD/MM/YYYY'))
             }
+            // clean up content area and reset side menu by deselecting any menu item
             navigate('/')
+            dispatch(setSideBarSelectedChildId({ id: '0' }))
         } catch (e: any) {
             console.log(e?.message)
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errFailFetchingDataFromAccounts })

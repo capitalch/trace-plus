@@ -15,11 +15,9 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { AppDispatchType } from "../../../../app/store/store";
-import { toggleAccountsInfo } from "../../accounts-slice";
-// import { useNavigate } from "react-router-dom";
+import { changeAccSettings } from "../../accounts-slice";
 
 export function CompanyInfo() {
-    // const navigate = useNavigate()
     const dispatch: AppDispatchType = useDispatch()
     const [indiaStates, setIndiaStates] = useState({})
     const instance: string = DataInstancesMap.companyInfo
@@ -66,7 +64,7 @@ export function CompanyInfo() {
     }, [])
 
     return (
-        <CompAccountsContainer>
+        <CompAccountsContainer className="h-[calc(100vh-80px)] overflow-y-scroll">
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 w-auto mt-2 mr-6 mb-2">
@@ -273,7 +271,7 @@ export function CompanyInfo() {
                     jData: JSON.stringify(data)
                 }
             })
-            dispatch(toggleAccountsInfo())
+            dispatch(changeAccSettings())
         } catch (e: any) {
             console.log(e)
         }
