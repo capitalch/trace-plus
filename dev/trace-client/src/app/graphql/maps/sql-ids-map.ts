@@ -48,4 +48,5 @@ export const SqlIdsMap = {
   getTrialBalance: "get_trial_balance",
   updateAccountsMaster: "update_accounts_master",
   upsertAutoSubledger: "upsert_auto_subledger",
+  upsertUnitInfo:"upsert_unit_info"
 };

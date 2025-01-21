@@ -33,11 +33,13 @@
 	- Company-info
 															- Init
 															- Form UI
-		- Validation
+														- Validation
+															- Check regex for landPhone, landPhones, Mobile and url
 															- Remove Inc and Dec from pin
-			- State to include options
-		- populate data
+															- State to include options
+															- populate data
 		- submit data
+			- rename toggle to accountsInfoChanged
 												- Master accounts
 															- Startup
 															- Server

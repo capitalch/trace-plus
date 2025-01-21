@@ -4,7 +4,7 @@ function useValidators() {
   function checkAddress(input: string | undefined) {
     let error = undefined;
     if (input) {
-      const regex = /^[a-zA-Z0-9\s,./\\():#&[]]*$/;
+      const regex = /^[a-zA-Z0-9\s,./\\()#\-_\\[\]]*$/;
       if (!regex.test(input)) {
         error = Messages.errInvalidAddress;
       }
@@ -20,8 +20,11 @@ function useValidators() {
     return error;
   }
 
-  function checkEmail(input: string) {
+  function checkEmail(input: string | undefined) {
     let error = undefined;
+    if (!input) {
+      return error;
+    }
     if (!isValidEmail(input)) {
       error = Messages.errInvalidEmail;
     }
@@ -50,7 +53,7 @@ function useValidators() {
   function checkLandPhone(input: string | undefined) {
     let error = undefined;
     if (input) {
-      const regex = /^(?:\+91|91)?\s?\d{3,5}\s?\d{6,8}$/;
+      const regex = /^(?:\+91\s?|91\s?)?(?:\d{3,5}\s?\d{6,10}|\d{8,10})$/;
       if (!regex.test(input)) {
         error = Messages.errInvalidLandPhone;
       }
@@ -61,7 +64,8 @@ function useValidators() {
   function checkLandPhones(input: string | undefined) {
     let error = undefined;
     if (input) {
-      const regex = /^(?:\+91|91)?\s?\d{3,5}\s?\d{6,8}(?:[\s,](?:\+91|91)?\s?\d{3,5}\s?\d{6,8})*$/
+      const regex =
+        /^(?:\+91\s?|91\s?)?(?:\d{3,5}\s?\d{6,10}|\d{8,10})(?:[,\s]+(?:\+91\s?|91\s?)?(?:\d{3,5}\s?\d{6,10}|\d{8,10}))*$/;
       if (!regex.test(input)) {
         error = Messages.errInvalidLandPhone;
       }
@@ -78,8 +82,11 @@ function useValidators() {
     return error;
   }
 
-  function checkMobileNos(input: string) {
+  function checkMobileNos(input: string | undefined) {
     let error = undefined;
+    if (!input) {
+      return error;
+    }
     const regex = /^(?:\+91|91)?\s?\d{10}(?:[\s,](?:\+91|91)?\s?\d{10})*$/;
     if (!regex.test(input)) {
       error = Messages.errInvalidMobileNo;
@@ -111,8 +118,11 @@ function useValidators() {
     return error;
   }
 
-  function checkNoSpaceOrSpecialChar(input: string) {
+  function checkNoSpaceOrSpecialChar(input: string | undefined) {
     let error = undefined;
+    if (!input) {
+      return error;
+    }
     if (input.search(/^[\w-_]*$/) < 0) {
       error = Messages.errNoSpceOrSpecialChar;
     }
@@ -127,16 +137,22 @@ function useValidators() {
     return error;
   }
 
-  function checkNoSpecialChar(input: string) {
+  function checkNoSpecialChar(input: string | undefined) {
     let error = undefined;
+    if (!input) {
+      return error;
+    }
     if (input.search(/[^\w\s-_]/) > 0) {
       error = Messages.errNoSpecialChar;
     }
     return error;
   }
 
-  function checkPinCode(input: string) {
+  function checkPinCode(input: string | undefined) {
     let error = undefined;
+    if (!input) {
+      return error;
+    }
     const regex = /^[1-9][0-9]{5}$/;
     if (!regex.test(input)) {
       error = Messages.errInvalidPinCode;

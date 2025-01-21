@@ -40,7 +40,7 @@ export const layoutsSlice = createSlice({
       state.navBar.menuItem = action.payload.menuItem
       // reset the parentId and childId of sidemenu
       state.sideBar.selectedParentId = ''
-      state.sideBar.selectedParentId = ''
+      // state.sideBar.selectedParentId = ''
     },
 
     setSideBarSelectedParentId: (

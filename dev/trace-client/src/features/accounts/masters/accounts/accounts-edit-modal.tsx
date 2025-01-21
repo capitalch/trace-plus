@@ -132,7 +132,6 @@ export function AccountsEditModal({
     }
 
     async function onSubmit(data: FormValuesType) {
-        console.log(dirtyFields.parentAccount)
         if (!isDirty) {
             Utils.showAlertMessage('Warning', Messages.messNothingToDo)
             return
@@ -150,13 +149,12 @@ export function AccountsEditModal({
         }
         
         try {
-            const res = await Utils.doGenericUpdateQuery({
+            await Utils.doGenericUpdateQuery({
                 buCode: buCode || '',
                 dbName: dbName || '',
                 sqlId: SqlIdsMap.updateAccountsMaster,
                 dbParams: decodedDbParamsObject,
                 sqlArgs: {
-                    
                     accCode: data.accountCode,
                     accLeaf: newAccLeaf,
                     accName: data.accountName,
@@ -165,7 +163,6 @@ export function AccountsEditModal({
                     hasParentChanged: Boolean(dirtyFields.parentAccount)
                 }
             })
-            console.log(res)
             Utils.loadDataInTreeGridWithSavedScrollPos(context, DataInstancesMap.accountsMaster)
             Utils.showSaveMessage();
             Utils.showHideModalDialogA({

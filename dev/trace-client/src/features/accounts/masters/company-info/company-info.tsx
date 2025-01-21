@@ -1,25 +1,33 @@
 import { useDispatch } from "react-redux";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
-import { AppDispatchType } from "../../../../app/store/store";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useValidators } from "../../../../utils/validators-hook";
 import { useForm } from "react-hook-form";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { Messages } from "../../../../utils/messages";
-import { validate } from "graphql";
+import indiaStatesJson from './india-states-gst-codes.json'
+import { CompReactSelect } from "../../../../controls/components/comp-react-select";
+import { useEffect, useState } from "react";
+import { UnitInfoType, Utils } from "../../../../utils/utils";
+import _ from "lodash";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { AppDispatchType } from "../../../../app/store/store";
+import { toggleAccountsInfo } from "../../accounts-slice";
+// import { useNavigate } from "react-router-dom";
 
 export function CompanyInfo() {
+    // const navigate = useNavigate()
     const dispatch: AppDispatchType = useDispatch()
+    const [indiaStates, setIndiaStates] = useState({})
     const instance: string = DataInstancesMap.companyInfo
-    const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const {
         checkAddress
         , checkEmail
         , checkGstin
-        , checkGstStateCode
         , checkLandPhones
         , checkMobileNos
         , checkNoSpaceOrSpecialChar
@@ -30,12 +38,11 @@ export function CompanyInfo() {
 
     const {
         register,
-        control,
         getValues,
         handleSubmit,
         setValue,
-        formState: { errors, isSubmitting },
-    } = useForm<CompanyInfoType>({
+        formState: { errors, isDirty, isSubmitting },
+    } = useForm<UnitInfoType>({
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
@@ -43,16 +50,20 @@ export function CompanyInfo() {
             address2: undefined,
             email: '',
             gstin: undefined,
-            id: undefined,
             landPhone: undefined,
             mobileNumber: '',
             pin: undefined,
             shortName: '',
-            state: undefined,
+            state: '',
             unitName: '',
             webSite: undefined
         },
     });
+
+    useEffect(() => {
+        loadIndiaStates()
+        populateData()
+    }, [])
 
     return (
         <CompAccountsContainer>
@@ -121,18 +132,26 @@ export function CompanyInfo() {
                         placeholder="e.g. 123456"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300
                         [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [appearance:textfield]" // classname from perplexity ai
-                        {...register('pin', { required: Messages.errRequired, validate: checkPinCode })}
+                        {...register('pin', {
+                            required: Messages.errRequired,
+                            validate: checkPinCode
+                        })}
                     />
                     {errors.pin && <WidgetFormErrorMessage errorMessage={errors.pin.message} />}
                 </label>
 
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">State</span>
-                    <input
-                        type="text"
-                        placeholder="e.g. California"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    <CompReactSelect
+                        className="mt-1.5"
+                        // menuPlacement='top'
+                        staticOptions={indiaStates}
+                        optionLabelName="stateName"
+                        optionValueName="stateValue"
                         {...register('state')}
+                        onChange={handleOnChangeState}
+                        ref={null} // required for react-hook-form to work with
+                        selectedValue={getValues('state') || ''}
                     />
                 </label>
 
@@ -193,7 +212,7 @@ export function CompanyInfo() {
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Website</span>
                     <input
-                        type="url"
+                        type="text"
                         placeholder="e.g. https://example.com"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
                         {...register('webSite', { validate: checkUrl })}
@@ -202,28 +221,75 @@ export function CompanyInfo() {
                 </label>
 
                 <div className="mt-7 flex justify-center">
-                    <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96" />
+                    <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
                 </div>
+                {/* <button type="button" className="p-2 bg-gray-200" onClick={()=>{
+                    navigate('/')
+                }}>Navigate</button> */}
             </form>
         </CompAccountsContainer>
     )
 
-    async function onSubmit(data: CompanyInfoType) {
+    function handleOnChangeState(selectedObject: { stateValue: string, stateName: string }) {
+        setValue('state', selectedObject.stateValue, { shouldDirty: true })
+    }
 
+    function loadIndiaStates() {
+        const indiaStates: { stateValue: string, stateName: string }[]
+            = Object.entries(indiaStatesJson)
+                .map(([stateValue, stateName]) => ({ stateValue, stateName }))
+        indiaStates.unshift({ stateValue: '', stateName: '--- select ---' })
+        setIndiaStates(indiaStates)
+    }
+
+    function populateData() {
+        const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
+        setValue('address1', unitInfo.address1 || '')
+        setValue('address2', unitInfo.address2)
+        setValue('email', unitInfo.email || '')
+        setValue('gstin', unitInfo.gstin)
+        setValue('landPhone', unitInfo.landPhone)
+        setValue('mobileNumber', unitInfo.mobileNumber || '')
+        setValue('pin', unitInfo.pin || '')
+        setValue('shortName', unitInfo.shortName || '')
+        setValue('state', unitInfo.state)
+        setValue('unitName', unitInfo.unitName || '')
+        setValue('webSite', unitInfo.webSite)
+    }
+
+    async function onSubmit(data: UnitInfoType) {
+        if (!isDirty) {
+            Utils.showAlertMessage('Warning', Messages.messNothingToDo)
+            return
+        }
+        try {
+            await Utils.doGenericUpdateQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                sqlId: SqlIdsMap.upsertUnitInfo,
+                dbParams: decodedDbParamsObject,
+                instance: instance,
+                sqlArgs: {
+                    jData: JSON.stringify(data)
+                }
+            })
+            dispatch(toggleAccountsInfo())
+        } catch (e: any) {
+            console.log(e)
+        }
     }
 }
 
-type CompanyInfoType = {
-    address1: string
-    address2?: string
-    email: string
-    gstin?: string
-    id: number | null
-    landPhone?: string
-    mobileNumber: string
-    pin: string
-    shortName: string
-    state?: string
-    unitName: string
-    webSite?: string
-}
+// type CompanyInfoType = {
+//     address1: string
+//     address2?: string
+//     email: string
+//     gstin?: string
+//     landPhone?: string
+//     mobileNumber: string
+//     pin: string
+//     shortName: string
+//     state?: string
+//     unitName: string
+//     webSite?: string
+// }

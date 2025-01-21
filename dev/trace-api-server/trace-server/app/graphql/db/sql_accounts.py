@@ -561,7 +561,9 @@ class SqlAccounts:
         select 'ok' as "connection"
     """
 
-    def update_accounts_master(params): return sql.SQL("""
+    def update_accounts_master(params):
+        return sql.SQL(
+            """
         do $$
         DECLARE 
             children INT[];
@@ -598,14 +600,15 @@ class SqlAccounts:
                                                        
             end if;
         end $$;
-    """).format(
-        accId=sql.Literal(params["accId"]),
-        parentId=sql.Literal(params["parentId"]),
-        accCode=sql.Literal(params["accCode"]),
-        accName=sql.Literal(params["accName"]),
-        accLeaf=sql.Literal(params["accLeaf"]),
-        hasParentChanged=sql.Literal(params["hasParentChanged"])
-    )
+    """
+        ).format(
+            accId=sql.Literal(params["accId"]),
+            parentId=sql.Literal(params["parentId"]),
+            accCode=sql.Literal(params["accCode"]),
+            accName=sql.Literal(params["accName"]),
+            accLeaf=sql.Literal(params["accLeaf"]),
+            hasParentChanged=sql.Literal(params["hasParentChanged"]),
+        )
 
     upsert_auto_subledger = """
         with "accId" as (values(%(accId)s::int)), "isAutoSubledger" as (values(%(isAutoSubledger)s::boolean)),
@@ -620,3 +623,22 @@ class SqlAccounts:
         SELECT (table "accId"), (table "isAutoSubledger")
         WHERE NOT EXISTS (SELECT 1 FROM upsert)
     """
+
+    def upsert_unit_info(params):
+        return sql.SQL(
+            """
+        do $$
+        begin
+            if exists( 
+                select 1 from "Settings"	
+                    where "key" = 'unitInfo') then
+                        update "Settings"
+                            set "jData" = {jData}
+                                where "key" = 'unitInfo';
+            else
+            insert into "Settings" ("id", "key", "jData", "intValue")
+                    values (2, 'unitInfo', {jData}, 0);
+            end if;
+        end $$;
+    """
+        ).format(jData=sql.Literal(params["jData"]))
