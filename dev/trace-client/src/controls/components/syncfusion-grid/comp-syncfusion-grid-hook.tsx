@@ -5,12 +5,27 @@ import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
-import { IconEdit } from "../../icons/icon-edit";
+// import { IconEdit } from "../../icons/icon-edit";
 import { IconDelete } from "../../icons/icon-delete";
 import { IconPreview } from "../../icons/icon-preview";
 import { Button } from "primereact/button";
+import { IconEdit1 } from "../../icons/icon-edit1";
 
-export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelection, hasIndexColumn, instance, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, }: CompSyncFusionGridType) {
+export function useCompSyncFusionGrid({ 
+    aggregates
+    , buCode
+    , columns
+    , dbName
+    , dbParams
+    , hasCheckBoxSelection
+    , hasIndexColumn
+    , instance
+    , isLoadOnInit
+    , onDelete
+    , onEdit
+    , onPreview
+    , sqlId
+    , sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     let lastNoOfRows = selectedLastNoOfRows
@@ -25,12 +40,14 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
     }
 
     const args: GraphQLQueryArgsType = {
+        buCode: buCode,
+        dbParams: dbParams,
         sqlId: sqlId,
         sqlArgs: sqlArgs,
-
     }
 
     const { loadData, loading, } = useQueryHelper({
+        dbName: dbName,
         getQueryArgs: () => args,
         instance: instance,
         isExecQueryOnLoad: isLoadOnInit
@@ -97,7 +114,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
                 field=''
                 headerText='P'
                 template={previewTemplate}
-                width={12}
+                width='14px'
             />)
         }
 
@@ -107,7 +124,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
                 field=''
                 headerText='E'
                 template={editTemplate}
-                width={12}
+                width='14px'
                 textAlign="Center"
             />)
         }
@@ -117,7 +134,7 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
                 field=''
                 headerText='#'
                 template={indexColumnTemplate}
-                width={70}
+                width='20px'
             />)
         }
         if (hasCheckBoxSelection) {
@@ -129,35 +146,37 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
     function deleteTemplate(props: any) {
         return (
             <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} 
-            className="w-4 h-4 rounded-md bg-slate-100 hover:bg-slate-300" onClick={() => {
+            className="w-5 h-5 bg-slate-50 hover:bg-slate-300" onClick={() => {
                 if (onDelete) {
                     onDelete(props.id)
                 }
             }}>
-                <IconDelete className="w-3 h-3 m-auto mt-1 text-red-600" />
+                <IconDelete className="w-5 h-5 text-red-500" />
             </Button>)
     }
 
     function previewTemplate(props: any) {
         return (
-            <Button tooltip="Preview" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+            <Button tooltip="Preview" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} 
+            className="w-6 h-6 bg-slate-50 hover:bg-slate-200" onClick={() => {
                 if (onPreview) {
                     onPreview(props)
                 }
             }}>
-                <IconPreview className="w-5 h-5 m-auto mt-1 text-blue-600" />
+                <IconPreview className="w-5 h-5 text-blue-600" />
             </Button>)
     }
 
     function editTemplate(props: any) {
         return (
             // WidgetTooltip not working here
-            <Button tooltip="Edit" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200" onClick={() => {
+            <Button tooltip="Edit" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} 
+            className="w-6 h-6 bg-slate-50 hover:bg-slate-200" onClick={() => {
                 if (onEdit) {
                     onEdit(props)
                 }
             }}>
-                <IconEdit className="w-5 h-5 m-auto mt-1 text-green-600" />
+                <IconEdit1 className="w-5 h-5 text-green-600" />
             </Button>
         )
     }

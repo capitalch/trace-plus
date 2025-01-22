@@ -11,8 +11,11 @@ import { isSideBarOpenSelectorFn } from "../../../features/layouts/layouts-slice
 
 export function CompSyncFusionGrid({
     aggregates,
+    buCode,
     className = '',
     columns,
+    dbName,
+    dbParams,
     dataSource,
     editSettings,
     gridDragAndDropSettings,
@@ -33,7 +36,23 @@ export function CompSyncFusionGrid({
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncFusionGrid({ aggregates, columns, instance, hasCheckBoxSelection, hasIndexColumn, isLoadOnInit, onDelete, onEdit, onPreview, sqlId, sqlArgs, })
+    const { getAggrColDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncFusionGrid(
+        {
+            aggregates
+            , buCode
+            , columns
+            , dbName
+            , dbParams
+            , instance
+            , hasCheckBoxSelection
+            , hasIndexColumn
+            , isLoadOnInit
+            , onDelete
+            , onEdit
+            , onPreview
+            , sqlId
+            , sqlArgs,
+        })
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
     const maxWidth = isSideBarOpenSelector ? 'calc(100vw - 240px - 12px)' : 'calc(100vw - 62px)'
     const gridRef: any = useRef({})

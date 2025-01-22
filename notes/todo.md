@@ -32,13 +32,17 @@
 	- rename generic-switch to comp-generic-switch in Master accounts
 
 	- Branches
-		- init
-		- form new / edit
-			UI
-			Submit
+															- init
+		- sliding pane
+			- Form for edit new branch
+				- UI
+				- validation
+				- submit
 		- Grid
-			- accommodate for generic query for accounts database
-		- populate data
+			- Aggregate
+															- accommodate for generic query for accounts database
+															- Populate data
+															- Delete
 	- Fin years
 		- init
 		- form new / edit
