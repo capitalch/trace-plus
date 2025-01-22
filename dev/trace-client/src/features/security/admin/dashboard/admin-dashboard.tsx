@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { WidgetButtonRefresh } from "../../../../controls/widgets/widget-button-refresh";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
@@ -8,11 +8,6 @@ import { Utils } from "../../../../utils/utils";
 export function AdminDashBoard() {
     const { loadData, loading, adminDashBoard }: { loadData: any, loading: boolean, adminDashBoard: AdminDashBoardType } = useAdminDashBoard()
 
-    useEffect(() => {
-        return (() => {
-            console.log('Closing up')
-        })
-    }, [])
     return (
         <CompContentContainer title='Admin dashboard' CustomControl={AdminDashBoardCustomControl}>
             {loading ? <WidgetLoadingIndicator /> : getContent()}
@@ -45,7 +40,6 @@ export function AdminDashBoard() {
         return (
             <div className="flex items-center">                
                 <label className="text-primary-300">{Utils.getUserDetails()?.clientName}</label>
-                
             </div>
         )
     }

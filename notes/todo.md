@@ -30,12 +30,29 @@
 	- In ledger subledger do a direct search on party name inside subledger
 	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
 	- rename generic-switch to comp-generic-switch in Master accounts
-- General settings
+
+	- Branches
+		- init
+		- form new / edit
+			UI
+			Submit
+		- Grid
+			- accommodate for generic query for accounts database
+		- populate data
+	- Fin years
+		- init
+		- form new / edit
+			UI
+			Submit
+		- Grid
+		- Populate data
+
+												- General settings
 															- Init
 															- form ui
-	- populate data
-	- validation
-	- submit
+															- populate data
+															- validation
+															- submit
 												- Company-info
 															- Init
 															- Form UI

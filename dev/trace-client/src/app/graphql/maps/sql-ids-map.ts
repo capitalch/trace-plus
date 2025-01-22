@@ -39,6 +39,7 @@ export const SqlIdsMap = {
   getAccountLedger: "get_account_ledger",
   getAccountParentOptions: "get_account_parent_options",
   getAllBanks: "get_all_banks",
+  getAllBranches: "get_all_branches",
   getBankOpBalance: "get_bank_op_balance",
   getBankRecon: "get_bank_recon",
   getExtBusinessContactsAccM: "get_extBusinessContactsAccM",

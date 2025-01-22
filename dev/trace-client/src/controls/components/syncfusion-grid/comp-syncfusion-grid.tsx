@@ -148,9 +148,12 @@ type GridDragAndDropSettingsType = {
 
 export type CompSyncFusionGridType = {
     aggregates?: SyncFusionGridAggregateType[]
+    buCode?: string
     className?: string
     columns: SyncFusionGridColumnType[]
     dataSource?: any
+    dbName?: string
+    dbParams?: { [key: string]: string | undefined }
     editSettings?: {
         allowEditing: boolean
         mode: 'Batch' | 'Dialog' | 'Normal'

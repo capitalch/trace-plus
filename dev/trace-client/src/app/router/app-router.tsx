@@ -25,6 +25,8 @@ import { BankRecon } from "../../features/accounts/options/bank-recon/bank-recon
 import { AccountsMaster } from "../../features/accounts/masters/accounts/accounts-master";
 import { CompanyInfo } from "../../features/accounts/masters/company-info/company-info";
 import { GeneralSettings } from "../../features/accounts/masters/general-settings";
+import { BranchMaster } from "../../features/accounts/masters/branch-master/branch-master";
+import { FinYearMaster } from "../../features/accounts/masters/fin-year-master";
 
 export const appRouter = createBrowserRouter([
     {
@@ -57,7 +59,9 @@ export const appRouter = createBrowserRouter([
                 { path: 'bank-recon', element: <BankRecon /> },
                 { path: 'accounts-master', element: <AccountsMaster /> },
                 { path: 'company-info', element: <CompanyInfo /> },
-                { path: 'general-settings', element: <GeneralSettings /> }
+                { path: 'general-settings', element: <GeneralSettings /> },
+                { path: 'branch-master', element: <BranchMaster /> },
+                { path: 'fin-year-master', element: <FinYearMaster /> }
             ]
     },
     {

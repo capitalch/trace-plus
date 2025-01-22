@@ -22,6 +22,8 @@ export function CompanyInfo() {
     const [indiaStates, setIndiaStates] = useState({})
     const instance: string = DataInstancesMap.companyInfo
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
+
     const {
         checkAddress
         , checkEmail
@@ -44,23 +46,22 @@ export function CompanyInfo() {
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
-            address1: '',
-            address2: undefined,
-            email: '',
-            gstin: undefined,
-            landPhone: undefined,
-            mobileNumber: '',
-            pin: undefined,
-            shortName: '',
-            state: '',
-            unitName: '',
-            webSite: undefined
+            address1: unitInfo.address1,
+            address2: unitInfo.address2,
+            email: unitInfo.email,
+            gstin: unitInfo.gstin,
+            landPhone: unitInfo.landPhone,
+            mobileNumber: unitInfo.mobileNumber,
+            pin: unitInfo.pin,
+            shortName: unitInfo.shortName,
+            state: unitInfo.state,
+            unitName: unitInfo.unitName,
+            webSite: unitInfo.webSite
         },
     });
 
     useEffect(() => {
         loadIndiaStates()
-        populateData()
     }, [])
 
     return (
@@ -68,11 +69,13 @@ export function CompanyInfo() {
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 w-auto mt-2 mr-6 mb-2">
+
+                {/* Unit name */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Unit Name <WidgetAstrix /></span>
                     <input
                         type="text"
-                        placeholder="e.g. Main Office"
+                        placeholder="e.g. ABC Pvt Ltd."
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
                         {...register('unitName', {
                             required: Messages.errRequired,
@@ -82,11 +85,12 @@ export function CompanyInfo() {
                     {errors.unitName && <WidgetFormErrorMessage errorMessage={errors.unitName.message} />}
                 </label>
 
+                {/* Short name */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Short Name <WidgetAstrix /></span>
                     <input
                         type="text"
-                        placeholder="e.g. MO"
+                        placeholder="e.g. ABCPvtLtd"
                         className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
                         {...register('shortName', {
                             required: Messages.errRequired,
@@ -96,6 +100,7 @@ export function CompanyInfo() {
                     {errors.shortName && <WidgetFormErrorMessage errorMessage={errors.shortName.message} />}
                 </label>
 
+                {/* Address 1 */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Address 1 <WidgetAstrix /></span>
                     <input
@@ -110,6 +115,7 @@ export function CompanyInfo() {
                     {errors.address1 && <WidgetFormErrorMessage errorMessage={errors.address1.message} />}
                 </label>
 
+                {/* Address 2 */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Address 2</span>
                     <input
@@ -123,6 +129,7 @@ export function CompanyInfo() {
                     {errors.address2 && <WidgetFormErrorMessage errorMessage={errors.address2.message} />}
                 </label>
 
+                {/* Pin */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">PIN <WidgetAstrix /></span>
                     <input
@@ -138,11 +145,11 @@ export function CompanyInfo() {
                     {errors.pin && <WidgetFormErrorMessage errorMessage={errors.pin.message} />}
                 </label>
 
+                {/* State */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">State</span>
                     <CompReactSelect
                         className="mt-1.5"
-                        // menuPlacement='top'
                         staticOptions={indiaStates}
                         optionLabelName="stateName"
                         optionValueName="stateValue"
@@ -153,6 +160,7 @@ export function CompanyInfo() {
                     />
                 </label>
 
+                {/* Email */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Email <WidgetAstrix /></span>
                     <input
@@ -167,6 +175,7 @@ export function CompanyInfo() {
                     {errors.email && <WidgetFormErrorMessage errorMessage={errors.email.message} />}
                 </label>
 
+                {/* gstin */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">GSTIN</span>
                     <input
@@ -180,6 +189,7 @@ export function CompanyInfo() {
                     {errors.gstin && <WidgetFormErrorMessage errorMessage={errors.gstin.message} />}
                 </label>
 
+                {/* Land phones */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Land Phones</span>
                     <input
@@ -193,6 +203,7 @@ export function CompanyInfo() {
                     {errors.landPhone && <WidgetFormErrorMessage errorMessage={errors.landPhone.message} />}
                 </label>
 
+                {/* Mobile numbers */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Mobile Numbers <WidgetAstrix /></span>
                     <input
@@ -207,6 +218,7 @@ export function CompanyInfo() {
                     {errors.mobileNumber && <WidgetFormErrorMessage errorMessage={errors.mobileNumber.message} />}
                 </label>
 
+                {/* web site  */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">Website</span>
                     <input
@@ -218,6 +230,7 @@ export function CompanyInfo() {
                     {errors.webSite && <WidgetFormErrorMessage errorMessage={errors.webSite.message} />}
                 </label>
 
+                {/* Submit */}
                 <div className="mt-7 flex justify-center">
                     <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
                 </div>
@@ -235,21 +248,6 @@ export function CompanyInfo() {
                 .map(([stateValue, stateName]) => ({ stateValue, stateName }))
         indiaStates.unshift({ stateValue: '', stateName: '--- select ---' })
         setIndiaStates(indiaStates)
-    }
-
-    function populateData() {
-        const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
-        setValue('address1', unitInfo.address1 || '')
-        setValue('address2', unitInfo.address2)
-        setValue('email', unitInfo.email || '')
-        setValue('gstin', unitInfo.gstin)
-        setValue('landPhone', unitInfo.landPhone)
-        setValue('mobileNumber', unitInfo.mobileNumber || '')
-        setValue('pin', unitInfo.pin || '')
-        setValue('shortName', unitInfo.shortName || '')
-        setValue('state', unitInfo.state)
-        setValue('unitName', unitInfo.unitName || '')
-        setValue('webSite', unitInfo.webSite)
     }
 
     async function onSubmit(data: UnitInfoType) {
@@ -274,3 +272,18 @@ export function CompanyInfo() {
         }
     }
 }
+
+// function populateData() {
+//     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
+//     setValue('address1', unitInfo.address1 || '')
+//     setValue('address2', unitInfo.address2)
+//     setValue('email', unitInfo.email || '')
+//     setValue('gstin', unitInfo.gstin)
+//     setValue('landPhone', unitInfo.landPhone)
+//     setValue('mobileNumber', unitInfo.mobileNumber || '')
+//     setValue('pin', unitInfo.pin || '')
+//     setValue('shortName', unitInfo.shortName || '')
+//     setValue('state', unitInfo.state)
+//     setValue('unitName', unitInfo.unitName || '')
+//     setValue('webSite', unitInfo.webSite)
+// }

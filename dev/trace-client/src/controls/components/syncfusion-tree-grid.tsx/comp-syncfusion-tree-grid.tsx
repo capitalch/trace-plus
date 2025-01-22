@@ -184,7 +184,7 @@ export type CompSyncfusionTreeGridType = {
     dataSource?: any
     dataBound?: (args: any) => void
     dbName?: string
-    dbParams?: { [key: string]: string | undefined },
+    dbParams?: { [key: string]: string | undefined }
     graphQlQueryFromMap?: (
         dbName: string,
         val: GraphQLQueryArgsType

@@ -26,7 +26,8 @@ export function useCompSyncFusionGrid({ aggregates, columns, hasCheckBoxSelectio
 
     const args: GraphQLQueryArgsType = {
         sqlId: sqlId,
-        sqlArgs: sqlArgs
+        sqlArgs: sqlArgs,
+
     }
 
     const { loadData, loading, } = useQueryHelper({

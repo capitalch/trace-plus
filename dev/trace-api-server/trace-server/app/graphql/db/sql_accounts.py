@@ -213,6 +213,12 @@ class SqlAccounts:
         order by "accName"
     """
 
+    get_all_branches = """
+    select "id", "branchCode", "branchName", "remarks"
+        from "BranchM"
+            order by "id"
+    """
+
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 

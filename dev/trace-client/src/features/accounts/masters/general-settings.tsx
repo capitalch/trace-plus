@@ -13,15 +13,15 @@ import _ from "lodash";
 import { GeneralSettingsType, Utils } from "../../../utils/utils";
 import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
 import { changeAccSettings } from "../accounts-slice";
-import { useEffect } from "react";
 
 export function GeneralSettings() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalSettings
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
+
     const {
         register,
-        // getValues,
         handleSubmit,
         setValue,
         formState: { errors, isDirty, isSubmitting },
@@ -29,15 +29,12 @@ export function GeneralSettings() {
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
-            dateFormat: '',
-            autoLogoutTimeInMins: null,
-            auditLockDate: null
+            dateFormat: generalSettings.dateFormat,
+            autoLogoutTimeInMins: generalSettings.autoLogoutTimeInMins,
+            auditLockDate: generalSettings.auditLockDate
         },
     });
 
-    useEffect(() => {
-        populateData()
-    }, [])
     return (<CompAccountsContainer className="h-[calc(100vh-80px)] overflow-y-scroll">
         <form onSubmit={handleSubmit(onSubmit)}
             className="grid grid-cols-1 gap-y-4 w-96 mt-2 mb-2">
@@ -105,18 +102,10 @@ export function GeneralSettings() {
                     jData: JSON.stringify(data)
                 }
             })
-
             dispatch(changeAccSettings())
         } catch (e: any) {
             console.log(e)
         }
-    }
-
-    function populateData() {
-        const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
-        setValue('dateFormat', generalSettings.dateFormat)
-        setValue('autoLogoutTimeInMins', generalSettings.autoLogoutTimeInMins)
-        setValue('auditLockDate', generalSettings.auditLockDate)
     }
 }
 
@@ -132,3 +121,17 @@ const dateFormatOptions: { dateFormatValue: string, dateFormatName: string }[] =
     { dateFormatValue: 'YYYY-MM-DD', dateFormatName: 'YYYY-MM-DD' },
 ]
 
+// function populateData() {
+//     const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
+//     setValue('dateFormat', generalSettings.dateFormat)
+//     setValue('autoLogoutTimeInMins', generalSettings.autoLogoutTimeInMins)
+//     setValue('auditLockDate', generalSettings.auditLockDate)
+// }
+
+// function setDefaultValues(){
+
+// }
+
+// useEffect(() => {
+//     // populateData()
+// }, [])

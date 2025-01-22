@@ -111,12 +111,12 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "35",
           label: "Branches",
-          path: "/blogs",
+          path: "/branch-master",
         },
         {
           id: "36",
           label: "Financial years",
-          path: "/blogs",
+          path: "/fin-year-master",
         },
       ],
     },

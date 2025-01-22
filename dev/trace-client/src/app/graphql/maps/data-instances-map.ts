@@ -13,6 +13,7 @@ export const DataInstancesMap = {
   balanceSheet: "balance-sheet",
   bankRecon: "bank-recon",
   bankReconOpBalance: "bank-recon-op-balance",
+  branchMaster:"branch-master",
   companyInfo: "company-info",
   contactsAndAddresses: "contacts-and-addresses",
   expenses: "expenses",
