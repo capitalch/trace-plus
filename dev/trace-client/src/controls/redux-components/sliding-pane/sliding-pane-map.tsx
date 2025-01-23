@@ -7,10 +7,10 @@ export const SlidingPaneMap: SlidingPaneMapType = {
     branchMaster: {
         content: EditNewBranch,
         props: {
-            id: null,
-            branchCode: null,
-            branchName: null,
-            remarks: null
+            id: undefined,
+            branchCode: '',
+            branchName: '',
+            remarks: undefined
         }
     },
     contactAndAddresses: {
@@ -35,7 +35,7 @@ export type SlidingPaneMapType = {
             isAddressExists: boolean
         }
     },
-    branchMaster :{
+    branchMaster: {
         content: FC<any>;
         props: EditNewBranchType;
     }

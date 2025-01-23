@@ -14,6 +14,8 @@
 - Bug fixes etc.
 
 ## History
+# 22-01-2025
+	- Completed General settings
 # 20-01-2025 - 21-01-2025
 	- Completed company-info
 # 01-01-2025 - 19-01-2025

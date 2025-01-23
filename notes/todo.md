@@ -31,15 +31,16 @@
 	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
 	- rename generic-switch to comp-generic-switch in Master accounts
 
-	- Branches
+												- Branches
 															- init
-		- sliding pane
-			- Form for edit new branch
-				- UI
-				- validation
-				- submit
-		- Grid
-			- Aggregate
+													- sliding pane
+														- Form for edit new branch
+															- UI
+															- validation
+															- submit
+														- Grid
+															- Add button
+															- Aggregate
 															- accommodate for generic query for accounts database
 															- Populate data
 															- Delete

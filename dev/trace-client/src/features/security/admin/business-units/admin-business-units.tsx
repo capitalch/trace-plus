@@ -35,7 +35,6 @@ export function AdminBusinessUnits() {
                 hasIndexColumn={true}
                 height="calc(100vh - 260px)"
                 instance={instance}
-                // rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allBusinessUnits}
                 onDelete={handleOnDelete}

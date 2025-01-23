@@ -16,6 +16,7 @@ export const DataInstancesMap = {
   branchMaster:"branch-master",
   companyInfo: "company-info",
   contactsAndAddresses: "contacts-and-addresses",
+  editNewBranch:"edit-new-branch",
   expenses: "expenses",
   generalLedger: "general-ledger",
   generalSettings:"general-settings",

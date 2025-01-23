@@ -11,7 +11,7 @@ import { IconPreview } from "../../icons/icon-preview";
 import { Button } from "primereact/button";
 import { IconEdit1 } from "../../icons/icon-edit1";
 
-export function useCompSyncFusionGrid({ 
+export function useCompSyncFusionGrid({
     aggregates
     , buCode
     , columns
@@ -124,7 +124,7 @@ export function useCompSyncFusionGrid({
                 field=''
                 headerText='E'
                 template={editTemplate}
-                width='14px'
+                width='16px'
                 textAlign="Center"
             />)
         }
@@ -145,38 +145,39 @@ export function useCompSyncFusionGrid({
 
     function deleteTemplate(props: any) {
         return (
-            <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} 
-            className="w-5 h-5 bg-slate-50 hover:bg-slate-300" onClick={() => {
-                if (onDelete) {
-                    onDelete(props.id)
-                }
-            }}>
-                <IconDelete className="w-5 h-5 text-red-500" />
+            <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }}
+                className="w-7 h-7 bg-slate-50 hover:bg-slate-300" onClick={() => {
+                    if (onDelete) {
+                        onDelete(props.id)
+                    }
+                }}>
+                <IconDelete className="w-5 h-5 text-red-500 ml-1" />
             </Button>)
     }
 
     function previewTemplate(props: any) {
         return (
-            <Button tooltip="Preview" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} 
-            className="w-6 h-6 bg-slate-50 hover:bg-slate-200" onClick={() => {
-                if (onPreview) {
-                    onPreview(props)
-                }
-            }}>
-                <IconPreview className="w-5 h-5 text-blue-600" />
+            <Button tooltip="Preview" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }}
+                className="w-7 h-7 bg-slate-50 hover:bg-slate-200" onClick={() => {
+                    if (onPreview) {
+                        onPreview(props)
+                    }
+                }}>
+                <IconPreview className="w-5 h-5 text-blue-600 ml-1" />
             </Button>)
     }
 
     function editTemplate(props: any) {
         return (
             // WidgetTooltip not working here
-            <Button tooltip="Edit" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }} 
-            className="w-6 h-6 bg-slate-50 hover:bg-slate-200" onClick={() => {
-                if (onEdit) {
-                    onEdit(props)
-                }
-            }}>
-                <IconEdit1 className="w-5 h-5 text-green-600" />
+            <Button tooltip="Edit" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }}
+                // <button
+                className="w-7 h-7 bg-slate-50 hover:bg-slate-200 " onClick={() => {
+                    if (onEdit) {
+                        onEdit(props)
+                    }
+                }}>
+                <IconEdit1 className="w-5 h-5 text-green-600 ml-1" />
             </Button>
         )
     }

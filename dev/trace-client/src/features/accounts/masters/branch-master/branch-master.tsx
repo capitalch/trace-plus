@@ -1,11 +1,9 @@
-import { useContext } from "react";
-import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { useDispatch } from "react-redux";
 import { AppDispatchType } from "../../../../app/store/store";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
-import { CompSyncFusionGrid, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
@@ -13,16 +11,17 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 import { EditNewBranchType } from "./edit-new-branch";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
+import { NewBranchButton } from "./new-branch-button";
+import { changeAccSettings } from "../../accounts-slice";
 
 export function BranchMaster() {
-    const context: GlobalContextType = useContext(GlobalContext);
     const instance = DataInstancesMap.branchMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
 
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
-            // CustomControl={() => <BankReconCustomControls instance={instance} meta={meta} />}
+            CustomControl={() => <NewBranchButton />}
             minWidth="1000px"
             title='Branches'
             isPdfExport={true}
@@ -33,14 +32,14 @@ export function BranchMaster() {
         />
 
         <CompSyncFusionGrid
-            // aggregates={getAggregates()}
+            aggregates={getAggregates()}
             buCode={buCode}
             className="mr-6 mt-4"
             columns={getColumns()}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             hasIndexColumn={true}
-            height="calc(100vh - 220px)"
+            height="calc(100vh - 250px)"
             instance={instance}
             isLoadOnInit={true}
             minWidth="1400px"
@@ -49,6 +48,22 @@ export function BranchMaster() {
             sqlId={SqlIdsMap.getAllBranches}
         />
     </CompAccountsContainer>)
+
+    function getAggregates(): SyncFusionGridAggregateType[] {
+        return ([
+            {
+                columnName: 'branchName',
+                type: 'Count',
+                field: 'branchName',
+                format: 'N0',
+                footerTemplate: branchNameAggrTemplate
+            }
+        ])
+    }
+
+    function branchNameAggrTemplate(props: any) {
+        return (<span className="text-xs">Count: {props.Count}</span>)
+    }
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
@@ -83,10 +98,7 @@ export function BranchMaster() {
                     deletedIds: [id],
                 })
                 Utils.showSaveMessage()
-                const loadData = context.CompSyncFusionGrid[instance].loadData
-                if (loadData) {
-                    loadData()
-                }
+                dispatch(changeAccSettings())
             } catch (e: any) {
                 console.log(e)
             }
@@ -98,7 +110,7 @@ export function BranchMaster() {
         props.id = args.id
         props.branchCode = args.branchCode
         props.branchName = args.branchName
-        props.remarks = args.branchName
+        props.remarks = args.remarks
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.branchMaster,
             title: 'Edit branch',

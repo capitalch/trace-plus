@@ -102,6 +102,7 @@ export function GeneralSettings() {
                     jData: JSON.stringify(data)
                 }
             })
+            Utils.showSaveMessage()
             dispatch(changeAccSettings())
         } catch (e: any) {
             console.log(e)
@@ -109,29 +110,8 @@ export function GeneralSettings() {
     }
 }
 
-// type GeneralSettingsType = {
-//     dateFormat: string
-//     autoLogOffTimeInMins: number | null
-//     auditLockDate: string | null
-// }
-
 const dateFormatOptions: { dateFormatValue: string, dateFormatName: string }[] = [
     { dateFormatValue: 'DD/MM/YYYY', dateFormatName: 'DD/MM/YYYY' },
     { dateFormatValue: 'MM/DD/YYYY', dateFormatName: 'MM/DD/YYYY' },
     { dateFormatValue: 'YYYY-MM-DD', dateFormatName: 'YYYY-MM-DD' },
 ]
-
-// function populateData() {
-//     const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
-//     setValue('dateFormat', generalSettings.dateFormat)
-//     setValue('autoLogoutTimeInMins', generalSettings.autoLogoutTimeInMins)
-//     setValue('auditLockDate', generalSettings.auditLockDate)
-// }
-
-// function setDefaultValues(){
-
-// }
-
-// useEffect(() => {
-//     // populateData()
-// }, [])

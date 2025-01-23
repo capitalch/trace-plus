@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { Utils } from "../../../../utils/utils"
 import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit"
-// import { GlobalContext } from "../../../../App";
 import clsx from "clsx";
 
 export function AdminNewBusinessUnitButton({ className, dataInstance, isTreeGrid = false }: { className?: string, dataInstance: string, isTreeGrid?: boolean }) {
@@ -12,13 +11,11 @@ export function AdminNewBusinessUnitButton({ className, dataInstance, isTreeGrid
         onClick={handleNewBu}>New</button>)
 
     function handleNewBu() {
-        const loadData: () => void = () => isTreeGrid ? context.CompSyncFusionTreeGrid[dataInstance].loadData(): context.CompSyncFusionGrid[dataInstance].loadData()
+        const loadData: () => void = () => isTreeGrid ? context.CompSyncFusionTreeGrid[dataInstance].loadData() : context.CompSyncFusionGrid[dataInstance].loadData()
         Utils.showHideModalDialogA({
             title: "New Business Unit",
             isOpen: true,
             element: <AdminNewEditBusinessUnit loadData={loadData} />,
         })
     }
-
-
 }
