@@ -26,7 +26,7 @@ import { AccountsMaster } from "../../features/accounts/masters/accounts/account
 import { CompanyInfo } from "../../features/accounts/masters/company-info/company-info";
 import { GeneralSettings } from "../../features/accounts/masters/general-settings";
 import { BranchMaster } from "../../features/accounts/masters/branch-master/branch-master";
-import { FinYearMaster } from "../../features/accounts/masters/fin-year-master/fin-year-master";
+import { FinYearsMaster } from "../../features/accounts/masters/fin-year-master/fin-years-master";
 
 export const appRouter = createBrowserRouter([
     {
@@ -61,7 +61,7 @@ export const appRouter = createBrowserRouter([
                 { path: 'company-info', element: <CompanyInfo /> },
                 { path: 'general-settings', element: <GeneralSettings /> },
                 { path: 'branch-master', element: <BranchMaster /> },
-                { path: 'fin-year-master', element: <FinYearMaster /> }
+                { path: 'fin-year-master', element: <FinYearsMaster /> }
             ]
     },
     {

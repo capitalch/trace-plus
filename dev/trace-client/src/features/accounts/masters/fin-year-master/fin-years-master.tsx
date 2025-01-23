@@ -6,7 +6,7 @@ import { CompAccountsContainer } from "../../../../controls/components/comp-acco
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 
-export function FinYearMaster() {
+export function FinYearsMaster() {
     const instance = DataInstancesMap.finYearsMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
