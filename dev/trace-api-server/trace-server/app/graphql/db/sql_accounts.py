@@ -404,6 +404,11 @@ class SqlAccounts:
 		    where "accId" = %(accId)s
     """
 
+    get_fin_years = """
+        select "id", "startDate", "endDate"
+                from "FinYearM" order by "id" DESC
+    """
+
     get_ledger_leaf_accounts = """
         select id, "accName", "accLeaf"
             from "AccM"

@@ -45,12 +45,18 @@
 															- Populate data
 															- Delete
 	- Fin years
-		- init
-		- form new / edit
+		- Server
+			- Make provision for isIdInsert
+															- init
+		- form new / edit modal
 			UI
 			Submit
 		- Grid
-		- Populate data
+			- Edit
+															- Delete
+			- New button
+															- Populate data
+															- Aggregate
 
 												- General settings
 															- Init

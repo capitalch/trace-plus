@@ -25,9 +25,7 @@ export function EditNewBranch({ props }: any) {
 
     const {
         register,
-        // getValues,
         handleSubmit,
-        // setValue,
         formState: { errors, isDirty, isSubmitting },
     } = useForm<EditNewBranchType>({
         mode: "onTouched",

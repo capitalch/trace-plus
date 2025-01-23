@@ -23,6 +23,7 @@ export const DataInstancesMap = {
   generalSettings:"general-settings",
   incomes: "incomes",
   liabilities: "liabilities",
+  newEditFinYear:"new-edit-fin-year",
   profitLoss: "profit-loss",
   securedControls: "secured-controls",
   securedControlsLinkRoles: "secured-controls-link-roles",

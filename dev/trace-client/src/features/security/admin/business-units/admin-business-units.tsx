@@ -61,7 +61,6 @@ export function AdminBusinessUnits() {
                 field: 'buName',
                 headerText: 'BU Name',
                 type: 'string',
-                // width: 80,
             },
             {
                 field: 'isActive',

@@ -13,6 +13,7 @@ export type TraceDataObjectType = {
 
 export type XDataObjectType = {
   id?: number
+  isIdInsert?: boolean
   [key: string]: string | number | boolean | any
   details?: TraceDataObjectType[]
 }

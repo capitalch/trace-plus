@@ -189,7 +189,6 @@ type FormDataType = {
 };
 
 type AdminNewEditBusinessUnitType = {
-    // dataInstance: string;
     buCode?: string;
     buName?: string;
     isActive?: boolean;
