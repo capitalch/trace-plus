@@ -6,6 +6,7 @@ import { DocumentNode } from "graphql";
 
 export const GraphQLQueriesMap: GraphQLQueriesMapType = {
   accountsMaster: accountsMaster,
+  accountsOpeningBalance: accountsOpeningBalance,
   balanceSheetProfitLoss: balanceSheetProfitLoss,
   changePwd: changePwd,
   changeUid: changeUid,
@@ -13,7 +14,7 @@ export const GraphQLQueriesMap: GraphQLQueriesMapType = {
   decodeExtDbParams: decodeExtDbParams,
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
-  genericUpdateQuery:genericUpdateQuery,
+  genericUpdateQuery: genericUpdateQuery,
   importSecuredControls: importSecuredControls,
   trialBalance: trialBalance,
   updateClient: updateClient,
@@ -29,6 +30,18 @@ function accountsMaster(
   return gql`
           query AccountsMaster {
             accountsMaster(dbName:"${dbName}", value:"${value}")
+          }
+      `;
+}
+
+function accountsOpeningBalance(
+  dbName: string,
+  val: GraphQLQueryArgsType
+): DocumentNode {
+  const value = encodeObj(val);
+  return gql`
+          query AccountsOpeningBalance {
+            accountsOpeningBalance(dbName:"${dbName}", value:"${value}")
           }
       `;
 }
@@ -206,6 +219,10 @@ export type GraphQLUpdateQueryArgsType = {
 
 export type GraphQLQueriesMapType = {
   accountsMaster: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode;
+  accountsOpeningBalance: (
+    dbName: string,
+    val: GraphQLQueryArgsType
+  ) => DocumentNode;
   balanceSheetProfitLoss: (
     dbName: string,
     val: GraphQLQueryArgsType

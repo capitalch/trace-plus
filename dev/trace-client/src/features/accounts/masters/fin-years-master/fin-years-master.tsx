@@ -15,7 +15,7 @@ import { NewFinYearButton } from "./new-fin-year-button";
 export function FinYearsMaster() {
     const instance = DataInstancesMap.finYearsMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
-    const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const dateFormat: string = Utils.getCurrentDateFormat()
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
@@ -99,6 +99,10 @@ export function FinYearsMaster() {
                 })
                 Utils.showSaveMessage()
                 dispatch(changeAccSettings())
+                const loadData = context.CompSyncFusionGrid[instance].loadData
+                if (loadData) {
+                    await loadData()
+                }
             } catch (e: any) {
                 console.log(e)
             }

@@ -8,12 +8,12 @@ import { AppDispatchType, RootStateType } from "../../../../app/store/store"
 import { Messages } from "../../../../utils/messages"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
-import { useNavigate } from "react-router-dom"
-import { setSideBarSelectedChildId } from "../../layouts-slice"
+// import { useNavigate } from "react-router-dom"
+// import { setSideBarSelectedChildId } from "../../layouts-slice"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
     const currentBusinessUnitSelector: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const selectAccSettingsChanged = useSelector((state: RootStateType) => state.accounts.accSettingsChanged) // to reload this component when accSettings like unitInfo changes
@@ -70,8 +70,8 @@ export function BusinessUnitsOptions() {
                 dispatch(setCurrentDateFormat('DD/MM/YYYY'))
             }
             // clean up content area and reset side menu by deselecting any menu item
-            navigate('/')
-            dispatch(setSideBarSelectedChildId({ id: '0' }))
+            // navigate('/')
+            // dispatch(setSideBarSelectedChildId({ id: '0' }))
         } catch (e: any) {
             console.log(e?.message)
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errFailFetchingDataFromAccounts })

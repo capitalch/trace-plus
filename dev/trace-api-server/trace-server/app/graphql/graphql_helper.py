@@ -20,10 +20,115 @@ from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
 from app.graphql.handlers.import_secured_controls import import_secured_controls
-from .db.helpers.psycopg2_helper import exec_sql as exec_sql_psycopg2
-import asyncio
+
+# from .db.helpers.psycopg2_helper import exec_sql as exec_sql_psycopg2
+# import asyncio
 
 logger = logging.getLogger(__name__)
+
+
+async def accounts_master_helper(info, dbName, value):
+    data = []
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_accounts_master
+    sqlArgs = valueDict.get("sqlArgs", {})
+    try:
+        res = await exec_sql(
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+        )
+        flat_data = res[0].get("jsonResult")
+        if flat_data is not None:
+            accountsMaster = (
+                build_nested_hierarchy_with_children(flat_data.get("accountsMaster"))
+                if flat_data.get("accountsMaster") is not None
+                else None
+            )
+        data.append({"jsonResult": {"accountsMaster": accountsMaster}})
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
+
+async def accounts_opening_balance_helper(info, dbName, value):
+    data = []
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_accounts_opening_balance
+    sqlArgs = valueDict.get("sqlArgs", {})
+    try:
+        res = await exec_sql(
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+        )
+        opBalance = (
+            build_nested_hierarchy_with_children(res) if res is not None else None
+        )
+        data.append({"jsonResult": {"accountsOpeningBalance": opBalance}})
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
+
+
+async def balance_sheet_profit_loss_helper(info, dbName, value):
+    data = []
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_balanceSheet_profitLoss
+    sqlArgs = valueDict.get("sqlArgs", {})
+    try:
+        res = await exec_sql(
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+        )
+        flat_data = res[0].get("jsonResult")
+        if flat_data is not None:
+            profitOrLoss = flat_data.get("profitOrLoss")
+            liabilities = (
+                build_nested_hierarchy_with_children(flat_data.get("liabilities"))
+                if flat_data.get("liabilities") is not None
+                else None
+            )
+            assets = (
+                build_nested_hierarchy_with_children(flat_data.get("assets"))
+                if flat_data.get("assets") is not None
+                else None
+            )
+            expenses = (
+                build_nested_hierarchy_with_children(flat_data.get("expenses"))
+                if flat_data.get("expenses") is not None
+                else None
+            )
+            incomes = (
+                build_nested_hierarchy_with_children(flat_data.get("incomes"))
+                if flat_data.get("incomes") is not None
+                else None
+            )
+            data.append(
+                {
+                    "jsonResult": {
+                        "profitOrLoss": profitOrLoss,
+                        "liabilities": liabilities,
+                        "assets": assets,
+                        "expenses": expenses,
+                        "incomes": incomes,
+                    }
+                }
+            )
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
 
 
 async def change_pwd_helper(info, value):
@@ -201,22 +306,12 @@ async def generic_update_query_helper(info, dbName: str, value: str):
         sql = getattr(sqlQueryObject, sqlId, None)
         sqlArgs = valueDict.get("sqlArgs", {})
         data = await exec_sql(
-            dbName=dbName, 
-            db_params=dbParams, 
-            schema=schema, 
-            sql = sql,
+            dbName=dbName,
+            db_params=dbParams,
+            schema=schema,
+            sql=sql,
             sqlArgs=sqlArgs,
         )
-        # data = exec_sql_psycopg2(
-        #     dbName=dbName, 
-        #     db_params=dbParams, 
-        #     schema=schema, 
-        #     sql = sql,
-        #     sqlArgs=sqlArgs,
-        # )
-
-
-
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
@@ -250,86 +345,6 @@ async def trial_balance_helper(info, dbName, value):
         flat_data = res[0].get("jsonResult").get("trialBalance")
         if flat_data is not None:
             data.append({"jsonResult": build_nested_hierarchy_with_children(flat_data)})
-    except Exception as e:
-        # Need to return error as data. Raise error does not work with GraphQL
-        # At client check data for error attribut and take action accordingly
-        return create_graphql_exception(e)
-    return data
-
-
-async def balance_sheet_profit_loss_helper(info, dbName, value):
-    data = []
-    valueString = unquote(value)
-    valueDict = json.loads(valueString)
-    dbParams = valueDict.get("dbParams", None)
-    schema = valueDict.get("buCode", None)
-    sql = SqlAccounts.get_balanceSheet_profitLoss
-    sqlArgs = valueDict.get("sqlArgs", {})
-    try:
-        res = await exec_sql(
-            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
-        )
-        flat_data = res[0].get("jsonResult")
-        if flat_data is not None:
-            profitOrLoss = flat_data.get("profitOrLoss")
-            liabilities = (
-                build_nested_hierarchy_with_children(flat_data.get("liabilities"))
-                if flat_data.get("liabilities") is not None
-                else None
-            )
-            assets = (
-                build_nested_hierarchy_with_children(flat_data.get("assets"))
-                if flat_data.get("assets") is not None
-                else None
-            )
-            expenses = (
-                build_nested_hierarchy_with_children(flat_data.get("expenses"))
-                if flat_data.get("expenses") is not None
-                else None
-            )
-            incomes = (
-                build_nested_hierarchy_with_children(flat_data.get("incomes"))
-                if flat_data.get("incomes") is not None
-                else None
-            )
-            data.append(
-                {
-                    "jsonResult": {
-                        "profitOrLoss": profitOrLoss,
-                        "liabilities": liabilities,
-                        "assets": assets,
-                        "expenses": expenses,
-                        "incomes": incomes,
-                    }
-                }
-            )
-    except Exception as e:
-        # Need to return error as data. Raise error does not work with GraphQL
-        # At client check data for error attribut and take action accordingly
-        return create_graphql_exception(e)
-    return data
-
-
-async def accounts_master_helper(info, dbName, value):
-    data = []
-    valueString = unquote(value)
-    valueDict = json.loads(valueString)
-    dbParams = valueDict.get("dbParams", None)
-    schema = valueDict.get("buCode", None)
-    sql = SqlAccounts.get_accounts_master
-    sqlArgs = valueDict.get("sqlArgs", {})
-    try:
-        res = await exec_sql(
-            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
-        )
-        flat_data = res[0].get("jsonResult")
-        if flat_data is not None:
-            accountsMaster = (
-                build_nested_hierarchy_with_children(flat_data.get("accountsMaster"))
-                if flat_data.get("accountsMaster") is not None
-                else None
-            )
-        data.append({"jsonResult": {"accountsMaster": accountsMaster}})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly

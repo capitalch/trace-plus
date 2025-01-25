@@ -31,6 +31,27 @@
 	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
 	- rename generic-switch to comp-generic-switch in Master accounts
 
+- Opening balances
+															- init
+														- server
+															- sql
+															- helper function and GraphQl
+	- client
+		- Show hierchy balances
+		- editale op balance
+		- detect diff
+		- submit
+			- new
+				- insert sql
+			- update
+				- update sql
+	- grid
+															- hierarchy
+															- display
+		- aggregate
+		- edit
+		- submit
+
 												- Branches
 															- init
 													- sliding pane
@@ -44,17 +65,18 @@
 															- accommodate for generic query for accounts database
 															- Populate data
 															- Delete
-	- Fin years
-		- Server
-			- Make provision for isIdInsert
+														- Fin years
+															- See tha fin years grid is visible but still loading fin years in the system
+														- Server
+															- Make provision for isIdInsert
 															- init
-		- form new / edit modal
-			UI
-			Submit
-		- Grid
-			- Edit
+														- form new / edit modal
+															UI
+															Submit
+														- Grid
+															- Edit
 															- Delete
-			- New button
+															- New button
 															- Populate data
 															- Aggregate
 

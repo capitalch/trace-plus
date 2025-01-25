@@ -12,11 +12,13 @@ import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget
 import _ from "lodash"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice"
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 
-export function EditNewBranch({ props }: any) {
+export function NewEditBranch({ props }: any) {
     const { id, branchCode, branchName, remarks } = props
+    const instance: string = DataInstancesMap.branchMaster
     const dispatch: AppDispatchType = useDispatch()
-    const { buCode } = useUtilsInfo()
+    const { buCode, context } = useUtilsInfo()
 
     const {
         checkNoSpaceOrSpecialChar
@@ -109,6 +111,10 @@ export function EditNewBranch({ props }: any) {
             Utils.showSaveMessage()
             dispatch(changeAccSettings())
             dispatch(closeSlidingPane())
+            const loadData = context.CompSyncFusionGrid[instance].loadData
+            if (loadData) {
+                await loadData()
+            }
         } catch (e: any) {
             console.log(e)
         }

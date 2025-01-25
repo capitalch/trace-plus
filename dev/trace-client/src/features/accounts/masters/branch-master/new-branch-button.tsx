@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { EditNewBranchType } from "./edit-new-branch";
+import { EditNewBranchType } from "./new-edit-branch";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { AppDispatchType } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";

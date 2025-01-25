@@ -61,7 +61,7 @@ export function CompSyncfusionTreeGrid({
     }
     const isCollapsed = context.CompSyncFusionTreeGrid[instance]?.isCollapsed
     const rowDropOptions: RowDropSettingsModel = { targetID: gridDragAndDropSettings?.targetId }
-
+    // console.log(JSON.stringify(selectedData))
     return (
         //The div container is important. The minWidth works with style only
         <div className="mt-2" style={{ minWidth: `${minWidth}` }} id="grid2">

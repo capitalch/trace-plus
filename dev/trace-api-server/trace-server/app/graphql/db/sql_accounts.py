@@ -142,23 +142,17 @@ class SqlAccounts:
 
             -- Simplified CASE for isAddressExists
             (x."id" IS NOT NULL) AS "isAddressExists"
-
                 FROM 
                     "AccM" a
-
                 -- JOIN instead of subquery for parentAccLeaf
                 LEFT JOIN 
                     "AccM" p ON a."parentId" = p."id"
-
                 LEFT JOIN 
                     "children_cte" cte ON a."id" = cte."parent_id"
-
                 JOIN 
                     "AccClassM" c ON a."classId" = c."id"
-
                 LEFT JOIN 
                     "ExtBusinessContactsAccM" x ON a."id" = x."accId"
-
                 LEFT JOIN 
                     "ExtMiscAccM" e ON a."id" = e."accId"
                 --ORDER by a."accType", c."accClass", a."accName", a."accCode"
@@ -169,6 +163,31 @@ class SqlAccounts:
                 ) AS "jsonResult"
     """
 
+    get_accounts_opening_balance = """
+        with cte1 as 
+            (select a."id", "accCode", "accName", "parentId", "accType", "isPrimary", "accLeaf","classId"
+            , (select array_agg(id) from "AccM" m where a."id" = m."parentId" ) as "children"
+                from "AccM" a 
+                    where "accType" in ('A', 'L')
+                        order by "accType", "accName", a."id"),
+            -- "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+                "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+            opbal as (
+                select "id" as "opId", "accId", "amount", "dc", "branchId"
+                    from "AccOpBal"
+                        where "finYearId" = (table "finYearId")
+                            and "branchId" = (table "branchId"))
+            select a."id", b."opId", "accType", "accLeaf", "accName"
+                , "parentId"
+                , CASE WHEN dc='D' then "amount" else 0  END as "debit"
+                , CASE WHEN dc='C' then "amount" else 0 end as "credit"
+                , "children"
+                from cte1 a
+                    left outer join opbal b
+                        on a."id" = b."accId"                                                           
+                    order by "accType","accLeaf", "accName"
+    """
+    
     get_account_parent_options = """
         with "accType" as (values (%(accType)s::text))
         --WITH "accType" AS (VALUES ('L'))

@@ -1,11 +1,11 @@
 import { FC, } from "react";
 import { ContactAndAddresses, } from "../../../features/accounts/masters/accounts/contact-and-addresses";
-import { EditNewBranch, EditNewBranchType } from "../../../features/accounts/masters/branch-master/edit-new-branch";
+import { NewEditBranch, EditNewBranchType } from "../../../features/accounts/masters/branch-master/new-edit-branch";
 
 
 export const SlidingPaneMap: SlidingPaneMapType = {
     branchMaster: {
-        content: EditNewBranch,
+        content: NewEditBranch,
         props: {
             id: undefined,
             branchCode: '',

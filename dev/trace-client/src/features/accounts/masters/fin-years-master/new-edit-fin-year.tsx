@@ -11,12 +11,13 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
 import _ from "lodash"
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 
-export function NewEditFinYear({ id, startDate, endDate }: NewEditFinYearType) {
+export function NewEditFinYear({ id, startDate, endDate, isIdInsert }: NewEditFinYearType) {
 
     const dispatch: AppDispatchType = useDispatch()
-    // const instance: string = DataInstancesMap.newEditFinYear
-    const { buCode, } = useUtilsInfo()
+    const instance: string = DataInstancesMap.finYearsMaster
+    const { buCode, context } = useUtilsInfo()
 
     const {
         register,
@@ -28,7 +29,8 @@ export function NewEditFinYear({ id, startDate, endDate }: NewEditFinYearType) {
         defaultValues: {
             id: id,
             startDate: startDate,
-            endDate: endDate
+            endDate: endDate,
+            isIdInsert: isIdInsert
         },
     });
 
@@ -92,7 +94,8 @@ export function NewEditFinYear({ id, startDate, endDate }: NewEditFinYearType) {
                 xData: {
                     id: data.id,
                     startDate: data.startDate,
-                    endDate: data.endDate
+                    endDate: data.endDate,
+                    isIdInsert: isIdInsert
                 }
             })
             Utils.showSaveMessage()
@@ -100,6 +103,10 @@ export function NewEditFinYear({ id, startDate, endDate }: NewEditFinYearType) {
             Utils.showHideModalDialogA({
                 isOpen: false
             })
+            const loadData = context.CompSyncFusionGrid[instance].loadData
+            if (loadData) {
+                await loadData()
+            }
         } catch (e: any) {
             console.log(e)
         }
@@ -108,7 +115,8 @@ export function NewEditFinYear({ id, startDate, endDate }: NewEditFinYearType) {
 }
 
 export type NewEditFinYearType = {
-    id: number
+    id?: number
     startDate: string
     endDate: string
+    isIdInsert?: boolean
 }

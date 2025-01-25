@@ -8,7 +8,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { EditNewBranchType } from "./edit-new-branch";
+import { EditNewBranchType } from "./new-edit-branch";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewBranchButton } from "./new-branch-button";
@@ -17,7 +17,7 @@ import { changeAccSettings } from "../../accounts-slice";
 export function BranchMaster() {
     const instance = DataInstancesMap.branchMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
-    const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
 
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
@@ -99,6 +99,10 @@ export function BranchMaster() {
                 })
                 Utils.showSaveMessage()
                 dispatch(changeAccSettings())
+                const loadData = context.CompSyncFusionGrid[instance].loadData
+                if (loadData) {
+                    await loadData()
+                }
             } catch (e: any) {
                 console.log(e)
             }

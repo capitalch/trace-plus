@@ -161,13 +161,23 @@ async def process_data(xData, acur, tableName, fkeyName, fkeyValue):
             await process_details(item, acur, id)
     return id
 
+# id      isIdInsert      Result
+# None    None            insert
+# None    True            insert
+# 100     None            update
+# 100     True            insert
 
+# if (xData.get("id", None)) and (not xData.get("isIdInsert", None)):
+#     return "update"
+# else:
+#     return "insert"
 def get_sql(xData, tableName, fkeyName, fkeyValue):
     sql = None
     valuesTuple = None
-    if xData.get("id", None):  # update
+    if xData.get("id", None) and (not xData.get("isIdInsert", None)):  # update
         sql, valuesTuple = get_update_sql(xData, tableName)
     else:  # insert
+        xData.pop('isIdInsert', None)
         sql, valuesTuple = get_insert_sql(
             xData, tableName, fkeyName, fkeyValue)
     return (sql, valuesTuple)
