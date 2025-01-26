@@ -30,6 +30,7 @@
 	- In ledger subledger do a direct search on party name inside subledger
 	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
 	- rename generic-switch to comp-generic-switch in Master accounts
+	- XData showing typescript error in many places. Need to correct the types
 
 - Opening balances
 															- init
@@ -37,7 +38,8 @@
 															- sql
 															- helper function and GraphQl
 	- client
-		- Show hierchy balances
+															- Show hierchy balances
+															- make changes to tree grid control
 		- editale op balance
 		- detect diff
 		- submit

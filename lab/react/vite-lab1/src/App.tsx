@@ -103,8 +103,8 @@ function App() {
       {/* <SyncfusionGrid /> */}
       {/* <InjectSummary /> */}
       {/* <SlidingPaneViewer /> */}
-      {/* <EditGrid /> */}
-      <Spinners />
+      <EditGrid />
+      {/* <Spinners /> */}
     </GlobalContext.Provider>
   )
 }

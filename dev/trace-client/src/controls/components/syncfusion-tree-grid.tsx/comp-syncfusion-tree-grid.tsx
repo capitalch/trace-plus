@@ -2,7 +2,7 @@ import { FC, useContext, useEffect, useRef } from "react"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, Edit, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 
@@ -19,11 +19,14 @@ export function CompSyncfusionTreeGrid({
     dataSource,
     dbName,
     dbParams,
+    editSettings,
     graphQlQueryFromMap,
     gridDragAndDropSettings,
     height,
     instance,
     isLoadOnInit = true,
+    loadData,
+    onCellEdit,
     minWidth = '600px',
     pageSize = 50,
     rowHeight,
@@ -32,7 +35,7 @@ export function CompSyncfusionTreeGrid({
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
 
     useEffect(() => { // make them available globally
@@ -45,7 +48,7 @@ export function CompSyncfusionTreeGrid({
                 scrollPos: 0,
             }
         }
-        context.CompSyncFusionTreeGrid[instance].loadData = loadData
+        context.CompSyncFusionTreeGrid[instance].loadData = loadData || loadDataLocal
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
     }, [])
 
@@ -73,11 +76,13 @@ export function CompSyncfusionTreeGrid({
                 allowSelection={true}
                 allowSorting={allowSorting}
                 allowTextWrap={true}
+                cellEdit={onCellEdit}
                 childMapping={childMapping}
                 className={className}
                 collapsed={onRowCollapsed}
                 created={onCreated}
                 dataSource={dataSource || selectedData}
+                editSettings={editSettings}
                 enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
                 expanded={onRowEpanded}
                 gridLines="Both"
@@ -107,6 +112,7 @@ export function CompSyncfusionTreeGrid({
                 <Inject services={[
                     Aggregate
                     , ExcelExport
+                    , Edit
                     , Filter // In treeGrid control Filter module is used in place of Search module. It works the same way
                     , InfiniteScroll
                     , Page
@@ -185,6 +191,12 @@ export type CompSyncfusionTreeGridType = {
     dataBound?: (args: any) => void
     dbName?: string
     dbParams?: { [key: string]: string | undefined }
+    editSettings?: {
+        allowEditing: boolean
+        mode: 'Batch' | 'Dialog' | 'Normal' | 'Cell'
+        showConfirmDialog: boolean
+
+    }
     graphQlQueryFromMap?: (
         dbName: string,
         val: GraphQLQueryArgsType
@@ -193,8 +205,10 @@ export type CompSyncfusionTreeGridType = {
     height?: string
     instance: string
     isLoadOnInit?: boolean
+    loadData?: () => void
     minWidth?: string
     pageSize?: number
+    onCellEdit?: (args: any) => void
     onRowDrop?: (args: any) => void
     rowHeight?: number
     sqlArgs?: SqlArgsType
@@ -203,6 +217,17 @@ export type CompSyncfusionTreeGridType = {
 }
 
 export type SyncFusionTreeGridColumnType = {
+    allowEditing?: boolean
+    customAttributes?: {
+        [key: string]: string
+    }
+    edit?: {
+        [key: string]: {
+            [key: string]: string
+        }
+    }
+    editTemplate?: any
+    editType?: 'datepickeredit' | 'textedit'
     field: string
     format?: string
     headerTemplate?: any

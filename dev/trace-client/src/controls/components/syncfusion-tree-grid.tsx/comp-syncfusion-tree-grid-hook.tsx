@@ -62,7 +62,12 @@ export function useCompSyncfusionTreeGrid({
     function getColumnDirectives() {
         const colDirectives: any[] = columns.map((col: SyncFusionTreeGridColumnType, index: number) => {
             return (<ColumnDirective
+                allowEditing={Boolean(col?.allowEditing)}
                 clipMode="EllipsisWithTooltip"
+                customAttributes={col?.customAttributes}
+                edit={col?.edit}
+                editTemplate={col?.editTemplate}
+                editType={col?.editType}
                 field={col.field}
                 format={col.format}
                 headerTemplate={col.headerTemplate}

@@ -107,7 +107,7 @@ export function CompSyncFusionTreeGridToolbar({
                         await loadData()
                     }
                     const state: RootStateType = Utils.getReduxState()
-                    const searchString = state.queryHelper[instance].searchString
+                    const searchString = state.queryHelper?.[instance]?.searchString
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     if (searchString) {
                         gridRef.current.search(searchString)

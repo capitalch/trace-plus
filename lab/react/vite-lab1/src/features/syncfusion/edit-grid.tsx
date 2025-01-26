@@ -2,8 +2,8 @@ import { FocusEvent, useRef, useState } from "react";
 import { GridComponent, ColumnsDirective, ColumnDirective, Edit, Inject, Toolbar } from "@syncfusion/ej2-react-grids";
 // import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
 // import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
-import InputMask from "react-input-mask";
-import { NumericFormat } from 'react-number-format'
+// import InputMask from "react-input-mask";
+// import { NumericFormat } from 'react-number-format'
 
 export function EditGrid() {
     // const [, setRefresh] = useState({})
@@ -13,11 +13,6 @@ export function EditGrid() {
             { OrderID: 10249, CustomerName: "Jane Smith", OrderDate: new Date('2022-12-12'), Freight: 11.61 }
         ]
     })
-    // Sample data
-    // const [data, setData] = useState([
-    //     { OrderID: 10248, CustomerName: "John Doe", OrderDate: new Date('2024-02-01'), Freight: 32.38 },
-    //     { OrderID: 10249, CustomerName: "Jane Smith", OrderDate: new Date('2022-12-12'), Freight: 11.61 }
-    // ]);
 
     const gridRef: any = useRef(null);
     const datePickerParams = {
@@ -26,17 +21,31 @@ export function EditGrid() {
         },
     };
 
+    const editTemplate = (props: any) => {
+        return (
+            <input
+                type="text"
+                defaultValue={props.Freight}
+                onChange={(e) => {
+                    props.column.value = e.target.value
+                }}
+                className="e-input e-field bg-slate-300 text-red-500"
+                placeholder="Enter frieght"
+            />
+        );
+    };
+
     return (
         <div className="flex flex-col m-4">
             {/* react-input-mask */}
-            <InputMask mask="9999999999.99" className="w-28 h-8 text-right" alwaysShowMask={false} />
+            {/* <InputMask mask="9999999999.99" className="w-28 h-8 text-right" alwaysShowMask={false} /> */}
             {/* react-number-format */}
-            <NumericFormat className="text-right w-28 h-8" allowNegative={false}
+            {/* <NumericFormat className="text-right w-28 h-8" allowNegative={false}
                 decimalScale={2}
                 fixedDecimalScale={true} thousandsGroupStyle="thousand"
                 thousandSeparator=','
                 onFocus={handleOnFocus}
-            />
+            /> */}
             <GridComponent
                 actionBegin={handleActionBegin}
                 cellEdit={handleCellEdit}
@@ -64,7 +73,15 @@ export function EditGrid() {
                     />
                     <ColumnDirective field="OrderID" headerText="Order ID" isPrimaryKey={true} width="120" />
                     <ColumnDirective field="CustomerName" headerText="Customer Name" width="150" allowEditing={true} />
-                    <ColumnDirective field="Freight" headerText="Freight" textAlign="Right" width="120" />
+                    <ColumnDirective
+                        allowEditing={true}
+                        editType="textedit"
+                        // editTemplate={editTemplate}
+                        field="Freight"
+                        headerText="Freight"
+                        textAlign="Right"
+                        width="120"
+                    />
                 </ColumnsDirective>
                 <Inject services={[Edit]} />
             </GridComponent>
@@ -104,3 +121,9 @@ export function EditGrid() {
 //         />
 //     );
 // };
+
+// Sample data
+// const [data, setData] = useState([
+//     { OrderID: 10248, CustomerName: "John Doe", OrderDate: new Date('2024-02-01'), Freight: 32.38 },
+//     { OrderID: 10249, CustomerName: "Jane Smith", OrderDate: new Date('2022-12-12'), Freight: 11.61 }
+// ]);
