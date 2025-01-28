@@ -7,6 +7,7 @@ import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-
 import { DocumentNode } from "graphql"
 
 export function CompSyncfusionTreeGrid({
+    actionComplete,
     addUniqueKeyToJson = false,
     aggregates,
     allowSorting = false,
@@ -70,6 +71,7 @@ export function CompSyncfusionTreeGrid({
         //The div container is important. The minWidth works with style only
         <div className="mt-2" style={{ minWidth: `${minWidth}` }} id="grid2">
             <TreeGridComponent
+                actionComplete={actionComplete}
                 allowPdfExport={true}
                 allowExcelExport={true}
                 allowResizing={true}
@@ -181,6 +183,7 @@ type GridDragAndDropSettingsType = {
 }
 
 export type CompSyncfusionTreeGridType = {
+    actionComplete?: (args: any) => void
     aggregates?: SyncFusionTreeGridAggregateColumnType[]
     addUniqueKeyToJson?: boolean
     allowRowDragAndDrop?: boolean
@@ -201,6 +204,7 @@ export type CompSyncfusionTreeGridType = {
         mode: 'Dialog' | 'Row' | 'Cell'
         // showConfirmDialog: boolean
     }
+    // enableCollapseAll?: boolean
     graphQlQueryFromMap?: (
         dbName: string,
         val: GraphQLQueryArgsType

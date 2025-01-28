@@ -42,13 +42,12 @@ export function SyncfusionTreeGrid() {
         actionComplete={onActionComplete}
         allowSorting={true} // Enable sorting
         cellEdit={onCellEdit}
-        cellSave={onCellSave}
         childMapping="children" // Field that indicates child data
         // collapsed={onRowCollapsed}
         // dataBound={onDataBound}
         dataSource={meta.current.rows}
         editSettings={editSettings}
-        // enableCollapseAll={true}
+        enableCollapseAll={true}
         // expanded={onRowExpanded}
         gridLines="Both"
         // height='100%'
@@ -113,9 +112,6 @@ export function SyncfusionTreeGrid() {
       if (item.children && item.children.length > 0) {
         flattenData(item.children)
       }
-      // else {
-      //   item.isValueChanged = false
-      // }
     })
   }
 
@@ -133,7 +129,7 @@ export function SyncfusionTreeGrid() {
   }
 
   function loadData() {
-    meta.current.rows = _.cloneDeep(data1)
+    meta.current.rows = data1
     sumDebitCredit()
     flattenData(meta.current.rows)
   }
@@ -147,14 +143,14 @@ export function SyncfusionTreeGrid() {
     }
   }
 
-  function onCellSave(args: any) { // it works
-    if (['debit', 'credit'].includes(args.column.field)) {
-      if (args.previousValue !== args.value) {
-        args.cell.style.backgroundColor = 'lightgreen'; // Add custom class to change cell background color
+  // function onCellSave(args: any) { // it works
+    // if (['debit', 'credit'].includes(args.column.field)) {
+      // if (args.previousValue !== args.value) {
+        // args.cell.style.backgroundColor = 'lightgreen'; // Add custom class to change cell background color
         // args.rowData['isValueChanged'] = true
-      }
-    }
-  }
+      // }
+    // }
+  // }
 
   function onQueryCellInfo(args: any) {
     if (['debit', 'credit'].includes(args.column.field)) {
@@ -209,18 +205,11 @@ export function SyncfusionTreeGrid() {
 
     nodes.forEach((node: any) => calculateTotals(node));
     if (gridRef) {
-      // gridRef.current.dataSource =[]
       gridRef.current.dataSource = nodes // structuredClone(nodes)
-      // gridRef.current.trigger('dataBound')
       gridRef.current.endEdit()
       gridRef.current.refresh()
-      // setTimeout(() => , 100)
-      // gridRef.current.refresh()
       // gridRef.current.refreshColumns()
-      // setRefresh({})
     }
-    // setRefresh({})
-    // return nodes;
   }
 }
 

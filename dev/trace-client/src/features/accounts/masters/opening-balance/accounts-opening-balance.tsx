@@ -6,14 +6,15 @@ import { CompAccountsContainer } from "../../../../controls/components/comp-acco
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
-// import jsonData from '../../../../test-data/test-data1.json'
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 // import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { Utils } from "../../../../utils/utils"
 import _ from "lodash"
+import { Messages } from "../../../../utils/messages"
+// import Decimal from "decimal.js"
 
 export function AccountsOpeningBalance() {
-    const [, setRefresh] = useState({})
+    // const [, setRefresh] = useState({})
     // const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.accountsOpeningBalance
     const {
@@ -26,26 +27,17 @@ export function AccountsOpeningBalance() {
     } = useUtilsInfo()
 
     const meta: any = useRef<MetaType>({
-        rows: []
+        rows: [],
+        flatData: {}
     })
 
     useEffect(() => {
         loadData()
+        context.CompSyncFusionTreeGrid[instance].isCollapsed = false
     }, [])
 
-    // const customTemplate = (props:any) => {
-    //     return (
-    //         <input
-    //             type="text"
-    //             defaultValue={props.value}
-    //             // onChange={(e) => props.setValue(e.target.value)}
-    //             className="e-input"
-    //         />
-    //     );
-    // };
-
     return (<CompAccountsContainer>
-        <button onClick={sumDebitCredit} className="bg-slate-100 px-2 w-32">Test</button>
+        {/* <button onClick={sumDebitCredit} className="bg-slate-100 px-2 w-32">Test</button> */}
         <CompSyncFusionTreeGridToolbar className="mt-2"
             title='Accounts opening balances'
             isLastNoOfRows={false}
@@ -54,36 +46,62 @@ export function AccountsOpeningBalance() {
         />
 
         <CompSyncfusionTreeGrid
+            actionComplete={onActionComplete}
             aggregates={getAggregates()}
             buCode={buCode}
             cellEdit={onCellEdit}
-            cellSave={onCellSave}
+            // cellSave={onCellSave}
             childMapping="children"
             className="mr-6"
             columns={getColumns()}
-            // dataBound={onDataBound}
-            // dataPath="accountsOpeningBalance"
             dataSource={meta.current.rows}
+
             editSettings={{
                 allowEditing: true,
                 mode: 'Cell',
             }}
-            // dbName={dbName}
-            // dbParams={decodedDbParamsObject}
             height="calc(100vh - 240px)"
             instance={instance}
+
             isLoadOnInit={false}
             loadData={loadData}
-            // graphQlQueryFromMap={GraphQLQueriesMap.accountsOpeningBalance}
             minWidth='950px'
-            // sqlArgs={{
-            //     branchId: branchId || 0,
-            //     finYearId: finYearId || 1900,
-            // }}
             queryCellInfo={onQueryCellInfo}
             treeColumnIndex={0}
         />
     </CompAccountsContainer>)
+
+    function accGroupTemplate(props: AccountsOpeningBalanceType): string {
+        const logicObject: any = {
+            'L': 'Ledger',
+            'N': 'Group',
+            'S': 'Subledger',
+            'Y': 'Leaf',
+        }
+        return (logicObject[props.accLeaf])
+    }
+
+    function accTypeTemplate(props: AccountsOpeningBalanceType) {
+        const logicObject: any = {
+            A: 'Asset',
+            L: 'Liability',
+            E: 'Expence',
+            I: 'Income'
+        }
+        return (logicObject?.[props.accType] || '')
+    }
+
+    function calculateCredits() {
+        // const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current) => (sum.plus(current.credit || 0)), new Decimal(0))
+        // const r: number = ret.toNumber()
+        // return (r)
+    }
+
+    function calculateDebits() {
+        // const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current) => (sum.plus(current.debit || 0)), new Decimal(0))
+        // const r: number = ret.toNumber()
+        // return (r)
+    }
 
     function getAggregates(): SyncFusionTreeGridAggregateColumnType[] {
         return ([
@@ -92,7 +110,23 @@ export function AccountsOpeningBalance() {
                 field: 'accName',
                 type: 'Count',
                 footerTemplate: (props: any) => `Count: ${props['accName - count']}`,
-            }
+            },
+            // {
+            //     columnName: 'debit',
+            //     field: 'debit',
+            //     format: 'N2',
+            //     type: 'Custom',
+            //     customAggregate: calculateDebits,
+            //     // footerTemplate: (props: any) => <span>{`${decFormatter.format(props?.['debit - custom'] || 0)}`}</span>
+            // },
+            // {
+            //     columnName: 'credit',
+            //     field: 'credit',
+            //     format: 'N2',
+            //     type: 'Custom',
+            //     customAggregate: calculateCredits,
+            //     // footerTemplate: (props: any) => <span>{`${decFormatter.format(props?.['credit - custom'] || 0)}`}</span>
+            // },
         ])
     }
 
@@ -116,17 +150,15 @@ export function AccountsOpeningBalance() {
                         decimals: 2,
                         format: 'N2',
                         showSpinButton: false,
-                        step: 0.01,
                         validateDecimalOnType: true
                     }
                 },
-                editType: 'numericedit', // 'textedit',
+                editType: 'numericedit',
                 field: 'debit',
                 headerText: 'Debits',
                 format: 'N2',
                 type: 'number',
                 textAlign: 'Right',
-                // validationRules: { required: true, regex: /^[0-9]+$/ },
                 width: 80,
             },
             {
@@ -140,7 +172,6 @@ export function AccountsOpeningBalance() {
                         decimals: 2,
                         format: 'N2',
                         showSpinButton: false,
-                        step: 0.01,
                         validateDecimalOnType: true
                     }
                 },
@@ -150,7 +181,6 @@ export function AccountsOpeningBalance() {
                 format: 'N2',
                 type: 'number',
                 textAlign: 'Right',
-                // validationRules: { required: true, regex: /^[0-9]+$/ },
                 width: 80,
             },
             {
@@ -179,24 +209,13 @@ export function AccountsOpeningBalance() {
         ])
     }
 
-    function accGroupTemplate(props: AccountsOpeningBalanceType): string {
-        const logicObject: any = {
-            'L': 'Ledger',
-            'N': 'Group',
-            'S': 'Subledger',
-            'Y': 'Leaf',
-        }
-        return (logicObject[props.accLeaf])
-    }
-
-    function accTypeTemplate(props: AccountsOpeningBalanceType) {
-        const logicObject: any = {
-            A: 'Asset',
-            L: 'Liability',
-            E: 'Expence',
-            I: 'Income'
-        }
-        return (logicObject?.[props.accType] || '')
+    function flattenData(items: AccountsOpeningBalanceType[]) {
+        items.forEach((item: AccountsOpeningBalanceType) => {
+            meta.current.flatData[item.id] = item
+            if (item.children && item.children.length > 0) {
+                flattenData(item.children)
+            }
+        })
     }
 
     async function loadData() {
@@ -217,17 +236,52 @@ export function AccountsOpeningBalance() {
             meta.current.rows = res?.data?.[queryName]
             if (!_.isEmpty(meta.current.rows)) {
                 sumDebitCredit()
+                flattenData(meta.current.rows)
             }
         } catch (e: any) {
             console.log(e)
         }
     }
 
+    function onActionComplete(args: any) {
+
+        if (args.type === 'save') {
+            const currentData = args.data[args.column.field]
+            if (args.previousData !== currentData) {
+                meta.current.flatData[args.data.id].isValueChanged = true
+                updateParentRecursive(args.data.id, currentData, args.previousData, args.column.field)
+                const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+                if (gridRef) {
+                    gridRef.current.endEdit()
+                    gridRef.current.refresh()
+                }
+            }
+        }
+    }
+
     function onCellEdit(args: any) {
+        // const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
         if (!['S', 'Y'].includes(args.rowData.accLeaf)) {
             args.cancel = true
             return
         }
+        if (!['debit', 'credit'].includes(args.columnName)) {
+            args.cancel = true
+            return
+        }
+        if ((args.columnName === 'debit') && (args.rowData.credit !== 0)) {  
+            args.cancel = true
+            // gridRef.current.endEdit()              
+            Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
+            return
+        }
+        if ((args.columnName === 'credit') && (args.rowData.debit !== 0)) {
+            args.cancel = true
+            // gridRef.current.endEdit()
+            Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
+            return
+        }
+
         setTimeout(() => {
             if (['debit', 'credit'].includes(args.columnName)) {
                 if (['S', 'Y'].includes(args.rowData.accLeaf)) {
@@ -239,23 +293,15 @@ export function AccountsOpeningBalance() {
                     }
                 }
             }
-        }, 50);
-    }
-
-    function onCellSave(args: any) {
-        if (['debit', 'credit'].includes(args.column.field)) {
-            if (args.previousValue !== args.value) {
-                args.cell.style.backgroundColor = 'lightgreen'; // Add custom class to change cell background color
-                sumDebitCredit()
-                // args.rowData['isValueChanged'] = true
-            }
-        }
+        }, 100);
     }
 
     function onQueryCellInfo(args: any) {
         if (['debit', 'credit'].includes(args.column.field)) {
             if (['S', 'Y'].includes(args.data.accLeaf)) {
-                if (args.cell.style.backgroundColor !== 'lightgreen') {
+                if (args.data.isValueChanged) {
+                    args.cell.style.backgroundColor = 'lightgreen';
+                } else {
                     args.cell.style.backgroundColor = 'lightyellow';
                 }
             }
@@ -284,17 +330,22 @@ export function AccountsOpeningBalance() {
         }
 
         nodes.forEach((node: any) => calculateTotals(node));
-        // console.log(nodes)
+
         const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
         if (gridRef) {
-            // gridRef.current.dataSource =[]
-            gridRef.current.dataSource = structuredClone(nodes)
-            // gridRef.current.trigger('dataBound')
-            // gridRef.current.refresh()
-            // gridRef.current.refreshColumns()
+            gridRef.current.dataSource = nodes
+            gridRef.current.endEdit()
+            gridRef.current.refresh()
         }
-        // setRefresh({})
-        // return nodes;
+    }
+
+    function updateParentRecursive(id: string, value: number, prevValue: number, field: string) {
+        const fd: any = meta.current.flatData
+        const parentId = fd[id].parentId
+        if (parentId) {
+            fd[parentId][field] += (value - prevValue)
+            updateParentRecursive(parentId, value, prevValue, field)
+        }
     }
 }
 
@@ -311,7 +362,8 @@ type AccountsOpeningBalanceType = {
 }
 
 type MetaType = {
-    rows: AccountsOpeningBalanceType[]
+    rows: AccountsOpeningBalanceType[],
+    flatData: { [key: string]: AccountsOpeningBalanceType }
 }
 // function editTemplate(props: any) {
 //     return (
@@ -322,4 +374,12 @@ type MetaType = {
 //             className="e-input bg-zinc-300"
 //         />
 //     );
+// }
+
+// function onCellSave(args: any) {
+// if (['debit', 'credit'].includes(args.column.field)) {
+//     if (args.previousValue !== args.value) {
+//         args.cell.style.backgroundColor = 'lightgreen'; // Add custom class to change cell background color
+//     }
+// }
 // }
