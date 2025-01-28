@@ -67,6 +67,7 @@ const Messages = {
   messDbConnFailure: 'Database connection was failed',
   messDbConnSuccessful: 'Database connection was successful',
   messDebitCreditNotTogether:'Debit and credit entries are not allowed together',
+  messDebitsNotEqualsCredits:'Debits and credits are not equal',
   messExistingLinksDropHere:
     'Existing Bu`s with links (Drop the dragged row here)',
   messExistingRolesWithLinksDropHere:

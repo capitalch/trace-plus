@@ -31,16 +31,17 @@
 	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
 	- rename generic-switch to comp-generic-switch in Master accounts
 	- XData showing typescript error in many places. Need to correct the types
-	- TreeGrid when expanded switch is on, after refresh button click it is not obeyed
+	
 - Opening balances
 															- init
 														- server
 															- sql
 															- helper function and GraphQl
 	- client
+		- TreeGrid when expanded switch is on, after refresh button click it is not obeyed
 		- Expanded status of grid to retain after change of data
-		- Aggregate for debits and credits
-		- use decimal.js for math
+														- Aggregate for debits and credits
+															- use decimal.js for math
 														- editale op balance
 															- Selection does not select digits after decimal point
 															- Debit credit both not allowed validation
@@ -62,12 +63,12 @@
 				- insert sql
 			- update
 				- update sql
-	- grid
+														- grid
 															- hierarchy
 															- display
-		- aggregate
-		- edit
-		- submit
+															- aggregate
+															- edit
+															- submit
 
 												- Branches
 															- init

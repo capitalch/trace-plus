@@ -11,6 +11,9 @@ import { useEffect, useRef } from "react"
 import { Utils } from "../../../../utils/utils"
 import _ from "lodash"
 import { Messages } from "../../../../utils/messages"
+import Decimal from "decimal.js"
+// import { TraceDataObjectType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 // import Decimal from "decimal.js"
 
 export function AccountsOpeningBalance() {
@@ -38,7 +41,7 @@ export function AccountsOpeningBalance() {
 
     return (<CompAccountsContainer>
         {/* <button onClick={sumDebitCredit} className="bg-slate-100 px-2 w-32">Test</button> */}
-        <CompSyncFusionTreeGridToolbar className="mt-2"
+        <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <button onClick={handleOnSubmit}>save</button>}
             title='Accounts opening balances'
             isLastNoOfRows={false}
             instance={instance}
@@ -92,15 +95,17 @@ export function AccountsOpeningBalance() {
     }
 
     function calculateCredits() {
-        // const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current) => (sum.plus(current.credit || 0)), new Decimal(0))
-        // const r: number = ret.toNumber()
-        // return (r)
+        const ret: Decimal = meta.current.rows.reduce((sum: Decimal, current: AccountsOpeningBalanceType) =>
+            (sum.plus(current.credit || 0)), new Decimal(0))
+        const r: number = ret.toNumber()
+        return (r)
     }
 
     function calculateDebits() {
-        // const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current) => (sum.plus(current.debit || 0)), new Decimal(0))
-        // const r: number = ret.toNumber()
-        // return (r)
+        const ret: Decimal = meta.current.rows.reduce((sum: Decimal, current: AccountsOpeningBalanceType) =>
+            (sum.plus(current.debit || 0)), new Decimal(0))
+        const r: number = ret.toNumber()
+        return (r)
     }
 
     function getAggregates(): SyncFusionTreeGridAggregateColumnType[] {
@@ -111,22 +116,22 @@ export function AccountsOpeningBalance() {
                 type: 'Count',
                 footerTemplate: (props: any) => `Count: ${props['accName - count']}`,
             },
-            // {
-            //     columnName: 'debit',
-            //     field: 'debit',
-            //     format: 'N2',
-            //     type: 'Custom',
-            //     customAggregate: calculateDebits,
-            //     // footerTemplate: (props: any) => <span>{`${decFormatter.format(props?.['debit - custom'] || 0)}`}</span>
-            // },
-            // {
-            //     columnName: 'credit',
-            //     field: 'credit',
-            //     format: 'N2',
-            //     type: 'Custom',
-            //     customAggregate: calculateCredits,
-            //     // footerTemplate: (props: any) => <span>{`${decFormatter.format(props?.['credit - custom'] || 0)}`}</span>
-            // },
+            {
+                columnName: 'debit',
+                field: 'debit',
+                format: 'N2',
+                type: 'Custom',
+                customAggregate: calculateDebits,
+                footerTemplate: (props: any) => <span className="mr-2">{`${Utils.toDecimalFormat(props?.['debit - custom'] || 0)}`}</span>
+            },
+            {
+                columnName: 'credit',
+                field: 'credit',
+                format: 'N2',
+                type: 'Custom',
+                customAggregate: calculateCredits,
+                footerTemplate: (props: any) => <span className="mr-2">{`${Utils.toDecimalFormat(props?.['credit - custom'] || 0)}`}</span>
+            },
         ])
     }
 
@@ -218,6 +223,51 @@ export function AccountsOpeningBalance() {
         })
     }
 
+    async function handleOnSubmit() {
+        const changedData: AccountsOpeningBalanceType[]
+            = Object.values(meta.current.flatData as Record<string, AccountsOpeningBalanceType>).filter((item: AccountsOpeningBalanceType) => item.isValueChanged)
+        const formattedData: any = changedData.map((item: AccountsOpeningBalanceType) => {
+            return ({
+                id: item.opId,
+                finYearId: finYearId,
+                branchId: branchId,
+                accId: item.id,
+                amount: item.debit ? item.debit : item.credit,
+                dc: item.credit ? 'C' : 'D'
+            })
+        })
+
+        const credits: number = calculateCredits()
+        const debits: number = calculateDebits()
+        if (debits !== credits) {
+            Utils.showConfirmDialog('Warning'
+                , Messages.messDebitsNotEqualsCredits
+                , await saveData)
+        } else {
+            await saveData()
+        }
+
+        async function saveData() {
+            try {
+                //     await Utils.doGenericUpdate({
+                //         buCode: buCode || '',
+                //         tableName: DatabaseTablesMap.AccOpBal,
+                //         xData: formattedData
+                // })
+                Utils.showSaveMessage()
+                await loadData()
+            } catch (e: any) {
+                console.log(e)
+            }
+        }
+
+        // const traceDataObject: TraceDataObjectType = {
+        //     tableName: DatabaseTablesMap.AccOpBal,
+        //     xData: formattedData
+        // }
+        // console.log(traceDataObject)
+    }
+
     async function loadData() {
         const queryName: string = GraphQLQueriesMap.accountsOpeningBalance.name
         const q: any = GraphQLQueriesMap.accountsOpeningBalance(
@@ -244,7 +294,6 @@ export function AccountsOpeningBalance() {
     }
 
     function onActionComplete(args: any) {
-
         if (args.type === 'save') {
             const currentData = args.data[args.column.field]
             if (args.previousData !== currentData) {
@@ -269,7 +318,7 @@ export function AccountsOpeningBalance() {
             args.cancel = true
             return
         }
-        if ((args.columnName === 'debit') && (args.rowData.credit !== 0)) {  
+        if ((args.columnName === 'debit') && (args.rowData.credit !== 0)) {
             args.cancel = true
             // gridRef.current.endEdit()              
             Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
@@ -357,6 +406,7 @@ type AccountsOpeningBalanceType = {
     credit: number
     debit: number
     id: number
+    isValueChanged?: boolean
     opId: number
     parentId: number
 }
