@@ -10,6 +10,7 @@ import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-
 import { useEffect, useRef, useState } from "react"
 // import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { Utils } from "../../../../utils/utils"
+import _ from "lodash"
 
 export function AccountsOpeningBalance() {
     const [, setRefresh] = useState({})
@@ -18,13 +19,13 @@ export function AccountsOpeningBalance() {
     const {
         branchId
         , buCode
-        // , context
+        , context
         , dbName
         , decodedDbParamsObject
         , finYearId
     } = useUtilsInfo()
 
-    const meta: any = useRef({
+    const meta: any = useRef<MetaType>({
         rows: []
     })
 
@@ -44,7 +45,7 @@ export function AccountsOpeningBalance() {
     // };
 
     return (<CompAccountsContainer>
-        {/* <button onClick={sumDebitCredit} className="bg-slate-100 px-2 w-32">Test</button> */}
+        <button onClick={sumDebitCredit} className="bg-slate-100 px-2 w-32">Test</button>
         <CompSyncFusionTreeGridToolbar className="mt-2"
             title='Accounts opening balances'
             isLastNoOfRows={false}
@@ -55,7 +56,8 @@ export function AccountsOpeningBalance() {
         <CompSyncfusionTreeGrid
             aggregates={getAggregates()}
             buCode={buCode}
-            onCellEdit={onCellEdit}
+            cellEdit={onCellEdit}
+            cellSave={onCellSave}
             childMapping="children"
             className="mr-6"
             columns={getColumns()}
@@ -65,7 +67,6 @@ export function AccountsOpeningBalance() {
             editSettings={{
                 allowEditing: true,
                 mode: 'Cell',
-                showConfirmDialog: false
             }}
             // dbName={dbName}
             // dbParams={decodedDbParamsObject}
@@ -79,6 +80,7 @@ export function AccountsOpeningBalance() {
             //     branchId: branchId || 0,
             //     finYearId: finYearId || 1900,
             // }}
+            queryCellInfo={onQueryCellInfo}
             treeColumnIndex={0}
         />
     </CompAccountsContainer>)
@@ -97,6 +99,7 @@ export function AccountsOpeningBalance() {
     function getColumns(): SyncFusionTreeGridColumnType[] {
         return ([
             {
+                allowEditing: false,
                 field: 'accName',
                 headerText: 'Account Name',
                 width: 250,
@@ -104,42 +107,71 @@ export function AccountsOpeningBalance() {
             },
             {
                 allowEditing: true,
-                // customAttributes: {
-                //     class: 'grid-col-edit'
-                // },
-                // editType:'textedit',
+                customAttributes: {
+                    class: 'grid-col-edit'
+                },
+                edit: {
+                    params:
+                    {
+                        decimals: 2,
+                        format: 'N2',
+                        showSpinButton: false,
+                        step: 0.01,
+                        validateDecimalOnType: true
+                    }
+                },
+                editType: 'numericedit', // 'textedit',
                 field: 'debit',
                 headerText: 'Debits',
                 format: 'N2',
                 type: 'number',
                 textAlign: 'Right',
+                // validationRules: { required: true, regex: /^[0-9]+$/ },
                 width: 80,
-                // editTemplate: {customTemplate}
             },
             {
+                allowEditing: true,
+                customAttributes: {
+                    class: 'grid-col-edit'
+                },
+                edit: {
+                    params:
+                    {
+                        decimals: 2,
+                        format: 'N2',
+                        showSpinButton: false,
+                        step: 0.01,
+                        validateDecimalOnType: true
+                    }
+                },
+                editType: 'numericedit', // 'textedit',
                 field: 'credit',
                 headerText: 'Credits',
                 format: 'N2',
                 type: 'number',
                 textAlign: 'Right',
-                width: 80
+                // validationRules: { required: true, regex: /^[0-9]+$/ },
+                width: 80,
             },
             {
+                allowEditing: false,
                 field: 'accType',
                 headerText: 'Type',
                 width: 80,
                 textAlign: 'Left',
-                // template: accTypeTemplate
+                template: accTypeTemplate
             },
             {
+                allowEditing: false,
                 field: 'accLeaf',
                 headerText: 'Level',
                 width: 80,
                 textAlign: 'Left',
-                // template: accGroupTemplate
+                template: accGroupTemplate
             },
             {
-                field:'id',
+                allowEditing: false,
+                field: 'id',
                 isPrimaryKey: true,
                 visible: false,
                 width: 0
@@ -147,16 +179,25 @@ export function AccountsOpeningBalance() {
         ])
     }
 
-    // function editTemplate(props: any) {
-    //     return (
-    //         <input
-    //             type="text"
-    //             defaultValue={props.value}
-    //             onChange={(e) => props.setValue(e.target.value)}
-    //             className="e-input bg-zinc-300"
-    //         />
-    //     );
-    // }
+    function accGroupTemplate(props: AccountsOpeningBalanceType): string {
+        const logicObject: any = {
+            'L': 'Ledger',
+            'N': 'Group',
+            'S': 'Subledger',
+            'Y': 'Leaf',
+        }
+        return (logicObject[props.accLeaf])
+    }
+
+    function accTypeTemplate(props: AccountsOpeningBalanceType) {
+        const logicObject: any = {
+            A: 'Asset',
+            L: 'Liability',
+            E: 'Expence',
+            I: 'Income'
+        }
+        return (logicObject?.[props.accType] || '')
+    }
 
     async function loadData() {
         const queryName: string = GraphQLQueriesMap.accountsOpeningBalance.name
@@ -173,24 +214,56 @@ export function AccountsOpeningBalance() {
         )
         try {
             const res: any = await Utils.queryGraphQL(q, queryName)
-            const nodes: any[] | undefined = res?.data?.[queryName]
-            if(nodes){
-                sumDebitCredit(nodes)
+            meta.current.rows = res?.data?.[queryName]
+            if (!_.isEmpty(meta.current.rows)) {
+                sumDebitCredit()
             }
-            meta.current.rows = nodes // res?.data?.[queryName]
-            setRefresh({})
         } catch (e: any) {
             console.log(e)
         }
     }
 
-    function onCellEdit(args: any){
-        console.log(args)
-        // args.cell.select()
+    function onCellEdit(args: any) {
+        if (!['S', 'Y'].includes(args.rowData.accLeaf)) {
+            args.cancel = true
+            return
+        }
+        setTimeout(() => {
+            if (['debit', 'credit'].includes(args.columnName)) {
+                if (['S', 'Y'].includes(args.rowData.accLeaf)) {
+                    const inputElement = args.row.querySelector('input');
+                    if (inputElement) {
+                        inputElement.value = parseFloat(inputElement.value).toFixed(2);
+                        inputElement.focus();
+                        inputElement.select();  // Select all text
+                    }
+                }
+            }
+        }, 50);
     }
 
-    function sumDebitCredit(nodes: any[]) {
-        // const nodes: any[] = meta.current.rows
+    function onCellSave(args: any) {
+        if (['debit', 'credit'].includes(args.column.field)) {
+            if (args.previousValue !== args.value) {
+                args.cell.style.backgroundColor = 'lightgreen'; // Add custom class to change cell background color
+                sumDebitCredit()
+                // args.rowData['isValueChanged'] = true
+            }
+        }
+    }
+
+    function onQueryCellInfo(args: any) {
+        if (['debit', 'credit'].includes(args.column.field)) {
+            if (['S', 'Y'].includes(args.data.accLeaf)) {
+                if (args.cell.style.backgroundColor !== 'lightgreen') {
+                    args.cell.style.backgroundColor = 'lightyellow';
+                }
+            }
+        }
+    }
+
+    function sumDebitCredit() {
+        const nodes: any[] = meta.current.rows
         function calculateTotals(node: any) {
             if (!node.children || node.children.length === 0) {
                 return { debit: node.debit, credit: node.credit };
@@ -212,19 +285,41 @@ export function AccountsOpeningBalance() {
 
         nodes.forEach((node: any) => calculateTotals(node));
         // console.log(nodes)
+        const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+        if (gridRef) {
+            // gridRef.current.dataSource =[]
+            gridRef.current.dataSource = structuredClone(nodes)
+            // gridRef.current.trigger('dataBound')
+            // gridRef.current.refresh()
+            // gridRef.current.refreshColumns()
+        }
         // setRefresh({})
         // return nodes;
     }
 }
 
-// type AccountsOpeningBalanceType = {
-//     accLeaf: 'L' | 'S' | 'Y' | 'N'
-//     accName: string
-//     accType: 'L' | 'A'
-//     children: AccountsOpeningBalanceType[] | []
-//     credit: number
-//     debit: number
-//     id: number
-//     opId: number
-//     parentId: number
+type AccountsOpeningBalanceType = {
+    accLeaf: 'L' | 'S' | 'Y' | 'N'
+    accName: string
+    accType: 'L' | 'A'
+    children: AccountsOpeningBalanceType[] | []
+    credit: number
+    debit: number
+    id: number
+    opId: number
+    parentId: number
+}
+
+type MetaType = {
+    rows: AccountsOpeningBalanceType[]
+}
+// function editTemplate(props: any) {
+//     return (
+//         <input
+//             type="text"
+//             defaultValue={props.value}
+//             onChange={(e) => props.setValue(e.target.value)}
+//             className="e-input bg-zinc-300"
+//         />
+//     );
 // }

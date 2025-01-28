@@ -33,3 +33,7 @@
     color:navy;
     /* width: auto; */
   }
+
+  .e-numerictextbox input {
+    text-align: right;
+}

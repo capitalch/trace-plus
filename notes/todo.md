@@ -41,7 +41,17 @@
 															- Show hierchy balances
 															- make changes to tree grid control
 		- editale op balance
-		- detect diff
+															- Debits, credits ediable color
+			- Debit credit both not allowed validation
+			- Color change for altered data
+			- propagate sum to parents when value changed
+															- Only leaf or S are editable: ok
+															- Editable different color
+															- numeric edit with N2 format
+															- select on focus: ok
+															- validation: numeric only: ok
+															- update data source
+			- detect diff
 		- submit
 			- new
 				- insert sql

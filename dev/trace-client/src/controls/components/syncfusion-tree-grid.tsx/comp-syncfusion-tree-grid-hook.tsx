@@ -65,8 +65,8 @@ export function useCompSyncfusionTreeGrid({
                 allowEditing={Boolean(col?.allowEditing)}
                 clipMode="EllipsisWithTooltip"
                 customAttributes={col?.customAttributes}
-                edit={col?.edit}
-                editTemplate={col?.editTemplate}
+                edit={col.edit}
+                // editTemplate={col?.editTemplate}
                 editType={col?.editType}
                 field={col.field}
                 format={col.format}
@@ -77,6 +77,7 @@ export function useCompSyncfusionTreeGrid({
                 template={col.template}
                 textAlign={col.textAlign}
                 type={col.type}
+                // validationRules={col?.validationRules || {}}
                 visible={col.visible}
                 width={col.width}
             />)

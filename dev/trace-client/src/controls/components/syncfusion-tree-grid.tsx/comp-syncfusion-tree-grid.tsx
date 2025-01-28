@@ -11,6 +11,8 @@ export function CompSyncfusionTreeGrid({
     aggregates,
     allowSorting = false,
     buCode = undefined,
+    cellEdit,
+    cellSave,
     childMapping,
     className = '',
     columns,
@@ -26,9 +28,9 @@ export function CompSyncfusionTreeGrid({
     instance,
     isLoadOnInit = true,
     loadData,
-    onCellEdit,
     minWidth = '600px',
     pageSize = 50,
+    queryCellInfo,
     rowHeight,
     sqlArgs,
     sqlId,
@@ -64,7 +66,6 @@ export function CompSyncfusionTreeGrid({
     }
     const isCollapsed = context.CompSyncFusionTreeGrid[instance]?.isCollapsed
     const rowDropOptions: RowDropSettingsModel = { targetID: gridDragAndDropSettings?.targetId }
-    // console.log(JSON.stringify(selectedData))
     return (
         //The div container is important. The minWidth works with style only
         <div className="mt-2" style={{ minWidth: `${minWidth}` }} id="grid2">
@@ -76,7 +77,8 @@ export function CompSyncfusionTreeGrid({
                 allowSelection={true}
                 allowSorting={allowSorting}
                 allowTextWrap={true}
-                cellEdit={onCellEdit}
+                cellEdit={cellEdit}
+                cellSave={cellSave}
                 childMapping={childMapping}
                 className={className}
                 collapsed={onRowCollapsed}
@@ -90,6 +92,7 @@ export function CompSyncfusionTreeGrid({
                 id={instance}
                 dataBound={onDataBound}
                 pageSettings={{ pageSize: pageSize }}
+                queryCellInfo={queryCellInfo}
                 ref={gridRef}
                 rowDataBound={onRowDataBound}
                 rowDragStart={gridDragAndDropSettings?.onRowDragStart}
@@ -183,6 +186,8 @@ export type CompSyncfusionTreeGridType = {
     allowRowDragAndDrop?: boolean
     allowSorting?: boolean
     buCode?: string
+    cellEdit?: (args: any) => void
+    cellSave?: (args: any) => void
     childMapping: string
     className?: string
     columns: SyncFusionTreeGridColumnType[]
@@ -193,9 +198,8 @@ export type CompSyncfusionTreeGridType = {
     dbParams?: { [key: string]: string | undefined }
     editSettings?: {
         allowEditing: boolean
-        mode: 'Batch' | 'Dialog' | 'Normal' | 'Cell'
-        showConfirmDialog: boolean
-
+        mode: 'Dialog' | 'Row' | 'Cell'
+        // showConfirmDialog: boolean
     }
     graphQlQueryFromMap?: (
         dbName: string,
@@ -208,8 +212,8 @@ export type CompSyncfusionTreeGridType = {
     loadData?: () => void
     minWidth?: string
     pageSize?: number
-    onCellEdit?: (args: any) => void
     onRowDrop?: (args: any) => void
+    queryCellInfo?: (args: any) => void
     rowHeight?: number
     sqlArgs?: SqlArgsType
     sqlId?: string
@@ -223,11 +227,11 @@ export type SyncFusionTreeGridColumnType = {
     }
     edit?: {
         [key: string]: {
-            [key: string]: string
+            [key: string]: any
         }
     }
     editTemplate?: any
-    editType?: 'datepickeredit' | 'textedit'
+    editType?: 'datepickeredit' | 'textedit' | 'numericedit'
     field: string
     format?: string
     headerTemplate?: any
@@ -237,6 +241,7 @@ export type SyncFusionTreeGridColumnType = {
     template?: any
     textAlign?: 'Center' | 'Justify' | 'Left' | 'Right'
     type?: 'string' | 'number' | 'boolean' | 'date' | 'datetime'
+    validationRules?: { [key: string]: any }
     visible?: boolean
     width?: number
 }
