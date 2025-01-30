@@ -45,7 +45,7 @@ export function AccountsMaster() {
         />
 
         <CompSyncfusionTreeGrid
-            // addUniqueKeyToJson={true}
+            addUniqueKeyToJson={true}
             aggregates={getAggregates()}
             buCode={buCode}
             childMapping="children"

@@ -33,7 +33,7 @@
 	- XData showing typescript error in many places. Need to correct the types
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 - Opening balances
-	- Accounts master addUniqueKeyToJson; change Utils method to have dataPath
+															- Accounts master addUniqueKeyToJson; change Utils method to have dataPath
 															- init
 														- server
 															- sql

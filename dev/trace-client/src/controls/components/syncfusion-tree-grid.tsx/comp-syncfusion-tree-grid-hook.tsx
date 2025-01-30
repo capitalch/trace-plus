@@ -29,6 +29,7 @@ export function useCompSyncfusionTreeGrid({
 
     const { loadData, loading, } = useQueryHelper({
         addUniqueKeyToJson: addUniqueKeyToJson,
+        dataPath: dataPath,
         dbName: dbName,
         getQueryArgs: () => args,
         graphQlQueryFromMap: graphQlQueryFromMap,
