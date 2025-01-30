@@ -46,6 +46,7 @@ import { SlidingPaneViewer } from './features/react-sliding-pane/slide-pane-view
 import { EditGrid } from './features/syncfusion/edit-grid'
 import { Spinners } from './features/spinners/spinners'
 import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
+import { SyncfusionTreeGrid1 } from './features/syncfusion/syncfusion-tree-grid1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -97,7 +98,8 @@ function App() {
       {/* <ApolloGraphQL03112024 /> */}
       {/* <ReactSelectTypeAheadAsync1 /> */}
       {/* <ReactSelectAsync /> */}
-      <SyncfusionTreeGrid />
+      {/* <SyncfusionTreeGrid /> */}
+      <SyncfusionTreeGrid1 />
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
       {/* <TreeGrid2 /> */}

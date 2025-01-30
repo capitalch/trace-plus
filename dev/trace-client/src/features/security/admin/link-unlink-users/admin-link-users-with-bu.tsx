@@ -183,13 +183,13 @@ export function AdminLinkUsersWithBu() {
 
         function setExpandedKeys() {
             // Only expand the key where items are dropped
-            const expandedKeys = []
+            const expandedKeys:Set<number> = new Set()
             if (targetRowData.level === 0) {
-                expandedKeys.push(targetRowData.pkey)
+                expandedKeys.add(targetRowData.pkey)
             }
             if (targetRowData.level === 1) {
                 const parentItem = targetRowData.parentItem
-                expandedKeys.push(parentItem.pkey)
+                expandedKeys.add(parentItem.pkey)
             }
             context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys
         }

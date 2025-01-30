@@ -8,11 +8,7 @@ function App() {
   return (
     <GlobalContext.Provider value={defaultGlobalContext}>
       <PrimeReactProvider>
-        <RouterProvider router={appRouter} 
-        // future={{
-        //   v7_startTransition: true, //settings to escape warning
-        // }} 
-        />
+        <RouterProvider router={appRouter} />
       </PrimeReactProvider>
     </GlobalContext.Provider>
   )

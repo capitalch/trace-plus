@@ -5,6 +5,9 @@ import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, Edit, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
+import { shallowEqual, useSelector } from "react-redux"
+import { RootStateType } from "../../../app/store/store"
+import { selectCompSwitchStateFn } from "../../redux-components/comp-slice"
 
 export function CompSyncfusionTreeGrid({
     actionComplete,
@@ -40,13 +43,14 @@ export function CompSyncfusionTreeGrid({
     const context: GlobalContextType = useContext(GlobalContext)
     const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
+    const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionTreeGrid[instance]) {
             context.CompSyncFusionTreeGrid[instance] = {
-                expandedKeys: [],
+                expandedKeys: new Set(),
                 gridRef: undefined,
-                isCollapsed: true,
+                // isCollapsed: true,
                 loadData: undefined,
                 scrollPos: 0,
             }
@@ -65,8 +69,9 @@ export function CompSyncfusionTreeGrid({
         operator: 'contains',
         hierarchyMode: 'Both'
     }
-    const isCollapsed = context.CompSyncFusionTreeGrid[instance]?.isCollapsed
+    // const isCollapsed = context.CompSyncFusionTreeGrid[instance]?.isCollapsed
     const rowDropOptions: RowDropSettingsModel = { targetID: gridDragAndDropSettings?.targetId }
+
     return (
         //The div container is important. The minWidth works with style only
         <div className="mt-2" style={{ minWidth: `${minWidth}` }} id="grid2">
@@ -87,8 +92,9 @@ export function CompSyncfusionTreeGrid({
                 created={onCreated}
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
-                enableCollapseAll={(isCollapsed === undefined) ? true : isCollapsed}
-                expanded={onRowEpanded}
+                enableCollapseAll={(isCollapsedRedux === undefined) ? true : isCollapsedRedux || false}
+                enablePersistence={true}
+                expanded={onRowExpanded}
                 gridLines="Both"
                 height={height}
                 id={instance}
@@ -132,16 +138,16 @@ export function CompSyncfusionTreeGrid({
     )
 
     function onCreated() {
-        const expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
-        if (expandedKeys.length > 0) {
-            expandedKeys.forEach((key: string) => {
-                if (gridRef?.current?.expandByKey) {
-                    setTimeout(() => {
-                        gridRef.current.expandByKey(key)
-                    }, 500); // Delay between expansions. Otherwise error occurs
-                }
-            })
-        }
+        // const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
+        // if (expandedKeys.size > 0) {
+        //     expandedKeys.forEach((key: number) => {
+        //         if (gridRef?.current?.expandByKey) {
+        //             setTimeout(() => {
+        //                 gridRef.current.expandByKey(key)
+        //             }, 500); // Delay between expansions. Otherwise error occurs
+        //         }
+        //     })
+        // }
     }
 
     function onDataBound(e: any) {
@@ -151,9 +157,10 @@ export function CompSyncfusionTreeGrid({
     }
 
     function onRowCollapsed(args: any) {
-        let expandedKeys: string[] = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
-        expandedKeys = expandedKeys.filter((key: any) => key !== args.data.pkey);
-        context.CompSyncFusionTreeGrid[instance].expandedKeys = [...expandedKeys]
+        const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
+        expandedKeys.delete(args.data.pkey)
+        // expandedKeys = expandedKeys.filter((key: any) => key !== args.data.pkey);
+        // context.CompSyncFusionTreeGrid[instance].expandedKeys = [...expandedKeys]
     }
 
     function onRowDataBound(args: any) {
@@ -161,16 +168,21 @@ export function CompSyncfusionTreeGrid({
         if (args.data.level === 1) {
             args.row.style.backgroundColor = '#f5f5f5';  // Light grey background for child rows
         }
+        const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
+        if (expandedKeys.has(args.data.pkey)) {
+            setTimeout(() => gridRef.current.expandRow(args.row), 50)
+        }
     }
 
-    function onRowEpanded(args: any) {
-        const expandedKeys = context.CompSyncFusionTreeGrid[instance].expandedKeys || []
+    function onRowExpanded(args: any) {
+        const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
         if (!args?.data?.pkey) {
             return
         }
-        if (!expandedKeys.includes(args.data.pkey)) {
-            expandedKeys.push(args.data.pkey)
-        }
+        expandedKeys.add(args.data.pkey)
+        // if (!expandedKeys.includes(args.data.pkey)) {
+        //     expandedKeys.push(args.data.pkey)
+        // }
     }
 }
 

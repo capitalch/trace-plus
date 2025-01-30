@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
-// import { GlobalContext } from "../../../../App";
 import { useForm } from "react-hook-form";
 import { Messages } from "../../../../utils/messages";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
@@ -92,7 +91,7 @@ export function SuperAdminLinkSecuredControlWithRoleModal({ roleId, instance }: 
             const queryName: string = GraphQLQueriesMap.genericUpdate.name;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
-            context.CompSyncFusionTreeGrid[instance].loadData();
+            await context.CompSyncFusionTreeGrid[instance].loadData();
             Utils.showSaveMessage();
         } catch (e: any) {
             console.log(e.message);

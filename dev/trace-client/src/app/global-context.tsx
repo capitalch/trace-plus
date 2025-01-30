@@ -21,9 +21,9 @@ export type GlobalContextType = {
   }
   CompSyncFusionTreeGrid: {
     [key: string]: {
-      expandedKeys?:string[] 
+      expandedKeys?: Set<number>
       gridRef?: any
-      isCollapsed?: boolean // For all nodes collapsed
+      // isCollapsed?: boolean // For all nodes collapsed
       loadData?: any
       scrollPos?: number
     }

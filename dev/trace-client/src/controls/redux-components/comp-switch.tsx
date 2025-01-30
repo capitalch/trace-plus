@@ -27,7 +27,7 @@ export function CompSwitch({
             <input
                 type="checkbox"
                 disabled={isDisabled}
-                checked={isChecked}
+                checked={isChecked || false}
                 className="peer sr-only"
                 onChange={handleOnChangeSwitch}
             />

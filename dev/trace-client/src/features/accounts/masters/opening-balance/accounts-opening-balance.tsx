@@ -6,7 +6,7 @@ import { CompAccountsContainer } from "../../../../controls/components/comp-acco
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 // import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { Utils } from "../../../../utils/utils"
 import _ from "lodash"
@@ -14,10 +14,14 @@ import { Messages } from "../../../../utils/messages"
 import Decimal from "decimal.js"
 // import { TraceDataObjectType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-save-button"
+// import { AppDispatchType } from "../../../../app/store/store"
+// import { useDispatch } from "react-redux"
+// import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice"
 // import Decimal from "decimal.js"
 
 export function AccountsOpeningBalance() {
-    // const [, setRefresh] = useState({})
+    const [, setRefresh] = useState({})
     // const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.accountsOpeningBalance
     const {
@@ -36,12 +40,10 @@ export function AccountsOpeningBalance() {
 
     useEffect(() => {
         loadData()
-        context.CompSyncFusionTreeGrid[instance].isCollapsed = false
     }, [])
 
     return (<CompAccountsContainer>
-        {/* <button onClick={sumDebitCredit} className="bg-slate-100 px-2 w-32">Test</button> */}
-        <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <button onClick={handleOnSubmit}>save</button>}
+        <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} />}
             title='Accounts opening balances'
             isLastNoOfRows={false}
             instance={instance}
@@ -50,6 +52,7 @@ export function AccountsOpeningBalance() {
 
         <CompSyncfusionTreeGrid
             actionComplete={onActionComplete}
+            addUniqueKeyToJson={true}
             aggregates={getAggregates()}
             buCode={buCode}
             cellEdit={onCellEdit}
@@ -58,14 +61,12 @@ export function AccountsOpeningBalance() {
             className="mr-6"
             columns={getColumns()}
             dataSource={meta.current.rows}
-
             editSettings={{
                 allowEditing: true,
                 mode: 'Cell',
             }}
             height="calc(100vh - 240px)"
             instance={instance}
-
             isLoadOnInit={false}
             loadData={loadData}
             minWidth='950px'
@@ -226,9 +227,13 @@ export function AccountsOpeningBalance() {
     async function handleOnSubmit() {
         const changedData: AccountsOpeningBalanceType[]
             = Object.values(meta.current.flatData as Record<string, AccountsOpeningBalanceType>).filter((item: AccountsOpeningBalanceType) => item.isValueChanged)
+        if (_.isEmpty(changedData)) {
+            Utils.showAlertMessage('Warning', Messages.messNothingToDo)
+            return
+        }
         const formattedData: any = changedData.map((item: AccountsOpeningBalanceType) => {
             return ({
-                id: item.opId,
+                id: item.opId ? item.opId : undefined,
                 finYearId: finYearId,
                 branchId: branchId,
                 accId: item.id,
@@ -249,23 +254,17 @@ export function AccountsOpeningBalance() {
 
         async function saveData() {
             try {
-                //     await Utils.doGenericUpdate({
-                //         buCode: buCode || '',
-                //         tableName: DatabaseTablesMap.AccOpBal,
-                //         xData: formattedData
-                // })
+                await Utils.doGenericUpdate({
+                    buCode: buCode || '',
+                    tableName: DatabaseTablesMap.AccOpBal,
+                    xData: formattedData
+                })
                 Utils.showSaveMessage()
                 await loadData()
             } catch (e: any) {
                 console.log(e)
             }
         }
-
-        // const traceDataObject: TraceDataObjectType = {
-        //     tableName: DatabaseTablesMap.AccOpBal,
-        //     xData: formattedData
-        // }
-        // console.log(traceDataObject)
     }
 
     async function loadData() {
@@ -284,9 +283,12 @@ export function AccountsOpeningBalance() {
         try {
             const res: any = await Utils.queryGraphQL(q, queryName)
             meta.current.rows = res?.data?.[queryName]
+            // const dt: any = [{ jsonResult: meta.current.rows }]
+            Utils.addUniqueKeysToJson(meta.current.rows)
             if (!_.isEmpty(meta.current.rows)) {
                 sumDebitCredit()
                 flattenData(meta.current.rows)
+                setRefresh({})
             }
         } catch (e: any) {
             console.log(e)

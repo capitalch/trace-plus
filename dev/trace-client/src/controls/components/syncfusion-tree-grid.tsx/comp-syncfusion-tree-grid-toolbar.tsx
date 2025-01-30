@@ -9,8 +9,10 @@ import { IconFileCsv } from "../../icons/icon-file-csv"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
-import { WidgetTreeGridSwitch } from "./widget-tree-grid-switch"
+// import { WidgetTreeGridSwitch } from "./widget-tree-grid-switch"
 import clsx from "clsx"
+// import { CompCheckBox } from "../../redux-components/comp-checkbox"
+import { CompSwitch } from "../../redux-components/comp-switch"
 
 export function CompSyncFusionTreeGridToolbar({
     className
@@ -89,11 +91,14 @@ export function CompSyncFusionTreeGridToolbar({
             </WidgetTooltip>}
 
             {/* Expand / Collapse switch */}
-            <WidgetTreeGridSwitch
+            {/* <WidgetTreeGridSwitch
                 className="mr-2"
                 instance={instance}
                 leftLabel="Expand"
-            />
+            /> */}
+
+            {/* Expand / Collapse redux switch */}
+            <CompSwitch className="mr-2" instance={instance} leftLabel="Expand" />
 
             {/* Search */}
             {isSearch && <CompSyncFusionTreeGridSearchBox instance={instance} />}

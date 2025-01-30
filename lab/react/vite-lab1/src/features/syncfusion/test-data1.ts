@@ -8,6 +8,7 @@ export const data1 = [
     parentId: null,
     debit: 0,
     credit: 0,
+    expanded: true,
     children: [
       {
         id: 16,

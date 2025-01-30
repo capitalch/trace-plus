@@ -43,7 +43,7 @@ export function TrialBalance() {
                 instance={instance}
                 width="calc(100vw - 250px)" // This stops unnecessary flickers
             />
-            <CompSyncfusionTreeGrid
+            <CompSyncfusionTreeGrid                
                 aggregates={getTrialBalanceAggregates()}
                 buCode={buCode}
                 childMapping="children"

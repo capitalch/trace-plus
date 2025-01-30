@@ -47,7 +47,7 @@ export function SyncfusionTreeGrid() {
         // dataBound={onDataBound}
         dataSource={meta.current.rows}
         editSettings={editSettings}
-        enableCollapseAll={true}
+        enableCollapseAll={undefined}
         // expanded={onRowExpanded}
         gridLines="Both"
         // height='100%'
@@ -142,15 +142,6 @@ export function SyncfusionTreeGrid() {
       gridRef.current.refresh()
     }
   }
-
-  // function onCellSave(args: any) { // it works
-    // if (['debit', 'credit'].includes(args.column.field)) {
-      // if (args.previousValue !== args.value) {
-        // args.cell.style.backgroundColor = 'lightgreen'; // Add custom class to change cell background color
-        // args.rowData['isValueChanged'] = true
-      // }
-    // }
-  // }
 
   function onQueryCellInfo(args: any) {
     if (['debit', 'credit'].includes(args.column.field)) {

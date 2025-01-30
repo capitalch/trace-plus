@@ -31,7 +31,6 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
                         className='mt-4'
-                        // CustomControl={() => <WidgetTooltip title='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 h-8 px-2 mb-2 text-xs' /></WidgetTooltip>}
                         minWidth='300px'
                         title=''
                         isLastNoOfRows={false}
@@ -85,7 +84,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
 
     function getSecuredControlsAggregates(): SyncFusionGridAggregateType[] {
         return [{
-            columnName:'controlName',
+            columnName: 'controlName',
             field: 'controlName',
             type: "Count",
             format: "N0",
@@ -122,14 +121,14 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         if (targetGridRef.current?.id === securedControlsInstance) {
             return
         }
-        
+
         // If dropped in empty area of target grid then return
         const targetRow = args?.target.closest('tr');
         if (!targetRow) {
             Utils.showFailureAlertMessage({ title: 'Failure', message: Messages.messNotAllowed })
             return
         }
-        
+
         const rolesLinkViewRecords = targetGridRef.current.getCurrentViewRecords();
         const targetIndex = args.dropIndex;
 
@@ -178,7 +177,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 await Utils.mutateGraphQL(q, queryName);
                 context.CompSyncFusionTreeGrid[linksInstance].loadData();
                 Utils.showSaveMessage();
-                if(sourceGridRef){
+                if (sourceGridRef) {
                     sourceGridRef.current.clearSelection() /// clear selection of source grid
                 }
             } catch (e: any) {
@@ -188,13 +187,13 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
 
         function setExpandedKeys() {
             // Only expand the key where items are dropped
-            const expandedKeys = []
+            const expandedKeys: Set<number> = new Set()
             if (targetRowData.level === 0) {
-                expandedKeys.push(targetRowData.pkey)
+                expandedKeys.add(targetRowData.pkey)
             }
             if (targetRowData.level === 1) {
                 const parentItem = targetRowData.parentItem
-                expandedKeys.push(parentItem.pkey)
+                expandedKeys.add(parentItem.pkey)
             }
             context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys
         }
