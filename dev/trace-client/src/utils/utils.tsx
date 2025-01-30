@@ -59,32 +59,62 @@ export const Utils: UtilsType = {
     treeGridUtils: treeGridUtils
 }
 
-function addUniqueKeysToJson(data: any) { // Created by AI
-    let runningKey = 100000; // This is child series
+// function addUniqueKeysToJson1(data: any) { // Created by AI
+//     let runningKey = 100000; // This is child series
+
+//     const traverseAndAddKeys = (node: any, parentKey: number) => {
+//         // Add a running key to child nodes, but the parent keeps the same key
+//         const nodeWithKey = { ...node, pkey: parentKey };
+
+//         // Traverse through child nodes if present
+//         Object.keys(nodeWithKey).forEach((key) => {
+//             if (Array.isArray(nodeWithKey[key])) {
+//                 // Children will have unique running keys
+//                 nodeWithKey[key] = nodeWithKey[key].map((child: any) => traverseAndAddKeys(child, runningKey++));
+//             } else if (typeof nodeWithKey[key] === 'object' && nodeWithKey[key] !== null) {
+//                 nodeWithKey[key] = traverseAndAddKeys(nodeWithKey[key], runningKey++);
+//             }
+//         });
+
+//         return nodeWithKey;
+//     };
+
+//     return data.map((item: any, index: number) => {
+//         // Assign a consistent parent key based on index or some stable property
+//         const parentKey = index + 1; // Can also be item.id if available
+//         return traverseAndAddKeys(item, parentKey);
+//     });
+
+// }
+
+function addUniqueKeysToJson(data: any) { // AI created
+    let runningKey = 100000; // Start of child series
 
     const traverseAndAddKeys = (node: any, parentKey: number) => {
-        // Add a running key to child nodes, but the parent keeps the same key
-        const nodeWithKey = { ...node, pkey: parentKey };
+        // Mutate the node by adding a pkey
+        node.pkey = parentKey;
 
         // Traverse through child nodes if present
-        Object.keys(nodeWithKey).forEach((key) => {
-            if (Array.isArray(nodeWithKey[key])) {
-                // Children will have unique running keys
-                nodeWithKey[key] = nodeWithKey[key].map((child: any) => traverseAndAddKeys(child, runningKey++));
-            } else if (typeof nodeWithKey[key] === 'object' && nodeWithKey[key] !== null) {
-                nodeWithKey[key] = traverseAndAddKeys(nodeWithKey[key], runningKey++);
+        Object.keys(node).forEach((key) => {
+            if (Array.isArray(node[key])) {
+                // Mutate children by adding unique running keys
+                node[key].forEach((child) => {
+                    traverseAndAddKeys(child, runningKey++);
+                });
+            } else if (typeof node[key] === 'object' && node[key] !== null) {
+                // Mutate nested objects
+                traverseAndAddKeys(node[key], runningKey++);
             }
         });
-
-        return nodeWithKey;
     };
 
-    return data.map((item: any, index: number) => {
-        // Assign a consistent parent key based on index or some stable property
-        const parentKey = index + 1; // Can also be item.id if available
-        return traverseAndAddKeys(item, parentKey);
+    // Mutate the top-level data array
+    data.forEach((item: any, index: number) => {
+        const parentKey = index + 1; // Assign a consistent parent key
+        traverseAndAddKeys(item, parentKey);
     });
 
+    return data; // Return the mutated data
 }
 
 async function decodeExtDbParams(encodedDbParams: string) {

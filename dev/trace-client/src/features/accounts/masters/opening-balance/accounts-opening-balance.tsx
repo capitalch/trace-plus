@@ -52,7 +52,7 @@ export function AccountsOpeningBalance() {
 
         <CompSyncfusionTreeGrid
             actionComplete={onActionComplete}
-            addUniqueKeyToJson={true}
+            // addUniqueKeyToJson={true}
             aggregates={getAggregates()}
             buCode={buCode}
             cellEdit={onCellEdit}
@@ -283,8 +283,8 @@ export function AccountsOpeningBalance() {
         try {
             const res: any = await Utils.queryGraphQL(q, queryName)
             meta.current.rows = res?.data?.[queryName]
-            // const dt: any = [{ jsonResult: meta.current.rows }]
-            Utils.addUniqueKeysToJson(meta.current.rows)
+            // Creates persistence of expanded rows
+            Utils.addUniqueKeysToJson(meta.current.rows) // adds unique pkey to each record
             if (!_.isEmpty(meta.current.rows)) {
                 sumDebitCredit()
                 flattenData(meta.current.rows)
@@ -311,7 +311,6 @@ export function AccountsOpeningBalance() {
     }
 
     function onCellEdit(args: any) {
-        // const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
         if (!['S', 'Y'].includes(args.rowData.accLeaf)) {
             args.cancel = true
             return
@@ -321,14 +320,12 @@ export function AccountsOpeningBalance() {
             return
         }
         if ((args.columnName === 'debit') && (args.rowData.credit !== 0)) {
-            args.cancel = true
-            // gridRef.current.endEdit()              
+            args.cancel = true              
             Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
             return
         }
         if ((args.columnName === 'credit') && (args.rowData.debit !== 0)) {
             args.cancel = true
-            // gridRef.current.endEdit()
             Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
             return
         }
@@ -398,6 +395,7 @@ export function AccountsOpeningBalance() {
             updateParentRecursive(parentId, value, prevValue, field)
         }
     }
+
 }
 
 type AccountsOpeningBalanceType = {
@@ -417,6 +415,7 @@ type MetaType = {
     rows: AccountsOpeningBalanceType[],
     flatData: { [key: string]: AccountsOpeningBalanceType }
 }
+
 // function editTemplate(props: any) {
 //     return (
 //         <input
