@@ -17,12 +17,14 @@ export function SyncFusionTreeGridEditTemplate1() {
                 actionBegin={onActionBegin}
                 actionComplete={onActionComplete}
                 // cellSave={onCellSave}
-
+                cellSelected={handleCellSelected}
                 dataSource={data}
+                rowSelected={handleRowSelected}
                 treeColumnIndex={2}
                 childMapping="subtasks"
                 editSettings={{
                     allowEditing: true,
+                    // allowEditOnSingleClick: true,
                     mode: 'Cell',
                 }}
                 ref={gridRef}
@@ -54,18 +56,10 @@ export function SyncFusionTreeGridEditTemplate1() {
         useEffect(() => {
             if (inputRef.current) {
                 setTimeout(() => inputRef.current ? inputRef.current.focus() : undefined, 10)
-                // inputRef.current.focus();
             }
         }, [])
-        
+
         return (
-            // <input
-            //     type="number"
-            //     defaultValue={args[args.column.field]} // Set the current value in edit mode
-            //     onChange={handleChange}
-            //     className="e-input"
-            //     style={{ width: '100%', textAlign: 'right' }} // Align input to the right
-            // />
             <NumericFormat className="text-right w-40 border-spacing-1 border-gray-300 h-8  mr-6 rounded-md" allowNegative={false}
                 decimalScale={2} getInputRef={inputRef}
                 fixedDecimalScale={true} autoFocus={true}
@@ -75,7 +69,6 @@ export function SyncFusionTreeGridEditTemplate1() {
                 value={args[args.column.field] || 0}
                 onValueChange={(values) => {
                     meta.current.editedValue = values.value
-                    // setAmount(values.value)
                 }}
             />
         );
@@ -83,26 +76,53 @@ export function SyncFusionTreeGridEditTemplate1() {
         function handleOnFocus(event: any): void {
             event.target.select()
         }
+    }
 
-        // function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        //     const value = parseFloat(event.target.value) || 0; // Parse numeric input
-        //     meta.current.editedValue = value
-        //     // args.value = value
-        //     // args.taskData[args.column.field] = value; // Update the row data
-        // }
+    function handleCellSelected(args: any) {
+        if (args.column.allowEditing &&     // Check if column is editable
+            gridRef.current &&
+            !gridRef.current.isEdit      // Avoid edit conflicts
+        ) {
+            gridRef.current.startEdit(args.rowIndex, args.column.field);
+        }
     }
 
     function handleCheck() {
         console.log(data)
     }
 
+    function handleRowSelected(args: any) {
+        console.log(args)
+        const treeGrid = gridRef.current;
+
+        // Trigger edit mode on single click
+        if (args.target.closest('.e-rowcell')) {
+            const index = args.rowIndex;
+            const field = args.target.getAttribute('aria-colindex');
+            if (treeGrid) {
+                treeGrid.startEdit({
+                    rowIndex: index,
+                    columnName: field,
+                });
+            }
+        }
+    }
+
     function onActionBegin(args: any) {
         if ((args.type === 'save') && (args.column.field === 'duration')) {
             args.rowData[args.column.field] = meta.current.editedValue
         }
+        if (args.requestType === 'beginEdit') {
+            // Focus the editor directly (optional)
+            setTimeout(() => {
+              const input = args.row.querySelector('input');
+              if (input) input.focus();
+            }, 0);
+          }
     }
 
     function onActionComplete(args: any) {
+        console.log(args)
         // const treeGridRef = gridRef.current
         // if (args.type === 'save') {
         //     // Find the edited row index

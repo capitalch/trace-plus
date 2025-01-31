@@ -11,8 +11,8 @@ import { store } from './app/store.ts'
 import { Provider } from 'react-redux'
 // import { RouterProvider } from 'react-router-dom'
 // import { router } from './features/react-router/react-router.tsx'
-// registerLicense('Ngo9BigBOggjHTQxAR8/V1NBaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXlecnVRR2NdWEJwXUE=')
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NDaF5cWWtCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH9ecXRRRGZdVkN2XEY=')
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX5dcXRcRWBYUENwXUo=')
+// registerLicense('Ngo9BigBOggjHTQxAR8/V1NDaF5cWWtCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH9ecXRRRGZdVkN2XEY=')
 const twentyFourHoursInMs = 1000 * 60 * 60 * 24;
 const queryClient = new QueryClient(
   {
