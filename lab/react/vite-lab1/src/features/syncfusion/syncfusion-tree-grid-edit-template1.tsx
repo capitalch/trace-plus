@@ -1,37 +1,32 @@
 import { TreeGridComponent, ColumnsDirective, ColumnDirective, Edit, Inject } from '@syncfusion/ej2-react-treegrid';
-import { NumericFormat } from "react-number-format"
-// import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
-// import { NumericTextBoxComponent } from '@syncfusion/ej2-react-inputs';
+import { NumberFormatValues, NumericFormat } from "react-number-format"
 import { useEffect, useRef } from 'react';
+import { NumericEditTemplate } from './numeric-edit-template';
 
 export function SyncFusionTreeGridEditTemplate1() {
-    const meta: any = useRef({
+    const meta = useRef<MetaType>({
         editedValue: 0
     })
     const gridRef: any = useRef(null)
-    // const inputRef: any = useRef(null)
+
     return (
         <div className='m-4 flex flex-col gap-2'>
-            <button onClick={handleCheck} className='bg-gray-100 rounded-md px-2 w-24'>Check</button>
+            <button onClick={handleCheck} className='bg-gray-200 rounded-md px-2 w-24 border-l-8 text-black text-md cursor-pointer'>Check</button>
             <TreeGridComponent
                 actionBegin={onActionBegin}
-                actionComplete={onActionComplete}
-                // cellSave={onCellSave}
-                cellSelected={handleCellSelected}
                 dataSource={data}
-                rowSelected={handleRowSelected}
                 treeColumnIndex={2}
                 childMapping="subtasks"
                 editSettings={{
                     allowEditing: true,
-                    // allowEditOnSingleClick: true,
                     mode: 'Cell',
                 }}
-                ref={gridRef}
-            >
+                gridLines='Both'
+                ref={gridRef}>
                 <ColumnsDirective>
                     {/* Regular column */}
                     <ColumnDirective field="taskID" headerText="Task ID" width="90" textAlign="Right" isPrimaryKey={true} />
+
                     {/* Column with custom numeric editTemplate */}
                     <ColumnDirective
                         field="duration"
@@ -39,7 +34,7 @@ export function SyncFusionTreeGridEditTemplate1() {
                         headerText="Duration (Hours)"
                         width="150"
                         textAlign="Right"
-                        editTemplate={editTemplate}
+                        editTemplate={(args: any) => { return NumericEditTemplate(args, onValueChanged) }}
                     />
                     {/* Regular editable column */}
                     <ColumnDirective field="taskName" headerText="Task Name" width="200" />
@@ -50,9 +45,13 @@ export function SyncFusionTreeGridEditTemplate1() {
         </div>
     );
 
+    function onValueChanged(values: NumberFormatValues) {
+        meta.current.editedValue = values.value
+    }
+
     function editTemplate(args: any) {
-        meta.current.editedValue = args[args.column.field]
         const inputRef = useRef<HTMLInputElement>(null);
+
         useEffect(() => {
             if (inputRef.current) {
                 setTimeout(() => inputRef.current ? inputRef.current.focus() : undefined, 10)
@@ -60,9 +59,13 @@ export function SyncFusionTreeGridEditTemplate1() {
         }, [])
 
         return (
-            <NumericFormat className="text-right w-40 border-spacing-1 border-gray-300 h-8  mr-6 rounded-md" allowNegative={false}
-                decimalScale={2} getInputRef={inputRef}
-                fixedDecimalScale={true} autoFocus={true}
+            <NumericFormat
+                className="text-right w-40 border-spacing-1 border-gray-300 h-8 rounded-md border-2 bg-white"
+                allowNegative={false}
+                autoFocus={true}
+                decimalScale={2}
+                fixedDecimalScale={true}
+                getInputRef={inputRef}
                 onFocus={handleOnFocus}
                 thousandsGroupStyle="thousand"
                 thousandSeparator=','
@@ -78,78 +81,19 @@ export function SyncFusionTreeGridEditTemplate1() {
         }
     }
 
-    function handleCellSelected(args: any) {
-        if (args.column.allowEditing &&     // Check if column is editable
-            gridRef.current &&
-            !gridRef.current.isEdit      // Avoid edit conflicts
-        ) {
-            gridRef.current.startEdit(args.rowIndex, args.column.field);
-        }
-    }
-
     function handleCheck() {
         console.log(data)
-    }
-
-    function handleRowSelected(args: any) {
-        console.log(args)
-        const treeGrid = gridRef.current;
-
-        // Trigger edit mode on single click
-        if (args.target.closest('.e-rowcell')) {
-            const index = args.rowIndex;
-            const field = args.target.getAttribute('aria-colindex');
-            if (treeGrid) {
-                treeGrid.startEdit({
-                    rowIndex: index,
-                    columnName: field,
-                });
-            }
-        }
     }
 
     function onActionBegin(args: any) {
         if ((args.type === 'save') && (args.column.field === 'duration')) {
             args.rowData[args.column.field] = meta.current.editedValue
         }
-        if (args.requestType === 'beginEdit') {
-            // Focus the editor directly (optional)
-            setTimeout(() => {
-              const input = args.row.querySelector('input');
-              if (input) input.focus();
-            }, 0);
-          }
     }
 
-    function onActionComplete(args: any) {
-        console.log(args)
-        // const treeGridRef = gridRef.current
-        // if (args.type === 'save') {
-        //     // Find the edited row index
-        //     const rowIndex = treeGridRef.getSelectedRowIndexes()[0];
-        //     if (rowIndex !== undefined) {
-        //         // Get the edited row data
-        //         const rowData = treeGridRef.getCurrentViewRecords()[rowIndex];
-        //         args.data.Duration = 1000;
-        //         treeGridRef.refresh();
-        //         // Find the numeric textbox in the edited row
-        //         const numericInput = args.row.querySelector('.e-numerictextbox');
-        //         if (numericInput) {
-        //             // Get the numeric value from the textbox
-        //             const numericValue = numericInput.ej2_instances[0].value;
-        //             // Update the row data with the new value
-        //             rowData.Duration = numericValue;
-        //             // Refresh the TreeGrid to reflect the changes
-        //             treeGridRef.refresh();
-        //         }
-        //     }
-        // }
-    }
-
-    // function onCellSave(args: any) {
-    //     args.rowData[args.column.field] = meta.current.editedValue
-    //     gridRef.current.refresh()
-    // }
+}
+type MetaType = {
+    editedValue: number | string
 }
 
 const data = [

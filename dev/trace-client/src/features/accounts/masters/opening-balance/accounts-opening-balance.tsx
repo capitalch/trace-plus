@@ -15,6 +15,9 @@ import Decimal from "decimal.js"
 // import { TraceDataObjectType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-save-button"
+import { NumericEditTemplate } from "../../../../controls/components/numeric-edit-template"
+import { NumberFormatValues } from "react-number-format"
+// import { NumericFormat } from "react-number-format"
 // import { AppDispatchType } from "../../../../app/store/store"
 // import { useDispatch } from "react-redux"
 // import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice"
@@ -22,6 +25,7 @@ import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-sav
 
 export function AccountsOpeningBalance() {
     const [, setRefresh] = useState({})
+
     // const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.accountsOpeningBalance
     const {
@@ -33,7 +37,9 @@ export function AccountsOpeningBalance() {
         , finYearId
     } = useUtilsInfo()
 
-    const meta: any = useRef<MetaType>({
+    const meta = useRef<MetaType>({
+        editedCreditValue: 0,
+        editedDebitValue: 0,
         rows: [],
         flatData: {}
     })
@@ -51,6 +57,7 @@ export function AccountsOpeningBalance() {
         />
 
         <CompSyncfusionTreeGrid
+            actionBegin={onActionBegin}
             actionComplete={onActionComplete}
             // addUniqueKeyToJson={true}
             aggregates={getAggregates()}
@@ -150,16 +157,17 @@ export function AccountsOpeningBalance() {
                 customAttributes: {
                     class: 'grid-col-edit'
                 },
-                edit: {
-                    params:
-                    {
-                        decimals: 2,
-                        format: 'N2',
-                        showSpinButton: false,
-                        validateDecimalOnType: true
-                    }
-                },
-                editType: 'numericedit',
+                // edit: {
+                //     params:
+                //     {
+                //         decimals: 2,
+                //         format: 'N2',
+                //         showSpinButton: false,
+                //         validateDecimalOnType: true
+                //     }
+                // },
+                // editType: 'numericedit',
+                editTemplate: (args: any) => (NumericEditTemplate(args, onDebitValueChanged)),
                 field: 'debit',
                 headerText: 'Debits',
                 format: 'N2',
@@ -172,16 +180,17 @@ export function AccountsOpeningBalance() {
                 customAttributes: {
                     class: 'grid-col-edit'
                 },
-                edit: {
-                    params:
-                    {
-                        decimals: 2,
-                        format: 'N2',
-                        showSpinButton: false,
-                        validateDecimalOnType: true
-                    }
-                },
-                editType: 'numericedit', // 'textedit',
+                // edit: {
+                //     params:
+                //     {
+                //         decimals: 2,
+                //         format: 'N2',
+                //         showSpinButton: false,
+                //         validateDecimalOnType: true
+                //     }
+                // },
+                // editType: 'numericedit', // 'textedit',
+                editTemplate: (args: any) => (NumericEditTemplate(args, onCreditValueChanged)),
                 field: 'credit',
                 headerText: 'Credits',
                 format: 'N2',
@@ -295,6 +304,14 @@ export function AccountsOpeningBalance() {
         }
     }
 
+    function onDebitValueChanged(values: NumberFormatValues) {
+        meta.current.editedDebitValue = values.value
+    }
+
+    function onCreditValueChanged(values: NumberFormatValues) {
+        meta.current.editedCreditValue = values.value
+    }
+
     function onActionComplete(args: any) {
         if (args.type === 'save') {
             const currentData = args.data[args.column.field]
@@ -310,6 +327,12 @@ export function AccountsOpeningBalance() {
         }
     }
 
+    function onActionBegin(args: any) {
+        if ((args.type === 'save') && (args.column.field === 'debit')) {
+            args.rowData[args.column.field] = meta.current.editedDebitValue
+        }
+    }
+
     function onCellEdit(args: any) {
         if (!['S', 'Y'].includes(args.rowData.accLeaf)) {
             args.cancel = true
@@ -320,7 +343,7 @@ export function AccountsOpeningBalance() {
             return
         }
         if ((args.columnName === 'debit') && (args.rowData.credit !== 0)) {
-            args.cancel = true              
+            args.cancel = true
             Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
             return
         }
@@ -412,25 +435,8 @@ type AccountsOpeningBalanceType = {
 }
 
 type MetaType = {
-    rows: AccountsOpeningBalanceType[],
+    editedCreditValue: string | number
+    editedDebitValue: string | number
+    rows: AccountsOpeningBalanceType[]
     flatData: { [key: string]: AccountsOpeningBalanceType }
 }
-
-// function editTemplate(props: any) {
-//     return (
-//         <input
-//             type="text"
-//             defaultValue={props.value}
-//             onChange={(e) => props.setValue(e.target.value)}
-//             className="e-input bg-zinc-300"
-//         />
-//     );
-// }
-
-// function onCellSave(args: any) {
-// if (['debit', 'credit'].includes(args.column.field)) {
-//     if (args.previousValue !== args.value) {
-//         args.cell.style.backgroundColor = 'lightgreen'; // Add custom class to change cell background color
-//     }
-// }
-// }

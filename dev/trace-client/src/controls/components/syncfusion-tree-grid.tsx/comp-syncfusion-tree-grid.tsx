@@ -10,6 +10,7 @@ import { RootStateType } from "../../../app/store/store"
 import { selectCompSwitchStateFn } from "../../redux-components/comp-slice"
 
 export function CompSyncfusionTreeGrid({
+    actionBegin,
     actionComplete,
     addUniqueKeyToJson = false,
     aggregates,
@@ -50,7 +51,6 @@ export function CompSyncfusionTreeGrid({
             context.CompSyncFusionTreeGrid[instance] = {
                 expandedKeys: new Set(),
                 gridRef: undefined,
-                // isCollapsed: true,
                 loadData: undefined,
                 scrollPos: 0,
             }
@@ -69,13 +69,14 @@ export function CompSyncfusionTreeGrid({
         operator: 'contains',
         hierarchyMode: 'Both'
     }
-    // const isCollapsed = context.CompSyncFusionTreeGrid[instance]?.isCollapsed
+
     const rowDropOptions: RowDropSettingsModel = { targetID: gridDragAndDropSettings?.targetId }
 
     return (
         //The div container is important. The minWidth works with style only
         <div className="mt-2" style={{ minWidth: `${minWidth}` }} id="grid2">
             <TreeGridComponent
+                actionBegin={actionBegin}
                 actionComplete={actionComplete}
                 allowPdfExport={true}
                 allowExcelExport={true}
@@ -89,7 +90,6 @@ export function CompSyncfusionTreeGrid({
                 childMapping={childMapping}
                 className={className}
                 collapsed={onRowCollapsed}
-                created={onCreated}
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
                 enableCollapseAll={(isCollapsedRedux === undefined) ? true : isCollapsedRedux || false}
@@ -137,19 +137,6 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    function onCreated() {
-        // const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
-        // if (expandedKeys.size > 0) {
-        //     expandedKeys.forEach((key: number) => {
-        //         if (gridRef?.current?.expandByKey) {
-        //             setTimeout(() => {
-        //                 gridRef.current.expandByKey(key)
-        //             }, 500); // Delay between expansions. Otherwise error occurs
-        //         }
-        //     })
-        // }
-    }
-
     function onDataBound(e: any) {
         if (dataBound) {
             dataBound(e)
@@ -159,8 +146,6 @@ export function CompSyncfusionTreeGrid({
     function onRowCollapsed(args: any) {
         const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
         expandedKeys.delete(args.data.pkey)
-        // expandedKeys = expandedKeys.filter((key: any) => key !== args.data.pkey);
-        // context.CompSyncFusionTreeGrid[instance].expandedKeys = [...expandedKeys]
     }
 
     function onRowDataBound(args: any) {
@@ -180,9 +165,6 @@ export function CompSyncfusionTreeGrid({
             return
         }
         expandedKeys.add(args.data.pkey)
-        // if (!expandedKeys.includes(args.data.pkey)) {
-        //     expandedKeys.push(args.data.pkey)
-        // }
     }
 }
 
@@ -195,6 +177,7 @@ type GridDragAndDropSettingsType = {
 }
 
 export type CompSyncfusionTreeGridType = {
+    actionBegin?: (args: any) => void
     actionComplete?: (args: any) => void
     aggregates?: SyncFusionTreeGridAggregateColumnType[]
     addUniqueKeyToJson?: boolean
@@ -214,9 +197,7 @@ export type CompSyncfusionTreeGridType = {
     editSettings?: {
         allowEditing: boolean
         mode: 'Dialog' | 'Row' | 'Cell'
-        // showConfirmDialog: boolean
     }
-    // enableCollapseAll?: boolean
     graphQlQueryFromMap?: (
         dbName: string,
         val: GraphQLQueryArgsType
@@ -246,7 +227,7 @@ export type SyncFusionTreeGridColumnType = {
             [key: string]: any
         }
     }
-    editTemplate?: any
+    editTemplate?: any // (args: any) => void
     editType?: 'datepickeredit' | 'textedit' | 'numericedit'
     field: string
     format?: string

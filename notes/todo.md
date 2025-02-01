@@ -40,10 +40,10 @@
 															- helper function and GraphQl
 	- client
 													- TreeGrid when expanded switch is on, after refresh button click it is not obeyed
-		- Expanded status of grid to retain after change of data
+													- Expanded status of grid to retain after change of data
 		- scrollpos to retain after refresh
 													- Save button graceful
-		- Try out editTemplate
+													- Try out editTemplate
 													- Submit
 														- Complete for insert and update
 														- Test

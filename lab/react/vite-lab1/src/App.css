@@ -9,13 +9,13 @@
 @import "../node_modules/@syncfusion/ej2-react-calendars/styles/material.css";
 
 @import 'react-sliding-pane/dist/react-sliding-pane.css';
-
-@import "tailwindcss/preflight"
+@import "tailwindcss";
+/* @import "tailwindcss/preflight"; */
 /* @tailwind base; */
 /* @tailwind components; */
-@tailwind utilities;
-        
-/* @layer components {
+/* @tailwind utilities; */
+/*         
+@layer components {
 
 } */
 
