@@ -17,6 +17,7 @@ export type GlobalContextType = {
     [key: string]: {
       gridRef?: any
       loadData?: any
+      scrollPos?: number
     }
   }
   CompSyncFusionTreeGrid: {

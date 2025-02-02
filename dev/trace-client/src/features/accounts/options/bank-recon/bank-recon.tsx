@@ -304,7 +304,7 @@ export function BankRecon() {
 
     function onRowDataBound(args: any) {
         if ((args.data.origClearDate !== args.data.clearDate) || (args.data.clearRemarks !== args.data.clearRemarks)) {
-            args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
+            // args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
         }
     }
 }

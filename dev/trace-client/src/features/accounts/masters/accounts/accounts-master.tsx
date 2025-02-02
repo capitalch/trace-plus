@@ -50,7 +50,7 @@ export function AccountsMaster() {
             buCode={buCode}
             childMapping="children"
             className="mr-6"
-            dataBound={onDataBound}
+            // dataBound={onDataBound}
             dataPath="accountsMaster"
             dbName={dbName}
             dbParams={decodedDbParamsObject}
@@ -299,9 +299,9 @@ export function AccountsMaster() {
         return (isSuccess)
     }
 
-    function onDataBound() {
-        Utils.treeGridUtils.restoreScrollPos(context, instance)
-    }
+    // function onDataBound() {
+    //     Utils.treeGridUtils.restoreScrollPos(context, instance)
+    // }
 
     function setIsPaneOpen(accId: number, isAddressExists: boolean | undefined) {
         Utils.treeGridUtils.saveScrollPos(context, instance) // Save scroll pos for contact and addresses

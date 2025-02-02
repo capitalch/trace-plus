@@ -8,6 +8,8 @@ import { DocumentNode } from "graphql"
 import { shallowEqual, useSelector } from "react-redux"
 import { RootStateType } from "../../../app/store/store"
 import { selectCompSwitchStateFn } from "../../redux-components/comp-slice"
+import { Utils } from "../../../utils/utils"
+// import { Utils } from "../../../utils/utils"
 
 export function CompSyncfusionTreeGrid({
     actionBegin,
@@ -21,7 +23,7 @@ export function CompSyncfusionTreeGrid({
     childMapping,
     className = '',
     columns,
-    dataBound,
+    // dataBound,
     dataPath,
     dataSource,
     dbName,
@@ -36,6 +38,7 @@ export function CompSyncfusionTreeGrid({
     minWidth = '600px',
     pageSize = 50,
     queryCellInfo,
+    rowDataBound,
     rowHeight,
     sqlArgs,
     sqlId,
@@ -57,6 +60,20 @@ export function CompSyncfusionTreeGrid({
         }
         context.CompSyncFusionTreeGrid[instance].loadData = loadData || loadDataLocal
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
+        // Add scroll event listener to remember scrolled location
+        // const current = gridRef.current;
+        const treegridElement = gridRef?.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
+        if (treegridElement) {
+            const scrollableContainer = treegridElement.querySelector('.e-content');
+            scrollableContainer.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (gridRef.current) {
+                const treegridElement = gridRef.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
+                treegridElement.removeEventListener('scroll', handleScroll);
+            }
+        };
     }, [])
 
     if (loading) {
@@ -90,6 +107,8 @@ export function CompSyncfusionTreeGrid({
                 childMapping={childMapping}
                 className={className}
                 collapsed={onRowCollapsed}
+                created={onCreated}
+                dataBound={onDataBound}
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
                 enableCollapseAll={(isCollapsedRedux === undefined) ? true : isCollapsedRedux || false}
@@ -98,7 +117,7 @@ export function CompSyncfusionTreeGrid({
                 gridLines="Both"
                 height={height}
                 id={instance}
-                dataBound={onDataBound}
+                load={onLoad}
                 pageSettings={{ pageSize: pageSize }}
                 queryCellInfo={queryCellInfo}
                 ref={gridRef}
@@ -137,10 +156,21 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    function onDataBound(e: any) {
-        if (dataBound) {
-            dataBound(e)
-        }
+    function handleScroll(args: any) {
+        Utils.treeGridUtils.saveScrollPos(context, instance)
+        console.log(args)
+    }
+
+    function onCreated(args: any) {
+        console.log(args)
+    }
+
+    function onLoad(args: any) {
+        console.log(args)
+    }
+
+    function onDataBound() {
+        Utils.treeGridUtils.restoreScrollPos(context, instance)
     }
 
     function onRowCollapsed(args: any) {
@@ -156,6 +186,9 @@ export function CompSyncfusionTreeGrid({
         const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
         if (expandedKeys.has(args.data.pkey)) {
             setTimeout(() => gridRef.current.expandRow(args.row), 50)
+        }
+        if(rowDataBound){
+            rowDataBound(args)
         }
     }
 
@@ -191,7 +224,7 @@ export type CompSyncfusionTreeGridType = {
     columns: SyncFusionTreeGridColumnType[]
     dataPath?: string
     dataSource?: any
-    dataBound?: (args: any) => void
+    // dataBound?: (args: any) => void
     dbName?: string
     dbParams?: { [key: string]: string | undefined }
     editSettings?: {
@@ -211,6 +244,7 @@ export type CompSyncfusionTreeGridType = {
     pageSize?: number
     onRowDrop?: (args: any) => void
     queryCellInfo?: (args: any) => void
+    rowDataBound?: (args: any) => void
     rowHeight?: number
     sqlArgs?: SqlArgsType
     sqlId?: string

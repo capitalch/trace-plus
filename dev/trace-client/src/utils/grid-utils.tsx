@@ -3,24 +3,26 @@ import { GlobalContextType } from "../app/global-context"
 export const gridUtils: GridUtilsType = {
 
     resetScrollPos(context: GlobalContextType, instance: string) {
-        context.CompSyncFusionTreeGrid[instance].scrollPos = 0
+        context.CompSyncFusionGrid[instance].scrollPos = 0
     },
 
     restoreScrollPos(context: GlobalContextType, instance: string) {
-        const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-        const treeGridElement = gridRef?.current?.grid?.getContent();
-        if (treeGridElement) {
-            const scrollableContainer = treeGridElement.querySelector('.e-content');
-            scrollableContainer.scrollTop = context.CompSyncFusionTreeGrid[instance].scrollPos
+        const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+        const gridElement = gridRef?.current?.grid?.getContent();
+        if (gridElement) {
+            const scrollableContainer = gridElement.querySelector('.e-content');
+            scrollableContainer.scrollTop = context.CompSyncFusionGrid[instance].scrollPos
         }
     },
     
     saveScrollPos(context: GlobalContextType, instance: string) {
-        const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-        const treeGridElement = gridRef?.current?.grid?.getContent();
-        if (treeGridElement) {
-            const scrollableContainer = treeGridElement.querySelector('.e-content'); // Adjust selector if needed
-            context.CompSyncFusionTreeGrid[instance].scrollPos = scrollableContainer.scrollTop
+        const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+        const gridElement = gridRef?.current?.grid?.getContent();
+        if (gridElement) {
+            const scrollableContainer = gridElement.querySelector('.e-content'); // Adjust selector if needed
+            if(scrollableContainer.scrollTop > 0){
+                context.CompSyncFusionGrid[instance].scrollPos = scrollableContainer.scrollTop
+            }
         }
     }
 }

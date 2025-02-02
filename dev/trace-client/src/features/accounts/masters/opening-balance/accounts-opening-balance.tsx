@@ -38,10 +38,11 @@ export function AccountsOpeningBalance() {
     } = useUtilsInfo()
 
     const meta = useRef<MetaType>({
-        editedCreditValue: 0,
-        editedDebitValue: 0,
         rows: [],
         flatData: {}
+    })
+
+    const editMeta = useRef<EditMetaType>({
     })
 
     useEffect(() => {
@@ -49,6 +50,7 @@ export function AccountsOpeningBalance() {
     }, [])
 
     return (<CompAccountsContainer>
+        {/* <button onClick={HandleSetScroll}>Set scroll</button> */}
         <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} />}
             title='Accounts opening balances'
             isLastNoOfRows={false}
@@ -78,6 +80,7 @@ export function AccountsOpeningBalance() {
             loadData={loadData}
             minWidth='950px'
             queryCellInfo={onQueryCellInfo}
+            // rowDataBound={onRowDataBound}
             treeColumnIndex={0}
         />
     </CompAccountsContainer>)
@@ -101,6 +104,12 @@ export function AccountsOpeningBalance() {
         }
         return (logicObject?.[props.accType] || '')
     }
+
+    // function HandleSetScroll() {
+    //     Utils.treeGridUtils.restoreScrollPos(context, instance)
+    //     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+    //     gridRef.current.refresh()
+    // }
 
     function calculateCredits() {
         const ret: Decimal = meta.current.rows.reduce((sum: Decimal, current: AccountsOpeningBalanceType) =>
@@ -269,6 +278,7 @@ export function AccountsOpeningBalance() {
                     xData: formattedData
                 })
                 Utils.showSaveMessage()
+                Utils.treeGridUtils.saveScrollPos(context, instance)
                 await loadData()
             } catch (e: any) {
                 console.log(e)
@@ -298,18 +308,25 @@ export function AccountsOpeningBalance() {
                 sumDebitCredit()
                 flattenData(meta.current.rows)
                 setRefresh({})
+                Utils.treeGridUtils.restoreScrollPos(context, instance)
             }
         } catch (e: any) {
             console.log(e)
         }
     }
 
-    function onDebitValueChanged(values: NumberFormatValues) {
-        meta.current.editedDebitValue = values.value
+    function onDebitValueChanged(args: any, values: NumberFormatValues) {
+        if (!editMeta.current[args.id]) {
+            editMeta.current[args.id] = {}
+        }
+        editMeta.current[args.id].editedDebitValue = values.floatValue
     }
 
-    function onCreditValueChanged(values: NumberFormatValues) {
-        meta.current.editedCreditValue = values.value
+    function onCreditValueChanged(args: any, values: NumberFormatValues) {
+        if (!editMeta.current[args.id]) {
+            editMeta.current[args.id] = {}
+        }
+        editMeta.current[args.id].editedCreditValue = values.floatValue
     }
 
     function onActionComplete(args: any) {
@@ -321,7 +338,7 @@ export function AccountsOpeningBalance() {
                 const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                 if (gridRef) {
                     gridRef.current.endEdit()
-                    gridRef.current.refresh()
+                    // gridRef.current.refresh()
                 }
             }
         }
@@ -329,7 +346,14 @@ export function AccountsOpeningBalance() {
 
     function onActionBegin(args: any) {
         if ((args.type === 'save') && (args.column.field === 'debit')) {
-            args.rowData[args.column.field] = meta.current.editedDebitValue
+            if (editMeta.current?.[args.rowData.id] !== undefined) {
+                args.rowData[args.column.field] = editMeta.current?.[args.rowData.id]?.editedDebitValue
+            }
+        }
+        if ((args.type === 'save') && (args.column.field === 'credit')) {
+            if (editMeta.current?.[args.rowData.id] !== undefined) {
+                args.rowData[args.column.field] = editMeta.current?.[args.rowData.id]?.editedCreditValue
+            }
         }
     }
 
@@ -342,35 +366,20 @@ export function AccountsOpeningBalance() {
             args.cancel = true
             return
         }
-        if ((args.columnName === 'debit') && (args.rowData.credit !== 0)) {
+        if ((args.columnName === 'debit') && (+args.rowData.credit !== 0)) {
             args.cancel = true
-            Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
             return
         }
-        if ((args.columnName === 'credit') && (args.rowData.debit !== 0)) {
+        if ((args.columnName === 'credit') && (+args.rowData.debit !== 0)) {
             args.cancel = true
-            Utils.showCustomMessage(Messages.messDebitCreditNotTogether)
             return
         }
-
-        setTimeout(() => {
-            if (['debit', 'credit'].includes(args.columnName)) {
-                if (['S', 'Y'].includes(args.rowData.accLeaf)) {
-                    const inputElement = args.row.querySelector('input');
-                    if (inputElement) {
-                        inputElement.value = parseFloat(inputElement.value).toFixed(2);
-                        inputElement.focus();
-                        inputElement.select();  // Select all text
-                    }
-                }
-            }
-        }, 100);
     }
 
     function onQueryCellInfo(args: any) {
         if (['debit', 'credit'].includes(args.column.field)) {
             if (['S', 'Y'].includes(args.data.accLeaf)) {
-                if (args.data.isValueChanged) {
+                if (args.data.taskData.isValueChanged) {
                     args.cell.style.backgroundColor = 'lightgreen';
                 } else {
                     args.cell.style.backgroundColor = 'lightyellow';
@@ -378,6 +387,12 @@ export function AccountsOpeningBalance() {
             }
         }
     }
+
+    // function onRowDataBound(args: any) {
+    //     if (args.data.taskData.isValueChanged) {
+    //         args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
+    //     }
+    // }
 
     function sumDebitCredit() {
         const nodes: any[] = meta.current.rows
@@ -435,8 +450,13 @@ type AccountsOpeningBalanceType = {
 }
 
 type MetaType = {
-    editedCreditValue: string | number
-    editedDebitValue: string | number
     rows: AccountsOpeningBalanceType[]
     flatData: { [key: string]: AccountsOpeningBalanceType }
+}
+
+type EditMetaType = {
+    [key: string]: {
+        editedCreditValue?: string | number
+        editedDebitValue?: string | number
+    }
 }

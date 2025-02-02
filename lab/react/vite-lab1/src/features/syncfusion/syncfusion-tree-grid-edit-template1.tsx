@@ -5,9 +5,32 @@ import { NumericEditTemplate } from './numeric-edit-template';
 
 export function SyncFusionTreeGridEditTemplate1() {
     const meta = useRef<MetaType>({
-        editedValue: 0
+
     })
     const gridRef: any = useRef(null)
+
+    useEffect(() => {
+        const treegridRef = gridRef
+        if (treegridRef.current) {
+            const treegridElement = gridRef?.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
+            if (treegridElement) {
+                const scrollableContainer = treegridElement.querySelector('.e-content');
+                scrollableContainer.addEventListener('scroll', handleScroll);
+                // treegridElement.addEventListener('scroll', handleScroll);
+            }
+        }
+
+        return () => {
+            if (treegridRef.current) {
+                const treegridElement = gridRef?.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
+                treegridElement.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    function handleScroll(args: any) {
+        console.log(args)
+    }
 
     return (
         <div className='m-4 flex flex-col gap-2'>
@@ -22,6 +45,7 @@ export function SyncFusionTreeGridEditTemplate1() {
                     mode: 'Cell',
                 }}
                 gridLines='Both'
+                // height={200}
                 ref={gridRef}>
                 <ColumnsDirective>
                     {/* Regular column */}
@@ -45,40 +69,12 @@ export function SyncFusionTreeGridEditTemplate1() {
         </div>
     );
 
-    function onValueChanged(values: NumberFormatValues) {
-        meta.current.editedValue = values.value
-    }
-
-    function editTemplate(args: any) {
-        const inputRef = useRef<HTMLInputElement>(null);
-
-        useEffect(() => {
-            if (inputRef.current) {
-                setTimeout(() => inputRef.current ? inputRef.current.focus() : undefined, 10)
-            }
-        }, [])
-
-        return (
-            <NumericFormat
-                className="text-right w-40 border-spacing-1 border-gray-300 h-8 rounded-md border-2 bg-white"
-                allowNegative={false}
-                autoFocus={true}
-                decimalScale={2}
-                fixedDecimalScale={true}
-                getInputRef={inputRef}
-                onFocus={handleOnFocus}
-                thousandsGroupStyle="thousand"
-                thousandSeparator=','
-                value={args[args.column.field] || 0}
-                onValueChange={(values) => {
-                    meta.current.editedValue = values.value
-                }}
-            />
-        );
-
-        function handleOnFocus(event: any): void {
-            event.target.select()
+    function onValueChanged(args: any, values: NumberFormatValues) {
+        // console.log(args)
+        if (!meta.current[args.taskID]) {
+            meta.current[args.taskID] = {}
         }
+        meta.current[args.taskID].editedValue = +values.value
     }
 
     function handleCheck() {
@@ -87,13 +83,17 @@ export function SyncFusionTreeGridEditTemplate1() {
 
     function onActionBegin(args: any) {
         if ((args.type === 'save') && (args.column.field === 'duration')) {
-            args.rowData[args.column.field] = meta.current.editedValue
+            if (meta.current?.[args.rowData.taskID] !== undefined) {
+                args.rowData[args.column.field] = meta.current?.[args.rowData.taskID]?.editedValue
+            }
         }
     }
 
 }
 type MetaType = {
-    editedValue: number | string
+    [key: string]: {
+        editedValue?: number | string
+    }
 }
 
 const data = [
