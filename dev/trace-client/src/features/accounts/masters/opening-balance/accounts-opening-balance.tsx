@@ -7,27 +7,19 @@ import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/s
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { useEffect, useRef, useState } from "react"
-// import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { Utils } from "../../../../utils/utils"
 import _ from "lodash"
 import { Messages } from "../../../../utils/messages"
 import Decimal from "decimal.js"
-// import { TraceDataObjectType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-save-button"
 import { NumericEditTemplate } from "../../../../controls/components/numeric-edit-template"
 import { NumberFormatValues } from "react-number-format"
-import { treeGridUtils } from "../../../../utils/tree-grid-utils"
-// import { NumericFormat } from "react-number-format"
-// import { AppDispatchType } from "../../../../app/store/store"
-// import { useDispatch } from "react-redux"
-// import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice"
-// import Decimal from "decimal.js"
+// import { treeGridUtils } from "../../../../utils/tree-grid-utils"
 
 export function AccountsOpeningBalance() {
     const [, setRefresh] = useState({})
 
-    // const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.accountsOpeningBalance
     const {
         branchId
@@ -51,7 +43,7 @@ export function AccountsOpeningBalance() {
     }, [])
 
     return (<CompAccountsContainer>
-        <button onClick={HandleSetScroll}>Set scroll</button>
+        {/* <button onClick={HandleSetScroll}>Set scroll</button> */}
         <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} />}
             title='Accounts opening balances'
             isLastNoOfRows={false}
@@ -106,17 +98,15 @@ export function AccountsOpeningBalance() {
         return (logicObject?.[props.accType] || '')
     }
 
-    function HandleSetScroll() {
-        // Utils.treeGridUtils.restoreScrollPos(context, instance)
-        const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-        const treeGridElement = gridRef?.current?.grid?.getContent();
-        if (treeGridElement) {
-            const scrollableContainer = treeGridElement.querySelector('.e-content');
-            scrollableContainer.scrollTop = 300
-            // gridRef.current.refresh()
-            // setTimeout(() => (scrollableContainer.scrollTop = context.CompSyncFusionTreeGrid[instance].scrollPos), 500)
-        }
-    }
+    // function HandleSetScroll() {
+    //     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+    //     const treeGridElement = gridRef?.current?.grid?.getContent();
+    //     if (treeGridElement) {
+    //         const scrollableContainer = treeGridElement.querySelector('.e-content');
+    //         scrollableContainer.scrollTop = 300
+    //         treeGridUtils.saveScrollPos(context, instance)
+    //     }
+    // }
 
     function calculateCredits() {
         const ret: Decimal = meta.current.rows.reduce((sum: Decimal, current: AccountsOpeningBalanceType) =>
@@ -285,7 +275,7 @@ export function AccountsOpeningBalance() {
                     xData: formattedData
                 })
                 Utils.showSaveMessage()
-                Utils.treeGridUtils.saveScrollPos(context, instance)
+                // Utils.treeGridUtils.saveScrollPos(context, instance)
                 await loadData()
             } catch (e: any) {
                 console.log(e)
@@ -307,10 +297,12 @@ export function AccountsOpeningBalance() {
             }
         )
         try {
+            // Utils.treeGridUtils.saveScrollPos(context,instance)
             const res: any = await Utils.queryGraphQL(q, queryName)
             meta.current.rows = res?.data?.[queryName]
             // Creates persistence of expanded rows
             Utils.addUniqueKeysToJson(meta.current.rows) // adds unique pkey to each record
+            // Utils.treeGridUtils.saveScrollPos(context,instance)
             if (!_.isEmpty(meta.current.rows)) {
                 sumDebitCredit()
                 flattenData(meta.current.rows)
@@ -419,7 +411,7 @@ export function AccountsOpeningBalance() {
         nodes.forEach((node: any) => calculateTotals(node));
 
         const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-        treeGridUtils.saveScrollPos(context, instance)
+        // treeGridUtils.saveScrollPos(context, instance)
         if (gridRef) {
             gridRef.current.dataSource = nodes // resets scrollpos
             gridRef.current.endEdit()

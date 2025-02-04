@@ -3,8 +3,10 @@
 																			- General ledger		: 22-12-2024
 																			- Bank Reconcillation	: 31-12-2024
 																			- Masters: Accounts		: Targetted: 31-12-2024, Completed: 19-01-2025
+																			- Unit info, General settings: Opening balances, Branches, 
+																				Financial years		: Targetted: 12-01-2025, Completed: 04-02-2025
 - Jan 2025
-	- Unit info, General settings: Opening balances, Branches, Financial years: 12-01-2025
+	
 	- Common utilities, Exports	: 19-01-2025
 	- Vouchers				: 31-01-2025
 - Feb 2025
@@ -14,6 +16,8 @@
 - Bug fixes etc.
 
 ## History
+# 04-02-2025
+	- Completed Opening balances, Branches, Financial Years
 # 22-01-2025
 	- Completed General settings
 # 20-01-2025 - 21-01-2025

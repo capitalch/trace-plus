@@ -162,7 +162,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "52",
           label: "Common utilities",
-          path: "/blogs",
+          path: "/common-utilities",
         },
         {
           id: "53",

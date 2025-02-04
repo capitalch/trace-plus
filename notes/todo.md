@@ -32,16 +32,20 @@
 	- rename generic-switch to comp-generic-switch in Master accounts
 	- XData showing typescript error in many places. Need to correct the types
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
-- Opening balances
+- Common utilities
+	- Transfer balances
+- Exports
+	- GST exports
+												- Opening balances
 															- Accounts master addUniqueKeyToJson; change Utils method to have dataPath
 															- init
 														- server
 															- sql
 															- helper function and GraphQl
-	- client
+												- client
 													- TreeGrid when expanded switch is on, after refresh button click it is not obeyed
 													- Expanded status of grid to retain after change of data
-		- scrollpos to retain after refresh
+													- scrollpos to retain after refresh
 													- Save button graceful
 													- Try out editTemplate
 													- Submit

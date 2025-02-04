@@ -61,18 +61,25 @@ export function CompSyncfusionTreeGrid({
         context.CompSyncFusionTreeGrid[instance].loadData = loadData || loadDataLocal
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
         // Add scroll event listener to remember scrolled location
-        // const current = gridRef.current;
-        const treegridElement = gridRef?.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
-        if (treegridElement) {
-            const scrollableContainer = treegridElement.querySelector('.e-content');
+        // const current = gridRef.current
+        const treeGridElement = gridRef?.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
+        if (treeGridElement) {
+            const scrollableContainer = treeGridElement.querySelector('.e-content');
             scrollableContainer.addEventListener('scroll', handleScroll);
         }
 
         return () => {
-            if (gridRef.current) {
-                const treegridElement = gridRef.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
-                treegridElement.removeEventListener('scroll', handleScroll);
+            if (treeGridElement) {
+                // const scrollableContainer = treeGridElement.querySelector('.e-content'); // Adjust selector if needed
+                // context.CompSyncFusionTreeGrid[instance].scrollPos = scrollableContainer.scrollTop
+                treeGridElement.removeEventListener('scroll', handleScroll);
             }
+            // if (current) {
+            //     const treegridElement = current?.grid?.getContent() // (treegridRef.current as any).grid.element;
+            //     if (treegridElement) {
+            //         treegridElement.removeEventListener('scroll', handleScroll);
+            //     }
+            // }
         };
     }, [])
 
@@ -108,7 +115,7 @@ export function CompSyncfusionTreeGrid({
                 className={className}
                 collapsed={onRowCollapsed}
                 created={onCreated}
-                dataBound={onDataBound}
+                // dataBound={onDataBound}
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
                 enableCollapseAll={(isCollapsedRedux === undefined) ? true : isCollapsedRedux || false}
@@ -169,9 +176,9 @@ export function CompSyncfusionTreeGrid({
         console.log(args)
     }
 
-    function onDataBound() {
-        Utils.treeGridUtils.restoreScrollPos(context, instance)
-    }
+    // function onDataBound() {
+    //     Utils.treeGridUtils.restoreScrollPos(context, instance)
+    // }
 
     function onRowCollapsed(args: any) {
         const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()
@@ -187,7 +194,7 @@ export function CompSyncfusionTreeGrid({
         if (expandedKeys.has(args.data.pkey)) {
             setTimeout(() => gridRef.current.expandRow(args.row), 50)
         }
-        if(rowDataBound){
+        if (rowDataBound) {
             rowDataBound(args)
         }
     }
