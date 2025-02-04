@@ -17,6 +17,7 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-save-button"
 import { NumericEditTemplate } from "../../../../controls/components/numeric-edit-template"
 import { NumberFormatValues } from "react-number-format"
+import { treeGridUtils } from "../../../../utils/tree-grid-utils"
 // import { NumericFormat } from "react-number-format"
 // import { AppDispatchType } from "../../../../app/store/store"
 // import { useDispatch } from "react-redux"
@@ -50,7 +51,7 @@ export function AccountsOpeningBalance() {
     }, [])
 
     return (<CompAccountsContainer>
-        {/* <button onClick={HandleSetScroll}>Set scroll</button> */}
+        <button onClick={HandleSetScroll}>Set scroll</button>
         <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} />}
             title='Accounts opening balances'
             isLastNoOfRows={false}
@@ -105,11 +106,17 @@ export function AccountsOpeningBalance() {
         return (logicObject?.[props.accType] || '')
     }
 
-    // function HandleSetScroll() {
-    //     Utils.treeGridUtils.restoreScrollPos(context, instance)
-    //     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-    //     gridRef.current.refresh()
-    // }
+    function HandleSetScroll() {
+        // Utils.treeGridUtils.restoreScrollPos(context, instance)
+        const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+        const treeGridElement = gridRef?.current?.grid?.getContent();
+        if (treeGridElement) {
+            const scrollableContainer = treeGridElement.querySelector('.e-content');
+            scrollableContainer.scrollTop = 300
+            // gridRef.current.refresh()
+            // setTimeout(() => (scrollableContainer.scrollTop = context.CompSyncFusionTreeGrid[instance].scrollPos), 500)
+        }
+    }
 
     function calculateCredits() {
         const ret: Decimal = meta.current.rows.reduce((sum: Decimal, current: AccountsOpeningBalanceType) =>
@@ -123,6 +130,15 @@ export function AccountsOpeningBalance() {
             (sum.plus(current.debit || 0)), new Decimal(0))
         const r: number = ret.toNumber()
         return (r)
+    }
+
+    function flattenData(items: AccountsOpeningBalanceType[]) {
+        items.forEach((item: AccountsOpeningBalanceType) => {
+            meta.current.flatData[item.id] = item
+            if (item.children && item.children.length > 0) {
+                flattenData(item.children)
+            }
+        })
     }
 
     function getAggregates(): SyncFusionTreeGridAggregateColumnType[] {
@@ -233,15 +249,6 @@ export function AccountsOpeningBalance() {
         ])
     }
 
-    function flattenData(items: AccountsOpeningBalanceType[]) {
-        items.forEach((item: AccountsOpeningBalanceType) => {
-            meta.current.flatData[item.id] = item
-            if (item.children && item.children.length > 0) {
-                flattenData(item.children)
-            }
-        })
-    }
-
     async function handleOnSubmit() {
         const changedData: AccountsOpeningBalanceType[]
             = Object.values(meta.current.flatData as Record<string, AccountsOpeningBalanceType>).filter((item: AccountsOpeningBalanceType) => item.isValueChanged)
@@ -315,18 +322,17 @@ export function AccountsOpeningBalance() {
         }
     }
 
-    function onDebitValueChanged(args: any, values: NumberFormatValues) {
-        if (!editMeta.current[args.id]) {
-            editMeta.current[args.id] = {}
+    function onActionBegin(args: any) {
+        if ((args.type === 'save') && (args.column.field === 'debit')) {
+            if (editMeta.current?.[args.rowData.id] !== undefined) {
+                args.rowData[args.column.field] = editMeta.current?.[args.rowData.id]?.editedDebitValue
+            }
         }
-        editMeta.current[args.id].editedDebitValue = values.floatValue
-    }
-
-    function onCreditValueChanged(args: any, values: NumberFormatValues) {
-        if (!editMeta.current[args.id]) {
-            editMeta.current[args.id] = {}
+        if ((args.type === 'save') && (args.column.field === 'credit')) {
+            if (editMeta.current?.[args.rowData.id] !== undefined) {
+                args.rowData[args.column.field] = editMeta.current?.[args.rowData.id]?.editedCreditValue
+            }
         }
-        editMeta.current[args.id].editedCreditValue = values.floatValue
     }
 
     function onActionComplete(args: any) {
@@ -340,19 +346,6 @@ export function AccountsOpeningBalance() {
                     gridRef.current.endEdit()
                     // gridRef.current.refresh()
                 }
-            }
-        }
-    }
-
-    function onActionBegin(args: any) {
-        if ((args.type === 'save') && (args.column.field === 'debit')) {
-            if (editMeta.current?.[args.rowData.id] !== undefined) {
-                args.rowData[args.column.field] = editMeta.current?.[args.rowData.id]?.editedDebitValue
-            }
-        }
-        if ((args.type === 'save') && (args.column.field === 'credit')) {
-            if (editMeta.current?.[args.rowData.id] !== undefined) {
-                args.rowData[args.column.field] = editMeta.current?.[args.rowData.id]?.editedCreditValue
             }
         }
     }
@@ -376,6 +369,20 @@ export function AccountsOpeningBalance() {
         }
     }
 
+    function onCreditValueChanged(args: any, values: NumberFormatValues) {
+        if (!editMeta.current[args.id]) {
+            editMeta.current[args.id] = {}
+        }
+        editMeta.current[args.id].editedCreditValue = values.floatValue
+    }
+
+    function onDebitValueChanged(args: any, values: NumberFormatValues) {
+        if (!editMeta.current[args.id]) {
+            editMeta.current[args.id] = {}
+        }
+        editMeta.current[args.id].editedDebitValue = values.floatValue
+    }
+
     function onQueryCellInfo(args: any) {
         if (['debit', 'credit'].includes(args.column.field)) {
             if (['S', 'Y'].includes(args.data.accLeaf)) {
@@ -387,12 +394,6 @@ export function AccountsOpeningBalance() {
             }
         }
     }
-
-    // function onRowDataBound(args: any) {
-    //     if (args.data.taskData.isValueChanged) {
-    //         args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
-    //     }
-    // }
 
     function sumDebitCredit() {
         const nodes: any[] = meta.current.rows
@@ -418,10 +419,11 @@ export function AccountsOpeningBalance() {
         nodes.forEach((node: any) => calculateTotals(node));
 
         const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
+        treeGridUtils.saveScrollPos(context, instance)
         if (gridRef) {
-            gridRef.current.dataSource = nodes
+            gridRef.current.dataSource = nodes // resets scrollpos
             gridRef.current.endEdit()
-            gridRef.current.refresh()
+            gridRef.current.refresh() // resets scrollpos
         }
     }
 
