@@ -16,6 +16,8 @@ export const DataInstancesMap = {
   bankReconOpBalance: "bank-recon-op-balance",
   branchMaster: "branch-master",
   companyInfo: "company-info",
+  commonUtilsTransferClosingBalance:
+    "common-utilities-transfer-closing-balance",
   contactsAndAddresses: "contacts-and-addresses",
   expenses: "expenses",
   finYearsMaster: "fin-years-master",

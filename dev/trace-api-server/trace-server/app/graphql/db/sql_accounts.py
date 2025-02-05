@@ -170,8 +170,8 @@ class SqlAccounts:
                 from "AccM" a 
                     where "accType" in ('A', 'L')
                         order by "accType", "accName", a."id"),
-            -- "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-                "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+             "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+                --"branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
             opbal as (
                 select "id" as "opId", "accId", "amount", "dc", "branchId"
                     from "AccOpBal"
@@ -672,6 +672,113 @@ class SqlAccounts:
         end $$;
     """
         ).format(jData=sql.Literal(params["jData"]))
+
+    # Assisted by AI
+    def upsert_transfer_closing_balance(params):
+        return sql.SQL(
+            """
+            DO $$
+            DECLARE 
+                "profitOrLoss" DECIMAL(17,2);
+            BEGIN
+                --with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+                --    with "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+                    
+                    -- Step 1: Delete Old Balances
+                    DELETE FROM "AccOpBal"
+                    WHERE ("finYearId" = ({finYearId} + 1) AND "branchId" = {branchId}) 
+                    OR "amount" = 0;
+                    
+                    -- Step 2: Aggregate Initial Balances (from AccOpBal & TranD)
+                    with initial_data AS (
+                        SELECT 
+                            a."id" AS "accId",
+                            SUM(CASE WHEN b."dc" = 'C' THEN -b."amount" ELSE b."amount" END) AS amount,
+                            b."finYearId",
+                            b."branchId"
+                        FROM "AccM" a
+                        JOIN "AccOpBal" b ON a."id" = b."accId"
+                        WHERE b."finYearId" = {finYearId}
+                            AND b."branchId" = {branchId}
+                            AND a."accType" IN ('A', 'L')
+                            AND a."accLeaf" IN ('Y', 'S')
+                        GROUP BY a."id", b."finYearId", b."branchId"
+                        
+                        UNION ALL
+
+                        SELECT 
+                            a."id" AS "accId",
+                            SUM(CASE WHEN t."dc" = 'C' THEN -t."amount" ELSE t."amount" END) AS amount,
+                            h."finYearId",
+                            h."branchId"
+                        FROM "AccM" a
+                        JOIN "TranD" t ON a."id" = t."accId"
+                        JOIN "TranH" h ON h."id" = t."tranHeaderId"
+                        WHERE h."finYearId" = {finYearId}
+                            AND h."branchId" = {branchId}
+                            AND a."accType" IN ('A', 'L')
+                            AND a."accLeaf" IN ('Y', 'S')
+                        GROUP BY a."id", h."finYearId", h."branchId"
+                    ),
+                    
+                    -- Step 3: Summarized Account Balances
+                    summarized_data AS (
+                        SELECT "accId", SUM("amount") AS "amount"
+                        FROM "initial_data"
+                        GROUP BY "accId"
+                    ),
+
+                    -- Step 4: Calculate Profit or Loss
+                    profit_or_loss AS (
+                        SELECT COALESCE(
+                            SUM(CASE WHEN "t"."dc" = 'D' THEN "t"."amount" ELSE -"t"."amount" END), 0
+                        ) AS "profitOrLoss"
+                        FROM "AccM" "a"
+                        JOIN "TranD" "t" ON "a"."id" = "t"."accId"
+                        JOIN "TranH" "h" ON "h"."id" = "t"."tranHeaderId"
+                        WHERE "h"."finYearId" = {finYearId}
+                            AND "h"."branchId" = {branchId}
+                            AND "a"."accType" IN ('E', 'I')
+                            AND "a"."accLeaf" IN ('Y', 'S')
+                    ),
+
+                    -- Step 5: Ensure Capital Account Exists
+                    capital_account AS (
+                        SELECT 4 AS "accId", 0 AS "amount"
+                        WHERE NOT EXISTS (SELECT 1 FROM "summarized_data" WHERE "accId" = 4)
+                    ),
+
+                    -- Step 6: Combine Account Balances and Profit/Loss Adjustment
+                    final_balances AS (
+                        SELECT "accId", "amount" FROM "summarized_data"
+                        UNION ALL
+                        SELECT * FROM "capital_account"
+                    ),
+
+                    -- Step 7: Adjust Profit/Loss for Capital Account
+                    updated_balances AS (
+                        SELECT 
+                            "fb"."accId", 
+                            "fb"."amount" + COALESCE("pl"."profitOrLoss", 0) AS "amount"
+                        FROM "final_balances" "fb"
+                        LEFT JOIN "profit_or_loss" "pl" 
+                            ON "fb"."accId" = (SELECT "id" FROM "AccM" WHERE "accCode" = 'Capital')
+                    )
+                    
+                    -- Step 8: Insert Updated Balances
+                    INSERT INTO "AccOpBal"("accId", "finYearId", "branchId", "amount", "dc")
+                    SELECT "accId", 
+                        ({finYearId} + 1), 
+                        {branchId}, 
+                        ABS("amount"), 
+                        CASE WHEN "amount" < 0 THEN 'C' ELSE 'D' END
+                    FROM "updated_balances";
+                END $$;
+            """
+        ).format(
+            finYearId = sql.Literal(params["finYearId"]),
+            branchId = sql.Literal(params["branchId"])
+        )
 
     def upsert_unit_info(params):
         return sql.SQL(

@@ -32,6 +32,7 @@
 	- rename generic-switch to comp-generic-switch in Master accounts
 	- XData showing typescript error in many places. Need to correct the types
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
+	- BS, PL, Trial Bal retain node expanded / collapsed
 - Common utilities
 	- Transfer balances
 - Exports

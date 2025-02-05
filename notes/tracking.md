@@ -16,6 +16,8 @@
 - Bug fixes etc.
 
 ## History
+# 05-02-2025
+	- Common utilities
 # 04-02-2025
 	- Completed Opening balances, Branches, Financial Years
 # 22-01-2025

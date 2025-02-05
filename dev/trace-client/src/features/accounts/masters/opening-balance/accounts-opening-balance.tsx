@@ -40,7 +40,7 @@ export function AccountsOpeningBalance() {
 
     useEffect(() => {
         loadData()
-    }, [])
+    }, [finYearId, buCode])
 
     return (<CompAccountsContainer>
         {/* <button onClick={HandleSetScroll}>Set scroll</button> */}
@@ -297,10 +297,8 @@ export function AccountsOpeningBalance() {
             }
         )
         try {
-            // Utils.treeGridUtils.saveScrollPos(context,instance)
             const res: any = await Utils.queryGraphQL(q, queryName)
             meta.current.rows = res?.data?.[queryName]
-            // Creates persistence of expanded rows
             Utils.addUniqueKeysToJson(meta.current.rows) // adds unique pkey to each record
             // Utils.treeGridUtils.saveScrollPos(context,instance)
             if (!_.isEmpty(meta.current.rows)) {

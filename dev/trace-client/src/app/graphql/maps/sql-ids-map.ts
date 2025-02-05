@@ -52,5 +52,6 @@ export const SqlIdsMap = {
   updateAccountsMaster: 'update_accounts_master',
   upsertAutoSubledger: 'upsert_auto_subledger',
   upsertGeneralSettings: 'upsert_general_settings',
+  upsertTransferClosingBalance:'upsert_transfer_closing_balance',
   upsertUnitInfo: 'upsert_unit_info'
 }

@@ -33,7 +33,7 @@ export function AccountsMaster() {
 
     useEffect(() => {
         //cleanup
-        return (() => Utils.treeGridUtils.resetScrollPos(context, instance))
+        // return (() => Utils.treeGridUtils.resetScrollPos(context, instance))
     }, [])
 
     return (<CompAccountsContainer>

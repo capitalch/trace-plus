@@ -20,7 +20,9 @@ export const treeGridUtils: TreeGridUtilsType = {
         const treeGridElement = gridRef?.current?.grid?.getContent();
         if (treeGridElement) {
             const scrollableContainer = treeGridElement.querySelector('.e-content'); // Adjust selector if needed
-            context.CompSyncFusionTreeGrid[instance].scrollPos = scrollableContainer.scrollTop
+            if (scrollableContainer.scrollTop > 0) {
+                context.CompSyncFusionTreeGrid[instance].scrollPos = scrollableContainer.scrollTop
+            }
         }
     }
 }
