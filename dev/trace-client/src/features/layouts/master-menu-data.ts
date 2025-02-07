@@ -167,7 +167,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "53",
           label: "Exports",
-          path: "/blogs",
+          path: "/all-exports",
         },
       ],
     },

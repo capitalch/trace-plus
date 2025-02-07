@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
-import { LoginType, UserDetailsType } from "../../login/login-slice"
+import { LoginType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice"

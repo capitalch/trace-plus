@@ -1,6 +1,9 @@
 import json
+import pandas as pd
 import logging
-from fastapi import status
+from fastapi import Response, status
+from fastapi.responses import FileResponse
+from io import BytesIO
 from typing import Literal, List
 from urllib.parse import unquote
 from app.config import Config
@@ -76,7 +79,6 @@ async def accounts_opening_balance_helper(info, dbName, value):
         # At client check data for error attribut and take action accordingly
         return create_graphql_exception(e)
     return data
-
 
 
 async def balance_sheet_profit_loss_helper(info, dbName, value):
@@ -249,6 +251,32 @@ async def decode_ext_db_params_helper(info, value):
         return create_graphql_exception(e)
     return decodedDbParams
 
+
+async def download_test_xlsx_helper(info, dbName, valus):
+    # Sample data for the Excel file
+    data = {
+        "Name": ["John", "Jane", "Doe"],
+        "Age": [28, 34, 22],
+        "Country": ["USA", "UK", "Canada"]
+    }
+    df = pd.DataFrame(data)
+    # Create an in-memory Excel file
+    excel_buffer = BytesIO()
+    with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Sheet1")
+
+    excel_buffer.seek(0)  # Reset buffer position
+    # return Response(
+    #     content=excel_buffer.getvalue(),
+    #     media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    #     headers={"Content-Disposition": "attachment; filename=example.xlsx"}
+    # )
+    # Return file as attachment
+    return FileResponse(
+        excel_buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename="example.xlsx",
+    )
 
 async def generic_query_helper(info, dbName: str, value: str):
     data = {}

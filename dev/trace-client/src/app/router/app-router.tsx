@@ -29,6 +29,7 @@ import { BranchMaster } from "../../features/accounts/masters/branch-master/bran
 import { FinYearsMaster } from "../../features/accounts/masters/fin-years-master/fin-years-master";
 import { AccountsOpeningBalance } from "../../features/accounts/masters/opening-balance/accounts-opening-balance";
 import { CommonUtilities } from "../../features/accounts/options/common-utilities/common-utilities";
+import { AllExports } from "../../features/accounts/options/exports/all-exports";
 
 export const appRouter = createBrowserRouter([
     {
@@ -65,7 +66,8 @@ export const appRouter = createBrowserRouter([
                 { path: 'branch-master', element: <BranchMaster /> },
                 { path: 'fin-year-master', element: <FinYearsMaster /> },
                 { path: 'opening-balance', element: <AccountsOpeningBalance /> },
-                { path: 'common-utilities', element: <CommonUtilities /> }
+                { path: 'common-utilities', element: <CommonUtilities /> },
+                { path: 'all-exports', element: <AllExports /> }
             ]
     },
     {

@@ -17,6 +17,7 @@ from app.graphql.graphql_helper import (
     change_uid_helper,
     create_bu_helper,
     decode_ext_db_params_helper,
+    download_test_xlsx_helper,
     generic_query_helper,
     generic_update_helper,
     generic_update_query_helper,
@@ -35,6 +36,7 @@ mutation = MutationType()
 async def accounts_master(_, info, dbName="", value=""):
     return await accounts_master_helper(info, dbName, value)
 
+
 @query.field("accountsOpeningBalance")
 async def accounts_opening_balance(_, info, dbName="", value=""):
     return await accounts_opening_balance_helper(info, dbName, value)
@@ -48,6 +50,11 @@ async def balance_sheet_profit_loss(_, info, dbName="", value=""):
 @query.field("decodeExtDbParams")
 async def decode_ext_db_params(_, info, value=""):
     return await decode_ext_db_params_helper(info, value)
+
+
+@query.field("downloadTestXlsx")
+async def download_test_xlsx(_, info, dbName="", value=""):
+    return await download_test_xlsx_helper(info, dbName, value)
 
 
 @query.field("genericQuery")
@@ -98,7 +105,6 @@ async def update_client(_, info, value=""):
 @mutation.field("updateUser")
 async def update_user(_, info, value=""):
     return await update_user_helper(info, value)
-
 
 
 @query.field("hello")

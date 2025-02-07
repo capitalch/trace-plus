@@ -3,6 +3,7 @@ type Query {
     accountsOpeningBalance(dbName: String, value: String): Generic
     balanceSheetProfitLoss(dbName: String, value: String): Generic
     decodeExtDbParams(value: String): Generic
+    downloadTestXlsx(dbName: String, value:String): Generic
     genericQuery(dbName: String, value: String): Generic
     hello: Generic
     trialBalance(dbName: String, value: String): Generic

@@ -36,7 +36,15 @@
 - Common utilities
 	- Transfer balances
 - Exports
+	- Prototype for minimum working solution
+		- Server
+		- Client
 	- GST exports
+	- Trial balance export
+	- BS, PL export
+	- 
+
+
 												- Opening balances
 															- Accounts master addUniqueKeyToJson; change Utils method to have dataPath
 															- init
