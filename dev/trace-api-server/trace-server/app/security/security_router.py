@@ -2,6 +2,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Depends, Request
 from typing import Annotated
+import pandas as pd
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from app.security.security_helper import (
     forgot_password_helper,
@@ -19,6 +21,16 @@ securityRouter = APIRouter()
 async def get_api():
     return {"api": "trace-plus server"}
 
+
+@securityRouter.get("/download-excel/")
+async def download_excel():
+    # Create an Excel file
+    df = pd.DataFrame({"Name": ["Alice", "Bob"], "Score": [85, 90]})
+    file_path = "report.xlsx"
+    df.to_excel(file_path, index=False)
+
+    # Serve the file
+    return FileResponse(file_path, filename="report.xlsx", media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 @securityRouter.post("/login", summary="Creates access token")
 async def do_login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):

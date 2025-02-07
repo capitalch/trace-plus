@@ -38,7 +38,9 @@
 - Exports
 	- Prototype for minimum working solution
 		- Server
+			- Remove GraphQL implementation
 		- Client
+			- Remove GraphQL implementation
 	- GST exports
 	- Trial balance export
 	- BS, PL export
