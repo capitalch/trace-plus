@@ -2,13 +2,13 @@ from fastapi import status, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import datetime, timedelta, timezone
-from app.dependencies import (
+from app.core.dependencies import (
     AppHttpException,
     UserClass,
     UserDetails,
     SuperAdminUserClass,
 )
-from app.messages import Messages
+from app.core.messages import Messages
 from app.config import Config
 from app.security.security_utils import (
     create_access_token,
@@ -17,9 +17,9 @@ from app.security.security_utils import (
 )
 from app.graphql.db.sql_security import SqlSecurity
 from app.graphql.db.helpers.psycopg_async_helper import exec_sql
-from app.utils import is_not_none_or_empty, getSqlQueryObject
-from app.messages import EmailMessages
-from app.mail import send_email
+from app.core.utils import is_not_none_or_empty, getSqlQueryObject
+from app.core.messages import EmailMessages
+from app.core.mail import send_email
 from jwt.exceptions import (
     ExpiredSignatureError,
     InvalidSignatureError,

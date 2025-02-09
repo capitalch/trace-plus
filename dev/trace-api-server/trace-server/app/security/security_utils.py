@@ -1,8 +1,8 @@
 import bcrypt, jwt, logging
 from fastapi import Request, status
 from app.config import Config
-from app.messages import Messages
-from app.dependencies import AppHttpException
+from app.core.messages import Messages
+from app.core.dependencies import AppHttpException
 from datetime import datetime, timedelta, timezone
 from jwt.exceptions import (
     ExpiredSignatureError,

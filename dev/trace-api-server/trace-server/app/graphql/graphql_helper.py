@@ -7,19 +7,19 @@ from io import BytesIO
 from typing import Literal, List
 from urllib.parse import unquote
 from app.config import Config
-from app.dependencies import AppHttpException
+from app.core.dependencies import AppHttpException
 from app.security.security_utils import (
     getRandomUserId,
     getRandomPassword,
     getPasswordHash,
     verify_password,
 )
-from app.messages import Messages, EmailMessages
-from app.mail import send_email
+from app.core.messages import Messages, EmailMessages
+from app.core.mail import send_email
 from .db.helpers.psycopg_async_helper import exec_sql, exec_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
 from .db.sql_accounts import SqlAccounts
-from app.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
+from app.core.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
 from app.graphql.handlers.import_secured_controls import import_secured_controls
@@ -45,7 +45,8 @@ async def accounts_master_helper(info, dbName, value):
         flat_data = res[0].get("jsonResult")
         if flat_data is not None:
             accountsMaster = (
-                build_nested_hierarchy_with_children(flat_data.get("accountsMaster"))
+                build_nested_hierarchy_with_children(
+                    flat_data.get("accountsMaster"))
                 if flat_data.get("accountsMaster") is not None
                 else None
             )
@@ -70,7 +71,8 @@ async def accounts_opening_balance_helper(info, dbName, value):
             dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
         )
         opBalance = (
-            build_nested_hierarchy_with_children(res) if res is not None else None
+            build_nested_hierarchy_with_children(
+                res) if res is not None else None
         )
         data = opBalance
         # data.append({"jsonResult": {"accountsOpeningBalance": opBalance}})
@@ -97,7 +99,8 @@ async def balance_sheet_profit_loss_helper(info, dbName, value):
         if flat_data is not None:
             profitOrLoss = flat_data.get("profitOrLoss")
             liabilities = (
-                build_nested_hierarchy_with_children(flat_data.get("liabilities"))
+                build_nested_hierarchy_with_children(
+                    flat_data.get("liabilities"))
                 if flat_data.get("liabilities") is not None
                 else None
             )
@@ -201,7 +204,8 @@ async def change_uid_helper(info, value):
         operationName = requestJson.get("operationName", None)
         sqlQueryObject = getSqlQueryObject(operationName)
         sql = sqlQueryObject.does_user_with_id_and_uid_exist
-        sqlArgs = {"id": valueDict.get("id"), "uid": valueDict.get("currentUid")}
+        sqlArgs = {"id": valueDict.get(
+            "id"), "uid": valueDict.get("currentUid")}
         data = await exec_sql(dbName=operationName, sql=sql, sqlArgs=sqlArgs)
         if data and len(data) > 0 and data[0].get("exists", False):
             # update uid
@@ -251,32 +255,6 @@ async def decode_ext_db_params_helper(info, value):
         return create_graphql_exception(e)
     return decodedDbParams
 
-
-async def download_test_xlsx_helper(info, dbName, valus):
-    # Sample data for the Excel file
-    data = {
-        "Name": ["John", "Jane", "Doe"],
-        "Age": [28, 34, 22],
-        "Country": ["USA", "UK", "Canada"]
-    }
-    df = pd.DataFrame(data)
-    # Create an in-memory Excel file
-    excel_buffer = BytesIO()
-    with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Sheet1")
-
-    excel_buffer.seek(0)  # Reset buffer position
-    # return Response(
-    #     content=excel_buffer.getvalue(),
-    #     media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    #     headers={"Content-Disposition": "attachment; filename=example.xlsx"}
-    # )
-    # Return file as attachment
-    return FileResponse(
-        excel_buffer,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        filename="example.xlsx",
-    )
 
 async def generic_query_helper(info, dbName: str, value: str):
     data = {}
@@ -373,7 +351,8 @@ async def trial_balance_helper(info, dbName, value):
         )
         flat_data = res[0].get("jsonResult").get("trialBalance")
         if flat_data is not None:
-            data.append({"jsonResult": build_nested_hierarchy_with_children(flat_data)})
+            data.append(
+                {"jsonResult": build_nested_hierarchy_with_children(flat_data)})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly

@@ -11,9 +11,9 @@ from app.graphql.db.helpers.psycopg_async_helper import (
     exec_sql_object,
 )
 from app.graphql.db.sql_security import SqlSecurity
-from app.messages import Messages
-from app.dependencies import AppHttpException
-from app.utils import decrypt
+from app.core.messages import Messages
+from app.core.dependencies import AppHttpException
+from app.core.utils import decrypt
 
 logger = logging.getLogger(__name__)
 

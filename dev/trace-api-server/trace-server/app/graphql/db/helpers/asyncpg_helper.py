@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi import status
 from asyncpg import create_pool, Pool
-from app.dependencies import AppHttpException
+from app.core.dependencies import AppHttpException
 from app.config import Config
 from typing import Any
 

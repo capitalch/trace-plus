@@ -1,17 +1,18 @@
 import axios from "axios"
-// import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Utils } from "../../../../utils/utils"
-// import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import urlJoin from "url-join"
+import { useUtilsInfo } from "../../../../utils/utils-info-hook"
+import { RequestDataType } from "./all-exports"
+import { encodeObj } from "../../../../app/graphql/maps/graphql-queries-map"
 
 export function GstExport() {
-    // const {
-    //     branchId
-    //     , buCode
-    //     , dbName
-    //     , decodedDbParamsObject
-    //     , finYearId
-    // } = useUtilsInfo()
+    const {
+        branchId
+        , buCode
+        , dbName
+        , decodedDbParamsObject
+        , finYearId
+    } = useUtilsInfo()
     return (<div>
         <button onClick={handleGstExport} className="bg-slate-100 px-2 py-1 rounded-md hover:bg-slate-200">Gst export</button>
     </div>)
@@ -20,42 +21,34 @@ export function GstExport() {
         const token = Utils.getToken()
         const hostUrl = Utils.getHostUrl()
         try {
-            const response = await axios.get(urlJoin(hostUrl, 'download-excel'), {
-                headers: { Authorization: `Bearer ${token}` },
-                responseType: "blob", // Important for handling binary data
-            });
-            // Create a Blob URL and trigger download
+            const requestData: RequestDataType = {
+                branchId: branchId || 1,
+                buCode: buCode || '',
+                clientId: Utils.getCurrentLoginInfo().userDetails?.clientId || 0,
+                dateFormat: Utils.getCurrentDateFormat(),
+                dbParams: decodedDbParamsObject || '',
+                dbName: dbName || '',
+                exportName: 'gst',
+                fileType: 'xlsx',
+                finYearId: finYearId || 0
+            }
+            const response = await axios({
+                method: 'post',
+                url: urlJoin(hostUrl, 'export-file'),
+                data: { valueString: encodeObj(requestData) },
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                responseType: 'blob'
+            })
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", "report.xlsx");
+            link.setAttribute("download", "gstReportAll.xlsx");
             document.body.appendChild(link);
             link.click();
             link.remove();
+            // window.URL.revokeObjectURL(url)
         } catch (e: any) {
-            console.log(e)
+            Utils.showErrorMessage(e)
         }
     }
-
-    // async function handleGstExport1() {
-    //     const queryName: string = GraphQLQueriesMap.downloadTestXlsx.name
-    //     const q: any = GraphQLQueriesMap.downloadTestXlsx(
-    //         dbName || '',
-    //         {
-    //             buCode: buCode,
-    //             dbParams: decodedDbParamsObject,
-    //             sqlArgs: {
-    //                 branchId: branchId,
-    //                 finYearId: finYearId
-    //             },
-    //         }
-    //     )
-    //     try {
-    //         const res: any = await Utils.queryGraphQL(q, queryName)
-    //         // const jsonResult: any = res?.data[queryName][0]?.jsonResult
-    //         console.log(res)
-    //     } catch (e: any) {
-    //         console.log(e)
-    //     }
-    // }
 }

@@ -12,7 +12,7 @@ class AppHttpException(HTTPException):
 import logging
 from datetime import datetime
 from app.security.security_utils import validate_token
-from app.messages import Messages
+from app.core.messages import Messages
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Any

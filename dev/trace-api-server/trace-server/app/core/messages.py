@@ -17,6 +17,7 @@ class Messages:
     err_email_send_error = "There was error in sending email. Email parameters from client are improper or missing"
     err_email_send_error_server = "There was error in sending email from server"
     err_email_not_provided = "Email is not provided"
+    err_empty_value_string_for_export = "Empty value string for export"
     err_internal_server_error = "Internal server error"
     err_inactive_user = "Inactive user"
     err_invalid_uid = "The current UID given by you is incorrect"
@@ -72,7 +73,7 @@ class customErrorCodes:
     e1026 = "Client is not active"
     e1027 = "The database for the client does not exist"
     e1028 = "Database connections parameters are missing for this external database. There was something wrong at the time of new client creation"
-    
+    e1029 = "Empty value string when export is requested and export-file endpoint is hit"
     
     
     

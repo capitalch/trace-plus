@@ -33,18 +33,23 @@
 	- XData showing typescript error in many places. Need to correct the types
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 	- BS, PL, Trial Bal retain node expanded / collapsed
-- Common utilities
-	- Transfer balances
+														- Common utilities
+															- Transfer balances
 - Exports
-	- Prototype for minimum working solution
-		- Server
-			- Remove GraphQL implementation
-		- Client
-			- Remove GraphQL implementation
+	- Generic framework for all exports
+													- Prototype for minimum working solution
+														- Server
+															- Remove GraphQL implementation
+														- Client
+															- Remove GraphQL implementation
 	- GST exports
+		- Sql
+		- pandas work
+		- datewise implementation
+		- UI
 	- Trial balance export
 	- BS, PL export
-	- 
+	- Other exports
 
 
 												- Opening balances

@@ -17,7 +17,7 @@ from app.graphql.graphql_helper import (
     change_uid_helper,
     create_bu_helper,
     decode_ext_db_params_helper,
-    download_test_xlsx_helper,
+    # download_test_xlsx_helper,
     generic_query_helper,
     generic_update_helper,
     generic_update_query_helper,
@@ -52,9 +52,9 @@ async def decode_ext_db_params(_, info, value=""):
     return await decode_ext_db_params_helper(info, value)
 
 
-@query.field("downloadTestXlsx")
-async def download_test_xlsx(_, info, dbName="", value=""):
-    return await download_test_xlsx_helper(info, dbName, value)
+# @query.field("downloadTestXlsx")
+# async def download_test_xlsx(_, info, dbName="", value=""):
+#     return await download_test_xlsx_helper(info, dbName, value)
 
 
 @query.field("genericQuery")

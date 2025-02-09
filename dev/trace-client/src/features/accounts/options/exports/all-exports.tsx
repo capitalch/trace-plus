@@ -1,7 +1,7 @@
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { GstExport } from "./gst-export";
 
-export function AllExports(){
+export function AllExports() {
     return (<CompAccountsContainer>
         <label className="mt-3 text-lg font-medium text-primary-500">All exports</label>
         <div className="flex flex-col">
@@ -15,3 +15,18 @@ export function AllExports(){
         </div>
     </CompAccountsContainer>)
 }
+
+export type RequestDataType = {
+    branchId: number
+    buCode: string
+    clientId: number
+    dateFormat: string
+    dbParams: string | { [key: string]: string | undefined }
+    dbName: string
+    endDate?: string
+    exportName: 'accountsMaster' | 'contra' | 'finalAccounts' | 'gst' | 'journal' | 'payment' | 'receipt' | 'trialBalance' | 'voucher'
+    fileType: 'csv' | 'json' | 'pdf' | 'xlsx'
+    finYearId: number
+    startDate?: string
+}
+

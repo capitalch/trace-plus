@@ -1,14 +1,14 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from app.dependencies import (
+from app.core.dependencies import (
     AppHttpException,
     app_http_exception_handler,
     configure_logger,
     exceptions_middleware,
     # handle_token_middleware,
 )
-from app.messages import Messages
+from app.core.messages import Messages
 from app.security.security_router import securityRouter
 from app.graphql.graphql_router import GraphQLApp
 from app.security.security_utils import validate_token

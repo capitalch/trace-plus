@@ -1,19 +1,32 @@
-def get_sql(xData):
-    # cond1 = xData.get("id", None)
-    # cond2 = not xData.get("isIdInsert", None)
-    if (xData.get("id", None)) and (not xData.get("isIdInsert", None)):
-        return "update"
-    else:
-        return "insert"
+from pydantic import BaseModel
 
 
-print(get_sql({"id": None, "isIdInsert": None}))
-print(get_sql({"id": None, "isIdInsert": True}))
-print(get_sql({"id": 100, "isIdInsert": None}))
-print(get_sql({"id": 100, "isIdInsert": True}))
+def exportBSXlsx(finYearId: int):
+    print(finYearId)
+    pass
 
-# a= None
-# if(a):
-#     print(True)
-# else:
-#     print(False)
+
+def exportPLXlsx(finYearId: int):
+    print(finYearId)
+    pass
+
+
+myDict1: dict = {
+    ('BS', 'XLSX'): {'method': exportBSXlsx, 'params': 2024},
+    ('PL', 'XLSX'): {'method': exportPLXlsx, 'params': 2023},
+}
+
+res1: dict = myDict1.get(('BS', 'XLSX'))
+method = res1.get('method')
+params = res1.get('params')
+method(params)
+
+
+class DownloadFileParams(BaseModel):
+    branchId: int
+    buCode: str
+
+
+params: DownloadFileParams = DownloadFileParams(branchId=1, buCode='123')
+(branchId, buCode) = vars(params).values()
+print(branchId)

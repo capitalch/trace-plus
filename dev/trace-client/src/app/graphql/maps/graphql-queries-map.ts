@@ -12,7 +12,7 @@ export const GraphQLQueriesMap: GraphQLQueriesMapType = {
   changeUid: changeUid,
   createBu: createBu,
   decodeExtDbParams: decodeExtDbParams,
-  downloadTestXlsx: downloadTestXlsx,
+  // downloadTestXlsx: downloadTestXlsx,
   genericQuery: genericQuery,
   genericUpdate: genericUpdate,
   genericUpdateQuery: genericUpdateQuery,
@@ -95,17 +95,17 @@ function decodeExtDbParams(val: string): DocumentNode {
   return q;
 }
 
-function downloadTestXlsx(
-  dbName: string,
-  val: GraphQLQueryArgsType
-): DocumentNode {
-  const value = encodeObj(val);
-  return gql`
-        query DownloadTestXlsx {
-            downloadTestXlsx(dbName:"${dbName}", value:"${value}")
-        }
-    `;
-}
+// function downloadTestXlsx(
+//   dbName: string,
+//   val: GraphQLQueryArgsType
+// ): DocumentNode {
+//   const value = encodeObj(val);
+//   return gql`
+//         query DownloadTestXlsx {
+//             downloadTestXlsx(dbName:"${dbName}", value:"${value}")
+//         }
+//     `;
+// }
 
 function genericQuery(dbName: string, val: GraphQLQueryArgsType): DocumentNode {
   const value = encodeObj(val);
@@ -185,7 +185,7 @@ function hello(): DocumentNode {
   `;
 }
 
-function encodeObj(obj: any) {
+export function encodeObj(obj: any) {
   let ret = "";
   if (!_.isEmpty(obj)) {
     ret = encodeURI(JSON.stringify(obj));
@@ -244,7 +244,7 @@ export type GraphQLQueriesMapType = {
   changeUid: (val: ChangeUidType) => DocumentNode;
   createBu: (dbName: string, val: TraceDataObjectType) => DocumentNode;
   decodeExtDbParams: (val: string) => DocumentNode;
-  downloadTestXlsx: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode;
+  // downloadTestXlsx: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode;
   genericQuery: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode;
   genericUpdate: (dbName: string, val: GraphQLUpdateArgsType) => DocumentNode;
   genericUpdateQuery: (
