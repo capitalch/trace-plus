@@ -49,6 +49,7 @@ import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
 import { SyncfusionTreeGrid1 } from './features/syncfusion/syncfusion-tree-grid1'
 import { SyncFusionTreeGridEditTemplate } from './features/syncfusion/syncfusion-tree-grid-edit-template'
 import { SyncFusionTreeGridEditTemplate1 } from './features/syncfusion/syncfusion-tree-grid-edit-template1'
+import { ReactDatePicker } from './features/react-datepicker/react-date-picker'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -102,7 +103,7 @@ function App() {
       {/* <ReactSelectAsync /> */}
       {/* <SyncfusionTreeGrid /> */}
       {/* <SyncfusionTreeGrid1 /> */}
-      <SyncFusionTreeGridEditTemplate1 />
+      {/* <SyncFusionTreeGridEditTemplate1 /> */}
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
       {/* <TreeGrid2 /> */}
@@ -111,6 +112,7 @@ function App() {
       {/* <SlidingPaneViewer /> */}
       {/* <EditGrid /> */}
       {/* <Spinners /> */}
+      <ReactDatePicker />
     </GlobalContext.Provider>
   )
 }

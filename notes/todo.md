@@ -36,7 +36,17 @@
 														- Common utilities
 															- Transfer balances
 - Exports
+	- Date range control
+		- Sync with finYear change
+		- Disable Preset Ranges when currentFin year !== running year
+		- Select on Qtrs dates basedon currentFinYear and nor running fin year
+		- Custom range set to current fin year when page refresh and a button to reset
 	- Generic framework for all exports
+	- Generic error handling for export with appHttpException
+	- verify token
+	- Date format
+														- export file naming
+	- branch / all branches
 													- Prototype for minimum working solution
 														- Server
 															- Remove GraphQL implementation

@@ -38,7 +38,7 @@ https://medium.com/@benshearlaw/asynchronous-postgres-with-python-fastapi-and-ps
 ## syncfusion key for 25.x
 ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
 
-## pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg python-multipart
+## pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg python-multipart fpdf xlsxwriter
 - superadmin@123
 
 ## VSCode extensions
@@ -47,6 +47,9 @@ ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdkBjXntZdXNTT2Vb
 
 ## React icons svg
 https://reactsvgicons.com/react-svg-iconsets
+
+## lucid react icons
+https://lucide.dev/icons/
 
 ## Tailwind 
 - CheatSheet

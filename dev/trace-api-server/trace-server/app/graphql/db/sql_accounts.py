@@ -238,6 +238,218 @@ class SqlAccounts:
             order by "id"
     """
 
+    get_all_gst_reports = """
+    --with "branchId" as (values(1)), "finYearId" as (values(2022)), "startDate" as (values('2022-04-01'::date)), "endDate" as (values('2023-03-31'::date))
+			with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
+			, cte1 as (
+            select  "tranDate", "autoRefNo", "userRefNo", "tranType", "gstin", d."amount" - "cgst" - "sgst" - "igst" as "aggregate", "cgst", "sgst", "igst", d."amount",
+                    "accName",h."remarks", "dc", "lineRefNo", d."remarks" as "lineRemarks"
+                from "TranH" h
+                    join "TranD" d
+                        on h."id" = d."tranHeaderId"
+                    join "ExtGstTranD" e
+                        on d."id" = e."tranDetailsId"
+                    join "AccM" a
+                        on a."id" = d."accId"
+                    join "TranTypeM" t
+                        on t."id" = h."tranTypeId"
+                where
+                    ("cgst" <> 0 or
+                    "sgst" <> 0 or
+                    "igst" <> 0) and
+                    "isInput" = true and
+                    "finYearId" = (table "finYearId") and
+                    "branchId" = (table "branchId") and
+                    ("tranDate" between (table "startDate") and (table "endDate"))
+                
+                order by "tranDate", h."id"),
+            
+            -- gst-output-consolidated (ExtGstTrand) based on "isInput"
+            cte2 as (
+            select  "tranDate", "autoRefNo", "userRefNo", "tranType", "gstin", d."amount" - "cgst" - "sgst" - "igst" as "aggregate", "cgst", "sgst", "igst", d."amount",
+                    "accName",h."remarks", "dc", "lineRefNo", d."remarks" as "lineRemarks"
+                from "TranH" h
+                    join "TranD" d
+                        on h."id" = d."tranHeaderId"
+                    join "ExtGstTranD" e
+                        on d."id" = e."tranDetailsId"
+                    join "AccM" a
+                        on a."id" = d."accId"
+                    join "TranTypeM" t
+                        on t."id" = h."tranTypeId"
+                where
+                    ("cgst" <> 0 or
+                    "sgst" <> 0 or
+                    "igst" <> 0) and
+                    "isInput" = false and
+                    "finYearId" = (table "finYearId") and
+                    "branchId" = (table "branchId") and
+                    ("tranDate" between (table "startDate") and (table "endDate"))
+                
+                order by "tranDate", h."id"),
+            
+            -- gst-output-sales (considering only table SalePurchaseDetails)
+            cte3 as (
+                select  "tranDate", "autoRefNo", "userRefNo", "tranType", 
+                (select "gstin" from "ExtGstTranD" where "tranDetailsId" = d."id") as "gstin",
+                "gstRate",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN (s."amount" - "cgst" - "sgst" - "igst") ELSE -(s."amount" - "cgst" - "sgst" - "igst") END) as "aggregate",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN "cgst" ELSE -"cgst" END) as "cgst",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN "sgst" ELSE -"sgst" END) as "sgst",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN "igst" ELSE -"igst" END) as "igst",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN s."amount" ELSE -s."amount" END) as "amount",
+                "accName", h."remarks", "dc", "lineRefNo", d."remarks" as "lineRemarks"
+                        from "TranH" h
+                            join "TranD" d
+                                on h."id" = d."tranHeaderId"
+                            join "AccM" a
+                                on a."id" = d."accId"
+                            join "TranTypeM" t
+                                on t."id" = h."tranTypeId"
+                            join "SalePurchaseDetails" s
+                                on d."id" = s."tranDetailsId"
+                        where
+                            ("cgst" <> 0 or
+                            "sgst" <> 0 or
+                            "igst" <> 0) and
+                            "tranTypeId" in (4,9) and
+                            "finYearId" = (table "finYearId") and
+							"branchId" = (table "branchId") and
+							("tranDate" between (table "startDate") and (table "endDate"))
+                    GROUP BY 
+                        "tranDate", h."id", "tranDate", "autoRefNo", "userRefNo", "tranType", "gstin", "gstRate", "accName", h."remarks", "dc", "lineRefNo", d."remarks"     
+                    order by "tranDate", h."id"
+            ),
+
+            -- gst-input-purchases (considering only table SalePurchaseDetails)
+            cte4 as (
+                select  "tranDate", "autoRefNo", "userRefNo", "tranType", 
+                (select "gstin" from "ExtGstTranD" where "tranDetailsId" = d."id") as "gstin",
+                "gstRate",
+                SUM(CASE WHEN "tranTypeId" = 5 THEN (s."amount" - "cgst" - "sgst" - "igst") ELSE -(s."amount" - "cgst" - "sgst" - "igst") END) as "aggregate",
+                SUM(CASE WHEN "tranTypeId" = 5 THEN "cgst" ELSE -"cgst" END) as "cgst",
+                SUM(CASE WHEN "tranTypeId" = 5 THEN "sgst" ELSE -"sgst" END) as "sgst",
+                SUM(CASE WHEN "tranTypeId" = 5 THEN "igst" ELSE -"igst" END) as "igst",
+                SUM(CASE WHEN "tranTypeId" = 5 THEN s."amount" ELSE -s."amount" END) as "amount",
+                "accName", h."remarks", "dc", "lineRefNo", d."remarks" as "lineRemarks"
+                        from "TranH" h
+                            join "TranD" d
+                                on h."id" = d."tranHeaderId"
+                            join "AccM" a
+                                on a."id" = d."accId"
+                            join "TranTypeM" t
+                                on t."id" = h."tranTypeId"
+                            join "SalePurchaseDetails" s
+                                on d."id" = s."tranDetailsId"
+                        where
+                            ("cgst" <> 0 or
+                            "sgst" <> 0 or
+                            "igst" <> 0) and
+                            "tranTypeId" in (5,10) and
+                            "finYearId" = (table "finYearId") and
+							"branchId" = (table "branchId") and
+							("tranDate" between (table "startDate") and (table "endDate"))
+                group by
+					"tranDate", h."id", "autoRefNo", "userRefNo", "tranType", "gstin", "gstRate","accName", h."remarks", "dc", "lineRefNo", d."remarks"
+                order by "tranDate", h."id"
+            ),
+
+            -- gst-input-vouchers
+            cte5 as (
+                select  "tranDate", "autoRefNo", "userRefNo", "tranType", 
+                "gstin", "rate" as "gstRate",
+                d."amount" - "cgst" - "sgst" - "igst" as "aggregate", "cgst", "sgst", "igst", d."amount",
+                "accName", h."remarks", "dc", "lineRefNo", d."remarks" as "lineRemarks"
+                        from "TranH" h
+                            join "TranD" d
+                                on h."id" = d."tranHeaderId"
+                            join "ExtGstTranD" e
+                                on d."id" = e."tranDetailsId"
+                            join "AccM" a
+                                on a."id" = d."accId"
+                            join "TranTypeM" t
+                                on t."id" = h."tranTypeId"
+                        where
+                            ("cgst" <> 0 or
+                            "sgst" <> 0 or
+                            "igst" <> 0) and
+                            "rate" is not null and -- When it is not a sale / purchase i.e voucher, then "gstRate" value exists in "ExtGstTranD" table otherwise not
+                            "isInput" = true and -- Only applicable for GST through vouchers
+                            "finYearId" = (table "finYearId") and
+							"branchId" = (table "branchId") and
+							("tranDate" between (table "startDate") and (table "endDate"))
+                        
+                order by "tranDate", h."id"
+            ),
+			-- gst-output-sales-hsn (considering only table SalePurchaseDetails)
+            cte6 as (
+                select  "tranType", hsn,
+ 				COUNT(*) as "itemsCount",
+				COUNT(DISTINCT h.id) as "saleBillsCount",				
+                SUM(CASE WHEN "tranTypeId" = 4 THEN (s."amount" - "cgst" - "sgst" - "igst") ELSE -(s."amount" - "cgst" - "sgst" - "igst") END) as "aggregate",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN "cgst" ELSE -"cgst" END) as "cgst",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN "sgst" ELSE -"sgst" END) as "sgst",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN "igst" ELSE -"igst" END) as "igst",
+                SUM(CASE WHEN "tranTypeId" = 4 THEN s."amount" ELSE -s."amount" END) as "amount",
+                "accName", "dc"
+                        from "TranH" h
+                            join "TranD" d
+                                on h."id" = d."tranHeaderId"
+                            join "AccM" a
+                                on a."id" = d."accId"
+                            join "TranTypeM" t
+                                on t."id" = h."tranTypeId"
+                            join "SalePurchaseDetails" s
+                                on d."id" = s."tranDetailsId"
+                        where
+                            ("cgst" <> 0 or
+                            "sgst" <> 0 or
+                            "igst" <> 0) and
+                            "tranTypeId" in (4,9) and
+                            "finYearId" = (table "finYearId") and
+							"branchId" = (table "branchId") and
+							("tranDate" between (table "startDate") and (table "endDate"))
+                    GROUP BY 
+                        "tranType", "accName", "dc", "hsn"
+                    order by hsn),
+			-- gst-output-sales-hsn-details (considering only table SalePurchaseDetails)
+            cte7 as (
+                select h."autoRefNo", "tranDate", "tranType", hsn,
+				CASE WHEN "tranTypeId" = 4 THEN (s."amount" - "cgst" - "sgst" - "igst") ELSE -(s."amount" - "cgst" - "sgst" - "igst") END as "aggregate",
+				CASE WHEN "tranTypeId" = 4 THEN "cgst" ELSE -"cgst" END as "cgst",
+                CASE WHEN "tranTypeId" = 4 THEN "sgst" ELSE -"sgst" END as "sgst",
+                CASE WHEN "tranTypeId" = 4 THEN "igst" ELSE -"igst" END as "igst",
+                CASE WHEN "tranTypeId" = 4 THEN s."amount" ELSE -s."amount" END as "amount",
+                "accName", "dc"
+                        from "TranH" h
+                            join "TranD" d
+                                on h."id" = d."tranHeaderId"
+                            join "AccM" a
+                                on a."id" = d."accId"
+                            join "TranTypeM" t
+                                on t."id" = h."tranTypeId"
+                            join "SalePurchaseDetails" s
+                                on d."id" = s."tranDetailsId"
+                        where
+                            ("cgst" <> 0 or
+                            "sgst" <> 0 or
+                            "igst" <> 0) and
+                            "tranTypeId" in (4,9) and
+                            "finYearId" = (table "finYearId") and
+							"branchId" = (table "branchId") and
+							("tranDate" between (table "startDate") and (table "endDate"))
+                    order by h.id)
+            select json_build_object(
+                    '01-gst-input-consolidated', (SELECT json_agg(row_to_json(a)) from cte1 a),
+                    '02-gst-output-consolidated', (SELECT json_agg(row_to_json(b)) from cte2 b),
+                    '03-gst-input-purchases', (SELECT json_agg(row_to_json(d)) from cte4 d),
+                    '04-gst-output-sales', (SELECT json_agg(row_to_json(c)) from cte3 c), 
+                    '05-gst-input-vouchers', (SELECT json_agg(row_to_json(e)) from cte5 e),
+					'06-gst-output-sales-hsn', (SELECT json_agg(row_to_json(f)) from cte6 f),
+					'07-gst-output-sales-hsn-details', (SELECT json_agg(row_to_json(f)) from cte7 f)
+                ) as "jsonResult"
+    """
+    
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 
