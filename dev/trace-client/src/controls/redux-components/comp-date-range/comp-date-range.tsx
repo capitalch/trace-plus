@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { Utils } from '../../../utils/utils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { currentFinYearSelectorFn, FinYearType } from '../../../features/login/login-slice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatchType, RootStateType } from '../../../app/store/store'
@@ -10,12 +10,18 @@ export function CompDateRange({ instance }: { instance: string }) {
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const selectedDateRange: { startDate: string, endDate: string } = useSelector((state: RootStateType) => state.reduxComp.compDateRange[instance])
-    
+
     const currentDateFormat: string = Utils.getCurrentDateFormat().replace('DD', 'dd').replace('YYYY', 'yyyy') || 'dd/MM/yyyy'
-    
+
     const [selectedType, setSelectedType] = useState<DateRangeType>("custom");
     const [selectedQuarter, setSelectedQuarter] = useState<Quarter>(undefined);
     const [selectedPreset, setSelectedPreset] = useState("");
+
+    useEffect(() => {
+        setSelectedType('custom')
+        setSelectedQuarter(undefined)
+        setSelectedPreset('')
+    }, [currentFinYear])
 
     return (<div className="flex flex-col space-y-4">
 
@@ -215,8 +221,8 @@ export function CompDateRange({ instance }: { instance: string }) {
         // onDateChange?.(start, end);
     }
 
-    function handleResetToFiscalYear(){
-        
+    function handleResetToFiscalYear() {
+
     }
 
     function handleTypeChange(value: DateRangeType) {
