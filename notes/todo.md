@@ -39,7 +39,7 @@
 	- Date range control
 		- Sync with finYear change
 		- Disable Preset Ranges when currentFin year !== running year
-		- Select on Qtrs dates basedon currentFinYear and nor running fin year
+		- Select on Qtrs dates based on current FinYear and not on running fin year
 		- Custom range set to current fin year when page refresh and a button to reset
 	- Generic framework for all exports
 	- Generic error handling for export with appHttpException
