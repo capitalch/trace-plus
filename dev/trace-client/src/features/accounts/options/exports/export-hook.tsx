@@ -5,8 +5,15 @@ import { ExportFileType, ExportNameType, RequestDataType } from "./all-exports";
 import urlJoin from "url-join";
 import { encodeObj } from "../../../../app/graphql/maps/graphql-queries-map";
 import dayjs from "dayjs";
+import { Messages } from "../../../../utils/messages";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../../../../app/store/store";
+import { selectCompSwitchStateFn } from "../../../../controls/redux-components/comp-slice";
+import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 
 export function useExport() {
+    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchExports)) || false
+
     const {
         branchId
         , branchCode
@@ -34,7 +41,7 @@ export function useExport() {
         endDate = endDate || '3000-12-31'
         try {
             const requestData: RequestDataType = {
-                branchId: branchId || 1,
+                branchId: isAllBranches ? null : branchId || 1,
                 buCode: buCode || '',
                 clientId: Utils.getCurrentLoginInfo().userDetails?.clientId || 0,
                 dateFormat: Utils.getCurrentDateFormat(),
@@ -61,8 +68,26 @@ export function useExport() {
             document.body.appendChild(link);
             link.click();
             link.remove();
-        } catch (e: any) {
-            Utils.showErrorMessage(e)
+        } catch (error: any) {
+            exportErrorHandler(error) // ai
+        }
+    }
+
+    function exportErrorHandler(error: any) {
+        if (error.response && error.response.data) {
+            // Convert blob error response to JSON
+            const reader: any = new FileReader();
+            reader.onload = function () {
+                try {
+                    const errorJson = JSON.parse(reader.result);
+                    Utils.showErrorMessage(errorJson)
+                } catch (parseError) {
+                    Utils.showErrorMessage(parseError)
+                }
+            };
+            reader.readAsText(error.response.data);
+        } else {
+            Utils.showErrorMessage(Messages.errUnknown)
         }
     }
 

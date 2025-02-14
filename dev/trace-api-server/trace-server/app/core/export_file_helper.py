@@ -3,7 +3,7 @@ import json
 import zipfile
 from fastapi.responses import Response
 from pydantic import BaseModel
-from typing import Any
+from typing import Any, Optional
 from fpdf import FPDF
 import io
 from app.graphql.db.sql_accounts import SqlAccounts
@@ -11,7 +11,7 @@ from app.graphql.db.helpers.psycopg_async_helper import exec_sql
 
 
 class ExportFileParams(BaseModel):
-    branchId: int
+    branchId: Optional[int] = None  # Allows None values
     buCode: str
     clientId: int
     dateFormat: str

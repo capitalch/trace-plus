@@ -45,6 +45,7 @@ const Messages = {
   errSameCurrentUidAndNewUid: "Current uid and new uid cannot be same",
   errSameCurrentPwdAndNewPwd:
     "Current password and new password cannot be same",
+  errSelectExportType: "You must select an export type",
   errSuperAdminRoleNameExists: "Super admin role name alrady exists",
   errSuperAdminControlNameExists: "Super admin control name already exists",
   errUidExistsForClient: "This uid already exists for the current client",
@@ -114,8 +115,9 @@ const Messages = {
     "The selected business users will be unlinked from the business unit. The business user will not be deleted.",
   messSureOnUnLinkAllSecuredControlsBody:
     "All secured controls will be unlinked from this role. The secured controls will not be deleted.",
-  messSureToTransferClosingBalance:'Are you sure you want to transfer this year\'s closing account balances to the next financial year for the selected branch?',
-    messSureUnlinkUser: "Are you sure to unlink this user?",
+  messSureToTransferClosingBalance:
+    "Are you sure you want to transfer this year's closing account balances to the next financial year for the selected branch?",
+  messSureUnlinkUser: "Are you sure to unlink this user?",
   messSureUnlinkUserBody:
     "The selected user will only be unlinked from the business unit. The user will not be deleted.",
   messTransferClosingBalance:

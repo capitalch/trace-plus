@@ -1,0 +1,33 @@
+
+@import "@syncfusion/ej2-base/styles/material.css";
+@import "@syncfusion/ej2-buttons/styles/material.css";
+@import "@syncfusion/ej2-splitbuttons/styles/material.css";
+@import "@syncfusion/ej2-calendars/styles/material.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Custom styles for Syncfusion DatePicker */
+.e-control-wrapper.e-input-group {
+  margin: 0 !important;
+}
+
+.e-input-group .e-input-group-icon {
+  padding: 0 8px !important;
+  margin-right: 0 !important;
+}
+
+.e-control-wrapper.e-input-group:not(.e-float-icon-left) {
+  padding-right: 0 !important;
+}

@@ -2,13 +2,14 @@ import { format } from 'date-fns'
 import { Utils } from '../../utils/utils'
 import { useEffect, useState } from 'react'
 import { currentFinYearSelectorFn, FinYearType } from '../../features/login/login-slice'
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { AppDispatchType, RootStateType } from '../../app/store/store'
 import { setCompDateRangeEndDate, setCompDateRangeStartDate, setCompDateRangeStartDateEndDate } from './comp-slice'
+import clsx from 'clsx'
 
-export function CompDateRange({ instance }: { instance: string }) {
+export function CompDateRange({ className, instance, title }: CompDateRangeType) {
     const dispatch: AppDispatchType = useDispatch()
-    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
+    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
     const selectedDateRange: { startDate: string, endDate: string } = useSelector((state: RootStateType) => state.reduxComp.compDateRange[instance])
     const isoFormat: string = 'yyyy-MM-dd'
     const currentDateFormat: string = Utils.getCurrentDateFormat().replace('DD', 'dd').replace('YYYY', 'yyyy') || 'dd/MM/yyyy'
@@ -30,11 +31,11 @@ export function CompDateRange({ instance }: { instance: string }) {
         }
     }, [currentFinYear])
 
-    return (<div className="flex flex-col space-y-4">
+    return (<div className={clsx(className, "flex flex-col space-y-4")}>
 
         {/* Header */}
         <div className="flex space-x-4 items-center">
-            <label className="text-lg font-semibold text-primary-500">Select Date Range</label>
+            <label className="text-lg font-semibold text-primary-500">{title || 'Select Date Range'}</label>
             <span className='text-black-600 mt-1 font-semibold'>
                 {format(selectedDateRange?.startDate || currentFinYear.startDate, currentDateFormat)} - {format(selectedDateRange?.endDate || currentFinYear.endDate, currentDateFormat)}
             </span>
@@ -250,3 +251,8 @@ export function CompDateRange({ instance }: { instance: string }) {
 
 type DateRangeType = "preset" | "quarter" | "custom";
 type Quarter = "Q1" | "Q2" | "Q3" | "Q4" | undefined;
+type CompDateRangeType = {
+    className?: string
+    instance: string
+    title?: string
+}

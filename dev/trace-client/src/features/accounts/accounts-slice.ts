@@ -9,6 +9,9 @@ const initialState: AccountsInitialStateType = {
     },
   },
   accSettingsChanged: 0,
+  exports: {
+    exportName: "",
+  },
 };
 
 const accountsSlice = createSlice({
@@ -16,6 +19,10 @@ const accountsSlice = createSlice({
   initialState: initialState,
 
   reducers: {
+    changeAccSettings: (state: AccountsInitialStateType) => {
+      state.accSettingsChanged = Date.now();
+    },
+
     selectBank: (
       state: AccountsInitialStateType,
       action: PayloadAction<SelectedBankType>
@@ -23,18 +30,26 @@ const accountsSlice = createSlice({
       state.bankRecon.selectedBank = action.payload;
     },
 
-    changeAccSettings: (state: AccountsInitialStateType) => {
-      state.accSettingsChanged = Date.now();
+    // Exports
+    setExportName: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<string>
+    ) => {
+      state.exports.exportName = action.payload;
     },
   },
 });
 
 export const accountsReducer = accountsSlice.reducer;
-export const { selectBank, changeAccSettings } = accountsSlice.actions;
+export const { changeAccSettings, selectBank, setExportName } =
+  accountsSlice.actions;
 
 export type AccountsInitialStateType = {
   bankRecon: { selectedBank: SelectedBankType };
   accSettingsChanged: number;
+  exports: {
+    exportName: string;
+  };
 };
 
 export type SelectedBankType = {

@@ -36,30 +36,45 @@
 														- Common utilities
 															- Transfer balances
 - Exports
-	- Date range control
-		- Sync with finYear change
-		- Disable Preset Ranges when currentFin year !== running year
-		- Select on Qtrs dates based on current FinYear and not on running fin year
-		- Custom range set to current fin year when page refresh and a button to reset
-	- Generic framework for all exports
-	- Generic error handling for export with appHttpException
+														- Generic error handling for export with appHttpException at server side
+	- 
 	- verify token
-	- Date format
-														- export file naming
 	- branch / all branches
+	- Artifacts
+		- optimize sql for gst
+		- Trial balance
+		- final accounts
+		- Payments, receipts, contra, journals, all vouchers
+		- accounts master
+														- Date format
+														- export file naming
+	
 													- Prototype for minimum working solution
 														- Server
 															- Remove GraphQL implementation
 														- Client
 															- Remove GraphQL implementation
-	- GST exports
-		- Sql
-		- pandas work
-		- datewise implementation
-		- UI
+													- GST exports
+														- Sql
+														- pandas work
+														- datewise implementation
+														- UI
 	- Trial balance export
 	- BS, PL export
 	- Other exports
+													- 5th report is not coming in pdf: it was null: no data
+													- ExportNamePicker
+														- redux dispatch
+													- ExportDropDownButton
+														- redux selectors
+														- Wireup
+														- Bug fix
+													- Date range control
+														- Sync with finYear change
+														- Disable Preset Ranges when currentFin year !== running year
+														- Select on Qtrs dates based on current FinYear and not on running fin year
+														- Custom range set to current fin year when page refresh and a button to reset
+														- Generic framework for all exports
 
 
 												- Opening balances
