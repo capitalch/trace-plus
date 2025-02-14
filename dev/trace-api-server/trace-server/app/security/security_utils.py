@@ -1,4 +1,6 @@
-import bcrypt, jwt, logging
+import bcrypt
+import jwt
+import logging
 from fastapi import Request, status
 from app.config import Config
 from app.core.messages import Messages
@@ -26,13 +28,15 @@ def create_access_token(subject: dict) -> str:
     encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)
     return encodedJwt
 
+
 def create_jwt_token(expireMinutes: int, data: dict) -> str:
     expiresDelta = datetime.now() + timedelta(minutes=expireMinutes)
     toEncode = {
         "exp": expiresDelta, "data": data
     }
     encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)
-    return(encodedJwt)
+    return (encodedJwt)
+
 
 def getPasswordHash(pwd):
     interm = pwd.encode('utf-8')
@@ -66,7 +70,7 @@ def parse_bearer_token(s):
     if (not s) or (not s.strip()):
         return None
     if s.startswith("Bearer "):
-        return s[len("Bearer ") :].strip()
+        return s[len("Bearer "):].strip()
     return s
 
 
@@ -109,14 +113,12 @@ async def validate_token(request: Request):
         raise e
     except Exception as e:
         logging.error(e)
+        message = getattr(e, 'args')[0] if getattr(
+            e, 'args', None) else Messages.err_access_token_unknown_error 
         raise AppHttpException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            error_code=e.error_code if e.error_code is not None else "e1014",
-            message=(
-                e.message
-                if e.message is not None
-                else Messages.err_access_token_unknown_error
-            ),
+            error_code="e1014",
+            message=message,
         )
 
 

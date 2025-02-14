@@ -22,7 +22,9 @@ valuesMap: dict = {
         "method": getCsvAsString,
         "sqlId": "get_accounts_master",
     },
-    ("gst", "json"): {"method": get_json_response, "sqlId": "get_all_gst_reports"},
+    ("gst", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_all_gst_reports"},
     ("gst", "xlsx"): {
         "method": get_excel_workbook_response,
         "sqlId": "get_all_gst_reports",

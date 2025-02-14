@@ -7,12 +7,10 @@ import { useExport } from "./export-hook";
 import { ExportFileType, ExportNameType } from "./all-exports";
 import { Utils } from "../../../../utils/utils";
 import { Messages } from "../../../../utils/messages";
-// import { selectCompSwitchStateFn } from "../../../../controls/redux-components/comp-slice";
 
 export function ExportFileTypeDropDownButton({ className }: { className?: string }) {
     const selectedExportName: ExportNameType = useSelector((state: RootStateType) => state.accounts.exports.exportName as ExportNameType)
     const selectedDateRange = useSelector((state: RootStateType) => state.reduxComp.compDateRange[CompInstances.compDateRangeExports])
-    // const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchExports)) || false
     const { exportFile } = useExport()
 
     const [selectedFileType, setSelectedFileType] = useState(fileTypes[0]);

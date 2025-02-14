@@ -36,12 +36,13 @@
 														- Common utilities
 															- Transfer balances
 - Exports
-														- Generic error handling for export with appHttpException at server side
-	- 
-	- verify token
-	- branch / all branches
+														- Generic error handling for export with appHttpException at server side 
+														- verify token
+														- branch / all branches
+	- disable date range control when required
 	- Artifacts
-		- optimize sql for gst
+														- optimize sql for gst
+														- gst
 		- Trial balance
 		- final accounts
 		- Payments, receipts, contra, journals, all vouchers

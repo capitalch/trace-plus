@@ -53,7 +53,7 @@ export function useExport() {
                 startDate: startDate,
                 endDate: endDate
             }
-            const ExportFileName: string = `${exportName}-${dateRange}-${buCode}-${branchCode || ''}-${finYearId}-time-${currentDateTime}.${fileExtension[fileType]}`
+            const ExportFileName: string = `${exportName}-${dateRange}-${buCode}-${isAllBranches ? 'AllBranches' : branchCode || ''}-${finYearId}-time-${currentDateTime}.${fileExtension[fileType]}`
             const response = await axios({
                 method: 'post',
                 url: urlJoin(hostUrl, 'export-file'),

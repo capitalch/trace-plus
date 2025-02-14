@@ -1,10 +1,11 @@
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Depends, Request
-import pandas as pd
-from pydantic import BaseModel
-from fastapi.responses import Response
-import io
+from app.security.security_utils import validate_token
+# import pandas as pd
+# from pydantic import BaseModel
+# from fastapi.responses import Response
+# import io
 # from typing import Annotated
 # from fastapi.responses import FileResponse
 # from pydantic import BaseModel
@@ -27,8 +28,9 @@ async def get_api():
 
 
 @securityRouter.post("/export-file/")
-async def export_file(request: ValueData):
-    return await exportFile(request)    
+async def export_file(request: Request, valueData: ValueData):
+    await validate_token(request)
+    return await exportFile(valueData)
 
 
 @securityRouter.post("/login", summary="Creates access token")
@@ -81,18 +83,3 @@ async def resolve_forgot_password(request: Request):
 @securityRouter.get("/reset-password/{token}")
 async def resolve_reset_password(token: str):
     return await reset_password_helper(token)
-
-
-# @securityRouter.get("/download-excel/")
-# async def download_excel(request: ExportFile):
-#     # Create an Excel file
-#     df = pd.DataFrame({"Name": ["Alice", "Bob"], "Score": [85, 90]})
-#     output = io.BytesIO()
-#     writer = pd.ExcelWriter(output, engine='xlsxwriter')
-#     df.to_excel(writer, sheet_name='xyz', index=False)
-#     writer.close()
-#     output.seek(0)
-#     str = output.read()
-#     output.close()
-#     return Response(str, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-#                     headers={"Content-Disposition": "attachment; filename=report.xlsx"},)

@@ -239,7 +239,7 @@ class SqlAccounts:
     """
 
     get_all_gst_reports = """
-    --with "branchId" as (values(null::int)), "finYearId" as (values(2022)), "startDate" as (values('2022-04-01'::date)), "endDate" as (values('2023-03-31'::date))
+        --with "branchId" as (values(null::int)), "finYearId" as (values(2022)), "startDate" as (values('2022-04-01'::date)), "endDate" as (values('2023-03-31'::date))
 			with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
 			, cte1 as (
             select  "tranDate", "autoRefNo", "userRefNo", "tranType", "gstin", d."amount" - "cgst" - "sgst" - "igst" as "aggregate", "cgst", "sgst", "igst", d."amount",
@@ -258,12 +258,10 @@ class SqlAccounts:
                     "sgst" <> 0 or
                     "igst" <> 0) and
                     "isInput" = true and
-                    "finYearId" = (table "finYearId") and
-					COALESCE((TABLE "branchId"), "branchId") = "branchId" and
-                    --"branchId" = (table "branchId") and
-                    ("tranDate" between (table "startDate") and (table "endDate"))
-                
-                order by "tranDate", h."id"),
+                    h."finYearId" = (table "finYearId") and
+					COALESCE((TABLE "branchId"), h."branchId") = h."branchId" and
+                    (h."tranDate" between (table "startDate") and (table "endDate"))
+                order by h."tranDate", h."id"),
             
             -- gst-output-consolidated (ExtGstTrand) based on "isInput"
             cte2 as (
@@ -284,8 +282,7 @@ class SqlAccounts:
                     "igst" <> 0) and
                     "isInput" = false and
                     "finYearId" = (table "finYearId") and
-					COALESCE((TABLE "branchId"), "branchId") = "branchId" and
-                     --"branchId" = (table "branchId") and
+					COALESCE((TABLE "branchId"),h. "branchId") = h."branchId" and
                     ("tranDate" between (table "startDate") and (table "endDate"))
                 
                 order by "tranDate", h."id"),
@@ -316,8 +313,7 @@ class SqlAccounts:
                             "igst" <> 0) and
                             "tranTypeId" in (4,9) and
                             "finYearId" = (table "finYearId") and
-							COALESCE((TABLE "branchId"), "branchId") = "branchId" and
-							 --"branchId" = (table "branchId") and
+							COALESCE((TABLE "branchId"), h."branchId") = h."branchId" and
 							("tranDate" between (table "startDate") and (table "endDate"))
                     GROUP BY 
                         "tranDate", h."id", "tranDate", "autoRefNo", "userRefNo", "tranType", "gstin", "gstRate", "accName", h."remarks", "dc", "lineRefNo", d."remarks"     
@@ -350,8 +346,7 @@ class SqlAccounts:
                             "igst" <> 0) and
                             "tranTypeId" in (5,10) and
                             "finYearId" = (table "finYearId") and
-							COALESCE((TABLE "branchId"), "branchId") = "branchId" and
-							 --"branchId" = (table "branchId") and
+							COALESCE((TABLE "branchId"), h."branchId") = h."branchId" and
 							("tranDate" between (table "startDate") and (table "endDate"))
                 group by
 					"tranDate", h."id", "autoRefNo", "userRefNo", "tranType", "gstin", "gstRate","accName", h."remarks", "dc", "lineRefNo", d."remarks"
@@ -380,8 +375,7 @@ class SqlAccounts:
                             "rate" is not null and -- When it is not a sale / purchase i.e voucher, then "gstRate" value exists in "ExtGstTranD" table otherwise not
                             "isInput" = true and -- Only applicable for GST through vouchers
                             "finYearId" = (table "finYearId") and
-							COALESCE((TABLE "branchId"), "branchId") = "branchId" and
-							-- "branchId" = (table "branchId") and
+							COALESCE((TABLE "branchId"), h."branchId") = h."branchId" and
 							("tranDate" between (table "startDate") and (table "endDate"))
                         
                 order by "tranDate", h."id"
@@ -412,8 +406,7 @@ class SqlAccounts:
                             "igst" <> 0) and
                             "tranTypeId" in (4,9) and
                             "finYearId" = (table "finYearId") and
-							COALESCE((TABLE "branchId"), "branchId") = "branchId" and
-							 --"branchId" = (table "branchId") and
+							COALESCE((TABLE "branchId"), h."branchId") = h."branchId" and
 							("tranDate" between (table "startDate") and (table "endDate"))
                     GROUP BY 
                         "tranType", "accName", "dc", "hsn"
@@ -442,8 +435,7 @@ class SqlAccounts:
                             "igst" <> 0) and
                             "tranTypeId" in (4,9) and
                             "finYearId" = (table "finYearId") and
-							COALESCE((TABLE "branchId"), "branchId") = "branchId" and
-							-- "branchId" = (table "branchId") and
+							COALESCE((TABLE "branchId"), h."branchId") = h."branchId" and
 							("tranDate" between (table "startDate") and (table "endDate"))
                     order by h.id)
             select json_build_object(

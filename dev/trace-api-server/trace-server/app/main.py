@@ -6,7 +6,6 @@ from app.core.dependencies import (
     app_http_exception_handler,
     configure_logger,
     exceptions_middleware,
-    # handle_token_middleware,
 )
 from app.core.messages import Messages
 from app.security.security_router import securityRouter
