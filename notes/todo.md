@@ -39,14 +39,16 @@
 														- Generic error handling for export with appHttpException at server side 
 														- verify token
 														- branch / all branches
-	- disable date range control when required
+														- disable date range control when required
 	- Artifacts
+		- final testing
+		- include dateformat in all reports
 														- optimize sql for gst
 														- gst
-		- Trial balance
-		- final accounts
+														- Trial balance
+														- final accounts
+														- accounts master
 		- Payments, receipts, contra, journals, all vouchers
-		- accounts master
 														- Date format
 														- export file naming
 	

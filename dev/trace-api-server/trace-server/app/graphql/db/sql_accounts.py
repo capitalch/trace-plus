@@ -109,58 +109,66 @@ class SqlAccounts:
 
     get_accounts_master = """
     -- modified by AI
-    WITH RECURSIVE "children_cte" AS (
-    SELECT 
-        "parentId" AS "parent_id", 
-        ARRAY_AGG("id") AS "child_ids"
-    FROM 
-        "AccM"
-    GROUP BY 
-        "parentId"),
-    cte1 AS (
+        WITH RECURSIVE "children_cte" AS (
         SELECT 
-            a."id", 
-            a."accCode", 
-            a."accName", 
-            a."parentId", 
-            a."accType", 
-            a."isPrimary", 
-            a."accLeaf", 
-            a."classId", 
-            c."accClass",
-
-            -- Optimized parentAccLeaf with JOIN
-            p."accLeaf" AS "parentAccLeaf",
-            p."classId" AS "parentClassId",
-            p."accType" AS "parentAccType",
-            x."id" AS "extBusinessContactsAccMId",
-            e."isAutoSubledger",
-            cte."child_ids" AS "children",
-
-            -- Simplified CASE for addressable
-            (c."accClass" IN ('debtor', 'creditor', 'loan') AND a."accLeaf" IN ('Y', 'S')) AS "addressable",
-
-            -- Simplified CASE for isAddressExists
-            (x."id" IS NOT NULL) AS "isAddressExists"
-                FROM 
-                    "AccM" a
-                -- JOIN instead of subquery for parentAccLeaf
-                LEFT JOIN 
-                    "AccM" p ON a."parentId" = p."id"
-                LEFT JOIN 
-                    "children_cte" cte ON a."id" = cte."parent_id"
-                JOIN 
-                    "AccClassM" c ON a."classId" = c."id"
-                LEFT JOIN 
-                    "ExtBusinessContactsAccM" x ON a."id" = x."accId"
-                LEFT JOIN 
-                    "ExtMiscAccM" e ON a."id" = e."accId"
-                --ORDER by a."accType", c."accClass", a."accName", a."accCode"
-            )
+            "parentId" AS "parent_id", 
+            ARRAY_AGG("id") AS "child_ids"
+        FROM 
+            "AccM"
+        GROUP BY 
+            "parentId"),
+        cte1 AS (
             SELECT 
-                json_build_object(
-                    'accountsMaster', (SELECT json_agg(a) FROM cte1 a)
-                ) AS "jsonResult"
+                a."id", 
+                a."accCode", 
+                a."accName", 
+                a."parentId", 
+                a."accType", 
+                a."isPrimary", 
+                a."accLeaf", 
+                a."classId", 
+                c."accClass",
+
+                -- Optimized parentAccLeaf with JOIN
+                p."accLeaf" AS "parentAccLeaf",
+                p."classId" AS "parentClassId",
+                p."accType" AS "parentAccType",
+                x."id" AS "extBusinessContactsAccMId",
+                e."isAutoSubledger",
+                cte."child_ids" AS "children",
+
+                -- Simplified CASE for addressable
+                (c."accClass" IN ('debtor', 'creditor', 'loan') AND a."accLeaf" IN ('Y', 'S')) AS "addressable",
+
+                -- Simplified CASE for isAddressExists
+                (x."id" IS NOT NULL) AS "isAddressExists"
+                    FROM 
+                        "AccM" a
+                    -- JOIN instead of subquery for parentAccLeaf
+                    LEFT JOIN 
+                        "AccM" p ON a."parentId" = p."id"
+                    LEFT JOIN 
+                        "children_cte" cte ON a."id" = cte."parent_id"
+                    JOIN 
+                        "AccClassM" c ON a."classId" = c."id"
+                    LEFT JOIN 
+                        "ExtBusinessContactsAccM" x ON a."id" = x."accId"
+                    LEFT JOIN 
+                        "ExtMiscAccM" e ON a."id" = e."accId"
+                    --ORDER by a."accType", c."accClass", a."accName", a."accCode"
+                )
+                SELECT 
+                    json_build_object(
+                        'accountsMaster', (SELECT json_agg(a) FROM cte1 a)
+                    ) AS "jsonResult"
+    """
+
+    get_accounts_master_export = """
+        select a.*, "accClass"
+            from "AccM" a
+                join "AccClassM" c
+                    on c."id" = a."classId"
+                        order by a."id"
     """
 
     get_accounts_opening_balance = """
@@ -187,7 +195,7 @@ class SqlAccounts:
                         on a."id" = b."accId"                                                           
                     order by "accType","accLeaf", "accName"
     """
-    
+
     get_account_parent_options = """
         with "accType" as (values (%(accType)s::text))
         --WITH "accType" AS (VALUES ('L'))
@@ -448,6 +456,27 @@ class SqlAccounts:
 					'07-gst-output-sales-hsn-details', (SELECT json_agg(row_to_json(f)) from cte7 f)
                 ) as "jsonResult"
     """
+
+    get_all_vouchers_export = """
+        --with "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(null::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
+			with "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
+            select ROW_NUMBER() over (order by h."id") as "index"
+            , h."id", to_char(h."tranDate", (table "dateFormat")) as "tranDate"
+            , h."autoRefNo", h."userRefNo", h."finYearId", h."branchId", h."remarks", h."userRefNo"
+            , a."accName"
+            , CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END as "debit"
+            , CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END as "credit"
+            , d."instrNo", d."lineRefNo", d."remarks" as "lineRemarks"
+			, h."timestamp"::text
+            from "TranD" d
+                join "TranH" h
+                    on h."id" = d."tranHeaderId"
+                join "AccM" a
+                    on a."id" = d."accId"
+            where "finYearId" = (table "finYearId") 
+			and COALESCE((table "branchId"), h."branchId") = h."branchId"
+            order by "id"
+    """
     
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
@@ -675,7 +704,7 @@ class SqlAccounts:
                 order by "accName"
     """
 
-    get_trialBalance = """
+    get_trial_balance = """
         WITH RECURSIVE hier AS (
             SELECT 
                 "accId", 
@@ -987,8 +1016,8 @@ class SqlAccounts:
                 END $$;
             """
         ).format(
-            finYearId = sql.Literal(params["finYearId"]),
-            branchId = sql.Literal(params["branchId"])
+            finYearId=sql.Literal(params["finYearId"]),
+            branchId=sql.Literal(params["branchId"]),
         )
 
     def upsert_unit_info(params):

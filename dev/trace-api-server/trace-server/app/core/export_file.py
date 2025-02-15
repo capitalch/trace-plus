@@ -4,9 +4,12 @@ import json
 from app.core.messages import Messages
 from app.core.dependencies import AppHttpException
 from app.core.export_file_helper import (
+    get_csv_response,
     get_csv_files_as_zip_response,
+    get_excel_sheet_response,
     get_excel_workbook_response,
     get_json_response,
+    get_pdf_response,
     get_pdf_files_as_zip_response,
     ExportFileParams,
     ValueData,
@@ -18,13 +21,79 @@ def getCsvAsString():
 
 
 valuesMap: dict = {
-    ("accountsMaster", "csv"): {
-        "method": getCsvAsString,
-        "sqlId": "get_accounts_master",
-    },
-    ("gst", "json"): {
+    ("accountsMaster", "json"): {
         "method": get_json_response,
-        "sqlId": "get_all_gst_reports"},
+        "sqlId": "get_accounts_master_export",
+    },
+    ("accountsMaster", "xlsx"): {
+        "method": get_excel_sheet_response,
+        "sqlId": "get_accounts_master_export",
+    },
+    ("accountsMaster", "csv"): {
+        "method": get_csv_response,
+        "sqlId": "get_accounts_master_export",
+    },
+    ("accountsMaster", "pdf"): {
+        "method": get_pdf_response,
+        "sqlId": "get_accounts_master_export",
+    },
+    ###
+    ("allVouchers", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_all_vouchers_export",
+    },
+    ("allVouchers", "xlsx"): {
+        "method": get_excel_sheet_response,
+        "sqlId": "get_all_vouchers_export",
+    },
+    ("allVouchers", "csv"): {
+        "method": get_csv_response,
+        "sqlId": "get_all_vouchers_export",
+    },
+    ("allVouchers", "pdf"): {
+        "method": get_pdf_response,
+        "sqlId": "get_all_vouchers_export",
+    },
+    ###
+    ("trialBalance", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_trial_balance",
+        "path": "trialBalance",
+    },
+    ("trialBalance", "xlsx"): {
+        "method": get_excel_sheet_response,
+        "sqlId": "get_trial_balance",
+        "path": "trialBalance",
+    },
+    ("trialBalance", "csv"): {
+        "method": get_csv_response,
+        "sqlId": "get_trial_balance",
+        "path": "trialBalance",
+    },
+    ("trialBalance", "pdf"): {
+        "method": get_pdf_response,
+        "sqlId": "get_trial_balance",
+        "path": "trialBalance",
+    },
+    ###
+    ("finalAccounts", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_balanceSheet_profitLoss",
+    },
+    ("finalAccounts", "xlsx"): {
+        "method": get_excel_workbook_response,
+        "sqlId": "get_balanceSheet_profitLoss",
+    },
+    ("finalAccounts", "csvZip"): {
+        "method": get_csv_files_as_zip_response,
+        "sqlId": "get_balanceSheet_profitLoss",
+    },
+    ("finalAccounts", "pdfZip"): {
+        "method": get_pdf_files_as_zip_response,
+        "sqlId": "get_balanceSheet_profitLoss",
+    },
+    ###
+    ("gst", "json"): {"method": get_json_response, "sqlId": "get_all_gst_reports"},
     ("gst", "xlsx"): {
         "method": get_excel_workbook_response,
         "sqlId": "get_all_gst_reports",
@@ -55,5 +124,6 @@ async def exportFile(request: ValueData):
     fileType = valueDict.fileType
     method = valuesMap.get((exportName, fileType)).get("method")
     sqlId = valuesMap.get((exportName, fileType)).get("sqlId")
-    values = await method(fileType, sqlId, valueDict)
+    path = valuesMap.get((exportName, fileType)).get("path", None)
+    values = await method(fileType, sqlId, valueDict, path=path)
     return values

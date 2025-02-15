@@ -1,20 +1,35 @@
+import { shallowEqual, useSelector } from "react-redux";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompDateRange } from "../../../../controls/redux-components/comp-date-range";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { CompSwitch } from "../../../../controls/redux-components/comp-switch";
 import { ExportFileTypeDropDownButton } from "./export-file-type-drop-down-button";
 import { ExportNamePicker } from "./export-name-picker";
+import { RootStateType } from "../../../../app/store/store";
+import { useEffect, useState } from "react";
 
 export function AllExports() {
+    const selectedExportName: ExportNameType = useSelector((state: RootStateType) => state.accounts.exports.exportName as ExportNameType, shallowEqual)
     const dateRangeInstance: string = CompInstances.compDateRangeExports
-    return (<CompAccountsContainer MiddleCustomControl={()=><CompSwitch instance={CompInstances.compSwitchExports} leftLabel="All branches" />}>
+    const [isDateRangeDisabled, setDateRangeDisabled] = useState<boolean>(true)
+
+    useEffect(() => {
+        if ((selectedExportName === 'accountsMaster') || (selectedExportName === 'finalAccounts') || (selectedExportName === 'trialBalance')) {
+            setDateRangeDisabled(true)
+        } else {
+            setDateRangeDisabled(false)
+        }
+    }, [selectedExportName])
+
+    return (<CompAccountsContainer MiddleCustomControl={() => <CompSwitch instance={CompInstances.compSwitchExports} leftLabel="All branches" />}>
         <div className="flex flex-col mt-8 space-y-8">
             <div className="flex justify-between mr-6">
                 <ExportNamePicker />
                 <ExportFileTypeDropDownButton className="mt-6" />
             </div>
-
-            <CompDateRange instance={dateRangeInstance} />
+            <div className={`${isDateRangeDisabled ? "opacity-30 pointer-events-none" : ""}`}>
+                <CompDateRange instance={dateRangeInstance} />
+            </div>
         </div>
     </CompAccountsContainer>)
 }

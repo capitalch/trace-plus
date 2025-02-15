@@ -343,7 +343,7 @@ async def trial_balance_helper(info, dbName, value):
     valueDict = json.loads(valueString)
     dbParams = valueDict.get("dbParams", None)
     schema = valueDict.get("buCode", None)
-    sql = SqlAccounts.get_trialBalance
+    sql = SqlAccounts.get_trial_balance
     sqlArgs = valueDict.get("sqlArgs", {})
     try:
         res = await exec_sql(

@@ -38,7 +38,7 @@ mimeMap = {
 }
 
 
-async def getJsonData(sqlId: str, valueDict: ExportFileParams):
+async def getJsonData(sqlId: str, valueDict: ExportFileParams, path: str = None):
     sql = getattr(SqlAccounts, sqlId)
     sqlArgs = {
         "branchId": valueDict.branchId,
@@ -53,18 +53,17 @@ async def getJsonData(sqlId: str, valueDict: ExportFileParams):
         sql=sql,
         sqlArgs=sqlArgs,
     )
-    return res[0].get("jsonResult")
+    if res[0].get("jsonResult"):
+        res = res[0].get("jsonResult")
+    if path:
+        res = res.get(path)
+    return res
 
 
 async def get_json_response(
-    fileType: str,
-    sqlId: str,
-    valueDict: ExportFileParams,
+    fileType: str, sqlId: str, valueDict: ExportFileParams, path: str = None
 ):
-    jsonResult = await getJsonData(
-        sqlId,
-        valueDict,
-    )
+    jsonResult = await getJsonData(sqlId, valueDict, path)
     json_str = json.dumps(jsonResult, indent=4)
 
     # Use BytesIO to store JSON data in memory
@@ -77,18 +76,34 @@ async def get_json_response(
     )
 
 
-async def get_csv_files_as_zip_response(
-    fileType: str,
-    sqlId: str,
-    valueDict: ExportFileParams,
+async def get_csv_response(
+    fileType: str, sqlId: str, valueDict: ExportFileParams, path: str = None
 ):
-    jsonResult = await getJsonData(
-        sqlId,
-        valueDict,
+    jsonResult = await getJsonData(sqlId, valueDict, path)
+    df = pd.DataFrame(jsonResult)
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False)  # Convert DataFrame to CSV
+    csv_buffer.seek(0)  # Move to the beginning of the file
+    # str = csv_buffer.read()
+    str1 = csv_buffer.getvalue()
+    csv_buffer.close()
+    return Response(
+        str1,
+        media_type=mimeMap.get(fileType),
+        headers={"Content-Disposition": "attachment;"},
     )
+
+
+async def get_csv_files_as_zip_response(
+    fileType: str, sqlId: str, valueDict: ExportFileParams, path: str = None
+):
+    jsonResult = await getJsonData(sqlId, valueDict, path)
     sheets = list(jsonResult.keys())
     csv_files: dict = {}
     for sheet in sheets:
+        data = jsonResult.get(sheet)
+        if not isinstance(data, list):
+            continue
         df = pd.DataFrame(jsonResult.get(sheet))
         csv_files[sheet] = df
 
@@ -123,14 +138,13 @@ class PDFWithHeader(FPDF):
 
 
 def create_pdf_from_json(data_list: list, file_name: str) -> bytes:
-    """Generate a PDF file from a list of dictionaries with dynamic column width."""
+    """Generate a PDF file from a list of dictionaries with clipped text in columns."""
 
     if not data_list:
         return b""  # Return empty bytes if no data
 
     pdf = PDFWithHeader(file_name)
     pdf.set_auto_page_break(auto=True, margin=15)
-
     pdf.add_page()
     pdf.set_font("Arial", size=8)
 
@@ -138,52 +152,69 @@ def create_pdf_from_json(data_list: list, file_name: str) -> bytes:
     columns = list(data_list[0].keys()) if data_list else []
     num_cols = len(columns)
 
-    # ✅ Determine column width dynamically based on page width
+    # ✅ Determine column width dynamically
     page_width = pdf.w - 20  # ✅ Subtract margins
-    min_col_width = 20
-    max_col_width = 40  # ✅ Prevent columns from being too wide
+    min_col_width = 30
+    max_col_width = 60  # ✅ Prevent columns from being too wide
     col_width = max(min_col_width, min(page_width / num_cols, max_col_width))
 
-    # ✅ Adjust page width dynamically if necessary
-    if num_cols * col_width > page_width:
-        new_page_width = num_cols * col_width + 20
-        pdf.w = new_page_width
+    # ✅ Estimate max character length that fits in a column
+    avg_char_width = 2.5  # Approximate character width in points
+    max_chars = int(col_width / avg_char_width)  # Max characters per cell
 
-    # ✅ Create table header
+    # ✅ Table Header
     pdf.set_fill_color(200, 200, 200)  # Light gray background
+    pdf.set_font("Arial", "B", 8)
+
     for col in columns:
-        pdf.cell(col_width, 10, col, border=1, ln=0, align="C", fill=True)
+        pdf.cell(col_width, 10, col, border=1, align="C", fill=True)
     pdf.ln()
 
-    # ✅ Add table data
+    # ✅ Table Data (Clipped Text)
+    pdf.set_font("Arial", size=8)
+
     for row in data_list:
         for col in columns:
             value = row.get(col, "")
 
-            if isinstance(value, (int, float)):  # ✅ Format numbers with 2 decimals
-                value = f"{value:,.2f}"
-                align = "R"  # Right-align numbers
+            if isinstance(value, (int, float)):
+                value = f"{value:,.2f}"  # ✅ Format numbers with 2 decimal places
+                align = "R"  # ✅ Right-align numbers
             else:
-                align = "L"  # Left-align text
+                value = str(value)[:max_chars]  # ✅ Clip text properly
+                align = "L"  # ✅ Left-align text
 
-            pdf.cell(col_width, 8, str(value), border=1, ln=0, align=align)
-        pdf.ln()
+            pdf.cell(col_width, 8, value, border=1, align=align)
+
+        pdf.ln()  # Move to the next row
 
     return pdf.output(dest="S").encode("latin1")
 
 
-async def get_pdf_files_as_zip_response(
-    fileType: str,
-    sqlId: str,
-    valueDict: ExportFileParams,
+async def get_pdf_response(
+    fileType: str, sqlId: str, valueDict: ExportFileParams, path: str = None
 ):
-    jsonResult = await getJsonData(
-        sqlId,
-        valueDict,
+    jsonResult = await getJsonData(sqlId, valueDict, path)
+    pdf_data = create_pdf_from_json(
+        jsonResult or [],
+        f"{valueDict.exportName} {valueDict.startDate} to {valueDict.endDate}",
     )
+    return Response(
+        content=pdf_data,
+        media_type=mimeMap.get(fileType),
+        headers={"Content-Disposition": "attachment;"},
+    )
+
+
+async def get_pdf_files_as_zip_response(
+    fileType: str, sqlId: str, valueDict: ExportFileParams, path: str = None
+):
+    jsonResult = await getJsonData(sqlId, valueDict, path)
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         for file_name, pdf_content in jsonResult.items():
+            if not isinstance(pdf_content, list):
+                continue
             pdf_data = create_pdf_from_json(
                 pdf_content or [], file_name
             )  # Generate PDF
@@ -198,25 +229,48 @@ async def get_pdf_files_as_zip_response(
     )
 
 
-async def get_excel_workbook_response(
-    fileType: str,
-    sqlId: str,
-    valueDict: ExportFileParams,
+async def get_excel_sheet_response(
+    fileType: str, sqlId: str, valueDict: ExportFileParams, path: str = None
 ):
-    jsonResult = await getJsonData(
-        sqlId,
-        valueDict,
+    jsonResult = await getJsonData(sqlId, valueDict, path)
+
+    output = io.BytesIO()
+    writer = pd.ExcelWriter(output, engine="xlsxwriter")
+    df = pd.DataFrame(jsonResult)
+    df.to_excel(writer, index=False, header=True, startrow=2)
+    sheetObj = writer.sheets["Sheet1"]
+    sheetObj.write(
+        "A1",
+        f"Report {valueDict.exportName}: from {valueDict.startDate or ''} to {valueDict.endDate or ''}",
     )
+    writer.close()
+    output.seek(0)
+    str = output.read()
+    output.close()
+    return Response(
+        str,
+        media_type=mimeMap.get(fileType),
+        headers={"Content-Disposition": "attachment;"},
+    )
+
+
+async def get_excel_workbook_response(
+    fileType: str, sqlId: str, valueDict: ExportFileParams, path: str = None
+):
+    jsonResult = await getJsonData(sqlId, valueDict, path)
     sheets = list(jsonResult.keys())
     output = io.BytesIO()
     writer = pd.ExcelWriter(output, engine="xlsxwriter")
     for sheet in sheets:
+        data = jsonResult.get(sheet)
+        if not isinstance(data, list):
+            continue
         df = pd.DataFrame(jsonResult.get(sheet))
         df.to_excel(writer, sheet_name=sheet, index=False, header=True, startrow=2)
         sheetObj = writer.sheets[sheet]
         sheetObj.write(
             "A1",
-            f"Gst report: {sheet}: from {valueDict.startDate or ''} to {valueDict.endDate or ''}",
+            f"Report {valueDict.exportName}: {sheet}: from {valueDict.startDate or ''} to {valueDict.endDate or ''}",
         )
     writer.close()
     output.seek(0)
