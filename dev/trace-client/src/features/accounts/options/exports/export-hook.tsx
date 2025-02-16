@@ -6,13 +6,14 @@ import urlJoin from "url-join";
 import { encodeObj } from "../../../../app/graphql/maps/graphql-queries-map";
 import dayjs from "dayjs";
 import { Messages } from "../../../../utils/messages";
-import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../app/store/store";
-import { selectCompSwitchStateFn } from "../../../../controls/redux-components/comp-slice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { selectCompSwitchStateFn, showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 
 export function useExport() {
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchExports)) || false
+    const dispatch: AppDispatchType = useDispatch()
 
     const {
         branchId
@@ -55,6 +56,10 @@ export function useExport() {
                 tranTypeId: 0 // As a placeholder now. Populated at server
             }
             const ExportFileName: string = `${exportName}-${dateRange}-${buCode}-${isAllBranches ? 'AllBranches' : branchCode || ''}-${finYearId}-time-${currentDateTime}.${fileExtension[fileType]}`
+            dispatch(showCompAppLoader({
+                instance: CompInstances.compAppLoader,
+                isVisible: true
+            }))
             const response = await axios({
                 method: 'post',
                 url: urlJoin(hostUrl, 'export-file'),
@@ -71,6 +76,12 @@ export function useExport() {
             link.remove();
         } catch (error: any) {
             exportErrorHandler(error) // ai
+        }
+        finally {
+            dispatch(showCompAppLoader({
+                instance: CompInstances.compAppLoader,
+                isVisible: false
+            }))
         }
     }
 

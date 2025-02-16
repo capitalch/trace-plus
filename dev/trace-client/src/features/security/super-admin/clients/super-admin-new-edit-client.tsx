@@ -104,7 +104,7 @@ export function SuperAdminNewEditClient({
                         {(errors.clientCode)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientCode.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <WidgetTooltip title={Messages.messClientCode} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                        <WidgetTooltip title={Messages.messClientCode} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
                             <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
                         </WidgetTooltip>
                     </span>
@@ -121,7 +121,7 @@ export function SuperAdminNewEditClient({
                         {(errors.clientName)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientName.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <WidgetTooltip title={Messages.messClientName} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                        <WidgetTooltip title={Messages.messClientName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
                             <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
                         </WidgetTooltip>
                     </span>

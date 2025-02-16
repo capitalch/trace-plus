@@ -1,9 +1,13 @@
-import { ColumnDirective, ColumnsDirective, Edit, GridComponent, Inject, Toolbar } from "@syncfusion/ej2-react-grids";
+import { ColumnDirective, ColumnsDirective, Edit, Filter, FilterSettings, FilterSettingsModel, FilterType, GridComponent, Inject, Toolbar } from "@syncfusion/ej2-react-grids";
 import { testData } from "./test-data";
 import { DatePickerComponent } from '@syncfusion/ej2-react-calendars';
 
 export function SyncfusionGrid() {
-
+    const filterOptions: FilterSettingsModel = {
+        type: "Menu",
+        mode: "OnEnter",
+        
+    };
     return (
         <div className="bg-red-400">
             <div className="bg-slate-200">
@@ -12,7 +16,8 @@ export function SyncfusionGrid() {
                     <label className="text-blue-500 font-medium mr-4">AccName</label>
                 </div>
                 <GridComponent
-                    
+                    allowFiltering={true}
+                    filterSettings={filterOptions}
                     className="mt-2"
                     gridLines="Both"
                     height='calc(100vh - 280px)'
@@ -21,7 +26,7 @@ export function SyncfusionGrid() {
                 // toolbar={['edit']}
                 >
                     <ColumnsDirective>
-                    <ColumnDirective
+                        {/* <ColumnDirective
                             field="Date"
                             headerText="Date"
                             width="70"
@@ -30,15 +35,15 @@ export function SyncfusionGrid() {
                         // editType="CustomEdit"
                         // edit={editParams}
                         // edit={editParams}
-                        />
+                        /> */}
                         <ColumnDirective field='OrderID' headerText='Order ID' width={120} textAlign="Right" />
                         <ColumnDirective field='CustomerID' headerText='Customer ID' width='150' />
                         <ColumnDirective field='ShipCity' headerText='Ship City' width='150' />
                         {/* <ColumnDirective field='ShipName' headerText='Ship Name' /> */}
                         <ColumnDirective field='ShipCountry' headerText='Ship Country' width='150' />
-                        
+
                     </ColumnsDirective>
-                    <Inject services={[Edit]} />
+                    <Inject services={[Edit, Filter]} />
                 </GridComponent>
             </div>
         </div>
@@ -65,7 +70,7 @@ export function SyncfusionGrid() {
                     value={args.Date}
                     // placeholder="Select date"
                     change={(e: any) => handleChange(e)}
-                    // style={{ width: '100%' }}
+                // style={{ width: '100%' }}
                 />
                 <button onClick={clearDate} style={{ marginTop: '5px' }}>
                     Clear

@@ -22,6 +22,7 @@ class ExportFileParams(BaseModel):
     fileType: str
     finYearId: int
     startDate: str
+    tranTypeId: int
 
 
 class ValueData(BaseModel):
@@ -42,9 +43,11 @@ async def getJsonData(sqlId: str, valueDict: ExportFileParams, path: str = None)
     sql = getattr(SqlAccounts, sqlId)
     sqlArgs = {
         "branchId": valueDict.branchId,
-        "finYearId": valueDict.finYearId,  # error
+        "finYearId": valueDict.finYearId,
         "startDate": valueDict.startDate,
         "endDate": valueDict.endDate,
+        "dateFormat": valueDict.dateFormat,
+        "tranTypeId": valueDict.tranTypeId
     }
     res = await exec_sql(
         dbName=valueDict.dbName,
@@ -53,7 +56,7 @@ async def getJsonData(sqlId: str, valueDict: ExportFileParams, path: str = None)
         sql=sql,
         sqlArgs=sqlArgs,
     )
-    if res[0].get("jsonResult"):
+    if res and res[0].get("jsonResult"):
         res = res[0].get("jsonResult")
     if path:
         res = res.get(path)
@@ -141,7 +144,7 @@ def create_pdf_from_json(data_list: list, file_name: str) -> bytes:
     """Generate a PDF file from a list of dictionaries with clipped text in columns."""
 
     if not data_list:
-        return b""  # Return empty bytes if no data
+        return PDFWithHeader(file_name).output(dest="S").encode("latin1")  # Return empty bytes if no data
 
     pdf = PDFWithHeader(file_name)
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -178,7 +181,8 @@ def create_pdf_from_json(data_list: list, file_name: str) -> bytes:
             value = row.get(col, "")
 
             if isinstance(value, (int, float)):
-                value = f"{value:,.2f}"  # ✅ Format numbers with 2 decimal places
+                # ✅ Format numbers with 2 decimal places
+                value = f"{value:,.2f}"
                 align = "R"  # ✅ Right-align numbers
             else:
                 value = str(value)[:max_chars]  # ✅ Clip text properly
@@ -266,7 +270,8 @@ async def get_excel_workbook_response(
         if not isinstance(data, list):
             continue
         df = pd.DataFrame(jsonResult.get(sheet))
-        df.to_excel(writer, sheet_name=sheet, index=False, header=True, startrow=2)
+        df.to_excel(writer, sheet_name=sheet,
+                    index=False, header=True, startrow=2)
         sheetObj = writer.sheets[sheet]
         sheetObj.write(
             "A1",

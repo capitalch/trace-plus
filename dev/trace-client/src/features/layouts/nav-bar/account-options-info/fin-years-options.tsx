@@ -27,7 +27,7 @@ export function FinYearsOptions() {
                 <IconPlusCircle className="h-7 w-7" />
             </button>
             {/* Financial year */}
-            <button onClick={handleOnClickFinYears} className="w-70 ml-1 flex h-8 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
+            <button onClick={handleOnClickFinYears} className="w-70 ml-1 flex h-8 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow-sm">
                 {/* Badge section */}
                 <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
                     FY

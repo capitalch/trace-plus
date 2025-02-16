@@ -5,9 +5,9 @@
 																			- Masters: Accounts		: Targetted: 31-12-2024, Completed: 19-01-2025
 																			- Unit info, General settings: Opening balances, Branches, 
 																				Financial years		: Targetted: 12-01-2025, Completed: 04-02-2025
+																			- Common utilities, Exports	: Targetted: 19-01-2025, Completed: 15-02-2025
 - Jan 2025
 	
-	- Common utilities, Exports	: 19-01-2025
 	- Vouchers				: 31-01-2025
 - Feb 2025
 	- Inventory				: 28-02-2025
@@ -16,6 +16,8 @@
 - Bug fixes etc.
 
 ## History
+# 15-02-2025
+	- All exports
 # 05-02-2025
 	- Common utilities
 # 04-02-2025

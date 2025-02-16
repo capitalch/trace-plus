@@ -55,6 +55,90 @@ valuesMap: dict = {
         "sqlId": "get_all_vouchers_export",
     },
     ###
+    ("contra", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 6
+    },
+    ("contra", "xlsx"): {
+        "method": get_excel_sheet_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 6
+    },
+    ("contra", "csv"): {
+        "method": get_csv_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 6
+    },
+    ("contra", "pdf"): {
+        "method": get_pdf_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 6
+    },
+    ###
+    ("journals", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 1
+    },
+    ("journals", "xlsx"): {
+        "method": get_excel_sheet_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 1
+    },
+    ("journals", "csv"): {
+        "method": get_csv_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 1
+    },
+    ("journals", "pdf"): {
+        "method": get_pdf_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 1
+    },
+    ###
+    ("payments", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 2
+    },
+    ("payments", "xlsx"): {
+        "method": get_excel_sheet_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 2
+    },
+    ("payments", "csv"): {
+        "method": get_csv_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 2
+    },
+    ("payments", "pdf"): {
+        "method": get_pdf_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 2
+    },
+    ###
+    ("receipts", "json"): {
+        "method": get_json_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 3
+    },
+    ("receipts", "xlsx"): {
+        "method": get_excel_sheet_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 3
+    },
+    ("receipts", "csv"): {
+        "method": get_csv_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 3
+    },
+    ("receipts", "pdf"): {
+        "method": get_pdf_response,
+        "sqlId": "get_all_transactions_export",
+        "tranTypeId": 3
+    },
+    ###
     ("trialBalance", "json"): {
         "method": get_json_response,
         "sqlId": "get_trial_balance",
@@ -117,13 +201,17 @@ async def exportFile(request: ValueData):
             error_code="E1029",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+    
     valueString: str = unquote(request.valueString)
     valueDict: ExportFileParams = json.loads(valueString)
     valueDict = ExportFileParams(**valueDict)
     exportName = valueDict.exportName
     fileType = valueDict.fileType
+    tranTypeId = valuesMap.get((exportName, fileType)).get("tranTypeId", None)
+    valueDict.tranTypeId = tranTypeId
     method = valuesMap.get((exportName, fileType)).get("method")
     sqlId = valuesMap.get((exportName, fileType)).get("sqlId")
     path = valuesMap.get((exportName, fileType)).get("path", None)
+
     values = await method(fileType, sqlId, valueDict, path=path)
     return values

@@ -66,7 +66,7 @@ export function CompSyncFusionGridToolbar({
 
             {/* last no of rows */}
             {isLastNoOfRows && <select value={lastNoOfRows}
-                className="rounded-md h-9 border border-none bg-slate-200 text-sm focus:border-none focus:outline-none"
+                className="rounded-md h-9 border border-none bg-slate-200 text-sm focus:border-none focus:outline-hidden"
                 onChange={handleOnChangeLastNoOfRows}>
                 <option value="100">Last 100 rows</option>
                 <option value="500">Last 500 rows</option>

@@ -114,7 +114,7 @@ export function CompSyncfusionTreeGrid({
                 childMapping={childMapping}
                 className={className}
                 collapsed={onRowCollapsed}
-                created={onCreated}
+                // created={onCreated}
                 // dataBound={onDataBound}
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
@@ -124,7 +124,7 @@ export function CompSyncfusionTreeGrid({
                 gridLines="Both"
                 height={height}
                 id={instance}
-                load={onLoad}
+                // load={onLoad}
                 pageSettings={{ pageSize: pageSize }}
                 queryCellInfo={queryCellInfo}
                 ref={gridRef}
@@ -168,13 +168,13 @@ export function CompSyncfusionTreeGrid({
         console.log(args)
     }
 
-    function onCreated(args: any) {
-        console.log(args)
-    }
+    // function onCreated(args: any) {
+    //     console.log(args)
+    // }
 
-    function onLoad(args: any) {
-        console.log(args)
-    }
+    // function onLoad(args: any) {
+    //     console.log(args)
+    // }
 
     // function onDataBound() {
     //     Utils.treeGridUtils.restoreScrollPos(context, instance)

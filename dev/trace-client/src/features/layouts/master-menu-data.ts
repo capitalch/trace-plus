@@ -180,7 +180,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "61",
           label: "All transactions",
-          path: "/blogs",
+          path: "/report-all-transactions",
         },
       ],
     },

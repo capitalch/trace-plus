@@ -93,7 +93,7 @@ export function SuperAdminNewEditSecuredControl({
                         {errors.controlName
                             ? <WidgetFormErrorMessage errorMessage={errors.controlName.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <WidgetTooltip title={Messages.messSecuredControlName} className="font-normal text-sm !-top-5 bg-white !text-blue-500 border-gray-200 border-2">
+                        <WidgetTooltip title={Messages.messSecuredControlName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
                             <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
                         </WidgetTooltip>
                     </span>

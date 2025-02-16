@@ -28,6 +28,7 @@ export const DataInstancesMap = {
   newEditBranch: "new-edit-branch",
   newEditFinYear: "new-edit-fin-year",
   profitLoss: "profit-loss",
+  reportAllTransactions: "report-all-transactions",
   securedControls: "secured-controls",
   securedControlsLinkRoles: "secured-controls-link-roles",
   superAdminAdminUsers: "super-admin-admin-users",

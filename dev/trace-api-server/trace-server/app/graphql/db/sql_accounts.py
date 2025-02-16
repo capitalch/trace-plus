@@ -457,6 +457,62 @@ class SqlAccounts:
                 ) as "jsonResult"
     """
 
+    get_all_transactions = """
+        --with "no" as (values(1000::int)), "tranTypeId" as (values(2::int)), "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(1::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
+			with "no" as (values (%(no)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
+            
+        select ROW_NUMBER() over (order by "tranDate" DESC , h."id" DESC, d."id" DESC) as "index"
+            , h."id", h."tranDate" as "tranDate"
+            , "tranTypeId"
+            , h."autoRefNo", h."userRefNo", h."remarks"
+            , a."accName"
+            , CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END as "debit"
+            , CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END as "credit"
+            , d."instrNo", d."lineRefNo", d."remarks" as "lineRemarks"
+            , h."tags"
+            , h."timestamp"
+            from "TranD" d
+                join "TranH" h
+                    on h."id" = d."tranHeaderId"
+                join "AccM" a
+                    on a."id" = d."accId"
+            where "finYearId" = (table "finYearId") and "branchId" = (table "branchId")
+            order by "tranDate" DESC, h."id" DESC, d."id" DESC limit (table "no")
+    
+    """
+    
+    get_all_transactions_export = """
+        --with "tranTypeId" as (values(2::int)), "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(null::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
+			with "tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
+            select h."id" as "tranHeaderId", 
+                to_char(h."tranDate", (table "dateFormat")) as "tranDate", 
+                "autoRefNo", 
+                "tags", 
+                d."id" as "tranDetailsId",
+                h."remarks" as "headerRemarks" , 
+                "userRefNo", 
+                "accName", 
+                "dc", 
+                d."remarks" as "lineRemarks",
+                "amount", 
+                "lineRefNo", 
+                "tranTypeId", 
+                d."instrNo", 
+                "clearDate"
+                    from "TranH" h 
+                        join "TranD" d
+                            on h."id" = d."tranHeaderId"				
+                        join "AccM" a
+                            on a."id" = d."accId"
+                        left outer join "ExtBankReconTranD" b
+                            on d."id" = b."tranDetailsId"	
+                    where "tranTypeId" = (table "tranTypeId") 
+                        and "finYearId" = (table "finYearId") 
+                        and COALESCE((table "branchId"), h."branchId") = h."branchId"
+                        and h."tranDate" between (table "startDate") and (table "endDate")
+                        order by "tranDate" DESC, h."id", d."id" 
+    """
+    
     get_all_vouchers_export = """
         --with "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(null::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
 			with "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
@@ -475,6 +531,7 @@ class SqlAccounts:
                     on a."id" = d."accId"
             where "finYearId" = (table "finYearId") 
 			and COALESCE((table "branchId"), h."branchId") = h."branchId"
+            and h."tranDate" between (table "startDate") and (table "endDate")
             order by "id"
     """
     

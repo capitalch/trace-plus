@@ -51,6 +51,8 @@ import { SyncFusionTreeGridEditTemplate } from './features/syncfusion/syncfusion
 import { SyncFusionTreeGridEditTemplate1 } from './features/syncfusion/syncfusion-tree-grid-edit-template1'
 import { ReactDatePicker } from './features/react-datepicker/react-date-picker'
 import { ExportDropDown } from './features/Misc/export-drop-down'
+// import DynamicFilteringGrid from './features/syncfusion/dynamic-filtering-grid'
+import GenericFilteringGridContainer from './features/syncfusion/filtering/generic-filtering-grid-container'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -113,8 +115,10 @@ function App() {
       {/* <SlidingPaneViewer /> */}
       {/* <EditGrid /> */}
       {/* <Spinners /> */}
-      <ReactDatePicker />
-      <ExportDropDown />
+      {/* <ReactDatePicker />
+      <ExportDropDown /> */}
+      {/* <DynamicFilteringGrid /> */}
+      <GenericFilteringGridContainer />
     </GlobalContext.Provider>
   )
 }

@@ -27,7 +27,7 @@ export function CompSyncFusionTreeGridSearchBox({ handleOnChange, instance }: Co
     }, [onTextChange])
 
     return (
-        <div className="flex pr-1 rounded-sm items-center border-2 border-gray-400 focus:ring-2">
+        <div className="flex pr-1 rounded-xs items-center border-2 border-gray-400 focus:ring-2">
             <input type="search" placeholder="Search" className="text-md h-9 w-56 border-none focus:ring-0" value={selectedSearchString || ''}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     dispatch(setSearchString({ instance: instance, searchString: e.target.value }))

@@ -14,18 +14,18 @@ export function CompModalDialog({ body, className, isOpen, size = 'sm', title, t
                 <>
                     {/* <Draggable className=''> */}
                     <div
-                        className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+                        className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-hidden focus:outline-hidden">
                         <div className={clsx("relative w-auto max-w-4xl mx-auto", sizeLogic[size])}>
 
                             {/*content*/}
-                            <div className="relative flex w-full flex-col rounded-lg bg-white shadow-lg outline-none focus:outline-none">
+                            <div className="relative flex w-full flex-col rounded-lg bg-white shadow-lg outline-hidden focus:outline-hidden">
 
                                 {/*header*/}
                                 <div className={clsx("flex items-center justify-between p-4", className)}>
                                     <label className="text-lg font-semibold text-primary-500">
                                         {title}
                                     </label>
-                                    <button onClick={onClickClose} className="ml-auto mt-1 h-6 w-6 cursor-pointer border-0 bg-transparent px-0 py-0 font-semibold outline-none focus:outline-none">
+                                    <button onClick={onClickClose} className="ml-auto mt-1 h-6 w-6 cursor-pointer border-0 bg-transparent px-0 py-0 font-semibold outline-hidden focus:outline-hidden">
                                         X
                                     </button>
                                 </div>

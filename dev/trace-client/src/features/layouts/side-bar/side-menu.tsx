@@ -16,8 +16,8 @@ function SideMenu() {
 
     const menuData = MasterMenuData[menuItemSelector]
     const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
-    const parentClass = "flex h-10 items-center gap-3 rounded-md border-b-[1px] px-2 hover:font-bold focus:outline-none text-primary-500"
-    const childClass = "flex h-10 w-full items-center rounded-md border-b-[1px] pl-9 hover:font-bold focus:outline-none text-primary-400"
+    const parentClass = "flex h-10 items-center gap-3 rounded-md border-b-[1px] px-2 hover:font-bold focus:outline-hidden text-primary-500"
+    const childClass = "flex h-10 w-full items-center rounded-md border-b-[1px] pl-9 hover:font-bold focus:outline-hidden text-primary-400"
     const transitionClass = 'flex origin-top transform-gpu flex-col gap-1 transition-all duration-300 ease-out'
 
     return (

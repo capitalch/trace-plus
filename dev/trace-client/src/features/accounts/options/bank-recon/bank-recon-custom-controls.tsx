@@ -32,27 +32,27 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
         <div className="flex gap-4 mr-4 flex-wrap">
             <TooltipComponent content='Select a bank from list of banks' className="text-sm" cssClass="custom-tooltip">
                 <button type="button" onClick={handleSelectBank}
-                    className="px-5 py-2 font-medium text-white inline-flex items-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200">
+                    className="px-5 py-2 font-medium text-white inline-flex items-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200">
                     <IconSelect className="text-white w-6 h-6 mr-2" />
                     Select Bank
                 </button>
             </TooltipComponent>
             <TooltipComponent content='Set opening balance of the bank' className="text-sm" cssClass="custom-tooltip">
-                <button type="button" onClick={handleOpBalance} disabled={isDisabled} className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-primary-500 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:bg-primary-200">
+                <button type="button" onClick={handleOpBalance} disabled={isDisabled} className="px-5 py-2 text-md font-medium text-white inline-flex items-center bg-primary-500 hover:bg-primary-800 focus:ring-4 focus:outline-hidden focus:ring-primary-300 rounded-lg text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:bg-primary-200">
                     <IconOpen className="text-white w-6 h-6 mr-2" />
                     Opening bal</button>
             </TooltipComponent>
             <TooltipComponent content='Rearrange without saving' className="text-sm" cssClass="custom-tooltip">
-                <button type="button" onClick={handleReArrange} disabled={isDisabled} className="px-5 py-2 font-medium text-white inline-flex items-center bg-secondary-500 hover:bg-secondary-800 focus:ring-4 focus:outline-none focus:ring-secondary-300 rounded-lg text-center dark:bg-secondary-600 dark:hover:bg-secondary-700 dark:focus:ring-secondary-800 disabled:bg-secondary-200">
+                <button type="button" onClick={handleReArrange} disabled={isDisabled} className="px-5 py-2 font-medium text-white inline-flex items-center bg-secondary-500 hover:bg-secondary-800 focus:ring-4 focus:outline-hidden focus:ring-secondary-300 rounded-lg text-center dark:bg-secondary-600 dark:hover:bg-secondary-700 dark:focus:ring-secondary-800 disabled:bg-secondary-200">
                     <IconArrange className="text-white w-6 h-6 mr-2" /> Rearrange
                 </button>
             </TooltipComponent>
             <TooltipComponent content='Undo edit' className="text-sm" cssClass="custom-tooltip">
-                <button onClick={handleOnCancel} type="button" disabled={isDisabled} className="px-5 py-2 font-medium text-white inline-flex items-center bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 disabled:bg-red-200">
+                <button onClick={handleOnCancel} type="button" disabled={isDisabled} className="px-5 py-2 font-medium text-white inline-flex items-center bg-red-500 hover:bg-red-800 focus:ring-4 focus:outline-hidden focus:ring-red-300 rounded-lg text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 disabled:bg-red-200">
                     <IconCancel className="text-white w-6 h-6 mr-2" /> Cancel</button>
             </TooltipComponent>
             <TooltipComponent content='Save data to server' className="text-sm" cssClass="custom-tooltip">
-                <button onClick={handleOnSubmit} type="button" disabled={isDisabled} className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
+                <button onClick={handleOnSubmit} type="button" disabled={isDisabled} className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
                     <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
             </TooltipComponent>
         </div>

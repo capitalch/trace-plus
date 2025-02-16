@@ -32,23 +32,32 @@
 	- rename generic-switch to comp-generic-switch in Master accounts
 	- XData showing typescript error in many places. Need to correct the types
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
-	- BS, PL, Trial Bal retain node expanded / collapsed
+	- BS, PL, Trial Bal to retain node expanded / collapsed
+															- Migrate to tailwind latest version
+
+- Reports
+	- All transactions
+		- Startup
+		- Multi column filter
 														- Common utilities
 															- Transfer balances
-- Exports
+												- Exports
+														- client showAppLoader
 														- Generic error handling for export with appHttpException at server side 
 														- verify token
 														- branch / all branches
 														- disable date range control when required
-	- Artifacts
-		- final testing
-		- include dateformat in all reports
+													- Artifacts
+														- final testing
+														- include dateformat in all reports
 														- optimize sql for gst
 														- gst
 														- Trial balance
 														- final accounts
 														- accounts master
-		- Payments, receipts, contra, journals, all vouchers
+													- Payments, receipts, contra, journals
+														- Error opening pdf when no data
+														- All vouchers
 														- Date format
 														- export file naming
 	
@@ -62,9 +71,9 @@
 														- pandas work
 														- datewise implementation
 														- UI
-	- Trial balance export
-	- BS, PL export
-	- Other exports
+														- Trial balance export
+														- BS, PL export
+														- Other exports
 													- 5th report is not coming in pdf: it was null: no data
 													- ExportNamePicker
 														- redux dispatch

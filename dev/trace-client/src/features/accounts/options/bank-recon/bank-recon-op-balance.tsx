@@ -76,7 +76,7 @@ export function BankReconOpBalance() {
             />
         </div>
         <button onClick={handleOnSubmit} type="button"
-            className="mt-8 w-full px-5 py-2 font-medium text-white inline-flex justify-center items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
+            className="mt-8 w-full px-5 py-2 font-medium text-white inline-flex justify-center items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
             <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
     </div>)
 

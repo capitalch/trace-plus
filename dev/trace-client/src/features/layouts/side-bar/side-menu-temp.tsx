@@ -13,8 +13,8 @@ function SideMenuTemp() {
     const dispatch: AppDispatchType = useDispatch()
 
     const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
-    const parentClass = "flex h-10 px-2 border-b-[1px] items-center gap-3 rounded-md  font-bold hover:bg-primary-50 focus:outline-none"
-    const childClass = "flex h-10 w-full border-b-[1px]  items-center rounded-md  pl-9 hover:bg-primary-100 focus:outline-none "
+    const parentClass = "flex h-10 px-2 border-b-[1px] items-center gap-3 rounded-md  font-bold hover:bg-primary-50 focus:outline-hidden"
+    const childClass = "flex h-10 w-full border-b-[1px]  items-center rounded-md  pl-9 hover:bg-primary-100 focus:outline-hidden "
     return (
         // root
         <div className={rootClass}>

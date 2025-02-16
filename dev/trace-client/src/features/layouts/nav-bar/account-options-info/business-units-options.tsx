@@ -23,7 +23,7 @@ export function BusinessUnitsOptions() {
 
     return (
         <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectAccSettingsChanged)}>
-            <button onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow">
+            <button onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow-sm">
 
                 {/* Badge section */}
                 <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
