@@ -13,6 +13,7 @@ export function useUtilsInfo() {
     const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn, shallowEqual)
     const decFormatter = Utils.getDecimalFormatter()
     const intFormatter = Utils.getIntegerFormatter()
+    const currentDateFormat: string = Utils.getCurrentDateFormat().replace('DD', 'dd').replace('YYYY', 'yyyy') || 'dd/MM/yyyy'
     const { dbName, decodedDbParamsObject, } = userDetails
 
     const buCode: string | undefined = currentBusinessUnit.buCode
@@ -25,6 +26,7 @@ export function useUtilsInfo() {
         , branchCode
         , buCode
         , context
+        , currentDateFormat
         , dbName
         , decodedDbParamsObject
         , decFormatter

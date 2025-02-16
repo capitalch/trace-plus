@@ -51,7 +51,8 @@ export function useExport() {
                 fileType: fileType,
                 finYearId: finYearId || 0,
                 startDate: startDate,
-                endDate: endDate
+                endDate: endDate,
+                tranTypeId: 0 // As a placeholder now. Populated at server
             }
             const ExportFileName: string = `${exportName}-${dateRange}-${buCode}-${isAllBranches ? 'AllBranches' : branchCode || ''}-${finYearId}-time-${currentDateTime}.${fileExtension[fileType]}`
             const response = await axios({

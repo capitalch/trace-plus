@@ -38,6 +38,7 @@ export type RequestDataType = {
     branchId: number | null
     buCode: string
     clientId: number
+    currentDateFormat?: string
     dateFormat: string
     dbParams: string | { [key: string]: string | undefined }
     dbName: string
@@ -46,6 +47,7 @@ export type RequestDataType = {
     fileType: ExportFileType
     finYearId: number
     startDate?: string
+    tranTypeId: number
 }
 
 export type ExportNameType = 'accountsMaster' | 'contra' | 'finalAccounts' | 'gst' | 'journal' | 'payment' | 'receipt' | 'trialBalance' | 'voucher'
