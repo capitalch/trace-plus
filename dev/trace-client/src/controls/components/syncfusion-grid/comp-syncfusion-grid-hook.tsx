@@ -29,9 +29,11 @@ export function useCompSyncFusionGrid({
     , sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
-    
+
     useEffect(() => { // This code is necessary. Otherwise change in no of rows is not reflected
-        loadData()
+        if (selectedLastNoOfRows !== undefined) {
+            loadData()
+        }
     }, [selectedLastNoOfRows])
 
     let lastNoOfRows = selectedLastNoOfRows

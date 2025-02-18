@@ -458,27 +458,39 @@ class SqlAccounts:
     """
 
     get_all_transactions = """
-        --with "noOfRows" as (values(1000::int)), "tranTypeId" as (values(2::int)), "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(1::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
-			with "noOfRows" as (values (%(noOfRows)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
-            
-        select ROW_NUMBER() over (order by "tranDate" DESC , h."id" DESC, d."id" DESC) as "index"
-            , h."id", h."tranDate" as "tranDate"
-            , "tranTypeId"
-            , h."autoRefNo", h."userRefNo", h."remarks"
-            , a."accName"
-            , CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END as "debit"
-            , CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END as "credit"
-            , d."instrNo", d."lineRefNo", d."remarks" as "lineRemarks"
-            , h."tags"
-            , h."timestamp"
-            from "TranD" d
-                join "TranH" h
-                    on h."id" = d."tranHeaderId"
-                join "AccM" a
-                    on a."id" = d."accId"
-            where "finYearId" = (table "finYearId") and "branchId" = (table "branchId")
-            order by "tranDate" DESC, h."id" DESC, d."id" DESC limit (table "noOfRows")
-    
+        --WITH "noOfRows" AS (VALUES (1000::int)), "tranTypeId" AS (VALUES (2::int)), "dateFormat" AS (VALUES ('dd/MM/yyyy'::text)), "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)), "startDate" AS (VALUES ('2024-04-01'::date)), "endDate" AS (VALUES ('2025-03-31'::date)),"dateType" AS (VALUES ('entryDate'::text))
+        with "noOfRows" as (values (%(noOfRows)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "dateType" AS (values (%(dateType)s::text))
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY "tranDate" DESC, h."id" DESC, d."id" DESC) AS "index",
+                h."id",
+                h."tranDate",
+                "tranTypeId",
+                h."autoRefNo",
+                h."userRefNo",
+                h."remarks",
+                a."accName",
+                CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END AS "debit",
+                CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END AS "credit",
+                d."instrNo",
+                d."lineRefNo",
+                d."remarks" AS "lineRemarks",
+                h."tags",
+                h."timestamp"
+            FROM "TranD" d
+            JOIN "TranH" h ON h."id" = d."tranHeaderId"
+            JOIN "AccM" a ON a."id" = d."accId"
+            WHERE 
+                "finYearId" = (TABLE "finYearId") 
+                AND "branchId" = (TABLE "branchId")
+                AND (
+                    CASE 
+                        WHEN (TABLE "dateType") = 'transactionDate' THEN h."tranDate" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+                        WHEN (TABLE "dateType") = 'entryDate' THEN h."timestamp" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+                        ELSE FALSE  -- Fallback case
+                    END
+                )
+            ORDER BY "tranDate" DESC, h."id" DESC, d."id" DESC
+            LIMIT (TABLE "noOfRows");
     """
     
     get_all_transactions_export = """

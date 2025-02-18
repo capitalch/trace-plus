@@ -50,7 +50,6 @@ export function AccountsMaster() {
             buCode={buCode}
             childMapping="children"
             className="mr-6"
-            // dataBound={onDataBound}
             dataPath="accountsMaster"
             dbName={dbName}
             dbParams={decodedDbParamsObject}
@@ -198,7 +197,7 @@ export function AccountsMaster() {
             {
                 field: '',
                 headerText: 'Address',
-                width: 80,
+                width: 100,
                 textAlign: 'Left',
                 template: accAddressTemplate
             },
@@ -219,7 +218,7 @@ export function AccountsMaster() {
         }
         const comp: ReactElement =
             <button onClick={() =>
-                setIsPaneOpen(props.id || 0, props.isAddressExists)} className="flex h-8 w-50 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow-sm">
+                setIsPaneOpen(props.id || 0, props.isAddressExists)} className="flex h-8 w-20 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow-sm">
                 {/* Badge section */}
                 {(filled === 'Filled') && <div className="rounded-full bg-blue-800 px-2 py-1 text-xs font-bold text-white">
                     A

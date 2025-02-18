@@ -1,4 +1,4 @@
-import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDataBoundEventArgs, Edit } from "@syncfusion/ej2-react-grids"
+import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDataBoundEventArgs, Edit, VirtualScroll } from "@syncfusion/ej2-react-grids"
 import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
@@ -20,6 +20,7 @@ export function CompSyncFusionGrid({
     deleteColumnWidth,
     editColumnWidth,
     editSettings,
+    enableVirtualization = false,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
@@ -102,6 +103,7 @@ export function CompSyncFusionGrid({
             dataSource={dataSource || selectedData || []}
             editSettings={editSettings}
             enablePersistence={false}
+            enableVirtualization={enableVirtualization}
             // excelQueryCellInfo={handleExcelQueryCellInfo}
             // excelAggregateQueryCellInfo={handleExcelQueryCellInfo}
             gridLines="Both"
@@ -143,6 +145,7 @@ export function CompSyncFusionGrid({
                 , Selection
                 , Sort
                 , Toolbar
+                , VirtualScroll
             ]} />
         </GridComponent>
     )
@@ -184,6 +187,7 @@ export type CompSyncFusionGridType = {
         mode: 'Batch' | 'Dialog' | 'Normal'
         showConfirmDialog: boolean
     }
+    enableVirtualization?: boolean
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean

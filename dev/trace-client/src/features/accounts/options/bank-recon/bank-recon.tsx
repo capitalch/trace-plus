@@ -74,6 +74,7 @@ export function BankRecon() {
             className="mr-6 mt-4"
             columns={getColumns()}
             dataSource={meta?.current?.rows || []}
+            deleteColumnWidth={40}
             editSettings={{
                 allowEditing: true,
                 mode: 'Batch',

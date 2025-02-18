@@ -5,7 +5,7 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 // import { Utils } from "../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import ReportAllTransactionsFilter  from "./report-all-transactions-filter";
+// import ReportAllTransactionsFilter  from "./report-all-transactions-filter";
 
 export function ReportAllTransactions() {
     const instance: string = DataInstancesMap.reportAllTransactions
@@ -20,7 +20,9 @@ export function ReportAllTransactions() {
         , finYearId
     } = useUtilsInfo()
 
-    return (<CompAccountsContainer MiddleCustomControl={() => <ReportAllTransactionsFilter />}>
+    return (<CompAccountsContainer
+    // MiddleCustomControl={() => <ReportAllTransactionsFilter />}
+    >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             // CustomControl={() => <BankReconCustomControls instance={instance} meta={meta} />}
             minWidth="1000px"
@@ -40,6 +42,7 @@ export function ReportAllTransactions() {
             dbParams={decodedDbParamsObject}
             deleteColumnWidth={40}
             editColumnWidth={40}
+            enableVirtualization={true}
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
             instance={instance}
@@ -52,11 +55,12 @@ export function ReportAllTransactions() {
             onRowDataBound={onRowDataBound}
             sqlArgs={{
                 dateFormat: currentDateFormat,
-                endDate: '2024-03-31',
+                endDate: '2025-03-31',
                 finYearId: finYearId,
                 branchId: branchId,
-                startDate: '2023-04-01',
-                tranTypeId: 2
+                startDate: '2024-04-01',
+                tranTypeId: 2,
+                dateType:'entryDate' // entryDate or transactionDate
             }}
             sqlId={SqlIdsMap.getAllTransactions}
         />

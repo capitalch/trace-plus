@@ -38,6 +38,10 @@
 - Reports
 	- Syncfusion grid perhaps broken for ledger and bank recon
 	- All transactions
+		- slide in pane control activate
+		- Implement filter range
+														- New sql query
+														- Fix syncfusion grid functionalities
 													- last no of rows
 														- Bug: not changing on onChange event. Changing after refresh is clicked
 														- alignment
