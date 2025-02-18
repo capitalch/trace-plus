@@ -17,6 +17,8 @@ export function CompSyncFusionGrid({
     dbName,
     dbParams,
     dataSource,
+    deleteColumnWidth,
+    editColumnWidth,
     editSettings,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
@@ -43,6 +45,8 @@ export function CompSyncFusionGrid({
             , columns
             , dbName
             , dbParams
+            , deleteColumnWidth
+            , editColumnWidth
             , instance
             , hasCheckBoxSelection
             , hasIndexColumn
@@ -173,6 +177,8 @@ export type CompSyncFusionGridType = {
     dataSource?: any
     dbName?: string
     dbParams?: { [key: string]: string | undefined }
+    deleteColumnWidth?: number
+    editColumnWidth?: number
     editSettings?: {
         allowEditing: boolean
         mode: 'Batch' | 'Dialog' | 'Normal'

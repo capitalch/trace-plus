@@ -1,4 +1,4 @@
-import { FC, } from "react"
+import { FC, useEffect, } from "react"
 import { GraphQLQueryArgsType, } from "../../../app/graphql/maps/graphql-queries-map";
 import { CompSyncFusionGridType, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "./comp-syncfusion-grid";
 import { AggregateColumnDirective, ColumnDirective } from "@syncfusion/ej2-react-grids";
@@ -16,6 +16,8 @@ export function useCompSyncFusionGrid({
     , columns
     , dbName
     , dbParams
+    , deleteColumnWidth
+    , editColumnWidth
     , hasCheckBoxSelection
     , hasIndexColumn
     , instance
@@ -27,6 +29,11 @@ export function useCompSyncFusionGrid({
     , sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
+    
+    useEffect(() => { // This code is necessary. Otherwise change in no of rows is not reflected
+        loadData()
+    }, [selectedLastNoOfRows])
+
     let lastNoOfRows = selectedLastNoOfRows
 
     if (selectedLastNoOfRows === undefined) {
@@ -103,7 +110,7 @@ export function useCompSyncFusionGrid({
                 field=''
                 headerText='D'
                 template={deleteTemplate}
-                width={30}
+                width={deleteColumnWidth || 30}
             />)
         }
 
@@ -123,7 +130,7 @@ export function useCompSyncFusionGrid({
                 field=''
                 headerText='E'
                 template={editTemplate}
-                width='16px'
+                width={editColumnWidth || '16px'}
                 textAlign="Center"
             />)
         }

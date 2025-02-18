@@ -1,19 +1,13 @@
-// import { useState } from "react";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setExportName } from "../../accounts-slice";
-// import { CompSwitch } from "../../../../controls/redux-components/comp-switch";
-// import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 
 export function ExportNamePicker() {
     const dispatch: AppDispatchType = useDispatch()
     const selectedExport = useSelector((state: RootStateType) => state.accounts.exports.exportName)
     return (
         <div>
-            {/* <div className="flex space-x-4"> */}
-                <label className="text-lg font-medium text-primary-500">Select Export Type</label>
-                
-            {/* </div> */}
+            <label className="text-lg font-medium text-primary-500">Select Export Type</label>
             <div className="flex flex-wrap justify-start gap-4">
                 {exportNameOptions.map((option) => (
                     <label
@@ -36,7 +30,6 @@ export function ExportNamePicker() {
 
     function handleExportChange(value: string) {
         dispatch(setExportName(value))
-        // setSelectedExport(value);
     }
 }
 

@@ -53,6 +53,8 @@ import { ReactDatePicker } from './features/react-datepicker/react-date-picker'
 import { ExportDropDown } from './features/Misc/export-drop-down'
 // import DynamicFilteringGrid from './features/syncfusion/dynamic-filtering-grid'
 import GenericFilteringGridContainer from './features/syncfusion/filtering/generic-filtering-grid-container'
+import ReportAllTransactionsFilter  from './features/ai-generated/report-all-transactions-filter'
+// import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
 // import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid';
@@ -118,7 +120,8 @@ function App() {
       {/* <ReactDatePicker />
       <ExportDropDown /> */}
       {/* <DynamicFilteringGrid /> */}
-      <GenericFilteringGridContainer />
+      {/* <GenericFilteringGridContainer /> */}
+      <ReportAllTransactionsFilter />
     </GlobalContext.Provider>
   )
 }

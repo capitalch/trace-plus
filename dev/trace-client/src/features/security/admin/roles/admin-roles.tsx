@@ -3,7 +3,6 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
-// import { GlobalContext } from "../../../../App";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
@@ -36,7 +35,6 @@ export function AdminRoles() {
                 hasIndexColumn={true}
                 height="calc(100vh - 260px)"
                 instance={instance}
-                // rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allAdminRoles}
                 onDelete={handleOnDelete}

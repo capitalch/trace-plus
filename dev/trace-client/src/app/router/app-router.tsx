@@ -30,7 +30,7 @@ import { FinYearsMaster } from "../../features/accounts/masters/fin-years-master
 import { AccountsOpeningBalance } from "../../features/accounts/masters/opening-balance/accounts-opening-balance";
 import { CommonUtilities } from "../../features/accounts/options/common-utilities/common-utilities";
 import { AllExports } from "../../features/accounts/options/exports/all-exports";
-import { ReportAllTransactions } from "../../features/accounts/reports/report-all-transactions";
+import { ReportAllTransactions } from "../../features/accounts/reports/report-all-transactions/report-all-transactions";
 
 export const appRouter = createBrowserRouter([
     {

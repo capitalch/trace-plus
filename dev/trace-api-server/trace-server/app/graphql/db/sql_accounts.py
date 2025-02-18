@@ -458,8 +458,8 @@ class SqlAccounts:
     """
 
     get_all_transactions = """
-        --with "no" as (values(1000::int)), "tranTypeId" as (values(2::int)), "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(1::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
-			with "no" as (values (%(no)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
+        --with "noOfRows" as (values(1000::int)), "tranTypeId" as (values(2::int)), "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(1::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
+			with "noOfRows" as (values (%(noOfRows)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
             
         select ROW_NUMBER() over (order by "tranDate" DESC , h."id" DESC, d."id" DESC) as "index"
             , h."id", h."tranDate" as "tranDate"
@@ -477,7 +477,7 @@ class SqlAccounts:
                 join "AccM" a
                     on a."id" = d."accId"
             where "finYearId" = (table "finYearId") and "branchId" = (table "branchId")
-            order by "tranDate" DESC, h."id" DESC, d."id" DESC limit (table "no")
+            order by "tranDate" DESC, h."id" DESC, d."id" DESC limit (table "noOfRows")
     
     """
     

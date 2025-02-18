@@ -36,9 +36,22 @@
 															- Migrate to tailwind latest version
 
 - Reports
+	- Syncfusion grid perhaps broken for ledger and bank recon
 	- All transactions
-		- Startup
-		- Multi column filter
+													- last no of rows
+														- Bug: not changing on onChange event. Changing after refresh is clicked
+														- alignment
+														- fields
+													- Aggregates
+														- count, debit, credit
+		- Delete functionality
+		- Filter radio buttons in sliding pane
+			- Transaction date: start date, end date
+			- Entry date: start date, end date
+			- transaction type:
+			
+
+
 														- Common utilities
 															- Transfer balances
 												- Exports
