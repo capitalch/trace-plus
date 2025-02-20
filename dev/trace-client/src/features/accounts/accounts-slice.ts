@@ -7,6 +7,7 @@ const initialState: AccountsInitialStateType = {
     dateType: "transactionDate",
     endDate: "",
     startDate: "",
+    selectedQuickDate:"fiscalYear",
     transactionType: "All",
   },
   bankRecon: {
@@ -76,6 +77,7 @@ export type AllTransactionsFilterType = {
   dateType: "transactionDate" | "entryDate";
   startDate: string;
   endDate: string;
+  selectedQuickDate: string;
 };
 
 export type SelectedBankType = {

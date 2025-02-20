@@ -37,12 +37,21 @@
 
 - Reports
 	-  Transactions
+														- Check error message
+														- Default date; Fiscal year selected
+														- remove padding from quick date selection and date range
+														- Retain old values
+														- Check change date
+														- Close pane when selected
 		- Delete functionality
-		- redux for TransactionType, filter by, startDate, endDate
-		- correct startDate and endDate populate and dispatch to redux
-		- populate values in filter bar
-		- pass values to sql
-		- Put a confirm button in pane. Otherwise refresh will happen on each change
+														- Pass values to sql
+		- Check Sql in terms of parameters
+		- In bar, date type to appear as space and capitalized
+														- redux for TransactionType, filter by, startDate, endDate
+														- correct startDate and endDate populate and dispatch to redux
+														- populate values in filter bar
+		
+														- Put a confirm button in pane. Otherwise refresh will happen on each change
 														- Syncfusion grid perhaps broken for ledger and bank recon
 													- All transactions
 														- slide in pane control activate

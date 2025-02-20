@@ -71,6 +71,7 @@ const Messages = {
   messDebitCreditNotTogether:
     "Debit and credit entries are not allowed together",
   messDebitsNotEqualsCredits: "Debits and credits are not equal",
+  messEndDateGreaterThanStartDate:"End date must be greater than or equal to start date",
   messExistingLinksDropHere:
     "Existing Bu`s with links (Drop the dragged row here)",
   messExistingRolesWithLinksDropHere:

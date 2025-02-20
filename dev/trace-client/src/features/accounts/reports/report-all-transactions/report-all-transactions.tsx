@@ -1,11 +1,14 @@
+import { useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { RootStateType } from "../../../../app/store/store";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 // import { Utils } from "../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { ReportAllTransactionsFilterBar } from "./report-all-transactions-filter-bar";
+import { AllTransactionsFilterType } from "../../accounts-slice";
 // import ReportAllTransactionsFilter  from "./report-all-transactions-filter";
 
 export function ReportAllTransactions() {
@@ -13,13 +16,21 @@ export function ReportAllTransactions() {
     const {
         branchId
         , buCode
-        // , context
         , currentDateFormat
         , dbName
-        // , decFormatter
         , decodedDbParamsObject
         , finYearId
     } = useUtilsInfo()
+
+    const transactionTypes = {
+        All: '',
+        Contra: 6,
+        Journals: 1,
+        Payments: 2,
+        Receipts: 3
+    }
+
+    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter)
 
     return (
         <CompAccountsContainer className="z-0">
@@ -53,12 +64,12 @@ export function ReportAllTransactions() {
                 onRowDataBound={onRowDataBound}
                 sqlArgs={{
                     dateFormat: currentDateFormat,
-                    endDate: '2025-03-31',
+                    endDate: '2025-03-31', // selectedAllTransactionsFilter.endDate, 
                     finYearId: finYearId,
                     branchId: branchId,
-                    startDate: '2024-04-01',
-                    tranTypeId: 2,
-                    dateType: 'entryDate' // entryDate or transactionDate
+                    startDate: '2024-04-01', //selectedAllTransactionsFilter.startDate, // 
+                    tranTypeId: 2, //transactionTypes[selectedAllTransactionsFilter.transactionType],
+                    dateType: 'entryDate' // selectedAllTransactionsFilter.dateType //  // entryDate or transactionDate
                 }}
                 sqlId={SqlIdsMap.getAllTransactions}
             />

@@ -1,22 +1,36 @@
-import React, { useState } from "react";
-import { AppDispatchType } from "../../../../app/store/store";
+import React, { useEffect, useState } from "react";
+import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllTransactionFilter } from "../../accounts-slice";
+import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
 import { startOfMonth, endOfMonth, endOfToday, format, subDays, subMonths } from "date-fns";
 import { currentFinYearSelectorFn, FinYearType, } from "../../../login/login-slice";
 import { Utils } from "../../../../utils/utils";
+import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
+import { Messages } from "../../../../utils/messages";
 
 const ReportAllTransactionsFilter: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isoDate = 'yyyy-MM-dd'
+    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter)
+
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
-        dateType: "transactionDate",
-        startDate: "",
-        endDate: "",
-        transactionType: "All",
-        selectedQuickDate: "",
+        dateType: selectedAllTransactionsFilter.dateType || "transactionDate",
+        startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
+        endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
+        transactionType: selectedAllTransactionsFilter.transactionType || "All",
+        selectedQuickDate: selectedAllTransactionsFilter.selectedQuickDate || 'fiscalYear',
     });
+
+    useEffect(() => {
+        dispatch(setAllTransactionFilter({
+            dateType: filterOptions.dateType,
+            transactionType: filterOptions.transactionType,
+            startDate: filterOptions.startDate,
+            endDate: filterOptions.endDate,
+            selectedQuickDate: filterOptions.selectedQuickDate
+        }))
+    }, [])
 
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -47,7 +61,7 @@ const ReportAllTransactionsFilter: React.FC = () => {
 
     const validateDates = (start: string, end: string) => {
         if (new Date(start) > new Date(end)) {
-            setErrorMessage("End date must be greater than or equal to start date.");
+            setErrorMessage(Messages.messEndDateGreaterThanStartDate);
             return false;
         }
         setErrorMessage("");
@@ -224,33 +238,34 @@ const ReportAllTransactionsFilter: React.FC = () => {
             </div>
 
             {/* Date type */}
-            <div className="bg-white p-2 rounded-lg shadow-md mt-2">
-                <label className="block text-gray-700 font-medium text-sm">Date Type</label>
-                <div className="flex gap-2 mt-1">
-                    {["transactionDate", "entryDate"].map((type) => (
-                        <label key={type} className="flex items-center gap-1 cursor-pointer">
-                            <input
-                                type="radio"
-                                name="dateType"
-                                value={type}
-                                checked={filterOptions.dateType === type}
-                                onChange={(e) =>
-                                    setFilterOptions({ ...filterOptions, dateType: e.target.value as FilterOptions["dateType"] })
-                                }
-                                className="hidden"
-                            />
-                            <span
-                                className={`px-2 py-1 rounded-md text-xs transition-colors duration-200 cursor-pointer   
+            <div className="mt-2">
+                <div className="bg-white rounded-lg shadow-md mt-2 p-2">
+                    <label className="block text-gray-700 font-medium text-sm">Date Type</label>
+                    <div className="flex gap-2 mt-1">
+                        {["transactionDate", "entryDate"].map((type) => (
+                            <label key={type} className="flex items-center gap-1 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="dateType"
+                                    value={type}
+                                    checked={filterOptions.dateType === type}
+                                    onChange={(e) =>
+                                        setFilterOptions({ ...filterOptions, dateType: e.target.value as FilterOptions["dateType"] })
+                                    }
+                                    className="hidden"
+                                />
+                                <span
+                                    className={`px-2 py-1 rounded-md text-xs transition-colors duration-200 cursor-pointer   
                   ${filterOptions.dateType === type ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
-                            >
-                                {capitalizeFirstLetter(type.replace("Date", " Date"))}
-                            </span>
-                        </label>
-                    ))}
+                                >
+                                    {capitalizeFirstLetter(type.replace("Date", " Date"))}
+                                </span>
+                            </label>
+                        ))}
+                    </div>
                 </div>
-
                 {/* Date Range */}
-                <div className="bg-white p-2 rounded-lg shadow-md mt-2">
+                <div className="bg-white rounded-lg shadow-md mt-2 p-2">
                     <label className="block text-gray-700 font-medium text-sm">Date Range</label>
                     <div className="flex mt-1 gap-1">
                         <input
@@ -274,7 +289,7 @@ const ReportAllTransactionsFilter: React.FC = () => {
                 </div>
 
                 {/* Quick date selection */}
-                <div className="bg-white p-2 rounded-lg shadow-md mt-2">
+                <div className="bg-white rounded-lg shadow-md mt-2 p-2">
                     <label className="block text-gray-700 font-medium text-sm">Quick Date Selection</label>
                     <div className="flex flex-wrap gap-1 mt-1">
                         {predefinedDateRanges.map((range) => (
@@ -349,8 +364,10 @@ const ReportAllTransactionsFilter: React.FC = () => {
             dateType: filterOptions.dateType,
             transactionType: filterOptions.transactionType,
             startDate: filterOptions.startDate,
-            endDate: filterOptions.endDate
+            endDate: filterOptions.endDate,
+            selectedQuickDate: filterOptions.selectedQuickDate
         }))
+        dispatch(closeSlidingPane())
     }
 };
 
