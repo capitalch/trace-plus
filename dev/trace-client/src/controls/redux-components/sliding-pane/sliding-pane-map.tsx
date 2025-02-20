@@ -1,6 +1,7 @@
 import { FC, } from "react";
 import { ContactAndAddresses, } from "../../../features/accounts/masters/accounts/contact-and-addresses";
 import { NewEditBranch, EditNewBranchType } from "../../../features/accounts/masters/branch-master/new-edit-branch";
+import ReportAllTransactionsFilter from "../../../features/accounts/reports/report-all-transactions/report-all-transactions-filter";
 
 
 export const SlidingPaneMap: SlidingPaneMapType = {
@@ -19,12 +20,16 @@ export const SlidingPaneMap: SlidingPaneMapType = {
             accId: 0,
             isAddressExists: false
         }
+    },
+    reportAllTransactionsFilter: {
+        content: ReportAllTransactionsFilter
     }
 }
 
 export enum SlidingPaneEnum {
     branchMaster = 'branchMaster',
     contactAndAddresses = 'contactAndAddresses',
+    reportAllTransactionsFilter = 'reportAllTransactionsFilter'
 }
 
 export type SlidingPaneMapType = {
@@ -38,5 +43,8 @@ export type SlidingPaneMapType = {
     branchMaster: {
         content: FC<any>;
         props: EditNewBranchType;
+    },
+    reportAllTransactionsFilter: {
+        content: FC<any>
     }
 }

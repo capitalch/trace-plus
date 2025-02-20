@@ -203,7 +203,6 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
     }
 
     function getQuarterDates(quarter: Quarter) {
-        // const currentYear = new Date().getFullYear();
         const finYear: number = quarter === 'Q4' ? currentFinYear.finYearId + 1 : currentFinYear.finYearId
         const quarterMap = {
             Q1: { startMonth: 3, endMonth: 5 },

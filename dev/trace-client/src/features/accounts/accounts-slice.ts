@@ -2,13 +2,19 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootStateType } from "../../app/store/store";
 
 const initialState: AccountsInitialStateType = {
+  accSettingsChanged: 0,
+  allTransactionsFilter: {
+    dateType: "transactionDate",
+    endDate: "",
+    startDate: "",
+    transactionType: "All",
+  },
   bankRecon: {
     selectedBank: {
       accId: undefined,
       accName: "",
     },
   },
-  accSettingsChanged: 0,
   exports: {
     exportName: "",
   },
@@ -37,19 +43,39 @@ const accountsSlice = createSlice({
     ) => {
       state.exports.exportName = action.payload;
     },
+
+    // All transactions filter for report
+    setAllTransactionFilter: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<AllTransactionsFilterType>
+    ) => {
+      state.allTransactionsFilter = action.payload;
+    },
   },
 });
 
 export const accountsReducer = accountsSlice.reducer;
-export const { changeAccSettings, selectBank, setExportName } =
-  accountsSlice.actions;
+export const {
+  changeAccSettings,
+  selectBank,
+  setAllTransactionFilter,
+  setExportName,
+} = accountsSlice.actions;
 
 export type AccountsInitialStateType = {
-  bankRecon: { selectedBank: SelectedBankType };
   accSettingsChanged: number;
+  allTransactionsFilter: AllTransactionsFilterType;
+  bankRecon: { selectedBank: SelectedBankType };
   exports: {
     exportName: string;
   };
+};
+
+export type AllTransactionsFilterType = {
+  transactionType: "All" | "Contra" | "Journals" | "Payments" | "Receipts";
+  dateType: "transactionDate" | "entryDate";
+  startDate: string;
+  endDate: string;
 };
 
 export type SelectedBankType = {

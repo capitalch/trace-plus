@@ -1,15 +1,11 @@
 import React, { useState } from "react";
 import { AppDispatchType } from "../../../../app/store/store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setAllTransactionFilter } from "../../accounts-slice";
-import { startOfMonth, endOfMonth, endOfToday, format, subDays, subMonths } from "date-fns";
-import { currentFinYearSelectorFn, FinYearType, } from "../../../login/login-slice";
-import { Utils } from "../../../../utils/utils";
 
 const ReportAllTransactionsFilter: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch()
-    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
-    const isoDate = 'yyyy-MM-dd'
+    const currentYear = new Date().getFullYear();
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         dateType: "transactionDate",
         startDate: "",
@@ -21,26 +17,25 @@ const ReportAllTransactionsFilter: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     const predefinedDateRanges = [
-        { label: "Today", dateRangeName: 'today' },
-        { label: "Yesterday", dateRangeName: 'yesterday' },
-        { label: "Last 3 Days", dateRangeName: 'last3Days' },
-        { label: "Last 7 Days", dateRangeName: 'last7Days' },
-        { label: "Last 30 Days", dateRangeName: 'last30Days' },
-        { label: "This Month", dateRangeName: 'thisMonth' },
-        { label: "Last Month", dateRangeName: 'lastMonth' },
-        { label: "Last 2 Months", dateRangeName: 'last2Months' },
-        { label: "Last 3 months", dateRangeName: 'last3Months' },
-        { label: "Since Last Month", dateRangeName: 'sinceLastMonth' },
-        { label: "Since Last 2 Months", dateRangeName: 'sinceLast2Months' },
-        { label: "Since Last 3 Months", dateRangeName: 'sinceLast3Months' },
-        { label: "Fiscal Year", dateRangeName: 'fiscalYear' }
+        { label: "Today", days: 0 },
+        { label: "Yesterday", days: 1 },
+        { label: "Last 3 Days", days: 3 },
+        { label: "Last 7 Days", days: 7 },
+        { label: "Last 30 Days", days: 30 },
+        { label: "This Month", months: 1 },
+        { label: "Last Month", months: 1 },
+        { label: "Last 2 Months", months: 2 },
+        { label: "Last 3 months", months: 3 },
+        { label: "Since Last Month", months: 1 },
+        { label: "Since Last 2 Months", months: 2 },
+        { label: "Since Last 3 Months", months: 3 },
     ];
 
     const quarters = [
-        { label: "Q1", dateRangeName: 'q1' },
-        { label: "Q2", dateRangeName: 'q2' },
-        { label: "Q3", dateRangeName: 'q3' },
-        { label: "Q4", dateRangeName: 'q4' },
+        { label: "Q1", startMonth: 0, endMonth: 2 },
+        { label: "Q2", startMonth: 3, endMonth: 5 },
+        { label: "Q3", startMonth: 6, endMonth: 8 },
+        { label: "Q4", startMonth: 9, endMonth: 11 },
     ];
 
     const transactionTypes = ["All", "Contra", "Journals", "Payments", "Receipts"];
@@ -54,114 +49,43 @@ const ReportAllTransactionsFilter: React.FC = () => {
         return true;
     };
 
-    const setDateRange = (dateRangeName: string) => {
-        const today = format(endOfToday(), isoDate)
-        const lastMonth = subMonths(new Date(), 1)
-        const logicObject: { [key: string]: () => any } = {
-            today: () => ({ startDate: today, endDate: today })
-            , yesterday: () => (
-                {
-                    startDate: format(subDays(new Date(), 1), isoDate),
-                    endDate: today
-                })
-            , last3Days: () => (
-                {
-                    startDate: format(subDays(new Date(), 3), isoDate),
-                    endDate: today
-                })
-            , last7Days: () => (
-                {
-                    startDate: format(subDays(new Date(), 7), isoDate),
-                    endDate: today
-                })
-            , last30Days: () => (
-                {
-                    startDate: format(subDays(new Date(), 30), isoDate),
-                    endDate: today
-                })
-            , thisMonth: () => (
-                {
-                    startDate: format(startOfMonth(new Date()), isoDate),
-                    endDate: today
-                })
-            , lastMonth: () => {
-                return (
-                    {
-                        startDate: format(startOfMonth(lastMonth), isoDate),
-                        endDate: format(endOfMonth(lastMonth), isoDate)
-                    })
-            }
-            , last2Months: () => {
-                const last2Month = subMonths(new Date(), 2)
-                return (
-                    {
-                        startDate: format(startOfMonth(last2Month), isoDate),
-                        endDate: format(endOfMonth(lastMonth), isoDate)
-                    })
-            }
-            , last3Months: () => {
-                const last3Month = subMonths(new Date(), 3)
-                return (
-                    {
-                        startDate: format(startOfMonth(last3Month), isoDate),
-                        endDate: format(endOfMonth(lastMonth), isoDate)
-                    })
-            }
-            , sinceLastMonth: () => {
-                const lastMonth = subMonths(new Date(), 1)
-                return (
-                    {
-                        startDate: format(startOfMonth(lastMonth), isoDate),
-                        endDate: today
-                    })
-            }
-            , sinceLast2Months: () => {
-                const last2Month = subMonths(new Date(), 2)
-                return (
-                    {
-                        startDate: format(startOfMonth(last2Month), isoDate),
-                        endDate: today
-                    })
-            }
-            , sinceLast3Months: () => {
-                const last3Month = subMonths(new Date(), 3)
-                return (
-                    {
-                        startDate: format(startOfMonth(last3Month), isoDate),
-                        endDate: today
-                    })
-            }
-            , fiscalYear: () => {
-                return (
-                    {
-                        startDate: format(currentFinYear.startDate, isoDate),
-                        endDate: format(currentFinYear.endDate, isoDate),
-                    })
-            }
-            , q1: () => ({
-                startDate: currentFinYear.startDate,
-                endDate: `${currentFinYear.finYearId}-06-30`
-            })
-            , q2: () => ({
-                startDate: `${currentFinYear.finYearId}-07-01`,
-                endDate: `${currentFinYear.finYearId}-09-30`
-            })
-            , q3: () => ({
-                startDate: `${currentFinYear.finYearId}-10-01`,
-                endDate: `${currentFinYear.finYearId}-12-31`
-            })
-            , q4: () => ({
-                startDate: `${currentFinYear.finYearId + 1}-01-01`,
-                endDate: `${currentFinYear.finYearId + 1}-03-31`
-            })
+    const getDateRange = (days?: number, months?: number, label?: string) => {
+        const today = new Date();
+        let startDate = new Date();
+
+        if (days) {
+            startDate.setDate(today.getDate() - days);
+        } else if (months) {
+            startDate = new Date(today.getFullYear(), today.getMonth() - months, 1);
+            const endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+            setFilterOptions((prev) => ({
+                ...prev,
+                startDate: startDate.toISOString().slice(0, 10),
+                endDate: endDate.toISOString().slice(0, 10),
+                selectedQuickDate: label || "",
+            }));
+            return;
         }
-        const computedDate = logicObject[dateRangeName]()
+
         setFilterOptions((prev) => ({
             ...prev,
-            ...computedDate,
-            selectedQuickDate: dateRangeName
-        }))
-    }
+            startDate: startDate.toISOString().slice(0, 10),
+            endDate: today.toISOString().slice(0, 10),
+            selectedQuickDate: label || "",
+        }));
+    };
+
+    const getQuarterRange = (label: string, startMonth: number, endMonth: number) => {
+        const year = new Date().getFullYear();
+        const startDate = new Date(year, startMonth, 1);
+        const endDate = new Date(year, endMonth + 1, 0);
+        setFilterOptions((prev) => ({
+            ...prev,
+            startDate: startDate.toISOString().slice(0, 10),
+            endDate: endDate.toISOString().slice(0, 10),
+            selectedQuickDate: label,
+        }));
+    };
 
     const handleStartDateChange = (date: string) => {
         const newStartDate = date;
@@ -187,6 +111,17 @@ const ReportAllTransactionsFilter: React.FC = () => {
         }));
 
         validateDates(currentStartDate, newEndDate);
+    };
+
+    const setFiscalYearRange = () => {
+        const startDate = new Date(currentYear, 0, 1); // January 1st of current year  
+        const endDate = new Date(currentYear, 11, 31); // December 31st of current year  
+        setFilterOptions((prev) => ({
+            ...prev,
+            startDate: startDate.toISOString().slice(0, 10),
+            endDate: endDate.toISOString().slice(0, 10),
+            selectedQuickDate: "Fiscal Year",
+        }));
     };
 
     const formatDate = (dateString: string) => {
@@ -284,16 +219,24 @@ const ReportAllTransactionsFilter: React.FC = () => {
                                     name="quickDate"
                                     value={range.label}
                                     checked={filterOptions.selectedQuickDate === range.label}
-                                    onChange={() => setDateRange(range.dateRangeName)}
+                                    onChange={() => getDateRange(range.days, range.months, range.label)}
                                     className="hidden"
                                 />
                                 <span
                                     className={`px-2 py-1 rounded-md text-xs cursor-pointer transition-colors duration-200   
-                    ${filterOptions.selectedQuickDate === range.dateRangeName ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
+                    ${filterOptions.selectedQuickDate === range.label ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+                                >
                                     {range.label}
                                 </span>
                             </label>
                         ))}
+                        <button
+                            onClick={setFiscalYearRange}
+                            className={`px-2 py-1 rounded-md text-xs cursor-pointer transition-colors duration-200   
+                ${filterOptions.selectedQuickDate === "Fiscal Year" ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+                        >
+                            Fiscal Year
+                        </button>
                     </div>
                 </div>
 
@@ -307,12 +250,13 @@ const ReportAllTransactionsFilter: React.FC = () => {
                                     name="quarter"
                                     value={quarter.label}
                                     checked={filterOptions.selectedQuickDate === quarter.label}
-                                    onChange={() => setDateRange(quarter.dateRangeName)}
+                                    onChange={() => getQuarterRange(quarter.label, quarter.startMonth, quarter.endMonth)}
                                     className="hidden"
                                 />
                                 <span
                                     className={`px-2 py-1 rounded-md text-xs cursor-pointer transition-colors duration-200   
-                    ${filterOptions.selectedQuickDate === quarter.dateRangeName ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
+                    ${filterOptions.selectedQuickDate === quarter.label ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+                                >
                                     {quarter.label}
                                 </span>
                             </label>
@@ -330,7 +274,7 @@ const ReportAllTransactionsFilter: React.FC = () => {
                 <div className="mt-1 text-gray-600 text-sm">
                     <strong>Transaction Type:</strong> {filterOptions.transactionType}
                     <br />
-                    <strong>Date Type:</strong> {filterOptions.dateType.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase())}
+                    <strong>Date Type:</strong> {filterOptions.dateType.replace(/([A-Z])/g, " ")}
                     <br />
                     <strong>Date Range:</strong> {formatDate(filterOptions.startDate)} to {formatDate(filterOptions.endDate)}
                     <br />

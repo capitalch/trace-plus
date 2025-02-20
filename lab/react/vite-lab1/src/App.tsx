@@ -54,6 +54,7 @@ import { ExportDropDown } from './features/Misc/export-drop-down'
 // import DynamicFilteringGrid from './features/syncfusion/dynamic-filtering-grid'
 import GenericFilteringGridContainer from './features/syncfusion/filtering/generic-filtering-grid-container'
 import ReportAllTransactionsFilter  from './features/ai-generated/report-all-transactions-filter'
+import  CompactTransactionFilter  from './features/ai-generated/show-filtered-values'
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
@@ -121,7 +122,8 @@ function App() {
       <ExportDropDown /> */}
       {/* <DynamicFilteringGrid /> */}
       {/* <GenericFilteringGridContainer /> */}
-      <ReportAllTransactionsFilter />
+      {/* <ReportAllTransactionsFilter /> */}
+      <CompactTransactionFilter />
     </GlobalContext.Provider>
   )
 }

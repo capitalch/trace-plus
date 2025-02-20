@@ -38,7 +38,9 @@ function NavBar() {
             {isVisibleAppLoader && <CompAppLoader />}
 
             {/* react sliding pane */}
-            {identifier && isOpen && <ReactSlidingPane
+            {identifier && isOpen && <ReactSlidingPane //className="relative z-100"
+            
+                // className=" bg-red-500 z-[9999] relative"
                 isOpen={isOpen}
                 onRequestClose={() => dispatch(closeSlidingPane())}
                 title={title}

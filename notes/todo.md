@@ -36,10 +36,17 @@
 															- Migrate to tailwind latest version
 
 - Reports
-	- Syncfusion grid perhaps broken for ledger and bank recon
-	- All transactions
-		- slide in pane control activate
-		- Implement filter range
+	-  Transactions
+		- Delete functionality
+		- redux for TransactionType, filter by, startDate, endDate
+		- correct startDate and endDate populate and dispatch to redux
+		- populate values in filter bar
+		- pass values to sql
+		- Put a confirm button in pane. Otherwise refresh will happen on each change
+														- Syncfusion grid perhaps broken for ledger and bank recon
+													- All transactions
+														- slide in pane control activate
+														- Implement filter range
 														- New sql query
 														- Fix syncfusion grid functionalities
 													- last no of rows
@@ -48,11 +55,10 @@
 														- fields
 													- Aggregates
 														- count, debit, credit
-		- Delete functionality
-		- Filter radio buttons in sliding pane
-			- Transaction date: start date, end date
-			- Entry date: start date, end date
-			- transaction type:
+												- Filter radio buttons in sliding pane
+													- Transaction date: start date, end date
+													- Entry date: start date, end date
+													- transaction type:
 			
 
 

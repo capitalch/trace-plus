@@ -5,6 +5,7 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 // import { Utils } from "../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { ReportAllTransactionsFilterBar } from "./report-all-transactions-filter-bar";
 // import ReportAllTransactionsFilter  from "./report-all-transactions-filter";
 
 export function ReportAllTransactions() {
@@ -20,51 +21,49 @@ export function ReportAllTransactions() {
         , finYearId
     } = useUtilsInfo()
 
-    return (<CompAccountsContainer
-    // MiddleCustomControl={() => <ReportAllTransactionsFilter />}
-    >
-        <CompSyncFusionGridToolbar className='mt-2 mr-6'
-            // CustomControl={() => <BankReconCustomControls instance={instance} meta={meta} />}
-            minWidth="1000px"
-            title='All transactions'
-            isPdfExport={false}
-            isExcelExport={false}
-            isCsvExport={true}
-            isLastNoOfRows={true}
-            instance={instance}
-        />
-        <CompSyncFusionGrid
-            aggregates={getAggregates()}
-            buCode={buCode}
-            className="mr-6 mt-4"
-            columns={getColumns()}
-            dbName={dbName}
-            dbParams={decodedDbParamsObject}
-            deleteColumnWidth={40}
-            editColumnWidth={40}
-            enableVirtualization={true}
-            hasIndexColumn={false}
-            height="calc(100vh - 240px)"
-            instance={instance}
-            isLoadOnInit={true}
-            // loadData={loadData}
-            minWidth="1400px"
-            // onCellEdit={handleCellEdit}
-            onEdit={handleOnEdit}
-            onDelete={handleOnDelete}
-            onRowDataBound={onRowDataBound}
-            sqlArgs={{
-                dateFormat: currentDateFormat,
-                endDate: '2025-03-31',
-                finYearId: finYearId,
-                branchId: branchId,
-                startDate: '2024-04-01',
-                tranTypeId: 2,
-                dateType:'entryDate' // entryDate or transactionDate
-            }}
-            sqlId={SqlIdsMap.getAllTransactions}
-        />
-    </CompAccountsContainer>)
+    return (
+        <CompAccountsContainer className="z-0">
+            <CompSyncFusionGridToolbar className='mt-2 mr-6'
+                CustomControl={() => <ReportAllTransactionsFilterBar />}
+                minWidth="1000px"
+                title='All transactions'
+                isPdfExport={false}
+                isExcelExport={false}
+                isCsvExport={true}
+                isLastNoOfRows={true}
+                instance={instance}
+            />
+            <CompSyncFusionGrid
+                aggregates={getAggregates()}
+                buCode={buCode}
+                className="mr-6 mt-4"
+                columns={getColumns()}
+                dbName={dbName}
+                dbParams={decodedDbParamsObject}
+                deleteColumnWidth={40}
+                editColumnWidth={40}
+                enableVirtualization={true}
+                hasIndexColumn={false}
+                height="calc(100vh - 240px)"
+                instance={instance}
+                isLoadOnInit={true}
+                minWidth="1400px"
+                onEdit={handleOnEdit}
+                onDelete={handleOnDelete}
+                onRowDataBound={onRowDataBound}
+                sqlArgs={{
+                    dateFormat: currentDateFormat,
+                    endDate: '2025-03-31',
+                    finYearId: finYearId,
+                    branchId: branchId,
+                    startDate: '2024-04-01',
+                    tranTypeId: 2,
+                    dateType: 'entryDate' // entryDate or transactionDate
+                }}
+                sqlId={SqlIdsMap.getAllTransactions}
+            />
+        </CompAccountsContainer>
+    )
 
     function getAggregates(): SyncFusionGridAggregateType[] {
         return ([

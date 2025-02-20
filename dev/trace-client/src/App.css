@@ -147,3 +147,19 @@
   text-align: right; /* Align text to the right */
   padding-right: '40px' !important;
 }
+
+/* To maintain that react sliding pane is over the syncfusion grid */
+/* .e-content .e-grid  {
+  position: relative;
+  z-index: 0 !important;
+  overflow: hidden;
+}
+
+.ReactModal__Overlay {
+  z-index: 1050 !important;
+}
+
+.ReactModal__Content {
+  z-index: 1051 !important;
+  position: relative;
+} */
