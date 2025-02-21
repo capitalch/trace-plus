@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
 import { startOfMonth, endOfMonth, endOfToday, format, subDays, subMonths } from "date-fns";
 import { currentFinYearSelectorFn, FinYearType, } from "../../../login/login-slice";
 import { Utils } from "../../../../utils/utils";
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { Messages } from "../../../../utils/messages";
+import { transactionTypes } from "./export-constants";
 
 const ReportAllTransactionsFilter: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isoDate = 'yyyy-MM-dd'
-    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter)
+    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
 
     const [filterOptions, setFilterOptions] = useState<FilterOptions>({
         dateType: selectedAllTransactionsFilter.dateType || "transactionDate",
         startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
         endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
-        transactionType: selectedAllTransactionsFilter.transactionType || "All",
+        transactionType: selectedAllTransactionsFilter.transactionType || "all",
         selectedQuickDate: selectedAllTransactionsFilter.selectedQuickDate || 'fiscalYear',
     });
 
@@ -30,7 +31,7 @@ const ReportAllTransactionsFilter: React.FC = () => {
             endDate: filterOptions.endDate,
             selectedQuickDate: filterOptions.selectedQuickDate
         }))
-    }, [])
+    }, [currentFinYear, selectedAllTransactionsFilter])
 
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -57,7 +58,7 @@ const ReportAllTransactionsFilter: React.FC = () => {
         { label: "Q4", dateRangeName: 'q4' },
     ];
 
-    const transactionTypes = ["All", "Contra", "Journals", "Payments", "Receipts"];
+    // const transactionTypes = ["All", "Contra", "Journals", "Payments", "Receipts", "Sales", "Purchase", "DebitNote", "CreditNote", "SalesReturn", "PurchaseReturn", "StockJournal", "BranchTransfer"];
 
     const validateDates = (start: string, end: string) => {
         if (new Date(start) > new Date(end)) {
@@ -214,14 +215,14 @@ const ReportAllTransactionsFilter: React.FC = () => {
             {/* Transaction type */}
             <div className="bg-white p-2 rounded-lg shadow-md">
                 <label className="block text-gray-700 font-medium text-sm">Transaction Type</label>
-                <div className="flex gap-2 mt-1">
-                    {transactionTypes.map((type) => (
-                        <label key={type} className="flex items-center gap-1 cursor-pointer">
+                <div className="flex gap-2 mt-1 flex-wrap">
+                    {Object.entries(transactionTypes).map(([key, { name, }]) => (
+                        <label key={key} className="flex items-center gap-1 cursor-pointer">
                             <input
                                 type="radio"
                                 name="transactionType"
-                                value={type}
-                                checked={filterOptions.transactionType === type}
+                                value={key}
+                                checked={filterOptions.transactionType === key}
                                 onChange={(e) =>
                                     setFilterOptions({ ...filterOptions, transactionType: e.target.value as FilterOptions["transactionType"] })
                                 }
@@ -229,8 +230,8 @@ const ReportAllTransactionsFilter: React.FC = () => {
                             />
                             <span
                                 className={`px-2 py-1 rounded-md text-xs transition-colors duration-200 cursor-pointer   
-                  ${filterOptions.transactionType === type ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
-                                {type}
+                  ${filterOptions.transactionType === key ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
+                                {name}
                             </span>
                         </label>
                     ))}
@@ -377,6 +378,6 @@ interface FilterOptions {
     dateType: "transactionDate" | "entryDate";
     startDate: string;
     endDate: string;
-    transactionType: "All" | "Contra" | "Journals" | "Payments" | "Receipts";
+    transactionType: string; //"All" | "Contra" | "Journals" | "Payments" | "Receipts";
     selectedQuickDate: string;
 }

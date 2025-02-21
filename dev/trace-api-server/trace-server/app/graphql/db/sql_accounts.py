@@ -458,7 +458,7 @@ class SqlAccounts:
     """
 
     get_all_transactions = """
-        --WITH "noOfRows" AS (VALUES (1000::int)), "tranTypeId" AS (VALUES (2::int)), "dateFormat" AS (VALUES ('dd/MM/yyyy'::text)), "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)), "startDate" AS (VALUES ('2024-04-01'::date)), "endDate" AS (VALUES ('2025-03-31'::date)),"dateType" AS (VALUES ('entryDate'::text))
+        --WITH "noOfRows" AS (VALUES (1000::int)), "tranTypeId" AS (VALUES (null::int)), "dateFormat" AS (VALUES ('dd/MM/yyyy'::text)), "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)), "startDate" AS (VALUES ('2024-04-01'::date)), "endDate" AS (VALUES ('2025-03-31'::date)),"dateType" AS (VALUES ('entryDate'::text))
         with "noOfRows" as (values (%(noOfRows)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "dateType" AS (values (%(dateType)s::text))
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY "tranDate" DESC, h."id" DESC, d."id" DESC) AS "index",
@@ -469,6 +469,7 @@ class SqlAccounts:
                 h."userRefNo",
                 h."remarks",
                 a."accName",
+                h."tranTypeId",
                 CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END AS "debit",
                 CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END AS "credit",
                 d."instrNo",
@@ -489,6 +490,10 @@ class SqlAccounts:
                         ELSE FALSE  -- Fallback case
                     END
                 )
+				AND (
+					(TABLE "tranTypeId") IS NULL
+					OR h."tranTypeId" = (TABLE "tranTypeId")
+				)
             ORDER BY "tranDate" DESC, h."id" DESC, d."id" DESC
             LIMIT (TABLE "noOfRows");
     """

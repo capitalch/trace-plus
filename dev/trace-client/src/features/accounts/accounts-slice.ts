@@ -73,7 +73,7 @@ export type AccountsInitialStateType = {
 };
 
 export type AllTransactionsFilterType = {
-  transactionType: "All" | "Contra" | "Journals" | "Payments" | "Receipts";
+  transactionType: string;
   dateType: "transactionDate" | "entryDate";
   startDate: string;
   endDate: string;

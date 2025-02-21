@@ -1,36 +1,70 @@
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { RootStateType } from "../../../../app/store/store";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
-// import { Utils } from "../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { ReportAllTransactionsFilterBar } from "./report-all-transactions-filter-bar";
 import { AllTransactionsFilterType } from "../../accounts-slice";
-// import ReportAllTransactionsFilter  from "./report-all-transactions-filter";
+import { useEffect } from "react";
+import { Utils } from "../../../../utils/utils";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { format } from "date-fns";
+import { transactionTypes } from "./export-constants";
 
 export function ReportAllTransactions() {
     const instance: string = DataInstancesMap.reportAllTransactions
     const {
         branchId
         , buCode
+        , context
         , currentDateFormat
         , dbName
         , decodedDbParamsObject
         , finYearId
     } = useUtilsInfo()
 
-    const transactionTypes = {
-        All: '',
-        Contra: 6,
-        Journals: 1,
-        Payments: 2,
-        Receipts: 3
-    }
+    // const transactionTypes = {
+    //     all: null,
+    //     contra: 6,
+    //     Journals: 1,
+    //     Payments: 2,
+    //     Receipts: 3,
+    //     Sales: 4,
+    //     Purchase: 5,
+    //     'DebitNote': 7,
+    //     'CreditNote': 8,
+    //     'SalesReturn': 9,
+    //     'PurchaseReturn': 10,
+    //     'StockJournal': 11,
+    //     'BranchTransfer': 12,
+    // }
 
-    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter)
+    // const tranTypeIds: any = {
+    //     1: 'Journal',
+    //     2: 'Payment',
+    //     3: 'Receipt',
+    //     4: 'Sales',
+    //     5: 'Purchase',
+    //     6: 'Contra',
+    //     7: 'Debit note',
+    //     8: 'Credit note',
+    //     9: 'Sales ret',
+    //     10: 'Purch ret',
+    //     11: 'Stock journal',
+    //     12: 'Branch trf'
+    // }
+
+    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
+
+    useEffect(() => {
+        const loadData = context.CompSyncFusionGrid[instance].loadData
+        if (loadData) {
+            loadData()
+        }
+    }, [selectedAllTransactionsFilter])
 
     return (
         <CompAccountsContainer className="z-0">
@@ -64,12 +98,12 @@ export function ReportAllTransactions() {
                 onRowDataBound={onRowDataBound}
                 sqlArgs={{
                     dateFormat: currentDateFormat,
-                    endDate: '2025-03-31', // selectedAllTransactionsFilter.endDate, 
+                    endDate: '2025-03-31', // selectedAllTransactionsFilter.endDate, //
                     finYearId: finYearId,
                     branchId: branchId,
                     startDate: '2024-04-01', //selectedAllTransactionsFilter.startDate, // 
-                    tranTypeId: 2, //transactionTypes[selectedAllTransactionsFilter.transactionType],
-                    dateType: 'entryDate' // selectedAllTransactionsFilter.dateType //  // entryDate or transactionDate
+                    tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null, // 2, // //
+                    dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
                 }}
                 sqlId={SqlIdsMap.getAllTransactions}
             />
@@ -132,6 +166,13 @@ export function ReportAllTransactions() {
                 type: 'string'
             },
             {
+                field: '',
+                headerText: 'Type',
+                width: 80,
+                type: 'string',
+                template: (args: any) => getKeyByValue(args.tranTypeId)
+            },
+            {
                 field: 'accName',
                 headerText: 'Acc name',
                 width: 150,
@@ -190,11 +231,36 @@ export function ReportAllTransactions() {
                 type: 'string',
                 width: 90
             },
+            {
+                field: 'timestamp',
+                headerText: 'Timestamp',
+                type: 'string',
+                width: 140,
+                template: (args: any) => <span>{format(args.timestamp, `${currentDateFormat}:HH mm`)}</span>
+            },
         ])
     }
 
-    function handleOnDelete() {
+    function getKeyByValue(value: number | null): string | undefined {
+        return (Object.keys(transactionTypes).find((key: string) => transactionTypes[key].value === value))
+    }
 
+    async function handleOnDelete(id: string) {
+        const loadData = context.CompSyncFusionGrid[instance].loadData
+        Utils.showDeleteConfirmDialog(async () => {
+            try {
+                await Utils.doGenericDelete({
+                    buCode: buCode || '',
+                    tableName: DatabaseTablesMap.TranH,
+                    deletedIds: [id]
+                })
+                if (loadData) {
+                    loadData()
+                }
+            } catch (e: any) {
+                console.log(e)
+            }
+        })
     }
 
     function handleOnEdit() {

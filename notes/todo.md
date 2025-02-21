@@ -37,16 +37,24 @@
 
 - Reports
 	-  Transactions
+		- When contra: No transaction, selected then old values appear in grid
+		- Autosave after 5 seconds
+		- Check Sql in terms of parameters
+			- startDate and endDate problem
+		- Disable quick date selection when not current fiscal year
+		- Correct change functionality
+														- Delete functionality
+														- include sales, purchase
+														- include column tranType
 														- Check error message
 														- Default date; Fiscal year selected
 														- remove padding from quick date selection and date range
 														- Retain old values
 														- Check change date
 														- Close pane when selected
-		- Delete functionality
+		
 														- Pass values to sql
-		- Check Sql in terms of parameters
-		- In bar, date type to appear as space and capitalized
+														- In bar, date type to appear as space and capitalized
 														- redux for TransactionType, filter by, startDate, endDate
 														- correct startDate and endDate populate and dispatch to redux
 														- populate values in filter bar

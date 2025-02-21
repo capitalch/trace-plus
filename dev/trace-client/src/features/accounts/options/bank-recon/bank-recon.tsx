@@ -233,10 +233,10 @@ export function BankRecon() {
     }
 
     async function handleOnDelete(id: string) {
-        Utils.showDeleteConfirmDialog(() => {
+        Utils.showDeleteConfirmDialog(async () => {
             console.log(id)
             try {
-                Utils.doGenericDelete({
+                await Utils.doGenericDelete({
                     buCode: buCode || '',
                     tableName: DatabaseTablesMap.TranH,
                     deletedIds: [id]
