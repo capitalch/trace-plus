@@ -13,9 +13,11 @@ import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
+import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";
 
 export function ReportAllTransactions() {
     const instance: string = DataInstancesMap.reportAllTransactions
+    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const {
         branchId
         , buCode
@@ -26,37 +28,6 @@ export function ReportAllTransactions() {
         , finYearId
     } = useUtilsInfo()
 
-    // const transactionTypes = {
-    //     all: null,
-    //     contra: 6,
-    //     Journals: 1,
-    //     Payments: 2,
-    //     Receipts: 3,
-    //     Sales: 4,
-    //     Purchase: 5,
-    //     'DebitNote': 7,
-    //     'CreditNote': 8,
-    //     'SalesReturn': 9,
-    //     'PurchaseReturn': 10,
-    //     'StockJournal': 11,
-    //     'BranchTransfer': 12,
-    // }
-
-    // const tranTypeIds: any = {
-    //     1: 'Journal',
-    //     2: 'Payment',
-    //     3: 'Receipt',
-    //     4: 'Sales',
-    //     5: 'Purchase',
-    //     6: 'Contra',
-    //     7: 'Debit note',
-    //     8: 'Credit note',
-    //     9: 'Sales ret',
-    //     10: 'Purch ret',
-    //     11: 'Stock journal',
-    //     12: 'Branch trf'
-    // }
-
     const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
 
     useEffect(() => {
@@ -64,7 +35,7 @@ export function ReportAllTransactions() {
         if (loadData) {
             loadData()
         }
-    }, [selectedAllTransactionsFilter])
+    }, [selectedAllTransactionsFilter, currentFinYear])
 
     return (
         <CompAccountsContainer className="z-0">
@@ -88,6 +59,7 @@ export function ReportAllTransactions() {
                 deleteColumnWidth={40}
                 editColumnWidth={40}
                 enableVirtualization={true}
+                
                 hasIndexColumn={false}
                 height="calc(100vh - 240px)"
                 instance={instance}
@@ -98,10 +70,10 @@ export function ReportAllTransactions() {
                 onRowDataBound={onRowDataBound}
                 sqlArgs={{
                     dateFormat: currentDateFormat,
-                    endDate: '2025-03-31', // selectedAllTransactionsFilter.endDate, //
+                    endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate, // '2025-03-31', // 
                     finYearId: finYearId,
                     branchId: branchId,
-                    startDate: '2024-04-01', //selectedAllTransactionsFilter.startDate, // 
+                    startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate, // '2024-04-01', //
                     tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null, // 2, // //
                     dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
                 }}

@@ -37,12 +37,16 @@
 
 - Reports
 	-  Transactions
+		- Working on 22-02-2025 before going to Phuket: thorough checkup
+		- Do thorough checkup
 		- When contra: No transaction, selected then old values appear in grid
-		- Autosave after 5 seconds
-		- Check Sql in terms of parameters
-			- startDate and endDate problem
 		- Disable quick date selection when not current fiscal year
-		- Correct change functionality
+		- Virtualization is giving problems
+													- filter
+														- Remove useState and use redux completely
+													- Check Sql in terms of parameters
+														- startDate and endDate problem
+														- Correct change functionality
 														- Delete functionality
 														- include sales, purchase
 														- include column tranType

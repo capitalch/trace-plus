@@ -26,7 +26,7 @@ export function ReportAllTransactionsFilterBar() {
             {/* Transaction Type */}
             <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
                 <span className="text-gray-500">Transaction Type:</span>
-                <span className="text-indigo-600 font-medium">{transactionType}</span>
+                <span className="text-indigo-600 font-medium">{transactionType.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase())}</span>
             </div>
 
             {/* Filter By */}

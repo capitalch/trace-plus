@@ -102,6 +102,7 @@ export function CompSyncFusionGrid({
             created={onCreated}
             dataSource={dataSource || selectedData || []}
             editSettings={editSettings}
+            // enableInfiniteScrolling={true}
             enablePersistence={false}
             enableVirtualization={enableVirtualization}
             // excelQueryCellInfo={handleExcelQueryCellInfo}

@@ -1,7 +1,7 @@
 import { FC, } from "react";
 import { ContactAndAddresses, } from "../../../features/accounts/masters/accounts/contact-and-addresses";
 import { NewEditBranch, EditNewBranchType } from "../../../features/accounts/masters/branch-master/new-edit-branch";
-import ReportAllTransactionsFilter from "../../../features/accounts/reports/report-all-transactions/report-all-transactions-filter";
+import {ReportAllTransactionsFilter} from "../../../features/accounts/reports/report-all-transactions/report-all-transactions-filter";
 
 
 export const SlidingPaneMap: SlidingPaneMapType = {

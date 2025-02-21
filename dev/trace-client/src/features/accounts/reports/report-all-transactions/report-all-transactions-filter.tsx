@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
@@ -9,29 +9,11 @@ import { closeSlidingPane } from "../../../../controls/redux-components/comp-sli
 import { Messages } from "../../../../utils/messages";
 import { transactionTypes } from "./export-constants";
 
-const ReportAllTransactionsFilter: React.FC = () => {
+export const ReportAllTransactionsFilter: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isoDate = 'yyyy-MM-dd'
     const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
-
-    const [filterOptions, setFilterOptions] = useState<FilterOptions>({
-        dateType: selectedAllTransactionsFilter.dateType || "transactionDate",
-        startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
-        endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
-        transactionType: selectedAllTransactionsFilter.transactionType || "all",
-        selectedQuickDate: selectedAllTransactionsFilter.selectedQuickDate || 'fiscalYear',
-    });
-
-    useEffect(() => {
-        dispatch(setAllTransactionFilter({
-            dateType: filterOptions.dateType,
-            transactionType: filterOptions.transactionType,
-            startDate: filterOptions.startDate,
-            endDate: filterOptions.endDate,
-            selectedQuickDate: filterOptions.selectedQuickDate
-        }))
-    }, [currentFinYear, selectedAllTransactionsFilter])
 
     const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -57,8 +39,6 @@ const ReportAllTransactionsFilter: React.FC = () => {
         { label: "Q3", dateRangeName: 'q3' },
         { label: "Q4", dateRangeName: 'q4' },
     ];
-
-    // const transactionTypes = ["All", "Contra", "Journals", "Payments", "Receipts", "Sales", "Purchase", "DebitNote", "CreditNote", "SalesReturn", "PurchaseReturn", "StockJournal", "BranchTransfer"];
 
     const validateDates = (start: string, end: string) => {
         if (new Date(start) > new Date(end)) {
@@ -171,8 +151,8 @@ const ReportAllTransactionsFilter: React.FC = () => {
             })
         }
         const computedDate = logicObject[dateRangeName]()
-        setFilterOptions((prev) => ({
-            ...prev,
+        dispatch(setAllTransactionFilter({
+            ...selectedAllTransactionsFilter,
             ...computedDate,
             selectedQuickDate: dateRangeName
         }))
@@ -180,27 +160,24 @@ const ReportAllTransactionsFilter: React.FC = () => {
 
     const handleStartDateChange = (date: string) => {
         const newStartDate = date;
-        const currentEndDate = filterOptions.endDate;
-
-        setFilterOptions((prev) => ({
-            ...prev,
+        const currentEndDate = selectedAllTransactionsFilter.endDate;
+        dispatch(setAllTransactionFilter({
+            ...selectedAllTransactionsFilter,
             startDate: newStartDate,
-            selectedQuickDate: "",
-        }));
+            selectedQuickDate: ''
+        }))
 
         validateDates(newStartDate, currentEndDate);
     };
 
     const handleEndDateChange = (date: string) => {
         const newEndDate = date;
-        const currentStartDate = filterOptions.startDate;
-
-        setFilterOptions((prev) => ({
-            ...prev,
+        const currentStartDate = selectedAllTransactionsFilter.startDate;
+        dispatch(setAllTransactionFilter({
+            ...selectedAllTransactionsFilter,
             endDate: newEndDate,
-            selectedQuickDate: "",
-        }));
-
+            selectedQuickDate: ''
+        }))
         validateDates(currentStartDate, newEndDate);
     };
 
@@ -222,15 +199,18 @@ const ReportAllTransactionsFilter: React.FC = () => {
                                 type="radio"
                                 name="transactionType"
                                 value={key}
-                                checked={filterOptions.transactionType === key}
-                                onChange={(e) =>
-                                    setFilterOptions({ ...filterOptions, transactionType: e.target.value as FilterOptions["transactionType"] })
-                                }
+                                checked={selectedAllTransactionsFilter.transactionType === key}
+                                onChange={(e: any) => {
+                                    dispatch(setAllTransactionFilter({
+                                        ...selectedAllTransactionsFilter,
+                                        transactionType: e.target.value
+                                    }))
+                                }}
                                 className="hidden"
                             />
                             <span
                                 className={`px-2 py-1 rounded-md text-xs transition-colors duration-200 cursor-pointer   
-                  ${filterOptions.transactionType === key ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
+                  ${selectedAllTransactionsFilter.transactionType === key ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
                                 {name}
                             </span>
                         </label>
@@ -249,15 +229,18 @@ const ReportAllTransactionsFilter: React.FC = () => {
                                     type="radio"
                                     name="dateType"
                                     value={type}
-                                    checked={filterOptions.dateType === type}
-                                    onChange={(e) =>
-                                        setFilterOptions({ ...filterOptions, dateType: e.target.value as FilterOptions["dateType"] })
-                                    }
+                                    checked={selectedAllTransactionsFilter.dateType === type}
+                                    onChange={(e) => {
+                                        dispatch(setAllTransactionFilter({
+                                            ...selectedAllTransactionsFilter,
+                                            dateType: e.target.value as any
+                                        }))
+                                    }}
                                     className="hidden"
                                 />
                                 <span
                                     className={`px-2 py-1 rounded-md text-xs transition-colors duration-200 cursor-pointer   
-                  ${filterOptions.dateType === type ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+                  ${selectedAllTransactionsFilter.dateType === type ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
                                 >
                                     {capitalizeFirstLetter(type.replace("Date", " Date"))}
                                 </span>
@@ -272,7 +255,7 @@ const ReportAllTransactionsFilter: React.FC = () => {
                         <input
                             type="date"
                             name="startDate"
-                            value={filterOptions.startDate}
+                            value={selectedAllTransactionsFilter.startDate}
                             onChange={(e) => handleStartDateChange(e.target.value)}
                             className="flex-grow border border-blue-300 rounded-md max-w-36 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-300"
                             style={{ cursor: "pointer" }}
@@ -280,7 +263,7 @@ const ReportAllTransactionsFilter: React.FC = () => {
                         <input
                             type="date"
                             name="endDate"
-                            value={filterOptions.endDate}
+                            value={selectedAllTransactionsFilter.endDate}
                             onChange={(e) => handleEndDateChange(e.target.value)}
                             className="flex-grow border border-blue-300 rounded-md max-w-36 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-300 ml-4"
                             style={{ cursor: "pointer" }}
@@ -299,13 +282,13 @@ const ReportAllTransactionsFilter: React.FC = () => {
                                     type="radio"
                                     name="quickDate"
                                     value={range.label}
-                                    checked={filterOptions.selectedQuickDate === range.label}
+                                    checked={selectedAllTransactionsFilter.selectedQuickDate === range.label}
                                     onChange={() => setDateRange(range.dateRangeName)}
                                     className="hidden"
                                 />
                                 <span
                                     className={`px-2 py-1 rounded-md text-xs cursor-pointer transition-colors duration-200   
-                    ${filterOptions.selectedQuickDate === range.dateRangeName ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
+                    ${selectedAllTransactionsFilter.selectedQuickDate === range.dateRangeName ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
                                     {range.label}
                                 </span>
                             </label>
@@ -322,13 +305,13 @@ const ReportAllTransactionsFilter: React.FC = () => {
                                     type="radio"
                                     name="quarter"
                                     value={quarter.label}
-                                    checked={filterOptions.selectedQuickDate === quarter.label}
+                                    checked={selectedAllTransactionsFilter.selectedQuickDate === quarter.label}
                                     onChange={() => setDateRange(quarter.dateRangeName)}
                                     className="hidden"
                                 />
                                 <span
                                     className={`px-2 py-1 rounded-md text-xs cursor-pointer transition-colors duration-200   
-                    ${filterOptions.selectedQuickDate === quarter.dateRangeName ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
+                    ${selectedAllTransactionsFilter.selectedQuickDate === quarter.dateRangeName ? "bg-indigo-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`}>
                                     {quarter.label}
                                 </span>
                             </label>
@@ -344,13 +327,13 @@ const ReportAllTransactionsFilter: React.FC = () => {
                     <button onClick={handleSubmit} className="bg-indigo-600 px-4 rounded-md text-xs text-white font-medium">Submit</button>
                 </div>
                 <div className="mt-1 text-gray-600 text-sm">
-                    <strong>Transaction Type:</strong> {filterOptions.transactionType}
+                    <strong>Transaction Type:</strong> {selectedAllTransactionsFilter.transactionType}
                     <br />
-                    <strong>Date Type:</strong> {filterOptions.dateType.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase())}
+                    <strong>Date Type:</strong> {selectedAllTransactionsFilter.dateType.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase())}
                     <br />
-                    <strong>Date Range:</strong> {formatDate(filterOptions.startDate)} to {formatDate(filterOptions.endDate)}
+                    <strong>Date Range:</strong> {formatDate(selectedAllTransactionsFilter.startDate)} to {formatDate(selectedAllTransactionsFilter.endDate)}
                     <br />
-                    <strong>Quick Selection:</strong> {filterOptions.selectedQuickDate || "None"}
+                    <strong>Quick Selection:</strong> {selectedAllTransactionsFilter.selectedQuickDate || "None"}
                 </div>
             </div>
         </div>
@@ -362,22 +345,14 @@ const ReportAllTransactionsFilter: React.FC = () => {
 
     function handleSubmit() {
         dispatch(setAllTransactionFilter({
-            dateType: filterOptions.dateType,
-            transactionType: filterOptions.transactionType,
-            startDate: filterOptions.startDate,
-            endDate: filterOptions.endDate,
-            selectedQuickDate: filterOptions.selectedQuickDate
+            dateType: selectedAllTransactionsFilter.dateType,
+            transactionType: selectedAllTransactionsFilter.transactionType,
+            startDate: selectedAllTransactionsFilter.startDate,
+            endDate: selectedAllTransactionsFilter.endDate,
+            selectedQuickDate: selectedAllTransactionsFilter.selectedQuickDate
         }))
         dispatch(closeSlidingPane())
     }
 };
 
-export default ReportAllTransactionsFilter;
-
-interface FilterOptions {
-    dateType: "transactionDate" | "entryDate";
-    startDate: string;
-    endDate: string;
-    transactionType: string; //"All" | "Contra" | "Journals" | "Payments" | "Receipts";
-    selectedQuickDate: string;
-}
+// export default ReportAllTransactionsFilter;
