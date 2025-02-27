@@ -11,7 +11,7 @@ import { transactionTypes } from "./export-constants";
 
 export const ReportAllTransactionsFilter: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch()
-    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
+    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
     const isoDate = 'yyyy-MM-dd'
     const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
 

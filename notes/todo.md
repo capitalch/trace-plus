@@ -37,12 +37,13 @@
 
 - Reports
 	-  Transactions
-		- Date range values are not set by default
-		- transaction type 'all' is not set by default
-		- filtered values are actually backlog by 1
+	- Disable quick date selection when not current fiscal year
+	- Last no of rows malfunction
+													- Date range values are not set by default
+													- transaction type 'all' is not set by default
+													- filtered values are actually backlog by 1
 		
-		- When contra: No transaction, selected then old values appear in grid
-		- Disable quick date selection when not current fiscal year
+													- When contra: No transaction, selected then old values appear in grid
 													- Virtualization is giving problems
 													- filter
 														- Remove useState and use redux completely

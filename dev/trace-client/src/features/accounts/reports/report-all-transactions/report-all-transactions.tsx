@@ -1,22 +1,27 @@
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { ReportAllTransactionsFilterBar } from "./report-all-transactions-filter-bar";
-import { AllTransactionsFilterType } from "../../accounts-slice";
+import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
 import { useEffect } from "react";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";
+import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
+// import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
+// import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 
 export function ReportAllTransactions() {
+    const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.reportAllTransactions
+    const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const {
         branchId
@@ -28,14 +33,25 @@ export function ReportAllTransactions() {
         , finYearId
     } = useUtilsInfo()
 
-    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter)
+    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
 
     useEffect(() => {
-        const loadData = context.CompSyncFusionGrid[instance].loadData
-        if (loadData) {
+        dispatch(setAllTransactionFilter({
+            ...selectedAllTransactionsFilter,
+            startDate: currentFinYear.startDate,
+            endDate: currentFinYear.endDate
+        }))
+    }, [currentFinYear])
+
+    useEffect(() => {
+        if (selectedAllTransactionsFilter.startDate && selectedLastNoOfRows) {
             loadData()
         }
-    }, [selectedAllTransactionsFilter, currentFinYear])
+    }, [selectedAllTransactionsFilter, selectedLastNoOfRows])
+
+    useEffect(() => {
+
+    }, [])
 
     return (
         <CompAccountsContainer className="z-0">
@@ -64,21 +80,21 @@ export function ReportAllTransactions() {
                 hasIndexColumn={false}
                 height="calc(100vh - 240px)"
                 instance={instance}
-                isLoadOnInit={true}
+                isLoadOnInit={false}
+                loadData={loadData}
                 minWidth="1400px"
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
-                // onRowDataBound={onRowDataBound}
-                sqlArgs={{
-                    dateFormat: currentDateFormat,
-                    endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate, // '2025-03-31', // 
-                    finYearId: finYearId,
-                    branchId: branchId,
-                    startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate, // '2024-04-01', //
-                    tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null, // 2, // //
-                    dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
-                }}
-                sqlId={SqlIdsMap.getAllTransactions}
+            // sqlArgs={{
+            //     dateFormat: currentDateFormat,
+            //     endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate, // '2025-03-31', // 
+            //     finYearId: finYearId,
+            //     branchId: branchId,
+            //     startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate, // '2024-04-01', //
+            //     tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null, // 2, // //
+            //     dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
+            // }}
+            // sqlId={SqlIdsMap.getAllTransactions}
             />
         </CompAccountsContainer>
     )
@@ -238,5 +254,39 @@ export function ReportAllTransactions() {
 
     function handleOnEdit() {
 
+    }
+
+    async function loadData() {
+        // dispatch(showCompAppLoader({
+        //     isVisible: true,
+        //     instance: CompInstances.compAppLoader
+        // }))
+        // context.CompSyncFusionGrid[instance].
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject,
+            instance: instance,
+            sqlArgs: {
+                dateFormat: currentDateFormat,
+                endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
+                finYearId: finYearId,
+                branchId: branchId,
+                startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
+                tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null,
+                noOfRows: +selectedLastNoOfRows,
+                dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
+            },
+            sqlId: SqlIdsMap.getAllTransactions
+        })
+        dispatch(setQueryHelperData({
+            instance: instance,
+            data: res
+        }))
+        // dispatch(showCompAppLoader({
+        //     isVisible: false,
+        //     instance: CompInstances.compAppLoader
+        // }))
+        // console.log(res)
     }
 }
