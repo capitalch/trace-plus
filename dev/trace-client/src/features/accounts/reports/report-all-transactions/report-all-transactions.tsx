@@ -28,7 +28,7 @@ export function ReportAllTransactions() {
         , finYearId
     } = useUtilsInfo()
 
-    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
+    const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter)
 
     useEffect(() => {
         const loadData = context.CompSyncFusionGrid[instance].loadData
@@ -58,8 +58,9 @@ export function ReportAllTransactions() {
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
                 editColumnWidth={40}
-                enableVirtualization={true}
-                
+                enableInfiniteScrolling={true}
+                // enableVirtualization={false}
+
                 hasIndexColumn={false}
                 height="calc(100vh - 240px)"
                 instance={instance}
@@ -67,7 +68,7 @@ export function ReportAllTransactions() {
                 minWidth="1400px"
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
-                onRowDataBound={onRowDataBound}
+                // onRowDataBound={onRowDataBound}
                 sqlArgs={{
                     dateFormat: currentDateFormat,
                     endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate, // '2025-03-31', // 
@@ -236,10 +237,6 @@ export function ReportAllTransactions() {
     }
 
     function handleOnEdit() {
-
-    }
-
-    function onRowDataBound() {
 
     }
 }

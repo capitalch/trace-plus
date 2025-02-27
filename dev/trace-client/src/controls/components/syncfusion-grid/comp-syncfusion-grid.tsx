@@ -20,6 +20,7 @@ export function CompSyncFusionGrid({
     deleteColumnWidth,
     editColumnWidth,
     editSettings,
+    enableInfiniteScrolling,
     enableVirtualization = false,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
@@ -102,7 +103,7 @@ export function CompSyncFusionGrid({
             created={onCreated}
             dataSource={dataSource || selectedData || []}
             editSettings={editSettings}
-            // enableInfiniteScrolling={true}
+            enableInfiniteScrolling={enableInfiniteScrolling}
             enablePersistence={false}
             enableVirtualization={enableVirtualization}
             // excelQueryCellInfo={handleExcelQueryCellInfo}
@@ -112,6 +113,7 @@ export function CompSyncFusionGrid({
             id={instance}
             // beforePdfExport={handleBeforePdfExport}
             // pdfQueryCellInfo={handlePdfQueryCellInfo}
+            pageSettings={{ pageSize: 500, }}
             ref={gridRef}
             rowDataBound={onRowDataBound}
             rowDragStart={gridDragAndDropSettings?.onRowDragStart}
@@ -188,6 +190,7 @@ export type CompSyncFusionGridType = {
         mode: 'Batch' | 'Dialog' | 'Normal'
         showConfirmDialog: boolean
     }
+    enableInfiniteScrolling?: boolean
     enableVirtualization?: boolean
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean

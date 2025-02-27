@@ -354,5 +354,3 @@ export const ReportAllTransactionsFilter: React.FC = () => {
         dispatch(closeSlidingPane())
     }
 };
-
-// export default ReportAllTransactionsFilter;

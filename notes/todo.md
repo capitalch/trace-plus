@@ -37,11 +37,13 @@
 
 - Reports
 	-  Transactions
-		- Working on 22-02-2025 before going to Phuket: thorough checkup
-		- Do thorough checkup
+		- Date range values are not set by default
+		- transaction type 'all' is not set by default
+		- filtered values are actually backlog by 1
+		
 		- When contra: No transaction, selected then old values appear in grid
 		- Disable quick date selection when not current fiscal year
-		- Virtualization is giving problems
+													- Virtualization is giving problems
 													- filter
 														- Remove useState and use redux completely
 													- Check Sql in terms of parameters

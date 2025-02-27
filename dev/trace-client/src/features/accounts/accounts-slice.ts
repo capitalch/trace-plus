@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootStateType } from "../../app/store/store";
+// import { Utils } from "../../utils/utils";
 
 const initialState: AccountsInitialStateType = {
   accSettingsChanged: 0,
@@ -8,7 +9,7 @@ const initialState: AccountsInitialStateType = {
     endDate: "",
     startDate: "",
     selectedQuickDate:"fiscalYear",
-    transactionType: "All",
+    transactionType: "all",
   },
   bankRecon: {
     selectedBank: {
