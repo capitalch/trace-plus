@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useEffect, } from "react"
+import { ChangeEvent, ReactElement, } from "react"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
@@ -30,11 +30,6 @@ export function AccountsMaster() {
         , dbName
         , decodedDbParamsObject
     } = useUtilsInfo()
-
-    useEffect(() => {
-        //cleanup
-        // return (() => Utils.treeGridUtils.resetScrollPos(context, instance))
-    }, [])
 
     return (<CompAccountsContainer>
         <CompSyncFusionTreeGridToolbar className="mt-2"
@@ -298,10 +293,6 @@ export function AccountsMaster() {
         return (isSuccess)
     }
 
-    // function onDataBound() {
-    //     Utils.treeGridUtils.restoreScrollPos(context, instance)
-    // }
-
     function setIsPaneOpen(accId: number, isAddressExists: boolean | undefined) {
         Utils.treeGridUtils.saveScrollPos(context, instance) // Save scroll pos for contact and addresses
         const props = SlidingPaneMap[SlidingPaneEnum.contactAndAddresses].props
@@ -330,8 +321,5 @@ export type AccountsMasterType = {
     isAddressExists?: boolean
     isAutoSubledger?: boolean
     isPrimary: boolean
-    // parentAccLeaf: 'N' | 'L'
-    // parentAccType: 'A' | 'L' | 'E' | 'I'
-    // parentClassId: number
     parentId: number
 }

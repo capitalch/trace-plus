@@ -34,11 +34,31 @@
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 	- BS, PL, Trial Bal to retain node expanded / collapsed
 															- Migrate to tailwind latest version
+- Inventory
+	- categories
+		- startup
+		- GraphQL wire up
+		- Server
+			- sql
+			- Server code
+		- Client
+			- UI design, primary screen
+			- Show data in Grid
+			- Tree Grid view
+			- Edit self
+			- Add child
+			- change parent
+			- Tag
+			- delete
+			- Add root category
+			- Manage tags
+			HSN for leaf categories
 
-- Reports
-	- Transactions
+
+											- Reports
+												- Transactions
 													- loadData runs twice
-		- Disable quick date selection when not current fiscal year
+													- Disable quick date selection when not current fiscal year
 													- Last no of rows malfunction
 													- Date range values are not set by default
 													- transaction type 'all' is not set by default

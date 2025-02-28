@@ -31,6 +31,7 @@ import { AccountsOpeningBalance } from "../../features/accounts/masters/opening-
 import { CommonUtilities } from "../../features/accounts/options/common-utilities/common-utilities";
 import { AllExports } from "../../features/accounts/options/exports/all-exports";
 import { ReportAllTransactions } from "../../features/accounts/reports/report-all-transactions/report-all-transactions";
+import { ProductCategories } from "../../features/accounts/inventory/categories/product-categories";
 
 export const appRouter = createBrowserRouter([
     {
@@ -69,7 +70,8 @@ export const appRouter = createBrowserRouter([
                 { path: 'opening-balance', element: <AccountsOpeningBalance /> },
                 { path: 'common-utilities', element: <CommonUtilities /> },
                 { path: 'all-exports', element: <AllExports /> },
-                { path: 'report-all-transactions', element: <ReportAllTransactions /> }
+                { path: 'report-all-transactions', element: <ReportAllTransactions /> },
+                { path: 'product-categories', element: <ProductCategories /> }
             ]
     },
     {

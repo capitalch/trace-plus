@@ -52,15 +52,13 @@ async def decode_ext_db_params(_, info, value=""):
     return await decode_ext_db_params_helper(info, value)
 
 
-# @query.field("downloadTestXlsx")
-# async def download_test_xlsx(_, info, dbName="", value=""):
-#     return await download_test_xlsx_helper(info, dbName, value)
-
-
 @query.field("genericQuery")
 async def generic_query(_, info, dbName="", value=""):
     return await generic_query_helper(info, dbName, value)
 
+@query.field("productCategories")
+async def product_categories(_, info, dbName="", value=""):
+    return await product_categories_helper(info, dbName, value)
 
 @query.field("trialBalance")
 async def trial_balance(_, info, dbName="", value=""):

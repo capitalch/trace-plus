@@ -336,6 +336,32 @@ async def import_secured_controls_helper(info, value: str):
         return create_graphql_exception(e)
     return data
 
+async def product_categories_helper(info, dbName, value):
+    data = []
+    valueString = unquote(value)
+    valueDict = json.loads(valueString)
+    dbParams = valueDict.get("dbParams", None)
+    schema = valueDict.get("buCode", None)
+    sql = SqlAccounts.get_product_categories
+    sqlArgs = valueDict.get("sqlArgs", {})
+    try:
+        res = await exec_sql(
+            dbName=dbName, db_params=dbParams, schema=schema, sql=sql, sqlArgs=sqlArgs
+        )
+        flat_data = res[0].get("jsonResult")
+        if flat_data is not None:
+            productCategories = (
+                build_nested_hierarchy_with_children(
+                    flat_data.get("productCategories"))
+                if flat_data.get("productCategories") is not None
+                else None
+            )
+        data.append({"jsonResult": {"productCategories": productCategories}})
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
 
 async def trial_balance_helper(info, dbName, value):
     data = []

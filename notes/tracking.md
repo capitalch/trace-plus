@@ -6,16 +6,18 @@
 																			- Unit info, General settings: Opening balances, Branches, 
 																				Financial years		: Targetted: 12-01-2025, Completed: 04-02-2025
 																			- Common utilities, Exports	: Targetted: 19-01-2025, Completed: 15-02-2025
-- Jan 2025
-	
-	- Vouchers				: 31-01-2025
-- Feb 2025
-	- Inventory				: 28-02-2025
+																			- Reports: Completed on 28-02-2025
 - Mar 2025
-	- sales / purchases		: 31-03-2025
+	- Inventory				: 31-03-2025
+- Apr 2025
+	- Vouchers				: 30-04-2025
+- May 2025
+	- sales / purchases		: 31-05-2025
 - Bug fixes etc.
 
 ## History
+# 28-02-2025
+	- Reports completed
 # 15-02-2025
 	- All exports
 # 05-02-2025

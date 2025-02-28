@@ -749,6 +749,10 @@ class SqlAccounts:
             order by "accName"
     """
 
+    get_product_categories = """
+    
+    """
+
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"

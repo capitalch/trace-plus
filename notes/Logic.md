@@ -1,3 +1,6 @@
+# Export logic
+    - Params from client to server
+        dbName, buCode, clientId, finYearId, branchId, exportName(BS, PL, TB, GST, VOUCHER, PAYMENT, RECEIPT, SALES, PURCHASE, ACCMASTER, Contra,),  fileFormat, dateFormat, 
 # Test script
 - Change of accCode and accName: Abm sales 1 to normal                              : Check changes in accCode and accName                                          :: OK
 - LLS: Change abm sales from goods creditor to service creditor and back            : AccType and accClass of abm sales changes. But here no change                 :: OK
