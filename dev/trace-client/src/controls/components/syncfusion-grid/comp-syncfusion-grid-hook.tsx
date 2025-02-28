@@ -22,6 +22,7 @@ export function useCompSyncFusionGrid({
     , hasIndexColumn
     , instance
     , isLoadOnInit
+    , loadData
     , onDelete
     , onEdit
     , onPreview
@@ -29,23 +30,16 @@ export function useCompSyncFusionGrid({
     , sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
-
-    useEffect(() => { // This code is necessary. Otherwise change in no of rows is not reflected
-        if (selectedLastNoOfRows !== undefined) {
-            loadData()
+    if (sqlArgs) { //sqlArgs is meaningful whenthere is no loadData defined for CompSyncfusionGrid and loadDataLocal is used
+        sqlArgs['noOfRows'] = (selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null)
+    }
+    useEffect(() => {
+        if (!loadData) { // For custom loadData the loading should be taken care of in the calling code
+            loadDataLocal()
         }
+
     }, [selectedLastNoOfRows])
 
-    let lastNoOfRows = selectedLastNoOfRows
-
-    if (selectedLastNoOfRows === undefined) {
-        lastNoOfRows = 100
-    } else if (selectedLastNoOfRows === '') {
-        lastNoOfRows = null
-    }
-    if (sqlArgs) {
-        sqlArgs.noOfRows = lastNoOfRows
-    }
 
     const args: GraphQLQueryArgsType = {
         buCode: buCode,
@@ -54,7 +48,7 @@ export function useCompSyncFusionGrid({
         sqlArgs: sqlArgs,
     }
 
-    const { loadData, loading, } = useQueryHelper({
+    const { loadData: loadDataLocal, loading, } = useQueryHelper({
         dbName: dbName,
         getQueryArgs: () => args,
         instance: instance,
@@ -196,5 +190,5 @@ export function useCompSyncFusionGrid({
     }
 
 
-    return ({ getAggrColDirectives, getColumnDirectives, loading, loadData, selectedData })
+    return ({ getAggrColDirectives, getColumnDirectives, loading, loadDataLocal, selectedData })
 }

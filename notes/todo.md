@@ -36,9 +36,10 @@
 															- Migrate to tailwind latest version
 
 - Reports
-	-  Transactions
-	- Disable quick date selection when not current fiscal year
-	- Last no of rows malfunction
+	- Transactions
+													- loadData runs twice
+		- Disable quick date selection when not current fiscal year
+													- Last no of rows malfunction
 													- Date range values are not set by default
 													- transaction type 'all' is not set by default
 													- filtered values are actually backlog by 1

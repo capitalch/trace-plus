@@ -15,8 +15,8 @@ import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";
 import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
-// import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
-// import { CompInstances } from "../../../../controls/redux-components/comp-instances";
+import { CompInstances } from "../../../../controls/redux-components/comp-instances";
+import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 
 export function ReportAllTransactions() {
     const dispatch: AppDispatchType = useDispatch()
@@ -44,7 +44,7 @@ export function ReportAllTransactions() {
     }, [currentFinYear])
 
     useEffect(() => {
-        if (selectedAllTransactionsFilter.startDate && selectedLastNoOfRows) {
+        if (selectedAllTransactionsFilter.startDate) {
             loadData()
         }
     }, [selectedAllTransactionsFilter, selectedLastNoOfRows])
@@ -67,6 +67,7 @@ export function ReportAllTransactions() {
             />
             <CompSyncFusionGrid
                 aggregates={getAggregates()}
+                allowPaging={true}
                 buCode={buCode}
                 className="mr-6 mt-4"
                 columns={getColumns()}
@@ -74,27 +75,17 @@ export function ReportAllTransactions() {
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
                 editColumnWidth={40}
-                enableInfiniteScrolling={true}
+                // enableInfiniteScrolling={true}
                 // enableVirtualization={false}
 
                 hasIndexColumn={false}
-                height="calc(100vh - 240px)"
+                height="calc(100vh - 300px)"
                 instance={instance}
                 isLoadOnInit={false}
                 loadData={loadData}
                 minWidth="1400px"
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
-            // sqlArgs={{
-            //     dateFormat: currentDateFormat,
-            //     endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate, // '2025-03-31', // 
-            //     finYearId: finYearId,
-            //     branchId: branchId,
-            //     startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate, // '2024-04-01', //
-            //     tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null, // 2, // //
-            //     dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
-            // }}
-            // sqlId={SqlIdsMap.getAllTransactions}
             />
         </CompAccountsContainer>
     )
@@ -257,36 +248,39 @@ export function ReportAllTransactions() {
     }
 
     async function loadData() {
-        // dispatch(showCompAppLoader({
-        //     isVisible: true,
-        //     instance: CompInstances.compAppLoader
-        // }))
-        // context.CompSyncFusionGrid[instance].
-        const res: any = await Utils.doGenericQuery({
-            buCode: buCode || '',
-            dbName: dbName || '',
-            dbParams: decodedDbParamsObject,
-            instance: instance,
-            sqlArgs: {
-                dateFormat: currentDateFormat,
-                endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
-                finYearId: finYearId,
-                branchId: branchId,
-                startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
-                tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null,
-                noOfRows: +selectedLastNoOfRows,
-                dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
-            },
-            sqlId: SqlIdsMap.getAllTransactions
-        })
-        dispatch(setQueryHelperData({
-            instance: instance,
-            data: res
+        dispatch(showCompAppLoader({
+            isVisible: true,
+            instance: CompInstances.compAppLoader
         }))
-        // dispatch(showCompAppLoader({
-        //     isVisible: false,
-        //     instance: CompInstances.compAppLoader
-        // }))
-        // console.log(res)
+        try {
+            const res: any = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                instance: instance,
+                sqlArgs: {
+                    dateFormat: currentDateFormat,
+                    endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
+                    finYearId: finYearId,
+                    branchId: branchId,
+                    startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
+                    tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null,
+                    noOfRows: selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null,
+                    dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
+                },
+                sqlId: SqlIdsMap.getAllTransactions
+            })
+            dispatch(setQueryHelperData({
+                instance: instance,
+                data: res
+            }))
+        } catch (e: any) {
+            console.log(e)
+        } finally {
+            dispatch(showCompAppLoader({
+                isVisible: false,
+                instance: CompInstances.compAppLoader
+            }))
+        }
     }
 }

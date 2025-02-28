@@ -1,4 +1,4 @@
-import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDataBoundEventArgs, Edit, VirtualScroll } from "@syncfusion/ej2-react-grids"
+import { Aggregate, AggregatesDirective, ColumnsDirective, Selection, ExcelExport, GridComponent, InfiniteScroll, Inject, PdfExport, Resize, Search, Sort, Toolbar, AggregateDirective, AggregateColumnsDirective, SearchSettingsModel, RowDD, RowDataBoundEventArgs, Edit, VirtualScroll, Page } from "@syncfusion/ej2-react-grids"
 import { FC, useContext, useEffect, useRef } from "react"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook"
@@ -11,6 +11,7 @@ import { isSideBarOpenSelectorFn } from "../../../features/layouts/layouts-slice
 
 export function CompSyncFusionGrid({
     aggregates,
+    allowPaging = false,
     buCode,
     className = '',
     columns,
@@ -20,8 +21,8 @@ export function CompSyncFusionGrid({
     deleteColumnWidth,
     editColumnWidth,
     editSettings,
-    enableInfiniteScrolling,
-    enableVirtualization = false,
+    // enableInfiniteScrolling,
+    // enableVirtualization = false,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
@@ -36,11 +37,11 @@ export function CompSyncFusionGrid({
     onPreview = undefined,
     onRowDataBound,
     rowHeight,
-    sqlArgs = {},
+    sqlArgs,
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggrColDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncFusionGrid(
+    const { getAggrColDirectives, getColumnDirectives, loading, loadDataLocal, selectedData } = useCompSyncFusionGrid(
         {
             aggregates
             , buCode
@@ -53,6 +54,7 @@ export function CompSyncFusionGrid({
             , hasCheckBoxSelection
             , hasIndexColumn
             , isLoadOnInit
+            , loadData
             , onDelete
             , onEdit
             , onPreview
@@ -92,6 +94,7 @@ export function CompSyncFusionGrid({
             allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
             allowPdfExport={true}
             allowExcelExport={true}
+            allowPaging={allowPaging}
             allowResizing={true}
             allowSorting={true}
             allowSelection={true}
@@ -103,9 +106,9 @@ export function CompSyncFusionGrid({
             created={onCreated}
             dataSource={dataSource || selectedData || []}
             editSettings={editSettings}
-            enableInfiniteScrolling={enableInfiniteScrolling}
+            // enableInfiniteScrolling={enableInfiniteScrolling}
             enablePersistence={false}
-            enableVirtualization={enableVirtualization}
+            // enableVirtualization={enableVirtualization}
             // excelQueryCellInfo={handleExcelQueryCellInfo}
             // excelAggregateQueryCellInfo={handleExcelQueryCellInfo}
             gridLines="Both"
@@ -113,7 +116,7 @@ export function CompSyncFusionGrid({
             id={instance}
             // beforePdfExport={handleBeforePdfExport}
             // pdfQueryCellInfo={handlePdfQueryCellInfo}
-            pageSettings={{ pageSize: 500, }}
+            pageSettings={{ pageSize: 100, }}
             ref={gridRef}
             rowDataBound={onRowDataBound}
             rowDragStart={gridDragAndDropSettings?.onRowDragStart}
@@ -141,6 +144,7 @@ export function CompSyncFusionGrid({
                 , Edit
                 , ExcelExport
                 , InfiniteScroll
+                , Page
                 , PdfExport
                 , Resize
                 , RowDD
@@ -177,6 +181,7 @@ type GridDragAndDropSettingsType = {
 
 export type CompSyncFusionGridType = {
     aggregates?: SyncFusionGridAggregateType[]
+    allowPaging?: boolean
     buCode?: string
     className?: string
     columns: SyncFusionGridColumnType[]
@@ -190,8 +195,8 @@ export type CompSyncFusionGridType = {
         mode: 'Batch' | 'Dialog' | 'Normal'
         showConfirmDialog: boolean
     }
-    enableInfiniteScrolling?: boolean
-    enableVirtualization?: boolean
+    // enableInfiniteScrolling?: boolean
+    // enableVirtualization?: boolean
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean

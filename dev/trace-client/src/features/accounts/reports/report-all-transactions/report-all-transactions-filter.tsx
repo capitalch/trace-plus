@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
@@ -8,14 +8,23 @@ import { Utils } from "../../../../utils/utils";
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { Messages } from "../../../../utils/messages";
 import { transactionTypes } from "./export-constants";
+import clsx from "clsx";
 
 export const ReportAllTransactionsFilter: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
     const isoDate = 'yyyy-MM-dd'
     const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
-
+    const [quickDateSelectionDisabled, setQuickDateSelectionDisabled] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("");
+
+    useEffect(() => {
+        if (currentFinYear.finYearId === Utils.getRunningFinYear().finYearId) {
+            setQuickDateSelectionDisabled(false)
+        } else {
+            setQuickDateSelectionDisabled(true)
+        }
+    }, [currentFinYear])
 
     const predefinedDateRanges = [
         { label: "Today", dateRangeName: 'today' },
@@ -248,6 +257,7 @@ export const ReportAllTransactionsFilter: React.FC = () => {
                         ))}
                     </div>
                 </div>
+
                 {/* Date Range */}
                 <div className="bg-white rounded-lg shadow-md mt-2 p-2">
                     <label className="block text-gray-700 font-medium text-sm">Date Range</label>
@@ -273,7 +283,10 @@ export const ReportAllTransactionsFilter: React.FC = () => {
                 </div>
 
                 {/* Quick date selection */}
-                <div className="bg-white rounded-lg shadow-md mt-2 p-2">
+                <div className={clsx(quickDateSelectionDisabled
+                    ? 'pointer-events-none opacity-50'
+                    : 'pointer-events-auto opacity-100',
+                    'bg-white rounded-lg shadow-md mt-2 p-2')}>
                     <label className="block text-gray-700 font-medium text-sm">Quick Date Selection</label>
                     <div className="flex flex-wrap gap-1 mt-1">
                         {predefinedDateRanges.map((range) => (

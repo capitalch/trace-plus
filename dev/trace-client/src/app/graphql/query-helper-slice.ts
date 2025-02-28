@@ -1,13 +1,17 @@
-import { PayloadAction, createSlice,} from '@reduxjs/toolkit'
-import { DataInstancesMap } from './maps/data-instances-map'
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { DataInstancesMap } from "./maps/data-instances-map";
 
 const initialState: InitialStateType = {
   [DataInstancesMap.superAdminDashBoard]: undefined,
-  [DataInstancesMap.superAdminClients]: undefined
-}
+  [DataInstancesMap.superAdminClients]: undefined,
+  [DataInstancesMap.reportAllTransactions]: {
+    lastNoOfRows: "100",
+    data: [],
+  },
+};
 
 const queryHelperSlice = createSlice({
-  name: 'queryHelper',
+  name: "queryHelper",
   initialState: initialState,
 
   reducers: {
@@ -16,18 +20,18 @@ const queryHelperSlice = createSlice({
       action: PayloadAction<ResetQueryHelperDataActionType>
     ) => {
       if (state[action.payload.instance]) {
-        state[action.payload.instance] = { data: [] }
+        state[action.payload.instance] = { data: [] };
       }
     },
-    
+
     setQueryHelperData: (
       state: InitialStateType,
       action: PayloadAction<SetQueryHelperDataActionType>
     ) => {
       if (!state[action.payload.instance]) {
-        state[action.payload.instance] = { data: [] }
+        state[action.payload.instance] = { data: [] };
       }
-      state[action.payload.instance].data = action.payload.data
+      state[action.payload.instance].data = action.payload.data;
     },
 
     setLastNoOfRows: (
@@ -35,9 +39,9 @@ const queryHelperSlice = createSlice({
       action: PayloadAction<SetLastNoOfRowsActionType>
     ) => {
       if (!state[action.payload.instance]) {
-        state[action.payload.instance] = { data: [], lastNoOfRows: '' }
+        state[action.payload.instance] = { data: [], lastNoOfRows: "100" };
       }
-      state[action.payload.instance].lastNoOfRows = action.payload.lastNoOfRows
+      state[action.payload.instance].lastNoOfRows = action.payload.lastNoOfRows;
     },
 
     setSearchString: (
@@ -45,42 +49,40 @@ const queryHelperSlice = createSlice({
       action: PayloadAction<SetSearchStringActionType>
     ) => {
       if (!state[action.payload.instance]) {
-        state[action.payload.instance] = { data: [], searchString: '' }
+        state[action.payload.instance] = { data: [], searchString: "" };
       }
-      state[action.payload.instance].searchString = action.payload.searchString
-    }
-  }
-})
+      state[action.payload.instance].searchString = action.payload.searchString;
+    },
+  },
+});
 
-export const queryHelperReducer = queryHelperSlice.reducer
+export const queryHelperReducer = queryHelperSlice.reducer;
 export const {
   resetQueryHelperData,
   setLastNoOfRows,
   setQueryHelperData,
-  setSearchString
-} = queryHelperSlice.actions
+  setSearchString,
+} = queryHelperSlice.actions;
 
 type InitialStateType = {
-  [key: string]: any
-}
+  [key: string]: any;
+};
 
 type SetQueryHelperDataActionType = {
-  data: any
-  instance: string
-}
+  data: any;
+  instance: string;
+};
 
 type ResetQueryHelperDataActionType = {
-  instance: string
-} 
+  instance: string;
+};
 
 type SetLastNoOfRowsActionType = {
-  instance: string
-  lastNoOfRows: string
-}
+  instance: string;
+  lastNoOfRows: string;
+};
 
 type SetSearchStringActionType = {
-  instance: string
-  searchString: string
-}
-
-// Selector functions
+  instance: string;
+  searchString: string;
+};
