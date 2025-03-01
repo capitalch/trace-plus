@@ -1,10 +1,11 @@
-import { useDispatch } from "react-redux"
-import { AppDispatchType } from "../../../../app/store/store"
+// import { useDispatch } from "react-redux"
+// import { AppDispatchType } from "../../../../app/store/store"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
+import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
 
 export function ProductCategories() {
     // const dispatch: AppDispatchType = useDispatch()
@@ -31,11 +32,11 @@ export function ProductCategories() {
             buCode={buCode}
             childMapping="children"
             className="mr-6"
-            // dataPath="accountsMaster"
+            dataPath="productCategories"
             dbName={dbName}
             dbParams={decodedDbParamsObject}
-            // graphQlQueryFromMap={GraphQLQueriesMap.accountsMaster}
-            isLoadOnInit={false}
+            graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
+            isLoadOnInit={true}
             columns={getColumns()}
             height="calc(100vh - 245px)"
             instance={instance}
@@ -46,7 +47,11 @@ export function ProductCategories() {
 
 function getColumns(): SyncFusionTreeGridColumnType[] {
     return ([
-        
+        {
+            field:'catName',
+            headerText:'Category name',
+            width: 200
+        }
     ])
 }
 }

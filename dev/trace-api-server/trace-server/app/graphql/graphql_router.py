@@ -4,11 +4,7 @@ from ariadne import (
     QueryType,
     MutationType,
 )
-
-# from fastapi import Request
 from ariadne.asgi import GraphQL
-
-# from fastapi.middleware.cors import CORSMiddleware
 from app.graphql.graphql_helper import (
     accounts_master_helper,
     accounts_opening_balance_helper,
@@ -17,11 +13,11 @@ from app.graphql.graphql_helper import (
     change_uid_helper,
     create_bu_helper,
     decode_ext_db_params_helper,
-    # download_test_xlsx_helper,
     generic_query_helper,
     generic_update_helper,
     generic_update_query_helper,
     import_secured_controls_helper,
+    product_categories_helper,
     trial_balance_helper,
     update_client_helper,
     update_user_helper,
@@ -56,9 +52,11 @@ async def decode_ext_db_params(_, info, value=""):
 async def generic_query(_, info, dbName="", value=""):
     return await generic_query_helper(info, dbName, value)
 
+
 @query.field("productCategories")
 async def product_categories(_, info, dbName="", value=""):
     return await product_categories_helper(info, dbName, value)
+
 
 @query.field("trialBalance")
 async def trial_balance(_, info, dbName="", value=""):
