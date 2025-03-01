@@ -17,7 +17,7 @@ from app.graphql.graphql_helper import (
     change_uid_helper,
     create_bu_helper,
     decode_ext_db_params_helper,
-    # download_test_xlsx_helper,
+    product_categories_helper,
     generic_query_helper,
     generic_update_helper,
     generic_update_query_helper,
