@@ -9,7 +9,6 @@ import { shallowEqual, useSelector } from "react-redux"
 import { RootStateType } from "../../../app/store/store"
 import { selectCompSwitchStateFn } from "../../redux-components/comp-slice"
 import { Utils } from "../../../utils/utils"
-// import { Utils } from "../../../utils/utils"
 
 export function CompSyncfusionTreeGrid({
     actionBegin,
@@ -61,7 +60,6 @@ export function CompSyncfusionTreeGrid({
         context.CompSyncFusionTreeGrid[instance].loadData = loadData || loadDataLocal
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
         // Add scroll event listener to remember scrolled location
-        // const current = gridRef.current
         const treeGridElement = gridRef?.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
         if (treeGridElement) {
             const scrollableContainer = treeGridElement.querySelector('.e-content');
@@ -114,8 +112,6 @@ export function CompSyncfusionTreeGrid({
                 childMapping={childMapping}
                 className={className}
                 collapsed={onRowCollapsed}
-                // created={onCreated}
-                // dataBound={onDataBound}
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
                 enableCollapseAll={(isCollapsedRedux === undefined) ? true : isCollapsedRedux || false}
@@ -124,7 +120,6 @@ export function CompSyncfusionTreeGrid({
                 gridLines="Both"
                 height={height}
                 id={instance}
-                // load={onLoad}
                 pageSettings={{ pageSize: pageSize }}
                 queryCellInfo={queryCellInfo}
                 ref={gridRef}
@@ -167,18 +162,6 @@ export function CompSyncfusionTreeGrid({
         Utils.treeGridUtils.saveScrollPos(context, instance)
         console.log(args)
     }
-
-    // function onCreated(args: any) {
-    //     console.log(args)
-    // }
-
-    // function onLoad(args: any) {
-    //     console.log(args)
-    // }
-
-    // function onDataBound() {
-    //     Utils.treeGridUtils.restoreScrollPos(context, instance)
-    // }
 
     function onRowCollapsed(args: any) {
         const expandedKeys: Set<number> = context.CompSyncFusionTreeGrid[instance].expandedKeys || new Set()

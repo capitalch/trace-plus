@@ -36,23 +36,39 @@
 															- Migrate to tailwind latest version
 - Inventory
 	- categories
-		- startup
-		- GraphQL wire up
-		- Server
-			- sql
-			- Server code
+		- Complete checkup
+												- startup
+												- GraphQL wire up
+												- Server
+													- sql
+													- Server code
 		- Client
-			- UI design, primary screen
-			- Show data in Grid
-			- Tree Grid view
-			- Edit self
-			- Add child
-			- change parent
-			- Tag
-			- delete
-			- Add root category
-			- Manage tags
-			HSN for leaf categories
+													- UI design, primary screen
+													- Show data in Grid
+													- Tree Grid view
+													- Row expander
+													- Exports
+													- Aggregates
+													- Grid adjustment of size
+			- Template action columns
+												- Edit self
+													- Server validation
+													- disable leaf
+				- Change parent
+				- Tag
+													- Add child
+													- UI
+													- delete
+													- Add root category
+			- Custom buttons toolbar
+													- UI
+				- Manage tags
+				- HSN for leaf categories
+					- SQL
+					- Display data in grid
+					- Edit in grid
+					- Submit
+													- Aggregates
 
 
 											- Reports

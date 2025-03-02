@@ -13,6 +13,7 @@ export const DatabaseTablesMap = {
   AccOpBal: 'AccOpBal',
   BankOpBal: 'BankOpBal',
   BranchM: 'BranchM',
+  CategoryM:'CategoryM',
   ExtBankReconTranD: 'ExtBankReconTranD',
   FinYearsM: 'FinYearM',
   TranH: 'TranH',

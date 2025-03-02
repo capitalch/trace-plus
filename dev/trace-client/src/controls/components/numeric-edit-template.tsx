@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { NumberFormatValues, NumericFormat } from "react-number-format";
 
-export function NumericEditTemplate(args: any, onValueChanged: (args: any, values: NumberFormatValues) => void) {
+export function NumericEditTemplate(args: any, onValueChanged: (args: any, values: NumberFormatValues) => void, decimalScale?: number, isThousandSeparator?: boolean) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -15,12 +15,12 @@ export function NumericEditTemplate(args: any, onValueChanged: (args: any, value
             className="text-right w-40 border-spacing-1 border-gray-300 h-8 rounded-md border-2 bg-white"
             allowNegative={false}
             autoFocus={true}
-            decimalScale={2}
+            decimalScale={decimalScale ?? 2}
             fixedDecimalScale={true}
             getInputRef={inputRef}
             onFocus={handleOnFocus}
             thousandsGroupStyle="thousand"
-            thousandSeparator=','
+            thousandSeparator={isThousandSeparator ? ',' : ''}
             value={args[args.column.field] || 0}
             onValueChange={(values: NumberFormatValues) => onValueChanged(args, values)}
         />

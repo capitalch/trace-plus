@@ -25,6 +25,7 @@ export const DataInstancesMap = {
   generalSettings: 'general-settings',
   incomes: 'incomes',
   liabilities: 'liabilities',
+  manageCategoryHsn:'manage-category-hsn',
   newEditBranch: 'new-edit-branch',
   newEditFinYear: 'new-edit-fin-year',
   productCategories: 'product-categories',

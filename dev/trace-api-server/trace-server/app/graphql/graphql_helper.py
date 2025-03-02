@@ -50,7 +50,8 @@ async def accounts_master_helper(info, dbName, value):
                 if flat_data.get("accountsMaster") is not None
                 else None
             )
-        data.append({"jsonResult": {"accountsMaster": accountsMaster}})
+        # data.append({"jsonResult": {"accountsMaster": accountsMaster}})
+        data.append({"jsonResult": accountsMaster})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly
@@ -356,7 +357,8 @@ async def product_categories_helper(info, dbName, value):
                 if flat_data.get("productCategories") is not None
                 else None
             )
-        data.append({"jsonResult": {"productCategories": productCategories}})
+        # data.append({"jsonResult": {"productCategories": productCategories}})
+        data.append({"jsonResult": productCategories})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly

@@ -45,7 +45,7 @@ export function AccountsMaster() {
             buCode={buCode}
             childMapping="children"
             className="mr-6"
-            dataPath="accountsMaster"
+            // dataPath="accountsMaster"
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.accountsMaster}
@@ -145,7 +145,7 @@ export function AccountsMaster() {
         return ([
             {
                 field: 'accName',
-                headerText: 'Account Name',
+                headerText: 'Account name',
                 width: 250,
                 textAlign: 'Left'
             },

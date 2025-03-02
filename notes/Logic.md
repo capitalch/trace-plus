@@ -1,3 +1,11 @@
+# Product categories
+- Buttons
+    - Child         : Only when isLeaf = false
+    - Edit          : Always
+    - Tag           : Always
+    - ChangeParent  : Always
+    - Delete        : isDeleteAllowed: no children, not isUsed
+    
 # Export logic
     - Params from client to server
         dbName, buCode, clientId, finYearId, branchId, exportName(BS, PL, TB, GST, VOUCHER, PAYMENT, RECEIPT, SALES, PURCHASE, ACCMASTER, Contra,),  fileFormat, dateFormat, 

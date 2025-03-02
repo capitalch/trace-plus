@@ -21,7 +21,7 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 
 export function BankRecon() {
     const [, setRefresh] = useState({})
-    const instance: string = DataInstancesMap.bankRecon
+    const instance = DataInstancesMap.bankRecon
     const dispatch: AppDispatchType = useDispatch()
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))

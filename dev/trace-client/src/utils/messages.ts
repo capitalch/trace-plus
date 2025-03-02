@@ -12,6 +12,7 @@ const Messages = {
   errBuCodeExists:
     "This business unit code already exists for the current client",
   errCannotBeZero: "Cannot have zero values",
+  errCatNameExists: "Category name altready exists",
   errClientCodeExists: "Client code altready exists",
   errClientNameExists: "Client name already exists",
   errCurrentAndNewUidCannotBeSame: "Current uid and new uid cannot be same",

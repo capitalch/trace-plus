@@ -21,6 +21,25 @@ class SqlAccounts:
             WHERE LOWER("accName") = LOWER((table "accName")))
     """
 
+    does_category_name_exist = """
+    with "catName" as (values (%(catName)s::text))
+        --with "catName" AS (VALUES ('LED'::text))
+        SELECT EXISTS (
+            SELECT 1
+                FROM "CategoryM"
+            WHERE LOWER("catName") = LOWER((table "catName")))
+    """
+
+    does_other_category_name_exist = """
+    with "catName" as (values (%(catName)s::text)), id as (values (%(id)s::int))
+        --with "catName" AS (VALUES ('LED'::text)), id as (VALUES (25::int))
+        SELECT EXISTS (
+            SELECT 1
+                FROM "CategoryM"
+            WHERE (LOWER("catName") = LOWER((table "catName"))
+				and "id" <> (table "id")))
+    """
+
     get_account_balance = """
      with "accId" as (values (%(accId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int))
      --with "accId" AS (VALUES (117::int)), "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int))
@@ -497,7 +516,7 @@ class SqlAccounts:
             ORDER BY "tranDate" DESC, h."id" DESC, d."id" DESC
             LIMIT (TABLE "noOfRows");
     """
-    
+
     get_all_transactions_export = """
         --with "tranTypeId" as (values(2::int)), "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(null::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
 			with "tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
@@ -529,7 +548,7 @@ class SqlAccounts:
                         and h."tranDate" between (table "startDate") and (table "endDate")
                         order by "tranDate" DESC, h."id", d."id" 
     """
-    
+
     get_all_vouchers_export = """
         --with "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(null::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
 			with "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
@@ -551,7 +570,7 @@ class SqlAccounts:
             and h."tranDate" between (table "startDate") and (table "endDate")
             order by "id"
     """
-    
+
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 
@@ -748,26 +767,50 @@ class SqlAccounts:
                 where "accLeaf" in ('L','Y')
             order by "accName"
     """
+    
+    get_leaf_categories = """
+        select id, "catName","descr", "hsn"
+            from "CategoryM"
+        where "isLeaf" = true
+            order by "catName"
+    """
 
     get_product_categories = """
-        with recursive cte as (
-            select c."id", c."catName", c."descr", c."parentId", c."isLeaf", t."tagName", c."tagId",
-            ( select array_agg(id) from "CategoryM" m where c."id" = m."parentId") as "children",
-            c."id"::text as "path"
-                from "CategoryM" c
-                    left join "TagsM" t
-                        on t.id = c."tagId"
-                where "parentId" is null                  
-            union
-                select c."id", c."catName", c."descr", c."parentId", c."isLeaf", t."tagName", c."tagId",
-                ( select array_agg(id) from "CategoryM" m where c."id" = m."parentId") as "children",
-                cte."path" || ',' || c."id"::text as "path"
-                    from "CategoryM" c 
-                        left join "TagsM" t
-                            on t.id = c."tagId"
-                        join cte on cte."id" = c."parentId" ),
-                cte1 as (select * from cte order by "catName")
-                select json_build_object('productCategories', (select json_agg(row_to_json(a)) from cte1 a) ) as "jsonResult"
+       WITH RECURSIVE cte AS (
+            SELECT 
+                c."id", c."catName", c."descr", c."parentId", c."isLeaf", t."tagName", c."tagId",
+                ARRAY(
+                    SELECT id FROM "CategoryM" m WHERE c."id" = m."parentId"
+                ) AS "children",
+                c."id"::TEXT AS "path",
+                EXISTS (
+                    SELECT 1 FROM "ProductM" p WHERE p."catId" = c."id"
+                ) AS "isUsed"
+            FROM "CategoryM" c
+            LEFT JOIN "TagsM" t ON t.id = c."tagId"
+            WHERE "parentId" IS NULL  
+
+            UNION ALL
+            
+            SELECT 
+                c."id", c."catName", c."descr", c."parentId", c."isLeaf", t."tagName", c."tagId",
+                ARRAY(
+                    SELECT id FROM "CategoryM" m WHERE c."id" = m."parentId"
+                ) AS "children",
+                cte."path" || ',' || c."id"::TEXT AS "path",
+                EXISTS (
+                    SELECT 1 FROM "ProductM" p WHERE p."catId" = c."id"
+                ) AS "isUsed"
+            FROM "CategoryM" c 
+            LEFT JOIN "TagsM" t ON t.id = c."tagId"
+            JOIN cte ON cte."id" = c."parentId"
+        ), 
+        cte1 AS (
+            SELECT * FROM cte ORDER BY "catName"
+        )
+        SELECT json_build_object(
+            'productCategories', (SELECT json_agg(a) FROM cte1 a)
+        ) AS "jsonResult"
     """
 
     get_settings_fin_years_branches = """

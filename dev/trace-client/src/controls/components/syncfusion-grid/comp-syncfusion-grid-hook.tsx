@@ -86,6 +86,7 @@ export function useCompSyncFusionGrid({
                 clipMode="EllipsisWithTooltip"
                 customAttributes={col?.customAttributes}
                 edit={col?.edit}
+                editTemplate={col?.editTemplate}
                 editType={col?.editType}
                 field={col.field}
                 format={col.format}

@@ -9,7 +9,8 @@ export function ModalDialogA() {
         className: '',
         isOpen: false,
         title: '',
-        element: <></>
+        element: <></>,
+        size:'sm'
     })
     const [, setRefresh] = useState({})
 
@@ -19,6 +20,7 @@ export function ModalDialogA() {
             meta.current.isOpen = d.data.isOpen
             meta.current.element = d.data.element
             meta.current.className = d.data.className
+            meta.current.size = d.data.size || 'sm'
             setRefresh({})
         })
         return (() => {
@@ -27,7 +29,7 @@ export function ModalDialogA() {
     }, [])
 
     return (
-        <CompModalDialog body={meta.current.element} className={meta.current.className} title={meta.current.title} isOpen={meta.current.isOpen} instanceName={instanceName} />
+        <CompModalDialog body={meta.current.element} className={meta.current.className} title={meta.current.title} isOpen={meta.current.isOpen} instanceName={instanceName} size={meta.current.size} />
     )
 }
 
@@ -36,4 +38,5 @@ type ModalDialogMetaType = {
     isOpen: boolean
     title: string
     element: any
+    size?: 'sm' | 'md' | 'lg'
 }

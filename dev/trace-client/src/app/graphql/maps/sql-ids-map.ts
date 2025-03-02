@@ -35,6 +35,8 @@ export const SqlIdsMap = {
   // accounts
   doesAccCodeExist: 'does_acc_code_exist',
   doesAccNameExist: 'does_acc_name_exist',
+  doesCatNameExist: 'does_category_name_exist',
+  doesOtherCatNameExist:'does_other_category_name_exist',
   getAccountBalance: 'get_account_balance',
   getAccountsOpeningBalance: 'get_accounts_opening_balance',
   getAccountLedger: 'get_account_ledger',
@@ -46,6 +48,7 @@ export const SqlIdsMap = {
   getBankRecon: 'get_bank_recon',
   getExtBusinessContactsAccM: 'get_extBusinessContactsAccM',
   getFinYears: 'get_fin_years',
+  getLeafCategories: 'get_leaf_categories',
   getLedgerLeafAccounts: 'get_ledger_leaf_accounts',
   getSettingsFinYearsBranches: 'get_settings_fin_years_branches',
   getSubledgerAccounts: 'get_subledger_accounts',

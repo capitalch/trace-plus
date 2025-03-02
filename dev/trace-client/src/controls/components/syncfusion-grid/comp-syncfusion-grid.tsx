@@ -36,6 +36,7 @@ export function CompSyncFusionGrid({
     onEdit = undefined,
     onPreview = undefined,
     onRowDataBound,
+    queryCellInfo,
     rowHeight,
     sqlArgs,
     sqlId
@@ -117,6 +118,7 @@ export function CompSyncFusionGrid({
             // beforePdfExport={handleBeforePdfExport}
             // pdfQueryCellInfo={handlePdfQueryCellInfo}
             pageSettings={{ pageSize: 100, }}
+            queryCellInfo={queryCellInfo}
             ref={gridRef}
             rowDataBound={onRowDataBound}
             rowDragStart={gridDragAndDropSettings?.onRowDragStart}
@@ -210,6 +212,7 @@ export type CompSyncFusionGridType = {
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
     onRowDataBound?: (args: RowDataBoundEventArgs) => void
+    queryCellInfo?: (args: any) => void
     rowHeight?: number
     sqlArgs?: GraphQLQueryArgsType // SqlArgsType
     sqlId?: string
@@ -231,10 +234,11 @@ export type SyncFusionGridColumnType = {
     }
     edit?: {
         [key: string]: {
-            [key: string]: string
+            [key: string]: any
         }
     }
-    editType?: 'datepickeredit' | 'textedit'
+    editTemplate?: any
+    editType?: 'datepickeredit' | 'textedit' | 'numericedit'
     field: string
     format?: string
     headerText?: string

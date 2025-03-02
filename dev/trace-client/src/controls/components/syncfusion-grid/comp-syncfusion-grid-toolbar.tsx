@@ -31,11 +31,6 @@ export function CompSyncFusionGridToolbar({
     const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
     const selectedLastNoOfRows: string = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
-    // let lastNoOfRows: string = selectedLastNoOfRows
-    // if (selectedLastNoOfRows === undefined) {
-    //     lastNoOfRows = '100'
-    // }
-
     const pdfExportProperties: PdfExportProperties = {
         fileName: `${title}-${Utils.getCompanyName()}-${isAllBranches ? 'All branches' : Utils.getCurrentLoginInfo().currentBranch?.branchName || ''}-${Utils.getCurrentFinYearFormattedDateRange()}.pdf`,
         header: {

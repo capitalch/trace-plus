@@ -489,13 +489,14 @@ function showGraphQlErrorMessage(error: GraphQlErrorType) {
     })
 }
 
-function showHideModalDialogA({ className, isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
+function showHideModalDialogA({ className, isOpen, title = '', element = <></>, size }: ShowHideModalDialogType) {
     const args: ShowModalDialogMessageArgsType = {
         className: className,
         title: title,
         isOpen: isOpen,
         element: element,
-        instanceName: 'A'
+        instanceName: 'A',
+        size: size,
     }
     ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-A"], args)
 }
@@ -606,6 +607,7 @@ type ShowHideModalDialogType = {
     isOpen: boolean
     title?: string | undefined
     element?: ReactElement
+    size?: 'sm' | 'md' | 'lg'
 }
 
 type ShowModalDialogMessageArgsType = {
@@ -614,6 +616,7 @@ type ShowModalDialogMessageArgsType = {
     isOpen: boolean
     element?: ReactElement
     instanceName: string
+    size?: 'sm' | 'md' | 'lg'
 }
 
 export type DbNameDbParamsType = {

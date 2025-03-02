@@ -1,5 +1,3 @@
-// import { useDispatch } from "react-redux"
-// import { AppDispatchType } from "../../../../app/store/store"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
@@ -15,7 +13,6 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-save-button"
 import { NumericEditTemplate } from "../../../../controls/components/numeric-edit-template"
 import { NumberFormatValues } from "react-number-format"
-// import { treeGridUtils } from "../../../../utils/tree-grid-utils"
 
 export function AccountsOpeningBalance() {
     const [, setRefresh] = useState({})
@@ -54,11 +51,9 @@ export function AccountsOpeningBalance() {
         <CompSyncfusionTreeGrid
             actionBegin={onActionBegin}
             actionComplete={onActionComplete}
-            // addUniqueKeyToJson={true}
             aggregates={getAggregates()}
             buCode={buCode}
             cellEdit={onCellEdit}
-            // cellSave={onCellSave}
             childMapping="children"
             className="mr-6"
             columns={getColumns()}
@@ -73,7 +68,6 @@ export function AccountsOpeningBalance() {
             loadData={loadData}
             minWidth='950px'
             queryCellInfo={onQueryCellInfo}
-            // rowDataBound={onRowDataBound}
             treeColumnIndex={0}
         />
     </CompAccountsContainer>)
