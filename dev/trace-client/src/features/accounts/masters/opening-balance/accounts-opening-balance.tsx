@@ -328,7 +328,6 @@ export function AccountsOpeningBalance() {
                 const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                 if (gridRef) {
                     gridRef.current.endEdit()
-                    // gridRef.current.refresh()
                 }
             }
         }

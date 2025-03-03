@@ -299,7 +299,7 @@ export function BankRecon() {
             jsonResult.bankRecon = [formattedOpBalance]
         }
         (jsonResult.bankRecon as any[]) = _.orderBy(jsonResult.bankRecon, ['index'], ['desc'])
-        meta.current.rows = jsonResult.bankRecon.map((x: any) => ({ ...x })) //_.cloneDeep(jsonResult.bankRecon) //
+        meta.current.rows = jsonResult.bankRecon.map((x: any) => ({ ...x }))
         setRefresh({})
     }
 

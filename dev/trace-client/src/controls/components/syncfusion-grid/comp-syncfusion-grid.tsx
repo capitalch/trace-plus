@@ -10,6 +10,8 @@ import { useSelector } from "react-redux"
 import { isSideBarOpenSelectorFn } from "../../../features/layouts/layouts-slice"
 
 export function CompSyncFusionGrid({
+    actionBegin,
+    actionComplete,
     aggregates,
     allowPaging = false,
     buCode,
@@ -92,6 +94,8 @@ export function CompSyncFusionGrid({
 
     return (
         <GridComponent style={{ maxWidth: maxWidth, minWidth: minWidth }}
+            actionBegin={actionBegin}
+            actionComplete={actionComplete}
             allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
             allowPdfExport={true}
             allowExcelExport={true}
@@ -100,23 +104,15 @@ export function CompSyncFusionGrid({
             allowSorting={true}
             allowSelection={true}
             allowTextWrap={true}
-            // beginEdit={handleBeginEdit}
             cellEdit={onCellEdit}
-            // beforeExcelExport={handleBeforeExcelExport}
             className={className}
             created={onCreated}
             dataSource={dataSource || selectedData || []}
             editSettings={editSettings}
-            // enableInfiniteScrolling={enableInfiniteScrolling}
             enablePersistence={false}
-            // enableVirtualization={enableVirtualization}
-            // excelQueryCellInfo={handleExcelQueryCellInfo}
-            // excelAggregateQueryCellInfo={handleExcelQueryCellInfo}
             gridLines="Both"
             height={height}
             id={instance}
-            // beforePdfExport={handleBeforePdfExport}
-            // pdfQueryCellInfo={handlePdfQueryCellInfo}
             pageSettings={{ pageSize: 100, }}
             queryCellInfo={queryCellInfo}
             ref={gridRef}
@@ -130,6 +126,14 @@ export function CompSyncFusionGrid({
             rowHeight={rowHeight}
             searchSettings={searchOptions}
             selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
+        // beforeExcelExport={handleBeforeExcelExport}
+        // beginEdit={handleBeginEdit}
+        // enableVirtualization={enableVirtualization}
+        // excelQueryCellInfo={handleExcelQueryCellInfo}
+        // excelAggregateQueryCellInfo={handleExcelQueryCellInfo}
+        // enableInfiniteScrolling={enableInfiniteScrolling}
+        // beforePdfExport={handleBeforePdfExport}
+        // pdfQueryCellInfo={handlePdfQueryCellInfo}
         >
             <ColumnsDirective>
                 {getColumnDirectives()}
@@ -159,10 +163,6 @@ export function CompSyncFusionGrid({
         </GridComponent>
     )
 
-    // function handleBeginEdit(args: any){
-    //     console.log(args)
-    // }
-
     function onCreated() {
         const state: RootStateType = Utils.getReduxState()
         const searchString = state.queryHelper[instance]?.searchString
@@ -182,6 +182,8 @@ type GridDragAndDropSettingsType = {
 }
 
 export type CompSyncFusionGridType = {
+    actionBegin?: (args: any) => void
+    actionComplete?: (args: any) => void
     aggregates?: SyncFusionGridAggregateType[]
     allowPaging?: boolean
     buCode?: string
@@ -197,8 +199,6 @@ export type CompSyncFusionGridType = {
         mode: 'Batch' | 'Dialog' | 'Normal'
         showConfirmDialog: boolean
     }
-    // enableInfiniteScrolling?: boolean
-    // enableVirtualization?: boolean
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
