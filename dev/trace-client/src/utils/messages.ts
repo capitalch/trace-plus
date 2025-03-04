@@ -49,6 +49,7 @@ const Messages = {
   errSelectExportType: "You must select an export type",
   errSuperAdminRoleNameExists: "Super admin role name alrady exists",
   errSuperAdminControlNameExists: "Super admin control name already exists",
+  errTagNameExists: "Tag name altready exists",
   errUidExistsForClient: "This uid already exists for the current client",
   errUnknown: "An unknown error occurred in the operation",
   errRequired: "This value is required",

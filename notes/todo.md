@@ -53,6 +53,13 @@
 			- Template action columns
 				- Change parent
 				- Manage Tags
+					- Checkup
+												- server side validation for edit
+												- server side validation
+												- no special char validation
+												- Insert
+												- Update
+												- Delete
 												- Edit self
 													- Server validation
 													- disable leaf

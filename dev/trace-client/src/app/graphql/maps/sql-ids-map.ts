@@ -37,6 +37,8 @@ export const SqlIdsMap = {
   doesAccNameExist: 'does_acc_name_exist',
   doesCatNameExist: 'does_category_name_exist',
   doesOtherCatNameExist:'does_other_category_name_exist',
+  doesOtherTagNameExist: 'does_other_tag_name_exist',
+  doesTagNameExist: 'does_tag_name_exist',
   getAccountBalance: 'get_account_balance',
   getAccountsOpeningBalance: 'get_accounts_opening_balance',
   getAccountLedger: 'get_account_ledger',

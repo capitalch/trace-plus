@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import { Utils } from "../../../../utils/utils";
 import { NewEditTagModal } from "./new-edit-tag-modal";
+import { Utils } from "../../../../../utils/utils";
 
-export function NewTagButton({ className }: NewTagButtonType) {
+export function NewTagButton({ className, instance }: NewTagButtonType) {
     return (
         <button
             className={clsx(
@@ -18,11 +18,12 @@ export function NewTagButton({ className }: NewTagButtonType) {
         Utils.showHideModalDialogB({
             title: "New Tag",
             isOpen: true,
-            element: <NewEditTagModal id={undefined} tagName="" />,
+            element: <NewEditTagModal id={undefined} tagName="" instance={instance} />,
         });
     }
 }
 
 type NewTagButtonType = {
     className?: string;
+    instance: string
 };

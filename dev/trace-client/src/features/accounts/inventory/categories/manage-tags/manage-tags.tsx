@@ -1,25 +1,23 @@
-// import { useDispatch } from "react-redux";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-// import { AppDispatchType } from "../../../../app/store/store";
-import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-// import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
-import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
-import { CompSyncFusionGrid, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
-import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
+import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
+import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { CompSyncFusionGrid, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
+import { Utils } from "../../../../../utils/utils";
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { NewEditTagModal } from "./new-edit-tag-modal";
 import { NewTagButton } from "./new-tag-button";
 
-export function ManageTags(){
+export function ManageTags() {
     const instance = DataInstancesMap.manageTags;
     // const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
-    
+
     return (
         <div className="flex flex-col">
             <CompSyncFusionGridToolbar
                 className="mr-6"
-                CustomControl={() => <NewTagButton />}
+                CustomControl={() => <NewTagButton instance={instance} />}
                 minWidth="500px"
                 title=""
                 isPdfExport={false}
@@ -37,7 +35,7 @@ export function ManageTags(){
                 dbParams={decodedDbParamsObject}
                 editColumnWidth={35}
                 hasIndexColumn={true}
-                height="calc(100vh - 250px)"
+                // height="calc(100vh - 250px)"
                 instance={instance}
                 isLoadOnInit={false}
                 minWidth="500px"
@@ -76,7 +74,6 @@ export function ManageTags(){
                     deletedIds: [id],
                 });
                 Utils.showSaveMessage();
-                // dispatch(changeAccSettings());
                 const loadData = context.CompSyncFusionGrid[instance].loadData;
                 if (loadData) {
                     await loadData();
@@ -89,10 +86,10 @@ export function ManageTags(){
 
     async function handleOnEdit(props: any) {
         console.log(props)
-        // Utils.showHideModalDialogA({
-        //     title: "Edit Tag",
-        //     isOpen: true,
-        //     element: <NewEditTag id={props.id} tagName={props.tagName} />,
-        // });
+        Utils.showHideModalDialogB({
+            title: "Edit Tag",
+            isOpen: true,
+            element: <NewEditTagModal id={props.id} tagName={props.tagName} instance={instance} />,
+        });
     }
 }

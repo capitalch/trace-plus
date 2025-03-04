@@ -1,6 +1,6 @@
 import { Utils } from "../../../../utils/utils"
-import { ManageCategoryHsn } from "./manage-category-hsn-modal"
-import { ManageTags } from "./manage-tags"
+import { ManageCategoryHsn } from "./manage-hsn/manage-category-hsn-modal"
+import { ManageTags } from "./manage-tags/manage-tags"
 
 export function ProductCategoriesToolbarButtons() {
     return (<div className="flex items-center gap-4 mb-1 mr-2">

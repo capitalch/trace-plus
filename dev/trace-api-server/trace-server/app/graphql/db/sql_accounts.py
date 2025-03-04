@@ -40,6 +40,25 @@ class SqlAccounts:
 				and "id" <> (table "id")))
     """
 
+    does_tag_name_exist = """
+        with "tagName" as (values (%(tagName)s::text))
+            --with "tagName" AS (VALUES ('tag1'::text))
+            SELECT EXISTS (
+                SELECT 1
+                    FROM "TagsM"
+                WHERE LOWER("tagName") = LOWER((table "tagName")))
+    """
+
+    does_other_tag_name_exist = """
+        with "tagName" as (values (%(tagName)s::text)), id as (values (%(id)s::int))
+        --with "tagName" AS (VALUES ('tag22'::text)), id as (VALUES (12::int))
+        SELECT EXISTS (
+            SELECT 1
+                FROM "TagsM"
+            WHERE (LOWER("tagName") = LOWER((table "tagName"))
+				and "id" <> (table "id")))
+    """
+
     get_account_balance = """
      with "accId" as (values (%(accId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int))
      --with "accId" AS (VALUES (117::int)), "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int))
