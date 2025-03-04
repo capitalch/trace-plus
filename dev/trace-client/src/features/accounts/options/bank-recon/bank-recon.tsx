@@ -89,7 +89,7 @@ export function BankRecon() {
             minWidth="1400px"
             onCellEdit={onCellEdit}
             onDelete={handleOnDelete}
-            onRowDataBound={onRowDataBound}
+            // onRowDataBound={onRowDataBound}
         />
         {isVisibleAppLoader && <CompAppLoader />}
     </CompAccountsContainer>)
@@ -303,11 +303,11 @@ export function BankRecon() {
         setRefresh({})
     }
 
-    function onRowDataBound(args: any) {
-        if ((args.data.origClearDate !== args.data.clearDate) || (args.data.clearRemarks !== args.data.clearRemarks)) {
-            // args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
-        }
-    }
+    // function onRowDataBound(args: any) {
+        // if ((args.data.origClearDate !== args.data.clearDate) || (args.data.clearRemarks !== args.data.origClearRemarks)) {
+        //     args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
+        // }
+    // }
 }
 
 export type BankReconType = {

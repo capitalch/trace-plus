@@ -197,7 +197,7 @@ export type CompSyncFusionGridType = {
     editSettings?: {
         allowEditing: boolean
         mode: 'Batch' | 'Dialog' | 'Normal'
-        showConfirmDialog: boolean
+        showConfirmDialog?: boolean
     }
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean

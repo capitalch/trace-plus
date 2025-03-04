@@ -842,6 +842,12 @@ class SqlAccounts:
                 order by "accName"
     """
 
+    get_tags = """
+        select id, "tagName"
+            from "TagsM"
+                order by "tagName"
+    """
+    
     get_trial_balance = """
         WITH RECURSIVE hier AS (
             SELECT 

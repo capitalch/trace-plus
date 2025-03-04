@@ -51,23 +51,23 @@
 													- Aggregates
 													- Grid adjustment of size
 			- Template action columns
+				- Change parent
+				- Manage Tags
 												- Edit self
 													- Server validation
 													- disable leaf
-				- Change parent
-				- Tag
 													- Add child
 													- UI
 													- delete
 													- Add root category
-			- Custom buttons toolbar
+											- Custom buttons toolbar
 													- UI
-				- Manage tags
-				- HSN for leaf categories
-					- SQL
-					- Display data in grid
-					- Edit in grid
-					- Submit
+													- Manage tags
+												- HSN for leaf categories
+													- SQL
+													- Display data in grid
+													- Edit in grid
+													- Submit
 													- Aggregates
 
 

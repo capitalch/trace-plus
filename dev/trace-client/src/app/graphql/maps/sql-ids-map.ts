@@ -52,6 +52,7 @@ export const SqlIdsMap = {
   getLedgerLeafAccounts: 'get_ledger_leaf_accounts',
   getSettingsFinYearsBranches: 'get_settings_fin_years_branches',
   getSubledgerAccounts: 'get_subledger_accounts',
+  getTags:'get_tags',
   getTrialBalance: 'get_trial_balance',
   updateAccountsMaster: 'update_accounts_master',
   upsertAutoSubledger: 'upsert_auto_subledger',

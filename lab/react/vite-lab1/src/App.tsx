@@ -116,14 +116,14 @@ function App() {
       {/* <SyncfusionGrid /> */}
       {/* <InjectSummary /> */}
       {/* <SlidingPaneViewer /> */}
-      {/* <EditGrid /> */}
+      <EditGrid />
       {/* <Spinners /> */}
       {/* <ReactDatePicker />
       <ExportDropDown /> */}
       {/* <DynamicFilteringGrid /> */}
       {/* <GenericFilteringGridContainer /> */}
       {/* <ReportAllTransactionsFilter /> */}
-      <CompactTransactionFilter />
+      {/* <CompactTransactionFilter /> */}
     </GlobalContext.Provider>
   )
 }

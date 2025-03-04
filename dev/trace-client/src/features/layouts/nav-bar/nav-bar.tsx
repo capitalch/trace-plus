@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux"
 import ReactSlidingPane from "react-sliding-pane"
 import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { FC } from "react"
+import { ModalDialogB } from "./modal-dialogB"
 
 function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
@@ -33,6 +34,7 @@ function NavBar() {
             </div>
             <LogoutMenuButton className="ml-auto" />
             <ModalDialogA />
+            <ModalDialogB />
 
             {/* <AppLoader /> */}
             {isVisibleAppLoader && <CompAppLoader />}

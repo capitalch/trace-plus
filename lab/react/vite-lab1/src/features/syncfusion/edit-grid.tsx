@@ -21,19 +21,19 @@ export function EditGrid() {
         },
     };
 
-    const editTemplate = (props: any) => {
-        return (
-            <input
-                type="text"
-                defaultValue={props.Freight}
-                onChange={(e) => {
-                    props.column.value = e.target.value
-                }}
-                className="e-input e-field bg-slate-300 text-red-500"
-                placeholder="Enter frieght"
-            />
-        );
-    };
+    // const editTemplate = (props: any) => {
+    //     return (
+    //         <input
+    //             type="text"
+    //             defaultValue={props.Freight}
+    //             onChange={(e) => {
+    //                 props.column.value = e.target.value
+    //             }}
+    //             className="e-input e-field bg-slate-300 text-red-500"
+    //             placeholder="Enter frieght"
+    //         />
+    //     );
+    // };
 
     return (
         <div className="flex flex-col m-4">
@@ -46,8 +46,10 @@ export function EditGrid() {
                 thousandSeparator=','
                 onFocus={handleOnFocus}
             /> */}
+            <button onClick={handleOnTest}>Test</button>
             <GridComponent
                 actionBegin={handleActionBegin}
+                actionComplete={handleActionComplete}
                 cellEdit={handleCellEdit}
                 queryCellInfo={handleQueryCellInfo}
                 dataSource={meta.current.sampleData}
@@ -56,10 +58,10 @@ export function EditGrid() {
                     mode: "Normal"
                 }}
                 gridLines="Both"
-                ref={gridRef}
-            >
+                ref={gridRef}>
                 <ColumnsDirective>
-                    <ColumnDirective allowEditing={true}
+                    <ColumnDirective 
+                        allowEditing={false}
                         edit={datePickerParams}
                         editType="datepickeredit"
                         field="OrderDate"
@@ -92,11 +94,19 @@ export function EditGrid() {
         event.target.select()
     }
 
+    function handleOnTest(){
+        console.log(meta.current.sampleData)
+    }
+
     function handleQueryCellInfo(args: any) {
         console.log(args)
     }
 
     function handleActionBegin(args: any) {
+        console.log(args)
+    }
+
+    function handleActionComplete(args:any){
         console.log(args)
     }
 

@@ -15,10 +15,10 @@ export function CompModalDialog({ body, className, isOpen, size = 'sm', title, t
                     {/* <Draggable className=''> */}
                     <div
                         className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-hidden focus:outline-hidden">
-                        <div className={clsx("relative w-auto max-w-4xl mx-auto", sizeLogic[size])}>
+                        <div className={clsx("relative w-auto max-w-4xl mx-auto ", sizeLogic[size])}>
 
                             {/*content*/}
-                            <div className="relative flex w-full flex-col rounded-lg bg-white shadow-lg outline-hidden focus:outline-hidden">
+                            <div className="relative flex w-full flex-col rounded-lg bg-white shadow-lg outline-hidden focus:outline-hidden border-1 border-gray-700">
 
                                 {/*header*/}
                                 <div className={clsx("flex items-center justify-between p-4", className)}>

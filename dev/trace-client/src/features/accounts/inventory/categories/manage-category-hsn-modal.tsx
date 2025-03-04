@@ -8,21 +8,23 @@ import { CompAppLoader } from "../../../../controls/redux-components/comp-app-lo
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { useEffect, useRef, useState } from "react"
 import _ from "lodash"
-// import { NumericEditTemplate } from "../../../../controls/components/numeric-edit-template"
-// import { NumberFormatValues } from "react-number-format"
-// import { useRef } from "react"
-// import { queryCellInfo } from "@syncfusion/ej2-react-grids"
+import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
+import { TooltipComponent } from "@syncfusion/ej2-react-popups"
+import { IconSubmit } from "../../../../controls/icons/icon-submit"
+import { Utils } from "../../../../utils/utils"
+import { Messages } from "../../../../utils/messages"
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
 
 export function ManageCategoryHsn() {
     const [, setRefresh] = useState({})
     const instance = DataInstancesMap.manageCategoryHsn
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
+
     const selectedData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[instance]?.data
         return (ret)
     })
-    // const editMeta = useRef<EditMetaType>({
-    // })
+
     const meta = useRef<MetaType>({
         rows: []
     })
@@ -32,78 +34,49 @@ export function ManageCategoryHsn() {
         , context
         , dbName
         , decodedDbParamsObject
-        // , finYearId
     } = useUtilsInfo()
 
     useEffect(() => {
-        // console.log(selectedData)
-        if (selectedData) {
+        if (!_.isEmpty(selectedData)) {
             meta.current.rows = _.cloneDeep(selectedData)
             setRefresh({})
         }
     }, [selectedData])
 
-    // const CustomEditTemplate = (args: any) => {
-    //     console.log(args.column.field)
-    //     return (
-    //         <input
-    //             type="text"
-    //             value={args.column.value || ''}
-    //             // onChange={(e) => args.setValue(e.target.value)}
-    //             onChange={(e) => {
-    //                 // args[args.column.field] = e.target.value
-    //                 args.column.value = e.target.value
-    //             }}
-    //             className="e-input"
-    //         />
-    //     );
-    // };
-
     return (<div className="flex flex-col">
-        <button onClick={handleOnTest}>Test</button>
-        {/* <CompSyncFusionGridToolbar className='mt-2 mr-6'
-            CustomControl={() => <BankReconCustomControls instance={instance} meta={meta} />}
-            minWidth="1000px"
-            title='Bank reconcillation'
+        <CompSyncFusionGridToolbar className='mt-2 mr-6'
+            CustomControl={() => <SubmitButton handleOnSubmit={handleOnSubmit} />}
+            minWidth="600px"
+            title='Double click to edit'
             isPdfExport={false}
             isExcelExport={false}
             isCsvExport={false}
             isLastNoOfRows={false}
             instance={instance}
-        /> */}
+        />
 
         <CompSyncFusionGrid
-            // actionBegin={onActionBegin}
             actionComplete={onActionComplete}
             aggregates={getAggregates()}
             buCode={buCode}
             dataSource={meta.current.rows}
-
             className="mr-6 mt-4"
             columns={getColumns()}
-            // dataSource={meta?.current?.rows || []}
-            // deleteColumnWidth={40}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             editSettings={{
                 allowEditing: true,
-                mode: 'Batch',
-                showConfirmDialog: false,
+                mode: 'Normal',
             }}
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
             instance={instance}
-
             isLoadOnInit={false}
-            // loadData={loadData}
             minWidth="550px"
             onCellEdit={onCellEdit}
-            // queryCellInfo={onQueryCellInfo}
+            queryCellInfo={onQueryCellInfo}
             sqlId={SqlIdsMap.getLeafCategories}
             sqlArgs={{}}
-            // onCellEdit={onCellEdit}
-            // onDelete={handleOnDelete}
-            onRowDataBound={onRowDataBound}
         />
         {isVisibleAppLoader && <CompAppLoader />}
     </div>)
@@ -133,8 +106,6 @@ export function ManageCategoryHsn() {
                 customAttributes: {
                     class: 'grid-col-edit'
                 },
-                // editTemplate: (args: any) => (NumericEditTemplate(args, onHsnValueChanged, 0, false)),
-                // editTemplate: CustomEditTemplate,
                 field: 'hsn',
                 headerText: 'HSN',
                 type: 'number',
@@ -157,71 +128,80 @@ export function ManageCategoryHsn() {
         ])
     }
 
+    async function handleOnSubmit() {
+        const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
+        if (gridRef) {
+            gridRef.current.endEdit()
+            // gridRef.current.refresh()
+        }
+        const changedValues = meta.current.rows
+        .filter(item=>item.isValueChanged)
+        .map(({ id, hsn }) => ({ id, hsn }));
+        if(_.isEmpty(changedValues)){
+            Utils.showAlertMessage('Warning',Messages.messNothingToDo)
+            return
+        }
+        try {
+            await Utils.doGenericUpdate({
+                buCode: buCode || '',
+                tableName: DatabaseTablesMap.CategoryM,
+                xData: changedValues
+            })
+            const loadData = context.CompSyncFusionGrid[instance].loadData
+            if (loadData) {
+                await loadData()
+            }
+            Utils.showSaveMessage();
+            // Utils.showHideModalDialogA({
+            //     isOpen: false
+            // })
+        } catch (e: any) {
+            console.log(e)
+        }
+    }
+
     function onCellEdit(args: any) { // clearDate set as tranDate
         console.log(args.value)
     }
 
-    function handleOnTest() {
-        const gridRef = context.CompSyncFusionGrid[instance].gridRef
-        gridRef.current.closeEdit()
-        gridRef.current.refresh()
-        console.log(meta.current.rows)
-    }
-
-    function onRowDataBound(args: any) {
-        console.log(args)
-        // if ((args.data.origClearDate !== args.data.clearDate) || (args.data.clearRemarks !== args.data.clearRemarks)) {
-        //     args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
-        // }
-    }
-
-    // function onActionBegin(args: any) {
-    //     if ((args.type === 'save') && (args.column.field === 'hsn')) {
-    //         if (editMeta.current?.[args.rowData.id] !== undefined) {
-    //             args.rowData[args.column.field] = editMeta.current?.[args.rowData.id]?.editedValue
-    //         }
-    //     }
-    // }
-
     function onActionComplete(args: any) {
-        if (args.type === 'save') {
-            const currentData = args.data[args.column.field]
-            if (args.previousData !== currentData) {
-                // meta.current[args.data.id].isValueChanged = true
-                // updateParentRecursive(args.data.id, currentData, args.previousData, args.column.field)
-                const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-                if (gridRef) {
-                    gridRef.current.endEdit()
+        if (args.requestType === 'save') {
+            const currentData = args.data['hsn']
+            if (args.previousData['hsn'] !== currentData) {
+                const item = meta.current.rows.find((x: any) => x.id === args.data.id)
+                if (item) {
+                    item.hsn = currentData // This line is important
+                    item.isValueChanged = true
+                    args.row.cells[1].style.backgroundColor = 'lightgreen';
                 }
             }
         }
     }
 
-    // function onHsnValueChanged(args: any, values: NumberFormatValues) {
-    //     if (!editMeta.current[args.id]) {
-    //         editMeta.current[args.id] = {}
-    //     }
-    //     editMeta.current[args.id].editedValue = values.floatValue
-    // }
-
-    // function onQueryCellInfo(args: any) {
-    //     if (args.column.field === 'hsn') {
-    //         if (args.column.isValueChanged) {
-    //             args.cell.style.backgroundColor = 'lightgreen';
-    //         } else {
-    //             args.cell.style.backgroundColor = 'lightyellow';
-    //         }
-    //     }
-    // }
+    function onQueryCellInfo(args: any) {
+        if (args.column.field === 'hsn') {
+            args.cell.style.backgroundColor = 'lightyellow';
+        }
+    }
 
 }
 
-// type EditMetaType = {
-//     [key: string]: {
-//         editedValue?: number
-//     }
-// }
-
 type MetaType = {
-    rows: any[]
+    rows: CategoryHsnType[]
+}
+
+type CategoryHsnType = {
+    catName: string
+    hsn: number
+    descr: string
+    id: number
+    isValueChanged?: boolean
+}
+
+function SubmitButton({ handleOnSubmit }: { handleOnSubmit: () => void }) {
+    return (<TooltipComponent content='Save changed HSN values to server' className="text-sm" cssClass="custom-tooltip">
+        <button onClick={handleOnSubmit} type="button" className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
+            <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
+    </TooltipComponent>)
+
 }

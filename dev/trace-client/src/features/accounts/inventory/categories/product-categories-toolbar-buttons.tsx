@@ -1,5 +1,6 @@
 import { Utils } from "../../../../utils/utils"
 import { ManageCategoryHsn } from "./manage-category-hsn-modal"
+import { ManageTags } from "./manage-tags"
 
 export function ProductCategoriesToolbarButtons() {
     return (<div className="flex items-center gap-4 mb-1 mr-2">
@@ -17,6 +18,11 @@ export function ProductCategoriesToolbarButtons() {
     }
 
     function handleManageTags() {
-
+        Utils.showHideModalDialogA({
+            title: "Manage Tags",
+            isOpen: true,
+            element: <ManageTags />,
+            size: 'md',
+        })
     }
 }
