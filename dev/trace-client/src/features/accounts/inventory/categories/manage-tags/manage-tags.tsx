@@ -78,6 +78,10 @@ export function ManageTags() {
                 if (loadData) {
                     await loadData();
                 }
+                const loadData1 = context.CompSyncFusionTreeGrid[DataInstancesMap.productCategories].loadData
+                if(loadData1){
+                    await loadData1();
+                }
             } catch (e: any) {
                 console.log(e);
             }

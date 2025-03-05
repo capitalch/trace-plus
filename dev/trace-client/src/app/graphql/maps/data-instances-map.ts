@@ -10,11 +10,13 @@ export const DataInstancesMap = {
   adminSecuredControls: "admin-secured-controls",
   adminSecuredControlsLinkRoles: "admin-ecured-controls-link-roles",
   allBanks: "all-banks",
+  allTags: "all-tags",
   assets: "assets",
   balanceSheet: "balance-sheet",
   bankRecon: "bank-recon",
   bankReconOpBalance: "bank-recon-op-balance",
   branchMaster: "branch-master",
+  changeCategoryParent: "change-category-parent",
   companyInfo: "company-info",
   commonUtilsTransferClosingBalance:
     "common-utilities-transfer-closing-balance",

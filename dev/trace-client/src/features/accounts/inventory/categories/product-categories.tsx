@@ -14,15 +14,15 @@ import { IconCross } from "../../../../controls/icons/icon-cross"
 import { IconTag } from "../../../../controls/icons/icon-tag"
 import { IconChangeArrow } from "../../../../controls/icons/icon-change-arrow"
 import { ProductCategoriesToolbarButtons } from "./product-categories-toolbar-buttons"
-import { AddRootCategoryModal } from "./add-root-category-modal"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
-import { AddChildCategoryModal } from "./add-child-category-modal"
-import { EditCategoryModal } from "./edit-category-modal"
+import { AddRootCategoryModal } from "./actions/add-root-category-modal"
+import { AddChildCategoryModal } from "./actions/add-child-category-modal"
+import { EditCategoryModal } from "./actions/edit-category-modal"
+import { AssociateTagModal } from "./actions/associate-tag-modal"
+import { ChangeCatgoryParent } from "./actions/change-category-parent"
 
 export function ProductCategories() {
-    // const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.productCategories
-
     const {
         buCode
         , context
@@ -47,7 +47,6 @@ export function ProductCategories() {
             buCode={buCode}
             childMapping="children"
             className="mr-6"
-            // dataPath="productCategories"
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
@@ -96,13 +95,13 @@ export function ProductCategories() {
             </button>}
 
             {/* Change parent */}
-            {<button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-orange-500">
+            {<button onClick={handeleOnClickChangeParent} className="flex font-medium justify-center items-center ml-4 text-xs text-orange-500">
                 <IconChangeArrow className="w-3 h-3 mr-1.5" />
                 CHANGE PARENT
             </button>}
 
             {/* Tag */}
-            {<button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-blue-500">
+            {<button onClick={handleOnClickTag} className="flex font-medium justify-center items-center ml-4 text-xs text-blue-500">
                 <IconTag className="w-3 h-3 mr-1.5" />
                 TAG
             </button>}
@@ -119,6 +118,15 @@ export function ProductCategories() {
                 title: `Add child for ${props.catName}`,
                 isOpen: true,
                 element: <AddChildCategoryModal id={props.id} />,
+            })
+        }
+
+        function handeleOnClickChangeParent(){
+            Utils.showHideModalDialogA({
+                title: `Select New Parent for '${props.catName}'`,
+                isOpen: true,
+                element: <ChangeCatgoryParent catId={props.id} />, // id is tag id
+                size:'md'
             })
         }
 
@@ -150,6 +158,14 @@ export function ProductCategories() {
                 } catch (e: any) {
                     console.log(e)
                 }
+            })
+        }
+
+        function handleOnClickTag() {
+            Utils.showHideModalDialogA({
+                title: 'Associate Tag',
+                isOpen: true,
+                element: <AssociateTagModal catId={props.id} id={props.tagId || null} />, // id is tag id
             })
         }
     }

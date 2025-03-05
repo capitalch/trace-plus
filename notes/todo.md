@@ -42,7 +42,7 @@
 												- Server
 													- sql
 													- Server code
-		- Client
+											- Client
 													- UI design, primary screen
 													- Show data in Grid
 													- Tree Grid view
@@ -50,10 +50,18 @@
 													- Exports
 													- Aggregates
 													- Grid adjustment of size
-			- Template action columns
-				- Change parent
-				- Manage Tags
-					- Checkup
+									- Template action columns
+										- Change parent
+												- UI
+												- Disable submit when no selection
+										- Implement submit
+										- Associate tag
+												- Add None
+												- UI
+										- Submit
+											- Nothing not being saved. Error
+											- Manage Tags
+												- Checkup
 												- server side validation for edit
 												- server side validation
 												- no special char validation

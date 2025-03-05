@@ -2,7 +2,7 @@ import { FC, useContext, useEffect, useRef } from "react"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, Edit, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, Edit, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Selection, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 import { shallowEqual, useSelector } from "react-redux"
@@ -30,6 +30,7 @@ export function CompSyncfusionTreeGrid({
     editSettings,
     graphQlQueryFromMap,
     gridDragAndDropSettings,
+    hasCheckBoxSelection = false,
     height,
     instance,
     isLoadOnInit = true,
@@ -38,13 +39,16 @@ export function CompSyncfusionTreeGrid({
     pageSize = 50,
     queryCellInfo,
     rowDataBound,
+    rowDeselected,
     rowHeight,
+    rowSelecting,
+    rowSelected,
     sqlArgs,
     sqlId,
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
     const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
@@ -124,11 +128,14 @@ export function CompSyncfusionTreeGrid({
                 queryCellInfo={queryCellInfo}
                 ref={gridRef}
                 rowDataBound={onRowDataBound}
+                rowDeselected={rowDeselected}
                 rowDragStart={gridDragAndDropSettings?.onRowDragStart}
                 rowDragStartHelper={gridDragAndDropSettings?.onRowDragStartHelper}
                 rowDrop={gridDragAndDropSettings?.onRowDrop}
                 rowDropSettings={rowDropOptions}
                 rowHeight={rowHeight} // When rowheight is undefined then footer row height looks good, otherwise this becomes small
+                rowSelecting={rowSelecting}
+                rowSelected={rowSelected}
                 searchSettings={searchOptions}
                 treeColumnIndex={treeColumnIndex}>
                 <ColumnsDirective>
@@ -151,12 +158,17 @@ export function CompSyncfusionTreeGrid({
                     , PdfExport
                     , Resize
                     , RowDD
+                    , Selection
                     , Sort
                     , Toolbar
                 ]} />
             </TreeGridComponent>
         </div>
     )
+
+    // function rowSelecting(args:any){
+    //     gridRef.current.clearSelection()
+    // }
 
     function handleScroll(args: any) {
         Utils.treeGridUtils.saveScrollPos(context, instance)
@@ -226,6 +238,7 @@ export type CompSyncfusionTreeGridType = {
         val: GraphQLQueryArgsType
     ) => DocumentNode,
     gridDragAndDropSettings?: GridDragAndDropSettingsType
+    hasCheckBoxSelection?: boolean
     height?: string
     instance: string
     isLoadOnInit?: boolean
@@ -235,7 +248,10 @@ export type CompSyncfusionTreeGridType = {
     onRowDrop?: (args: any) => void
     queryCellInfo?: (args: any) => void
     rowDataBound?: (args: any) => void
+    rowDeselected?: (args: any) => void
     rowHeight?: number
+    rowSelecting?: (args: any) => void
+    rowSelected?: (args: any) => void
     sqlArgs?: SqlArgsType
     sqlId?: string
     treeColumnIndex: number

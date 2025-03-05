@@ -83,6 +83,8 @@ const Messages = {
   messFinYearSuccessfullyChanged: "The financial year was successfully changed",
   messFailure: "Failure",
   messLinkSecuredControl: "Link a secured control with this role",
+  messNoLeafNodeAllowed:"Leaf nodes cannot be selected",
+  messNoParentCategoryConfirm:"Are you sure you want to make this category a top-level category?",
   messNothingToDo: "Nothing to do",
   messNotAllowed: "This operation is not allowed",
   messNoBusinessUnitsDefined:

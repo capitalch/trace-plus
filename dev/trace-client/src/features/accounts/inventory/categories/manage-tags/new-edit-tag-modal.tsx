@@ -1,7 +1,5 @@
-// import { useDispatch } from "react-redux";
-// import { AppDispatchType } from "../../../../../app/store/store";
+
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-// import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { useForm } from "react-hook-form";
 import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import { Messages } from "../../../../../utils/messages";
@@ -16,7 +14,7 @@ import { useEffect } from "react";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../../utils/ibuki";
 import { IbukiMessages } from "../../../../../utils/ibukiMessages";
 import _ from "lodash";
-
+import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 
 export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
     const { checkNoSpecialChar } = useValidators()
@@ -24,7 +22,6 @@ export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
 
     const {
         clearErrors,
-        // getValues,
         register,
         trigger,
         handleSubmit,
@@ -81,7 +78,7 @@ export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
             {/* Submit */}
             <WidgetButtonSubmitFullWidth
                 label="Submit"
-                className="max-w-96 mt-4"
+                className="max-w-96 mt-2"
                 disabled={isSubmitting || !isDirty || (!_.isEmpty(errors))}
             />
 
@@ -108,11 +105,14 @@ export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
                 xData: { id: data.id, tagName: data.tagName },
             });
             Utils.showSaveMessage();
-            // dispatch(changeAccSettings());
             Utils.showHideModalDialogB({ isOpen: false });
             const loadData = context.CompSyncFusionGrid[instance].loadData;
             if (loadData) {
                 await loadData();
+            }
+            const loadData1 = context.CompSyncFusionTreeGrid[DataInstancesMap.productCategories].loadData
+            if (loadData1) {
+                await loadData1();
             }
         } catch (e: any) {
             console.log(e);

@@ -14,6 +14,7 @@ export function useCompSyncfusionTreeGrid({
     , dbName
     , dbParams
     , graphQlQueryFromMap
+    , hasCheckBoxSelection
     , instance
     , isLoadOnInit
     , sqlId
@@ -87,10 +88,19 @@ export function useCompSyncfusionTreeGrid({
                 field="pkey"
                 isPrimaryKey={true}
                 visible={false}
+                width={0}
                 key='P'
             />)
         }
+        if (hasCheckBoxSelection) {
+            colDirectives.unshift(<ColumnDirective key='X' type="checkbox" width='' allowResizing={false} headerTemplate={selectHeaderTemplate} />)
+        }
         return (colDirectives)
+    }
+
+    // Custom header template function
+    function selectHeaderTemplate() {
+        return <div></div>; // Empty div removes the checkbox, or add custom content if desired
     }
 
     return ({ getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData })

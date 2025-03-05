@@ -1,20 +1,20 @@
 import { useForm } from "react-hook-form";
-import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
-import { Messages } from "../../../../utils/messages";
-import { useValidators } from "../../../../utils/validators-hook";
-import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
-import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
-import { IbukiMessages } from "../../../../utils/ibukiMessages";
-import { useEffect } from "react";
-import { Utils } from "../../../../utils/utils";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import _ from "lodash";
-import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
-import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { useValidators } from "../../../../../utils/validators-hook";
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { useEffect } from "react";
+import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../../utils/ibuki";
+import { IbukiMessages } from "../../../../../utils/ibukiMessages";
+import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
+import { Messages } from "../../../../../utils/messages";
+import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
+import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width";
+import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+import { Utils } from "../../../../../utils/utils";
+import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
+import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
+import { WidgetFormHelperText } from "../../../../../controls/widgets/widget-form-helper-text";
+import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 
 export function AddRootCategoryModal() {
     const { checkNoSpecialChar } = useValidators()

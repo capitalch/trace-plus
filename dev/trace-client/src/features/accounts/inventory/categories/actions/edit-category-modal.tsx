@@ -1,20 +1,20 @@
 import { useForm } from "react-hook-form";
-import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
-import { Messages } from "../../../../utils/messages";
-import { useValidators } from "../../../../utils/validators-hook";
-import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
-import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
-// import { useEffect } from "react";
-import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
+import { Messages } from "../../../../../utils/messages";
+import { useValidators } from "../../../../../utils/validators-hook";
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
+import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width";
+import { Utils } from "../../../../../utils/utils";
+import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
+import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { useEffect } from "react";
-import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
-import { IbukiMessages } from "../../../../utils/ibukiMessages";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
+import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../../utils/ibuki";
+import { IbukiMessages } from "../../../../../utils/ibukiMessages";
+import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { WidgetFormHelperText } from "../../../../../controls/widgets/widget-form-helper-text";
 import clsx from "clsx";
+
 export function EditCategoryModal({ catName, descr, hasChildRecords, id, isLeaf, isUsed }: EditChildCategoryModalType) {
     const { checkNoSpecialChar } = useValidators();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
@@ -23,7 +23,6 @@ export function EditCategoryModal({ catName, descr, hasChildRecords, id, isLeaf,
         clearErrors,
         register,
         handleSubmit,
-        // setValue,
         setError,
         trigger,
         formState: { errors, isSubmitting },

@@ -16,6 +16,8 @@
 - Bug fixes etc.
 
 ## History
+# 06-03-2025
+	- Inventory -> Category completed
 # 28-02-2025
 	- Reports completed
 # 15-02-2025
