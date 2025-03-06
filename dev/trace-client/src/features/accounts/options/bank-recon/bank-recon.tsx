@@ -72,6 +72,7 @@ export function BankRecon() {
         />
 
         <CompSyncFusionGrid
+            actionBegin={onActionBegin}
             actionComplete={onActionComplete}
             aggregates={getAggregates()}
             className="mr-6 mt-4"
@@ -93,6 +94,7 @@ export function BankRecon() {
             onCellEdit={onCellEdit}
             onDelete={handleOnDelete}
             queryCellInfo={onQueryCellInfo}
+        // onRowDataBound={onRowDataBound}
         />
         {isVisibleAppLoader && <CompAppLoader />}
     </CompAccountsContainer>)
@@ -305,35 +307,64 @@ export function BankRecon() {
         setRefresh({})
     }
 
-    function onActionComplete(args: any) {
-        if (args.requestType === 'save') {
-            // const item1 = meta.current.rows.find((x: any) => x.id === args.data.id)
-            // const metaClearDate = format(item1.clearDate, isoFormat)
-            const currentClearDate = format(args.data['clearDate'], isoFormat)
-            const previousClearDate = format(args.previousData['clearDate'], isoFormat)
-            const currentClearRemarks = args.data['clearRemarks']
-            const previousClearRemarks = args.previousData['clearRemarks']
-            if ((previousClearDate !== currentClearDate) || (previousClearRemarks !== currentClearRemarks)) {
-                const item = meta.current.rows.find((x: any) => x.id === args.data.id)
-                if (item) {
-                    if ((previousClearDate !== currentClearDate) || item.isValueChanged) {
-                        args.row.cells[4].style.backgroundColor = 'lightgreen';
-                    }
-                    if (previousClearRemarks !== currentClearRemarks || item.isValueChanged) {
-                        args.row.cells[8].style.backgroundColor = 'lightgreen';
-                    }
-                    item.clearDate = currentClearDate // This line is important
-                    item.clearRemarks = currentClearRemarks
-                    item.isValueChanged = true
-                }
-            }
+    function onActionBegin(args: any) {
+        if ((args.requestType === 'beginEdit') && (!args.rowData.clearDate)) {
+            args.rowData.clearDate = args.rowData.tranDate
         }
     }
 
-    function onQueryCellInfo(args: any) {
-        if (['clearDate', 'clearRemarks'].includes(args.column.field)) {
-            args.cell.style.backgroundColor = 'lightyellow';
+    function onActionComplete(args: any) {
+        if (args.requestType === 'save') {
+            const item = meta.current.rows.find((x: any) => x.id === args.data.id)
+            const currentClearDate = args.data['clearDate'] ? format(args.data['clearDate'], isoFormat) : undefined
+            const origClearDate = item?.origClearDate ? format(item?.origClearDate, isoFormat) : undefined
+            const currentClearRemarks = args.data['clearRemarks']
+            const origClearRemarks = item?.origClearRemarks
+            if ((origClearDate !== currentClearDate)) {
+                args.row.cells[4].style.backgroundColor = 'lightgreen';
+            }
+            if (origClearRemarks !== currentClearRemarks) {
+                args.row.cells[8].style.backgroundColor = 'lightgreen';
+            }
+            item.clearDate = currentClearDate // This line is important
+            item.clearRemarks = currentClearRemarks // This line is important
         }
+    }
+
+    // function onRowDataBound(args: any) {
+    // const item = meta.current.rows.find((x: any) => x.id === args.data.id)
+    // const currentClearDate = args.data['clearDate'] ? format(args.data['clearDate'], isoFormat) : undefined
+    // const origClearDate = item?.origClearDate ? format(item?.origClearDate, isoFormat) : undefined
+    // const currentClearRemarks = args.data['clearRemarks']
+    // const origClearRemarks = item?.origClearRemarks
+    // if ((origClearDate !== currentClearDate)) {
+    //     args.row.cells[4].style.backgroundColor = 'lightgreen';
+    // }
+    // if (origClearRemarks !== currentClearRemarks) {
+    //     args.row.cells[8].style.backgroundColor = 'lightgreen';
+    // }
+    // }
+
+    function onQueryCellInfo(args: any) {
+        // if (['clearDate', 'clearRemarks'].includes(args.column.field)) {
+        //     args.cell.style.backgroundColor = 'lightyellow';
+        // }
+
+        if (args.column.field === "clearDate") {
+            if (args.data.clearDate !== args.data.origClearDate) {
+                args.cell.style.backgroundColor = 'lightgreen';
+            } else {
+                args.cell.style.backgroundColor = 'lightyellow';
+            }
+        }
+        if (args.column.field === "clearRemarks") {
+            if (args.data.clearRemarks !== args.data.origClearRemarks) {
+                args.cell.style.backgroundColor = 'lightgreen';
+            } else {
+                args.cell.style.backgroundColor = 'lightyellow';
+            }
+        }
+
     }
 }
 

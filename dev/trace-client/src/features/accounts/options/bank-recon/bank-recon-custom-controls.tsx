@@ -27,7 +27,7 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
         , decodedDbParamsObject
         , genericUpdateQueryName
     } = useUtilsInfo()
-    
+
     return (
         <div className="flex gap-4 mr-4 flex-wrap">
             <TooltipComponent content='Select a bank from list of banks' className="text-sm" cssClass="custom-tooltip">
@@ -74,7 +74,7 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
         ))
         const changedData: any[] = changedrows.map((item: any) => {
             const it: any = {
-                clearDate: item.clearDate,
+                clearDate: item.clearDate || null,
                 clearRemarks: item.clearRemarks,
                 tranDetailsId: item.tranDetailsId,
                 id: item.bankReconId
@@ -89,11 +89,21 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
 
     function handleOnCancel() {
         const gridRef = context.CompSyncFusionGrid[instance].gridRef
-        gridRef.current.closeEdit()
         gridRef.current.refresh()
+        gridRef.current.closeEdit()
+        meta.current.rows.filter((row: any) => (
+            (row.origClearDate !== row.clearDate)
+            || (row.origClearRemarks !== row.clearRemarks)
+        )).forEach((item: any) => {
+            item.clearDate = item.origClearDate
+            item.clearRemarks = item.origClearRemarks
+        })
+        handleReArrange()
+        // gridRef.current.dataSource = []
+        // gridRef.current.dataSource = meta.current.rows
     }
 
-    function handleOpBalance(){
+    function handleOpBalance() {
         Utils.showHideModalDialogA({
             className: 'ml-2',
             title: `Opening balance`,
@@ -105,21 +115,22 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
     function handleReArrange() {
         const gridRef = context.CompSyncFusionGrid[instance].gridRef
         gridRef.current.endEdit()
-        
+
         const rows: BankReconType[] = _.orderBy(meta.current.rows, ['clearDate', 'tranDate', 'index']) // , ['desc', 'desc', 'desc']
         updateBalance(rows)
-        
+
         rows.reverse()
         meta.current.rows = rows.map((x: any) => ({ ...x }))
         gridRef.current.dataSource = []
         gridRef.current.dataSource = meta.current.rows
+        gridRef.current.refresh()
     }
 
     async function handleOnSubmit() {
         try {
             const gridRef = context.CompSyncFusionGrid[instance].gridRef
             gridRef.current.endEdit()
-            gridRef.current.refresh()
+            // gridRef.current.refresh()
             const xData: any[] = getChangedData()
             const op: any = xData.find((x: any) => !x.tranDetailsId)
             if (op) {
