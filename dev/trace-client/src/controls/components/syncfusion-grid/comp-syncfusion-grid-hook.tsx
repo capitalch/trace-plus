@@ -104,6 +104,7 @@ export function useCompSyncFusionGrid({
         if (onDelete) {
             colDirectives.unshift(<ColumnDirective
                 key='D'
+                allowEditing={false}
                 field=''
                 headerText='D'
                 template={deleteTemplate}
@@ -114,6 +115,7 @@ export function useCompSyncFusionGrid({
         if (onPreview) {
             colDirectives.unshift(<ColumnDirective
                 key='P'
+                allowEditing={false}
                 field=''
                 headerText='P'
                 template={previewTemplate}
@@ -124,6 +126,7 @@ export function useCompSyncFusionGrid({
         if (onEdit) {
             colDirectives.unshift(<ColumnDirective
                 key='E'
+                allowEditing={false}
                 field=''
                 headerText='E'
                 template={editTemplate}
@@ -134,6 +137,7 @@ export function useCompSyncFusionGrid({
         if (hasIndexColumn) {
             colDirectives.unshift(<ColumnDirective
                 key='#'
+                allowEditing={false}
                 field=''
                 headerText='#'
                 template={indexColumnTemplate}

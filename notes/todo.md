@@ -34,9 +34,15 @@
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 	- BS, PL, Trial Bal to retain node expanded / collapsed
 															- Migrate to tailwind latest version
+	- Bank reconcillation clear date, remarks not saving
+		- Behave erratic while saving
+		- No green background for altered data
 - Inventory
-	- categories
-		- Complete checkup
+									- categories
+										Show aggregates
+											- Manage tags
+											- Change parent
+								- Complete checkup
 												- startup
 												- GraphQL wire up
 												- Server

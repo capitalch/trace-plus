@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map"
 import { GraphQLQueriesMap } from "../../../../../app/graphql/maps/graphql-queries-map"
-import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
+import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompSyncFusionTreeGridToolbar } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width"
 import { Messages } from "../../../../../utils/messages"
@@ -35,7 +35,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         />
         <CompSyncfusionTreeGrid
             addUniqueKeyToJson={true}
-            // aggregates={getAggregates()}
+            aggregates={getAggregates()}
             buCode={buCode}
             childMapping="children"
             className="mr-6"
@@ -63,6 +63,17 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         />
     </div>)
 
+    function getAggregates(): SyncFusionTreeGridAggregateColumnType[] {
+        return ([
+            {
+                columnName: 'catName',
+                field: 'catName',
+                type: 'Count',
+                footerTemplate: (props: any) => `Count: ${props['catName - count']}`,
+            }
+        ])
+    }
+    
     function getColumns(): SyncFusionTreeGridColumnType[] {
         return ([
             {
@@ -109,7 +120,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         }
     }
 
-    function rowDeselected(){
+    function rowDeselected() {
         setParentId(undefined)
     }
 

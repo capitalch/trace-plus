@@ -74,7 +74,7 @@ export function ManageCategoryHsn() {
             instance={instance}
             isLoadOnInit={false}
             minWidth="550px"
-            onCellEdit={onCellEdit}
+            // onCellEdit={onCellEdit}
             queryCellInfo={onQueryCellInfo}
             sqlId={SqlIdsMap.getLeafCategories}
             sqlArgs={{}}
@@ -133,7 +133,6 @@ export function ManageCategoryHsn() {
         const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
         if (gridRef) {
             gridRef.current.endEdit()
-            // gridRef.current.refresh()
         }
         const changedValues = meta.current.rows
         .filter(item=>item.isValueChanged)
@@ -153,17 +152,14 @@ export function ManageCategoryHsn() {
                 await loadData()
             }
             Utils.showSaveMessage();
-            // Utils.showHideModalDialogA({
-            //     isOpen: false
-            // })
         } catch (e: any) {
             console.log(e)
         }
     }
 
-    function onCellEdit(args: any) { // clearDate set as tranDate
-        console.log(args.value)
-    }
+    // function onCellEdit(args: any) { // clearDate set as tranDate
+    //     console.log(args.value)
+    // }
 
     function onActionComplete(args: any) {
         if (args.requestType === 'save') {

@@ -18,6 +18,7 @@ import { CompAppLoader } from "../../../../controls/redux-components/comp-app-lo
 import Decimal from "decimal.js"
 import _ from "lodash"
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { format } from "date-fns"
 
 export function BankRecon() {
     const [, setRefresh] = useState({})
@@ -27,6 +28,7 @@ export function BankRecon() {
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn, shallowEqual)
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
+    const isoFormat = 'yyyy-MM-dd'
 
     const { buCode
         , context
@@ -70,6 +72,7 @@ export function BankRecon() {
         />
 
         <CompSyncFusionGrid
+            actionComplete={onActionComplete}
             aggregates={getAggregates()}
             className="mr-6 mt-4"
             columns={getColumns()}
@@ -77,8 +80,8 @@ export function BankRecon() {
             deleteColumnWidth={40}
             editSettings={{
                 allowEditing: true,
-                mode: 'Batch',
-                showConfirmDialog: false
+                mode: 'Normal',
+                // showConfirmDialog: false
             }}
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
@@ -89,7 +92,7 @@ export function BankRecon() {
             minWidth="1400px"
             onCellEdit={onCellEdit}
             onDelete={handleOnDelete}
-            // onRowDataBound={onRowDataBound}
+            queryCellInfo={onQueryCellInfo}
         />
         {isVisibleAppLoader && <CompAppLoader />}
     </CompAccountsContainer>)
@@ -147,9 +150,9 @@ export function BankRecon() {
             },
             {
                 allowEditing: true,
-                customAttributes: {
-                    class: 'grid-col-edit'
-                },
+                // customAttributes: {
+                //     class: 'grid-col-edit'
+                // },
                 edit: datePickerParams,
                 editType: 'datepickeredit',
                 field: 'clearDate',
@@ -157,7 +160,6 @@ export function BankRecon() {
                 headerText: 'Clear date',
                 textAlign: 'Left',
                 type: 'date',
-                // template: (props: any) => props?.clearDate ? dayjs(props.clearDate).format(Utils.getCurrentDateFormat()) : '',
                 width: 160,
             },
             {
@@ -187,9 +189,9 @@ export function BankRecon() {
             },
             {
                 allowEditing: true,
-                customAttributes: {
-                    class: 'grid-col-edit'
-                },
+                // customAttributes: {
+                //     class: 'grid-col-edit'
+                // },
                 field: 'clearRemarks',
                 headerText: 'Clear remarks',
                 type: 'string',
@@ -303,11 +305,36 @@ export function BankRecon() {
         setRefresh({})
     }
 
-    // function onRowDataBound(args: any) {
-        // if ((args.data.origClearDate !== args.data.clearDate) || (args.data.clearRemarks !== args.data.origClearRemarks)) {
-        //     args.row.style.backgroundColor = '#d4edda'; // Light green for edited rows
-        // }
-    // }
+    function onActionComplete(args: any) {
+        if (args.requestType === 'save') {
+            // const item1 = meta.current.rows.find((x: any) => x.id === args.data.id)
+            // const metaClearDate = format(item1.clearDate, isoFormat)
+            const currentClearDate = format(args.data['clearDate'], isoFormat)
+            const previousClearDate = format(args.previousData['clearDate'], isoFormat)
+            const currentClearRemarks = args.data['clearRemarks']
+            const previousClearRemarks = args.previousData['clearRemarks']
+            if ((previousClearDate !== currentClearDate) || (previousClearRemarks !== currentClearRemarks)) {
+                const item = meta.current.rows.find((x: any) => x.id === args.data.id)
+                if (item) {
+                    if ((previousClearDate !== currentClearDate) || item.isValueChanged) {
+                        args.row.cells[4].style.backgroundColor = 'lightgreen';
+                    }
+                    if (previousClearRemarks !== currentClearRemarks || item.isValueChanged) {
+                        args.row.cells[8].style.backgroundColor = 'lightgreen';
+                    }
+                    item.clearDate = currentClearDate // This line is important
+                    item.clearRemarks = currentClearRemarks
+                    item.isValueChanged = true
+                }
+            }
+        }
+    }
+
+    function onQueryCellInfo(args: any) {
+        if (['clearDate', 'clearRemarks'].includes(args.column.field)) {
+            args.cell.style.backgroundColor = 'lightyellow';
+        }
+    }
 }
 
 export type BankReconType = {

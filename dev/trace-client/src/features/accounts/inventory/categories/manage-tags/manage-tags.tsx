@@ -1,7 +1,7 @@
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
-import { CompSyncFusionGrid, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { Utils } from "../../../../../utils/utils";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
@@ -28,6 +28,7 @@ export function ManageTags() {
             />
 
             <CompSyncFusionGrid
+            aggregates={getAggregates()}
                 buCode={buCode}
                 className="mr-6 mt-4"
                 columns={getColumns()}
@@ -45,6 +46,17 @@ export function ManageTags() {
             />
         </div>
     );
+
+    function getAggregates(): SyncFusionGridAggregateType[] {
+            return ([
+                {
+                    columnName: 'tagName',
+                    field: 'tagName',
+                    type: 'Count',
+                    footerTemplate: (props: any) => `Count: ${props['tagName - count']}`,
+                }
+            ])
+        }
 
     function getColumns(): SyncFusionGridColumnType[] {
         return [

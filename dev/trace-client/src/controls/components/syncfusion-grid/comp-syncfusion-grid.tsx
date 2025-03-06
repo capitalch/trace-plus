@@ -125,16 +125,7 @@ export function CompSyncFusionGrid({
             }}
             rowHeight={rowHeight}
             searchSettings={searchOptions}
-            selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
-        // beforeExcelExport={handleBeforeExcelExport}
-        // beginEdit={handleBeginEdit}
-        // enableVirtualization={enableVirtualization}
-        // excelQueryCellInfo={handleExcelQueryCellInfo}
-        // excelAggregateQueryCellInfo={handleExcelQueryCellInfo}
-        // enableInfiniteScrolling={enableInfiniteScrolling}
-        // beforePdfExport={handleBeforePdfExport}
-        // pdfQueryCellInfo={handlePdfQueryCellInfo}
-        >
+            selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}>
             <ColumnsDirective>
                 {getColumnDirectives()}
             </ColumnsDirective>

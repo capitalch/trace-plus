@@ -166,10 +166,6 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    // function rowSelecting(args:any){
-    //     gridRef.current.clearSelection()
-    // }
-
     function handleScroll(args: any) {
         Utils.treeGridUtils.saveScrollPos(context, instance)
         console.log(args)
