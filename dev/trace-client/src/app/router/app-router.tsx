@@ -32,6 +32,9 @@ import { CommonUtilities } from "../../features/accounts/options/common-utilitie
 import { AllExports } from "../../features/accounts/options/exports/all-exports";
 import { ReportAllTransactions } from "../../features/accounts/reports/report-all-transactions/report-all-transactions";
 import { ProductCategories } from "../../features/accounts/inventory/categories/product-categories";
+import { BrandMaster } from "../../features/accounts/inventory/brands/brand-master";
+import { ProductMaster } from "../../features/accounts/inventory/products/product-master";
+import { ProductsOpeningStock } from "../../features/accounts/inventory/opening-stock/products-opening-stock";
 
 export const appRouter = createBrowserRouter([
     {
@@ -71,7 +74,10 @@ export const appRouter = createBrowserRouter([
                 { path: 'common-utilities', element: <CommonUtilities /> },
                 { path: 'all-exports', element: <AllExports /> },
                 { path: 'report-all-transactions', element: <ReportAllTransactions /> },
-                { path: 'product-categories', element: <ProductCategories /> }
+                { path: 'product-categories', element: <ProductCategories /> },
+                { path: 'brand-master', element: <BrandMaster /> },
+                { path: 'product-master', element: <ProductMaster /> },
+                { path: 'products-opening-stock', element: <ProductsOpeningStock /> },
             ]
     },
     {

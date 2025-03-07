@@ -317,38 +317,21 @@ export function BankRecon() {
         if (args.requestType === 'save') {
             const item = meta.current.rows.find((x: any) => x.id === args.data.id)
             const currentClearDate = args.data['clearDate'] ? format(args.data['clearDate'], isoFormat) : undefined
-            const origClearDate = item?.origClearDate ? format(item?.origClearDate, isoFormat) : undefined
+            // const origClearDate = item?.origClearDate ? format(item?.origClearDate, isoFormat) : undefined
             const currentClearRemarks = args.data['clearRemarks']
-            const origClearRemarks = item?.origClearRemarks
-            if ((origClearDate !== currentClearDate)) {
-                args.row.cells[4].style.backgroundColor = 'lightgreen';
-            }
-            if (origClearRemarks !== currentClearRemarks) {
-                args.row.cells[8].style.backgroundColor = 'lightgreen';
-            }
+            // const origClearRemarks = item?.origClearRemarks
+            // if ((origClearDate !== currentClearDate)) {
+            //     args.row.cells[4].style.backgroundColor = 'lightgreen';
+            // }
+            // if (origClearRemarks !== currentClearRemarks) {
+            //     args.row.cells[8].style.backgroundColor = 'lightgreen';
+            // }
             item.clearDate = currentClearDate // This line is important
             item.clearRemarks = currentClearRemarks // This line is important
         }
     }
 
-    // function onRowDataBound(args: any) {
-    // const item = meta.current.rows.find((x: any) => x.id === args.data.id)
-    // const currentClearDate = args.data['clearDate'] ? format(args.data['clearDate'], isoFormat) : undefined
-    // const origClearDate = item?.origClearDate ? format(item?.origClearDate, isoFormat) : undefined
-    // const currentClearRemarks = args.data['clearRemarks']
-    // const origClearRemarks = item?.origClearRemarks
-    // if ((origClearDate !== currentClearDate)) {
-    //     args.row.cells[4].style.backgroundColor = 'lightgreen';
-    // }
-    // if (origClearRemarks !== currentClearRemarks) {
-    //     args.row.cells[8].style.backgroundColor = 'lightgreen';
-    // }
-    // }
-
     function onQueryCellInfo(args: any) {
-        // if (['clearDate', 'clearRemarks'].includes(args.column.field)) {
-        //     args.cell.style.backgroundColor = 'lightyellow';
-        // }
 
         if (args.column.field === "clearDate") {
             if (args.data.clearDate !== args.data.origClearDate) {
@@ -364,7 +347,6 @@ export function BankRecon() {
                 args.cell.style.backgroundColor = 'lightyellow';
             }
         }
-
     }
 }
 

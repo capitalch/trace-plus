@@ -198,17 +198,17 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "72",
           label: "Brands",
-          path: "/blogs",
+          path: "/brand-master",
         },
         {
           id: "73",
           label: "Products",
-          path: "/blogs",
+          path: "/product-master",
         },
         {
           id: "74",
           label: "Opening stock",
-          path: "/blogs",
+          path: "/products-opening-stock",
         },
         {
           id: "75",
@@ -218,6 +218,11 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "76",
           label: "Stock journal",
+          path: "/blogs",
+        },
+        {
+          id: "77",
+          label: "Branch transfer",
           path: "/blogs",
         },
       ],

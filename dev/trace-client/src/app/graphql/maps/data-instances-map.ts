@@ -16,6 +16,7 @@ export const DataInstancesMap = {
   bankRecon: "bank-recon",
   bankReconOpBalance: "bank-recon-op-balance",
   branchMaster: "branch-master",
+  brandMaster: "brand-master",
   changeCategoryParent: "change-category-parent",
   companyInfo: "company-info",
   commonUtilsTransferClosingBalance:
@@ -33,6 +34,7 @@ export const DataInstancesMap = {
   newEditFinYear: "new-edit-fin-year",
   newEditTag: "new-edit-tag",
   productCategories: "product-categories",
+  productMaster: "product-master",
   profitLoss: "profit-loss",
   reportAllTransactions: "report-all-transactions",
   securedControls: "secured-controls",

@@ -8,7 +8,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { EditNewBranchType } from "./new-edit-branch";
+import { NewEditBranchType } from "./new-edit-branch";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewBranchButton } from "./new-branch-button";
@@ -109,8 +109,8 @@ export function BranchMaster() {
         }
     }
 
-    async function handleOnEdit(args: EditNewBranchType) {
-        const props: EditNewBranchType = SlidingPaneMap[SlidingPaneEnum.branchMaster].props
+    async function handleOnEdit(args: NewEditBranchType) {
+        const props: NewEditBranchType = SlidingPaneMap[SlidingPaneEnum.branchMaster].props
         props.id = args.id
         props.branchCode = args.branchCode
         props.branchName = args.branchName

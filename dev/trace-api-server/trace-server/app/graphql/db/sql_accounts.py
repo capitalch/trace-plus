@@ -284,6 +284,21 @@ class SqlAccounts:
             order by "id"
     """
 
+    get_all_brands = """
+        SELECT 
+            b."id",
+            b."brandName",
+            b."remarks",
+            CASE WHEN MAX(p.id) IS NULL THEN FALSE ELSE TRUE END as "isUsed"
+        FROM "BrandM" b
+        LEFT JOIN "ProductM" p ON b.id = p."brandId"
+        GROUP BY 
+            b."id",
+            b."brandName",
+            b."remarks"
+        ORDER BY "brandName"
+    """
+
     get_all_gst_reports = """
         --with "branchId" as (values(null::int)), "finYearId" as (values(2022)), "startDate" as (values('2022-04-01'::date)), "endDate" as (values('2023-03-31'::date))
 			with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
@@ -493,6 +508,37 @@ class SqlAccounts:
 					'06-gst-output-sales-hsn', (SELECT json_agg(row_to_json(f)) from cte6 f),
 					'07-gst-output-sales-hsn-details', (SELECT json_agg(row_to_json(f)) from cte7 f)
                 ) as "jsonResult"
+    """
+
+    get_all_products = """
+        SELECT 
+            ROW_NUMBER() OVER (ORDER BY c."catName", b."brandName", p."label") AS "index",
+            p."id" AS "id",
+            c."id" AS "catId",
+            u."id" AS "unitId",
+            b."id" AS "brandId",
+            c."catName",
+            p."hsn",
+            b."brandName",
+            p."info",
+            u."unitName",
+            p."label",
+            p."jData",
+            p."productCode",
+            p."gstRate",
+            p."upcCode",
+            p."maxRetailPrice",
+            p."salePrice",
+            p."salePriceGst",
+            p."dealerPrice",
+            p."purPrice",
+            p."purPriceGst",
+            p."isActive"
+        FROM "ProductM" p
+        INNER JOIN "CategoryM" c ON c."id" = p."catId"
+        INNER JOIN "UnitM" u ON u."id" = p."unitId"
+        INNER JOIN "BrandM" b ON b."id" = p."brandId"
+        ORDER BY c."catName", b."brandName", p."label";
     """
 
     get_all_transactions = """
@@ -786,7 +832,7 @@ class SqlAccounts:
                 where "accLeaf" in ('L','Y')
             order by "accName"
     """
-    
+
     get_leaf_categories = """
         select id, "catName","descr", "hsn"
             from "CategoryM"
@@ -866,7 +912,7 @@ class SqlAccounts:
             from "TagsM"
                 order by "tagName"
     """
-    
+
     get_trial_balance = """
         WITH RECURSIVE hier AS (
             SELECT 

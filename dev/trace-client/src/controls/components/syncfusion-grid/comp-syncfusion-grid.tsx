@@ -199,7 +199,7 @@ export type CompSyncFusionGridType = {
     loadData?: () => void
     minWidth?: string
     onCellEdit?: (args: any) => void
-    onDelete?: (id: string) => void
+    onDelete?: (id: string, isUsed?: boolean | undefined) => void
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
     onRowDataBound?: (args: RowDataBoundEventArgs) => void

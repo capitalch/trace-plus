@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { EditNewBranchType } from "./new-edit-branch";
+import { NewEditBranchType } from "./new-edit-branch";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { AppDispatchType } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
@@ -11,7 +11,7 @@ export function NewBranchButton({ className }: NewBranchButtonType) {
         onClick={handleNewBranch}>New</button>)
 
     function handleNewBranch() {
-        const props: EditNewBranchType = SlidingPaneMap[SlidingPaneEnum.branchMaster].props
+        const props: NewEditBranchType = SlidingPaneMap[SlidingPaneEnum.branchMaster].props
         props.id = undefined
         props.branchCode = ''
         props.branchName = ''

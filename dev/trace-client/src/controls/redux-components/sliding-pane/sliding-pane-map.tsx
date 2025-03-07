@@ -1,7 +1,8 @@
 import { FC, } from "react";
 import { ContactAndAddresses, } from "../../../features/accounts/masters/accounts/contact-and-addresses";
-import { NewEditBranch, EditNewBranchType } from "../../../features/accounts/masters/branch-master/new-edit-branch";
-import {ReportAllTransactionsFilter} from "../../../features/accounts/reports/report-all-transactions/report-all-transactions-filter";
+import { NewEditBranch, NewEditBranchType } from "../../../features/accounts/masters/branch-master/new-edit-branch";
+import { ReportAllTransactionsFilter } from "../../../features/accounts/reports/report-all-transactions/report-all-transactions-filter";
+import { NewEditBrand, NewEditBrandType } from "../../../features/accounts/inventory/brands/new-edit-brand";
 
 
 export const SlidingPaneMap: SlidingPaneMapType = {
@@ -11,6 +12,14 @@ export const SlidingPaneMap: SlidingPaneMapType = {
             id: undefined,
             branchCode: '',
             branchName: '',
+            remarks: undefined
+        }
+    },
+    brandMaster: {
+        content: NewEditBrand,
+        props: {
+            id: undefined,
+            brandName: '',
             remarks: undefined
         }
     },
@@ -28,6 +37,7 @@ export const SlidingPaneMap: SlidingPaneMapType = {
 
 export enum SlidingPaneEnum {
     branchMaster = 'branchMaster',
+    brandMaster = 'brandMaster',
     contactAndAddresses = 'contactAndAddresses',
     reportAllTransactionsFilter = 'reportAllTransactionsFilter'
 }
@@ -42,7 +52,11 @@ export type SlidingPaneMapType = {
     },
     branchMaster: {
         content: FC<any>;
-        props: EditNewBranchType;
+        props: NewEditBranchType;
+    },
+    brandMaster: {
+        content: FC<any>;
+        props: NewEditBrandType
     },
     reportAllTransactionsFilter: {
         content: FC<any>

@@ -64,6 +64,7 @@ const Messages = {
     "Business unit name can be between 6 characters and 150 characters",
   messBuSuccessfullySelected: "The business unit was successfully selected",
   messBusinessUsersDragFrom: "Available business users (Drag a row)",
+  messCannotDeleteSinceUsedInProduct:"Cannot delete because this brand is already used in a product",
   messClientCode:
     "Client code should be between 6 characters and 30 characters",
   messClientName:

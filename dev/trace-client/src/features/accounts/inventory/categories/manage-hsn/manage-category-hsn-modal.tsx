@@ -135,10 +135,10 @@ export function ManageCategoryHsn() {
             gridRef.current.endEdit()
         }
         const changedValues = meta.current.rows
-        .filter(item=>item.isValueChanged)
-        .map(({ id, hsn }) => ({ id, hsn }));
-        if(_.isEmpty(changedValues)){
-            Utils.showAlertMessage('Warning',Messages.messNothingToDo)
+            .filter(item => item.isValueChanged)
+            .map(({ id, hsn }) => ({ id, hsn }));
+        if (_.isEmpty(changedValues)) {
+            Utils.showAlertMessage('Warning', Messages.messNothingToDo)
             return
         }
         try {
@@ -156,10 +156,6 @@ export function ManageCategoryHsn() {
             console.log(e)
         }
     }
-
-    // function onCellEdit(args: any) { // clearDate set as tranDate
-    //     console.log(args.value)
-    // }
 
     function onActionComplete(args: any) {
         if (args.requestType === 'save') {
@@ -200,5 +196,4 @@ function SubmitButton({ handleOnSubmit }: { handleOnSubmit: () => void }) {
         <button onClick={handleOnSubmit} type="button" className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
             <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
     </TooltipComponent>)
-
 }

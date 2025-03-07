@@ -29,7 +29,7 @@ export function NewEditBranch({ props }: any) {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting },
-    } = useForm<EditNewBranchType>({
+    } = useForm<NewEditBranchType>({
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
@@ -92,7 +92,7 @@ export function NewEditBranch({ props }: any) {
         </form>
     )
 
-    async function onSubmit(data: EditNewBranchType) {
+    async function onSubmit(data: NewEditBranchType) {
         if (!isDirty) {
             Utils.showAlertMessage('Warning', Messages.messNothingToDo)
             return
@@ -121,7 +121,7 @@ export function NewEditBranch({ props }: any) {
     }
 }
 
-export type EditNewBranchType = {
+export type NewEditBranchType = {
     id?: number
     branchCode: string
     branchName: string

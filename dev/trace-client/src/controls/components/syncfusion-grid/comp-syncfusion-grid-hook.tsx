@@ -155,7 +155,7 @@ export function useCompSyncFusionGrid({
             <Button tooltip="Delete" tooltipOptions={{ position: 'top', mouseTrack: true, mouseTrackTop: 10 }}
                 className="w-7 h-7 bg-slate-50 hover:bg-slate-300" onClick={() => {
                     if (onDelete) {
-                        onDelete(props.id)
+                        onDelete(props.id, props.isUsed)
                     }
                 }}>
                 <IconDelete className="w-5 h-5 text-red-500 ml-1" />
