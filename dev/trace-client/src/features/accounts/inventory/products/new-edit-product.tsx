@@ -14,6 +14,7 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import Select from "react-select";
+import { NumericFormat } from "react-number-format";
 
 export function NewEditProduct({ props }: any) {
     const { id, catId, brandId, unitId, label, productCode, hsn, upcCode, gstRate, salePrice, isActive, maxRetailPrice, dealerPrice, salePriceGst, purPriceGst, purPrice, info } = props;
@@ -22,7 +23,7 @@ export function NewEditProduct({ props }: any) {
     const { buCode, context } = useUtilsInfo();
 
     const {
-        checkNoSpaceOrSpecialChar,
+        // checkNoSpaceOrSpecialChar,
         checkNoSpecialChar
     } = useValidators();
 
@@ -42,7 +43,7 @@ export function NewEditProduct({ props }: any) {
             productCode,
             hsn,
             upcCode,
-            gstRate,
+            gstRate: 0,
             salePrice,
             isActive,
             maxRetailPrice,
@@ -57,10 +58,10 @@ export function NewEditProduct({ props }: any) {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 w-auto mt-2 mr-6 mb-2"
+            className="flex flex-col gap-4"
         >
             {/* Category */}
-            <label className="flex flex-col font-medium text-primary-800">
+            <label className="flex flex-col text-primary-800">
                 <span className="font-bold">Category <WidgetAstrix /></span>
                 <Select
                     placeholder="Select Category"
@@ -68,9 +69,9 @@ export function NewEditProduct({ props }: any) {
                     className="mt-1"
                 />
             </label>
-            
+
             {/* Brand */}
-            <label className="flex flex-col font-medium text-primary-800">
+            <label className="flex flex-col text-primary-800">
                 <span className="font-bold">Brand <WidgetAstrix /></span>
                 <Select
                     placeholder="Select Brand"
@@ -78,10 +79,10 @@ export function NewEditProduct({ props }: any) {
                     className="mt-1"
                 />
             </label>
-            
+
             {/* Product Label */}
-            <label className="flex flex-col font-medium text-primary-800">
-                <span className="font-bold">Label <WidgetAstrix /></span>
+            <label className="flex flex-col text-primary-800">
+                <span className="font-bold">Product Label <WidgetAstrix /></span>
                 <input
                     type="text"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
@@ -92,21 +93,161 @@ export function NewEditProduct({ props }: any) {
                 />
                 {errors.label && <WidgetFormErrorMessage errorMessage={errors.label.message} />}
             </label>
-            
-            {/* Product Code */}
+
+            {/* Product Details */}
             <label className="flex flex-col font-medium text-primary-800">
-                <span className="font-bold">Product Code <WidgetAstrix /></span>
+                <span className="font-bold">Product Details</span>
                 <input
                     type="text"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
-                    {...register('productCode', {
-                        required: Messages.errRequired,
-                        validate: checkNoSpaceOrSpecialChar
+                    {...register('info', {
+                        validate: checkNoSpecialChar
                     })}
                 />
-                {errors.productCode && <WidgetFormErrorMessage errorMessage={errors.productCode.message} />}
+                {errors.info && <WidgetFormErrorMessage errorMessage={errors.info.message} />}
             </label>
-            
+
+            {/* Product specs */}
+            <div className="flex gap-4 flex-wrap">
+
+                {/* HSN */}
+                <label className="flex flex-col text-primary-800">
+                    <span className="font-bold">HSN</span>
+                    <NumericFormat
+                        allowNegative={false}
+                        className="rounded-md w-30"
+                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                        {...register('hsn')}
+                    />
+                </label>
+
+                {/* GST Rate (%) */}
+                <label className="flex flex-col text-primary-800">
+                    <span className="font-bold">GST Rate (%)</span>
+                    <NumericFormat
+                        allowNegative={false}
+                        className="rounded-md w-25 text-right"
+                        decimalScale={2}
+                        defaultValue={0}
+                        fixedDecimalScale={true}
+                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                        {...register('gstRate')}
+                    />
+                </label>
+
+                {/* UPC code */}
+                <label className="flex flex-col text-primary-800">
+                    <span className="font-bold">UPC Code</span>
+                    <NumericFormat
+                        allowNegative={false}
+                        className="rounded-md w-50"
+                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                        {...register('upcCode')}
+                    />
+                </label>
+
+                {/* Unit */}
+                <label className="flex flex-col text-primary-800">
+                    <span className="font-bold">Unit</span>
+                    <input type='text' className="w-20" />
+                </label>
+            </div>
+
+            {/* Product prices */}
+            <div className="flex flex-col gap-2">
+
+                {/* Sale */}
+                <div className="flex gap-4">
+                    {/* Max retail price */}
+                    <label className="flex flex-col text-primary-800">
+                        <span className="">Max Retail Price</span>
+                        <NumericFormat
+                            allowNegative={false}
+                            className="rounded-md w-40 text-right"
+                            decimalScale={2}
+                            defaultValue={0}
+                            fixedDecimalScale={true}
+                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                            {...register('maxRetailPrice')}
+                        />
+                    </label>
+
+                    {/* Sale price */}
+                    <label className="flex flex-col text-primary-800">
+                        <span className="">Sale Price</span>
+                        <NumericFormat
+                            allowNegative={false}
+                            className="rounded-md w-40 text-right"
+                            decimalScale={2}
+                            defaultValue={0}
+                            fixedDecimalScale={true}
+                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                            {...register('salePrice')}
+                        />
+                    </label>
+
+                    {/* Sale price gst*/}
+                    <label className="flex flex-col text-primary-800">
+                        <span className="">Sale Price (gst)</span>
+                        <NumericFormat
+                            allowNegative={false}
+                            className="rounded-md w-40 text-right"
+                            decimalScale={2}
+                            defaultValue={0}
+                            fixedDecimalScale={true}
+                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                            {...register('salePriceGst')}
+                        />
+                    </label>
+                </div>
+
+                {/* Purchase */}
+                <div className="flex gap-4">
+                    {/* Dealer price */}
+                    <label className="flex flex-col text-primary-800">
+                        <span className="">Dealer Price</span>
+                        <NumericFormat
+                            allowNegative={false}
+                            className="rounded-md w-40 text-right"
+                            decimalScale={2}
+                            defaultValue={0}
+                            fixedDecimalScale={true}
+                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                            {...register('dealerPrice')}
+                        />
+                    </label>
+
+                    {/* Purchase price */}
+                    <label className="flex flex-col text-primary-800">
+                        <span className="">Purchase Price</span>
+                        <NumericFormat
+                            allowNegative={false}
+                            className="rounded-md w-40 text-right"
+                            decimalScale={2}
+                            defaultValue={0}
+                            fixedDecimalScale={true}
+                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                            {...register('purPrice')}
+                        />
+                    </label>
+
+                    {/* Purchase price gst*/}
+                    <label className="flex flex-col text-primary-800">
+                        <span className="">Purchase Price (gst)</span>
+                        <NumericFormat
+                            allowNegative={false}
+                            className="rounded-md w-40 text-right"
+                            decimalScale={2}
+                            defaultValue={0}
+                            fixedDecimalScale={true}
+                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                            {...register('purPriceGst')}
+                        />
+                    </label>
+                </div>
+
+            </div>
+
             {/* Submit Button */}
             <div className="sm:col-span-2 mt-4">
                 <WidgetButtonSubmitFullWidth label="Submit" className="" disabled={(isSubmitting) || (!_.isEmpty(errors))} />

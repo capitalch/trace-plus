@@ -42,8 +42,7 @@ export function ProductMaster() {
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
                 editColumnWidth={40}
-                // hasIndexColumn={true}
-                height="calc(100vh - 250px)"
+                height="calc(100vh - 295px)"
                 instance={instance}
                 isLoadOnInit={true}
                 minWidth="1500px"
@@ -73,17 +72,17 @@ export function ProductMaster() {
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
             { field: 'index', headerText: '#', type: 'number', width: 80 },
-            { field: 'productCode', headerText: 'P Code', type: 'string', width: 80 },
+            { field: 'productCode', headerText: 'Code', type: 'string', width: 80 },
             { field: 'catName', headerText: 'Cat', type: 'string', width: 80 },
             { field: 'brandName', headerText: 'Brand', type: 'string', width: 80 },
             { field: 'label', headerText: 'Label', type: 'string', width: 150 },
             { field: 'hsn', headerText: 'HSN', type: 'string', width: 80 },
-            { field: 'maxRetailPrice', headerText: 'MRP', type: 'number', width: 80, format: 'N2', textAlign: 'Right' },
-            { field: 'salePrice', headerText: 'S Price', type: 'number', width: 80, format: 'N2', textAlign: 'Right' },
-            { field: 'salePriceGst', headerText: 'S Pr(GST)', type: 'number', width: 80, format: 'N2', textAlign: 'Right' },
-            { field: 'dealerPrice', headerText: 'Dlr pr', type: 'number', width: 80, format: 'N2', textAlign: 'Right' },
-            { field: 'purPrice', headerText: 'Sal Pr(GST)', type: 'number', width: 80, format: 'N2', textAlign: 'Right' },
-            { field: 'purPriceGst', headerText: 'Pur Pr(GST)', type: 'number', width: 80, format: 'N2', textAlign: 'Right' },
+            { field: 'maxRetailPrice', headerText: 'MRP', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
+            { field: 'salePrice', headerText: 'Sal Price', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
+            { field: 'salePriceGst', headerText: 'Sal Pr(GST)', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
+            { field: 'dealerPrice', headerText: 'Dealer pr', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
+            { field: 'purPrice', headerText: 'Sal Pr(GST)', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
+            { field: 'purPriceGst', headerText: 'Pur Pr(GST)', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
             { field: 'gstRate', headerText: 'Gst(%)', type: 'number', width: 80, format: 'N2', textAlign: 'Right' },
             { field: 'unitName', headerText: 'Unit', type: 'string', width: 80 },
             { field: 'info', headerText: 'Details', type: 'string', width: 250 },

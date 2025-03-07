@@ -93,7 +93,7 @@ export function CompSyncFusionGrid({
     }
 
     return (
-        <GridComponent style={{ maxWidth: maxWidth, minWidth: minWidth }}
+        <GridComponent style={{ maxWidth: maxWidth, minWidth: minWidth,  }}
             actionBegin={actionBegin}
             actionComplete={actionComplete}
             allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
@@ -125,7 +125,9 @@ export function CompSyncFusionGrid({
             }}
             rowHeight={rowHeight}
             searchSettings={searchOptions}
-            selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}>
+            selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
+            
+            >
             <ColumnsDirective>
                 {getColumnDirectives()}
             </ColumnsDirective>
