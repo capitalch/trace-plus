@@ -148,7 +148,10 @@
   padding-right: '40px' !important;
 }
 
-/* Hide the "Select All" checkbox in the header of syncfusion grid */
-/* .e-treegrid .e-headercell .e-checkselectall {
-  display: none;
+/* React sliding pane title */
+/* .custom-pane .slide-pane__title-wrapper {
+  background: linear-gradient(135deg, #6b73ff, #000dff);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
 } */

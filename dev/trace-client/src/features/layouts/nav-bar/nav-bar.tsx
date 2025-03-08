@@ -19,7 +19,7 @@ function NavBar() {
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
     const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
 
-    const SlidingPaneChildComp: FC<any> = SlidingPaneMap[identifier]?.content
+    const SlidingPaneChildComp: FC<any>  = SlidingPaneMap[identifier]?.content
     const slidingPaneChildCompProps: any = SlidingPaneMap[identifier]?.props
     
     return (
@@ -40,12 +40,12 @@ function NavBar() {
             {isVisibleAppLoader && <CompAppLoader />}
 
             {/* react sliding pane */}
-            {identifier && isOpen && <ReactSlidingPane //className="relative z-100"
-            
-                // className=" bg-red-500 z-[9999] relative"
+            {identifier && isOpen && <ReactSlidingPane 
+                className=""
                 isOpen={isOpen}
                 onRequestClose={() => dispatch(closeSlidingPane())}
-                title={title}
+                title={<span className="font-bold text-primary-500">{title}</span>}
+            
                 width={width || '90%'}>
                 <SlidingPaneChildComp props={slidingPaneChildCompProps}></SlidingPaneChildComp>
             </ReactSlidingPane>}

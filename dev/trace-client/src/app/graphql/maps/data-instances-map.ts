@@ -17,6 +17,7 @@ export const DataInstancesMap = {
   bankReconOpBalance: "bank-recon-op-balance",
   branchMaster: "branch-master",
   brandMaster: "brand-master",
+  brandsCategoriesUnits:"brands-categories-units",
   changeCategoryParent: "change-category-parent",
   companyInfo: "company-info",
   commonUtilsTransferClosingBalance:
@@ -27,6 +28,7 @@ export const DataInstancesMap = {
   generalLedger: "general-ledger",
   generalSettings: "general-settings",
   incomes: "incomes",
+  // leafCategories:"leaf-categories",
   liabilities: "liabilities",
   manageCategoryHsn: "manage-category-hsn",
   manageTags: "manage-tags",

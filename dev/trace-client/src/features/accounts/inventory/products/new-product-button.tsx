@@ -18,7 +18,7 @@ export function NewProductButton({ className }: { className?: string }) {
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.productMaster,
             title: "New Product",
-            width: "650px"
+            width: "700px"
         }));
     }
 }

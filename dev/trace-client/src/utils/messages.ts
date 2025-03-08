@@ -84,6 +84,8 @@ const Messages = {
   messFinYearSuccessfullyChanged: "The financial year was successfully changed",
   messFailure: "Failure",
   messLinkSecuredControl: "Link a secured control with this role",
+  messMax500Chars: "Maximum 500 characters",
+  messMin2CharsRequired:"Minimum 2 characters required",
   messNoLeafNodeAllowed:"Leaf nodes cannot be selected",
   messNoParentCategoryConfirm:"Are you sure you want to make this category a top-level category?",
   messNothingToDo: "Nothing to do",

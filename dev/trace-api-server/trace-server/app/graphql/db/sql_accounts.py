@@ -268,6 +268,30 @@ class SqlAccounts:
           "accType", "accLeaf", "accClass", "accName"
     """
 
+    get_brands_categories_units = """
+        with cte1 as (
+            SELECT "id", "brandName"
+	 			from "BrandM" order by "brandName"
+        ),
+        cte2 as (
+            select "id", "catName" , (
+				select "catName" from "CategoryM"
+					where id = c."parentId"
+			) as "parent"
+                from "CategoryM" c
+					where "isLeaf" = true order by "catName"
+        ),
+        cte3 as (
+            select "id", "unitName" from "UnitM" order by "unitName"
+        )
+        SELECT
+            json_build_object(
+                'brands', (SELECT json_agg(a) from cte1 a)
+                , 'categories', (SELECT json_agg(b) from cte2 b)
+                , 'units',(SELECT json_agg(c) FROM cte3 c)
+            ) as "jsonResult"
+    """
+    
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 
@@ -614,6 +638,10 @@ class SqlAccounts:
                         order by "tranDate" DESC, h."id", d."id" 
     """
 
+    get_all_units = """
+        select "id", "unitName" from "UnitM" order by "unitName"
+    """
+    
     get_all_vouchers_export = """
         --with "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(null::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
 			with "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))

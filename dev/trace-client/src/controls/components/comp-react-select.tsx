@@ -36,10 +36,8 @@ export function CompReactSelect({
 
     return (<Select
         className={className}
-        // escapeClearsValue={true} //Does not work
         getOptionLabel={(option: any) => option[optionLabelName]}
         getOptionValue={(option: any) => option[optionValueName]}
-        // isClearable={true} //Does not work
         menuPlacement={menuPlacement || 'auto'}
         onChange={onChange}
         options={options}

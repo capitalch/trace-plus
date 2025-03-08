@@ -40,9 +40,12 @@
 - Inventory
 	- ProductM
 												- Data display in Grid
-		- Populate Category, Brand and Unit
+												- Populate Category, Brand and Unit
 		- REFRESH button
-		- Enhanced UI
+		- category to show parent also
+		- populate product on id for edit
+
+												- Enhanced UI
 		- New product
 		- Edit product
 		- Submit
