@@ -39,11 +39,10 @@
 													- No green background for altered data
 - Inventory
 	- ProductM
-												- UI
 												- Data display in Grid
 		- Populate Category, Brand and Unit
 		- REFRESH button
-		- Modify UI
+		- Enhanced UI
 		- New product
 		- Edit product
 		- Submit

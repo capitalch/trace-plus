@@ -55,6 +55,8 @@ import { ExportDropDown } from './features/Misc/export-drop-down'
 import GenericFilteringGridContainer from './features/syncfusion/filtering/generic-filtering-grid-container'
 import ReportAllTransactionsFilter  from './features/ai-generated/report-all-transactions-filter'
 import  CompactTransactionFilter  from './features/ai-generated/show-filtered-values'
+import { NewEditProduct } from './features/Misc/new-edit-product'
+import { NewEditProduct1 } from './features/Misc/new-edit-product1'
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
@@ -116,7 +118,7 @@ function App() {
       {/* <SyncfusionGrid /> */}
       {/* <InjectSummary /> */}
       {/* <SlidingPaneViewer /> */}
-      <EditGrid />
+      {/* <EditGrid /> */}
       {/* <Spinners /> */}
       {/* <ReactDatePicker />
       <ExportDropDown /> */}
@@ -124,6 +126,7 @@ function App() {
       {/* <GenericFilteringGridContainer /> */}
       {/* <ReportAllTransactionsFilter /> */}
       {/* <CompactTransactionFilter /> */}
+      <NewEditProduct />
     </GlobalContext.Provider>
   )
 }

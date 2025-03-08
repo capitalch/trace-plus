@@ -10,7 +10,6 @@ import { NewTagButton } from "./new-tag-button";
 
 export function ManageTags() {
     const instance = DataInstancesMap.manageTags;
-    // const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
 
     return (

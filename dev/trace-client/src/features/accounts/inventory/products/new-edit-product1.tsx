@@ -16,7 +16,7 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import Select from "react-select";
 import { NumericFormat } from "react-number-format";
 
-export function NewEditProduct() {
+export function NewEditProduct1() {
     // const { id, catId, brandId, unitId, label, productCode, hsn, upcCode, gstRate, salePrice, isActive, maxRetailPrice, dealerPrice, salePriceGst, purPriceGst, purPrice, info } = props;
     const instance: string = DataInstancesMap.productMaster;
     const dispatch: AppDispatchType = useDispatch();
