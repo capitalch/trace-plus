@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatchType } from "../../../../app/store/store";
 import clsx from "clsx";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
-import { SlidingPaneEnum } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
+import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 
 export function NewProductButton({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch();
@@ -15,6 +15,8 @@ export function NewProductButton({ className }: { className?: string }) {
     );
 
     function handleOpenNewProduct() {
+        const props = SlidingPaneMap[SlidingPaneEnum.productMaster].props;
+        props.id = undefined;
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.productMaster,
             title: "New Product",

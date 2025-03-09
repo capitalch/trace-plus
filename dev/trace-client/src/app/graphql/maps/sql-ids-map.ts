@@ -35,6 +35,8 @@ export const SqlIdsMap = {
   // accounts
   doesAccCodeExist: 'does_acc_code_exist',
   doesAccNameExist: 'does_acc_name_exist',
+  doesCatIdBrandIdProductLabelExist: 'does_catId_brandId_product_label_exist',
+  doesOtherCatIdBrandIdProductLabelExist: 'does_other_catId_brandId_product_label_exist',
   doesCatNameExist: 'does_category_name_exist',
   doesOtherCatNameExist: 'does_other_category_name_exist',
   doesOtherTagNameExist: 'does_other_tag_name_exist',
@@ -55,6 +57,7 @@ export const SqlIdsMap = {
   getFinYears: 'get_fin_years',
   getLeafCategories: 'get_leaf_categories',
   getLedgerLeafAccounts: 'get_ledger_leaf_accounts',
+  getProductOnId: 'get_product_on_id',
   getSettingsFinYearsBranches: 'get_settings_fin_years_branches',
   getSubledgerAccounts: 'get_subledger_accounts',
   getTags: 'get_tags',

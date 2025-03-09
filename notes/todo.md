@@ -42,6 +42,7 @@
 												- Data display in Grid
 												- Populate Category, Brand and Unit
 		- REFRESH button
+		- Validate product at server
 		- category to show parent also
 		- populate product on id for edit
 

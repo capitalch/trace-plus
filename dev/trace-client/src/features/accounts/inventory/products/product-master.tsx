@@ -13,6 +13,8 @@ import { NewEditProductType } from "./new-edit-product1";
 // import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewProductButton } from ".//new-product-button";
 import { changeAccSettings } from "../../accounts-slice";
+import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
+import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 
 export function ProductMaster() {
     const instance = DataInstancesMap.productMaster;
@@ -111,13 +113,12 @@ export function ProductMaster() {
     }
 
     async function handleOnEdit(args: NewEditProductType) {
-        console.log(args)
-        // const props: NewEditProductType = SlidingPaneMap[SlidingPaneEnum.productMaster].props;
-        // Object.assign(props, args);
-        // dispatch(openSlidingPane({
-        //     identifier: SlidingPaneEnum.productMaster,
-        //     title: 'Edit Product',
-        //     width: '600px'
-        // }));
+        const props = SlidingPaneMap[SlidingPaneEnum.productMaster].props;
+        props.id = args.id;
+        dispatch(openSlidingPane({
+            identifier: SlidingPaneEnum.productMaster,
+            title: 'Edit Product',
+            width: '700px'
+        }));
     }
 }

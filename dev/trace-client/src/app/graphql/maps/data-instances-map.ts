@@ -37,6 +37,7 @@ export const DataInstancesMap = {
   newEditTag: "new-edit-tag",
   productCategories: "product-categories",
   productMaster: "product-master",
+  productOnId:"product-on-id",
   profitLoss: "profit-loss",
   reportAllTransactions: "report-all-transactions",
   securedControls: "secured-controls",

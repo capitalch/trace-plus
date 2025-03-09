@@ -12,6 +12,28 @@ function useValidators() {
     return error;
   }
 
+  function checkAllowSomeSpecialChars(input: string | undefined) {
+    let error = undefined;
+    if (!input) {
+      return error;
+    }
+    if (input.search(/^[A-Za-z0-9 .@$%!#+'":;(),_-]+$/) < 0) {
+      error = Messages.errForbiddenChar;
+    }
+    return error;
+  }
+
+  function checkAllowSomeSpecialChars1(input: string | undefined) {
+    let error = undefined;
+    if (!input) {
+      return error;
+    }
+    if (input.search(/^[A-Za-z0-9 ()-]+$/) < 0) {
+      error = Messages.errForbiddenChar;
+    }
+    return error;
+  }
+
   function checkAtLeast8Chars(input: string) {
     let error = undefined;
     if (input.length < 8) {
@@ -223,6 +245,8 @@ function useValidators() {
 
   return {
     checkAddress,
+    checkAllowSomeSpecialChars,
+    checkAllowSomeSpecialChars1,
     checkAtLeast8Chars,
     checkEmail,
     checkGstin,

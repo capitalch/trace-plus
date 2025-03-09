@@ -21,6 +21,33 @@ class SqlAccounts:
             WHERE LOWER("accName") = LOWER((table "accName")))
     """
 
+    does_catId_brandId_product_label_exist = """
+        --with "catId" as (values(%(catId)s::int)), "brandId" as (values(%(brandId)s::int)), "label" as (values (%(label)s::text))
+        with "catId" as (values(4::int)), "brandId" as (values(1::int)), "label" as (values ('ddd'::text))
+        SELECT EXISTS (
+            SELECT 1
+                FROM "ProductM" p
+			        INNER JOIN "CategoryM" c ON c."id" = p."catId"
+			        INNER JOIN "BrandM" b ON b."id" = p."brandId"
+			            WHERE "catId" = (table "catId")
+							and "brandId" = (table"brandId")
+							and LOWER("label") = LOWER((table "label")))
+    """
+
+    does_other_catId_brandId_product_label_exist = """
+    with "catId" as (values(%(catId)s::int)), "brandId" as (values(%(brandId)s::int)), "label" as (values (%(label)s::text)), id as (values (%(id)s::int))
+        --with "catId" as (values(4::int)), "brandId" as (values(1::int)), "label" as (values ('ddd'::text)), id as (VALUES (9::int))
+        SELECT EXISTS (
+            SELECT 1
+                FROM "ProductM" p
+			        INNER JOIN "CategoryM" c ON c."id" = p."catId"
+			        INNER JOIN "BrandM" b ON b."id" = p."brandId"
+			            WHERE "catId" = (table "catId")
+							and "brandId" = (table"brandId")
+							and LOWER("label") = LOWER((table "label"))
+							and p."id" <> (table "id"))
+    """
+
     does_category_name_exist = """
     with "catName" as (values (%(catName)s::text))
         --with "catName" AS (VALUES ('LED'::text))
@@ -904,6 +931,32 @@ class SqlAccounts:
         SELECT json_build_object(
             'productCategories', (SELECT json_agg(a) FROM cte1 a)
         ) AS "jsonResult"
+    """
+
+    get_product_on_id = """
+        with "id" as (values(%(id)s::int))
+            --WITH "id" AS (VALUES (232))
+            SELECT 
+                    c."id" AS "catId",
+                    u."id" AS "unitId",
+                    b."id" AS "brandId",
+                    p."hsn",
+                    p."info",
+                    p."label",
+                    p."gstRate",
+                    p."upcCode",
+                    p."maxRetailPrice",
+                    p."salePrice",
+                    p."salePriceGst",
+                    p."dealerPrice",
+                    p."purPrice",
+                    p."purPriceGst",
+                    p."isActive"
+                FROM "ProductM" p
+                INNER JOIN "CategoryM" c ON c."id" = p."catId"
+                INNER JOIN "UnitM" u ON u."id" = p."unitId"
+                INNER JOIN "BrandM" b ON b."id" = p."brandId"
+                where p."id" = (table "id")
     """
 
     get_settings_fin_years_branches = """

@@ -7,37 +7,42 @@ import { useValidators } from "../../../../utils/validators-hook";
 import { useForm } from "react-hook-form";
 import { Utils } from "../../../../utils/utils";
 import { Messages } from "../../../../utils/messages";
-import { changeAccSettings } from "../../accounts-slice";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import _ from "lodash";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import Select from "react-select";
 import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
-import { useEffect } from "react";
+import { useEffect} from "react";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
+import { resetQueryHelperData, setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
+import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
 
-export function NewEditProduct({ id }: { id?: number }) {
-    const instance: string = DataInstancesMap.productMaster;
+export function NewEditProduct({ props }: any) {
+    const { id } = props
+    // const instance: string = DataInstancesMap.productMaster;
     const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
     const allBrandsCategoriesUnits = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.brandsCategoriesUnits]?.data)
+    const productOnId: NewEditProductType = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.productOnId]?.data)
 
     const {
-        // checkNoSpecialChar
+        checkAllowSomeSpecialChars,
+        checkAllowSomeSpecialChars1,
     } = useValidators();
 
     const {
+        clearErrors,
         register,
         handleSubmit,
         watch,
         formState: { errors, isDirty, isSubmitting },
+        setError,
+        setValue,
     } = useForm<NewEditProductType>({
         mode: "onTouched",
         criteriaMode: "all",
@@ -62,8 +67,24 @@ export function NewEditProduct({ id }: { id?: number }) {
     });
 
     useEffect(() => {
-        // loadCategory()
+        return (() => {
+            dispatch(resetQueryHelperData({ instance: DataInstancesMap.productOnId }))
+        })
     }, [])
+
+    useEffect(() => {
+        if (!_.isEmpty(allBrandsCategoriesUnits)) {
+            if (id) {
+                loadProduct()
+            }
+        }
+    }, [allBrandsCategoriesUnits])
+
+    useEffect(() => {
+        if (!_.isEmpty(productOnId)) {
+            Object.entries(productOnId).forEach(([key, value]) => setValue(key as any, value));
+        }
+    }, [productOnId])
 
     const { loading } = useQueryHelper({
         instance: DataInstancesMap.brandsCategoriesUnits,
@@ -94,10 +115,12 @@ export function NewEditProduct({ id }: { id?: number }) {
                                 optionLabelName="catName"
                                 optionValueName="id"
                                 placeHolder="Select category ..."
+                                {...register('catId'
+                                    , { required: Messages.errRequired })}
+                                onChange={handleOnChangeCategory}
                                 ref={null}
                                 staticOptions={allBrandsCategoriesUnits?.[0]?.jsonResult?.categories ?? []} //meta.current.rows
-                                selectedValue={id}
-                                onChange={handleOnChangeCategory}
+                                selectedValue={watch('catId')}
                             />
                         </FormField>
 
@@ -108,32 +131,50 @@ export function NewEditProduct({ id }: { id?: number }) {
                                 optionLabelName="brandName"
                                 optionValueName="id"
                                 placeHolder="Select brand ..."
+                                {...register('brandId'
+                                    , { required: Messages.errRequired })}
                                 ref={null}
                                 staticOptions={allBrandsCategoriesUnits?.[0]?.jsonResult?.brands ?? []} //meta.current.rows
-                                selectedValue={id}
+                                selectedValue={watch('brandId')}
                                 onChange={handleOnChangeBrand}
                             />
                         </FormField>
 
-                        {/* product label */}
-                        <FormField
-                            label="Product Label"
-                            required
-                            error={errors.label?.message}
-                            className="col-span-2">
-                            <input
-                                type="text"
-                                className={inputStyles}
-                                placeholder="Enter product name"
-                                {...register('label', {
-                                    required: Messages.errRequired,
-                                    minLength: {
-                                        value: 2,
-                                        message: Messages.messMin2CharsRequired
-                                    }
-                                })}
-                            />
-                        </FormField>
+                        <div className="">
+
+                            {/* product label */}
+                            <FormField
+                                label="Product Label"
+                                required
+                                error={errors.label?.message}
+                                className="">
+                                <input
+                                    type="text"
+                                    className={inputStyles}
+                                    placeholder="Enter product name"
+                                    {...register('label', {
+                                        required: Messages.errRequired,
+                                        minLength: {
+                                            value: 2,
+                                            message: Messages.messMin2CharsRequired
+                                        },
+                                        validate: checkAllowSomeSpecialChars1
+                                    })}
+                                />
+                            </FormField>
+
+                            {/* isActive */}
+                            {/* <label className="flex flex-col items-center font-medium text-primary-400 cursor-pointer">
+                                <span className="font-bold">Is Active</span>
+                                <input
+                                    type="checkbox"
+                                    className="mt-4"
+                                    {...register('isActive')}
+                                    checked={watch("isActive")}
+                                />
+
+                            </label> */}
+                        </div>
 
                     </div>
 
@@ -145,9 +186,9 @@ export function NewEditProduct({ id }: { id?: number }) {
                                 allowNegative={false}
                                 className={inputStyles}
                                 isAllowed={(values) => values.value.length <= 8}
+                                onValueChange={(values) => setValue('hsn', values.floatValue)}
                                 placeholder="00000000"
-                                thousandSeparator
-                                {...register('hsn')}
+                                value={watch('hsn')}
                             />
                         </FormField>
 
@@ -155,13 +196,13 @@ export function NewEditProduct({ id }: { id?: number }) {
                         <FormField label="GST Rate (%)">
                             <NumericFormat
                                 allowNegative={false}
-                                className={clsx(inputStyles, 'w-20')}
+                                className={clsx(inputStyles, 'text-right')}
                                 decimalScale={2}
                                 fixedDecimalScale={true}
                                 defaultValue={0}
-                                // suffix=" %"
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                {...register('gstRate')}
+                                onValueChange={(values) => setValue('gstRate', values.floatValue)}
+                                value={watch('gstRate')}
                             />
                         </FormField>
 
@@ -170,25 +211,28 @@ export function NewEditProduct({ id }: { id?: number }) {
                             <NumericFormat
                                 allowNegative={false}
                                 decimalScale={2}
-                                fixedDecimalScale={true}
                                 className={inputStyles}
                                 placeholder="000000000000"
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                {...register('upcCode')}
+                                onValueChange={(values) => setValue('upcCode', values.floatValue)}
+                                value={watch('upcCode')}
                             />
                         </FormField>
 
                         {/* unit */}
-                        <FormField label="Unit">
+                        <FormField label="Unit" required error={errors.unitId?.message}>
                             <CompReactSelect
+                                className="-mt-1"
                                 menuPlacement="auto"
                                 optionLabelName="unitName"
                                 optionValueName="id"
                                 placeHolder="Select unit ..."
+                                {...register('unitId'
+                                    , { required: Messages.errRequired })}
                                 ref={null}
                                 staticOptions={allBrandsCategoriesUnits?.[0]?.jsonResult?.units ?? []} //meta.current.rows
-                                selectedValue={id}
-                                onChange={handleOnChangeBrand}
+                                selectedValue={watch('unitId') || 1}
+                                onChange={handleOnChangeUnit}
                             />
                         </FormField>
                     </div>
@@ -206,7 +250,8 @@ export function NewEditProduct({ id }: { id?: number }) {
                                 maxLength: {
                                     value: 500,
                                     message: Messages.messMax500Chars
-                                }
+                                },
+                                validate: checkAllowSomeSpecialChars
                             })}
                         />
                         <span className="text-xs text-gray-500 mt-1 flex justify-end">
@@ -223,13 +268,17 @@ export function NewEditProduct({ id }: { id?: number }) {
                             <FormField label="Max Retail Price" error={errors.maxRetailPrice?.message}>
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={inputStyles}
+                                    className={clsx(inputStyles, 'text-right')}
                                     decimalScale={2}
+                                    fixedDecimalScale={true}
                                     thousandSeparator
                                     {...register('maxRetailPrice', {
-                                        // validate: value => 
-                                        //     value >= salePrice || "Must be >= sale price"
+                                        validate: value =>
+                                            ((value ?? 0) >= (watch('salePriceGst') ?? 0)) || "Must be >= sale price"
                                     })}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    onValueChange={(values) => setValue('maxRetailPrice', values.floatValue)}
+                                    value={watch('maxRetailPrice')}
                                 />
                             </FormField>
 
@@ -237,10 +286,13 @@ export function NewEditProduct({ id }: { id?: number }) {
                             <FormField label="Sale Price">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={inputStyles}
+                                    className={clsx(inputStyles, 'text-right')}
                                     decimalScale={2}
+                                    fixedDecimalScale={true}
                                     thousandSeparator
-                                    {...register('salePrice')}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    onValueChange={(values) => setValue('salePrice', values.floatValue)}
+                                    value={watch('salePrice')}
                                 />
                             </FormField>
 
@@ -248,10 +300,13 @@ export function NewEditProduct({ id }: { id?: number }) {
                             <FormField label="Sale Price (GST)">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={inputStyles}
+                                    className={clsx(inputStyles, 'text-right')}
                                     decimalScale={2}
+                                    fixedDecimalScale={true}
                                     thousandSeparator
-                                    {...register('salePriceGst')}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    onValueChange={(values) => setValue('salePriceGst', values.floatValue)}
+                                    value={watch('salePriceGst')}
                                 />
                             </FormField>
                         </div>
@@ -261,10 +316,13 @@ export function NewEditProduct({ id }: { id?: number }) {
                             <FormField label="Dealer Price">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={inputStyles}
+                                    className={clsx(inputStyles, 'text-right')}
                                     decimalScale={2}
+                                    fixedDecimalScale={true}
                                     thousandSeparator
-                                    {...register('dealerPrice')}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    onValueChange={(values) => setValue('dealerPrice', values.floatValue)}
+                                    value={watch('dealerPrice')}
                                 />
                             </FormField>
 
@@ -272,10 +330,13 @@ export function NewEditProduct({ id }: { id?: number }) {
                             <FormField label="Purchase Price">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={inputStyles}
+                                    className={clsx(inputStyles, 'text-right')}
                                     decimalScale={2}
+                                    fixedDecimalScale={true}
                                     thousandSeparator
-                                    {...register('purPrice')}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    onValueChange={(values) => setValue('purPrice', values.floatValue)}
+                                    value={watch('purPrice')}
                                 />
                             </FormField>
 
@@ -283,44 +344,59 @@ export function NewEditProduct({ id }: { id?: number }) {
                             <FormField label="Purchase Price (GST)">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={inputStyles}
+                                    className={clsx(inputStyles, 'text-right')}
                                     decimalScale={2}
+                                    fixedDecimalScale={true}
                                     thousandSeparator
-                                    {...register('purPriceGst')}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    onValueChange={(values) => setValue('purPriceGst', values.floatValue)}
+                                    value={watch('purPriceGst')}
                                 />
                             </FormField>
                         </div>
                     </div>
 
                     <WidgetButtonSubmitFullWidth label="Save" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
+
+                    <span>
+                        {showServerValidationError()}
+                    </span>
                 </div>
             </form>
         </div>
-    );
+    )
 
-    function handleOnChangeBrand() {
-
+    function handleOnChangeBrand(selectedBrand: any) {
+        setValue('brandId', selectedBrand?.id, { shouldDirty: true })
+        clearErrors('brandId')
     }
 
-    function handleOnChangeCategory() {
-
+    function handleOnChangeCategory(selectedCat: any) {
+        setValue('catId', selectedCat?.id, { shouldDirty: true })
+        clearErrors('catId')
     }
 
-    async function loadCategory() {
-        // try {
-        //     const res: any = await Utils.doGenericQuery({
-        //         buCode: buCode || '',
-        //         dbName: dbName || '',
-        //         dbParams: decodedDbParamsObject,
-        //         sqlId: SqlIdsMap.getLeafCategories,
-        //     })
-        //     dispatch(setQueryHelperData({
-        //         instance: DataInstancesMap.leafCategories,
-        //         data: res
-        //     }))
-        // } catch (e: any) {
-        //     console.log(e)
-        // }
+    function handleOnChangeUnit(selectedUnit: any) {
+        setValue('unitId', selectedUnit?.id, { shouldDirty: true })
+        clearErrors('unitId')
+    }
+
+    async function loadProduct() {
+        try {
+            const res: any = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getProductOnId,
+                sqlArgs: { id: id }
+            })
+            dispatch(setQueryHelperData({
+                instance: DataInstancesMap.productOnId,
+                data: res?.[0] || []
+            }))
+        } catch (e: any) {
+            console.log(e)
+        }
     }
 
     async function onSubmit(data: NewEditProductType) {
@@ -328,25 +404,57 @@ export function NewEditProduct({ id }: { id?: number }) {
             Utils.showAlertMessage('Warning', Messages.messNothingToDo);
             return;
         }
+        // await validateCatIdBrandIdLabel(data)
         try {
-            await Utils.doGenericUpdate({
-                buCode: buCode || '',
-                tableName: DatabaseTablesMap.ProductM,
-                xData: data
-            });
-            Utils.showSaveMessage();
-            dispatch(changeAccSettings());
-            dispatch(closeSlidingPane());
-            const loadData = context.CompSyncFusionGrid[instance].loadData;
-            if (loadData) {
-                await loadData();
-            }
+            console.log(data)
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || '',
+            //     tableName: DatabaseTablesMap.ProductM,
+            //     xData: data
+            // });
+            // Utils.showSaveMessage();
+            // dispatch(changeAccSettings());
+            // dispatch(closeSlidingPane());
+            // const loadData = context.CompSyncFusionGrid[instance].loadData;
+            // if (loadData) {
+            //     await loadData();
+            // }
         } catch (e: any) {
             console.log(e);
         }
     }
 
+    function showServerValidationError() {
+        let Ret = <></>
+        if (errors?.root?.catIdBrandIdLabel) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.catIdBrandIdLabel.message} />
+        } else {
+            Ret = <WidgetFormHelperText helperText='&nbsp;' />
+        }
+        return (Ret)
+    }
 
+    async function validateCatIdBrandIdLabel(value: NewEditProductType) {
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.doesCatIdBrandIdProductLabelExist,
+            sqlArgs: {
+                catId: value.catId,
+                brandId: value.brandId,
+                label: value.label
+            }
+        })
+        if (res?.[0]?.exists) {
+            setError('root.catIdBrandIdLabel', {
+                type: 'serverError',
+                message: Messages.errCatNameExists
+            })
+        } else {
+            clearErrors('root.catIdBrandIdLabel')
+        }
+    }
 }
 
 export type NewEditProductType = {
@@ -355,9 +463,8 @@ export type NewEditProductType = {
     brandId?: number;
     unitId?: number;
     label: string;
-    productCode: string;
-    hsn?: string;
-    upcCode?: string;
+    hsn?: number;
+    upcCode?: number;
     gstRate?: number;
     salePrice?: number;
     isActive?: boolean;
@@ -368,17 +475,6 @@ export type NewEditProductType = {
     purPrice?: number;
     info?: string;
 };
-
-// function Section({ title, children }: { title: string; children: React.ReactNode; icon?: string }) {
-//     return (
-//         <fieldset className="border border-primary-100 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200 p-4">
-//             <legend className="text-lg font-semibold text-primary-500 flex items-center">
-//                 {title}
-//             </legend>
-//             {children}
-//         </fieldset>
-//     );
-// }
 
 // Form Field Component
 function FormField({ label, children, required, error, className }: {
@@ -400,11 +496,9 @@ function FormField({ label, children, required, error, className }: {
     );
 }
 
-// const inputStyles = clsx(
-//     "w-full rounded-lg border border-gray-200 px-4 py-2 bg-white",
-//     "focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none",
-//     "placeholder:text-gray-400 text-sm transition-all duration-200",
-//     "hover:border-gray-300"
-// );
-const inputStyles =
-    "w-full rounded-lg border border-gray-400 px-4 py-2 bg-white focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none placeholder:text-gray-400 text-sm transition-all duration-200 hover:border-gray-300"
+const inputStyles = clsx(
+    "w-full rounded-lg border border-gray-400 px-4 py-2 bg-white",
+    "focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none",
+    "placeholder:text-gray-400 text-sm transition-all duration-200",
+    "hover:border-gray-300"
+);
