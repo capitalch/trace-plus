@@ -62,6 +62,7 @@ export const SqlIdsMap = {
   getSubledgerAccounts: 'get_subledger_accounts',
   getTags: 'get_tags',
   getTrialBalance: 'get_trial_balance',
+  insertProduct:'insert_product',
   updateAccountsMaster: 'update_accounts_master',
   upsertAutoSubledger: 'upsert_auto_subledger',
   upsertGeneralSettings: 'upsert_general_settings',

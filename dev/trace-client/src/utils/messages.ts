@@ -13,6 +13,7 @@ const Messages = {
     'This business unit code already exists for the current client',
   errCannotBeZero: 'Cannot have zero values',
   errCatNameExists: 'Category name altready exists',
+  errCatBrandLabelExists:'This category, brand and product label already exists',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
   errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
@@ -25,7 +26,7 @@ const Messages = {
     'The existing account has children. You cannot change parent account to ledger type',
   errFailFetchingDataFromAccounts:
     'Failed in fetching data from accounts database. Hence logging out',
-  errForbiddenChar:'Forbidden char is present. Allowed .@$%!#+":;(),_-',
+  errForbiddenChar:'Forbidden char is present. Allowed .@$#+:(),_-',
   errForbiddenChar1:'Forbidden char is present. Allowed ()_-',
   errIncrementedFinYearNotExists:
     'Incremented financial year does not exist. Please create a new financial year in the accounts',

@@ -39,17 +39,18 @@
 													- No green background for altered data
 - Inventory
 	- ProductM
+		- final testing and cleanup
+		- product code generation
+		- validation gst rate
+												- Submit
+												- Validate product at server
+												- category to show parent also
 												- Data display in Grid
 												- Populate Category, Brand and Unit
-		- REFRESH button
-		- Validate product at server
-		- category to show parent also
-		- populate product on id for edit
-
+												- populate product on id for edit
 												- Enhanced UI
-		- New product
-		- Edit product
-		- Submit
+												- New product
+												- Edit product
 									- Brands
 										- isUsed
 										- if used then not delete

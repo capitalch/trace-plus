@@ -17,7 +17,7 @@ function useValidators() {
     if (!input) {
       return error;
     }
-    if (input.search(/^[A-Za-z0-9 .@$%!#+'":;(),_-]+$/) < 0) {
+    if (input.search(/^[A-Za-z0-9 .@$#+:(),_-]+$/) < 0) {
       error = Messages.errForbiddenChar;
     }
     return error;

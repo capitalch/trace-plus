@@ -22,8 +22,8 @@ class SqlAccounts:
     """
 
     does_catId_brandId_product_label_exist = """
-        --with "catId" as (values(%(catId)s::int)), "brandId" as (values(%(brandId)s::int)), "label" as (values (%(label)s::text))
-        with "catId" as (values(4::int)), "brandId" as (values(1::int)), "label" as (values ('ddd'::text))
+        with "catId" as (values(%(catId)s::int)), "brandId" as (values(%(brandId)s::int)), "label" as (values(%(label)s::text))
+        --with "catId" as (values(4::int)), "brandId" as (values(1::int)), "label" as (values ('ddd'::text))
         SELECT EXISTS (
             SELECT 1
                 FROM "ProductM" p
@@ -308,13 +308,17 @@ class SqlAccounts:
                 from "CategoryM" c
 					where "isLeaf" = true order by "catName"
         ),
+		cte22 as (
+			select "id", "catName" || ' (' || "parent" || ')' as "catName"
+				from cte2
+		),
         cte3 as (
             select "id", "unitName" from "UnitM" order by "unitName"
         )
         SELECT
             json_build_object(
                 'brands', (SELECT json_agg(a) from cte1 a)
-                , 'categories', (SELECT json_agg(b) from cte2 b)
+                , 'categories', (SELECT json_agg(b) from cte22 b)
                 , 'units',(SELECT json_agg(c) FROM cte3 c)
             ) as "jsonResult"
     """
@@ -937,6 +941,7 @@ class SqlAccounts:
         with "id" as (values(%(id)s::int))
             --WITH "id" AS (VALUES (232))
             SELECT 
+                    p.id,
                     c."id" AS "catId",
                     u."id" AS "unitId",
                     b."id" AS "brandId",
@@ -1115,6 +1120,27 @@ class SqlAccounts:
             'trialBalance', (SELECT JSON_AGG(a) FROM cte4 a),
             'profitOrLoss', (SELECT "profitOrLoss" FROM cte3)
         ) AS "jsonResult"
+    """
+
+    insert_product = """
+        WITH new_product_code AS (
+            UPDATE "Settings"
+            SET "intValue" = "intValue" + 1
+            WHERE "key" = 'lastProductCode'
+            RETURNING "intValue" AS "productCode"),
+        inserted_product AS (
+            INSERT INTO "ProductM" (
+                "catId", "hsn", "brandId", "info", "unitId", "label", 
+                "productCode", "upcCode", "gstRate", "maxRetailPrice", "salePrice",
+                "salePriceGst", "dealerPrice", "purPrice", "purPriceGst"
+            )
+            SELECT 
+                %(catId)s, %(hsn)s, %(brandId)s, %(info)s, %(unitId)s, %(label)s,  
+                np."productCode", %(upcCode)s, %(gstRate)s, %(maxRetailPrice)s, %(salePrice)s, 
+                %(salePriceGst)s, %(dealerPrice)s, %(purPrice)s, %(purPriceGst)s
+            FROM new_product_code np
+            RETURNING "id")
+        SELECT "id" FROM inserted_product
     """
 
     test_connection = """

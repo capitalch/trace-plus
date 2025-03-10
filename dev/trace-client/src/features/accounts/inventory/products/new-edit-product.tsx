@@ -15,19 +15,21 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
-import { useEffect} from "react";
+import { useEffect } from "react";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { resetQueryHelperData, setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
 import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
+import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
+import { IbukiMessages } from "../../../../utils/ibukiMessages";
 
 export function NewEditProduct({ props }: any) {
     const { id } = props
-    // const instance: string = DataInstancesMap.productMaster;
     const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
-    const allBrandsCategoriesUnits = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.brandsCategoriesUnits]?.data)
+    const allBrandsCategoriesUnits = useSelector((state: RootStateType) =>
+        state.queryHelper[DataInstancesMap.brandsCategoriesUnits]?.data)
     const productOnId: NewEditProductType = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.productOnId]?.data)
 
     const {
@@ -37,6 +39,7 @@ export function NewEditProduct({ props }: any) {
 
     const {
         clearErrors,
+        getValues,
         register,
         handleSubmit,
         watch,
@@ -67,7 +70,11 @@ export function NewEditProduct({ props }: any) {
     });
 
     useEffect(() => {
+        const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-PRODUCT-LABEL'], 1200).subscribe(async () => {
+            validateCatIdBrandIdLabel()
+        })
         return (() => {
+            subs1.unsubscribe()
             dispatch(resetQueryHelperData({ instance: DataInstancesMap.productOnId }))
         })
     }, [])
@@ -158,7 +165,10 @@ export function NewEditProduct({ props }: any) {
                                             value: 2,
                                             message: Messages.messMin2CharsRequired
                                         },
-                                        validate: checkAllowSomeSpecialChars1
+                                        validate: checkAllowSomeSpecialChars1,
+                                        onChange: (e: any) => {
+                                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-PRODUCT-LABEL'], { label: e.target.value })
+                                        }
                                     })}
                                 />
                             </FormField>
@@ -355,25 +365,25 @@ export function NewEditProduct({ props }: any) {
                             </FormField>
                         </div>
                     </div>
-
+                    {showServerValidationError()}
                     <WidgetButtonSubmitFullWidth label="Save" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
-
-                    <span>
-                        {showServerValidationError()}
-                    </span>
                 </div>
+
             </form>
+
         </div>
     )
 
     function handleOnChangeBrand(selectedBrand: any) {
         setValue('brandId', selectedBrand?.id, { shouldDirty: true })
         clearErrors('brandId')
+        validateCatIdBrandIdLabel()
     }
 
     function handleOnChangeCategory(selectedCat: any) {
         setValue('catId', selectedCat?.id, { shouldDirty: true })
         clearErrors('catId')
+        validateCatIdBrandIdLabel()
     }
 
     function handleOnChangeUnit(selectedUnit: any) {
@@ -404,21 +414,31 @@ export function NewEditProduct({ props }: any) {
             Utils.showAlertMessage('Warning', Messages.messNothingToDo);
             return;
         }
-        // await validateCatIdBrandIdLabel(data)
         try {
-            console.log(data)
-            // await Utils.doGenericUpdate({
-            //     buCode: buCode || '',
-            //     tableName: DatabaseTablesMap.ProductM,
-            //     xData: data
-            // });
-            // Utils.showSaveMessage();
-            // dispatch(changeAccSettings());
-            // dispatch(closeSlidingPane());
-            // const loadData = context.CompSyncFusionGrid[instance].loadData;
-            // if (loadData) {
-            //     await loadData();
-            // }
+            if (id) {
+                //update
+                await Utils.doGenericUpdate({
+                    buCode: buCode || '',
+                    tableName: DatabaseTablesMap.ProductM,
+                    xData: data
+                });
+            } else {
+                // insert
+                await Utils.doGenericUpdateQuery({
+                    buCode: buCode || '',
+                    dbName: dbName || '',
+                    dbParams: decodedDbParamsObject,
+                    sqlId: SqlIdsMap.insertProduct,
+                    sqlArgs: data
+                })
+            }
+
+            Utils.showSaveMessage();
+            dispatch(closeSlidingPane());
+            const loadData = context.CompSyncFusionGrid[DataInstancesMap.productMaster].loadData;
+            if (loadData) {
+                await loadData();
+            }
         } catch (e: any) {
             console.log(e);
         }
@@ -434,22 +454,27 @@ export function NewEditProduct({ props }: any) {
         return (Ret)
     }
 
-    async function validateCatIdBrandIdLabel(value: NewEditProductType) {
+    async function validateCatIdBrandIdLabel() {
+        const values = getValues()
+        if ((!values.catId) || (!values.brandId) || (!values.label)) {
+            return
+        }
         const res: any = await Utils.doGenericQuery({
             buCode: buCode || '',
             dbName: dbName || '',
             dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.doesCatIdBrandIdProductLabelExist,
+            sqlId: id ? SqlIdsMap.doesOtherCatIdBrandIdProductLabelExist : SqlIdsMap.doesCatIdBrandIdProductLabelExist,
             sqlArgs: {
-                catId: value.catId,
-                brandId: value.brandId,
-                label: value.label
+                catId: values.catId,
+                brandId: values.brandId,
+                label: values.label,
+                id: id
             }
         })
         if (res?.[0]?.exists) {
             setError('root.catIdBrandIdLabel', {
                 type: 'serverError',
-                message: Messages.errCatNameExists
+                message: Messages.errCatBrandLabelExists
             })
         } else {
             clearErrors('root.catIdBrandIdLabel')
