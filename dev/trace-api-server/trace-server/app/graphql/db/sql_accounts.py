@@ -965,7 +965,30 @@ class SqlAccounts:
     """
 
     get_products_opening_balances = """
-    
+        with 
+            "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+            --"branchId" as (values(1)), "finYearId" as (values (2024)),
+            cte1 as (
+                    select a."id", "catName", "catId", "brandName", "brandId", "productId" ,"label", "info", "qty", "openingPrice", "lastPurchaseDate", "productCode"
+                                from "ProductOpBal" a
+                                    join "ProductM" p
+                                        on p."id" = a."productId"
+                                    join "CategoryM" c
+                                        on c."id" = p."catId"
+                                    join "BrandM" b
+                                        on b."id" = p."brandId"
+                            where "finYearId" = (table "finYearId") 
+                                and "branchId" = (table "branchId")
+                            order by a."id" DESC),
+            cte2 as (
+                select SUM("qty" * "openingPrice") as value
+                    from "ProductOpBal"
+                where "finYearId" = (table "finYearId") 
+                    and "branchId" = (table "branchId"))
+                select json_build_object(
+                    'openingBalances',(SELECT json_agg(a) from cte1 a)
+                    , 'value', (SELECT value from cte2)
+                ) as "jsonResult"
     """
     
     get_settings_fin_years_branches = """
