@@ -38,10 +38,18 @@
 													- Behave erratic while saving
 													- No green background for altered data
 - Inventory
+	- Op stock
+		- UI
+		- populate data
+		- Sql
+		- edit
+			- UI
+			- Submit
 	- ProductM
-		- final testing and cleanup
-		- product code generation
-		- validation gst rate
+		- product active status change
+												- final testing and cleanup
+												- product code generation
+												- validation gst rate
 												- Submit
 												- Validate product at server
 												- category to show parent also

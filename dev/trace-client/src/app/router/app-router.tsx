@@ -34,7 +34,7 @@ import { ReportAllTransactions } from "../../features/accounts/reports/report-al
 import { ProductCategories } from "../../features/accounts/inventory/categories/product-categories";
 import { BrandMaster } from "../../features/accounts/inventory/brands/brand-master";
 import { ProductMaster } from "../../features/accounts/inventory/products/product-master";
-import { ProductsOpeningStock } from "../../features/accounts/inventory/opening-stock/products-opening-stock";
+import { ProductsOpeningBalances } from "../../features/accounts/inventory/opening-stock/products-opening-balances";
 
 export const appRouter = createBrowserRouter([
     {
@@ -77,7 +77,7 @@ export const appRouter = createBrowserRouter([
                 { path: 'product-categories', element: <ProductCategories /> },
                 { path: 'brand-master', element: <BrandMaster /> },
                 { path: 'product-master', element: <ProductMaster /> },
-                { path: 'products-opening-stock', element: <ProductsOpeningStock /> },
+                { path: 'products-opening-balances', element: <ProductsOpeningBalances /> },
             ]
     },
     {

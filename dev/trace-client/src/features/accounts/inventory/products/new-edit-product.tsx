@@ -172,22 +172,8 @@ export function NewEditProduct({ props }: any) {
                                     })}
                                 />
                             </FormField>
-
-                            {/* isActive */}
-                            {/* <label className="flex flex-col items-center font-medium text-primary-400 cursor-pointer">
-                                <span className="font-bold">Is Active</span>
-                                <input
-                                    type="checkbox"
-                                    className="mt-4"
-                                    {...register('isActive')}
-                                    checked={watch("isActive")}
-                                />
-
-                            </label> */}
                         </div>
-
                     </div>
-
                     <div className="grid grid-cols-4 gap-2">
 
                         {/* hsn */}
@@ -203,15 +189,18 @@ export function NewEditProduct({ props }: any) {
                         </FormField>
 
                         {/* gst rate */}
-                        <FormField label="GST Rate (%)">
+                        <FormField label="GST Rate (%)" error={errors.gstRate?.message}>
                             <NumericFormat
                                 allowNegative={false}
                                 className={clsx(inputStyles, 'text-right')}
                                 decimalScale={2}
                                 fixedDecimalScale={true}
+                                {...register('gstRate', {
+                                    validate: (value) => ((value ?? 0) < (41)) || Messages.errGstRateTooHigh
+                                })}
                                 defaultValue={0}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                onValueChange={(values) => setValue('gstRate', values.floatValue)}
+                                onValueChange={(values) => setValue('gstRate', values.floatValue, { shouldValidate: true, shouldDirty: true })}
                                 value={watch('gstRate')}
                             />
                         </FormField>
@@ -284,7 +273,7 @@ export function NewEditProduct({ props }: any) {
                                     thousandSeparator
                                     {...register('maxRetailPrice', {
                                         validate: value =>
-                                            ((value ?? 0) >= (watch('salePriceGst') ?? 0)) || "Must be >= sale price"
+                                            ((value ?? 0) >= (watch('salePriceGst') ?? 0)) || Messages.messMustBeGESalePriceGst
                                     })}
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                     onValueChange={(values) => setValue('maxRetailPrice', values.floatValue)}
@@ -522,7 +511,7 @@ function FormField({ label, children, required, error, className }: {
 }
 
 const inputStyles = clsx(
-    "w-full rounded-lg border border-gray-400 px-4 py-2 bg-white",
+    "w-full rounded-lg border border-gray-800 px-4 py-2 bg-white",
     "focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none",
     "placeholder:text-gray-400 text-sm transition-all duration-200",
     "hover:border-gray-300"

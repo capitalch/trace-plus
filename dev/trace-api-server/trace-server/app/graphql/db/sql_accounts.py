@@ -964,6 +964,10 @@ class SqlAccounts:
                 where p."id" = (table "id")
     """
 
+    get_products_opening_balances = """
+    
+    """
+    
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"

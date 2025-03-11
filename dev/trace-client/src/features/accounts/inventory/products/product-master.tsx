@@ -8,9 +8,6 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-// import { NewEditProductType } from "./new-edit-product1";
-// import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
-// import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewProductButton } from ".//new-product-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
@@ -28,7 +25,7 @@ export function ProductMaster() {
                 className='mt-2 mr-6'
                 CustomControl={() => <NewProductButton />}
                 minWidth="1450px"
-                title='Products'
+                title='Product master'
                 isPdfExport={true}
                 isExcelExport={true}
                 isCsvExport={true}

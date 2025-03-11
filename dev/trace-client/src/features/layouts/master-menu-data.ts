@@ -202,13 +202,13 @@ export const MasterMenuData: MenuDataType = {
         },
         {
           id: "73",
-          label: "Products",
+          label: "Product master",
           path: "/product-master",
         },
         {
           id: "74",
           label: "Opening stock",
-          path: "/products-opening-stock",
+          path: "/products-opening-balances",
         },
         {
           id: "75",

@@ -16,6 +16,8 @@
 - Bug fixes etc.
 
 ## History
+# 10-03-2024
+	- Inventory -> Brands + Products completed
 # 06-03-2025
 	- Inventory -> Category completed
 # 28-02-2025

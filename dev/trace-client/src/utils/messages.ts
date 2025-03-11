@@ -28,6 +28,7 @@ const Messages = {
     'Failed in fetching data from accounts database. Hence logging out',
   errForbiddenChar:'Forbidden char is present. Allowed .@$#+:(),_-',
   errForbiddenChar1:'Forbidden char is present. Allowed ()_-',
+  errGstRateTooHigh:'Gst rate is too high',
   errIncrementedFinYearNotExists:
     'Incremented financial year does not exist. Please create a new financial year in the accounts',
   errInputMustBeUrl: 'Input must be a valid URL',
