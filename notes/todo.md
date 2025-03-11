@@ -39,9 +39,11 @@
 													- No green background for altered data
 - Inventory
 	- Op stock
-		- UI
-		- populate data
-		- Sql
+												- UI
+												- populate data
+												- Sql
+		- index
+		- Aggregate value
 		- edit
 			- UI
 			- Submit

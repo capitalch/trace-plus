@@ -969,7 +969,19 @@ class SqlAccounts:
             "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
             --"branchId" as (values(1)), "finYearId" as (values (2024)),
             cte1 as (
-                    select a."id", "catName", "catId", "brandName", "brandId", "productId" ,"label", "info", "qty", "openingPrice", "lastPurchaseDate", "productCode"
+                    select a."id", 
+                    ROW_NUMBER() OVER (ORDER BY c."catName", b."brandName", p."label") AS "index",
+                    "catName", 
+                    "catId", 
+                    "brandName", 
+                    "brandId", 
+                    "productId",
+                    "label", 
+                    "info", 
+                    "qty", 
+                    "openingPrice", 
+                    "lastPurchaseDate", 
+                    "productCode"
                                 from "ProductOpBal" a
                                     join "ProductM" p
                                         on p."id" = a."productId"
