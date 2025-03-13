@@ -39,16 +39,18 @@
 													- No green background for altered data
 - Inventory
 	- Op stock
+												- show error messages
+												- functionality of lastPurchaseDate
+		- edit
+		- new
+		- Submit
+			- Save
+			- reset and refresh
 												- UI
 												- populate data
 												- Sql
 												- index
 												- Aggregate value
-		- edit
-			- UI
-			- Submit
-		- new
-			- Submit
 	- ProductM
 		- product active status change
 												- final testing and cleanup

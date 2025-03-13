@@ -1,5 +1,5 @@
-import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../app/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 // import { useValidators } from "../../../../utils/validators-hook";
 import { useForm } from "react-hook-form";
@@ -17,26 +17,27 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
 // import { Utils } from "../../../../utils/utils";
 // import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
-import { useEffect, useRef } from "react";
-import { ProductCatIdBrandIdLabelType } from "../../accounts-slice";
+import { useEffect, } from "react";
+import { Utils } from "../../../../utils/utils";
+import { resetQueryHelperData, setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
+// import { ProductCatIdBrandIdLabelType } from "../../accounts-slice";
 
 export function ProductsOpeningBalancesWorkBench() {
-    // const dispatch: AppDispatchType = useDispatch();
+    const dispatch: AppDispatchType = useDispatch();
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
-    const productCatIdBrandIdLabel: ProductCatIdBrandIdLabelType = useSelector((state: RootStateType) => state.accounts.productCatIdBrandIdLabel)
+    // const productCatIdBrandIdLabel: ProductCatIdBrandIdLabelType = useSelector((state: RootStateType) => state.accounts.productCatIdBrandIdLabel)
     const leafCategoriesWithParent = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.leafCategoriesWithParent]?.data)
     const brandsOnCatId = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.brandsOnCatId]?.data)
     const productLabelsOnCatIdBrandId = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.productLabelsOnCatIdBrandId]?.data)
-    // const meta = useRef<MetaType>({})
-    const formRef: any = useRef(null)
+
     const {
         clearErrors,
-        getValues,
+        // getValues,
         register,
         handleSubmit,
         // trigger,
         watch,
-        formState: { errors, isSubmitting },
+        formState: { errors, isDirty, isSubmitting },
         // setError,
         setValue,
     } = useForm<ProductsOpeningBalancesFormType>({
@@ -44,24 +45,12 @@ export function ProductsOpeningBalancesWorkBench() {
         criteriaMode: "all",
         defaultValues: {
             // id: id,
-            catId: productCatIdBrandIdLabel.catId,
-            brandId: productCatIdBrandIdLabel.brandId,
-            unitId: undefined,
-            label: productCatIdBrandIdLabel.label,
+            catId: undefined, // productCatIdBrandIdLabel.catId,
+            brandId: undefined, //productCatIdBrandIdLabel.brandId,
+            label: undefined, //productCatIdBrandIdLabel.label,
             qty: 0,
             openingPrice: 0,
             lastPurchaseDate: undefined
-            // hsn: undefined,
-            // upcCode: undefined,
-            // gstRate: 0,
-            // salePrice: 0,
-            // isActive: true,
-            // maxRetailPrice: 0,
-            // dealerPrice: 0,
-            // salePriceGst: 0,
-            // purPriceGst: 0,
-            // purPrice: 0,
-            // info: undefined
         },
     });
 
@@ -76,19 +65,45 @@ export function ProductsOpeningBalancesWorkBench() {
         })
     })
 
-    useEffect(()=>{
+    const catId = watch('catId')
+    const brandId = watch('brandId')
 
-    },[])
+    useEffect(() => {
+        return (() => {
+            resetBrandsOptions()
+            resetLabelsOptions()
+        })
+    }, [])
+
+    useEffect(() => {
+        if (!catId) {
+            return
+        }
+        fetchBrands()
+        setValue('brandId', undefined)
+        setValue('label', undefined)
+        resetLabelsOptions()
+        resetOtherControls()
+    }, [catId])
+
+    useEffect(() => {
+        if (!brandId) {
+            return
+        }
+        fetchLabels()
+        setValue('label', undefined)
+        // resetOtherControls()
+    }, [brandId])
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
     }
 
-    return (<div className="border-4 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-[calc(100vh-120px)]">
-        <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+    return (<div className="border-2 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-[calc(100vh-120px)]">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
 
             {/* category */}
-            <FormField label="Category" required>
+            <FormField label="Category" required error={errors.catId?.message}>
                 <CompReactSelect
                     menuPlacement="auto"
                     optionLabelName="catName"
@@ -104,7 +119,7 @@ export function ProductsOpeningBalancesWorkBench() {
             </FormField>
 
             {/* Brand */}
-            <FormField label="Brand" required >
+            <FormField label="Brand" required error={errors.brandId?.message}>
                 <CompReactSelect
                     menuPlacement="auto"
                     optionLabelName="brandName"
@@ -121,7 +136,7 @@ export function ProductsOpeningBalancesWorkBench() {
 
             {/* product label */}
             <FormField
-                label="Product Label" required>
+                label="Product Label" required error={errors.label?.message}>
                 <CompReactSelect
                     menuPlacement="auto"
                     optionLabelName="label"
@@ -139,14 +154,15 @@ export function ProductsOpeningBalancesWorkBench() {
             <div className="grid grid-cols-2 gap-2">
 
                 {/* qty */}
-                <FormField label="Qty" >
+                <FormField label="Qty" required error={errors.qty?.message}>
                     <NumericFormat
                         allowNegative={false}
-                        className={clsx('text-right')}
+                        className={clsx('text-right rounded-md')}
                         decimalScale={2}
                         fixedDecimalScale={true}
                         {...register('qty', {
-                            // validate: (value) => ((value ?? 0) < (41)) || Messages.errGstRateTooHigh
+                            required: Messages.errRequired,
+                            validate: (value) => ((value ?? 0) > 0 ? true : Messages.errCannotBeZero)
                         })}
                         defaultValue={0}
                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
@@ -159,12 +175,10 @@ export function ProductsOpeningBalancesWorkBench() {
                 <FormField label="Opening price" >
                     <NumericFormat
                         allowNegative={false}
-                        className={clsx('text-right')}
+                        className={clsx('text-right mt-1 rounded-md')}
                         decimalScale={2}
                         fixedDecimalScale={true}
-                        {...register('openingPrice', {
-                            // validate: (value) => ((value ?? 0) < (41)) || Messages.errGstRateTooHigh
-                        })}
+                        {...register('openingPrice')}
                         defaultValue={0}
                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                         onValueChange={(values) => setValue('openingPrice', values.floatValue, { shouldValidate: true, shouldDirty: true })}
@@ -174,76 +188,75 @@ export function ProductsOpeningBalancesWorkBench() {
             </div>
 
             {/* Last purchaseDate */}
-            <FormField label="Last purchase date" >
+            <FormField label="Last purchase date" required error={errors.lastPurchaseDate?.message}>
                 <input
                     type='date'
-                    className={clsx('text-right')}
+                    className={clsx('text-right rounded-md')}
                     {...register('lastPurchaseDate', {
-                        // validate: (value) => ((value ?? 0) < (41)) || Messages.errGstRateTooHigh
+                        required: Messages.errRequired
                     })}
-                    value={watch('openingPrice')}
+                    value={watch('lastPurchaseDate')}
                 />
             </FormField>
 
-            <WidgetButtonSubmitFullWidth className="mt-4" label="Submit" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
+            <WidgetButtonSubmitFullWidth className="mt-2" label="Submit" disabled={(isSubmitting) || (!_.isEmpty(errors)) || !(isDirty)} />
 
         </form>
-        <div className="w-full flex justify-end mt-10">
-            <button className="w-36 bg-amber-600 text-gray-100 rounded-md py-1 text-lg hover:bg-amber-800 hover:text-white">Reset</button>
+        <div className="w-full flex justify-end mt-2">
+            <button onClick={handleResetAll} className="w-36 bg-amber-600 text-gray-100 rounded-md py-1 text-lg hover:bg-amber-800 hover:text-white">Reset</button>
         </div>
     </div>)
 
-    async function handleOnChangeBrand(selectedBrand: any) {
-        const catId = undefined
-        // if (meta.current) {
-        //     catId = meta.current.catId
-        // }
-        if ((!selectedBrand?.id) || (!catId)) {
-            return
-        }
-        // meta.current.brandId = selectedBrand.id
-        clearErrors('brandId')
+    async function fetchBrands() {
         try {
-            // const res = await Utils.doGenericQuery({
-            //     buCode: buCode || '',
-            //     dbName: dbName || '',
-            //     dbParams: decodedDbParamsObject,
-            //     sqlId: SqlIdsMap.getProductLabelsOnCatIdBrandId,
-            //     sqlArgs: { catId: meta.current.catId, brandId: meta.current.brandId }
-            // })
-            // dispatch(setQueryHelperData({
-            //     data: res,
-            //     instance: DataInstancesMap.productLabelsOnCatIdBrandId
-            // }))
+            const res = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getBrandsOnCatId,
+                sqlArgs: { catId: catId }
+            })
+            dispatch(setQueryHelperData({
+                data: res,
+                instance: DataInstancesMap.brandsOnCatId
+            }))
         } catch (e: any) {
             console.log(e)
         }
+    }
+
+    async function fetchLabels() {
+        try {
+            const res = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getProductLabelsOnCatIdBrandId,
+                sqlArgs: { catId: catId, brandId: brandId }
+            })
+            dispatch(setQueryHelperData({
+                data: res,
+                instance: DataInstancesMap.productLabelsOnCatIdBrandId
+            }))
+        } catch (e: any) {
+            console.log(e)
+        }
+    }
+
+    async function handleOnChangeBrand(selectedBrand: any) {
+        if ((!selectedBrand?.id) || (!catId)) {
+            return
+        }
+        setValue('brandId', selectedBrand.id, { shouldDirty: true })
+        clearErrors('brandId')
     }
 
     async function handleOnChangeCategory(selectedCat: any) {
         if (!selectedCat?.id) {
             return
         }
-        // if (meta.current) {
-        //     meta.current.catId = selectedCat.id
-        // }
         clearErrors('catId')
-        setValue('catId', selectedCat.id)
-        try {
-            // const res = await Utils.doGenericQuery({
-            //     buCode: buCode || '',
-            //     dbName: dbName || '',
-            //     dbParams: decodedDbParamsObject,
-            //     sqlId: SqlIdsMap.getBrandsOnCatId,
-            //     sqlArgs: { catId: meta.current.catId }
-            // })
-            // dispatch(setQueryHelperData({
-            //     data: res,
-            //     instance: DataInstancesMap.brandsOnCatId
-            // }))
-        } catch (e: any) {
-            console.log(e)
-        }
+        setValue('catId', selectedCat.id, { shouldDirty: true })
     }
 
     function handleOnChangeLabel(selectedLabel: any) {
@@ -251,8 +264,37 @@ export function ProductsOpeningBalancesWorkBench() {
         clearErrors('label')
     }
 
+    function handleResetAll() {
+        setValue('catId', undefined,)
+        setValue('brandId', undefined)
+        setValue('label', undefined)
+        setValue('id', undefined)
+        resetOtherControls()
+        resetBrandsOptions()
+        resetLabelsOptions()
+    }
+
+
     async function onSubmit(data: any) {
         console.log(data)
+    }
+
+    function resetBrandsOptions() {
+        dispatch(resetQueryHelperData({
+            instance: DataInstancesMap.brandsOnCatId
+        }))
+    }
+
+    function resetLabelsOptions() {
+        dispatch(resetQueryHelperData({
+            instance: DataInstancesMap.productLabelsOnCatIdBrandId
+        }))
+    }
+
+    function resetOtherControls() {
+        setValue('qty', 0)
+        setValue('openingPrice', 0)
+        setValue('lastPurchaseDate', undefined)
     }
 }
 
@@ -282,9 +324,9 @@ function FormField({ label, children, required, error, className }: {
 //     label?: string
 // }
 type ProductsOpeningBalancesFormType = {
+    id?: number
     catId?: number
     brandId?: number
-    unitId: number
     label?: string
     qty?: number
     openingPrice?: number
