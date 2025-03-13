@@ -42,10 +42,12 @@
 												- UI
 												- populate data
 												- Sql
-		- index
-		- Aggregate value
+												- index
+												- Aggregate value
 		- edit
 			- UI
+			- Submit
+		- new
 			- Submit
 	- ProductM
 		- product active status change

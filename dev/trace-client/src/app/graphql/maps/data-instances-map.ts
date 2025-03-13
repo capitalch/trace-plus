@@ -18,6 +18,7 @@ export const DataInstancesMap = {
   branchMaster: "branch-master",
   brandMaster: "brand-master",
   brandsCategoriesUnits:"brands-categories-units",
+  brandsOnCatId:"brands-on-cat-id",
   changeCategoryParent: "change-category-parent",
   companyInfo: "company-info",
   commonUtilsTransferClosingBalance:
@@ -29,6 +30,7 @@ export const DataInstancesMap = {
   generalSettings: "general-settings",
   incomes: "incomes",
   // leafCategories:"leaf-categories",
+  leafCategoriesWithParent:"leaf-categories-with-parent",
   liabilities: "liabilities",
   manageCategoryHsn: "manage-category-hsn",
   manageTags: "manage-tags",
@@ -38,6 +40,7 @@ export const DataInstancesMap = {
   productCategories: "product-categories",
   productMaster: "product-master",
   productOnId:"product-on-id",
+  productLabelsOnCatIdBrandId:"product-labels-on-cat-id-brand-id",
   productsOpeningBalances:"products-opening-balances",
   profitLoss: "profit-loss",
   reportAllTransactions: "report-all-transactions",

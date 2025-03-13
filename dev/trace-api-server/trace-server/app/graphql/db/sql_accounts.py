@@ -874,6 +874,19 @@ class SqlAccounts:
             ) as "jsonResult"
     """
 
+    get_brands_on_catId = """
+        with "catId" as (values(%(catId)s::int))
+            --WITH "catId" AS (VALUES (4))
+        select DISTINCT on(b.id, b."brandName")
+            b.id, 
+            b."brandName"
+        from "BrandM" b
+            join "ProductM" p
+                on b.id = p."brandId"
+        where p."catId" = (table "catId")
+        order by "brandName"
+    """
+    
     get_extBusinessContactsAccM = """
     select * 
 	    from "ExtBusinessContactsAccM"
@@ -885,6 +898,18 @@ class SqlAccounts:
                 from "FinYearM" order by "id" DESC
     """
 
+    get_product_labels_on_catId_brandId = """
+        with "catId" as (values(%(catId)s::int)), "brandId" as (values(%(brandId)s::int))
+		--WITH "catId" AS (VALUES (49)), "brandId" AS (VALUES (9))
+            select DISTINCT on(p.id, p."label")
+                p.id, 
+                p."label"
+            from "ProductM" p
+            where p."catId" = (table "catId")
+                and p."brandId" = (table "brandId")
+            order by "label"
+    """
+    
     get_ledger_leaf_accounts = """
         select id, "accName", "accLeaf"
             from "AccM"
@@ -897,6 +922,16 @@ class SqlAccounts:
             from "CategoryM"
         where "isLeaf" = true
             order by "catName"
+    """
+    
+    get_leaf_categories_with_parent ="""
+        select "id", "catName" || ' (' || (
+				select "catName" from "CategoryM"
+					where id = c."parentId"
+			) || ')' as "catName"
+                from "CategoryM" c
+					where "isLeaf" 
+				order by "catName"
     """
 
     get_product_categories = """
@@ -913,9 +948,7 @@ class SqlAccounts:
             FROM "CategoryM" c
             LEFT JOIN "TagsM" t ON t.id = c."tagId"
             WHERE "parentId" IS NULL  
-
             UNION ALL
-            
             SELECT 
                 c."id", c."catName", c."descr", c."parentId", c."isLeaf", t."tagName", c."tagId",
                 ARRAY(
@@ -981,17 +1014,18 @@ class SqlAccounts:
                     "qty", 
                     "openingPrice", 
                     "lastPurchaseDate", 
-                    "productCode"
-                                from "ProductOpBal" a
-                                    join "ProductM" p
-                                        on p."id" = a."productId"
-                                    join "CategoryM" c
-                                        on c."id" = p."catId"
-                                    join "BrandM" b
-                                        on b."id" = p."brandId"
-                            where "finYearId" = (table "finYearId") 
-                                and "branchId" = (table "branchId")
-                            order by a."id" DESC),
+                    "productCode",
+                    p."isActive"
+                        from "ProductOpBal" a
+                            join "ProductM" p
+                                on p."id" = a."productId"
+                            join "CategoryM" c
+                                on c."id" = p."catId"
+                            join "BrandM" b
+                                on b."id" = p."brandId"
+                        where "finYearId" = (table "finYearId") 
+                            and "branchId" = (table "branchId")
+                        order by a."id" DESC),
             cte2 as (
                 select SUM("qty" * "openingPrice") as value
                     from "ProductOpBal"

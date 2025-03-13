@@ -18,7 +18,7 @@ export function ProductsOpeningBalances() {
 
     return (<CompAccountsContainer>
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 h-[calc(100vh-120px)] mr-4 mt-4">
-            <div className="sm:col-span-1 bg-gray-50 p-4">
+            <div className="sm:col-span-1 bg-gray-50">
                 <ProductsOpeningBalancesWorkBench />
             </div>
             <div className="sm:col-span-3 bg-gray-100 pl-4">

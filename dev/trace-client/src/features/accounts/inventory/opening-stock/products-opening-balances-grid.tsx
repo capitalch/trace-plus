@@ -5,14 +5,14 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
-import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
+// import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
+// import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import Decimal from "decimal.js";
 
 export function ProductsOpeningBalancesGrid() {
     const instance = DataInstancesMap.productsOpeningBalances;
     const dispatch: AppDispatchType = useDispatch();
-    const { branchId, buCode, currentDateFormat, dbName, decodedDbParamsObject,decFormatter, finYearId } = useUtilsInfo();
+    const { branchId, buCode, currentDateFormat, dbName, decodedDbParamsObject, finYearId } = useUtilsInfo();
     const selectedData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[instance]?.data
         return (ret)
@@ -51,15 +51,13 @@ export function ProductsOpeningBalancesGrid() {
         />
     </div>)
 
-function customClosingAggregate(data: any,) {
-    const res: Decimal = (data?.result || data) // when you pdf or excel export then figures are available in data and not in data.result
-        // .filter((item: any) => !item?.parentId) // Filter only top-level rows
-        .reduce((acc: Decimal, current: any) => {
-            // const multiplier = current[dcColName] === 'C' ? -1 : 1; // Determine the multiplier based on condition
-            return acc.plus(new Decimal(current['openingPrice']).times(new Decimal(current['qty']))); // Multiply and add with Decimal
-        }, new Decimal(0)); // Initialize accumulator as Decimal
-    return (res.toNumber()); // Get the absolute value and convert back to a number
-}
+    function customClosingAggregate(data: any,) {
+        const res: Decimal = (data?.result || data) // when you pdf or excel export then figures are available in data and not in data.result
+            .reduce((acc: Decimal, current: any) => {
+                return acc.plus(new Decimal(current['openingPrice']).times(new Decimal(current['qty']))); // Multiply and add with Decimal
+            }, new Decimal(0)); // Initialize accumulator as Decimal
+        return (res.toNumber()); // Get the absolute value and convert back to a number
+    }
 
     function getAggregates(): SyncFusionGridAggregateType[] {
         return ([
@@ -71,11 +69,13 @@ function customClosingAggregate(data: any,) {
                 footerTemplate: productAggrTemplate
             },
             {
-                columnName: 'details',
+                columnName: 'info',
                 customAggregate: (data: any) => customClosingAggregate(data),
-                field: 'details',
+                field: 'info',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                footerTemplate: (props: any) => {
+                    return (<span className="mr-3 font-semibold">Value: {props.Custom}</span>)
+                },
                 type: 'Custom',
             }
         ]);
@@ -101,12 +101,13 @@ function customClosingAggregate(data: any,) {
     }
 
     async function handleOnEdit(args: any) {
-        const props = SlidingPaneMap[SlidingPaneEnum.productMaster].props;
-        props.id = args.id;
-        dispatch(openSlidingPane({
-            identifier: SlidingPaneEnum.productMaster,
-            title: 'Product Opening Balance',
-            width: '700px'
-        }));
+        console.log(args)
+        // const props = SlidingPaneMap[SlidingPaneEnum.productMaster].props;
+        // props.id = args.id;
+        // dispatch(openSlidingPane({
+        //     identifier: SlidingPaneEnum.productMaster,
+        //     title: 'Product Opening Balance',
+        //     width: '700px'
+        // }));
     }
 }
