@@ -925,13 +925,16 @@ class SqlAccounts:
     """
     
     get_leaf_categories_with_parent ="""
-        select "id", "catName" || ' (' || (
-				select "catName" from "CategoryM"
-					where id = c."parentId"
-			) || ')' as "catName"
+        select distinct
+            c."id", "catName" || ' (' || (
+                select "catName" from "CategoryM"
+                    where id = c."parentId"
+                ) || ')' as "catName"
                 from "CategoryM" c
-					where "isLeaf" 
-				order by "catName"
+                join "ProductM"p
+                    on c.id = p."catId"	
+                where "isLeaf" 
+                order by "catName"
     """
 
     get_product_categories = """

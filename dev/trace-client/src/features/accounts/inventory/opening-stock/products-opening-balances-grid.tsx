@@ -8,6 +8,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 // import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 // import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import Decimal from "decimal.js";
+import { ProductCatIdBrandIdLabelType, setProductCatIdBrandIdLabel } from "../../accounts-slice";
 
 export function ProductsOpeningBalancesGrid() {
     const instance = DataInstancesMap.productsOpeningBalances;
@@ -100,14 +101,11 @@ export function ProductsOpeningBalancesGrid() {
         ]);
     }
 
-    async function handleOnEdit(args: any) {
-        console.log(args)
-        // const props = SlidingPaneMap[SlidingPaneEnum.productMaster].props;
-        // props.id = args.id;
-        // dispatch(openSlidingPane({
-        //     identifier: SlidingPaneEnum.productMaster,
-        //     title: 'Product Opening Balance',
-        //     width: '700px'
-        // }));
+    async function handleOnEdit(args: ProductCatIdBrandIdLabelType) {
+        // dispatch(setProductCatIdBrandIdLabel({
+        //     catId: args.catId,
+        //     brandId: args.brandId,
+        //     label: args.label
+        // }))
     }
 }

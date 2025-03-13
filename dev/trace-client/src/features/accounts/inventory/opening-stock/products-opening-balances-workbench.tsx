@@ -1,5 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../../../../app/store/store";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 // import { useValidators } from "../../../../utils/validators-hook";
 import { useForm } from "react-hook-form";
@@ -15,21 +15,23 @@ import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
-import { Utils } from "../../../../utils/utils";
-import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
-import { useRef } from "react";
+// import { Utils } from "../../../../utils/utils";
+// import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
+import { useEffect, useRef } from "react";
+import { ProductCatIdBrandIdLabelType } from "../../accounts-slice";
 
 export function ProductsOpeningBalancesWorkBench() {
-    const dispatch: AppDispatchType = useDispatch();
+    // const dispatch: AppDispatchType = useDispatch();
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const productCatIdBrandIdLabel: ProductCatIdBrandIdLabelType = useSelector((state: RootStateType) => state.accounts.productCatIdBrandIdLabel)
     const leafCategoriesWithParent = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.leafCategoriesWithParent]?.data)
     const brandsOnCatId = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.brandsOnCatId]?.data)
     const productLabelsOnCatIdBrandId = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.productLabelsOnCatIdBrandId]?.data)
-    const meta = useRef<MetaType>({})
+    // const meta = useRef<MetaType>({})
     const formRef: any = useRef(null)
     const {
         clearErrors,
-        // getValues,
+        getValues,
         register,
         handleSubmit,
         // trigger,
@@ -37,26 +39,29 @@ export function ProductsOpeningBalancesWorkBench() {
         formState: { errors, isSubmitting },
         // setError,
         setValue,
-    } = useForm<any>({
+    } = useForm<ProductsOpeningBalancesFormType>({
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
             // id: id,
-            catId: undefined,
-            brandId: undefined,
+            catId: productCatIdBrandIdLabel.catId,
+            brandId: productCatIdBrandIdLabel.brandId,
             unitId: undefined,
-            label: undefined,
-            hsn: undefined,
-            upcCode: undefined,
-            gstRate: 0,
-            salePrice: 0,
-            isActive: true,
-            maxRetailPrice: 0,
-            dealerPrice: 0,
-            salePriceGst: 0,
-            purPriceGst: 0,
-            purPrice: 0,
-            info: undefined
+            label: productCatIdBrandIdLabel.label,
+            qty: 0,
+            openingPrice: 0,
+            lastPurchaseDate: undefined
+            // hsn: undefined,
+            // upcCode: undefined,
+            // gstRate: 0,
+            // salePrice: 0,
+            // isActive: true,
+            // maxRetailPrice: 0,
+            // dealerPrice: 0,
+            // salePriceGst: 0,
+            // purPriceGst: 0,
+            // purPrice: 0,
+            // info: undefined
         },
     });
 
@@ -70,6 +75,10 @@ export function ProductsOpeningBalancesWorkBench() {
             sqlId: SqlIdsMap.getLeafCategoriesWithParent
         })
     })
+
+    useEffect(()=>{
+
+    },[])
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -90,7 +99,7 @@ export function ProductsOpeningBalancesWorkBench() {
                     onChange={handleOnChangeCategory}
                     ref={null}
                     staticOptions={leafCategoriesWithParent} //meta.current.rows
-                    selectedValue={meta?.current?.catId}
+                    selectedValue={watch('catId')}
                 />
             </FormField>
 
@@ -105,7 +114,7 @@ export function ProductsOpeningBalancesWorkBench() {
                         , { required: Messages.errRequired })}
                     ref={null}
                     staticOptions={brandsOnCatId} //meta.current.rows
-                    selectedValue={meta?.current?.brandId}
+                    selectedValue={watch('brandId')}
                     onChange={handleOnChangeBrand}
                 />
             </FormField>
@@ -122,7 +131,7 @@ export function ProductsOpeningBalancesWorkBench() {
                         , { required: Messages.errRequired })}
                     ref={null}
                     staticOptions={productLabelsOnCatIdBrandId}
-                    selectedValue={meta?.current?.label}
+                    selectedValue={watch('label')}
                     onChange={handleOnChangeLabel}
                 />
             </FormField>
@@ -185,27 +194,27 @@ export function ProductsOpeningBalancesWorkBench() {
     </div>)
 
     async function handleOnChangeBrand(selectedBrand: any) {
-        let catId = undefined
-        if (meta.current) {
-            catId = meta.current.catId
-        }
+        const catId = undefined
+        // if (meta.current) {
+        //     catId = meta.current.catId
+        // }
         if ((!selectedBrand?.id) || (!catId)) {
             return
         }
-        meta.current.brandId = selectedBrand.id
+        // meta.current.brandId = selectedBrand.id
         clearErrors('brandId')
         try {
-            const res = await Utils.doGenericQuery({
-                buCode: buCode || '',
-                dbName: dbName || '',
-                dbParams: decodedDbParamsObject,
-                sqlId: SqlIdsMap.getProductLabelsOnCatIdBrandId,
-                sqlArgs: { catId: meta.current.catId, brandId: meta.current.brandId }
-            })
-            dispatch(setQueryHelperData({
-                data: res,
-                instance: DataInstancesMap.productLabelsOnCatIdBrandId
-            }))
+            // const res = await Utils.doGenericQuery({
+            //     buCode: buCode || '',
+            //     dbName: dbName || '',
+            //     dbParams: decodedDbParamsObject,
+            //     sqlId: SqlIdsMap.getProductLabelsOnCatIdBrandId,
+            //     sqlArgs: { catId: meta.current.catId, brandId: meta.current.brandId }
+            // })
+            // dispatch(setQueryHelperData({
+            //     data: res,
+            //     instance: DataInstancesMap.productLabelsOnCatIdBrandId
+            // }))
         } catch (e: any) {
             console.log(e)
         }
@@ -215,22 +224,23 @@ export function ProductsOpeningBalancesWorkBench() {
         if (!selectedCat?.id) {
             return
         }
-        if (meta.current) {
-            meta.current.catId = selectedCat.id
-        }
+        // if (meta.current) {
+        //     meta.current.catId = selectedCat.id
+        // }
         clearErrors('catId')
+        setValue('catId', selectedCat.id)
         try {
-            const res = await Utils.doGenericQuery({
-                buCode: buCode || '',
-                dbName: dbName || '',
-                dbParams: decodedDbParamsObject,
-                sqlId: SqlIdsMap.getBrandsOnCatId,
-                sqlArgs: { catId: meta.current.catId }
-            })
-            dispatch(setQueryHelperData({
-                data: res,
-                instance: DataInstancesMap.brandsOnCatId
-            }))
+            // const res = await Utils.doGenericQuery({
+            //     buCode: buCode || '',
+            //     dbName: dbName || '',
+            //     dbParams: decodedDbParamsObject,
+            //     sqlId: SqlIdsMap.getBrandsOnCatId,
+            //     sqlArgs: { catId: meta.current.catId }
+            // })
+            // dispatch(setQueryHelperData({
+            //     data: res,
+            //     instance: DataInstancesMap.brandsOnCatId
+            // }))
         } catch (e: any) {
             console.log(e)
         }
@@ -266,8 +276,17 @@ function FormField({ label, children, required, error, className }: {
     );
 }
 
-type MetaType = {
-    brandId?: number
+// type MetaType = {
+//     brandId?: number
+//     catId?: number
+//     label?: string
+// }
+type ProductsOpeningBalancesFormType = {
     catId?: number
+    brandId?: number
+    unitId: number
     label?: string
+    qty?: number
+    openingPrice?: number
+    lastPurchaseDate?: string
 }
