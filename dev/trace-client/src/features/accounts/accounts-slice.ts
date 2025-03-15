@@ -1,41 +1,41 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootStateType } from '../../app/store/store'
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootStateType } from "../../app/store/store";
 
 const initialState: AccountsInitialStateType = {
   accSettingsChanged: 0,
   allTransactionsFilter: {
-    dateType: 'transactionDate',
-    endDate: '',
-    startDate: '',
-    selectedQuickDate: 'fiscalYear',
-    transactionType: 'all'
+    dateType: "transactionDate",
+    endDate: "",
+    startDate: "",
+    selectedQuickDate: "fiscalYear",
+    transactionType: "all",
   },
   bankRecon: {
     selectedBank: {
       accId: undefined,
-      accName: ''
-    }
+      accName: "",
+    },
   },
   exports: {
-    exportName: ''
+    exportName: "",
   },
-  productCatIdBrandIdLabel: {}
-}
+  productOpeningBalanceEdit: {},
+};
 
 const accountsSlice = createSlice({
-  name: 'accounts',
+  name: "accounts",
   initialState: initialState,
 
   reducers: {
     changeAccSettings: (state: AccountsInitialStateType) => {
-      state.accSettingsChanged = Date.now()
+      state.accSettingsChanged = Date.now();
     },
 
     selectBank: (
       state: AccountsInitialStateType,
       action: PayloadAction<SelectedBankType>
     ) => {
-      state.bankRecon.selectedBank = action.payload
+      state.bankRecon.selectedBank = action.payload;
     },
 
     // Exports
@@ -43,7 +43,7 @@ const accountsSlice = createSlice({
       state: AccountsInitialStateType,
       action: PayloadAction<string>
     ) => {
-      state.exports.exportName = action.payload
+      state.exports.exportName = action.payload;
     },
 
     // All transactions filter for report
@@ -51,57 +51,78 @@ const accountsSlice = createSlice({
       state: AccountsInitialStateType,
       action: PayloadAction<AllTransactionsFilterType>
     ) => {
-      state.allTransactionsFilter = action.payload
+      state.allTransactionsFilter = action.payload;
     },
 
     // Products opening balance selection by catId, brandId, label
-    setProductCatIdBrandIdLabel: (
+    setProductOpeningBalanceEdit: (
       state: AccountsInitialStateType,
-      action: PayloadAction<ProductCatIdBrandIdLabelType>
+      action: PayloadAction<ProductOpeningBalanceEditType>
     ) => {
-      state.productCatIdBrandIdLabel = action.payload
-    }
-  }
-})
+      state.productOpeningBalanceEdit = {...action.payload};
+    },
 
-export const accountsReducer = accountsSlice.reducer
+    reSetProductOpeningBalanceEdit: (
+      state: AccountsInitialStateType,
+      // action: PayloadAction<ProductOpeningBalanceEditType>
+    ) => {
+      state.productOpeningBalanceEdit = {
+        brandId: undefined,
+        catId: undefined,
+        id: undefined,
+        labelId: undefined,
+        lastPurchaseDate: undefined,
+        openingPrice:0,
+        productId: undefined
+      };
+    },
+  },
+});
+
+export const accountsReducer = accountsSlice.reducer;
 export const {
   changeAccSettings,
   selectBank,
   setAllTransactionFilter,
   setExportName,
-  setProductCatIdBrandIdLabel
-} = accountsSlice.actions
+  reSetProductOpeningBalanceEdit,
+  setProductOpeningBalanceEdit,
+} = accountsSlice.actions;
 
 export type AccountsInitialStateType = {
-  accSettingsChanged: number
-  allTransactionsFilter: AllTransactionsFilterType
-  bankRecon: { selectedBank: SelectedBankType }
+  accSettingsChanged: number;
+  allTransactionsFilter: AllTransactionsFilterType;
+  bankRecon: { selectedBank: SelectedBankType };
   exports: {
-    exportName: string
-  }
-  productCatIdBrandIdLabel: ProductCatIdBrandIdLabelType
-}
+    exportName: string;
+  };
+  productOpeningBalanceEdit: ProductOpeningBalanceEditType;
+};
 
 export type AllTransactionsFilterType = {
-  transactionType: string
-  dateType: 'transactionDate' | 'entryDate'
-  startDate: string
-  endDate: string
-  selectedQuickDate: string
-}
+  transactionType: string;
+  dateType: "transactionDate" | "entryDate";
+  startDate: string;
+  endDate: string;
+  selectedQuickDate: string;
+};
 
-export type ProductCatIdBrandIdLabelType = {
-  catId?: number
-  brandId?: number
-  label?: string
-}
+export type ProductOpeningBalanceEditType = {
+  id?: number;
+  catId?: number;
+  brandId?: number;
+  labelId?: number;
+  productId?: number;
+  qty?: number;
+  openingPrice?: number;
+  lastPurchaseDate?: string;
+};
 
 export type SelectedBankType = {
-  accId: number | undefined
-  accName: string
-}
+  accId: number | undefined;
+  accName: string;
+};
 
 // selectors
 export const bankReconSelectedBankFn = (state: RootStateType) =>
-  state.accounts.bankRecon.selectedBank
+  state.accounts.bankRecon.selectedBank;

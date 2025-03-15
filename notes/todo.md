@@ -38,14 +38,30 @@
 													- Behave erratic while saving
 													- No green background for altered data
 - Inventory
-	- Op stock
+	- Stock Journal
+	- Branch transfer
+		- Startup
+		- UI
+			- View
+				- Grid data
+				- pagination
+				- delete
+				- edit
+				- preview
+			- Main
+				- Form display
+				- Reset
+				- Submit
+											- Op stock
+												- validate lastPurchaseDate
+												- Update if existing
+											- Submit
+												- delete
+												- Save for edit
+												- Save for new
+												- show new / edit mode
 												- show error messages
 												- functionality of lastPurchaseDate
-		- edit
-		- new
-		- Submit
-			- Save
-			- reset and refresh
 												- UI
 												- populate data
 												- Sql

@@ -16,6 +16,9 @@
 - Bug fixes etc.
 
 ## History
+# 15-03-2025
+	- Inventory -> Product opening balances completed
+	- Branch transfer started
 # 10-03-2024
 	- Inventory -> Brands + Products completed
 # 06-03-2025

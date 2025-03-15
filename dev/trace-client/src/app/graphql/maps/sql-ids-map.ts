@@ -60,7 +60,7 @@ export const SqlIdsMap = {
   getLeafCategories: "get_leaf_categories",
   getLeafCategoriesWithParent: "get_leaf_categories_with_parent",
   getLedgerLeafAccounts: "get_ledger_leaf_accounts",
-  getProductLabelsOnCatIdBrandId:"get_product_labels_on_catId_brandId",
+  getProductLabelsOnCatIdBrandId: "get_product_labels_on_catId_brandId",
   getProductOnId: "get_product_on_id",
   getProductsOpeningBalances: "get_products_opening_balances",
   getSettingsFinYearsBranches: "get_settings_fin_years_branches",
@@ -71,6 +71,7 @@ export const SqlIdsMap = {
   updateAccountsMaster: "update_accounts_master",
   upsertAutoSubledger: "upsert_auto_subledger",
   upsertGeneralSettings: "upsert_general_settings",
+  upsertProductOpeningBalance: "upsert_product_opening_balance",
   upsertTransferClosingBalance: "upsert_transfer_closing_balance",
   upsertUnitInfo: "upsert_unit_info",
 };

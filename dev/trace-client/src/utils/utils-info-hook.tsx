@@ -27,6 +27,7 @@ export function useUtilsInfo() {
         , buCode
         , context
         , currentDateFormat
+        , currentFinYear
         , dbName
         , decodedDbParamsObject
         , decFormatter

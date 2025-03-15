@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-// import { useValidators } from "../../../../utils/validators-hook";
 import { useForm } from "react-hook-form";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import clsx from "clsx";
@@ -15,39 +14,36 @@ import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
-// import { Utils } from "../../../../utils/utils";
-// import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
-import { useEffect, } from "react";
+import { useEffect } from "react";
 import { Utils } from "../../../../utils/utils";
 import { resetQueryHelperData, setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
-// import { ProductCatIdBrandIdLabelType } from "../../accounts-slice";
+import { ProductOpeningBalanceEditType, reSetProductOpeningBalanceEdit, setProductOpeningBalanceEdit } from "../../accounts-slice";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { format, isBefore, parseISO } from "date-fns";
 
 export function ProductsOpeningBalancesWorkBench() {
     const dispatch: AppDispatchType = useDispatch();
-    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
-    // const productCatIdBrandIdLabel: ProductCatIdBrandIdLabelType = useSelector((state: RootStateType) => state.accounts.productCatIdBrandIdLabel)
+    const { branchId, buCode, context, currentDateFormat, currentFinYear, dbName, finYearId, decodedDbParamsObject } = useUtilsInfo();
+    const productOpeningBalanceEdit: ProductOpeningBalanceEditType = useSelector((state: RootStateType) => state.accounts.productOpeningBalanceEdit)
     const leafCategoriesWithParent = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.leafCategoriesWithParent]?.data)
     const brandsOnCatId = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.brandsOnCatId]?.data)
     const productLabelsOnCatIdBrandId = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.productLabelsOnCatIdBrandId]?.data)
 
     const {
         clearErrors,
-        // getValues,
         register,
         handleSubmit,
-        // trigger,
         watch,
         formState: { errors, isDirty, isSubmitting },
-        // setError,
         setValue,
     } = useForm<ProductsOpeningBalancesFormType>({
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
-            // id: id,
-            catId: undefined, // productCatIdBrandIdLabel.catId,
-            brandId: undefined, //productCatIdBrandIdLabel.brandId,
-            label: undefined, //productCatIdBrandIdLabel.label,
+            id: undefined,
+            catId: undefined,
+            brandId: undefined,
+            labelId: undefined,
             qty: 0,
             openingPrice: 0,
             lastPurchaseDate: undefined
@@ -65,13 +61,39 @@ export function ProductsOpeningBalancesWorkBench() {
         })
     })
 
+    useEffect(() => {
+        if (productOpeningBalanceEdit.id && productOpeningBalanceEdit.brandId && productOpeningBalanceEdit.catId && productOpeningBalanceEdit.labelId) {
+            setValue('id', productOpeningBalanceEdit.id,)
+            setValue('catId', productOpeningBalanceEdit.catId,)
+            setValue('brandId', productOpeningBalanceEdit.brandId,)
+            setValue('labelId', productOpeningBalanceEdit.labelId,)
+            setValue('qty', productOpeningBalanceEdit.qty,)
+            setValue('openingPrice', productOpeningBalanceEdit.openingPrice,)
+            setValue('lastPurchaseDate', productOpeningBalanceEdit.lastPurchaseDate,)
+        }
+    }, [productOpeningBalanceEdit])
+
+    const id = watch('id')
     const catId = watch('catId')
     const brandId = watch('brandId')
+    const labelId = watch('labelId')
+    const qty = watch('qty')
+    const openingPrice = watch('openingPrice')
+    // const lastPurchaseDate = watch('lastPurchaseDate')
+
+    useEffect(() => {
+        if (_.isEmpty(productLabelsOnCatIdBrandId)) {
+            return
+        }
+        setValue('labelId', productOpeningBalanceEdit.labelId,)
+    }, [productLabelsOnCatIdBrandId])
 
     useEffect(() => {
         return (() => {
+            resetEditData()
             resetBrandsOptions()
             resetLabelsOptions()
+            resetOtherControls()
         })
     }, [])
 
@@ -80,10 +102,6 @@ export function ProductsOpeningBalancesWorkBench() {
             return
         }
         fetchBrands()
-        setValue('brandId', undefined)
-        setValue('label', undefined)
-        resetLabelsOptions()
-        resetOtherControls()
     }, [catId])
 
     useEffect(() => {
@@ -91,15 +109,16 @@ export function ProductsOpeningBalancesWorkBench() {
             return
         }
         fetchLabels()
-        setValue('label', undefined)
-        // resetOtherControls()
-    }, [brandId])
+    }, [catId, brandId])
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
     }
 
-    return (<div className="border-2 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-[calc(100vh-120px)]">
+    return (<div className="flex flex-col border-2 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-[calc(100vh - 120px)]">
+        <div className="flex justify-end">
+            <label className="text-sm text-primary-400 font-bold">{id ? 'Edit opening balance' : 'New opening balance'}</label>
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
 
             {/* category */}
@@ -114,7 +133,7 @@ export function ProductsOpeningBalancesWorkBench() {
                     onChange={handleOnChangeCategory}
                     ref={null}
                     staticOptions={leafCategoriesWithParent} //meta.current.rows
-                    selectedValue={watch('catId')}
+                    selectedValue={catId}
                 />
             </FormField>
 
@@ -129,24 +148,24 @@ export function ProductsOpeningBalancesWorkBench() {
                         , { required: Messages.errRequired })}
                     ref={null}
                     staticOptions={brandsOnCatId} //meta.current.rows
-                    selectedValue={watch('brandId')}
+                    selectedValue={brandId}
                     onChange={handleOnChangeBrand}
                 />
             </FormField>
 
             {/* product label */}
             <FormField
-                label="Product Label" required error={errors.label?.message}>
+                label="Product Label" required error={errors.labelId?.message}>
                 <CompReactSelect
                     menuPlacement="auto"
                     optionLabelName="label"
                     optionValueName="id"
                     placeHolder="Select product label ..."
-                    {...register('label'
+                    {...register('labelId'
                         , { required: Messages.errRequired })}
                     ref={null}
                     staticOptions={productLabelsOnCatIdBrandId}
-                    selectedValue={watch('label')}
+                    selectedValue={labelId}
                     onChange={handleOnChangeLabel}
                 />
             </FormField>
@@ -167,7 +186,7 @@ export function ProductsOpeningBalancesWorkBench() {
                         defaultValue={0}
                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                         onValueChange={(values) => setValue('qty', values.floatValue, { shouldValidate: true, shouldDirty: true })}
-                        value={watch('qty')}
+                        value={qty}
                     />
                 </FormField>
 
@@ -182,7 +201,7 @@ export function ProductsOpeningBalancesWorkBench() {
                         defaultValue={0}
                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                         onValueChange={(values) => setValue('openingPrice', values.floatValue, { shouldValidate: true, shouldDirty: true })}
-                        value={watch('openingPrice')}
+                        value={openingPrice}
                     />
                 </FormField>
             </div>
@@ -193,9 +212,15 @@ export function ProductsOpeningBalancesWorkBench() {
                     type='date'
                     className={clsx('text-right rounded-md')}
                     {...register('lastPurchaseDate', {
-                        required: Messages.errRequired
+                        required: Messages.errRequired,
+                        validate: (value: any) => {
+                            const selectedDate = parseISO(value);
+                            const startDate = parseISO(currentFinYear?.startDate || '')
+                            const formattedStartDate = format(startDate, currentDateFormat)
+                            return (isBefore(selectedDate, startDate) || `${Messages.errLastPurDateLessThanStartDate} ${formattedStartDate}`)
+                        }
                     })}
-                    value={watch('lastPurchaseDate')}
+                // value={lastPurchaseDate}
                 />
             </FormField>
 
@@ -220,6 +245,7 @@ export function ProductsOpeningBalancesWorkBench() {
                 data: res,
                 instance: DataInstancesMap.brandsOnCatId
             }))
+
         } catch (e: any) {
             console.log(e)
         }
@@ -260,28 +286,81 @@ export function ProductsOpeningBalancesWorkBench() {
     }
 
     function handleOnChangeLabel(selectedLabel: any) {
-        setValue('label', selectedLabel?.id, { shouldDirty: true })
-        clearErrors('label')
+        setValue('labelId', selectedLabel?.id, { shouldDirty: true })
+        clearErrors('labelId')
     }
 
     function handleResetAll() {
+        dispatch(reSetProductOpeningBalanceEdit())
         setValue('catId', undefined,)
         setValue('brandId', undefined)
-        setValue('label', undefined)
+        setValue('labelId', undefined)
         setValue('id', undefined)
+        setValue('qty', 0)
+        setValue('openingPrice', 0)
+        setValue('lastPurchaseDate', undefined)
         resetOtherControls()
         resetBrandsOptions()
         resetLabelsOptions()
     }
 
-
-    async function onSubmit(data: any) {
+    async function onSubmit(data: ProductsOpeningBalancesFormType) {
+        const isSame = _.isEqual(data, productOpeningBalanceEdit)
+        if (isSame) {
+            Utils.showAlertMessage('Oops!', Messages.messNothingToDo)
+            return
+        }
+        try {
+            const xData = {
+                id: data.id,
+                branchId: branchId,
+                finYearId: finYearId,
+                productId: data.labelId,
+                qty: data.qty,
+                openingPrice: data.openingPrice,
+                lastPurchaseDate: data.lastPurchaseDate
+            }
+            if(id){
+                await Utils.doGenericUpdate({
+                    buCode: buCode || '',
+                    tableName: DatabaseTablesMap.ProductOpBal,
+                    xData: xData
+                });
+            } else {
+                await Utils.doGenericUpdateQuery({
+                    buCode: buCode || '',
+                    dbName: dbName || '',
+                    dbParams: decodedDbParamsObject,
+                    sqlId:SqlIdsMap.upsertProductOpeningBalance,
+                    sqlArgs:{
+                        ...xData,
+                        id: undefined
+                    }
+                })
+            }
+            
+            Utils.showSaveMessage();
+            handleResetAll()
+            const loadData = context.CompSyncFusionGrid[DataInstancesMap.productsOpeningBalances].loadData;
+            if (loadData) await loadData();
+        } catch (e: any) {
+            console.log(e)
+        }
         console.log(data)
     }
 
     function resetBrandsOptions() {
         dispatch(resetQueryHelperData({
             instance: DataInstancesMap.brandsOnCatId
+        }))
+    }
+
+    function resetEditData() {
+        dispatch(setProductOpeningBalanceEdit({
+            id: undefined,
+            catId: undefined,
+            brandId: undefined,
+            labelId: undefined
         }))
     }
 
@@ -318,16 +397,11 @@ function FormField({ label, children, required, error, className }: {
     );
 }
 
-// type MetaType = {
-//     brandId?: number
-//     catId?: number
-//     label?: string
-// }
 type ProductsOpeningBalancesFormType = {
     id?: number
     catId?: number
     brandId?: number
-    label?: string
+    labelId?: number
     qty?: number
     openingPrice?: number
     lastPurchaseDate?: string

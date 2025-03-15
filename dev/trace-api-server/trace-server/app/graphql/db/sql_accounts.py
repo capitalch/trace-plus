@@ -322,7 +322,7 @@ class SqlAccounts:
                 , 'units',(SELECT json_agg(c) FROM cte3 c)
             ) as "jsonResult"
     """
-    
+
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 
@@ -672,7 +672,7 @@ class SqlAccounts:
     get_all_units = """
         select "id", "unitName" from "UnitM" order by "unitName"
     """
-    
+
     get_all_vouchers_export = """
         --with "dateFormat" as (values ('dd/MM/yyyy'::text)), "branchId" as (values(null::int)), "finYearId" as (values(2023)), "startDate" as (values('2023-04-01'::date)), "endDate" as (values('2024-03-31'::date))
 			with "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))
@@ -886,7 +886,7 @@ class SqlAccounts:
         where p."catId" = (table "catId")
         order by "brandName"
     """
-    
+
     get_extBusinessContactsAccM = """
     select * 
 	    from "ExtBusinessContactsAccM"
@@ -898,18 +898,6 @@ class SqlAccounts:
                 from "FinYearM" order by "id" DESC
     """
 
-    get_product_labels_on_catId_brandId = """
-        with "catId" as (values(%(catId)s::int)), "brandId" as (values(%(brandId)s::int))
-		--WITH "catId" AS (VALUES (49)), "brandId" AS (VALUES (9))
-            select DISTINCT on(p.id, p."label")
-                p.id, 
-                p."label"
-            from "ProductM" p
-            where p."catId" = (table "catId")
-                and p."brandId" = (table "brandId")
-            order by "label"
-    """
-    
     get_ledger_leaf_accounts = """
         select id, "accName", "accLeaf"
             from "AccM"
@@ -923,8 +911,8 @@ class SqlAccounts:
         where "isLeaf" = true
             order by "catName"
     """
-    
-    get_leaf_categories_with_parent ="""
+
+    get_leaf_categories_with_parent = """
         select distinct
             c."id", "catName" || ' (' || (
                 select "catName" from "CategoryM"
@@ -1000,6 +988,18 @@ class SqlAccounts:
                 where p."id" = (table "id")
     """
 
+    get_product_labels_on_catId_brandId = """
+        with "catId" as (values(%(catId)s::int)), "brandId" as (values(%(brandId)s::int))
+		--WITH "catId" AS (VALUES (49)), "brandId" AS (VALUES (9))
+            select DISTINCT on(p.id, p."label")
+                p.id, 
+                p."label"
+            from "ProductM" p
+            where p."catId" = (table "catId")
+                and p."brandId" = (table "brandId")
+            order by "label"
+    """
+
     get_products_opening_balances = """
         with 
             "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
@@ -1039,7 +1039,7 @@ class SqlAccounts:
                     , 'value', (SELECT value from cte2)
                 ) as "jsonResult"
     """
-    
+
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"
@@ -1304,6 +1304,27 @@ class SqlAccounts:
         end $$;
     """
         ).format(jData=sql.Literal(params["jData"]))
+
+    upsert_product_opening_balance = """
+        with "productId" as (values(%(productId)s::int)), "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "openingPrice" as (values(%(openingPrice)s::numeric)), "lastPurchaseDate" as (values(%(lastPurchaseDate)s::date)), "qty" as (values(%(qty)s::numeric)),
+		--WITH "productId" AS (VALUES (49)), "branchId" as (values(1)), "finYearId" as (values (2024)), "openingPrice" AS (VALUES (100)), "lastPurchaseDate" as (values ('2023=03-12'::date)), "qty" as (values(10)),
+            updated AS (
+                UPDATE "ProductOpBal"
+                SET "qty" = "qty" + (table "qty"),
+                    "lastPurchaseDate" = COALESCE((table "lastPurchaseDate"),"ProductOpBal"."lastPurchaseDate"),
+                    "openingPrice" = CASE 
+                        WHEN (table "openingPrice") = 0 THEN "ProductOpBal"."openingPrice"
+                        ELSE (table "openingPrice")
+                    END
+                WHERE "productId" = (table "productId")
+                AND "branchId" = (table "branchId")
+                AND "finYearId" = (table "finYearId")
+                RETURNING *
+            )
+            INSERT INTO "ProductOpBal" ("productId", "branchId", "finYearId", "qty", "openingPrice", "lastPurchaseDate")
+                SELECT (table "productId"), (table "branchId"), (table "finYearId"), (table "qty"), (table "openingPrice"), (table "lastPurchaseDate")
+            WHERE NOT EXISTS (SELECT 1 FROM updated);
+    """
 
     # Assisted by AI
     def upsert_transfer_closing_balance(params):

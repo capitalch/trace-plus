@@ -35,6 +35,7 @@ import { ProductCategories } from "../../features/accounts/inventory/categories/
 import { BrandMaster } from "../../features/accounts/inventory/brands/brand-master";
 import { ProductMaster } from "../../features/accounts/inventory/products/product-master";
 import { ProductsOpeningBalances } from "../../features/accounts/inventory/opening-stock/products-opening-balances";
+import { ProductsBranchTransfers } from "../../features/accounts/inventory/branch-transfer/products-branch-transfers";
 
 export const appRouter = createBrowserRouter([
     {
@@ -78,6 +79,7 @@ export const appRouter = createBrowserRouter([
                 { path: 'brand-master', element: <BrandMaster /> },
                 { path: 'product-master', element: <ProductMaster /> },
                 { path: 'products-opening-balances', element: <ProductsOpeningBalances /> },
+                { path: 'products-branch-transfers', element: <ProductsBranchTransfers /> },
             ]
     },
     {

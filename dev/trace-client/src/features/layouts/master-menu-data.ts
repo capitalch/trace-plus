@@ -223,7 +223,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "77",
           label: "Branch transfer",
-          path: "/blogs",
+          path: "/products-branch-transfers",
         },
       ],
     },

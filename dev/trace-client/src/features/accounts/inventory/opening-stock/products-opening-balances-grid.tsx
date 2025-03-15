@@ -5,20 +5,20 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-// import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
-// import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import Decimal from "decimal.js";
-import { ProductCatIdBrandIdLabelType, setProductCatIdBrandIdLabel } from "../../accounts-slice";
+import { ProductOpeningBalanceEditType, setProductOpeningBalanceEdit } from "../../accounts-slice";
+import { Utils } from "../../../../utils/utils";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function ProductsOpeningBalancesGrid() {
     const instance = DataInstancesMap.productsOpeningBalances;
     const dispatch: AppDispatchType = useDispatch();
-    const { branchId, buCode, currentDateFormat, dbName, decodedDbParamsObject, finYearId } = useUtilsInfo();
+    const { branchId, buCode, context, currentDateFormat, dbName, decodedDbParamsObject, finYearId } = useUtilsInfo();
     const selectedData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[instance]?.data
         return (ret)
     })
-    return (<div className="h-32">
+    return (<div className="border-2 border-amber-100 rounded-lg">
         <CompSyncFusionGridToolbar
             className='mt-2 mr-6'
             minWidth="500px"
@@ -43,6 +43,7 @@ export function ProductsOpeningBalancesGrid() {
             instance={instance}
             isLoadOnInit={true}
             minWidth="800px"
+            onDelete={handleOnDelete}
             onEdit={handleOnEdit}
             sqlId={SqlIdsMap.getProductsOpeningBalances}
             sqlArgs={{
@@ -101,11 +102,35 @@ export function ProductsOpeningBalancesGrid() {
         ]);
     }
 
-    async function handleOnEdit(args: ProductCatIdBrandIdLabelType) {
-        // dispatch(setProductCatIdBrandIdLabel({
-        //     catId: args.catId,
-        //     brandId: args.brandId,
-        //     label: args.label
-        // }))
+    async function handleOnDelete(id: string) {
+        Utils.showDeleteConfirmDialog(doDelete);
+        async function doDelete() {
+            try {
+                await Utils.doGenericDelete({
+                    buCode: buCode || '',
+                    tableName: DatabaseTablesMap.ProductOpBal,
+                    deletedIds: [id],
+                });
+                Utils.showSaveMessage();
+                const loadData = context.CompSyncFusionGrid[instance].loadData;
+                if (loadData) {
+                    await loadData();
+                }
+            } catch (e: any) {
+                console.log(e);
+            }
+        }
+    }
+
+    async function handleOnEdit(args: ProductOpeningBalanceEditType) {
+        dispatch(setProductOpeningBalanceEdit({
+            id: args.id,
+            catId: args.catId,
+            brandId: args.brandId,
+            labelId: args.productId,
+            qty: args.qty,
+            openingPrice: args.openingPrice,
+            lastPurchaseDate: args.lastPurchaseDate
+        }))
     }
 }
