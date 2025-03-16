@@ -52,7 +52,7 @@ export function ProductCategories() {
             graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
             isLoadOnInit={true}
             columns={getColumns()}
-            height="calc(100vh - 240px)"
+            height="calc(100vh - 230px)"
             instance={instance}
             minWidth='1400px'
             treeColumnIndex={0}

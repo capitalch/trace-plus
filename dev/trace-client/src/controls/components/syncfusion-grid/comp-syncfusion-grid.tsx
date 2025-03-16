@@ -38,6 +38,7 @@ export function CompSyncFusionGrid({
     onEdit = undefined,
     onPreview = undefined,
     onRowDataBound,
+    previewColumnWidth,
     queryCellInfo,
     rowHeight,
     sqlArgs,
@@ -61,6 +62,7 @@ export function CompSyncFusionGrid({
             , onDelete
             , onEdit
             , onPreview
+            , previewColumnWidth
             , sqlId
             , sqlArgs,
         })
@@ -93,7 +95,7 @@ export function CompSyncFusionGrid({
     }
 
     return (
-        <GridComponent style={{ maxWidth: maxWidth, minWidth: minWidth,  }}
+        <GridComponent style={{ maxWidth: maxWidth, minWidth: minWidth, }}
             actionBegin={actionBegin}
             actionComplete={actionComplete}
             allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
@@ -126,8 +128,8 @@ export function CompSyncFusionGrid({
             rowHeight={rowHeight}
             searchSettings={searchOptions}
             selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
-            
-            >
+
+        >
             <ColumnsDirective>
                 {getColumnDirectives()}
             </ColumnsDirective>
@@ -205,6 +207,7 @@ export type CompSyncFusionGridType = {
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
     onRowDataBound?: (args: RowDataBoundEventArgs) => void
+    previewColumnWidth?: number
     queryCellInfo?: (args: any) => void
     rowHeight?: number
     sqlArgs?: GraphQLQueryArgsType // SqlArgsType

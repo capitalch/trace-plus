@@ -59,6 +59,7 @@ import { NewEditProduct } from './features/Misc/new-edit-product'
 import { NewEditProduct1 } from './features/Misc/new-edit-product1'
 import ProductForm from './features/Misc/product-form'
 import BranchTransfer from './features/Misc/branch-transfer-form'
+import { TabExample } from './features/Misc/tabs/tab-example'
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
 // import { GridDragAndDrop } from './features/syncfusion/gridDragAndDrop'
@@ -130,6 +131,7 @@ function App() {
       {/* <CompactTransactionFilter /> */}
       {/* <NewEditProduct /> */}
       <BranchTransfer />
+      {/* <TabExample /> */}
     </GlobalContext.Provider>
   )
 }

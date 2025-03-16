@@ -26,6 +26,7 @@ export function useCompSyncFusionGrid({
     , onDelete
     , onEdit
     , onPreview
+    , previewColumnWidth
     , sqlId
     , sqlArgs, }: CompSyncFusionGridType) {
 
@@ -119,7 +120,7 @@ export function useCompSyncFusionGrid({
                 field=''
                 headerText='P'
                 template={previewTemplate}
-                width='14px'
+                width={previewColumnWidth || 30}
             />)
         }
 

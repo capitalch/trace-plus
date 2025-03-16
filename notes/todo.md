@@ -40,14 +40,17 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
-		- Startup
+													- Sql
+													- Startup
 		- UI
 			- View
-				- Grid data
-				- pagination
-				- delete
+													- Grid data
+													- pagination
+													- delete
+				- new
 				- edit
 				- preview
+				- Exports not working
 			- Main
 				- Form display
 				- Reset

@@ -42,7 +42,7 @@ export function BrandMaster() {
                 dbName={dbName}
                 dbParams={decodedDbParamsObject}
                 hasIndexColumn={true}
-                height="calc(100vh - 250px)"
+                height="calc(100vh - 240px)"
                 instance={instance}
                 isLoadOnInit={true}
                 minWidth="600px"

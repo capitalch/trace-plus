@@ -42,7 +42,7 @@ export function ProductMaster() {
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
                 editColumnWidth={40}
-                height="calc(100vh - 295px)"
+                height="calc(100vh - 290px)"
                 instance={instance}
                 isLoadOnInit={true}
                 minWidth="1500px"
