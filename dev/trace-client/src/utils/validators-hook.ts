@@ -1,6 +1,9 @@
+import { isWithinInterval, parseISO } from "date-fns";
 import { Messages } from "./messages";
+import { useUtilsInfo } from "./utils-info-hook";
 
 function useValidators() {
+  const { currentFinYear } = useUtilsInfo();
   function checkAddress(input: string | undefined) {
     let error = undefined;
     if (input) {
@@ -8,6 +11,24 @@ function useValidators() {
       if (!regex.test(input)) {
         error = Messages.errInvalidAddress;
       }
+    }
+    return error;
+  }
+
+  function checkAllowedDate(input: string | undefined) {
+    let error = undefined;
+    if (!input) {
+      return error;
+    }
+    const dateToCheck = parseISO(input);
+    const startDate = parseISO(currentFinYear?.startDate || "");
+    const endDate = parseISO(currentFinYear?.endDate || "");
+    const isBetween = isWithinInterval(dateToCheck, {
+      start: startDate,
+      end: endDate,
+    });
+    if (!isBetween) {
+      error = Messages.errInvalidDate;
     }
     return error;
   }
@@ -245,6 +266,7 @@ function useValidators() {
 
   return {
     checkAddress,
+    checkAllowedDate,
     checkAllowSomeSpecialChars,
     checkAllowSomeSpecialChars1,
     checkAtLeast8Chars,

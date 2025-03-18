@@ -8,7 +8,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { NewProductButton } from ".//new-product-button";
+import { NewProductButton } from "./new-product-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";

@@ -40,6 +40,8 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
+		- Select tab redux based
+			- Pass id also so that fetch on id can be perormed and data can be edited
 													- Sql
 													- Startup
 		- UI

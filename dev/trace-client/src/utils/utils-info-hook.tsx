@@ -20,10 +20,12 @@ export function useUtilsInfo() {
     const finYearId: number | undefined = currentFinYear?.finYearId
     const branchId: number | undefined = currentBranch?.branchId
     const branchCode: string | undefined = currentBranch?.branchCode
+    const branchName = currentBranch?.branchName
     const genericUpdateQueryName: string = GraphQLQueriesMap.genericUpdate.name;
     return ({
         branchId
         , branchCode
+        , branchName
         , buCode
         , context
         , currentDateFormat

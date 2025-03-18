@@ -5,6 +5,7 @@ const initialState: ReduxCompStateType = {
   compAppLoader: {},
   compCheckBox: {},
   compSwitch: {},
+  compTabs: {},
   compDateRange: {},
   ledgerSubledger: {},
   slidingPane: {
@@ -89,12 +90,10 @@ const compSlice = createSlice({
       action: PayloadAction<{ instance: string; startDate: string }>
     ) => {
       const instance: string = action.payload.instance;
-      // if (!state.compDateRange[instance]) {
-        state.compDateRange[instance] = {
-          startDate: '',
-          endDate: '',
-        };
-      // }
+      state.compDateRange[instance] = {
+        startDate: "",
+        endDate: "",
+      };
       state.compDateRange[instance].startDate = action.payload.startDate;
     },
 
@@ -103,26 +102,26 @@ const compSlice = createSlice({
       action: PayloadAction<{ instance: string; endDate: string }>
     ) => {
       const instance: string = action.payload.instance;
-      // if (!state.compDateRange[instance]) {
-        state.compDateRange[instance] = {
-          startDate: '',
-          endDate: '',
-        // };
-      }
+      state.compDateRange[instance] = {
+        startDate: "",
+        endDate: "",
+      };
       state.compDateRange[instance].endDate = action.payload.endDate;
     },
 
     setCompDateRangeStartDateEndDate: (
       state: ReduxCompStateType,
-      action: PayloadAction<{ instance: string; endDate: string; startDate: string }>
+      action: PayloadAction<{
+        instance: string;
+        endDate: string;
+        startDate: string;
+      }>
     ) => {
       const instance: string = action.payload.instance;
-      // if (!state.compDateRange[instance]) {
-        state.compDateRange[instance] = {
-          startDate: '',
-          endDate: '',
-        };
-      // }
+      state.compDateRange[instance] = {
+        startDate: "",
+        endDate: "",
+      };
       state.compDateRange[instance].endDate = action.payload.endDate;
       state.compDateRange[instance].startDate = action.payload.startDate;
     },
@@ -140,6 +139,19 @@ const compSlice = createSlice({
     closeSlidingPane: (state: ReduxCompStateType) => {
       state.slidingPane.isOpen = false;
     },
+
+    //CompTabs
+    setActiveTabIndex: (
+      state: ReduxCompStateType,
+      action: PayloadAction<CompTabPayloadActionType>
+    ) => {
+      const instance = action.payload.instance;
+      if (!state.compTabs[instance]) {
+        state.compTabs[instance] = { activeTabIndex: 0 };
+      }
+      state.compTabs[instance].activeTabIndex = action.payload.activeTabIndex;
+      state.compTabs[instance].id = action.payload.id || undefined;
+    },
   },
 });
 
@@ -147,6 +159,7 @@ export const reduxCompReducer = compSlice.reducer;
 export const {
   closeSlidingPane,
   openSlidingPane,
+  setActiveTabIndex,
   setCompCheckBoxState,
   setCompDateRangeStartDate,
   setCompDateRangeEndDate,
@@ -161,6 +174,7 @@ type ReduxCompStateType = {
   compAppLoader: Record<string, boolean>;
   compCheckBox: Record<string, boolean>;
   compSwitch: Record<string, boolean>;
+  compTabs: Record<string, CompTabsType>;
   compDateRange: Record<string, StartDateEndDateType>;
   ledgerSubledger: Record<string, LedgerSubledgerInstanceType>;
   slidingPane: {
@@ -191,6 +205,17 @@ type AccountType = {
   id: number;
 };
 
+type CompTabPayloadActionType = {
+  activeTabIndex: number;
+  id?: number | string;
+  instance: string;
+};
+
+type CompTabsType = {
+  activeTabIndex: number;
+  id?: number | string;
+};
+
 type SlidingPanePayloadActionType = {
   identifier: string;
   title: string;
@@ -215,13 +240,6 @@ export const compAppLoaderVisibilityFn = (
   state: RootStateType,
   instance: string
 ) => state.reduxComp.compAppLoader[instance] || false;
-
-// CompDateRange
-// export const compDateRangeDatesFn = (state: RootStateType, instance: string) =>
-//   state.reduxComp.compDateRange[instance] || {
-//     startDate: new Date(),
-//     endDate: new Date(),
-//   };
 
 // ledgerSubledger
 export const selectLedgerSubledgerFieldFn = (

@@ -33,7 +33,7 @@ import { AllExports } from "../../features/accounts/options/exports/all-exports"
 import { ReportAllTransactions } from "../../features/accounts/reports/report-all-transactions/report-all-transactions";
 import { ProductCategories } from "../../features/accounts/inventory/categories/product-categories";
 import { BrandMaster } from "../../features/accounts/inventory/brands/brand-master";
-import { ProductMaster } from "../../features/accounts/inventory/products/product-master";
+import { ProductMaster } from "../../features/accounts/inventory/product-master/product-master";
 import { ProductsOpeningBalances } from "../../features/accounts/inventory/opening-stock/products-opening-balances";
 import { ProductsBranchTransfers } from "../../features/accounts/inventory/branch-transfer/products-branch-transfers";
 

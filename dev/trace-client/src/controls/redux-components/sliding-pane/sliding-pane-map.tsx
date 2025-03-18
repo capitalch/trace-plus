@@ -3,7 +3,7 @@ import { ContactAndAddresses, } from "../../../features/accounts/masters/account
 import { NewEditBranch, NewEditBranchType } from "../../../features/accounts/masters/branch-master/new-edit-branch";
 import { ReportAllTransactionsFilter } from "../../../features/accounts/reports/report-all-transactions/report-all-transactions-filter";
 import { NewEditBrand, NewEditBrandType } from "../../../features/accounts/inventory/brands/new-edit-brand";
-import { NewEditProduct, } from "../../../features/accounts/inventory/products/new-edit-product";
+import { NewEditProduct, } from "../../../features/accounts/inventory/product-master/new-edit-product";
 
 
 export const SlidingPaneMap: SlidingPaneMapType = {

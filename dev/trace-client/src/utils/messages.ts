@@ -34,6 +34,7 @@ const Messages = {
   errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidAddress: 'Invalid address format',
   errInvalidClientName: 'Invalid client name',
+  errInvalidDate:"Invalid date",
   errInvalidEmail: 'Invalid email',
   errInvalidGstin: 'Invalid GSTIN no',
   errInvalidGstStateCode: 'Invalid state code',

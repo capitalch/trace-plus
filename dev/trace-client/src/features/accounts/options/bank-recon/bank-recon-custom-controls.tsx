@@ -99,8 +99,6 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
             item.clearRemarks = item.origClearRemarks
         })
         handleReArrange()
-        // gridRef.current.dataSource = []
-        // gridRef.current.dataSource = meta.current.rows
     }
 
     function handleOpBalance() {
@@ -130,7 +128,6 @@ export function BankReconCustomControls({ instance, meta }: BankReconCustomContr
         try {
             const gridRef = context.CompSyncFusionGrid[instance].gridRef
             gridRef.current.endEdit()
-            // gridRef.current.refresh()
             const xData: any[] = getChangedData()
             const op: any = xData.find((x: any) => !x.tranDetailsId)
             if (op) {

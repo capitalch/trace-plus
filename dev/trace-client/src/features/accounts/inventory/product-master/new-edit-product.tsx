@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
-import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useValidators } from "../../../../utils/validators-hook";
@@ -23,6 +22,8 @@ import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-load
 import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
+import { FormField } from "../../../../controls/widgets/form-field";
+import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 
 export function NewEditProduct({ props }: any) {
     const { id } = props
@@ -157,7 +158,7 @@ export function NewEditProduct({ props }: any) {
                                 className="">
                                 <input
                                     type="text"
-                                    className={inputStyles}
+                                    className={inputFormFieldStyles}
                                     placeholder="Enter product name"
                                     {...register('label', {
                                         required: Messages.errRequired,
@@ -180,7 +181,7 @@ export function NewEditProduct({ props }: any) {
                         <FormField label="HSN" className="flex-1">
                             <NumericFormat
                                 allowNegative={false}
-                                className={inputStyles}
+                                className={inputFormFieldStyles}
                                 isAllowed={(values) => values.value.length <= 8}
                                 onValueChange={(values) => setValue('hsn', values.floatValue)}
                                 placeholder="00000000"
@@ -192,7 +193,7 @@ export function NewEditProduct({ props }: any) {
                         <FormField label="GST Rate (%)" error={errors.gstRate?.message}>
                             <NumericFormat
                                 allowNegative={false}
-                                className={clsx(inputStyles, 'text-right')}
+                                className={clsx(inputFormFieldStyles, 'text-right')}
                                 decimalScale={2}
                                 fixedDecimalScale={true}
                                 {...register('gstRate', {
@@ -210,7 +211,7 @@ export function NewEditProduct({ props }: any) {
                             <NumericFormat
                                 allowNegative={false}
                                 decimalScale={2}
-                                className={inputStyles}
+                                className={inputFormFieldStyles}
                                 placeholder="000000000000"
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                 onValueChange={(values) => setValue('upcCode', values.floatValue)}
@@ -242,7 +243,7 @@ export function NewEditProduct({ props }: any) {
                         className="col-span-2"
                         error={errors.info?.message}>
                         <textarea
-                            className={clsx(inputStyles, "resize-none")}
+                            className={clsx(inputFormFieldStyles, "resize-none")}
                             placeholder="Describe your product..."
                             rows={4}
                             {...register('info', {
@@ -267,7 +268,7 @@ export function NewEditProduct({ props }: any) {
                             <FormField label="Max Retail Price" error={errors.maxRetailPrice?.message}>
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={clsx(inputStyles, 'text-right')}
+                                    className={clsx(inputFormFieldStyles, 'text-right')}
                                     decimalScale={2}
                                     fixedDecimalScale={true}
                                     thousandSeparator
@@ -285,7 +286,7 @@ export function NewEditProduct({ props }: any) {
                             <FormField label="Sale Price">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={clsx(inputStyles, 'text-right')}
+                                    className={clsx(inputFormFieldStyles, 'text-right')}
                                     decimalScale={2}
                                     fixedDecimalScale={true}
                                     thousandSeparator
@@ -299,7 +300,7 @@ export function NewEditProduct({ props }: any) {
                             <FormField label="Sale Price (GST)">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={clsx(inputStyles, 'text-right')}
+                                    className={clsx(inputFormFieldStyles, 'text-right')}
                                     decimalScale={2}
                                     fixedDecimalScale={true}
                                     thousandSeparator
@@ -315,7 +316,7 @@ export function NewEditProduct({ props }: any) {
                             <FormField label="Dealer Price">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={clsx(inputStyles, 'text-right')}
+                                    className={clsx(inputFormFieldStyles, 'text-right')}
                                     decimalScale={2}
                                     fixedDecimalScale={true}
                                     thousandSeparator
@@ -329,7 +330,7 @@ export function NewEditProduct({ props }: any) {
                             <FormField label="Purchase Price">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={clsx(inputStyles, 'text-right')}
+                                    className={clsx(inputFormFieldStyles, 'text-right')}
                                     decimalScale={2}
                                     fixedDecimalScale={true}
                                     thousandSeparator
@@ -343,7 +344,7 @@ export function NewEditProduct({ props }: any) {
                             <FormField label="Purchase Price (GST)">
                                 <NumericFormat
                                     allowNegative={false}
-                                    className={clsx(inputStyles, 'text-right')}
+                                    className={clsx(inputFormFieldStyles, 'text-right')}
                                     decimalScale={2}
                                     fixedDecimalScale={true}
                                     thousandSeparator
@@ -490,29 +491,9 @@ export type NewEditProductType = {
     info?: string;
 };
 
-// Form Field Component
-function FormField({ label, children, required, error, className }: {
-    label: string;
-    children: React.ReactNode;
-    required?: boolean;
-    error?: string;
-    className?: string;
-}) {
-    return (
-        <label className={clsx("flex flex-col text-primary-500", className)}>
-            <div className="flex items-center gap-1 mb-1.5">
-                <span className="font-medium text-sm">{label}</span>
-                {required && <WidgetAstrix />}
-            </div>
-            {children}
-            {error && <WidgetFormErrorMessage errorMessage={error} />}
-        </label>
-    );
-}
-
-const inputStyles = clsx(
-    "w-full rounded-lg border border-gray-800 px-4 py-2 bg-white",
-    "focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none",
-    "placeholder:text-gray-400 text-sm transition-all duration-200",
-    "hover:border-gray-300"
-);
+// const inputStyles = clsx(
+//     "w-full rounded-lg border border-gray-800 px-4 py-2 bg-white",
+//     "focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none",
+//     "placeholder:text-gray-400 text-sm transition-all duration-200",
+//     "hover:border-gray-300"
+// );
