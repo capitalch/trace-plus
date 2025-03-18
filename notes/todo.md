@@ -40,8 +40,18 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
-		- Select tab redux based
-			- Pass id also so that fetch on id can be perormed and data can be edited
+		- SQL to get details from id
+		- Form
+			- header
+			- products
+			- reset
+			- submit
+				- edit
+				- new
+		- edit
+			- populate form
+													- Select tab redux based
+													- Pass id also so that fetch on id can be perormed and data can be edited
 													- Sql
 													- Startup
 		- UI
@@ -49,14 +59,10 @@
 													- Grid data
 													- pagination
 													- delete
-				- new
 				- edit
 				- preview
 				- Exports not working
-			- Main
-				- Form display
-				- Reset
-				- Submit
+			
 											- Op stock
 												- validate lastPurchaseDate
 												- Update if existing
