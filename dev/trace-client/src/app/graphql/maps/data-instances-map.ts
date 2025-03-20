@@ -43,6 +43,7 @@ export const DataInstancesMap = {
   productLabelsOnCatIdBrandId:"product-labels-on-cat-id-brand-id",
   productsBranchTransfer:"products-branch-transfer",
   productsOpeningBalances:"products-opening-balances",
+  productSelect:"product-select",
   profitLoss: "profit-loss",
   reportAllTransactions: "report-all-transactions",
   securedControls: "secured-controls",

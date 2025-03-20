@@ -166,16 +166,6 @@ export function AccountsOpeningBalance() {
                 customAttributes: {
                     class: 'grid-col-edit'
                 },
-                // edit: {
-                //     params:
-                //     {
-                //         decimals: 2,
-                //         format: 'N2',
-                //         showSpinButton: false,
-                //         validateDecimalOnType: true
-                //     }
-                // },
-                // editType: 'numericedit',
                 editTemplate: (args: any) => (NumericEditTemplate(args, onDebitValueChanged)),
                 field: 'debit',
                 headerText: 'Debits',

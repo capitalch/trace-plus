@@ -44,6 +44,18 @@
 		- Form
 			- header
 			- products
+				- Search product
+				- Populate on product code change
+													- min one product
+													- clear row button
+													- Product detail: Text area with two rows
+													- Qty numeric field with validation red box
+													- price with numeric field
+													- Amount = qty * price
+													- resize qty, price, amount
+				- Sr no, remarks management
+				- validation
+					- sr no should match qty
 			- reset
 			- submit
 				- edit

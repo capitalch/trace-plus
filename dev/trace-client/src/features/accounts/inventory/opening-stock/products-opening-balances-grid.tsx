@@ -82,6 +82,7 @@ export function ProductsOpeningBalancesGrid() {
             }
         ]);
     }
+    
     function productAggrTemplate(props: any) {
         return (<span className="text-xs">Count: {props.Count}</span>);
     }
