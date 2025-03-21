@@ -31,7 +31,7 @@ export function useCompSyncFusionGrid({
     , sqlArgs, }: CompSyncFusionGridType) {
 
     const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
-    if (sqlArgs) { //sqlArgs is meaningful whenthere is no loadData defined for CompSyncfusionGrid and loadDataLocal is used
+    if (sqlArgs) { //sqlArgs is meaningful when there is no loadData defined for CompSyncfusionGrid and loadDataLocal is used
         sqlArgs['noOfRows'] = (selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null)
     }
     useEffect(() => {

@@ -54,6 +54,7 @@ export const SqlIdsMap = {
   getBankOpBalance: 'get_bank_op_balance',
   getBrandsOnCatId: 'get_brands_on_catId',
   getAllProducts: 'get_all_products',
+  getAllProductsInfoForProductSelect:"get_all_products_info_for_product_select",
   getBankRecon: 'get_bank_recon',
   getBrandsCategoriesUnits: 'get_brands_categories_units',
   getExtBusinessContactsAccM: 'get_extBusinessContactsAccM',

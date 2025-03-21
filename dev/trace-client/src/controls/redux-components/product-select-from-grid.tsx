@@ -1,7 +1,7 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../app/graphql/maps/data-instances-map";
 import { useUtilsInfo } from "../../utils/utils-info-hook";
-import { AppDispatchType } from "../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../app/store/store";
 import { CompSyncFusionGridToolbar } from "../components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../components/syncfusion-grid/comp-syncfusion-grid";
 import { SqlIdsMap } from "../../app/graphql/maps/sql-ids-map";
@@ -10,7 +10,10 @@ export function ProductSelectFromGrid({ index, onSelect }: ProductSelectFromGrid
     const instance = DataInstancesMap.productSelect;
     const dispatch: AppDispatchType = useDispatch();
     const { branchId, buCode, context, currentDateFormat, dbName, decodedDbParamsObject, finYearId } = useUtilsInfo();
-
+    const selectedData: any = useSelector((state: RootStateType) => {
+        const ret: any = state.queryHelper[instance]?.data
+        return (ret)
+    })
     return (<div className="">
         <CompSyncFusionGridToolbar
             className='mt-2 mr-6'
@@ -21,27 +24,47 @@ export function ProductSelectFromGrid({ index, onSelect }: ProductSelectFromGrid
             isCsvExport={false}
             instance={instance}
         />
-
         <CompSyncFusionGrid
+            aggregates={getAggregates()}
+            allowPaging={true}
+            buCode={buCode}
+            className="mr-6 mt-4"
+            columns={getColumns()}
+            dataSource={selectedData}
+            dbName={dbName}
+            dbParams={decodedDbParamsObject}
+            deleteColumnWidth={40}
+            editColumnWidth={40}
+            height="calc(100vh - 290px)"
+            instance={instance}
+            isLoadOnInit={true}
+            // minWidth="1500px"
+            // onDelete={handleOnDelete}
+            // onEdit={handleOnEdit}
+            sqlId={SqlIdsMap.getAllProducts}
+        />
+        {/* <CompSyncFusionGrid
             aggregates={getAggregates()}
             buCode={buCode}
             className="mt-4"
             columns={getColumns()}
             // dataSource={selectedData?.[0]?.jsonResult?.openingBalances}
+            dataSource={selectedData}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
-            deleteColumnWidth={40}
-            editColumnWidth={40}
+            // deleteColumnWidth={40}
+            // editColumnWidth={40}
             height='calc(100vh - 260px)'
             instance={instance}
-            isLoadOnInit={true}
+            isLoadOnInit={false}
             minWidth="800px"
-            sqlId={SqlIdsMap.getProductsOpeningBalances}
+            sqlId={SqlIdsMap.getAllProducts}
+            // sqlId={SqlIdsMap.getAllProductsInfoForProductSelect}
             sqlArgs={{
                 branchId: branchId,
                 finYearId: finYearId
             }}
-        />
+        /> */}
     </div>)
 
     function getAggregates(): SyncFusionGridAggregateType[] {
@@ -68,17 +91,19 @@ export function ProductSelectFromGrid({ index, onSelect }: ProductSelectFromGrid
 
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
-            { field: 'index', headerText: '#', type: 'number', width: 80, textAlign: 'Right' },
-            { field: 'productCode', headerText: 'Code', type: 'string', width: 80, textAlign: 'Right' },
-            { field: 'catName', headerText: 'Cat', type: 'string', width: 100 },
-            { field: 'brandName', headerText: 'Brand', type: 'string', width: 80 },
-            { field: 'label', headerText: 'Label', type: 'string', width: 150 },
-            { field: 'qty', headerText: 'Qty', type: 'number', width: 80, textAlign: 'Right' },
-            { field: 'openingPrice', headerText: 'Op price', type: 'number', format: 'N2', width: 100, textAlign: 'Right' },
-            { field: 'lastPurchaseDate', headerText: 'Pur dt', type: 'date', width: 90, format: currentDateFormat },
-            { field: 'info', headerText: 'Details', type: 'string', width: 250 },
-            { field: 'id', type: 'string', width: 0, textAlign: 'Right', isPrimaryKey: true, visible: false },
-            { field: 'isActive', headerText: 'Active', type: 'boolean', width: 80, template: (props: any) => <input type='checkbox' checked={props.isActive} readOnly disabled /> }
+            { field: 'productCode', headerText: 'Code', type: 'string', width: 80 },
+            { field: 'catName', headerText: 'Cat', type: 'string', width: 80 },
+            // { field: 'index', headerText: '#', type: 'number', width: 80, textAlign: 'Right' },
+            // { field: 'productCode', headerText: 'Code', type: 'string', width: 80, textAlign: 'Right' },
+            // { field: 'catName', headerText: 'Cat', type: 'string', width: 100 },
+            // { field: 'brandName', headerText: 'Brand', type: 'string', width: 80 },
+            // { field: 'label', headerText: 'Label', type: 'string', width: 150 },
+            // { field: 'clos', headerText: 'Clos', type: 'number', width: 80, textAlign: 'Right' },
+            // { field: 'openingPrice', headerText: 'Op price', type: 'number', format: 'N2', width: 100, textAlign: 'Right' },
+            // { field: 'lastPurchaseDate', headerText: 'Pur dt', type: 'date', width: 90, format: currentDateFormat },
+            // { field: 'info', headerText: 'Details', type: 'string', width: 250 },
+            // { field: 'id', type: 'string', width: 0, textAlign: 'Right', isPrimaryKey: true, visible: false },
+            // { field: 'isActive', headerText: 'Active', type: 'boolean', width: 80, template: (props: any) => <input type='checkbox' checked={props.isActive} readOnly disabled /> }
         ]);
     }
 }
