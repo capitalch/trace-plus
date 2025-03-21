@@ -18,11 +18,11 @@ import { NumericFormat } from "react-number-format";
 import { useState } from "react";
 import { Utils } from "../../../../../utils/utils";
 import Decimal from "decimal.js";
-import { ProductSelectFromGrid } from "../../../../../controls/redux-components/product-select-from-grid";
+import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
 
 export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
     console.log(id)
-    const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+    // const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
     const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
     const handleTooltipToggle = (idx: number) => {
@@ -374,9 +374,16 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
         Utils.showHideModalDialogA({
             isOpen: true,
             size: 'lg',
-            element: <ProductSelectFromGrid />,
+            element: <ProductSelectFromGrid onSelect={onSelect} />,
             title: 'Select a product'
         })
+
+        function onSelect(args: ProductInfoType) {
+            setValue(`productLineItems.${index}.productCode`, args.productCode)
+            setValue(`productLineItems.${index}.id`, args.id)
+            setValue(`productLineItems.${index}.productDetails`, `${args.brandName} ${args.catName} ${args.label} ${args.info ?? ''}`)
+            setValue(`productLineItems.${index}.price`, args.lastPurchasePriceGst)
+        }
     }
 
     function handleReset() {

@@ -41,6 +41,7 @@ export function CompSyncFusionGrid({
     previewColumnWidth,
     queryCellInfo,
     rowHeight,
+    rowSelected,
     sqlArgs,
     sqlId
 }: CompSyncFusionGridType) {
@@ -127,6 +128,7 @@ export function CompSyncFusionGrid({
             }}
             rowHeight={rowHeight}
             searchSettings={searchOptions}
+            rowSelected={rowSelected}
             selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
 
         >
@@ -210,6 +212,7 @@ export type CompSyncFusionGridType = {
     previewColumnWidth?: number
     queryCellInfo?: (args: any) => void
     rowHeight?: number
+    rowSelected?: (args: any) => void
     sqlArgs?: GraphQLQueryArgsType // SqlArgsType
     sqlId?: string
 }
