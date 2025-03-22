@@ -1219,6 +1219,30 @@ class SqlAccounts:
                 and p."brandId" = (table "brandId")
             order by "label"
     """
+    
+    get_product_on_product_code_upc = """
+        with "productCodeOrUpc" as (values(%(productCodeOrUpc)s))
+        --with "productCodeOrUpc" as (values('1063'))
+        select p."id" "productId",
+			coalesce(o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
+			c."catName",
+			b."brandName",
+			coalesce(p."hsn", c."hsn", 0) hsn,
+			p."info",
+			p."label",
+			p."productCode",
+			p."upcCode",
+			coalesce(p."gstRate", 0) "gstRate"
+            from "ProductM" p
+                left join "ProductOpBal" o
+                    on p."id" = o."productId"
+                left join "CategoryM" c
+                    on c."id" = p."catId"
+                left join "BrandM" b
+                    on b."id" = p."brandId"
+            where ((p."productCode" = (table "productCodeOrUpc") or (p."upcCode" = (table "productCodeOrUpc")))) and p."isActive"
+            order by p."id" limit 1
+    """
 
     get_products_opening_balances = """
         with 

@@ -19,17 +19,18 @@ import { useState } from "react";
 import { Utils } from "../../../../../utils/utils";
 import Decimal from "decimal.js";
 import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
+import _ from "lodash";
+import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 
 export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
     console.log(id)
-    // const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
     const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
     const handleTooltipToggle = (idx: number) => {
         setTooltipIndex(tooltipIndex === idx ? null : idx);
     };
 
-    const { branchId } = useUtilsInfo()
+    const { branchId, buCode, dbName, decodedDbParamsObject } = useUtilsInfo()
     const { checkAllowedDate } = useValidators()
     const {
         control
@@ -47,7 +48,7 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
             userRefNo: "",
             remarks: "",
             destBranchId: undefined,
-            productLineItems: [{ productCode: "", productDetails: "", lineRefNo: "", qty: 1, price: 0, lineRemarks: "", serialNo: "" }]
+            productLineItems: [{ productCode: "", productDetails: "", lineRefNo: "", qty: 1, price: 0, lineRemarks: "", serialNumbers: "" }]
         }
     });
 
@@ -141,14 +142,14 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                     <thead>
                         <tr className="bg-gray-100 text-primary-500">
                             <th className="p-2 border w-10">#</th>
-                            <th className="p-2 border w-32">Product Code</th>
+                            <th className="p-2 border w-32 text-xs font-medium">UPC / Product Code</th>
                             <th className="p-2 border w-xs">Product Details</th>
-                            <th className="p-2 border">Ref No</th>
+                            <th className="p-2 border w-36">Line Ref No</th>
+                            <th className="p-2 border">Line Remarks</th>
                             <th className="p-2 border w-28 text-right">Qty</th>
                             <th className="p-2 border w-40 text-right">Price</th>
-                            <th className="p-2 border w-44 text-right">Amount</th>
-                            <th className="p-2 border">Line Remarks</th>
-                            <th className="p-2 border">Serial No</th>
+                            <th className="p-2 border">Serial Numbers</th>
+                            <th className="p-2 border w-36 text-right">Amount</th>
                             <th className="p-2 border"></th>
                         </tr>
                     </thead>
@@ -163,7 +164,8 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                     {/* index */}
                                     <td className="p-2 border">{index + 1}</td>
                                     {/* product code */}
-                                    <td className="p-2 border">
+                                    <td className="p-2 border flex flex-col">
+                                        <span tabIndex={-1} className="text-xs -mt-2 text-blue-500">{watch(`productLineItems.${index}.upcCode`) || '------------'}</span>
                                         <div className="flex items-center align-middle justify-center">
                                             <input
                                                 type="text"
@@ -172,10 +174,10 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                                 className="border p-2 rounded w-full"
                                             />
                                             <div className="flex flex-col gap-2">
-                                                <button type="button" onClick={() => handleProductSearch(index)} className="ml-2 text-blue-500">
+                                                <button tabIndex={-1} type="button" onClick={() => handleProductSearch(index)} className="ml-2 text-blue-500">
                                                     <IconSearch />
                                                 </button>
-                                                <button type="button" onClick={() => handleProductClear(index)} className="ml-2 text-blue-500">
+                                                <button tabIndex={-1} type="button" onClick={() => handleProductClear(index)} className="ml-2 text-blue-500">
                                                     <IconClear />
                                                 </button>
                                             </div>
@@ -183,7 +185,7 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                     </td>
                                     {/* product details */}
                                     <td className="p-2 border">
-                                        <textarea
+                                        <textarea tabIndex={-1}
                                             rows={3}
                                             {...register(`productLineItems.${index}.productDetails`)}
                                             className="border px-2 py-0.5 rounded w-full bg-gray-100 text-xs"
@@ -196,6 +198,10 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             type="text"
                                             {...register(`productLineItems.${index}.lineRefNo`)}
                                             className="border p-2 rounded w-full" />
+                                    </td>
+                                    {/* line remarks */}
+                                    <td className="p-2 border">
+                                        <textarea {...register(`productLineItems.${index}.lineRemarks`)} className="border p-2 rounded w-full text-xs" />
                                     </td>
                                     {/* qty */}
                                     <td className="p-2 border  relative">
@@ -255,6 +261,17 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             value={watch(`productLineItems.${index}.price`)}
                                             className="border p-2 rounded w-full text-right" />
                                     </td>
+                                    {/* serial numbers */}
+                                    <td className="p-2 border">
+                                        <textarea {...register(`productLineItems.${index}.serialNumbers`, {
+                                            validate: (input: string) => validateSerialNumbers(input, index),
+
+                                        })}
+                                            value={watch(`productLineItems.${index}.serialNumbers`)}
+                                            className="border p-2 rounded w-full text-xs" placeholder="Give comma separated serial numbers" />
+                                        {/* Error Indicator & Tooltip Button */}
+                                        {serialNumbersErrorIndicator(index)}
+                                    </td>
                                     {/* amount */}
                                     <td className="p-2 border">
                                         <NumericFormat
@@ -264,24 +281,14 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             decimalScale={2}
                                             defaultValue={0}
                                             fixedDecimalScale={true}
-                                            // {...register(`productLineItems.${index}.amount`)}
                                             onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                             thousandSeparator={true}
-                                            // onValueChange={(values) => setValue(`productLineItems.${index}.amount`, values.floatValue || 0, { shouldValidate: true, shouldDirty: true })}
                                             value={amount}
                                             className="border p-2 rounded w-full text-right bg-gray-100" />
                                     </td>
-                                    {/* line remarks */}
-                                    <td className="p-2 border">
-                                        <textarea {...register(`productLineItems.${index}.lineRemarks`)} className="border p-2 rounded w-full text-xs" />
-                                    </td>
-                                    {/* serial no */}
-                                    <td className="p-2 border">
-                                        <input type="text" {...register(`productLineItems.${index}.serialNo`)} className="border p-2 rounded w-full" />
-                                    </td>
                                     {/* delete */}
                                     <td className="p-2 border">
-                                        <button type="button" onClick={() => handleDeleteRow(index)} className="text-red-500">
+                                        <button tabIndex={-1} type="button" onClick={() => handleDeleteRow(index)} className="text-red-500">
                                             <IconDelete />
                                         </button>
                                     </td>
@@ -294,12 +301,12 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                     <tfoot>
                         <tr className="bg-gray-200 font-semibold text-primary-500">
                             <td colSpan={2}>
-                                <button type="button" onClick={() => append({ productId: undefined, productCode: "", productDetails: "", lineRefNo: "", qty: 1, price: 0, amount: 0, lineRemarks: "", serialNo: "" })} className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2">
+                                <button type="button" onClick={() => append({ productId: undefined, productCode: "", productDetails: "", lineRefNo: "", qty: 1, price: 0, amount: 0, lineRemarks: "", serialNumbers: "", upcCode: "" })} className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2">
                                     <IconPlus />
                                     Add Product
                                 </button>
                             </td>
-                            <td className="p-2 border text-right" colSpan={2}>Total</td>
+                            <td className="p-2 border text-right" colSpan={3}>Total</td>
                             {/* Total Qty */}
                             <td className="p-2 border text-right">
                                 <NumericFormat
@@ -312,6 +319,7 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                     fixedDecimalScale
                                 />
                             </td>
+                            <td className="p-2 border"></td>
                             <td className="p-2 border"></td>
                             {/* Total Amount */}
                             <td className="p-2 border text-right">
@@ -345,14 +353,28 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
         remove(index)
     }
 
-    function handleOnBlurProductCode(index: number) {
-        console.log(index)
-        // Utils.showHideModalDialogA({
-        //     isOpen: true,
-        //     size: 'lg',
-        //     element: <ProductSelectFromGrid />,
-        //     title: 'Select a product'
-        // })
+    async function handleOnBlurProductCode(index: number) {
+        const productCode = watch(`productLineItems.${index}.productCode`)
+        if (_.isEmpty(productCode)) {
+            return
+        }
+        const product: ProductType[] = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
+            sqlArgs: {
+                productCodeOrUpc: productCode
+            }
+        })
+        if (_.isEmpty(product)) {
+            return
+        }
+        setValue(`productLineItems.${index}.productCode`, product[0].productCode)
+        setValue(`productLineItems.${index}.productId`, product[0].productId)
+        setValue(`productLineItems.${index}.productDetails`, `${product[0].brandName} ${product[0].catName} ${product[0].label} ${product[0].info ?? ''}`)
+        setValue(`productLineItems.${index}.price`, product[0].lastPurchasePrice)
+        setValue(`productLineItems.${index}.upcCode`, product[0].upcCode)
     }
 
     function handleOnChangeDestBranch() {
@@ -366,7 +388,8 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
         setValue(`productLineItems.${index}.qty`, 1)
         setValue(`productLineItems.${index}.price`, 0)
         setValue(`productLineItems.${index}.lineRemarks`, '')
-        setValue(`productLineItems.${index}.serialNo`, '')
+        setValue(`productLineItems.${index}.serialNumbers`, '')
+        setValue(`productLineItems.${index}.upcCode`, '')
     }
 
     function handleProductSearch(index: number) {
@@ -380,9 +403,10 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
 
         function onSelect(args: ProductInfoType) {
             setValue(`productLineItems.${index}.productCode`, args.productCode)
-            setValue(`productLineItems.${index}.id`, args.id)
+            setValue(`productLineItems.${index}.productId`, args.id)
             setValue(`productLineItems.${index}.productDetails`, `${args.brandName} ${args.catName} ${args.label} ${args.info ?? ''}`)
-            setValue(`productLineItems.${index}.price`, args.lastPurchasePriceGst)
+            setValue(`productLineItems.${index}.price`, args.lastPurchasePrice)
+            setValue(`productLineItems.${index}.upcCode`, args.upcCode)
         }
     }
 
@@ -392,6 +416,48 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
 
     async function onSubmit(data: BranchTransferType) {
         console.log(data)
+    }
+
+    function serialNumbersErrorIndicator(index: number) {
+        const snCount = watch(`productLineItems.${index}.serialNumbers`).split(/[,;]/).length
+        const qty = watch(`productLineItems.${index}.qty`)
+        if (qty === snCount) {
+            return (<></>)
+        }
+        return (<div className="absolute top-0 right-0">
+            <button
+                type="button"
+                className="relative"
+                onClick={() => handleTooltipToggle(index)}
+                onBlur={() => setTooltipIndex(null)}>
+                {/* Small red triangle indicator */}
+                <div className="w-0 h-0 
+                    border-t-11 border-t-red-500 
+                    border-l-11 border-l-transparent 
+                    border-b-0 border-r-0"
+                />
+            </button>
+
+            {/* Error Tooltip (Only shows for the clicked index) */}
+            {tooltipIndex === index && (
+                <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
+                    {errors?.productLineItems?.[index]?.serialNumbers?.message || Messages.errQtySrNoNotMatch}
+                </div>
+            )}
+        </div>)
+    }
+
+    function validateSerialNumbers(input: string, index: number) {
+        if (!input) {
+            return (true)
+        }
+        let err = undefined
+        const snCount = input.split(/[,;]/).length
+        const qty = watch(`productLineItems.${index}.qty`)
+        if (snCount !== qty) {
+            err = Messages.errQtySrNoNotMatch
+        }
+        return (err)
     }
 
 }
@@ -410,12 +476,26 @@ type ProductLineItem = {
     id?: number | string
     amount: number
     jData?: { [key: string]: any }
-    price: number
     lineRefNo: string
     lineRemarks: string
+    price: number
     productCode: string
     productDetails: string
     productId?: number
-    serialNo: string
     qty: number
+    serialNumbers: string
+    upcCode: string
+}
+
+type ProductType = {
+    brandName: string
+    catName: string
+    gstRate: number
+    hsn: number
+    info: string
+    label: string
+    lastPurchasePrice: number
+    productCode: string
+    productId: number
+    upcCode: string
 }

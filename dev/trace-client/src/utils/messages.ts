@@ -50,7 +50,8 @@ const Messages = {
   errMustHaveOneSpecialChar: "Must have a special character",
   errNoSpceOrSpecialChar: "Cannot have space or special character",
   errNoSpecialChar: "Cannot have special character",
-  errQtyCannotBeZero:"Qty cannot b zero",
+  errQtyCannotBeZero: "Qty cannot be zero",
+  errQtySrNoNotMatch: "Quantity and serial number count do not match",
   errRequired: "This value is required",
   errSameCurrentUidAndNewUid: "Current uid and new uid cannot be same",
   errSameCurrentPwdAndNewPwd:
@@ -61,7 +62,6 @@ const Messages = {
   errTagNameExists: "Tag name altready exists",
   errUidExistsForClient: "This uid already exists for the current client",
   errUnknown: "An unknown error occurred in the operation",
- 
 
   messAutoLinkBuiltinRoles: "Add controls from built-in roles",
   messBranchSuccessfullySelected: "The branch was successfully selected",

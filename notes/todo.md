@@ -33,19 +33,30 @@
 	- XData showing typescript error in many places. Need to correct the types
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 	- BS, PL, Trial Bal to retain node expanded / collapsed
-															- Migrate to tailwind latest version
-												- Bank reconcillation clear date, remarks not saving
+	- Product master check duplicate UPC code server side validation
+													- Migrate to tailwind latest version
+													- Bank reconcillation clear date, remarks not saving
 													- Behave erratic while saving
 													- No green background for altered data
 - Inventory
 	- Stock Journal
 	- Branch transfer
-		- SQL to get details from id
+		- edit populate
+		- preview
+		- exports not working
+		- reset
+			- submit
+				- edit
+				- new
 		- Form
-			- header
-			- products
-				- Search product
-				- Populate on product code change
+			- Sr no, remarks management
+				- validation
+					- sr no should match qty
+													- header
+													- products
+													- SQL to get details from id
+													- Search product
+													- Populate on product code change
 													- min one product
 													- clear row button
 													- Product detail: Text area with two rows
@@ -53,28 +64,15 @@
 													- price with numeric field
 													- Amount = qty * price
 													- resize qty, price, amount
-				- Sr no, remarks management
-				- validation
-					- sr no should match qty
-			- reset
-			- submit
-				- edit
-				- new
-		- edit
-			- populate form
 													- Select tab redux based
 													- Pass id also so that fetch on id can be perormed and data can be edited
 													- Sql
 													- Startup
-		- UI
-			- View
+												- UI
+													- View
 													- Grid data
 													- pagination
 													- delete
-				- edit
-				- preview
-				- Exports not working
-			
 											- Op stock
 												- validate lastPurchaseDate
 												- Update if existing

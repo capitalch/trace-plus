@@ -86,6 +86,7 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
             { field: 'hsn', headerText: 'HSN', type: 'number', width: 90 },
             { field: 'saleDiscount', headerText: 'Discount', type: 'number', textAlign: 'Right', format: 'N0', width: 90 },
             { field: 'productCode', headerText: 'Pr Code', type: 'string', width: 100, textAlign: 'Right' },
+            { field: 'upcCode', headerText: 'UPC', type: 'string', width: 100 },
         ]);
     }
 
