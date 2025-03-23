@@ -1107,6 +1107,46 @@ class SqlAccounts:
         order by "brandName"
     """
 
+    get_branch_transfer_details_on_tran_header_id = """
+    --with "id" as (values(10843))
+        with "id" as (values(%(id)s::int))
+        , cte1 as (
+                select "id", "tranDate", "userRefNo", "remarks", "autoRefNo", "tranTypeId"
+                    from "TranH"
+                        where "id" = (table "id")
+            )
+        , cte2 as (
+                select  t."id"
+            , "tranHeaderId"
+            , "productId"
+            , "productCode"
+            , "brandName"
+            , "label"
+            , "catName"
+            , "info"
+            , "qty"
+            , "lineRemarks"
+            , "lineRefNo"
+            , t."jData"->>'serialNumbers' as "serialNumbers"
+            , "price"
+            , "destBranchId"
+		from cte1 c1
+			join "BranchTransfer" t
+				on c1."id" = t."tranHeaderId"
+			join "ProductM" p
+					on p."id" = t."productId"
+			join "CategoryM" c
+				on c."id" = p."catId"
+			join "BrandM" b
+				on b."id" = p."brandId"
+			order by t."id"
+            )
+            select json_build_object(
+                'tranH', (SELECT row_to_json(a) from cte1 a),
+                'branchTransfer', (SELECT json_agg(b) from cte2 b)
+            ) as "jsonResult"
+    """
+
     get_extBusinessContactsAccM = """
     select * 
 	    from "ExtBusinessContactsAccM"

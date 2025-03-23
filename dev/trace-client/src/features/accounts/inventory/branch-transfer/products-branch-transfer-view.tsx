@@ -1,12 +1,16 @@
+import { useDispatch } from "react-redux";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { AppDispatchType } from "../../../../app/store/store";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 
 export function ProductsBranchTransferView() {
+    const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.productsBranchTransfer
     const { buCode, branchId, context, currentDateFormat, dbName, decodedDbParamsObject, finYearId } = useUtilsInfo();
 
@@ -31,11 +35,10 @@ export function ProductsBranchTransferView() {
             dbParams={decodedDbParamsObject}
             deleteColumnWidth={40}
             editColumnWidth={40}
-            // hasIndexColumn={true}
             height="calc(100vh - 430px)"
             allowPaging={true}
             instance={instance}
-            isLoadOnInit={true}
+            // isLoadOnInit={true}
             minWidth="1400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
@@ -152,8 +155,13 @@ export function ProductsBranchTransferView() {
         }
     }
 
-    async function handleOnEdit() {
-
+    async function handleOnEdit(props: any) {
+        console.log(props)
+        dispatch(setActiveTabIndex({
+            instance: instance,
+            id: props.id,
+            activeTabIndex: 0
+        }))
     }
 
     async function handleOnPreview() {

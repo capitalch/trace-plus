@@ -1,40 +1,37 @@
 import { useFieldArray, useForm } from "react-hook-form";
-import { Messages } from "../../../../../utils/messages";
-import { useValidators } from "../../../../../utils/validators-hook";
-import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
-import { IconSubmit } from "../../../../../controls/icons/icon-submit";
-import { IconReset } from "../../../../../controls/icons/icon-reset";
-import { FormField } from "../../../../../controls/widgets/form-field";
-import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { CompReactSelect } from "../../../../../controls/components/comp-react-select";
+import { Messages } from "../../../../utils/messages";
+import { useValidators } from "../../../../utils/validators-hook";
+import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
+import { IconSubmit } from "../../../../controls/icons/icon-submit";
+import { IconReset } from "../../../../controls/icons/icon-reset";
+import { FormField } from "../../../../controls/widgets/form-field";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { useSelector } from "react-redux";
-import { allBranchesSelectorFn, BranchType } from "../../../../login/login-slice";
-import { IconSearch } from "../../../../../controls/icons/icon-search";
-import { IconDelete } from "../../../../../controls/icons/icon-delete";
+import { allBranchesSelectorFn, BranchType } from "../../../login/login-slice";
+import { IconSearch } from "../../../../controls/icons/icon-search";
+import { IconDelete } from "../../../../controls/icons/icon-delete";
 import clsx from "clsx";
-import { IconPlus } from "../../../../../controls/icons/icon-plus";
-import { IconClear } from "../../../../../controls/icons/icon-clear";
+import { IconPlus } from "../../../../controls/icons/icon-plus";
+import { IconClear } from "../../../../controls/icons/icon-clear";
 import { NumericFormat } from "react-number-format";
-import { useState } from "react";
-import { Utils } from "../../../../../utils/utils";
+import { useEffect, useState } from "react";
+import { Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
-import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
+import { ProductInfoType, ProductSelectFromGrid } from "../../../../controls/components/product-select-from-grid";
 import _ from "lodash";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { RootStateType } from "../../../../app/store/store";
 
-export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
-    console.log(id)
-
-    const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
-    const handleTooltipToggle = (idx: number) => {
-        setTooltipIndex(tooltipIndex === idx ? null : idx);
-    };
+export function ProductsBranchTransferMain({ instance }: { instance: string }) {
+    const selectedTranHeaderId = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.id)
+    const [qtyTooltipIndex, setQtyTooltipIndex] = useState<number | null>(null);
+    const [srNoTooltipIndex, setSrNoTooltipIndex] = useState<number | null>(null);
 
     const { branchId, buCode, dbName, decodedDbParamsObject } = useUtilsInfo()
     const { checkAllowedDate } = useValidators()
     const {
         control
-        // , clearErrors
         , formState: { errors }
         , handleSubmit
         , register
@@ -64,6 +61,12 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
         autoRefNo: watch('autoRefNo')
     }
 
+    useEffect(() => {
+        if (selectedTranHeaderId) {
+            loadProductOnTranHeaderId()
+        }
+    }, [selectedTranHeaderId])
+
     return (<div className="h-[calc(100vh-240px)]">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 mr-6 min-w-[85rem]">
 
@@ -88,7 +91,7 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
 
                 {/* User ref no */}
                 <FormField
-                    label="Use ref no">
+                    label="User ref no">
                     <input
                         type="text"
                         className={clsx(inputFormFieldStyles, 'mt-1')}
@@ -158,11 +161,16 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                             const qty = watch(`productLineItems.${index}.qty`);
                             const price = watch(`productLineItems.${index}.price`);
                             const amount = qty * price;
+                            const sn = watch(`productLineItems.${index}.serialNumbers`).replace(/[,;]$/, "");
+                            const snCount = sn.split(/[,;]/).length
+                            const snError = (snCount !== 0) && (snCount !== qty)
 
                             return (
                                 <tr key={item.id} className="border">
+
                                     {/* index */}
                                     <td className="p-2 border">{index + 1}</td>
+
                                     {/* product code */}
                                     <td className="p-2 border flex flex-col">
                                         <span tabIndex={-1} className="text-xs -mt-2 text-blue-500">{watch(`productLineItems.${index}.upcCode`) || '------------'}</span>
@@ -183,6 +191,7 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             </div>
                                         </div>
                                     </td>
+
                                     {/* product details */}
                                     <td className="p-2 border">
                                         <textarea tabIndex={-1}
@@ -192,6 +201,7 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             readOnly
                                         />
                                     </td>
+
                                     {/* ref no */}
                                     <td className="p-2 border">
                                         <input
@@ -199,19 +209,21 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             {...register(`productLineItems.${index}.lineRefNo`)}
                                             className="border p-2 rounded w-full" />
                                     </td>
+
                                     {/* line remarks */}
                                     <td className="p-2 border">
                                         <textarea {...register(`productLineItems.${index}.lineRemarks`)} className="border p-2 rounded w-full text-xs" />
                                     </td>
+
                                     {/* qty */}
-                                    <td className="p-2 border  relative">
+                                    <td className="p-2 border relative">
                                         <NumericFormat
                                             allowNegative={false}
                                             decimalScale={2}
                                             defaultValue={0}
                                             fixedDecimalScale={true}
                                             {...register(`productLineItems.${index}.qty`, {
-                                                validate: (value) => value > 0 || "Qty cannot be zero",
+                                                validate: (value) => (value === 0) || Messages.errQtyCannotBeZero,
                                             })}
                                             onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                             onValueChange={(values) => setValue(`productLineItems.${index}.qty`, values.floatValue || 0, { shouldValidate: true, shouldDirty: true })}
@@ -219,34 +231,13 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             value={watch(`productLineItems.${index}.qty`)}
                                             className={clsx(
                                                 "border p-2 rounded w-full text-right",
-                                                watch(`productLineItems.${index}.qty`) === 0 ? "border-red-500 bg-red-100" : ""
+                                                qty === 0 ? "border-red-500 bg-red-100" : ""
                                             )}
                                         />
                                         {/* Error Indicator & Tooltip Button */}
-                                        {watch(`productLineItems.${index}.qty`) === 0 && (
-                                            <div className="absolute top-0 right-0">
-                                                <button
-                                                    type="button"
-                                                    className="relative"
-                                                    onClick={() => handleTooltipToggle(index)}
-                                                    onBlur={() => setTooltipIndex(null)}>
-                                                    {/* Small red triangle indicator */}
-                                                    <div className="w-0 h-0 
-                                                        border-t-11 border-t-red-500 
-                                                        border-l-11 border-l-transparent 
-                                                        border-b-0 border-r-0"
-                                                    />
-                                                </button>
-
-                                                {/* Error Tooltip (Only shows for the clicked index) */}
-                                                {tooltipIndex === index && (
-                                                    <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
-                                                        {errors?.productLineItems?.[index]?.qty?.message || Messages.errQtyCannotBeZero}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
+                                        {errorIndicatorAndTooltipForQty(index)}
                                     </td>
+
                                     {/* price */}
                                     <td className="p-2 border">
                                         <NumericFormat
@@ -261,17 +252,20 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             value={watch(`productLineItems.${index}.price`)}
                                             className="border p-2 rounded w-full text-right" />
                                     </td>
+
                                     {/* serial numbers */}
-                                    <td className="p-2 border">
+                                    <td className="p-2 border relative">
                                         <textarea {...register(`productLineItems.${index}.serialNumbers`, {
                                             validate: (input: string) => validateSerialNumbers(input, index),
 
                                         })}
                                             value={watch(`productLineItems.${index}.serialNumbers`)}
-                                            className="border p-2 rounded w-full text-xs" placeholder="Give comma separated serial numbers" />
+                                            className={clsx("border p-2 rounded w-full text-xs", snError ? "border-red-500 bg-red-100" : "")}
+                                            placeholder="Give comma separated serial numbers" />
                                         {/* Error Indicator & Tooltip Button */}
-                                        {serialNumbersErrorIndicator(index)}
+                                        {errorIndicatorAndTooltipForSerialNumber(index)}
                                     </td>
+
                                     {/* amount */}
                                     <td className="p-2 border">
                                         <NumericFormat
@@ -286,6 +280,7 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
                                             value={amount}
                                             className="border p-2 rounded w-full text-right bg-gray-100" />
                                     </td>
+
                                     {/* delete */}
                                     <td className="p-2 border">
                                         <button tabIndex={-1} type="button" onClick={() => handleDeleteRow(index)} className="text-red-500">
@@ -343,6 +338,71 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
             </div>
         </form>
     </div>)
+
+    function errorIndicatorAndTooltipForQty(index: number) {
+        const qty = watch(`productLineItems.${index}.qty`)
+        if (qty > 0) {
+            return
+        }
+        return (<div className="absolute top-0 right-0">
+            <button
+                type="button"
+                className="relative"
+                onClick={() => {
+                    setQtyTooltipIndex(qtyTooltipIndex === index ? null : index)
+                }}
+                onBlur={() => {
+                    setQtyTooltipIndex(null)
+                }}>
+
+                <div className="w-0 h-0 
+                    border-t-11 border-t-red-500 
+                    border-l-11 border-l-transparent 
+                    border-b-0 border-r-0"
+                />
+            </button>
+
+            {/* Error Tooltip (Only shows for the clicked index) */}
+            {
+                qtyTooltipIndex === index && (
+                    <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
+                        {errors?.productLineItems?.[index]?.qty?.message || Messages.errQtyCannotBeZero}
+                    </div>
+                )
+            }
+        </div >)
+    }
+
+    function errorIndicatorAndTooltipForSerialNumber(index: number) {
+        const sn = watch(`productLineItems.${index}.serialNumbers`).replace(/[,;]$/, "");
+        const snCount = sn.split(/[,;]/).length
+        const qty = watch(`productLineItems.${index}.qty`)
+        const snError = (snCount !== 0) && (snCount !== qty)
+        if (!snError) {
+            return (<></>)
+        }
+        return (<div className="absolute top-0 right-0">
+            <button
+                type="button"
+                className="relative"
+                onClick={() => setSrNoTooltipIndex(srNoTooltipIndex === index ? null : index)}
+                onBlur={() => setSrNoTooltipIndex(null)}>
+                {/* Small red triangle indicator */}
+                <div className="w-0 h-0 
+                    border-t-11 border-t-red-500 
+                    border-l-11 border-l-transparent 
+                    border-b-0 border-r-0"
+                />
+            </button>
+
+            {/* Error Tooltip (Only shows for the clicked index) */}
+            {srNoTooltipIndex === index && (
+                <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
+                    {errors?.productLineItems?.[index]?.serialNumbers?.message || Messages.errQtySrNoNotMatch}
+                </div>
+            )}
+        </div>)
+    }
 
     function handleDeleteRow(index: number) {
         const productLineItems = watch('productLineItems')
@@ -414,42 +474,32 @@ export function ProductsBranchTransferMain({ id }: { id?: string | number }) {
 
     }
 
+    async function loadProductOnTranHeaderId() {
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject || {},
+            instance: instance,
+            sqlArgs: {
+                id:selectedTranHeaderId
+            },
+            sqlId: SqlIdsMap.getBranchTransferDetailsOnTranHeaderId
+        })
+        const jsonResult = res?.[0]?.jsonResult
+        if(_.isEmpty(jsonResult)){
+            Utils.showAlertMessage('Oops!',Messages.messResultSetEmpty)
+            return
+        }
+        
+    }
+
     async function onSubmit(data: BranchTransferType) {
         console.log(data)
     }
 
-    function serialNumbersErrorIndicator(index: number) {
-        const snCount = watch(`productLineItems.${index}.serialNumbers`).split(/[,;]/).length
-        const qty = watch(`productLineItems.${index}.qty`)
-        if (qty === snCount) {
-            return (<></>)
-        }
-        return (<div className="absolute top-0 right-0">
-            <button
-                type="button"
-                className="relative"
-                onClick={() => handleTooltipToggle(index)}
-                onBlur={() => setTooltipIndex(null)}>
-                {/* Small red triangle indicator */}
-                <div className="w-0 h-0 
-                    border-t-11 border-t-red-500 
-                    border-l-11 border-l-transparent 
-                    border-b-0 border-r-0"
-                />
-            </button>
-
-            {/* Error Tooltip (Only shows for the clicked index) */}
-            {tooltipIndex === index && (
-                <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
-                    {errors?.productLineItems?.[index]?.serialNumbers?.message || Messages.errQtySrNoNotMatch}
-                </div>
-            )}
-        </div>)
-    }
-
     function validateSerialNumbers(input: string, index: number) {
         if (!input) {
-            return (true)
+            return (false)
         }
         let err = undefined
         const snCount = input.split(/[,;]/).length

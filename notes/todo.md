@@ -41,6 +41,7 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
+		- Sr no validation malfunctioning. Requiring sn when qty != 0
 		- edit populate
 		- preview
 		- exports not working
@@ -48,10 +49,10 @@
 			- submit
 				- edit
 				- new
-		- Form
-			- Sr no, remarks management
-				- validation
-					- sr no should match qty
+										- Form
+											- Sr no, remarks management
+												- validation
+													- sr no should match qty
 													- header
 													- products
 													- SQL to get details from id
