@@ -41,14 +41,17 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
-		- Sr no validation malfunctioning. Requiring sn when qty != 0
-		- edit populate
-		- preview
-		- exports not working
-		- reset
-			- submit
+		- serial no validation issue still there
+		- dest branch is not changing
+		- submit
 				- edit
 				- new
+		- preview
+		- exports not working
+													- Sr no validation malfunctioning. Requiring sn when qty != 0
+													- edit populate
+													- tranDate finYear validation
+													- reset
 										- Form
 											- Sr no, remarks management
 												- validation

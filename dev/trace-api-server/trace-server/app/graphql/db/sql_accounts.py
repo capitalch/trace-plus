@@ -1130,6 +1130,7 @@ class SqlAccounts:
             , t."jData"->>'serialNumbers' as "serialNumbers"
             , "price"
             , "destBranchId"
+            , "upcCode"
 		from cte1 c1
 			join "BranchTransfer" t
 				on c1."id" = t."tranHeaderId"
