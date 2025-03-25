@@ -41,9 +41,12 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
-		- serial no validation issue still there
-		- dest branch is not changing
+		- Reset not clearing autoRefNo
+													- serial no validation issue still there
+													- dest branch is not changing
 		- submit
+			- Check isDirty etc. before sumit enabled
+			- productId validation
 				- edit
 				- new
 		- preview
