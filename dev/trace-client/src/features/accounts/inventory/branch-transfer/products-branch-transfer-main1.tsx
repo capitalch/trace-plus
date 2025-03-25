@@ -28,7 +28,8 @@ import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import { format } from "date-fns";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 
-export function ProductsBranchTransferMain({ instance }: { instance: string }) {
+export function ProductsBranchTransferMain1({ instance }: { instance: string }) {
+  
   const dispatch: AppDispatchType = useDispatch();
   const selectedTranHeaderId = useSelector(
     (state: RootStateType) => state.reduxComp.compTabs[instance]?.id
@@ -39,6 +40,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   const { branchId, buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
   const { checkAllowedDate } = useValidators();
   const {
+    clearErrors,
     control,
     formState: { errors },
     handleSubmit,
@@ -77,10 +79,6 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     (branch: BranchType) => branch.branchId !== branchId
   );
 
-  const formFields = {
-    autoRefNo: watch("autoRefNo")
-  };
-
   useEffect(() => {
     if (selectedTranHeaderId) {
       loadProductOnTranHeaderId();
@@ -112,7 +110,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
           {/* Auto ref no */}
           <FormField label="Auto ref no" className="w-40 ">
             <label className="border-b-2 mt-10 border-gray-200">
-              {formFields.autoRefNo}
+              {watch('autoRefNo')}
             </label>
           </FormField>
 
@@ -185,6 +183,11 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
             >
               <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
             </button>
+            <button onClick={() => {
+              console.log(errors)
+              const qty = watch(`productLineItems.${0}.qty`)
+              console.log(qty)
+            }}>Test</button>
           </div>
         </div>
 
@@ -300,13 +303,13 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
                         fixedDecimalScale={true}
                         {...register(`productLineItems.${index}.qty`, {
                           validate: (value) =>
-                            value === 0 || Messages.errQtyCannotBeZero
+                            value !== 0 || Messages.errQtyCannotBeZero
                         })}
                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                         onValueChange={(values) =>
                           setValue(
                             `productLineItems.${index}.qty`,
-                            values.floatValue || 0,
+                            values.floatValue ?? 0,
                             { shouldValidate: true, shouldDirty: true }
                           )
                         }
@@ -348,10 +351,10 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
                       <textarea
                         {...register(
                           `productLineItems.${index}.serialNumbers`,
-                        //   {
-                        //     validate: (input: string) =>
-                        //       validateSerialNumbers(input, index)
-                        //   }
+                            {
+                              validate: (input: string) =>
+                                validateSerialNumbers(input, index)
+                            }
                         )}
                         value={watch(`productLineItems.${index}.serialNumbers`)}
                         className={clsx(
@@ -473,40 +476,40 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   );
 
   function errorIndicatorAndTooltipForQty(index: number) {
-    const qty = watch(`productLineItems.${index}.qty`);
-    if (qty > 0) {
-      return;
-    }
-    return (
-      <div className="absolute top-0 right-0">
-        <button
-          type="button"
-          className="relative"
-          onClick={() => {
-            setQtyTooltipIndex(qtyTooltipIndex === index ? null : index);
-          }}
-          onBlur={() => {
-            setQtyTooltipIndex(null);
-          }}
-        >
-          <div
-            className="w-0 h-0 
-                    border-t-11 border-t-red-500 
-                    border-l-11 border-l-transparent 
-                    border-b-0 border-r-0"
-          />
-        </button>
-
-        {/* Error Tooltip (Only shows for the clicked index) */}
-        {qtyTooltipIndex === index && (
-          <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
-            {errors?.productLineItems?.[index]?.qty?.message ||
-              Messages.errQtyCannotBeZero}
+        const qty = watch(`productLineItems.${index}.qty`);
+        if (qty || (qty === undefined)) {
+          return true;
+        }
+        return (
+          <div className="absolute top-0 right-0">
+            <button
+              type="button"
+              className="relative"
+              onClick={() => {
+                setQtyTooltipIndex(qtyTooltipIndex === index ? null : index);
+              }}
+              onBlur={() => {
+                setQtyTooltipIndex(null);
+              }}
+            >
+              <div
+                className="w-0 h-0 
+                        border-t-11 border-t-red-500 
+                        border-l-11 border-l-transparent 
+                        border-b-0 border-r-0"
+              />
+            </button>
+    
+            {/* Error Tooltip (Only shows for the clicked index) */}
+            {qtyTooltipIndex === index && (
+              <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
+                {errors?.productLineItems?.[index]?.qty?.message ||
+                  Messages.errQtyCannotBeZero}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    );
-  }
+        );
+      }
 
   function errorIndicatorAndTooltipForSerialNumber(index: number) {
     const sn = watch(`productLineItems.${index}.serialNumbers`).replace(
@@ -579,15 +582,19 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     setValue(`productLineItems.${index}.productId`, product[0].productId);
     setValue(
       `productLineItems.${index}.productDetails`,
-      `${product[0].brandName} ${product[0].catName} ${product[0].label} ${
-        product[0].info ?? ""
+      `${product[0].brandName} ${product[0].catName} ${product[0].label} ${product[0].info ?? ""
       }`
     );
     setValue(`productLineItems.${index}.price`, product[0].lastPurchasePrice);
     setValue(`productLineItems.${index}.upcCode`, product[0].upcCode);
   }
 
-  function handleOnChangeDestBranch() {}
+  function handleOnChangeDestBranch(selectedBranch: any) {
+    if(selectedBranch) {
+      setValue('destBranchId', selectedBranch?.branchId, {shouldDirty:true})
+      clearErrors('destBranchId')
+    }
+  }
 
   function handleProductClear(index: number) {
     setValue(`productLineItems.${index}.productCode`, "");
@@ -605,11 +612,11 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     Utils.showHideModalDialogA({
       isOpen: true,
       size: "lg",
-      element: <ProductSelectFromGrid onSelect={onSelect} />,
+      element: <ProductSelectFromGrid onSelect={onProductSelect} />,
       title: "Select a product"
     });
 
-    function onSelect(args: ProductInfoType) {
+    function onProductSelect(args: ProductInfoType) {
       setValue(`productLineItems.${index}.productCode`, args.productCode);
       setValue(`productLineItems.${index}.productId`, args.id);
       setValue(
@@ -672,8 +679,9 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     if (
       _.isEmpty(tranH) ||
       _.isEmpty(branchTransfers) ||
-      branchTransfers.length === 0
+      (Array.isArray(branchTransfers) && branchTransfers.length === 0)
     ) {
+      Utils.showAlertMessage("Oops!", Messages.messResultSetEmpty);
       return;
     }
     const destBranchId = branchTransfers?.[0]?.destBranchId;
@@ -684,17 +692,17 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     setValue("userRefNo", tranH.userRefNo);
     setValue("id", tranH.id);
     const productLineItems = branchTransfers.map(
-      (branchTransfer: BranchTransfersType) => {
+      (branchTransfer: BranchTransfersType, ) => {
         return {
           id: branchTransfer.id,
           lineRefNo: branchTransfer.lineRefNo,
           lineRemarks: branchTransfer.lineRemarks,
           price: branchTransfer.price,
           productCode: branchTransfer.productCode,
-          productDetails: `${branchTransfer.brandName} ${
-            branchTransfer.catName
-          } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
+          productDetails: `${branchTransfer.brandName} ${branchTransfer.catName
+            } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
           productId: branchTransfer.productId,
+
           qty: branchTransfer.qty,
           serialNumbers: branchTransfer.serialNumbers,
           tranHeaderId: branchTransfer.tranHeaderId,
@@ -703,11 +711,12 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
       }
     );
     setValue("productLineItems", productLineItems);
+    // setValue(`productLineItems.${0}.qty`, 100);
   }
 
   function validateSerialNumbers(input: string, index: number) {
     if (!input) {
-      return false;
+      return true;
     }
     let err = undefined;
     const snCount = input.split(/[,;]/).length;

@@ -26,12 +26,10 @@ export function CompReactSelect({
         if (!_.isEmpty(options)) {
             selectItem()
         }
-    }, [options, selectedValue])
+    }, [selectedValue])
 
     useEffect(() => {
-        // if (!_.isEmpty(staticOptions)) {
         setOptions(staticOptions ?? [])
-        // }
     }, [staticOptions])
 
     return (<Select

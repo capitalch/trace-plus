@@ -32,6 +32,7 @@
     "@types/react-input-mask": "^3.0.6",
     "awesome-debounce-promise": "^2.1.0",
     "axios": "^1.7.9",
+    "date-fns": "^4.1.0",
     "decimal.js": "^10.5.0",
     "graphql": "^16.10.0",
     "lucide-react": "^0.479.0",
