@@ -41,16 +41,17 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
-		- Reset not clearing autoRefNo
-													- serial no validation issue still there
-													- dest branch is not changing
+													- Product select modal: search on product not working								
 		- submit
-			- Check isDirty etc. before sumit enabled
-			- productId validation
-				- edit
-				- new
+													- Check isDirty etc. before sumit enabled
+													- productId validation
+			- edit
+			- new
 		- preview
 		- exports not working
+													- Reset not clearing autoRefNo	
+		- serial no validation issue still there
+													- dest branch is not changing
 													- Sr no validation malfunctioning. Requiring sn when qty != 0
 													- edit populate
 													- tranDate finYear validation

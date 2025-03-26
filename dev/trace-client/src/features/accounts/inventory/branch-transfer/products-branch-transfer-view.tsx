@@ -43,6 +43,7 @@ export function ProductsBranchTransferView() {
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
             onPreview={handleOnPreview}
+            previewColumnWidth={40}
             sqlId={SqlIdsMap.getAllBranchTransferHeaders}
             sqlArgs={{ branchId: branchId, finYearId: finYearId }}
         />

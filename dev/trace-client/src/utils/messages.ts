@@ -50,6 +50,7 @@ const Messages = {
   errMustHaveOneSpecialChar: 'Must have a special character',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
+  errProductNotSelected: 'Product not selected',
   errQtyCannotBeZero: 'Qty cannot be zero',
   errQtySrNoNotMatch: 'Qty and serial number count do not match',
   errRequired: 'This value is required',

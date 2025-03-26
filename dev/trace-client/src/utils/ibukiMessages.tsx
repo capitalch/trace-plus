@@ -2,6 +2,7 @@ export const IbukiMessages = {
     'Functionality:SourceComponent:DestinationComponent+fieldName': crypto.randomUUID(),
     'DEBOUNCE-ACC-CODE': 'DEBOUNCE-ACC-CODE',
     'DEBOUNCE-ACC-NAME': 'DEBOUNCE-ACC-NAME',
+    // 'DEBOUNCE-BRANCH-TRANSFER': 'DEBOUNCE-BRANCH-TRANSFER',
     'DEBOUNCE-BU-CODE': 'DEBOUNCE-BU-CODE',
     'DEBOUNCE-CLIENT-CODE': 'DEBOUNCE-CLIENT-CODE',
     'DEBOUNCE-CLIENT-NAME': 'DEBOUNCE-CLIENT-NAME',

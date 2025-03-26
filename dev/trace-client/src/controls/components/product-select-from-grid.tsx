@@ -75,6 +75,9 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
     function getColumns(): SyncFusionGridColumnType[] {
         return ([
             { field: 'product', headerText: 'Product', type: 'string', width: 220, template: productTemplate },
+            { field: 'label', type: 'string', width: 0, visible: false }, // to enable search
+            { field: 'brandName', type: 'string', width: 0, visible: false }, // to enable search
+            { field: 'catName', type: 'string', width: 0, visible: false }, // to enable search
             { field: 'info', headerText: 'Details', type: 'string', width: 240 },
             { field: 'clos', headerText: 'Stock', type: 'number', textAlign: 'Right', width: 90 },
             { field: 'age', headerText: 'Age', type: 'number', format: 'N0', width: 70, textAlign: 'Right', },
@@ -111,9 +114,10 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
     }
 
     function productTemplate(props: ProductInfoType) {
-        return (<div>
-            {`${props.brandName} ${props.catName} ${props.label}`}
-        </div>)
+        return (''.concat(props.brandName, ' ', props.catName, ' ', props.label))
+        // return (<div>
+        //     {`${props.brandName} ${props.catName} ${props.label}`}
+        // </div>)
     }
 }
 
