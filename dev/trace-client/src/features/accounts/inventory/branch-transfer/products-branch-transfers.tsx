@@ -5,7 +5,6 @@ import {
   CompTabsType
 } from "../../../../controls/redux-components/comp-tabs";
 import { ProductsBranchTransferMain } from "./products-branch-transfer-main/products-branch-transfer-main";
-// import { ProductsBranchTransferMain } from "./products-branch-transfer-main";
 import { ProductsBranchTransferView } from "./products-branch-transfer-view";
 
 export function ProductsBranchTransfers() {

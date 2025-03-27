@@ -31,7 +31,7 @@ export function ProductsBrancheTransferHeader() {
         clearErrors,
         register,
         setValue,
-        formState: { errors, isSubmitting, isDirty }
+        formState: { errors, isSubmitting, isDirty ,}
     } = useFormContext<BranchTransferType>();
 
     return (
@@ -44,11 +44,8 @@ export function ProductsBrancheTransferHeader() {
                     readOnly
                     disabled
                     title="Auto reference number"
-                    value={watch("autoRefNo")}
+                    value={watch("autoRefNo") ?? ''}
                 />
-                {/* <label className="border-b-2 mt-10 border-gray-200">
-          {watch("autoRefNo")}
-        </label> */}
             </FormField>
 
             {/* tran date */}
@@ -73,16 +70,6 @@ export function ProductsBrancheTransferHeader() {
                 />
             </FormField>
 
-            {/* Remarks */}
-            <FormField className="min-w-60 w-auto" label="Remarks">
-                <textarea
-                    rows={3}
-                    className={clsx(inputFormFieldStyles, "text-xs")}
-                    placeholder="Enter remarks"
-                    {...register("remarks")}
-                />
-            </FormField>
-
             {/* Dest branch */}
             <FormField
                 label="Destination branch"
@@ -99,6 +86,16 @@ export function ProductsBrancheTransferHeader() {
                     ref={null}
                     staticOptions={availableDestBranches || []}
                     selectedValue={watch("destBranchId")}
+                />
+            </FormField>
+
+             {/* Remarks */}
+             <FormField className="min-w-60 w-auto" label="Remarks">
+                <textarea
+                    rows={3}
+                    className={clsx(inputFormFieldStyles, "text-xs")}
+                    placeholder="Enter remarks"
+                    {...register("remarks")}
                 />
             </FormField>
 
@@ -141,8 +138,9 @@ export function ProductsBrancheTransferHeader() {
         setValue("destBranchId", undefined);
         setValue("productLineItems", [
             {
-                productCode: undefined,
-                productDetails: undefined,
+                productId: undefined,
+                productCode: '',
+                productDetails: '',
                 lineRefNo: undefined,
                 qty: 1,
                 price: 0,

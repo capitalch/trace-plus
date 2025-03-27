@@ -24,7 +24,6 @@ export type GlobalContextType = {
     [key: string]: {
       expandedKeys?: Set<number>
       gridRef?: any
-      // isCollapsed?: boolean // For all nodes collapsed
       loadData?: any
       scrollPos?: number
     }

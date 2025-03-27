@@ -25,18 +25,19 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
+            autoRefNo: '',
             tranDate: format(new Date(), "yyyy-MM-dd"),
-            userRefNo: undefined,
-            remarks: undefined,
+            userRefNo: '',
+            remarks: '',
             destBranchId: undefined,
             productLineItems: [
                 {
-                    productCode: undefined,
-                    productDetails: undefined,
-                    lineRefNo: undefined,
+                    productCode: '',
+                    productDetails: '',
+                    lineRefNo: '',
                     qty: 1,
                     price: 0,
-                    lineRemarks: undefined,
+                    lineRemarks: '',
                     serialNumbers: ""
                 }
             ]
@@ -104,7 +105,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         }
         const dataItem: {
             id?: string | number;
-            autoRefNo?: string;
+            autoRefNo?: string | null;
             branchId?: number;
             details: {
                 id?: number | string;
@@ -119,10 +120,10 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
             finYearId?: number;
             jData?: string;
             posId?: number;
-            remarks?: string;
+            remarks?: string | null;
             tranDate: string;
             tranTypeId: number;
-            userRefNo?: string;
+            userRefNo?: string | null;
         } = {
             id: data.id || undefined,
             autoRefNo: data.autoRefNo,
@@ -219,46 +220,46 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
 
 export type BranchTransferType = {
     id?: string | number;
-    autoRefNo?: string;
+    autoRefNo?: string | null;
     destBranchId?: number;
     productLineItems: ProductLineItem[];
-    remarks?: string;
+    remarks?: string | null;
     tranDate: string;
-    userRefNo?: string;
+    userRefNo?: string | null;
 };
 
 type ProductLineItem = {
     id?: number | string;
     amount?: number;
     jData?: { [key: string]: any };
-    lineRefNo?: string;
-    lineRemarks?: string;
+    lineRefNo?: string | null;
+    lineRemarks?: string | null;
     price: number;
-    productCode?: string;
-    productDetails?: string;
+    productCode?: string | null;
+    productDetails?: string | null;
     productId?: number;
     qty: number;
-    serialNumbers: string;
+    serialNumbers: string | null;
     tranHeaderId?: number;
-    upcCode?: string;
+    upcCode?: string | null;
 };
 
 type BranchTransfersType = {
-    brandName: string;
-    catName: string;
+    brandName: string | null;
+    catName: string | null;
     destBranchId: number;
     id: number;
-    info: string;
-    label: string;
-    lineRefNo: string;
-    lineRemarks: string;
+    info: string | null;
+    label: string | null;
+    lineRefNo: string | null;
+    lineRemarks: string | null;
     price: number;
-    productCode: string;
+    productCode: string | null;
     productId: number;
     qty: number;
-    serialNumbers: string;
+    serialNumbers: string | null;
     tranHeaderId: number;
-    upcCode: string;
+    upcCode: string | null;
 };
 
 type JsonResultType = {
@@ -267,24 +268,10 @@ type JsonResultType = {
 };
 
 type TranHeaderType = {
-    autoRefNo: string;
+    autoRefNo: string | null;
     id: number;
-    remarks: string;
+    remarks: string | null;
     tranDate: string;
     tranTypeId: number;
-    userRefNo: string;
+    userRefNo: string | null;
 };
-
-// reset({
-//     autoRefNo: tranH.autoRefNo,
-//     destBranchId: destBranchId,
-//     remarks: tranH.remarks,
-//     tranDate: tranH.tranDate,
-//     userRefNo: tranH.userRefNo,
-// }, { keepDirty: false });
-// setValue("autoRefNo", tranH.autoRefNo);
-// setValue("destBranchId", destBranchId);
-// setValue("remarks", tranH.remarks);
-// setValue("tranDate", tranH.tranDate);
-// setValue("userRefNo", tranH.userRefNo);
-// setValue("id", tranH.id);

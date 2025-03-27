@@ -8,30 +8,18 @@ import clsx from "clsx";
 import { IconDelete } from "../../../../../controls/icons/icon-delete";
 import { IconPlus } from "../../../../../controls/icons/icon-plus";
 import Decimal from "decimal.js";
-import { Utils } from "../../../../../utils/utils";
-import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import _ from "lodash";
-import {
-    ProductInfoType,
-    ProductSelectFromGrid
-} from "../../../../../controls/components/product-select-from-grid";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, } from "react";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
+import { useProductsBranchTransferLineItems } from "./products-branch-transfer-line-items-hook";
 
 export function ProductLineItems() {
-    const [qtyTooltipIndex, setQtyTooltipIndex] = useState<number | null>(null);
-    const [srNoTooltipIndex, setSrNoTooltipIndex] = useState<number | null>(null);
-    const [productIdTooltipIndex, setProductIdTooltipIndex] = useState<number | null>(null);
-    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const { errorIndicatorAndTooltipForProductId, errorIndicatorAndTooltipForQty, errorIndicatorAndTooltipForSerialNumber, getSnError, handleDeleteRow, handleProductClear, handleProductSearch, populateProductOnProductCode, validateSerialNumbers } = useProductsBranchTransferLineItems()
     const {
-        clearErrors,
         control,
         watch,
         register,
         setValue,
-        trigger,
-        formState: { errors }
     } = useFormContext<BranchTransferType>();
 
     const { fields, append, remove } = useFieldArray({
@@ -43,7 +31,7 @@ export function ProductLineItems() {
         () =>
             _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
                 populateProductOnProductCode(e.target.value, index);
-            }, 1500),
+            }, 2000),
         []
     )
     useEffect(() => {
@@ -76,21 +64,15 @@ export function ProductLineItems() {
                         const price = watch(`productLineItems.${index}.price`);
                         const productId = watch(`productLineItems.${index}.productId`);
                         const amount = qty * price;
-                        const sn = watch(`productLineItems.${index}.serialNumbers`).replace(
-                            /[,;]$/,
-                            ""
-                        );
-                        const snCount = sn ? sn.split(/[,;]/).length : 0;
-                        const snError = snCount !== 0 && snCount !== qty;
 
                         return (
-                            <tr key={item.id} className="border">
+                            <tr key={item.id} className="border hover:bg-gray-50">
                                 {/* index */}
                                 <td className="p-2 border">{index + 1}</td>
 
                                 {/* product code */}
-                                <td className="p-2 border flex flex-col relative">
-                                    <span tabIndex={-1} className="text-xs -mt-2 text-blue-500 text-center">
+                                <td className="p-2 flex flex-col relative w-40">
+                                    <span tabIndex={-1} className="text-xs mb-1 text-teal-500 text-center">
                                         {watch(`productLineItems.${index}.upcCode`) ||
                                             "------------"}
                                     </span>
@@ -106,7 +88,7 @@ export function ProductLineItems() {
                                                     },
                                                 })}
                                             onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                            value={watch(`productLineItems.${index}.productCode`)}
+                                            value={watch(`productLineItems.${index}.productCode`)??""}
                                             className={clsx("border p-2 rounded w-full", inputFormFieldStyles, productId ? "" : "border-red-500 bg-red-100")}
 
                                         />
@@ -220,14 +202,14 @@ export function ProductLineItems() {
                                 <td className="p-2 border relative">
                                     <textarea
                                         {...register(`productLineItems.${index}.serialNumbers`, {
-                                            validate: (input: string) =>
-                                                validateSerialNumbers(input, index)
+                                            validate: (input: string | null) =>
+                                                validateSerialNumbers(input, index),
                                         })}
                                         rows={3}
-                                        value={watch(`productLineItems.${index}.serialNumbers`)}
+                                        value={watch(`productLineItems.${index}.serialNumbers`) ?? ""}
                                         className={clsx(
                                             "border p-2 rounded w-full", inputFormFieldStyles,
-                                            snError ? "border-red-500 bg-red-100" : ""
+                                            getSnError(index) ? "border-red-500 bg-red-100" : ""
                                         )}
                                         placeholder="Give comma separated serial numbers"
                                     />
@@ -257,7 +239,7 @@ export function ProductLineItems() {
                                         aria-label="Delete Row"
                                         tabIndex={-1}
                                         type="button"
-                                        onClick={() => handleDeleteRow(index)}
+                                        onClick={() => handleDeleteRow(index, remove)}
                                         className="text-red-500"
                                     >
                                         <IconDelete />
@@ -344,218 +326,4 @@ export function ProductLineItems() {
         </div>
     );
 
-    function errorIndicatorAndTooltipForProductId(index: number) {
-        const productId = watch(`productLineItems.${index}.productId`);
-        if (productId) {
-            return true;
-        }
-        return (
-            <div className="absolute top-0 right-0">
-                <button aria-label="Error Tooltip"
-                    tabIndex={-1}
-                    type="button"
-                    className="relative"
-                    onClick={() => {
-                        setProductIdTooltipIndex(productIdTooltipIndex === index ? null : index);
-                    }}
-                    onBlur={() => {
-                        setProductIdTooltipIndex(null);
-                    }}
-                >
-                    <div
-                        className="w-0 h-0 
-                    border-t-11 border-t-red-500 
-                    border-l-11 border-l-transparent 
-                    border-b-0 border-r-0"
-                    />
-                </button>
-
-                {/* Error Tooltip (Only shows for the clicked index) */}
-                {productIdTooltipIndex === index && (
-                    <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
-                        {errors?.productLineItems?.[index]?.productId?.message ||
-                            Messages.errProductNotSelected}
-                    </div>
-                )}
-            </div>);
-    }
-
-    function errorIndicatorAndTooltipForQty(index: number) {
-        const qty = watch(`productLineItems.${index}.qty`);
-        if (qty || qty === undefined) {
-            return true;
-        }
-        return (
-            <div className="absolute top-0 right-0">
-                <button aria-label="Error Tooltip"
-                    tabIndex={-1}
-                    type="button"
-                    className="relative"
-                    onClick={() => {
-                        setQtyTooltipIndex(qtyTooltipIndex === index ? null : index);
-                    }}
-                    onBlur={() => {
-                        setQtyTooltipIndex(null);
-                    }}
-                >
-                    <div
-                        className="w-0 h-0 
-                    border-t-11 border-t-red-500 
-                    border-l-11 border-l-transparent 
-                    border-b-0 border-r-0"
-                    />
-                </button>
-
-                {/* Error Tooltip (Only shows for the clicked index) */}
-                {qtyTooltipIndex === index && (
-                    <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
-                        {errors?.productLineItems?.[index]?.qty?.message ||
-                            Messages.errQtyCannotBeZero}
-                    </div>
-                )}
-            </div>
-        );
-    }
-
-    function errorIndicatorAndTooltipForSerialNumber(index: number) {
-        const sn = watch(`productLineItems.${index}.serialNumbers`).replace(
-            /[,;]$/,
-            ""
-        );
-        const snCount = sn ? sn.split(/[,;]/).length : 0;
-        const qty = watch(`productLineItems.${index}.qty`);
-        const snError = snCount !== 0 && snCount !== qty;
-        if (!snError) {
-            return <></>;
-        }
-        return (
-            <div className="absolute top-0 right-0">
-                <button aria-label="Error Tooltip"
-                    tabIndex={-1}
-                    type="button"
-                    className="relative"
-                    onClick={() =>
-                        setSrNoTooltipIndex(srNoTooltipIndex === index ? null : index)
-                    }
-                    onBlur={() => setSrNoTooltipIndex(null)}
-                >
-                    {/* Small red triangle indicator */}
-                    <div
-                        className="w-0 h-0 
-                border-t-11 border-t-red-500 
-                border-l-11 border-l-transparent 
-                border-b-0 border-r-0"
-                    />
-                </button>
-
-                {/* Error Tooltip (Only shows for the clicked index) */}
-                {srNoTooltipIndex === index && (
-                    <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
-                        {errors?.productLineItems?.[index]?.serialNumbers?.message ||
-                            Messages.errQtySrNoNotMatch}
-                    </div>
-                )}
-            </div>
-        );
-    }
-
-    function handleDeleteRow(index: number) {
-        const productLineItems = watch("productLineItems");
-        if (productLineItems.length === 1) {
-            Utils.showAlertMessage("Oops!", Messages.messMustKeepOneRow);
-            return;
-        }
-        remove(index);
-    }
-
-    function handleProductClear(index: number) {
-        setValue(`productLineItems.${index}.productId`, undefined);
-        setValue(`productLineItems.${index}.productCode`, undefined);
-        setValue(`productLineItems.${index}.productDetails`, undefined);
-        setValue(`productLineItems.${index}.lineRefNo`, undefined);
-        setValue(`productLineItems.${index}.qty`, 1);
-        setValue(`productLineItems.${index}.price`, 0);
-        setValue(`productLineItems.${index}.lineRemarks`, undefined);
-        setValue(`productLineItems.${index}.serialNumbers`, '');
-        setValue(`productLineItems.${index}.upcCode`, undefined);
-    }
-
-    function handleProductSearch(index: number) {
-        console.log(index);
-        Utils.showHideModalDialogA({
-            isOpen: true,
-            size: "lg",
-            element: <ProductSelectFromGrid onSelect={onProductSelect} />,
-            title: "Select a product"
-        });
-
-        function onProductSelect(args: ProductInfoType) {
-            setValue(`productLineItems.${index}.productCode`, args.productCode);
-            setValue(`productLineItems.${index}.productId`, args.id);
-            setValue(
-                `productLineItems.${index}.productDetails`,
-                `${args.brandName} ${args.catName} ${args.label} ${args.info ?? ""}`
-            );
-            setValue(`productLineItems.${index}.price`, args.lastPurchasePrice);
-            setValue(`productLineItems.${index}.upcCode`, args.upcCode);
-        }
-    }
-
-    async function populateProductOnProductCode(productCode: string, index: number) {
-        if (_.isEmpty(productCode)) {
-            handleProductClear(index);
-            trigger(`productLineItems.${index}.productCode`);
-            return;
-        }
-        const product: ProductType[] = await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
-            sqlArgs: {
-                productCodeOrUpc: productCode
-            }
-        });
-        if (_.isEmpty(product)) {
-            handleProductClear(index);
-            trigger(`productLineItems.${index}.productCode`);
-            return
-        }
-        clearErrors(`productLineItems.${index}.productCode`);
-        setValue(`productLineItems.${index}.productCode`, product[0].productCode);
-        setValue(`productLineItems.${index}.productId`, product[0].productId);
-        setValue(
-            `productLineItems.${index}.productDetails`,
-            `${product[0].brandName} ${product[0].catName} ${product[0].label} ${product[0].info ?? ""
-            }`
-        );
-        setValue(`productLineItems.${index}.price`, product[0].lastPurchasePrice);
-        setValue(`productLineItems.${index}.upcCode`, product[0].upcCode);
-    }
-
-    function validateSerialNumbers(input: string, index: number) {
-        if (!input) {
-            return true;
-        }
-        let err = undefined;
-        const snCount = input.split(/[,;]/).length;
-        const qty = watch(`productLineItems.${index}.qty`);
-        if (snCount !== qty) {
-            err = Messages.errQtySrNoNotMatch;
-        }
-        return err;
-    }
 }
-
-type ProductType = {
-    brandName: string;
-    catName: string;
-    gstRate: number;
-    hsn: number;
-    info: string;
-    label: string;
-    lastPurchasePrice: number;
-    productCode: string;
-    productId: number;
-    upcCode: string;
-};
