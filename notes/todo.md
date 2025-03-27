@@ -41,9 +41,16 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
+		- Test
+			- Insert
+			- Edit
+			- DeleteRow
+			- Delete
+		- types management
 		- submit
 			- edit
 			- new
+			- delete
 													- Check isDirty etc. before sumit enabled
 													- productId validation
 													- Product select modal: search on product not working								

@@ -38,7 +38,6 @@ export function ProductsBranchTransferView() {
             height="calc(100vh - 430px)"
             allowPaging={true}
             instance={instance}
-            // isLoadOnInit={true}
             minWidth="1400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
@@ -132,7 +131,6 @@ export function ProductsBranchTransferView() {
                 type: 'string',
                 width: 100,
             }
-
         ]);
     }
 

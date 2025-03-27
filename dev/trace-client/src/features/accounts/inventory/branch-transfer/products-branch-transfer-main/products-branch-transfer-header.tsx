@@ -9,153 +9,156 @@ import { useValidators } from "../../../../../utils/validators-hook";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
 import { format } from "date-fns";
 import {
-    allBranchesSelectorFn,
-    BranchType
+  allBranchesSelectorFn,
+  BranchType
 } from "../../../../login/login-slice";
 import { useSelector } from "react-redux";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BranchTransferType } from "./products-branch-transfer-main";
 import _ from "lodash";
 
-export function ProductsBrancheTransferHeader() {
-    const { branchId } = useUtilsInfo();
+export function ProductsBranchTransferHeader() {
+  const { branchId } = useUtilsInfo();
 
-    const allBranches: BranchType[] = useSelector(allBranchesSelectorFn) || [];
-    const availableDestBranches = allBranches.filter(
-        (branch: BranchType) => branch.branchId !== branchId
-    );
+  const allBranches: BranchType[] = useSelector(allBranchesSelectorFn) || [];
+  const availableDestBranches = allBranches.filter(
+    (branch: BranchType) => branch.branchId !== branchId
+  );
 
-    const { checkAllowedDate } = useValidators();
-    const {
-        watch,
-        clearErrors,
-        register,
-        setValue,
-        formState: { errors, isSubmitting, isDirty ,}
-    } = useFormContext<BranchTransferType>();
+  const { checkAllowedDate } = useValidators();
+  const {
+    watch,
+    clearErrors,
+    register,
+    setValue,
+    formState: { errors, isSubmitting, isDirty }
+  } = useFormContext<BranchTransferType>();
 
-    return (
-        <div className="flex items-center align-middle gap-2 flex-wrap">
-            {/* Auto ref no */}
-            <FormField label="Auto ref no" className="w-52 ">
-                <input
-                    type="text"
-                    className={clsx("mt-1 bg-gray-200 rounded-lg")}
-                    readOnly
-                    disabled
-                    title="Auto reference number"
-                    value={watch("autoRefNo") ?? ''}
-                />
-            </FormField>
+  return (
+    <div className="flex items-center align-middle gap-2 flex-wrap">
+      {/* Auto ref no */}
+      <FormField label="Auto ref no" className="w-52 ">
+        <input
+          type="text"
+          className={clsx("mt-1 bg-gray-200 rounded-lg")}
+          readOnly
+          disabled
+          title="Auto reference number"
+          value={watch("autoRefNo") ?? undefined}
+        />
+      </FormField>
 
-            {/* tran date */}
-            <FormField label="Date" required error={errors?.tranDate?.message}>
-                <input
-                    type="date"
-                    className={clsx("text-right rounded-lg h-10", inputFormFieldStyles)}
-                    {...register("tranDate", {
-                        required: Messages.errRequired,
-                        validate: checkAllowedDate
-                    })}
-                />
-            </FormField>
+      {/* tran date */}
+      <FormField label="Date" required error={errors?.tranDate?.message}>
+        <input
+          type="date"
+          className={clsx("text-right rounded-lg h-10", inputFormFieldStyles)}
+          {...register("tranDate", {
+            required: Messages.errRequired,
+            validate: checkAllowedDate
+          })}
+        />
+      </FormField>
 
-            {/* User ref no */}
-            <FormField label="User ref no">
-                <input
-                    type="text"
-                    className={clsx(inputFormFieldStyles, "mt-1")}
-                    placeholder="Enter user ref no"
-                    {...register("userRefNo")}
-                />
-            </FormField>
+      {/* User ref no */}
+      <FormField label="User ref no">
+        <input
+          type="text"
+          className={clsx(inputFormFieldStyles, "mt-1")}
+          placeholder="Enter user ref no"
+          {...register("userRefNo")}
+        />
+      </FormField>
 
-            {/* Dest branch */}
-            <FormField
-                label="Destination branch"
-                required
-                error={errors.destBranchId?.message}
-            >
-                <CompReactSelect
-                    menuPlacement="auto"
-                    optionLabelName="branchName"
-                    optionValueName="branchId"
-                    placeHolder="Select dest branch ..."
-                    {...register("destBranchId", { required: Messages.errRequired })}
-                    onChange={handleOnChangeDestBranch}
-                    ref={null}
-                    staticOptions={availableDestBranches || []}
-                    selectedValue={watch("destBranchId")}
-                />
-            </FormField>
+      {/* Dest branch */}
+      <FormField
+        label="Destination branch"
+        required
+        error={errors.destBranchId?.message}
+      >
+        <CompReactSelect
+          menuPlacement="auto"
+          optionLabelName="branchName"
+          optionValueName="branchId"
+          placeHolder="Select dest branch ..."
+          {...register("destBranchId", { required: Messages.errRequired })}
+          onChange={handleOnChangeDestBranch}
+          ref={null}
+          staticOptions={availableDestBranches || []}
+          selectedValue={watch("destBranchId")}
+        />
+      </FormField>
 
-             {/* Remarks */}
-             <FormField className="min-w-60 w-auto" label="Remarks">
-                <textarea
-                    rows={3}
-                    className={clsx(inputFormFieldStyles, "text-xs")}
-                    placeholder="Enter remarks"
-                    {...register("remarks")}
-                />
-            </FormField>
+      {/* Remarks */}
+      <FormField className="min-w-60 w-auto" label="Remarks">
+        <textarea
+          rows={3}
+          className={clsx(inputFormFieldStyles, "text-xs")}
+          placeholder="Enter remarks"
+          {...register("remarks")}
+        />
+      </FormField>
 
-            {/* Reset submit */}
-            <div className="flex gap-3 ml-auto mt-8">
-                {/* Reset */}
-                <button
-                    onClick={handleReset}
-                    type="button"
-                    className="px-5 py-2 font-medium text-white inline-flex items-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200"
-                >
-                    <IconReset className="text-white w-6 h-6 mr-2" />
-                    Reset
-                </button>
-                {/* Submit */}
-                <button
-                    type="submit"
-                    disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
-                    className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200"
-                >
-                    <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
-                </button>
-                <button
-                    onClick={() => {
-                        console.log(isDirty);
-                        console.log(isSubmitting);
-                        console.log(errors);
-                    }}
-                    type="button">Test</button>
-            </div>
-        </div>
-    );
+      {/* Reset submit */}
+      <div className="flex gap-3 ml-auto mt-8">
+        {/* Reset */}
+        <button
+          onClick={handleReset}
+          type="button"
+          className="px-5 py-2 font-medium text-white inline-flex items-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200"
+        >
+          <IconReset className="text-white w-6 h-6 mr-2" />
+          Reset
+        </button>
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
+          className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200"
+        >
+          <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
+        </button>
+        <button
+          onClick={() => {
+            console.log(isDirty);
+            console.log(isSubmitting);
+            console.log(errors);
+          }}
+          type="button"
+        >
+          Test
+        </button>
+      </div>
+    </div>
+  );
 
-    function handleReset() {
-        setValue("id", undefined);
-        setValue("autoRefNo", '');
-        setValue("tranDate", format(new Date(), "yyyy-MM-dd"));
-        setValue("userRefNo", undefined);
-        setValue("remarks", undefined);
-        setValue("destBranchId", undefined);
-        setValue("productLineItems", [
-            {
-                productId: undefined,
-                productCode: '',
-                productDetails: '',
-                lineRefNo: undefined,
-                qty: 1,
-                price: 0,
-                lineRemarks: undefined,
-                tranHeaderId: undefined,
-                serialNumbers: "",
-                upcCode: undefined
-            }
-        ]);
+  function handleReset() {
+    setValue("id", undefined);
+    setValue("autoRefNo", null);
+    setValue("tranDate", format(new Date(), "yyyy-MM-dd"));
+    setValue("userRefNo", null);
+    setValue("remarks", null);
+    setValue("destBranchId", null);
+    setValue("productLineItems", [
+      {
+        productId: undefined,
+        productCode: null,
+        productDetails: null,
+        lineRefNo: null,
+        qty: 1,
+        price: 0,
+        lineRemarks: null,
+        tranHeaderId: undefined,
+        serialNumbers: null,
+        upcCode: null
+      }
+    ]);
+  }
+
+  function handleOnChangeDestBranch(selectedBranch: any) {
+    if (selectedBranch) {
+      setValue("destBranchId", selectedBranch?.branchId, { shouldDirty: true });
+      clearErrors("destBranchId");
     }
-
-    function handleOnChangeDestBranch(selectedBranch: any) {
-        if (selectedBranch) {
-            setValue("destBranchId", selectedBranch?.branchId, { shouldDirty: true });
-            clearErrors("destBranchId");
-        }
-    }
+  }
 }
