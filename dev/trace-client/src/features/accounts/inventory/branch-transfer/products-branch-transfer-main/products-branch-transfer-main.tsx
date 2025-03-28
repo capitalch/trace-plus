@@ -169,6 +169,17 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   async function onSubmit(data: BranchTransferType) {
     console.log(data);
     const xData: XDataObjectType = getXData(data);
+    try {
+        await Utils.doGenericUpdate({
+            buCode: buCode || '',
+            // tableName: DatabaseTablesMap.TranH,
+            xData: xData
+        });
+        Utils.showSaveMessage();
+        
+    } catch (e) {
+        console.log(e);
+    }
     console.log(xData);
   }
 

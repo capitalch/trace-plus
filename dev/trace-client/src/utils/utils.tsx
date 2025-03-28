@@ -645,7 +645,7 @@ export type DoGenericQueryType = {
 
 export type DoGenericUpdateType = {
     buCode: string
-    tableName: string
+    tableName?: string
     xData: Record<string, any>[] | Record<string, any>
 }
 
