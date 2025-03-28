@@ -42,6 +42,7 @@
 	- Stock Journal
 	- Branch transfer
 		- Test
+			- Reset
 			- Sometimes client side validation error appears for productCode
 			- Insert
 			- Edit
@@ -50,11 +51,13 @@
 				- Edit with value changed
 			- DeleteRow
 			- Delete
-		- types management
-		- submit
-			- edit
-			- new
-			- delete
+													- types management
+												- submit
+													- Go back to edit if id
+													- Clear data
+													- edit
+													- new
+													- delete
 													- Check isDirty etc. before sumit enabled
 													- productId validation
 													- Product select modal: search on product not working								

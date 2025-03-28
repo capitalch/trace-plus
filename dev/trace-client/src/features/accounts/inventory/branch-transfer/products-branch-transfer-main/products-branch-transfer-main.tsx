@@ -13,8 +13,6 @@ import _ from "lodash";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
-// import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
-// import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   const {
@@ -54,6 +52,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   });
   const { reset } = methods;
 
+  const extendedMethods = { ...methods, xReset }
   useEffect(() => {
     if (selectedTranHeaderId) {
       loadProductOnTranHeaderId();
@@ -76,7 +75,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
 
   return (
     <div className="h-[calc(100vh-240px)]">
-      <FormProvider {...methods}>
+      <FormProvider {...extendedMethods} >
         <form
           className="flex flex-col gap-6 mr-6 min-w-[85rem]"
           onSubmit={methods.handleSubmit(onSubmit)}
@@ -118,6 +117,10 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         xData: xData
       });
       Utils.showSaveMessage();
+      xReset()
+      if (selectedTranHeaderId) {
+        dispatch(setActiveTabIndex({ activeTabIndex: 1, instance: instance }))
+      }
     } catch (e) {
       console.log(e);
     }
@@ -183,9 +186,8 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
           lineRemarks: branchTransfer.lineRemarks,
           price: branchTransfer.price,
           productCode: branchTransfer.productCode,
-          productDetails: `${branchTransfer.brandName} ${
-            branchTransfer.catName
-          } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
+          productDetails: `${branchTransfer.brandName} ${branchTransfer.catName
+            } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
           productId: branchTransfer.productId,
           qty: branchTransfer.qty,
           serialNumbers: branchTransfer.serialNumbers,
@@ -208,6 +210,32 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
       },
       { keepDirty: false } // Ensure the form is not marked as dirty
     );
+  }
+
+  function xReset() {
+    reset({
+      id: undefined,
+      autoRefNo: "",
+      tranDate: format(new Date(), "yyyy-MM-dd"),
+      userRefNo: null,
+      remarks: null,
+      destBranchId: null,
+      productLineItems: [
+        {
+          id: undefined,
+          productId: undefined,
+          productCode: null,
+          productDetails: null,
+          lineRefNo: null,
+          qty: 1,
+          price: 0,
+          lineRemarks: null,
+          tranHeaderId: undefined,
+          serialNumbers: null,
+          upcCode: null
+        }
+      ]
+    });
   }
 }
 

@@ -7,7 +7,6 @@ import { IconSubmit } from "../../../../../controls/icons/icon-submit";
 import { useFormContext } from "react-hook-form";
 import { useValidators } from "../../../../../utils/validators-hook";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
-import { format } from "date-fns";
 import {
   allBranchesSelectorFn,
   BranchType
@@ -16,10 +15,12 @@ import { useSelector } from "react-redux";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BranchTransferType } from "./products-branch-transfer-main";
 import _ from "lodash";
+// import { format } from "date-fns";
+// import { useState } from "react";
 
 export function ProductsBranchTransferHeader() {
   const { branchId } = useUtilsInfo();
-
+  // const [,setRefresh] = useState({});
   const allBranches: BranchType[] = useSelector(allBranchesSelectorFn) || [];
   const availableDestBranches = allBranches.filter(
     (branch: BranchType) => branch.branchId !== branchId
@@ -30,9 +31,12 @@ export function ProductsBranchTransferHeader() {
     watch,
     clearErrors,
     register,
+    // reset,
     setValue,
-    formState: { errors, isSubmitting, isDirty }
+    formState: { errors, isSubmitting, isDirty },
+
   } = useFormContext<BranchTransferType>();
+  const { xReset }: any = useFormContext();
 
   return (
     <div className="flex items-center align-middle gap-2 flex-wrap">
@@ -133,26 +137,30 @@ export function ProductsBranchTransferHeader() {
   );
 
   function handleReset() {
-    setValue("id", undefined);
-    setValue("autoRefNo", ''); //if null or undefined value is set then warning appears
-    setValue("tranDate", format(new Date(), "yyyy-MM-dd"));
-    setValue("userRefNo", null);
-    setValue("remarks", null);
-    setValue("destBranchId", null);
-    setValue("productLineItems", [
-      {
-        productId: undefined,
-        productCode: null,
-        productDetails: null,
-        lineRefNo: null,
-        qty: 1,
-        price: 0,
-        lineRemarks: null,
-        tranHeaderId: undefined,
-        serialNumbers: null,
-        upcCode: null
-      }
-    ]);
+    xReset()
+    // setValue("id", undefined);
+    // setValue("autoRefNo", ''); //if null or undefined value is set then warning appears
+    // setValue("tranDate", format(new Date(), "yyyy-MM-dd"));
+    // setValue("userRefNo", null);
+    // setValue("remarks", null);
+    // setValue("destBranchId", null);
+    // setValue("productLineItems", [
+    //   {
+    //     id: undefined,
+    //     productId: undefined,
+    //     productCode: null,
+    //     productDetails: null,
+    //     lineRefNo: null,
+    //     qty: 1,
+    //     price: 0,
+    //     lineRemarks: null,
+    //     tranHeaderId: undefined,
+    //     serialNumbers: null,
+    //     upcCode: null
+    //   }
+    // ]);
+    // reset({}, { keepValues: false });
+    // setRefresh({})
   }
 
   function handleOnChangeDestBranch(selectedBranch: any) {
