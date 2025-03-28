@@ -42,8 +42,12 @@
 	- Stock Journal
 	- Branch transfer
 		- Test
+			- Sometimes client side validation error appears for productCode
 			- Insert
 			- Edit
+				- Edit normal with added new fields
+				- Edit with delete
+				- Edit with value changed
 			- DeleteRow
 			- Delete
 		- types management

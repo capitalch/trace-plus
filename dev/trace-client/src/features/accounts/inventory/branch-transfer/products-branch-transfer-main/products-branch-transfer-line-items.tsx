@@ -105,9 +105,6 @@ export function ProductBranchTransferLineItems({
                       {...register(`productLineItems.${index}.productCode`, {
                         onChange: (e) => onChangeProductCode(e, index),
                         validate: () => {
-                          const productId = watch(
-                            `productLineItems.${index}.productId`
-                          );
                           return productId
                             ? true
                             : Messages.errProductNotSelected;

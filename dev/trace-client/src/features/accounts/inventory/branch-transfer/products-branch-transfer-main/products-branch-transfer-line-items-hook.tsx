@@ -184,7 +184,6 @@ export function useProductsBranchTransferLineItems(instance: string) {
   }
 
   function handleProductSearch(index: number) {
-    console.log(index);
     Utils.showHideModalDialogA({
       isOpen: true,
       size: "lg",
@@ -193,8 +192,12 @@ export function useProductsBranchTransferLineItems(instance: string) {
     });
 
     function onProductSelect(args: ProductInfoType) {
+      clearErrors(`productLineItems.${index}.productCode`);
       setValue(`productLineItems.${index}.productCode`, args.productCode);
-      setValue(`productLineItems.${index}.productId`, args.id);
+      setValue(`productLineItems.${index}.productId`, args.id, {
+        shouldValidate: true,
+        shouldDirty: true
+      });
       setValue(
         `productLineItems.${index}.productDetails`,
         `${args.brandName} ${args.catName} ${args.label} ${args.info ?? ""}`

@@ -157,8 +157,11 @@ async def process_data(xData, acur, tableName, fkeyName, fkeyValue):
             records = await acur.fetchone()
             id = records.get("id")
     if xDetails:
-        for item in xDetails:
-            await process_details(item, acur, id)
+        if type(xDetails) is list:
+            for item in xDetails:
+                await process_details(item, acur, id)
+        else:
+            await process_details(xDetails, acur, id)
     return id
 
 # id      isIdInsert      Result
@@ -227,6 +230,9 @@ def get_update_sql(xData, tableName):
 
 async def process_deleted_ids(sqlObject, acur: Any):
     deletedIdList = sqlObject.get("deletedIds")
+    if not deletedIdList:
+        # If deletedIdList is None or empty, return early
+        return
     tableName = sqlObject.get("tableName")
     ret = "("
     for x in deletedIdList:

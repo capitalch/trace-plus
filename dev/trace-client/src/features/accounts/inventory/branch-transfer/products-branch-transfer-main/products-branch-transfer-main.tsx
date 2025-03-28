@@ -13,10 +13,18 @@ import _ from "lodash";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
+// import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+// import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
-  const { branchId, buCode,context, dbName, decodedDbParamsObject, finYearId } =
-    useUtilsInfo();
+  const {
+    branchId,
+    buCode,
+    context,
+    dbName,
+    decodedDbParamsObject,
+    finYearId
+  } = useUtilsInfo();
   const dispatch: AppDispatchType = useDispatch();
   const selectedTranHeaderId = useSelector(
     (state: RootStateType) => state.reduxComp.compTabs[instance]?.id
@@ -99,86 +107,57 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     populateData(jsonResult);
   }
 
-  function getXData(data: BranchTransferType) {
-    const xData: XDataObjectType = {
-      tableName: DatabaseTablesMap.TranH,
-      data: []
-    };
-    const dataItem: {
-      id?: string | number;
-      autoRefNo?: string | null;
-      branchId?: number;
-      details: {
-        id?: number | string;
-        destBranchId?: number;
-        jData?: { serialNumbers: string };
-        lineRefNo?: string;
-        lineRemarks?: string;
-        price: number;
-        productId?: number;
-        qty: number;
-      }[];
-      finYearId?: number;
-      jData?: string;
-      posId?: number;
-      remarks?: string | null;
-      tranDate: string;
-      tranTypeId: number;
-      userRefNo?: string | null;
-    } = {
-      id: data.id || undefined,
-      autoRefNo: data.autoRefNo,
-      branchId: branchId,
-      details: [],
-      finYearId: finYearId,
-      jData: "{}",
-      posId: 1,
-      remarks: data.remarks,
-      tranDate: data.tranDate,
-      tranTypeId: 12,
-      userRefNo: data.userRefNo
-    };
-
-    const branchTransfer: any = {
-      tableName: DatabaseTablesMap.BranchTransfer,
-      fkeyName: "tranHeaderId",
-      deletedIds: context.DataInstances?.[instance]?.deletedIds || [],
-      data: getProductLineItems()
-    };
-
-    dataItem.details.push(branchTransfer);
-    xData.data.push(dataItem);
-    return xData;
-
-    function getProductLineItems() {
-      return data.productLineItems.map((item: ProductLineItem) => {
-        return {
-          id: item.id || undefined,
-          destBranchId: data.destBranchId,
-          jData: { serialNumbers: item.serialNumbers },
-          lineRefNo: item.lineRefNo,
-          lineRemarks: item.lineRemarks,
-          price: item.price,
-          productId: item.productId,
-          qty: item.qty
-        };
-      });
-    }
-  }
-
   async function onSubmit(data: BranchTransferType) {
     console.log(data);
-    const xData: XDataObjectType = getXData(data);
+    const xData: XDataObjectType = getTranHeaderRow();
+
     try {
-        await Utils.doGenericUpdate({
-            buCode: buCode || '',
-            // tableName: DatabaseTablesMap.TranH,
-            xData: xData
-        });
-        Utils.showSaveMessage();
-        
+      await Utils.doGenericUpdate({
+        buCode: buCode || "",
+        tableName: DatabaseTablesMap.TranH,
+        xData: xData
+      });
+      Utils.showSaveMessage();
     } catch (e) {
-        console.log(e);
+      console.log(e);
+    }
+
+    function getTranHeaderRow() {
+      return {
+        id: (data.id as number) || undefined,
+        autoRefNo: data.autoRefNo,
+        branchId: branchId,
+        finYearId: finYearId,
+        jData: "{}",
+        posId: 1,
+        remarks: data.remarks,
+        tranDate: data.tranDate,
+        tranTypeId: 12,
+        userRefNo: data.userRefNo,
+        xDetails: getXDetails()
+      };
+    }
+
+    function getXDetails() {
+      return {
+        tableName: DatabaseTablesMap.BranchTransfer,
+        fkeyName: "tranHeaderId",
+        deletedIds: context.DataInstances?.[instance]?.deletedIds || [],
+        xData: data.productLineItems.map((item: ProductLineItem) => {
+          return {
+            id: item.id || undefined,
+            destBranchId: data.destBranchId,
+            jData: _.isEmpty(item.serialNumbers)
+              ? null
+              : { serialNumbers: item.serialNumbers },
+            lineRefNo: item.lineRefNo,
+            lineRemarks: item.lineRemarks,
+            price: item.price,
+            productId: item.productId,
+            qty: item.qty
+          };
+        })
+      };
     }
     console.log(xData);
   }
@@ -283,7 +262,10 @@ type BranchTransferInfoType = {
 
 type TranHeaderType = {
   autoRefNo: string | null;
-  id: number;
+  branchId: number;
+  finYearId: number;
+  id?: number;
+  posId?: number;
   remarks: string | null;
   tranDate: string;
   tranTypeId: number;

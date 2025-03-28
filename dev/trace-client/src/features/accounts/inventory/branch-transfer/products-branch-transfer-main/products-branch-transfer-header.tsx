@@ -134,7 +134,7 @@ export function ProductsBranchTransferHeader() {
 
   function handleReset() {
     setValue("id", undefined);
-    setValue("autoRefNo", null);
+    setValue("autoRefNo", ''); //if null or undefined value is set then warning appears
     setValue("tranDate", format(new Date(), "yyyy-MM-dd"));
     setValue("userRefNo", null);
     setValue("remarks", null);
