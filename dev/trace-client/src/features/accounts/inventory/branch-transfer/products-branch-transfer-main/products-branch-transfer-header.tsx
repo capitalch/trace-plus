@@ -15,12 +15,9 @@ import { useSelector } from "react-redux";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BranchTransferType } from "./products-branch-transfer-main";
 import _ from "lodash";
-// import { format } from "date-fns";
-// import { useState } from "react";
 
 export function ProductsBranchTransferHeader() {
   const { branchId } = useUtilsInfo();
-  // const [,setRefresh] = useState({});
   const allBranches: BranchType[] = useSelector(allBranchesSelectorFn) || [];
   const availableDestBranches = allBranches.filter(
     (branch: BranchType) => branch.branchId !== branchId
@@ -31,12 +28,11 @@ export function ProductsBranchTransferHeader() {
     watch,
     clearErrors,
     register,
-    // reset,
     setValue,
     formState: { errors, isSubmitting, isDirty },
 
   } = useFormContext<BranchTransferType>();
-  const { xReset }: any = useFormContext();
+  const { xReset }: any = useFormContext(); // normal reset does not work. xReset is custom reset method defined in .._branch_transfer_main.tsx
 
   return (
     <div className="flex items-center align-middle gap-2 flex-wrap">
@@ -107,7 +103,7 @@ export function ProductsBranchTransferHeader() {
       <div className="flex gap-3 ml-auto mt-8">
         {/* Reset */}
         <button
-          onClick={handleReset}
+          onClick={xReset}
           type="button"
           className="px-5 py-2 font-medium text-white inline-flex items-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200"
         >
@@ -136,32 +132,9 @@ export function ProductsBranchTransferHeader() {
     </div>
   );
 
-  function handleReset() {
-    xReset()
-    // setValue("id", undefined);
-    // setValue("autoRefNo", ''); //if null or undefined value is set then warning appears
-    // setValue("tranDate", format(new Date(), "yyyy-MM-dd"));
-    // setValue("userRefNo", null);
-    // setValue("remarks", null);
-    // setValue("destBranchId", null);
-    // setValue("productLineItems", [
-    //   {
-    //     id: undefined,
-    //     productId: undefined,
-    //     productCode: null,
-    //     productDetails: null,
-    //     lineRefNo: null,
-    //     qty: 1,
-    //     price: 0,
-    //     lineRemarks: null,
-    //     tranHeaderId: undefined,
-    //     serialNumbers: null,
-    //     upcCode: null
-    //   }
-    // ]);
-    // reset({}, { keepValues: false });
-    // setRefresh({})
-  }
+  // function handleReset() {
+  //   xReset()
+  // }
 
   function handleOnChangeDestBranch(selectedBranch: any) {
     if (selectedBranch) {

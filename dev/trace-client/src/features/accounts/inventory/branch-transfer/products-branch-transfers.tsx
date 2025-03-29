@@ -16,7 +16,7 @@ export function ProductsBranchTransfers() {
     },
     {
       label: "View",
-      content: <ProductsBranchTransferView />
+      content: <ProductsBranchTransferView instance = {instance} />
     }
   ];
   return (

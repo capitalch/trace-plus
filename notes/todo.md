@@ -41,6 +41,8 @@
 - Inventory
 	- Stock Journal
 	- Branch transfer
+		- generate auto ref no at server
+													- View to show prod details
 		- Test
 			- Reset
 			- Sometimes client side validation error appears for productCode
@@ -62,6 +64,10 @@
 													- productId validation
 													- Product select modal: search on product not working								
 		- preview
+			- react-pane
+			- Header company
+			- header right
+			- details
 		- exports not working
 													- Reset not clearing autoRefNo	
 													- serial no validation issue still there

@@ -16,6 +16,12 @@ export const SlidingPaneMap: SlidingPaneMapType = {
             remarks: undefined
         }
     },
+    // branchTransfer:{
+    //     content: NewEditBranch,
+    //     props: {
+    //         id: undefined
+    //     }
+    // },
     brandMaster: {
         content: NewEditBrand,
         props: {
@@ -31,19 +37,21 @@ export const SlidingPaneMap: SlidingPaneMapType = {
             isAddressExists: false
         }
     },
-    reportAllTransactionsFilter: {
-        content: ReportAllTransactionsFilter
-    },
     productMaster: {
         content: NewEditProduct,
         props: {
             id: undefined
         }
     },
+    reportAllTransactionsFilter: {
+        content: ReportAllTransactionsFilter
+    },
+
 }
 
 export enum SlidingPaneEnum {
     branchMaster = 'branchMaster',
+    // branchTransfer = 'branchTransfer',
     brandMaster = 'brandMaster',
     contactAndAddresses = 'contactAndAddresses',
     productMaster = 'productMaster',
@@ -62,6 +70,12 @@ export type SlidingPaneMapType = {
         content: FC<any>;
         props: NewEditBranchType;
     },
+    // branchTransfer: {
+    //     content: FC<any>
+    //     props: {
+    //         id: number | undefined
+    //     }
+    // },
     brandMaster: {
         content: FC<any>;
         props: NewEditBrandType

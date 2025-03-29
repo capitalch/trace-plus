@@ -98,7 +98,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
       },
       sqlId: SqlIdsMap.getBranchTransferDetailsOnTranHeaderId
     });
-    const jsonResult: JsonResultType = res?.[0]?.jsonResult;
+    const jsonResult: BranchTransferJsonResultType = res?.[0]?.jsonResult;
     if (_.isEmpty(jsonResult)) {
       Utils.showAlertMessage("Oops!", Messages.messResultSetEmpty);
       return;
@@ -162,12 +162,11 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         })
       };
     }
-    console.log(xData);
   }
 
-  function populateData(jsonResult: JsonResultType) {
+  function populateData(jsonResult: BranchTransferJsonResultType) {
     const tranH = jsonResult.tranH;
-    const branchTransfers = jsonResult.branchTransfer;
+    const branchTransfers = jsonResult.branchTransfers;
     if (
       _.isEmpty(tranH) ||
       _.isEmpty(branchTransfers) ||
@@ -265,8 +264,8 @@ type ProductLineItem = {
   upcCode?: string | null;
 };
 
-type JsonResultType = {
-  branchTransfer: BranchTransferInfoType[];
+export type BranchTransferJsonResultType = {
+  branchTransfers: BranchTransferInfoType[];
   tranH: TranHeaderType;
 };
 

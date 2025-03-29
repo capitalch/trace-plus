@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+// import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { AppDispatchType } from "../../../../app/store/store";
@@ -8,10 +8,20 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+import { useRef, useState } from "react";
+import ReactSlidingPane from "react-sliding-pane";
+import { PDFViewer } from "@react-pdf/renderer";
+import { ProductsBranchTransferPdf } from "./products-branch-transfer-pdf";
+import { BranchTransferJsonResultType } from "./products-branch-transfer-main/products-branch-transfer-main";
 
-export function ProductsBranchTransferView() {
+export function ProductsBranchTransferView({ instance }: { instance: string }) {
     const dispatch: AppDispatchType = useDispatch()
-    const instance = DataInstancesMap.productsBranchTransfer
+    const [isPaneOpen, setIsPaneOpen] = useState(false);
+    const meta = useRef<BranchTransferJsonResultType>({
+        branchTransfers: [],
+        tranH: {} as any
+    })
+    // const instance = DataInstancesMap.productsBranchTransfer
     const { buCode, branchId, context, currentDateFormat, dbName, decodedDbParamsObject, finYearId } = useUtilsInfo();
 
     return (<div className="flex flex-col">
@@ -46,6 +56,19 @@ export function ProductsBranchTransferView() {
             sqlId={SqlIdsMap.getAllBranchTransferHeaders}
             sqlArgs={{ branchId: branchId, finYearId: finYearId }}
         />
+        {/* Sliding Pane */}
+        <ReactSlidingPane
+            className="bg-gray-300"
+            isOpen={isPaneOpen}
+            title="Branch Transfer"
+            from="right"
+            width="80%"
+            onRequestClose={() => setIsPaneOpen(false)}>
+            {/* PDF Viewer inside the sliding pane */}
+            <PDFViewer style={{ width: '100%', height: '100%' }}>
+                <ProductsBranchTransferPdf branchTransfers={meta.current.branchTransfers} tranH={meta.current.tranH}/>
+            </PDFViewer>
+        </ReactSlidingPane>
     </div>)
 
     function getAggregates(): SyncFusionGridAggregateType[] {
@@ -163,7 +186,20 @@ export function ProductsBranchTransferView() {
         }))
     }
 
-    async function handleOnPreview() {
-
+    async function handleOnPreview(props: any) {
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject || {},
+            instance: instance,
+            sqlArgs: {
+                id: props.id
+            },
+            sqlId: SqlIdsMap.getBranchTransferDetailsOnTranHeaderId
+        });
+        const jsonResult: BranchTransferJsonResultType = res?.[0]?.jsonResult;
+        meta.current = jsonResult
+        console.log(jsonResult)
+        setIsPaneOpen(true)
     }
 }

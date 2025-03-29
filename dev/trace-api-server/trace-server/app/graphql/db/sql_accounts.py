@@ -351,7 +351,7 @@ class SqlAccounts:
         , MIN(b1."branchName") as "destBranchName"
         , string_agg(t."lineRemarks", ', ') as "lineRemarks"
         , string_agg("productCode", ', ') as "productCodes"
-        , string_agg("brandName" || ' ' || "label",', ') as "productDetails"
+        , string_agg("brandName" || ' ' || "catName" || ' ' || "label" || ' ' || COALESCE("info",'') , ', ') as "productDetails"
         , string_agg(t."jData"->>'serialNumbers', ', ') as "serialNumbers"
 		, SUM(qty * price) as amount
             from "TranH" h
@@ -365,10 +365,12 @@ class SqlAccounts:
                     on br.id = p."brandId"
                 join "BranchM" b1
                     on b1.id = t."destBranchId"
+				join "CategoryM" c
+                    on c.id = p."catId"
 			where "finYearId" = (table "finYearId") 
 				and "branchId" = (table "branchId")
             group by h.id
-			order by "tranDate" DESC, h.id 
+			order by "tranDate" DESC, h.id DESC
     """
 
     get_all_brands = """
@@ -1144,7 +1146,7 @@ class SqlAccounts:
             )
             select json_build_object(
                 'tranH', (SELECT row_to_json(a) from cte1 a),
-                'branchTransfer', (SELECT json_agg(b) from cte2 b)
+                'branchTransfers', (SELECT json_agg(b) from cte2 b)
             ) as "jsonResult"
     """
 
