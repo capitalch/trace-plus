@@ -6,6 +6,7 @@ from app.config import Config
 from typing import Any
 from types import FunctionType
 from psycopg_pool import AsyncConnectionPool
+from app.graphql.db.sql_accounts import SqlAccounts
 import psycopg
 
 dbParams: dict = {
@@ -60,7 +61,7 @@ async def do_process(
                 await cur.execute(f"SET search_path TO {schema_to_set}")
 
                 # Execute the query
-                if(isinstance(sql, FunctionType)):
+                if (isinstance(sql, FunctionType)):
                     await cur.execute(sql(sqlArgs))
                 else:
                     await cur.execute(sql, sqlArgs)
@@ -133,6 +134,7 @@ async def exec_sql_object(
         async with await AsyncConnection.connect(connInfo) as aconn:
             await aconn.execute(f"set search_path to {schema or 'public'}")
             async with aconn.cursor(row_factory=dict_row) as acur:
+                await handle_auto_ref_no(sqlObject, acur)
                 records = await execSqlObject(sqlObject, acur)
             await acur.close()
             await aconn.commit()
@@ -142,6 +144,38 @@ async def exec_sql_object(
     except Exception as e:
         raise e
     return records
+
+
+async def handle_auto_ref_no(sqlObject, acur):
+    xData = sqlObject.get("xData", {})
+    if (
+        "id" not in xData or not xData["id"] and
+        "finYearId" in xData and
+        "branchId" in xData and
+        "tranTypeId" in xData
+    ):
+        finYearId = xData["finYearId"]
+        branchId = xData["branchId"]
+        tranTypeId = xData["tranTypeId"]
+        # Fetch tranTypeCode and branchCode
+        await acur.execute(SqlAccounts.get_branch_code_tran_code, {"branchId": branchId, "tranTypeId": tranTypeId})
+        codes = await acur.fetchone()
+        branchCode = codes.get("branchCode", "")
+        tranCode = codes.get("tranCode", "")
+        # Fetch lastNo from TranCounter; Add a row if not there
+        await acur.execute(SqlAccounts.get_last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
+        no = await acur.fetchone()
+        lastNo = no.get("lastNo", 0)
+        if lastNo == 0:
+            lastNo = 1
+        autoRefNo = f'{branchCode}/{tranCode}/{lastNo}/{finYearId}'
+        # Replace autoRefNo in xData
+        xData["autoRefNo"] = autoRefNo
+        # Update TranCounter
+        await acur.execute(SqlAccounts.increment
+                           
+                           
+                           _last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId, "lastNo": lastNo + 1})
 
 
 async def process_data(xData, acur, tableName, fkeyName, fkeyValue):
@@ -174,6 +208,8 @@ async def process_data(xData, acur, tableName, fkeyName, fkeyValue):
 #     return "update"
 # else:
 #     return "insert"
+
+
 def get_sql(xData, tableName, fkeyName, fkeyValue):
     sql = None
     valuesTuple = None

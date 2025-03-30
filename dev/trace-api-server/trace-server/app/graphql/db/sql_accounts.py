@@ -1096,6 +1096,14 @@ class SqlAccounts:
             ) as "jsonResult"
     """
 
+    get_branch_code_tran_code = """
+    WITH "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int))
+     --with "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (12::int))
+		select 
+			(select "branchCode" from "BranchM" where "id" = (table "branchId") ) as "branchCode",
+			(select "tranCode" from "TranTypeM" where "id" = (table "tranTypeId")) as "tranCode"
+    """
+
     get_brands_on_catId = """
         with "catId" as (values(%(catId)s::int))
             --WITH "catId" AS (VALUES (4))
@@ -1159,6 +1167,29 @@ class SqlAccounts:
     get_fin_years = """
         select "id", "startDate", "endDate"
                 from "FinYearM" order by "id" DESC
+    """
+
+    get_last_no = """
+    WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int)),
+     --with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (12::int)),
+        inserted AS (
+            INSERT INTO "TranCounter" ("finYearId", "branchId", "tranTypeId", "lastNo")
+            SELECT (table "finYearId"), (table "branchId"), (table "tranTypeId"), 0
+            WHERE NOT EXISTS (
+                SELECT 1 FROM "TranCounter" 
+                WHERE "finYearId" = (table "finYearId") 
+                AND "branchId" = (table "branchId") 
+                AND "tranTypeId" = (table "tranTypeId")
+            )
+            RETURNING "lastNo"
+        )
+        SELECT "lastNo" FROM inserted
+        UNION ALL
+        SELECT "lastNo" 
+        FROM "TranCounter"
+        WHERE "finYearId" = (table "finYearId") 
+        AND "branchId" = (table "branchId")
+        AND "tranTypeId" = (table "tranTypeId")
     """
 
     get_ledger_leaf_accounts = """

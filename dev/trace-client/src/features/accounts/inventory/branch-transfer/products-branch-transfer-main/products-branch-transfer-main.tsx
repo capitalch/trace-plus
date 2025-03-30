@@ -52,7 +52,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   });
   const { reset } = methods;
 
-  const extendedMethods = { ...methods, xReset }
+  const extendedMethods = { ...methods, xReset };
   useEffect(() => {
     if (selectedTranHeaderId) {
       loadProductOnTranHeaderId();
@@ -75,7 +75,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
 
   return (
     <div className="h-[calc(100vh-240px)]">
-      <FormProvider {...extendedMethods} >
+      <FormProvider {...extendedMethods}>
         <form
           className="flex flex-col gap-6 mr-6 min-w-[85rem]"
           onSubmit={methods.handleSubmit(onSubmit)}
@@ -117,9 +117,9 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         xData: xData
       });
       Utils.showSaveMessage();
-      xReset()
+      xReset();
       if (selectedTranHeaderId) {
-        dispatch(setActiveTabIndex({ activeTabIndex: 1, instance: instance }))
+        dispatch(setActiveTabIndex({ activeTabIndex: 1, instance: instance }));
       }
     } catch (e) {
       console.log(e);
@@ -152,7 +152,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
             destBranchId: data.destBranchId,
             jData: _.isEmpty(item.serialNumbers)
               ? null
-              : { serialNumbers: item.serialNumbers },
+              : JSON.stringify({ serialNumbers: item.serialNumbers }),
             lineRefNo: item.lineRefNo,
             lineRemarks: item.lineRemarks,
             price: item.price,
@@ -185,8 +185,9 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
           lineRemarks: branchTransfer.lineRemarks,
           price: branchTransfer.price,
           productCode: branchTransfer.productCode,
-          productDetails: `${branchTransfer.brandName} ${branchTransfer.catName
-            } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
+          productDetails: `${branchTransfer.brandName} ${
+            branchTransfer.catName
+          } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
           productId: branchTransfer.productId,
           qty: branchTransfer.qty,
           serialNumbers: branchTransfer.serialNumbers,
@@ -280,6 +281,7 @@ type BranchTransferInfoType = {
   lineRemarks: string | null;
   price: number;
   productCode: string | null;
+  productDetails?: string | null;
   productId: number;
   qty: number;
   serialNumbers: string | null;
@@ -297,4 +299,5 @@ type TranHeaderType = {
   tranDate: string;
   tranTypeId: number;
   userRefNo: string | null;
+  [key: string]: any;
 };

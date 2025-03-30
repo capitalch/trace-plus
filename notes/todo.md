@@ -45,7 +45,7 @@
 													- View to show prod details
 		- Test
 			- Reset
-			- Sometimes client side validation error appears for productCode
+													- Sometimes client side validation error appears for productCode
 			- Insert
 			- Edit
 				- Edit normal with added new fields
@@ -63,11 +63,11 @@
 													- Check isDirty etc. before sumit enabled
 													- productId validation
 													- Product select modal: search on product not working								
-		- preview
-			- react-pane
-			- Header company
-			- header right
-			- details
+												- preview
+													- react-pane
+													- Header company
+													- header right
+													- details
 		- exports not working
 													- Reset not clearing autoRefNo	
 													- serial no validation issue still there
