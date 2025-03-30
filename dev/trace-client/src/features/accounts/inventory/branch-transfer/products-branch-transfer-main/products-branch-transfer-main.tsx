@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { FormProvider, useForm } from "react-hook-form";
 import { ProductsBranchTransferHeader } from "./products-branch-transfer-header";
-import { ProductBranchTransferLineItems } from "./products-branch-transfer-line-items";
+import { ProductsBranchTransferLineItems } from "./products-branch-transfer-line-items";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../../app/store/store";
@@ -81,7 +81,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
           onSubmit={methods.handleSubmit(onSubmit)}
         >
           <ProductsBranchTransferHeader />
-          <ProductBranchTransferLineItems instance={instance} />
+          <ProductsBranchTransferLineItems instance={instance} />
         </form>
       </FormProvider>
     </div>
@@ -107,9 +107,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   }
 
   async function onSubmit(data: BranchTransferType) {
-    console.log(data);
     const xData: XDataObjectType = getTranHeaderRow();
-
     try {
       await Utils.doGenericUpdate({
         buCode: buCode || "",
@@ -147,12 +145,18 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         fkeyName: "tranHeaderId",
         deletedIds: context.DataInstances?.[instance]?.deletedIds || [],
         xData: data.productLineItems.map((item: ProductLineItem) => {
+          const formattedSerialNumbers = item.serialNumbers
+            ? item.serialNumbers
+                .split(/[,;]\s*/) // Split by ',' or ';' with or without spaces
+                .filter((sn) => sn.trim() !== "") // Remove empty entries
+                .join(", ") // Join with ', '
+            : null;
           return {
             id: item.id || undefined,
             destBranchId: data.destBranchId,
-            jData: _.isEmpty(item.serialNumbers)
-              ? null
-              : JSON.stringify({ serialNumbers: item.serialNumbers }),
+            jData: formattedSerialNumbers
+              ? JSON.stringify({ serialNumbers: formattedSerialNumbers })
+              : null,
             lineRefNo: item.lineRefNo,
             lineRemarks: item.lineRemarks,
             price: item.price,

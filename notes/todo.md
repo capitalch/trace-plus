@@ -40,19 +40,28 @@
 													- No green background for altered data
 - Inventory
 	- Stock Journal
-	- Branch transfer
-		- generate auto ref no at server
+		- startup
+		- UI design
+										- Branch transfer
+													- exports not working
+													- Separate all sr no with , + space
+													- Add amount to aggregates
+													- Final code optimization
+												- Final testing before release
+													- product details not appearing in pdf
+													- Validation error occurs when line item cleared and saved
+													- generate auto ref no at server
 													- View to show prod details
-		- Test
-			- Reset
+											- Test
+													- Reset
 													- Sometimes client side validation error appears for productCode
-			- Insert
-			- Edit
-				- Edit normal with added new fields
-				- Edit with delete
-				- Edit with value changed
-			- DeleteRow
-			- Delete
+												- Insert
+												- Edit
+													- Edit normal with added new fields
+													- Edit with delete
+													- Edit with value changed
+												- DeleteRow
+													- Delete: not working
 													- types management
 												- submit
 													- Go back to edit if id
@@ -68,7 +77,6 @@
 													- Header company
 													- header right
 													- details
-		- exports not working
 													- Reset not clearing autoRefNo	
 													- serial no validation issue still there
 													- dest branch is not changing

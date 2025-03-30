@@ -349,6 +349,7 @@ class SqlAccounts:
         , h."remarks"
         , MIN(b."branchName") as "sourceBranchName"
         , MIN(b1."branchName") as "destBranchName"
+        , string_agg(t."lineRefNo", ', ') as "lineRefNo"
         , string_agg(t."lineRemarks", ', ') as "lineRemarks"
         , string_agg("productCode", ', ') as "productCodes"
         , string_agg("brandName" || ' ' || "catName" || ' ' || "label" || ' ' || COALESCE("info",'') , ', ') as "productDetails"
@@ -1141,6 +1142,7 @@ class SqlAccounts:
             , "price"
             , "destBranchId"
             , "upcCode"
+            , "brandName" || ' ' || "catName" || ' ' || "label" || ' ' || COALESCE("info",'') as "productDetails"
 		from cte1 c1
 			join "BranchTransfer" t
 				on c1."id" = t."tranHeaderId"
@@ -1515,7 +1517,16 @@ class SqlAccounts:
             'profitOrLoss', (SELECT "profitOrLoss" FROM cte3)
         ) AS "jsonResult"
     """
-
+    increment_last_no = """
+        WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int))
+        --with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (12::int))
+            UPDATE "TranCounter"
+            SET "lastNo" = "lastNo" + 1
+            WHERE "finYearId" = (table "finYearId")
+            AND "branchId" = (table "branchId")
+            AND "tranTypeId" = (table "tranTypeId")
+    """
+    
     insert_product = """
         WITH new_product_code AS (
             UPDATE "Settings"

@@ -148,6 +148,8 @@ async def exec_sql_object(
 
 async def handle_auto_ref_no(sqlObject, acur):
     xData = sqlObject.get("xData", {})
+    if not xData:  # Check if xData is None or empty
+        return
     if (
         "id" not in xData or not xData["id"] and
         "finYearId" in xData and
@@ -172,10 +174,7 @@ async def handle_auto_ref_no(sqlObject, acur):
         # Replace autoRefNo in xData
         xData["autoRefNo"] = autoRefNo
         # Update TranCounter
-        await acur.execute(SqlAccounts.increment
-                           
-                           
-                           _last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId, "lastNo": lastNo + 1})
+        await acur.execute(SqlAccounts.increment_last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
 
 
 async def process_data(xData, acur, tableName, fkeyName, fkeyValue):

@@ -31,6 +31,7 @@ export function CompSyncFusionGridToolbar({
     const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
     const selectedLastNoOfRows: string = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
+    
     const pdfExportProperties: PdfExportProperties = {
         fileName: `${title}-${Utils.getCompanyName()}-${isAllBranches ? 'All branches' : Utils.getCurrentLoginInfo().currentBranch?.branchName || ''}-${Utils.getCurrentFinYearFormattedDateRange()}.pdf`,
         header: {
@@ -60,7 +61,7 @@ export function CompSyncFusionGridToolbar({
             {CustomControl && <CustomControl />}
 
             {/* last no of rows */}
-            {isLastNoOfRows && <select value={selectedLastNoOfRows}
+            {isLastNoOfRows && <select value={selectedLastNoOfRows} title="select"
                 className="rounded-md h-9 border border-none bg-slate-200 text-sm focus:border-none focus:outline-hidden cursor-pointer"
                 onChange={handleOnChangeLastNoOfRows}>
                 <option value="100">Last 100 rows</option>
@@ -71,9 +72,9 @@ export function CompSyncFusionGridToolbar({
 
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
-                <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={async () => {
+                <button type="button" aria-label="Pdf export" className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={async () => {
                     const gridRef: any = await context.CompSyncFusionGrid[instance].gridRef
-                    gridRef.current.pdfExport(pdfExportProperties)
+                    await gridRef.current.pdfExport(pdfExportProperties)
                 }}>
                     <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
                 </button>
@@ -81,7 +82,7 @@ export function CompSyncFusionGridToolbar({
 
             {/* Excel export */}
             {isExcelExport && <WidgetTooltip title="Excel export">
-                <button className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
+                <button type="button" aria-label="Excel export" className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                     gridRef.current.excelExport({
                         includeHeader: true,
@@ -95,7 +96,7 @@ export function CompSyncFusionGridToolbar({
 
             {/* csv export */}
             {isCsvExport && <WidgetTooltip title="Csv export">
-                <button className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
+                <button type="button" aria-label="Csv export" className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
                     const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
                     gridRef.current.csvExport()
                 }}>

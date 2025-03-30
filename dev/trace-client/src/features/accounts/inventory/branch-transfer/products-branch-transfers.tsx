@@ -21,7 +21,7 @@ export function ProductsBranchTransfers() {
   ];
   return (
     <CompAccountsContainer>
-      <label className="mt-3 text-lg font-medium text-primary-500">
+      <label className="mt-1 text-md font-medium text-primary-500">
         Branch Transfer
       </label>
       <CompTabs tabsInfo={tabsInfo} className="mt-4" instance={instance} />

@@ -118,7 +118,7 @@ export function ProductsBranchTransferHeader() {
         >
           <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
         </button>
-        <button
+        {/* <button
           onClick={() => {
             console.log(isDirty);
             console.log(isSubmitting);
@@ -127,14 +127,10 @@ export function ProductsBranchTransferHeader() {
           type="button"
         >
           Test
-        </button>
+        </button> */}
       </div>
     </div>
   );
-
-  // function handleReset() {
-  //   xReset()
-  // }
 
   function handleOnChangeDestBranch(selectedBranch: any) {
     if (selectedBranch) {

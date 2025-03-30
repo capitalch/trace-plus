@@ -20,13 +20,14 @@ import { PDFViewer } from "@react-pdf/renderer";
 import { ProductsBranchTransferPdf } from "./products-branch-transfer-pdf";
 import { BranchTransferJsonResultType } from "./products-branch-transfer-main/products-branch-transfer-main";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
+import { format } from "date-fns";
 
 export function ProductsBranchTransferView({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();
   const [isPaneOpen, setIsPaneOpen] = useState(false);
   const meta = useRef<BranchTransferJsonResultType>({
-        branchTransfers:[],
-        tranH:{} as any
+    branchTransfers: [],
+    tranH: {} as any
   });
 
   const {
@@ -102,6 +103,15 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         footerTemplate: (props: any) => (
           <span className="text-xs">Count: {props.Count}</span>
         )
+      },
+      {
+        columnName: "amount",
+        type: "Sum",
+        field: "amount",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs mr-4">{props.Sum}</span>
+        )
       }
     ];
   }
@@ -113,7 +123,9 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         headerText: "Date",
         type: "date",
         width: 80,
-        format: currentDateFormat
+        template: (props: any) =>
+          format(props.tranDate, currentDateFormat)
+        // format: currentDateFormat, // For PDF export only used template. format gives error is exports
       },
       {
         field: "autoRefNo",

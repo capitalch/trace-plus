@@ -14,7 +14,7 @@ import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form
 import { useProductsBranchTransferLineItems } from "./products-branch-transfer-line-items-hook";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 
-export function ProductBranchTransferLineItems({
+export function ProductsBranchTransferLineItems({
   instance
 }: {
   instance: string;
