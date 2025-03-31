@@ -42,6 +42,17 @@
 	- Stock Journal
 		- startup
 		- UI design
+			- Header
+			- Source
+			- Destination
+			- Form submit
+		- Reset
+		- View
+			- Sql
+			- Grid view
+			- Edit
+			- Delete
+			- Preview
 										- Branch transfer
 													- exports not working
 													- Separate all sr no with , + space
