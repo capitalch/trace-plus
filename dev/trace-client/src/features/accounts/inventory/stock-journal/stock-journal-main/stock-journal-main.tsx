@@ -6,7 +6,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { ProductLineItem } from "../../shared-types";
 import { StockJournalHeader } from "./stock-journal-header";
-import { StockJournalLineItems } from "./stock-journal-line-items";
+// import { StockJournalLineItems } from "./stock-journal-line-items";
+import { StockJournalSourceDestTabs } from "./stock-journal-source-dest-tabs";
 
 export function StockJournalMain({ instance }: { instance: string }) {
     // const dispatch: AppDispatchType = useDispatch();
@@ -65,8 +66,8 @@ export function StockJournalMain({ instance }: { instance: string }) {
                 onSubmit={methods.handleSubmit(onSubmit)}
             >
                 <StockJournalHeader />
-                <StockJournalLineItems name="sourceLineItems" instance={instance} title= "Source"/>
-                {/* <ProductsBranchTransferLineItems instance={instance} /> */}
+                {/* <StockJournalLineItems name="sourceLineItems" instance={instance} title= "Source"/> */}
+                <StockJournalSourceDestTabs instance={instance} />
             </form>
         </FormProvider>
     </div>)

@@ -40,13 +40,18 @@
 													- No green background for altered data
 - Inventory
 	- Stock Journal
-		- startup
+		- Main
+			- Separate indexing for source and dest
+			- Search product
+			- footer
+			- validations
+													- startup
 		- UI design
 			- Header
 			- Source
 			- Destination
 			- Form submit
-		- Reset
+													- Reset
 		- View
 			- Sql
 			- Grid view
