@@ -40,24 +40,28 @@
 													- No green background for altered data
 - Inventory
 	- Stock Journal
+		- Validations
+			- Qty + Serial numbers
+			- Product details
+
+		- Submit
+		- Delete row
 		- Main
-			- Separate indexing for source and dest
-			- Search product
-			- footer
-			- validations
-													- startup
-		- UI design
-			- Header
-			- Source
-			- Destination
-			- Form submit
-													- Reset
 		- View
 			- Sql
 			- Grid view
 			- Edit
 			- Delete
 			- Preview
+													- Separate indexing for source and dest
+													- Search product
+													- footer
+													- startup
+												- UI design
+													- Header
+													- Source
+													- Output
+													- Reset
 										- Branch transfer
 													- exports not working
 													- Separate all sr no with , + space

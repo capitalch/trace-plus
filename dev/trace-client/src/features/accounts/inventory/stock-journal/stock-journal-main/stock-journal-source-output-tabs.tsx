@@ -1,7 +1,7 @@
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { StockJournalLineItems } from "./stock-journal-line-items";
 
-export function StockJournalSourceDestTabs({instance}:{instance: string}){
+export function StockJournalSourceOutputTabs({instance}:{instance: string}){
     const tabsInfo: CompTabsType = [
         {
           label: "Source Items",
@@ -9,7 +9,7 @@ export function StockJournalSourceDestTabs({instance}:{instance: string}){
         },
         {
           label: "Output Items",
-          content: <StockJournalLineItems instance={instance} name="destLineItems" title="Output" />
+          content: <StockJournalLineItems instance={instance} name="outputLineItems" title="Output" />
         }
       ];
 

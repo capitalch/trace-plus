@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { ProductLineItem } from "../../shared-types";
 import { StockJournalHeader } from "./stock-journal-header";
 // import { StockJournalLineItems } from "./stock-journal-line-items";
-import { StockJournalSourceDestTabs } from "./stock-journal-source-dest-tabs";
+import { StockJournalSourceOutputTabs } from "./stock-journal-source-output-tabs";
 
 export function StockJournalMain({ instance }: { instance: string }) {
     // const dispatch: AppDispatchType = useDispatch();
@@ -43,7 +43,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
                     serialNumbers: null
                 }
             ],
-            destLineItems: [
+            outputLineItems: [
                 {
                     productCode: null,
                     productDetails: null,
@@ -67,7 +67,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
             >
                 <StockJournalHeader />
                 {/* <StockJournalLineItems name="sourceLineItems" instance={instance} title= "Source"/> */}
-                <StockJournalSourceDestTabs instance={instance} />
+                <StockJournalSourceOutputTabs instance={instance} />
             </form>
         </FormProvider>
     </div>)
@@ -97,7 +97,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
                     upcCode: null
                 }
             ],
-            destLineItems: [
+            outputLineItems: [
                 {
                     id: undefined,
                     productId: undefined,
@@ -121,7 +121,7 @@ export type StockJournalType = {
     id?: string | number;
     autoRefNo?: string | null;
     sourceLineItems: ProductLineItem[];
-    destLineItems: ProductLineItem[];
+    outputLineItems: ProductLineItem[];
     remarks?: string | null;
     tranDate: string;
     userRefNo?: string | null;

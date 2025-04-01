@@ -10,6 +10,7 @@ import {
 } from "../../../../../controls/components/product-select-from-grid";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import _ from "lodash";
+import { ProductType } from "../../shared-types";
 
 export function useProductsBranchTransferLineItems(instance: string) {
   const [qtyTooltipIndex, setQtyTooltipIndex] = useState<number | null>(null);
@@ -264,15 +265,15 @@ export function useProductsBranchTransferLineItems(instance: string) {
   };
 }
 
-type ProductType = {
-  brandName: string;
-  catName: string;
-  gstRate: number;
-  hsn: number;
-  info: string;
-  label: string;
-  lastPurchasePrice: number;
-  productCode: string;
-  productId: number;
-  upcCode: string;
-};
+// type ProductType = {
+//   brandName: string;
+//   catName: string;
+//   gstRate: number;
+//   hsn: number;
+//   info: string;
+//   label: string;
+//   lastPurchasePrice: number;
+//   productCode: string;
+//   productId: number;
+//   upcCode: string;
+// };

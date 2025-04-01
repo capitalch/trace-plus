@@ -13,3 +13,16 @@ export type ProductLineItem = {
     tranHeaderId?: number;
     upcCode?: string | null;
   };
+
+  export type ProductType = {
+    brandName: string;
+    catName: string;
+    gstRate: number;
+    hsn: number;
+    info: string;
+    label: string;
+    lastPurchasePrice: number;
+    productCode: string;
+    productId: number;
+    upcCode: string;
+  };
