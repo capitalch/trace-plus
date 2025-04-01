@@ -19,8 +19,7 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import _ from "lodash";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import { ProductType } from "../../shared-types";
-// import { useStockJournalLineItems } from "./stock-journal-line-items-hook";
-// import { Messages } from "../../../../../utils/messages";
+import Decimal from "decimal.js";
 
 export function StockJournalLineItems({
   name,
@@ -29,12 +28,13 @@ export function StockJournalLineItems({
 }: StockJournalLineItemsType) {
   const [, setRefresh] = useState({});
   const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
-//   const {} = useStockJournalLineItems(instance, name);
+
   const meta = useRef<MetaType>({
     sourceLineItems: 0,
     outputLineItems: 0
   });
-  const { clearErrors, control, watch, register, setValue , trigger} =
+
+  const { clearErrors, control, watch, register, setValue, trigger, formState: { errors } } =
     useFormContext<StockJournalType>();
 
   const sourceFields = useFieldArray({ control, name: "sourceLineItems" });
@@ -48,9 +48,10 @@ export function StockJournalLineItems({
     () =>
       _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
         populateProductOnProductCode(e.target.value, index);
-      }, 2000),
-    []
+      }, 2000), [name]
   );
+
+
   useEffect(() => {
     return () => onChangeProductCode.cancel();
   }, [onChangeProductCode]);
@@ -62,7 +63,6 @@ export function StockJournalLineItems({
       }
     };
   }, []);
-
 
   return (
     <div className="flex flex-col">
@@ -90,7 +90,7 @@ export function StockJournalLineItems({
         </thead>
         <tbody>
           {fields.map((item, index) => {
-            console.log(item);
+            // console.log(item);
             const qty = watch(`${name}.${index}.qty`);
             const price = watch(`${name}.${index}.price`);
             // const productId = watch(`${name}.${index}.productId`);
@@ -100,13 +100,14 @@ export function StockJournalLineItems({
                 key={index}
                 className={clsx(
                   "hover:bg-gray-50 cursor-pointer",
-                  index === meta.current[name] && "outline-1 outline-teal-500"
+                  index === meta.current[name] && "outline outline-teal-500"
                 )}
                 onClick={() => {
                   meta.current[name] = index;
                   setRefresh({});
                 }}
               >
+
                 {/* index */}
                 <td className="p-2">
                   <span>{index + 1}</span>
@@ -132,19 +133,14 @@ export function StockJournalLineItems({
                   <input
                     type="text"
                     {...register(`${name}.${index}.productCode`, {
-                      onChange: (e) => onChangeProductCode(e, index)
-                      //   validate: () => {
-                      //       return productId
-                      //           ? true
-                      //           : Messages.errProductNotSelected;
-                      //   }
+                      onChange: (e) => onChangeProductCode(e, index),
+                      required: Messages.errRequired
                     })}
                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                     value={watch(`${name}.${index}.productCode`) ?? ""}
                     className={clsx(
                       "border p-2 rounded w-full",
-                      inputFormFieldStyles
-                      // productId ? "" : "border-red-500 bg-red-100"
+                      inputFormFieldStyles, errors[name]?.[index]?.productCode && 'bg-red-200'
                     )}
                   />
                   <button
@@ -163,10 +159,12 @@ export function StockJournalLineItems({
                   <textarea
                     tabIndex={-1}
                     rows={3}
-                    {...register(`${name}.${index}.productDetails`)}
+                    {...register(`${name}.${index}.productDetails`, {
+                      required: Messages.errRequired
+                    })}
                     className={clsx(
                       "border px-2 py-0.5 rounded w-full bg-gray-100 text-xs",
-                      inputFormFieldStyles
+                      inputFormFieldStyles,
                     )}
                     value={watch(`${name}.${index}.productDetails`) ?? ""}
                     readOnly
@@ -211,18 +209,16 @@ export function StockJournalLineItems({
                         value !== 0 || Messages.errQtyCannotBeZero
                     })}
                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                    onValueChange={(values) =>
+                    onValueChange={(values) => 
                       setValue(`${name}.${index}.qty`, values.floatValue ?? 0, {
                         shouldValidate: true,
                         shouldDirty: true
-                      })
-                    }
+                      })}
                     thousandSeparator={true}
                     value={watch(`${name}.${index}.qty`)}
                     className={clsx(
                       "border p-2 rounded w-full text-right",
-                      inputFormFieldStyles
-                      // qty === 0 ? "border-red-500 bg-red-100" : ""
+                      inputFormFieldStyles, errors[name]?.[index]?.qty && 'bg-red-200'
                     )}
                   />
                   {/* Error Indicator & Tooltip Button */}
@@ -268,7 +264,7 @@ export function StockJournalLineItems({
                       inputFormFieldStyles
                       // getSnError(index) ? "border-red-500 bg-red-100" : ""
                     )}
-                    placeholder="Give comma separated serial numbers"
+                    placeholder="Comma-separated serials"
                   />
                   {/* Error Indicator & Tooltip Button */}
                   {/* {errorIndicatorAndTooltipForSerialNumber(index)} */}
@@ -285,7 +281,7 @@ export function StockJournalLineItems({
                     fixedDecimalScale={true}
                     thousandSeparator={true}
                     value={amount}
-                    className="border p-2 rounded w-full text-right bg-gray-100"
+                    className={clsx("p-2 rounded w-full text-right bg-gray-100", inputFormFieldStyles)}
                   />
                 </td>
 
@@ -306,8 +302,10 @@ export function StockJournalLineItems({
           })}
         </tbody>
         <tfoot className="">
-          <tr className="font-semibold text-primary-500">
-            <td colSpan={2}>
+          <tr className="font-semibold text-primary-500 bg-gray-100">
+
+            {/* Add item */}
+            <td colSpan={5}>
               <button
                 type="button"
                 onClick={() => {
@@ -326,12 +324,52 @@ export function StockJournalLineItems({
                   meta.current[name] = fields.length;
                   setRefresh({});
                 }}
-                className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2 mt-2"
+                className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2 my-2"
               >
                 <IconPlus />
-                Add Product
+                Add Item
               </button>
             </td>
+
+            {/* Total Qty */}
+            <td className="pr-4 text-right">
+              <NumericFormat
+                value={fields.reduce(
+                  (sum, _, index) =>
+                    new Decimal(sum)
+                      .plus(watch(`${name}.${index}.qty`) || 0)
+                      .toNumber(),
+                  0
+                )}
+                displayType="text"
+                thousandSeparator
+                decimalScale={2}
+                fixedDecimalScale
+              />
+            </td>
+            <td colSpan={2}></td>
+
+            {/* Total Amount */}
+            <td className="pr-2 text-right" colSpan={2}>
+              <NumericFormat
+                value={fields
+                  .reduce((sum, _, index) => {
+                    const qty = new Decimal(
+                      watch(`${name}.${index}.qty`) || 0
+                    );
+                    const price = new Decimal(
+                      watch(`${name}.${index}.price`) || 0
+                    );
+                    return sum.plus(qty.times(price));
+                  }, new Decimal(0))
+                  .toNumber()}
+                displayType="text"
+                thousandSeparator
+                decimalScale={2}
+                fixedDecimalScale
+              />
+            </td>
+
           </tr>
         </tfoot>
       </table>
@@ -414,8 +452,7 @@ export function StockJournalLineItems({
     setValue(`${name}.${index}.productId`, product[0].productId);
     setValue(
       `${name}.${index}.productDetails`,
-      `${product[0].brandName} ${product[0].catName} ${product[0].label} ${
-        product[0].info ?? ""
+      `${product[0].brandName} ${product[0].catName} ${product[0].label} ${product[0].info ?? ""
       }`
     );
     setValue(`${name}.${index}.price`, product[0].lastPurchasePrice);

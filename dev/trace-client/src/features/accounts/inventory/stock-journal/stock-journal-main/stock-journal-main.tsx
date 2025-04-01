@@ -1,13 +1,8 @@
-// import { useDispatch, useSelector } from "react-redux";
-// import { AppDispatchType, RootStateType } from "../../../../../app/store/store";
-// import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-// import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { FormProvider, useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { ProductLineItem } from "../../shared-types";
-import { StockJournalHeader } from "./stock-journal-header";
-// import { StockJournalLineItems } from "./stock-journal-line-items";
-import { StockJournalSourceOutputTabs } from "./stock-journal-source-output-tabs";
+import { StockJournalHeader } from "./stock-journal-header"
+import { StockJournalTabs } from "./stock-journal-tabs";
 
 export function StockJournalMain({ instance }: { instance: string }) {
     // const dispatch: AppDispatchType = useDispatch();
@@ -65,9 +60,8 @@ export function StockJournalMain({ instance }: { instance: string }) {
                 className="flex flex-col gap-6 mr-6 min-w-[85rem]"
                 onSubmit={methods.handleSubmit(onSubmit)}
             >
-                <StockJournalHeader />
-                {/* <StockJournalLineItems name="sourceLineItems" instance={instance} title= "Source"/> */}
-                <StockJournalSourceOutputTabs instance={instance} />
+                <StockJournalHeader />                
+                <StockJournalTabs instance={instance} />
             </form>
         </FormProvider>
     </div>)

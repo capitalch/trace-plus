@@ -1,7 +1,7 @@
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { StockJournalLineItems } from "./stock-journal-line-items";
 
-export function StockJournalSourceOutputTabs({instance}:{instance: string}){
+export function StockJournalTabs({instance}:{instance: string}){
     const tabsInfo: CompTabsType = [
         {
           label: "Source Items",

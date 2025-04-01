@@ -40,13 +40,16 @@
 													- No green background for altered data
 - Inventory
 	- Stock Journal
-		- Validations
-			- Qty + Serial numbers
-			- Product details
-
-		- Submit
-		- Delete row
+		- Crown
 		- Main
+													- Aggregate qty, amount
+			- Validations
+					- Qty 
+				- Serial numbers
+					- Product code
+				- Tab color change when error
+			- Submit
+			- Delete row
 		- View
 			- Sql
 			- Grid view
