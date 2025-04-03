@@ -16,6 +16,8 @@
 - Bug fixes etc.
 
 ## History
+# 31-03-2025 - 03-04-2025
+	- Stock journal
 # 30-03-2025
 	- Branch transfer completed
 # 15-03-2025

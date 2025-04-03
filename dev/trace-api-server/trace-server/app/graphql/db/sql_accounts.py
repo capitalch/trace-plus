@@ -1418,6 +1418,52 @@ class SqlAccounts:
 	) as "jsonResult" 
     """
 
+    get_stock_journal_on_tran_header_id = """
+        with "id" as (values(%(id)s::int)),
+	    --with "id" as (values(10834)),
+		cte1 as (
+            select "id", 
+				"tranDate", 
+				"userRefNo", 
+				"remarks", 
+				"autoRefNo", 
+				"tranTypeId"
+            from "TranH"
+            	where "id" = (table "id")
+        ), cte2 as (
+			select 
+				s."id",
+				"productId", 
+				"productCode",
+                "upcCode",
+				"brandName", 
+				"label", 
+				"catName", 
+				"info",
+				"catName" || ' ' ||  "brandName" || ' ' || "label" || ' ' || COALESCE("info",'') as "productDetails",
+				qty, 
+				s."price",
+				s."jData"->>'serialNumbers' as "serialNumbers",
+				"dc",
+				"lineRefNo", 
+				"lineRemarks"
+			from cte1 c1
+				join "StockJournal" s
+					on c1."id" = s."tranHeaderId"
+				join "ProductM" p
+					on p."id" = s."productId"
+				join "CategoryM" c
+					on c."id" = p."catId"
+				join "BrandM" b
+					on b."id" = p."brandId"
+			order by s."id"
+		)
+		select json_build_object(
+			'tranH', (SELECT row_to_json(a) from cte1 a),
+			'stockJournals', (select json_agg(b) from cte2 b)
+		) as "jsonResult"
+    """
+
     get_subledger_accounts = """
         with "accId" as (values (%(accId)s::int))
          -- with "accId" AS (VALUES (1::int))

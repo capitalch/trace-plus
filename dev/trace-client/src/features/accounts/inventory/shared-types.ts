@@ -26,3 +26,16 @@ export type ProductLineItem = {
     productId: number;
     upcCode: string;
   };
+
+  export type TranHeaderType = {
+    autoRefNo: string | null;
+    branchId: number;
+    finYearId: number;
+    id?: number;
+    posId?: number;
+    remarks: string | null;
+    tranDate: string;
+    tranTypeId: number;
+    userRefNo: string | null;
+    [key: string]: any;
+  };

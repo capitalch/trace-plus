@@ -13,7 +13,7 @@ import _ from "lodash";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
-import { ProductLineItem } from "../../shared-types";
+import { ProductLineItem, TranHeaderType } from "../../shared-types";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   const {
@@ -25,6 +25,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     finYearId
   } = useUtilsInfo();
   const dispatch: AppDispatchType = useDispatch();
+
   const selectedTranHeaderId = useSelector(
     (state: RootStateType) => state.reduxComp.compTabs[instance]?.id
   );
@@ -254,22 +255,6 @@ export type BranchTransferType = {
   userRefNo?: string | null;
 };
 
-// type ProductLineItem = {
-//   id?: number | string;
-//   amount?: number;
-//   jData?: { [key: string]: any };
-//   lineRefNo?: string | null;
-//   lineRemarks?: string | null;
-//   price: number;
-//   productCode?: string | null;
-//   productDetails?: string | null;
-//   productId?: number;
-//   qty: number;
-//   serialNumbers: string | null;
-//   tranHeaderId?: number;
-//   upcCode?: string | null;
-// };
-
 export type BranchTransferJsonResultType = {
   branchTransfers: BranchTransferInfoType[];
   tranH: TranHeaderType;
@@ -294,15 +279,15 @@ type BranchTransferInfoType = {
   upcCode: string | null;
 };
 
-type TranHeaderType = {
-  autoRefNo: string | null;
-  branchId: number;
-  finYearId: number;
-  id?: number;
-  posId?: number;
-  remarks: string | null;
-  tranDate: string;
-  tranTypeId: number;
-  userRefNo: string | null;
-  [key: string]: any;
-};
+// type TranHeaderType = {
+//   autoRefNo: string | null;
+//   branchId: number;
+//   finYearId: number;
+//   id?: number;
+//   posId?: number;
+//   remarks: string | null;
+//   tranDate: string;
+//   tranTypeId: number;
+//   userRefNo: string | null;
+//   [key: string]: any;
+// };

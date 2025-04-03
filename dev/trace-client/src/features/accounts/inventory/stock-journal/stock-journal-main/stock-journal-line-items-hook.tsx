@@ -22,9 +22,6 @@ export function useStockJournalLineItems(
     const [srNoTooltipIndex, setSrNoTooltipIndex] = useState<number | null>(null);
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo();
 
-    // const selectedTranHeaderId = useSelector(
-    //     (state: RootStateType) => state.accounts.tranHeaderEdit[instance].id
-    // );
     const onChangeProductCode = useMemo(
         // For debounce
         () =>
