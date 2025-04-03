@@ -80,13 +80,22 @@ const accountsSlice = createSlice({
       state: AccountsInitialStateType,
       action: PayloadAction<TranHeaderEditType>
     ) => {
-      if(!state.tranHeaderEdit[action.payload.instance]){
+      if (!state.tranHeaderEdit[action.payload.instance]) {
         state.tranHeaderEdit[action.payload.instance] = {
-          id: null
-        }
+          id: null,
+        };
       }
       state.tranHeaderEdit[action.payload.instance].id =
         action.payload.tranHeaderId;
+    },
+
+    resetTranHeaderIdToEdit: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<TranHeaderEditType>
+    ) => {
+      if (state.tranHeaderEdit[action.payload.instance]) {
+        state.tranHeaderEdit[action.payload.instance].id = undefined;
+      }
     },
   },
 });
@@ -99,6 +108,7 @@ export const {
   setExportName,
   reSetProductOpeningBalanceEdit,
   setProductOpeningBalanceEdit,
+  resetTranHeaderIdToEdit,
   setTranHeaderIdToEdit,
 } = accountsSlice.actions;
 
@@ -112,7 +122,7 @@ export type AccountsInitialStateType = {
   productOpeningBalanceEdit: ProductOpeningBalanceEditType;
   tranHeaderEdit: {
     [key: string]: {
-      id: number | null;
+      id: number | null | undefined;
     };
   };
 };
@@ -143,7 +153,7 @@ export type SelectedBankType = {
 
 export type TranHeaderEditType = {
   instance: string;
-  tranHeaderId: number;
+  tranHeaderId?: number;
 };
 
 // selectors

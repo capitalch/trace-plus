@@ -1446,7 +1446,8 @@ class SqlAccounts:
 				s."jData"->>'serialNumbers' as "serialNumbers",
 				"dc",
 				"lineRefNo", 
-				"lineRemarks"
+				"lineRemarks",
+                "tranHeaderId"
 			from cte1 c1
 				join "StockJournal" s
 					on c1."id" = s."tranHeaderId"

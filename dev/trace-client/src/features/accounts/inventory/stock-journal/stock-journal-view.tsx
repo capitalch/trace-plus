@@ -6,8 +6,8 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useState } from "react";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { AppDispatchType} from "../../../../app/store/store";
-import { useDispatch} from "react-redux";
+import { AppDispatchType } from "../../../../app/store/store";
+import { useDispatch } from "react-redux";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { format } from "date-fns";
@@ -28,7 +28,7 @@ export function StockJournalView({ instance }: { instance: string }) {
         finYearId
     } = useUtilsInfo();
 
-    
+
 
     return (
         <div className="flex flex-col max-w-max">
@@ -224,13 +224,13 @@ export function StockJournalView({ instance }: { instance: string }) {
     }
 
     async function handleOnEdit(props: any) {
-        console.log(props);
         dispatch(
-          setTranHeaderIdToEdit({
-            instance: instance,
-            tranHeaderId: props.id
-          })
+            setTranHeaderIdToEdit({
+                instance: instance,
+                tranHeaderId: props.id
+            })
         );
+        Utils.showHideModalDialogA({ isOpen: false })
     }
 
     async function handleOnPreview(props: any) {

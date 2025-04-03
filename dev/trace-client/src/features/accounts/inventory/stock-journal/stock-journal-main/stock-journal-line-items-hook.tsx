@@ -8,8 +8,6 @@ import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/
 import _ from "lodash";
 import { ProductType } from "../../shared-types";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
-import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../../app/store/store";
 
 export function useStockJournalLineItems(
     name: "sourceLineItems" | "outputLineItems",

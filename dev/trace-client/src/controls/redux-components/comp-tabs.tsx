@@ -23,6 +23,7 @@ export function CompTabs(
                     tabsInfo.map((tab: TabType, idx: number) => {
                         return (
                             <button key={idx}
+                                type="button"
                                 className={clsx(ripple, 'flex gap-3 items-center py-2 rounded-t-lg border-b-3 transition-colors duration-300'
                                     , (idx === (compTabsInstance?.activeTabIndex ?? 0))
                                         ? 'border-teal-500 bg-blue-500 text-white font-semibold '

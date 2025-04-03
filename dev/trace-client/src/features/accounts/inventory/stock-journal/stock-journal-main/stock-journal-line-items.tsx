@@ -51,7 +51,7 @@ export function StockJournalLineItems({
 
   return (
     <div className="flex flex-col">
-      <label className="font-bold">{title || "Source"}</label>
+      <label className="font-medium">{title || "Source"}</label>
       <table className="border-separate border-spacing-0 border-2 border-gray-100 ">
         <thead>
           <tr className="bg-gray-100 text-primary-500 text-xs font-medium text-left">
