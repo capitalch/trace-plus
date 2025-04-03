@@ -340,8 +340,8 @@ class SqlAccounts:
     """
 
     get_all_branch_transfer_headers = """
-    --with "branchId" as (values (1)), "finYearId" as (values (2024))
-        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int))
+    with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int))
+        --with "branchId" as (values (1)), "finYearId" as (values (2024))
         select h.id
         , "tranDate"
         ,"autoRefNo"
@@ -819,6 +819,44 @@ class SqlAccounts:
         FROM cte7
     """
 
+    get_all_stock_journals = """
+        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "noOfRows" as (values (%(noOfRows)s::int))
+        --with "branchId" as (values (1)), "finYearId" as (values (2024)), "noOfRows" as (values (100))
+		select h."id" 
+		, "tranDate"
+		, "autoRefNo"
+		, "userRefNo"
+		, h."remarks"
+        , CASE when "dc"='D' then "qty" else 0 end as "debits"
+        , CASE when "dc"='C' then "qty" else 0 end as "credits"
+        , "productCode"
+		, "brandName"
+		, "label"
+		, "catName"
+		, "info"
+		, "catName" || ' ' ||  "brandName" || ' ' || "label" || ' ' || COALESCE("info",'') as "productDetails"
+        , "dc"
+		, "lineRefNo"
+		, "lineRemarks"
+        , "qty"
+        , "price"
+        , ("qty" * "price") as "amount"
+		, s."jData"->>'serialNumbers' as "serialNumbers"
+            from "TranH" h
+                join "StockJournal" s
+                    on h."id" = s."tranHeaderId"
+				join "ProductM" p
+					on p."id" = s."productId"
+				join "CategoryM" c
+					on c."id" = p."catId"
+				join "BrandM" b
+					on b."id" = p."brandId"
+        where "tranTypeId" = 11 
+        and "finYearId" = (table "finYearId")
+        and "branchId" = (table "branchId")
+        order by "tranDate" DESC, "id" DESC LIMIT (table "noOfRows")
+    """
+    
     get_all_transactions = """
         --WITH "noOfRows" AS (VALUES (1000::int)), "tranTypeId" AS (VALUES (null::int)), "dateFormat" AS (VALUES ('dd/MM/yyyy'::text)), "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)), "startDate" AS (VALUES ('2024-04-01'::date)), "endDate" AS (VALUES ('2025-03-31'::date)),"dateType" AS (VALUES ('entryDate'::text))
         with "noOfRows" as (values (%(noOfRows)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "dateType" AS (values (%(dateType)s::text))

@@ -1,73 +1,86 @@
 import clsx from "clsx"
-import { ReactElement } from "react"
 import { ibukiEmit } from "../../utils/ibuki"
 import { IbukiMessages } from "../../utils/ibukiMessages"
-// import Draggable from "react-draggable"
 
-export function CompModalDialog({ body, className, isOpen, size = 'sm', title, toShowCloseButton = false, instanceName }: CompModalDialogType) {
-    const sizeLogic = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-4xl' }
-    const footerClassName = toShowCloseButton ? 'flex' : 'hidden'
+// My version improved 3.0
 
-    return (
-        <>
-            {isOpen ? (
-                <>
-                    {/* <Draggable className=''> */}
-                    <div
-                        className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-hidden focus:outline-hidden">
-                        <div className={clsx("relative w-auto max-w-4xl mx-auto ", sizeLogic[size])}>
 
-                            {/*content*/}
-                            <div className="relative flex w-full flex-col rounded-lg bg-white shadow-lg outline-hidden focus:outline-hidden border-1 border-gray-700">
 
-                                {/*header*/}
-                                <div className={clsx("flex items-center justify-between p-4", className)}>
-                                    <label className="text-lg font-semibold text-primary-500">
-                                        {title}
-                                    </label>
-                                    <button onClick={onClickClose} className="ml-auto mt-1 h-6 w-6 cursor-pointer border-0 bg-transparent px-0 py-0 font-semibold outline-hidden focus:outline-hidden">
-                                        X
-                                    </button>
-                                </div>
+export function CompModalDialog({
+  body,
+  className,
+  isOpen,
+  size = "sm",
+  title,
+  toShowCloseButton = false,
+  instanceName,
+}: CompModalDialogType) {
+  if (!isOpen) return null; // Prevent rendering when closed
 
-                                {/*body*/}
-                                <div className="relative flex-auto p-6 pt-0">
-                                    {/* {body({ defaultData })} */}
-                                    {body}
-                                </div>
+  const sizeLogic = {
+    sm: "w-full max-w-sm",
+    md: "w-full md:max-w-xl",
+    lg: "w-full lg:max-w-4xl",
+    xl: "w-full xl:max-w-[90vw]",
+  };
 
-                                {/*footer*/}
-                                <div className={clsx("flex ml-auto mr-6 mb-6 ", footerClassName)} >
-                                    <button
-                                        className="border-[1px] bg-primary-400 px-6 py-2 text-sm font-bold uppercase text-white hover:bg-primary-500 active:bg-primary-600"
-                                        type="button"
-                                        onClick={onClickClose}>
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
-                    {/* </Draggable> */}
-                </>
-            ) : null}
-        </>
-    )
+  return (
+    <>
+      {/* Background Overlay */}
+      <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
 
-    function onClickClose() {
-        const ibukiMessage: string = (instanceName === 'A') ? IbukiMessages["SHOW-MODAL-DIALOG-A"] : IbukiMessages["SHOW-MODAL-DIALOG-B"]
-        ibukiEmit(ibukiMessage, { isOpen: false, title: undefined, element: <></> })
-    }
+      {/* Modal */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className={clsx("relative mx-4 sm:mx-0", sizeLogic[size])}>
+          <div className="flex flex-col rounded-lg bg-white shadow-lg border border-gray-300 max-h-[95vh] ">
+            
+            {/* Header */}
+            <div className={clsx("flex items-center justify-between px-4 py-2 border-b", className)}>
+              <h2 className="text-lg font-semibold text-primary-500">{title}</h2>
+              <button
+                onClick={onClickClose}
+                className="p-2 text-gray-500 hover:text-red-500"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body - Scrollable for large content */}
+            <div className="px-4 py-2 flex-1 ">{body}</div>
+
+            {/* Footer */}
+            {toShowCloseButton && (
+              <div className="flex justify-end p-4 border-t">
+                <button
+                  className="border bg-primary-400 px-6 py-2 text-sm font-bold uppercase text-white hover:bg-primary-500"
+                  onClick={onClickClose}
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  function onClickClose() {
+    const ibukiMessage =
+      instanceName === "A"
+        ? IbukiMessages["SHOW-MODAL-DIALOG-A"]
+        : IbukiMessages["SHOW-MODAL-DIALOG-B"];
+    ibukiEmit(ibukiMessage, { isOpen: false, title: undefined, element: <></> });
+  }
 }
 
+// Component Props Type
 type CompModalDialogType = {
-    body?: ReactElement
-    className?: string
-    defaultData?: any
-    isOpen: boolean
-    size?: 'sm' | 'md' | 'lg'
-    title: string
-    toShowCloseButton?: boolean
-    instanceName: string
-}
+  body?: React.ReactElement;
+  className?: string;
+  isOpen: boolean;
+  size?: "sm" | "md" | "lg" | "xl";
+  title: string;
+  toShowCloseButton?: boolean;
+  instanceName: string;
+};

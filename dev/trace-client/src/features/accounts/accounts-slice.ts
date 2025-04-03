@@ -20,6 +20,7 @@ const initialState: AccountsInitialStateType = {
     exportName: "",
   },
   productOpeningBalanceEdit: {},
+  tranHeaderEdit: {},
 };
 
 const accountsSlice = createSlice({
@@ -59,22 +60,33 @@ const accountsSlice = createSlice({
       state: AccountsInitialStateType,
       action: PayloadAction<ProductOpeningBalanceEditType>
     ) => {
-      state.productOpeningBalanceEdit = {...action.payload};
+      state.productOpeningBalanceEdit = { ...action.payload };
     },
 
-    reSetProductOpeningBalanceEdit: (
-      state: AccountsInitialStateType,
-      // action: PayloadAction<ProductOpeningBalanceEditType>
-    ) => {
+    reSetProductOpeningBalanceEdit: (state: AccountsInitialStateType) => {
       state.productOpeningBalanceEdit = {
         brandId: undefined,
         catId: undefined,
         id: undefined,
         labelId: undefined,
         lastPurchaseDate: undefined,
-        openingPrice:0,
-        productId: undefined
+        openingPrice: 0,
+        productId: undefined,
       };
+    },
+
+    // tranHeader edits
+    setTranHeaderIdToEdit: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<TranHeaderEditType>
+    ) => {
+      if(!state.tranHeaderEdit[action.payload.instance]){
+        state.tranHeaderEdit[action.payload.instance] = {
+          id: null
+        }
+      }
+      state.tranHeaderEdit[action.payload.instance].id =
+        action.payload.tranHeaderId;
     },
   },
 });
@@ -87,6 +99,7 @@ export const {
   setExportName,
   reSetProductOpeningBalanceEdit,
   setProductOpeningBalanceEdit,
+  setTranHeaderIdToEdit,
 } = accountsSlice.actions;
 
 export type AccountsInitialStateType = {
@@ -97,6 +110,11 @@ export type AccountsInitialStateType = {
     exportName: string;
   };
   productOpeningBalanceEdit: ProductOpeningBalanceEditType;
+  tranHeaderEdit: {
+    [key: string]: {
+      id: number | null;
+    };
+  };
 };
 
 export type AllTransactionsFilterType = {
@@ -121,6 +139,11 @@ export type ProductOpeningBalanceEditType = {
 export type SelectedBankType = {
   accId: number | undefined;
   accName: string;
+};
+
+export type TranHeaderEditType = {
+  instance: string;
+  tranHeaderId: number;
 };
 
 // selectors

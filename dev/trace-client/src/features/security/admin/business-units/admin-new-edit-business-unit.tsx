@@ -73,8 +73,8 @@ export function AdminNewEditBusinessUnit({
     }, []);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-72">
+        <form onSubmit={handleSubmit(onSubmit)} className="">
+            <div className="flex flex-col gap-2 min-w-72">
 
                 {/* Business Unit Code */}
                 <label className="flex flex-col font-medium text-primary-400">

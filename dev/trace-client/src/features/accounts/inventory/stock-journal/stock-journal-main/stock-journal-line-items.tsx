@@ -9,17 +9,9 @@ import { Messages } from "../../../../../utils/messages";
 import { IconDelete } from "../../../../../controls/icons/icon-delete";
 import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import { IconPlus } from "../../../../../controls/icons/icon-plus";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Utils } from "../../../../../utils/utils";
-import {
-  ProductInfoType,
-  ProductSelectFromGrid
-} from "../../../../../controls/components/product-select-from-grid";
-import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import _ from "lodash";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
-import { ProductType } from "../../shared-types";
+import { useRef, useState } from "react";
 import Decimal from "decimal.js";
+import { useStockJournalLineItems } from "./stock-journal-line-items-hook";
 
 export function StockJournalLineItems({
   name,
@@ -27,7 +19,6 @@ export function StockJournalLineItems({
   title
 }: StockJournalLineItemsType) {
   const [, setRefresh] = useState({});
-  const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
 
   const meta = useRef<MetaType>({
     sourceLineItems: 0,
@@ -43,26 +34,20 @@ export function StockJournalLineItems({
   const { fields, append, remove } =
     name === "sourceLineItems" ? sourceFields : outputFields;
 
-  const onChangeProductCode = useMemo(
-    // For debounce
-    () =>
-      _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
-        populateProductOnProductCode(e.target.value, index);
-      }, 2000), [name]
-  );
-
-
-  useEffect(() => {
-    return () => onChangeProductCode.cancel();
-  }, [onChangeProductCode]);
-
-  useEffect(() => {
-    return () => {
-      if (context.DataInstances?.[instance]) {
-        context.DataInstances[instance].deletedIds = [];
-      }
-    };
-  }, []);
+  const {
+    errorIndicatorAndTooltipForSerialNumber,
+    getSnError,
+    handleDeleteRow,
+    handleProductClear,
+    handleProductSearch,
+    onChangeProductCode,
+  } = useStockJournalLineItems(
+    name,
+    instance,
+    clearErrors,
+    setValue,
+    trigger,
+    watch)
 
   return (
     <div className="flex flex-col">
@@ -109,7 +94,7 @@ export function StockJournalLineItems({
               >
 
                 {/* index */}
-                <td className="p-2">
+                <td className="p-2 align-top">
                   <span>{index + 1}</span>
                   <button
                     aria-label="Clear Product"
@@ -123,13 +108,8 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* product code */}
-                <td className="p-2 flex flex-col w-40">
-                  <span
-                    tabIndex={-1}
-                    className="text-xs mb-1 text-teal-500 text-center"
-                  >
-                    {watch(`${name}.${index}.upcCode`) || "------------"}
-                  </span>
+                <td className="p-2 flex flex-col w-40 align-top">
+                  
                   <input
                     type="text"
                     {...register(`${name}.${index}.productCode`, {
@@ -140,22 +120,28 @@ export function StockJournalLineItems({
                     value={watch(`${name}.${index}.productCode`) ?? ""}
                     className={clsx(
                       "border p-2 rounded w-full",
-                      inputFormFieldStyles, errors[name]?.[index]?.productCode && 'bg-red-200'
+                      inputFormFieldStyles, errors[name]?.[index]?.productCode ? 'bg-red-200 border-red-500' : ''
                     )}
                   />
                   <button
                     tabIndex={-1}
                     type="button"
-                    className="text-xs text-blue-600 flex items-center mt-1 ml-2"
+                    className="text-sm text-blue-600 flex items-center mt-2 "
                     onClick={() => handleProductSearch(index)}
                   >
                     <IconSearch className="mr-1" />
                     Search Product
                   </button>
+                  <span
+                    tabIndex={-1}
+                    className="text-xs mt-1 text-teal-500 "
+                  >
+                    {watch(`${name}.${index}.upcCode`) || "------------"}
+                  </span>
                 </td>
 
                 {/* product details */}
-                <td className="p-2 font-semibold">
+                <td className="p-2 font-semibold align-top">
                   <textarea
                     tabIndex={-1}
                     rows={3}
@@ -172,12 +158,12 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* ref no */}
-                <td className="p-2">
+                <td className="p-2 align-top">
                   <input
                     type="text"
                     {...register(`${name}.${index}.lineRefNo`)}
                     className={clsx(
-                      "border p-2 rounded w-full text-xs",
+                      "border p-2 rounded w-full text-xs h-10",
                       inputFormFieldStyles
                     )}
                     value={watch(`${name}.${index}.lineRefNo`) ?? ""}
@@ -185,7 +171,7 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* line remarks */}
-                <td className="p-2">
+                <td className="p-2 align-top">
                   <textarea
                     rows={3}
                     {...register(`${name}.${index}.lineRemarks`)}
@@ -198,7 +184,7 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* qty */}
-                <td className="p-2 relative">
+                <td className="p-2 align-top">
                   <NumericFormat
                     allowNegative={false}
                     decimalScale={2}
@@ -209,7 +195,7 @@ export function StockJournalLineItems({
                         value !== 0 || Messages.errQtyCannotBeZero
                     })}
                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                    onValueChange={(values) => 
+                    onValueChange={(values) =>
                       setValue(`${name}.${index}.qty`, values.floatValue ?? 0, {
                         shouldValidate: true,
                         shouldDirty: true
@@ -218,7 +204,7 @@ export function StockJournalLineItems({
                     value={watch(`${name}.${index}.qty`)}
                     className={clsx(
                       "border p-2 rounded w-full text-right",
-                      inputFormFieldStyles, errors[name]?.[index]?.qty && 'bg-red-200'
+                      inputFormFieldStyles, errors[name]?.[index]?.qty ? 'bg-red-200 border-red-500' : ''
                     )}
                   />
                   {/* Error Indicator & Tooltip Button */}
@@ -226,7 +212,7 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* price */}
-                <td className="p-2">
+                <td className="p-2 align-top">
                   <NumericFormat
                     allowNegative={false}
                     decimalScale={2}
@@ -251,27 +237,27 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* serial numbers */}
-                <td className="p-2 relative">
+                <td className="p-2 relative align-top">
                   <textarea
                     {...register(`${name}.${index}.serialNumbers`, {
-                      // validate: (input: string | null) =>
-                      //     validateSerialNumbers(input, index)
+                      validate: () =>
+                        getSnError(index)
                     })}
                     rows={3}
                     value={watch(`${name}.${index}.serialNumbers`) ?? ""}
                     className={clsx(
                       "border p-2 rounded w-full",
-                      inputFormFieldStyles
-                      // getSnError(index) ? "border-red-500 bg-red-100" : ""
+                      inputFormFieldStyles,
+                      getSnError(index) ? "bg-red-100 border-red-500" : ""
                     )}
                     placeholder="Comma-separated serials"
                   />
                   {/* Error Indicator & Tooltip Button */}
-                  {/* {errorIndicatorAndTooltipForSerialNumber(index)} */}
+                  {errorIndicatorAndTooltipForSerialNumber(index)}
                 </td>
 
                 {/* amount */}
-                <td className="p-2">
+                <td className="p-2 align-top">
                   <NumericFormat
                     allowNegative={false}
                     disabled
@@ -286,7 +272,7 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* delete */}
-                <td className="p-2">
+                <td className="p-2 align-top">
                   <button
                     aria-label="Delete Row"
                     tabIndex={-1}
@@ -369,95 +355,12 @@ export function StockJournalLineItems({
                 fixedDecimalScale
               />
             </td>
-
           </tr>
         </tfoot>
       </table>
     </div>
   );
 
-  function handleProductClear(index: number) {
-    setValue(`${name}.${index}.productId`, undefined);
-    setValue(`${name}.${index}.productCode`, null);
-    setValue(`${name}.${index}.productDetails`, null);
-    setValue(`${name}.${index}.lineRefNo`, null);
-    setValue(`${name}.${index}.qty`, 1);
-    setValue(`${name}.${index}.price`, 0);
-    setValue(`${name}.${index}.lineRemarks`, null);
-    setValue(`${name}.${index}.tranHeaderId`, undefined);
-    setValue(`${name}.${index}.serialNumbers`, null);
-    setValue(`${name}.${index}.upcCode`, null);
-  }
-
-  function handleDeleteRow(index: number, remove: any) {
-    const id = watch(`${name}.${index}.id`);
-    if (id) {
-      if (!context.DataInstances?.[instance]) {
-        context.DataInstances[instance] = { deletedIds: [] };
-      }
-      context.DataInstances[instance].deletedIds.push(id);
-    }
-    remove(index);
-  }
-
-  function handleProductSearch(index: number) {
-    Utils.showHideModalDialogA({
-      isOpen: true,
-      size: "lg",
-      element: <ProductSelectFromGrid onSelect={onProductSelect} />,
-      title: "Select a product"
-    });
-
-    function onProductSelect(args: ProductInfoType) {
-      clearErrors(`${name}.${index}.productCode`);
-      setValue(`${name}.${index}.productCode`, args.productCode);
-      setValue(`${name}.${index}.productId`, args.id, {
-        shouldValidate: true,
-        shouldDirty: true
-      });
-      setValue(
-        `${name}.${index}.productDetails`,
-        `${args.brandName} ${args.catName} ${args.label} ${args.info ?? ""}`
-      );
-      setValue(`${name}.${index}.price`, args.lastPurchasePrice);
-      setValue(`${name}.${index}.upcCode`, args.upcCode);
-    }
-  }
-
-  async function populateProductOnProductCode(
-    productCode: string,
-    index: number
-  ) {
-    if (_.isEmpty(productCode)) {
-      handleProductClear(index);
-      trigger(`${name}.${index}.productCode`);
-      return;
-    }
-    const product: ProductType[] = await Utils.doGenericQuery({
-      buCode: buCode || "",
-      dbName: dbName || "",
-      dbParams: decodedDbParamsObject,
-      sqlId: SqlIdsMap.getProductOnProductCodeUpc,
-      sqlArgs: {
-        productCodeOrUpc: productCode
-      }
-    });
-    if (_.isEmpty(product)) {
-      handleProductClear(index);
-      trigger(`${name}.${index}.productCode`);
-      return;
-    }
-    clearErrors(`${name}.${index}.productCode`);
-    setValue(`${name}.${index}.productCode`, product[0].productCode);
-    setValue(`${name}.${index}.productId`, product[0].productId);
-    setValue(
-      `${name}.${index}.productDetails`,
-      `${product[0].brandName} ${product[0].catName} ${product[0].label} ${product[0].info ?? ""
-      }`
-    );
-    setValue(`${name}.${index}.price`, product[0].lastPurchasePrice);
-    setValue(`${name}.${index}.upcCode`, product[0].upcCode);
-  }
 }
 
 type StockJournalLineItemsType = {

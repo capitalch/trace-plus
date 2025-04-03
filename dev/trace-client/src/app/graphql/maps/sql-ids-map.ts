@@ -52,11 +52,13 @@ export const SqlIdsMap = {
   getAllBrands: "get_all_brands",
   getAllTransactions: "get_all_transactions",
   getBankOpBalance: "get_bank_op_balance",
-  getBranchTransferDetailsOnTranHeaderId:"get_branch_transfer_details_on_tran_header_id",
+  getBranchTransferDetailsOnTranHeaderId:
+    "get_branch_transfer_details_on_tran_header_id",
   getBrandsOnCatId: "get_brands_on_catId",
   getAllProducts: "get_all_products",
   getAllProductsInfoForProductSelect:
     "get_all_products_info_for_product_select",
+  getAllStockJournals: "get_all_stock_journals",
   getBankRecon: "get_bank_recon",
   getBrandsCategoriesUnits: "get_brands_categories_units",
   getExtBusinessContactsAccM: "get_extBusinessContactsAccM",

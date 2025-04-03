@@ -117,8 +117,8 @@ export function ProductsOpeningBalancesWorkBench() {
 
     return (<div className="flex flex-col border-2 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-[calc(100vh - 120px)]">
         <div className="flex justify-between items-center align-middle">
-            <label className="text-lg mb-1 font-medium text-primary-500">Opening Stock</label>
-            <label className="text-sm text-primary-400 font-bold">{id ? 'Edit opening balance' : 'New opening balance'}</label>
+            <label className="text-lg mb-1 font-medium text-primary-500">Opening Balance</label>
+            <label className="text-sm text-primary-400 font-bold">{id ? 'Edit' : 'New'}</label>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
 

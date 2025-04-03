@@ -60,7 +60,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
                 className="flex flex-col gap-6 mr-6 min-w-[85rem]"
                 onSubmit={methods.handleSubmit(onSubmit)}
             >
-                <StockJournalHeader />                
+                <StockJournalHeader instance={instance} />
                 <StockJournalTabs instance={instance} />
             </form>
         </FormProvider>

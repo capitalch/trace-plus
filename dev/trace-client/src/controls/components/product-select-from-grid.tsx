@@ -13,7 +13,7 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
 
     return (<div className="">
         <CompSyncFusionGridToolbar
-            className='mt-2 mr-6'
+            // className='mt-2 mr-6'
             minWidth="500px"
             title='All Active Products'
             isPdfExport={false}
@@ -28,7 +28,7 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
             columns={getColumns()}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
-            height='calc(100vh - 260px)'
+            height='calc(100vh - 280px)'
             instance={instance}
             isLoadOnInit={false}
             minWidth="800px"

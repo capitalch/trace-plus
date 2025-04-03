@@ -70,7 +70,7 @@ export function ManageCategoryHsn() {
                 mode: 'Normal',
             }}
             hasIndexColumn={false}
-            height="calc(100vh - 240px)"
+            height="calc(100vh - 250px)"
             instance={instance}
             isLoadOnInit={false}
             minWidth="550px"

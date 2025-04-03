@@ -3,6 +3,7 @@ import React from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../app/store/store";
 import { setActiveTabIndex } from "./comp-slice";
+import { IconError1 } from "../icons/icon-error1";
 
 export function CompTabs(
     {
@@ -22,14 +23,17 @@ export function CompTabs(
                     tabsInfo.map((tab: TabType, idx: number) => {
                         return (
                             <button key={idx}
-                                className={clsx(ripple, 'py-2 px-8 rounded-md border-b-3   transition-colors duration-300'
+                                className={clsx(ripple, 'flex gap-3 items-center py-2 rounded-t-lg border-b-3 transition-colors duration-300'
                                     , (idx === (compTabsInstance?.activeTabIndex ?? 0))
-                                        ? 'border-teal-500 bg-primary-500 text-white font-semibold '
-                                        : 'border-white hover:border-teal-100 bg-neutral-200 hover:bg-primary-200 text-gray-400 hover:text-gray-700')}
+                                        ? 'border-teal-500 bg-blue-500 text-white font-semibold '
+                                        : 'border-white hover:border-teal-100 bg-neutral-200 hover:bg-primary-200 text-gray-400 hover:text-gray-700'
+                                    // , 'rounded-t-lg'
+                                )}
                                 onClick={() => dispatch(setActiveTabIndex({
                                     instance: instance,
                                     activeTabIndex: idx
                                 }))}>
+                                {tab.hasError && <IconError1 className="text-red-500 w-5 h-5"/>}
                                 {tab.label}
                                 <span className={spanRipple}></span>
                             </button>
@@ -49,4 +53,5 @@ export type CompTabsType = TabType[]
 type TabType = {
     label: string
     content: React.ReactElement
+    hasError?: boolean
 }

@@ -40,20 +40,26 @@
 													- No green background for altered data
 - Inventory
 	- Stock Journal
+		- Check price
 		- Crown
+		- Clear button
 		- Main
 													- Aggregate qty, amount
 			- Validations
 					- Qty 
-				- Serial numbers
+					- Serial numbers
 					- Product code
-				- Tab color change when error
+					- Tab color change when error
+				- Global validation
+					- Amount mismatch check
+					- Each tab validation
 			- Submit
-			- Delete row
+					- Delete row
 		- View
-			- Sql
-			- Grid view
+					- Sql
+					- Grid view
 			- Edit
+				- Populate
 			- Delete
 			- Preview
 													- Separate indexing for source and dest

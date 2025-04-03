@@ -607,7 +607,7 @@ type ShowHideModalDialogType = {
     isOpen: boolean
     title?: string | undefined
     element?: ReactElement
-    size?: 'sm' | 'md' | 'lg'
+    size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
 type ShowModalDialogMessageArgsType = {
@@ -616,7 +616,7 @@ type ShowModalDialogMessageArgsType = {
     isOpen: boolean
     element?: ReactElement
     instanceName: string
-    size?: 'sm' | 'md' | 'lg'
+    size?: 'sm' | 'md' | 'lg' |'xl'
 }
 
 export type DbNameDbParamsType = {
