@@ -1,5 +1,4 @@
 import { useFormContext } from "react-hook-form";
-// import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { StockJournalType } from "./stock-journal-main";
 import { FormField } from "../../../../../controls/widgets/form-field";
 import clsx from "clsx";

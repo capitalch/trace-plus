@@ -22,18 +22,18 @@ export function StockJournalLineItems({
   const [, setRefresh] = useState({});
 
   const meta = useRef<MetaType>({
-    sourceLineItems: 0,
+    inputLineItems: 0,
     outputLineItems: 0
   });
 
   const { clearErrors, control, watch, register, setValue, trigger, formState: { errors } } =
     useFormContext<StockJournalType>();
 
-  const sourceFields = useFieldArray({ control, name: "sourceLineItems" });
+  const sourceFields = useFieldArray({ control, name: "inputLineItems" });
   const outputFields = useFieldArray({ control, name: "outputLineItems" });
 
   const { fields, append, remove } =
-    name === "sourceLineItems" ? sourceFields : outputFields;
+    name === "inputLineItems" ? sourceFields : outputFields;
 
   const {
     errorIndicatorAndTooltipForSerialNumber,
@@ -209,8 +209,6 @@ export function StockJournalLineItems({
                       inputFormFieldStyles, errors[name]?.[index]?.qty ? 'bg-red-200 border-red-500' : ''
                     )}
                   />
-                  {/* Error Indicator & Tooltip Button */}
-                  {/* {errorIndicatorAndTooltipForQty(index)} */}
                 </td>
 
                 {/* price */}
@@ -294,7 +292,7 @@ export function StockJournalLineItems({
           <tr className="font-semibold text-primary-500 bg-gray-100">
 
             {/* Add item */}
-            <td colSpan={4}>
+            <td colSpan={2}>
               <button
                 type="button"
                 onClick={() => {
@@ -320,7 +318,18 @@ export function StockJournalLineItems({
               </button>
             </td>
 
-            <td className="text-right">
+            <td className="flex">
+              <button
+                type="button"
+                onClick={handleClearAllRows}
+                className="px-2 py-2 ml-2 bg-amber-500 text-white rounded w-28 flex items-center gap-2 my-2 hover:bg-amber-700"
+              >
+                <IconClear1 />
+                Clear All
+              </button>
+            </td>
+
+            <td className="text-right" colSpan={2}>
               Total
             </td>
 
@@ -340,18 +349,8 @@ export function StockJournalLineItems({
                 fixedDecimalScale
               />
             </td>
-            <td></td>
-            <td className="flex justify-center">
-              <button
-                type="button"
-                onClick={handleClearAllRows}
-                className="px-2 py-2 bg-amber-500 text-white rounded w-24 flex items-center gap-2 my-2 hover:bg-amber-700"
-              >
-                <IconClear1 />
-                Clear
-              </button>
-            </td>
-
+            <td colSpan={2}></td>
+            
             {/* Total Amount */}
             <td className="pr-2 text-right" colSpan={2}>
               <NumericFormat
@@ -382,7 +381,7 @@ export function StockJournalLineItems({
 
 type StockJournalLineItemsType = {
   instance: string;
-  name: "sourceLineItems" | "outputLineItems";
+  name: "inputLineItems" | "outputLineItems";
   title: string;
 };
 

@@ -10,7 +10,7 @@ import { ProductLineItem, ProductType } from "../../shared-types";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 
 export function useStockJournalLineItems(
-    name: "sourceLineItems" | "outputLineItems",
+    name: "inputLineItems" | "outputLineItems",
     instance: string,
     clearErrors: UseFormClearErrors<StockJournalType>,
     fields: Array<ProductLineItem>,

@@ -4,24 +4,31 @@ import { StockJournalLineItems } from "./stock-journal-line-items";
 import { StockJournalType } from "./stock-journal-main";
 import { ProductLineItem } from "../../shared-types";
 import _ from "lodash";
+import { useEffect } from "react";
 
 export function StockJournalTabs({ instance }: { instance: string }) {
   const { watch } = useFormContext<StockJournalType>()
-  const sourceLineItems = watch('sourceLineItems')
+  const inputLineItems = watch('inputLineItems')
   const outputLineItems = watch('outputLineItems')
 
   const tabsInfo: CompTabsType = [
     {
-      label: "Source Items",
-      content: <StockJournalLineItems instance={instance} name="sourceLineItems" title="Source (Consumed / Inputs / Credits)" />,
-      hasError: hasError(sourceLineItems)
+      label: "Input Items",
+      content: <StockJournalLineItems instance={instance} name="inputLineItems" title="Input (Consumed / Source / Credits)" />,
+      hasError: hasError(inputLineItems),
+      tagLine: "Removed from stock"
     },
     {
       label: "Output Items",
       content: <StockJournalLineItems instance={instance} name="outputLineItems" title="Output (Produced / Results / Debits)" />,
-      hasError: hasError(outputLineItems)
+      hasError: hasError(outputLineItems),
+      tagLine: "Added to stock"
     }
   ];
+
+  useEffect(() => {
+    console.log("trigger");
+  });
 
   return (<CompTabs tabsInfo={tabsInfo} instance={instance} />)
 
