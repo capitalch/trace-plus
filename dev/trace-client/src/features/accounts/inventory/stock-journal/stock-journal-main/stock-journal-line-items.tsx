@@ -58,7 +58,7 @@ export function StockJournalLineItems({
       <label className="font-medium">{title || "Source"}</label>
       <table className="border-separate border-spacing-0 border-2 border-gray-100 ">
         <thead>
-          <tr className="bg-gray-100 text-primary-500 text-xs font-medium text-left">
+          <tr className="bg-gray-100 text-primary-500 text-sm font-medium text-left">
             <th className="p-2 w-10 ">#</th>
             <th className="p-2 w-32">
               UPC / Product Code <WidgetAstrix />
