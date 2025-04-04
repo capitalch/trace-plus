@@ -1,6 +1,6 @@
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
-import { StockJournalCrown } from "./stock-journal-crown";
+// import { StockJournalCrown } from "./stock-journal-crown";
 import { StockJournalMain } from "./stock-journal-main/stock-journal-main";
 
 export function StockJournal() {
@@ -10,7 +10,7 @@ export function StockJournal() {
       <label className="mt-1 text-md font-bold text-primary-500">
         Stock Journal
       </label>
-      <StockJournalCrown instance={instance} />
+      {/* <StockJournalCrown instance={instance} /> */}
     </div>
 
     <StockJournalMain instance={instance} />

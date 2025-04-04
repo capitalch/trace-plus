@@ -41,7 +41,7 @@
 - Inventory
 	- Stock Journal
 		- Check price
-		- Crown
+													- Crown
 													- Clear button
 		- Main
 													- Aggregate qty, amount
@@ -60,7 +60,7 @@
 					- Grid view
 				- Edit
 					- Populate
-				- Delete
+					- Delete
 			- Preview
 													- Separate indexing for source and dest
 													- Search product
