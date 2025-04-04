@@ -11,9 +11,7 @@ import { useDispatch } from "react-redux";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { format } from "date-fns";
-import { setTranHeaderIdToEdit } from "../../accounts-slice";
-// import { PDFViewer } from "@react-pdf/renderer";
-// import { ProductsBranchTransferPdf } from "../branch-transfer/products-branch-transfer-pdf";
+import { resetTranHeaderIdToEdit, setTranHeaderIdToEdit } from "../../accounts-slice";
 
 export function StockJournalView({ instance }: { instance: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -27,8 +25,6 @@ export function StockJournalView({ instance }: { instance: string }) {
         decodedDbParamsObject,
         finYearId
     } = useUtilsInfo();
-
-
 
     return (
         <div className="flex flex-col max-w-max">
@@ -82,6 +78,12 @@ export function StockJournalView({ instance }: { instance: string }) {
             </PDFViewer> */}
             </ReactSlidingPane>
         </div>)
+
+    function clearDeletedIds() {
+        if (context.DataInstances?.[instance]) {
+            context.DataInstances[instance].deletedIds = [];
+        }
+    }
 
     function getAggregates(): SyncFusionGridAggregateType[] {
         return [
@@ -184,7 +186,7 @@ export function StockJournalView({ instance }: { instance: string }) {
             },
             {
                 field: "remarks",
-                headerText: "Comm remarks",
+                headerText: "Remarks",
                 type: "string",
                 width: 120
             },
@@ -224,12 +226,22 @@ export function StockJournalView({ instance }: { instance: string }) {
     }
 
     async function handleOnEdit(props: any) {
+        clearDeletedIds()
         dispatch(
-            setTranHeaderIdToEdit({
+            resetTranHeaderIdToEdit({
                 instance: instance,
-                tranHeaderId: props.id
             })
-        );
+        )
+        // Settimeout is necessary to enable render of selector component twice; one for each dispatch
+        setTimeout(() => {
+            dispatch(
+                setTranHeaderIdToEdit({
+                    instance: instance,
+                    tranHeaderId: props.id
+                })
+            );
+        }, 0);
+
         Utils.showHideModalDialogA({ isOpen: false })
     }
 

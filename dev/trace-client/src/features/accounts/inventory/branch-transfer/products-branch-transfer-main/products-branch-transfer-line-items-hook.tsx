@@ -162,7 +162,6 @@ export function useProductsBranchTransferLineItems(instance: string) {
       return;
     }
     if (id) {
-      console.log(id);
       if (!context.DataInstances?.[instance]) {
         context.DataInstances[instance] = { deletedIds: [] };
       }
@@ -236,8 +235,7 @@ export function useProductsBranchTransferLineItems(instance: string) {
     setValue(`productLineItems.${index}.productId`, product[0].productId);
     setValue(
       `productLineItems.${index}.productDetails`,
-      `${product[0].brandName} ${product[0].catName} ${product[0].label} ${
-        product[0].info ?? ""
+      `${product[0].brandName} ${product[0].catName} ${product[0].label} ${product[0].info ?? ""
       }`
     );
     setValue(`productLineItems.${index}.price`, product[0].lastPurchasePrice);

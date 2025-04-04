@@ -42,7 +42,7 @@
 	- Stock Journal
 		- Check price
 		- Crown
-		- Clear button
+													- Clear button
 		- Main
 													- Aggregate qty, amount
 			- Validations
@@ -58,9 +58,9 @@
 		- View
 					- Sql
 					- Grid view
-			- Edit
-				- Populate
-			- Delete
+				- Edit
+					- Populate
+				- Delete
 			- Preview
 													- Separate indexing for source and dest
 													- Search product

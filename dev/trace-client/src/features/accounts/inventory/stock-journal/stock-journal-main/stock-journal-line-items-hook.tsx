@@ -1,18 +1,20 @@
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { Messages } from "../../../../../utils/messages";
-import { UseFormClearErrors, UseFormSetValue, UseFormTrigger, UseFormWatch } from "react-hook-form";
+import { UseFieldArrayRemove, UseFormClearErrors, UseFormSetValue, UseFormTrigger, UseFormWatch } from "react-hook-form";
 import { StockJournalType } from "./stock-journal-main";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { Utils } from "../../../../../utils/utils";
 import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
 import _ from "lodash";
-import { ProductType } from "../../shared-types";
+import { ProductLineItem, ProductType } from "../../shared-types";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 
 export function useStockJournalLineItems(
     name: "sourceLineItems" | "outputLineItems",
     instance: string,
     clearErrors: UseFormClearErrors<StockJournalType>,
+    fields: Array<ProductLineItem>,
+    remove: UseFieldArrayRemove,
     setValue: UseFormSetValue<StockJournalType>,
     trigger: UseFormTrigger<StockJournalType>,
     watch: UseFormWatch<StockJournalType>
@@ -33,11 +35,15 @@ export function useStockJournalLineItems(
 
     useEffect(() => {
         return () => {
-            if (context.DataInstances?.[instance]) {
-                context.DataInstances[instance].deletedIds = [];
-            }
+            clearDeletedIds()
         };
     }, []);
+
+    function clearDeletedIds() {
+        if (context.DataInstances?.[instance]) {
+            context.DataInstances[instance].deletedIds = [];
+        }
+    }
 
     function errorIndicatorAndTooltipForSerialNumber(index: number) {
         const snError = getSnError(index);
@@ -85,6 +91,20 @@ export function useStockJournalLineItems(
             snError = Messages.errQtySrNoNotMatch;
         }
         return snError;
+    }
+
+    function handleClearAllRows() {
+        const allIndices = fields.map((_, index) => {
+            const id = watch(`${name}.${index}.id`);
+            if (id) {
+                if (!context.DataInstances[instance]) {
+                    context.DataInstances[instance] = { deletedIds: [] }
+                }
+                context.DataInstances[instance].deletedIds.push(id)
+            }
+            return (index)
+        });
+        remove(allIndices)
     }
 
     function handleDeleteRow(index: number, remove: any) {
@@ -173,10 +193,10 @@ export function useStockJournalLineItems(
     return ({
         errorIndicatorAndTooltipForSerialNumber,
         getSnError,
+        handleClearAllRows,
         handleDeleteRow,
         handleProductClear,
         handleProductSearch,
         onChangeProductCode,
-        // populateProductOnProductCode,
     })
 }

@@ -114,7 +114,6 @@ export function StockJournalMain({ instance }: { instance: string }) {
     }
 
     async function onSubmit(data: StockJournalType) {
-        console.log(data);
         const xData: XDataObjectType = getTranHeaderRow();
         try {
             await Utils.doGenericUpdate({
@@ -124,9 +123,6 @@ export function StockJournalMain({ instance }: { instance: string }) {
             });
             Utils.showSaveMessage();
             xReset();
-            // if (selectedTranHeaderId) {
-                // dispatch(setActiveTabIndex({ activeTabIndex: 1, instance: instance }));
-            // }
         } catch (e) {
             console.log(e);
         }
@@ -165,7 +161,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
                     price: item.price,
                     productId: item.productId,
                     qty: item.qty,
-                    dc:'C'
+                    dc: 'C'
                 };
             })
             const xDataOutputItems = data.outputLineItems.map((item: ProductLineItem) => {
@@ -185,7 +181,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
                     price: item.price,
                     productId: item.productId,
                     qty: item.qty,
-                    dc:'D'
+                    dc: 'D'
                 };
             })
             return {
@@ -294,9 +290,14 @@ export function StockJournalMain({ instance }: { instance: string }) {
                 }
             ]
         });
+        // If edited then reset tranHeaderId
         dispatch(resetTranHeaderIdToEdit({
             instance: instance
         }))
+        // Reset deletedIds
+        if (context.DataInstances?.[instance]) {
+            context.DataInstances[instance].deletedIds = [];
+        }
     }
 }
 

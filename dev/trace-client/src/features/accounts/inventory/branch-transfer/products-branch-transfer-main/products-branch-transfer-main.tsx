@@ -242,6 +242,9 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         }
       ]
     });
+    if (context.DataInstances?.[instance]) {
+      context.DataInstances[instance].deletedIds = [];
+    }
   }
 }
 

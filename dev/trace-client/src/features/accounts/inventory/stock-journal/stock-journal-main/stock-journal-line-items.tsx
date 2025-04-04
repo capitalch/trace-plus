@@ -12,6 +12,7 @@ import { IconPlus } from "../../../../../controls/icons/icon-plus";
 import { useRef, useState } from "react";
 import Decimal from "decimal.js";
 import { useStockJournalLineItems } from "./stock-journal-line-items-hook";
+import { IconClear1 } from "../../../../../controls/icons/icon-clear1";
 
 export function StockJournalLineItems({
   name,
@@ -37,6 +38,7 @@ export function StockJournalLineItems({
   const {
     errorIndicatorAndTooltipForSerialNumber,
     getSnError,
+    handleClearAllRows,
     handleDeleteRow,
     handleProductClear,
     handleProductSearch,
@@ -45,6 +47,8 @@ export function StockJournalLineItems({
     name,
     instance,
     clearErrors,
+    fields,
+    remove,
     setValue,
     trigger,
     watch)
@@ -74,11 +78,9 @@ export function StockJournalLineItems({
           </tr>
         </thead>
         <tbody>
-          {fields.map((item, index) => {
-            // console.log(item);
+          {fields.map((_, index) => {
             const qty = watch(`${name}.${index}.qty`);
             const price = watch(`${name}.${index}.price`);
-            // const productId = watch(`${name}.${index}.productId`);
             const amount = qty * price;
             return (
               <tr
@@ -109,7 +111,7 @@ export function StockJournalLineItems({
 
                 {/* product code */}
                 <td className="p-2 flex flex-col w-40 align-top">
-                  
+
                   <input
                     type="text"
                     {...register(`${name}.${index}.productCode`, {
@@ -287,11 +289,12 @@ export function StockJournalLineItems({
             );
           })}
         </tbody>
+
         <tfoot className="">
           <tr className="font-semibold text-primary-500 bg-gray-100">
 
             {/* Add item */}
-            <td colSpan={5}>
+            <td colSpan={4}>
               <button
                 type="button"
                 onClick={() => {
@@ -310,11 +313,15 @@ export function StockJournalLineItems({
                   meta.current[name] = fields.length;
                   setRefresh({});
                 }}
-                className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2 my-2"
+                className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2 my-2 hover:bg-blue-700"
               >
                 <IconPlus />
                 Add Item
               </button>
+            </td>
+
+            <td className="text-right">
+              Total
             </td>
 
             {/* Total Qty */}
@@ -333,7 +340,17 @@ export function StockJournalLineItems({
                 fixedDecimalScale
               />
             </td>
-            <td colSpan={2}></td>
+            <td></td>
+            <td className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleClearAllRows}
+                className="px-2 py-2 bg-amber-500 text-white rounded w-24 flex items-center gap-2 my-2 hover:bg-amber-700"
+              >
+                <IconClear1 />
+                Clear
+              </button>
+            </td>
 
             {/* Total Amount */}
             <td className="pr-2 text-right" colSpan={2}>
