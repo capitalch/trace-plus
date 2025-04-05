@@ -21,6 +21,7 @@ import { ProductsBranchTransferPdf } from "./products-branch-transfer-pdf";
 import { BranchTransferJsonResultType } from "./products-branch-transfer-main/products-branch-transfer-main";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { format } from "date-fns";
+// import { StockJournalPdf } from "../stock-journal/stock-journal-pdf";
 
 export function ProductsBranchTransferView({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -88,6 +89,7 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
             branchTransfers={meta.current.branchTransfers}
             tranH={meta.current.tranH}
           />
+          {/* <StockJournalPdf inputLineItems={[]} outputLineItems={[]} tranH={meta.current.tranH}/> */}
         </PDFViewer>
       </ReactSlidingPane>
     </div>

@@ -3,7 +3,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { AppDispatchType } from "../../../../app/store/store";
@@ -12,6 +12,10 @@ import { showCompAppLoader } from "../../../../controls/redux-components/comp-sl
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { format } from "date-fns";
 import { resetTranHeaderIdToEdit, setTranHeaderIdToEdit } from "../../accounts-slice";
+import { StockJournalJsonResultType } from "./stock-journal-main/stock-journal-main";
+import { PDFViewer } from "@react-pdf/renderer";
+import { StockJournalPdf } from "./stock-journal-pdf";
+// import { ProductsBranchTransferPdf } from "../branch-transfer/products-branch-transfer-pdf";
 
 export function StockJournalView({ instance }: { instance: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -26,6 +30,10 @@ export function StockJournalView({ instance }: { instance: string }) {
         finYearId
     } = useUtilsInfo();
 
+    const meta = useRef<StockJournalJsonResultType>({
+        stockJournals: [],
+        tranH: {} as any
+    });
     return (
         <div className="flex flex-col max-w-max">
             <CompSyncFusionGridToolbar
@@ -61,7 +69,7 @@ export function StockJournalView({ instance }: { instance: string }) {
             />
             {/* Sliding Pane */}
             <ReactSlidingPane
-                className="bg-gray-300"
+                className="bg-gray-300 z-[999999]"
                 isOpen={isPaneOpen}
                 title="Branch Transfer"
                 from="right"
@@ -69,13 +77,14 @@ export function StockJournalView({ instance }: { instance: string }) {
                 onRequestClose={() => setIsPaneOpen(false)}
             >
                 {/* PDF Viewer inside the sliding pane */}
-                <div></div>
-                {/* <PDFViewer style={{ width: "100%", height: "100%" }}>
-              <ProductsBranchTransferPdf
-                branchTransfers={meta.current.branchTransfers}
-                tranH={meta.current.tranH}
-              />
-            </PDFViewer> */}
+                <PDFViewer style={{ width: "100%", height: "100%" }}>
+                    <StockJournalPdf
+                        // branchTransfers={meta.current.stockJournals}
+                        inputLineItems={[]}
+                        outputLineItems={[]}
+                        tranH={meta.current.tranH}
+                    />
+                </PDFViewer>
             </ReactSlidingPane>
         </div>)
 
@@ -261,13 +270,25 @@ export function StockJournalView({ instance }: { instance: string }) {
                 sqlArgs: {
                     id: props.id
                 },
-                sqlId: SqlIdsMap.getBranchTransferDetailsOnTranHeaderId
+                sqlId: SqlIdsMap.getStockJournalOnTranHeaderId
             });
-            console.log(res)
-            // const jsonResult: BranchTransferJsonResultType = res?.[0]?.jsonResult;
-            // jsonResult.tranH.currentDateFormat = currentDateFormat;
-            // meta.current = jsonResult;
-            setIsPaneOpen(true);
+            // console.log(res)
+            const jsonResult: StockJournalJsonResultType = res?.[0]?.jsonResult;
+            jsonResult.tranH.currentDateFormat = currentDateFormat;
+            meta.current = jsonResult;
+            Utils.showHideModalDialogB({
+                title: "Stock Journal",
+                isOpen: true,
+                size: "lg",
+                element: <PDFViewer style={{ width: "100%", height: "100%" }}>
+                    <StockJournalPdf
+                        inputLineItems={[]}
+                        outputLineItems={[]}
+                        tranH={meta.current.tranH}
+                    />
+                </PDFViewer>
+            })
+            // setIsPaneOpen(true);
         } catch (e: any) {
             console.log(e);
         } finally {

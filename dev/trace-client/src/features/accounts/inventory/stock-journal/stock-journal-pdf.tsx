@@ -1,17 +1,12 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { UnitInfoType, Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
+import { TranHeaderType } from "../shared-types";
 
 type StockJournalPdfProps = {
   inputLineItems: any[];
   outputLineItems: any[];
-  tranH: {
-    tranDate: string;
-    autoRefNo: string;
-    userRefNo: string;
-    remarks: string;
-    currentDateFormat: string;
-  };
+  tranH: TranHeaderType
 };
 
 export function StockJournalPdf({
@@ -39,7 +34,8 @@ export function StockJournalPdf({
   const outputTotals = getTotals(outputLineItems);
 
   return (
-    <Document>
+    <Document style={{width: "100%", height: "100%"}}>
+      {/* <Page size="A4" style={{ width: "100%", height: "100%" }} orientation="landscape"> */}
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header} fixed>

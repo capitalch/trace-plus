@@ -501,13 +501,15 @@ function showHideModalDialogA({ className, isOpen, title = '', element = <></>, 
     ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-A"], args)
 }
 
-function showHideModalDialogB({ isOpen, title = '', element = <></> }: ShowHideModalDialogType) {
+function showHideModalDialogB({className, isOpen, title = '', element = <></>, size }: ShowHideModalDialogType) {
 
     const args: ShowModalDialogMessageArgsType = {
+        className: className,
         title: title,
         isOpen: isOpen,
         element: element,
-        instanceName: 'B'
+        instanceName: 'B',
+        size: size,
     }
     ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-B"], args)
 

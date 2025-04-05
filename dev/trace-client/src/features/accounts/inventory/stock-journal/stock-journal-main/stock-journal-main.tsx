@@ -15,6 +15,9 @@ import { resetTranHeaderIdToEdit } from "../../../accounts-slice";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
 import { StockJournalCrown } from "../stock-journal-crown";
+// import ReactSlidingPane from "react-sliding-pane";
+// import { PDFViewer } from "@react-pdf/renderer";
+// import { StockJournalPdf } from "../stock-journal-pdf";
 
 export function StockJournalMain({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -152,9 +155,9 @@ export function StockJournalMain({ instance }: { instance: string }) {
         (item: ProductLineItem) => {
           const formattedSerialNumbers = item.serialNumbers
             ? item.serialNumbers
-                .split(/[,;]\s*/) // Split by ',' or ';' with or without spaces
-                .filter((sn) => sn.trim() !== "") // Remove empty entries
-                .join(", ") // Join with ', '
+              .split(/[,;]\s*/) // Split by ',' or ';' with or without spaces
+              .filter((sn) => sn.trim() !== "") // Remove empty entries
+              .join(", ") // Join with ', '
             : null;
           return {
             id: item.id || undefined,
@@ -174,9 +177,9 @@ export function StockJournalMain({ instance }: { instance: string }) {
         (item: ProductLineItem) => {
           const formattedSerialNumbers = item.serialNumbers
             ? item.serialNumbers
-                .split(/[,;]\s*/) // Split by ',' or ';' with or without spaces
-                .filter((sn) => sn.trim() !== "") // Remove empty entries
-                .join(", ") // Join with ', '
+              .split(/[,;]\s*/) // Split by ',' or ';' with or without spaces
+              .filter((sn) => sn.trim() !== "") // Remove empty entries
+              .join(", ") // Join with ', '
             : null;
           return {
             id: item.id || undefined,
