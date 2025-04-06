@@ -1,5 +1,3 @@
-// import { useDispatch } from "react-redux"
-// import { AppDispatchType } from "../../../../app/store/store"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
@@ -34,7 +32,7 @@ export function ProductCategories() {
         <CompSyncFusionTreeGridToolbar
             className="mt-2"
             CustomControl={() => <ProductCategoriesToolbarButtons />}
-            title='Product categories'
+            title='Product Categories'
             isLastNoOfRows={false}
             instance={instance}
             minWidth="950px"

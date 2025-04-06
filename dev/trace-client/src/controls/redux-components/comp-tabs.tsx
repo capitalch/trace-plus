@@ -68,35 +68,6 @@ export function CompTabs({
         {tabsInfo[compTabsInstance?.activeTabIndex || 0].content}
       </div>
     </div>
-    // <div className={className}>
-    //     <div className="flex space-x-2 border-b border-gray-300 pb-0.5">
-    //         {
-    //             tabsInfo.map((tab: TabType, idx: number) => {
-    //                 return (
-    //                     <button key={idx}
-    //                         type="button"
-    //                         className={clsx(ripple, 'flex gap-3 items-center py-2 rounded-t-lg border-b-3 transition-colors duration-300'
-    //                             , (idx === (compTabsInstance?.activeTabIndex ?? 0))
-    //                                 ? 'border-teal-500 bg-blue-500 text-white font-semibold '
-    //                                 : 'border-white hover:border-teal-100 bg-neutral-200 hover:bg-primary-200 text-gray-400 hover:text-gray-700'
-    //                             // , 'rounded-t-lg'
-    //                         )}
-    //                         onClick={() => dispatch(setActiveTabIndex({
-    //                             instance: instance,
-    //                             activeTabIndex: idx
-    //                         }))}>
-    //                         {tab.hasError && <IconError1 className="text-red-500 w-5 h-5"/>}
-    //                         {tab.label}
-    //                         <span className={spanRipple}></span>
-    //                     </button>
-    //                 )
-    //             })
-    //         }
-    //     </div>
-    //     <div className="py-4">
-    //         {tabsInfo[compTabsInstance?.activeTabIndex || 0].content}
-    //     </div>
-    // </div>
   );
 }
 

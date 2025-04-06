@@ -21,7 +21,6 @@ import { ProductsBranchTransferPdf } from "./products-branch-transfer-pdf";
 import { BranchTransferJsonResultType } from "./products-branch-transfer-main/products-branch-transfer-main";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { format } from "date-fns";
-// import { StockJournalPdf } from "../stock-journal/stock-journal-pdf";
 
 export function ProductsBranchTransferView({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -63,7 +62,7 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         dbParams={decodedDbParamsObject}
         deleteColumnWidth={40}
         editColumnWidth={40}
-        height="calc(100vh - 430px)"
+        height="calc(100vh - 410px)"
         allowPaging={true}
         instance={instance}
         minWidth="1300px"

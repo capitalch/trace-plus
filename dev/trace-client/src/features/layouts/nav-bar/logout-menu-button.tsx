@@ -28,9 +28,9 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     const email: string | undefined = loginInfo.userDetails?.userEmail
     return (
         <ClickAwayListener onClickAway={handleOnClickAway}>
-            <div className="ml-auto">
+            <div className="ml-auto  text-white bg-primary-500 flex items-center relative h-12">
                 <TooltipComponent content={getLogoutTooltipContent()} position="LeftCenter">
-                    <button onClick={handleShowDropdown}
+                    <button onClick={handleShowDropdown} type="button"
                         className={clsx(className, 'flex px-4 gap-3 py-2 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400')}>
                         <span className="text-sm">{email}</span>
                         <IconUser1 className='w-4 h-5 text-secondary-200' />
@@ -40,7 +40,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
                         toShowNavBarDropDownSelector &&
                         <div className="absolute z-10 mt-2 rounded-md shadow-lg bg-gray-50 right-0 border-[1px] text-gray-500 font-semibold">
                             <div className="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                                {isNotSuperAdmin && <button onClick={handleOnChangeUid} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
+                                {isNotSuperAdmin && <button type="button" onClick={handleOnChangeUid} className="border-b-[1px] h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
                                     <IconChangeUid className='w-4 h-4 my-2 text-blue-500' />
                                     <span className="text-secondary-500">Change uid</span>
                                 </button>}
@@ -48,7 +48,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
                                     <IconChangePassword className='w-4 h-4 my-2 text-red-700' />
                                     <span>Change password</span>
                                 </button>}
-                                <button onClick={handleOnLogout} className=" h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
+                                <button onClick={handleOnLogout} type="button" className=" h-10 px-4 gap-4 w-full flex items-center cursor-pointer hover:bg-gray-200 border-primary-50">
                                     <IconLogout className='w-4 h-4 my-2 text-green-500' />
                                     <span>Log out</span>
                                 </button>

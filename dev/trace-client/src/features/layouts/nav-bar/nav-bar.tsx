@@ -13,7 +13,7 @@ import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/
 import { FC } from "react"
 import { ModalDialogB } from "./modal-dialogB"
 
-function NavBar() {
+export function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
     const { isOpen, identifier, title, width } = useSelector(selectSlidingPaneStateFn) // for sliding pane
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
@@ -23,32 +23,31 @@ function NavBar() {
     const slidingPaneChildCompProps: any = SlidingPaneMap[identifier]?.props
     
     return (
-        // Top Nav bar
-        <div className="flex items-center h-12 bg-primary-500 overflow-hidden">
-            <div className="flex items-center text-lg text-white">
-                <button onClick={handleShowSideBar} className={clsx(getMenuShowHideClass(), 'mx-2')}>
-                    <IconMenuUnfold className='h-6' />
-                </button>
-                {getMenuButtons()}
-                {getBuFyBranchInfo()}
-            </div>
-            <LogoutMenuButton className="ml-auto" />
-            <ModalDialogA />
-            <ModalDialogB />
+       // Top Nav bar
+       <div className="flex items-center h-12 bg-primary-500">
+       <div className="flex items-center text-lg text-white">
+           <button type="button" onClick={handleShowSideBar} className={clsx(getMenuShowHideClass(), 'mx-2')} title="toggle" >
+               <IconMenuUnfold className='h-6' />
+           </button>
+           {getMenuButtons()}
+           {getBuFyBranchInfo()}
+       </div>
+       <LogoutMenuButton />
+       <ModalDialogA />
+       <ModalDialogB />
 
-            {/* <AppLoader /> */}
-            {isVisibleAppLoader && <CompAppLoader />}
+       {/* <AppLoader /> */}
+       {isVisibleAppLoader && <CompAppLoader />}
 
-            {/* react sliding pane */}
-            {identifier && isOpen && <ReactSlidingPane 
-                className=""
-                isOpen={isOpen}
-                onRequestClose={() => dispatch(closeSlidingPane())}
-                title={<span className="font-bold text-primary-500">{title}</span>}
-            
-                width={width || '90%'}>
-                <SlidingPaneChildComp props={slidingPaneChildCompProps}></SlidingPaneChildComp>
-            </ReactSlidingPane>}
-        </div>)
+       {/* react sliding pane */}
+       {identifier && isOpen && <ReactSlidingPane 
+           className=""
+           isOpen={isOpen}
+           onRequestClose={() => dispatch(closeSlidingPane())}
+           title={<span className="font-bold text-primary-500">{title}</span>}
+       
+           width={width || '90%'}>
+           <SlidingPaneChildComp props={slidingPaneChildCompProps}></SlidingPaneChildComp>
+       </ReactSlidingPane>}
+   </div>)
 }
-export { NavBar }

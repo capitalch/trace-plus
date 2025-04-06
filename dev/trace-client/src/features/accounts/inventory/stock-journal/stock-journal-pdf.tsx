@@ -35,7 +35,7 @@ export function StockJournalPdf({
 
   return (
     <Document style={{width: "100%", height: "100%"}}>
-      {/* <Page size="A4" style={{ width: "100%", height: "100%" }} orientation="landscape"> */}
+      {/* <Page size="A4" style={{ width: "100%", height: "100%" }} > */}
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header} fixed>
@@ -82,6 +82,7 @@ export function StockJournalPdf({
           <Text style={{ width: 70, textAlign: "right" }}>Price</Text>
           <Text style={{ width: 80, textAlign: "right" }}>Amount</Text>
           <Text style={styles.serialNumbers}>Sr No</Text>
+          <Text style={{ width: 80 }}>Ref No</Text>
           <Text style={{ width: 120 }}>Remarks</Text>
         </View>
         {inputLineItems.map((item, index) => (
@@ -93,6 +94,7 @@ export function StockJournalPdf({
             <Text style={{ width: 70, textAlign: "right" }}>{new Decimal(item.price).toFixed(2)}</Text>
             <Text style={{ width: 80, textAlign: "right" }}>{new Decimal(item.qty).times(item.price).toFixed(2)}</Text>
             <Text style={styles.serialNumbers}>{item.serialNumbers}</Text>
+            <Text style={{ width: 80 }}>{item.lineRefNo}</Text>
             <Text style={{ width: 120 }}>{item.lineRemarks}</Text>
           </View>
         ))}
@@ -116,6 +118,7 @@ export function StockJournalPdf({
           <Text style={{ width: 70, textAlign: "right" }}>Price</Text>
           <Text style={{ width: 80, textAlign: "right" }}>Amount</Text>
           <Text style={styles.serialNumbers}>Sr No</Text>
+          <Text style={{ width: 80 }}>Ref No</Text>
           <Text style={{ width: 120 }}>Remarks</Text>
         </View>
         {outputLineItems.map((item, index) => (
@@ -127,6 +130,7 @@ export function StockJournalPdf({
             <Text style={{ width: 70, textAlign: "right" }}>{new Decimal(item.price).toFixed(2)}</Text>
             <Text style={{ width: 80, textAlign: "right" }}>{new Decimal(item.qty).times(item.price).toFixed(2)}</Text>
             <Text style={styles.serialNumbers}>{item.serialNumbers}</Text>
+            <Text style={{ width: 80 }}>{item.lineRefNo}</Text>
             <Text style={{ width: 120 }}>{item.lineRemarks}</Text>
           </View>
         ))}

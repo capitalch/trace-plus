@@ -213,7 +213,7 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "75",
           label: "Reports",
-          path: "/blogs",
+          path: "/inventory-reports-dashboard",
         },
         {
           id: "76",

@@ -16,6 +16,10 @@
 - Bug fixes etc.
 
 ## History
+# 06-04-2025
+	- Started inventory reports
+# 05-04-2025
+	- Stock Journal completed
 # 31-03-2025 - 03-04-2025
 	- Stock journal
 # 30-03-2025

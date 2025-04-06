@@ -39,29 +39,46 @@
 													- Behave erratic while saving
 													- No green background for altered data
 - Inventory
-	- Stock Journal
-		- Check price
+	- Reports
+													- basic architecture framework and startup
+		- current orders
+		- Products list
+		- Purchase price variation
+		- Purchases
+		- Sales
+		- Stock summary
+		- Stock transactions
+										- Stock Journal
+											- Final testing
+													- Add
+													- modify
+													- delete whole voucher
+													- delete various combinations of delete row
+													- delete row and clear row combinations
+													- Reset functionalities
+													- Clear buton
+													- Global validation
+													- Date field to make red when error
 													- Crown
 													- Clear button
-		- Main
+											- Main
 													- Aggregate qty, amount
-			- Validations
-					- Qty 
-					- Serial numbers
-					- Product code
-					- Tab color change when error
-				- Global validation
-					- Amount mismatch check
-					- Each tab validation
-			- Submit
-					- Delete row
-		- View
-					- Sql
-					- Grid view
-				- Edit
-					- Populate
-					- Delete
-			- Preview
+											- Validations
+													- Qty 
+													- Serial numbers
+													- Product code
+													- Tab color change when error
+													- Amount mismatch check
+													- Each tab validation
+											- Submit
+													- Delete row
+											- View
+													- Sql
+													- Grid view
+												- Edit
+													- Populate
+													- Delete
+													- Preview
 													- Separate indexing for source and dest
 													- Search product
 													- footer

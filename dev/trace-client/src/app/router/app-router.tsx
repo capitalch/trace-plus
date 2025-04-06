@@ -37,59 +37,88 @@ import { ProductMaster } from "../../features/accounts/inventory/product-master/
 import { ProductsOpeningBalances } from "../../features/accounts/inventory/opening-stock/products-opening-balances";
 import { ProductsBranchTransfers } from "../../features/accounts/inventory/branch-transfer/products-branch-transfers";
 import { StockJournal } from "../../features/accounts/inventory/stock-journal/stock-journal";
+import { InventoryReportsDashboard } from "../../features/accounts/inventory/reports/inventory-reports-dashboard";
+import { InventoryReportsContainer } from "../../features/accounts/inventory/reports/inventory-reports-container";
 
-export const appRouter = createBrowserRouter([
+export const appRouter = createBrowserRouter(
+  [
     {
-        path: '/',
-        element: <Protected>
-            <Layouts />
-        </Protected>,
-        errorElement: <ErrorPage />,
-        children:
-            [
-                { path: '/', element: <></> },
-                { path: 'admin-business-units', element: <AdminBusinessUnits /> },
-                { path: 'admin-business-users', element: <AdminBusinessUsers /> },
-                { path: 'admin-dashboard', element: <AdminDashBoard /> },
-                { path: 'admin-link-users', element: <AdminLinkUsersWithBu /> },
-                { path: 'admin-link-secured-controls-roles', element: <AdminLinkSecuredControlsWithRoles /> },
-                { path: 'admin-roles', element: <AdminRoles /> },
-                { path: 'blogs', element: <Blogs /> },
-                { path: 'comp1', element: <Comp1 /> },
-                { path: 'super-admin-admin-users', element: <SuperAdminAdminUsers /> },
-                { path: 'super-admin-clients', element: <SuperAdminClients /> },
-                { path: 'super-admin-dashboard', element: <SuperAdminDashboard /> },
-                { path: 'super-admin-roles', element: <SuperAdminRoles /> },
-                { path: 'super-admin-link-secured-controls-roles', element: <SuperAdminLinkSecuredControlsWithRoles /> },
-                { path: 'super-admin-secured-controls', element: <SuperAdminSecuredControls /> },
-                { path: 'trial-balance', element: <TrialBalance /> },
-                { path: 'balance-sheet', element: <BalanceSheet /> },
-                { path: 'profit-loss', element: <ProfitLoss /> },
-                { path: 'general-ledger', element: <GeneralLedger /> },
-                { path: 'bank-recon', element: <BankRecon /> },
-                { path: 'accounts-master', element: <AccountsMaster /> },
-                { path: 'company-info', element: <CompanyInfo /> },
-                { path: 'general-settings', element: <GeneralSettings /> },
-                { path: 'branch-master', element: <BranchMaster /> },
-                { path: 'fin-year-master', element: <FinYearsMaster /> },
-                { path: 'opening-balance', element: <AccountsOpeningBalance /> },
-                { path: 'common-utilities', element: <CommonUtilities /> },
-                { path: 'all-exports', element: <AllExports /> },
-                { path: 'report-all-transactions', element: <ReportAllTransactions /> },
-                { path: 'product-categories', element: <ProductCategories /> },
-                { path: 'brand-master', element: <BrandMaster /> },
-                { path: 'product-master', element: <ProductMaster /> },
-                { path: 'products-opening-balances', element: <ProductsOpeningBalances /> },
-                { path: 'products-branch-transfers', element: <ProductsBranchTransfers /> },
-                { path: 'stock-journal', element: <StockJournal /> },
-            ]
+      path: "/",
+      element: (
+        <Protected>
+          <Layouts />
+        </Protected>
+      ),
+      errorElement: <ErrorPage />,
+      children: [
+        { path: "/", element: <></> },
+        { path: "admin-business-units", element: <AdminBusinessUnits /> },
+        { path: "admin-business-users", element: <AdminBusinessUsers /> },
+        { path: "admin-dashboard", element: <AdminDashBoard /> },
+        { path: "admin-link-users", element: <AdminLinkUsersWithBu /> },
+        {
+          path: "admin-link-secured-controls-roles",
+          element: <AdminLinkSecuredControlsWithRoles />
+        },
+        { path: "admin-roles", element: <AdminRoles /> },
+        { path: "blogs", element: <Blogs /> },
+        { path: "comp1", element: <Comp1 /> },
+        { path: "super-admin-admin-users", element: <SuperAdminAdminUsers /> },
+        { path: "super-admin-clients", element: <SuperAdminClients /> },
+        { path: "super-admin-dashboard", element: <SuperAdminDashboard /> },
+        { path: "super-admin-roles", element: <SuperAdminRoles /> },
+        {
+          path: "super-admin-link-secured-controls-roles",
+          element: <SuperAdminLinkSecuredControlsWithRoles />
+        },
+        {
+          path: "super-admin-secured-controls",
+          element: <SuperAdminSecuredControls />
+        },
+        { path: "trial-balance", element: <TrialBalance /> },
+        { path: "balance-sheet", element: <BalanceSheet /> },
+        { path: "profit-loss", element: <ProfitLoss /> },
+        { path: "general-ledger", element: <GeneralLedger /> },
+        { path: "bank-recon", element: <BankRecon /> },
+        { path: "accounts-master", element: <AccountsMaster /> },
+        { path: "company-info", element: <CompanyInfo /> },
+        { path: "general-settings", element: <GeneralSettings /> },
+        { path: "branch-master", element: <BranchMaster /> },
+        { path: "fin-year-master", element: <FinYearsMaster /> },
+        { path: "opening-balance", element: <AccountsOpeningBalance /> },
+        { path: "common-utilities", element: <CommonUtilities /> },
+        { path: "all-exports", element: <AllExports /> },
+        { path: "report-all-transactions", element: <ReportAllTransactions /> },
+        { path: "product-categories", element: <ProductCategories /> },
+        { path: "brand-master", element: <BrandMaster /> },
+        { path: "product-master", element: <ProductMaster /> },
+        {
+          path: "products-opening-balances",
+          element: <ProductsOpeningBalances />
+        },
+        {
+          path: "products-branch-transfers",
+          element: <ProductsBranchTransfers />
+        },
+        { path: "stock-journal", element: <StockJournal /> },
+        {
+          path: "inventory-reports-dashboard",
+          element: <InventoryReportsDashboard />
+        },
+
+        {
+          path: "/inventory-reports/:id",
+          element: <InventoryReportsContainer />
+        }
+      ]
     },
     {
-        path: '/login',
-        element: <Login />,
-        errorElement: <ErrorPage />,
+      path: "/login",
+      element: <Login />,
+      errorElement: <ErrorPage />
     }
-], {
+  ],
+  {
     //Following settings to escape warning
     // future: {
     //     v7_relativeSplatPath: true,
@@ -98,6 +127,5 @@ export const appRouter = createBrowserRouter([
     //     v7_partialHydration: true,
     //     v7_skipActionErrorRevalidation: true
     // },
-})
-
-
+  }
+);

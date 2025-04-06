@@ -9,9 +9,7 @@ import { IconFileCsv } from "../../icons/icon-file-csv"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
-// import { WidgetTreeGridSwitch } from "./widget-tree-grid-switch"
 import clsx from "clsx"
-// import { CompCheckBox } from "../../redux-components/comp-checkbox"
 import { CompSwitch } from "../../redux-components/comp-switch"
 
 export function CompSyncFusionTreeGridToolbar({
@@ -62,7 +60,7 @@ export function CompSyncFusionTreeGridToolbar({
 
             {/* Pdf export  */}
             {isPdfExport && <WidgetTooltip title="Pdf export">
-                <button className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
+                <button type="button" title="Pdf export" className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.pdfExport(pdfExportProperties)
                 }}>
@@ -72,7 +70,7 @@ export function CompSyncFusionTreeGridToolbar({
 
             {/* Excel export */}
             {isExcelExport && <WidgetTooltip title="Excel export">
-                <button className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
+                <button type="button" title="Excel export" className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.excelExport()
                 }}>
@@ -82,7 +80,7 @@ export function CompSyncFusionTreeGridToolbar({
 
             {/* csv export */}
             {isCsvExport && <WidgetTooltip title="Csv export">
-                <button className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
+                <button type="button" title="Csv export" className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.csvExport()
                 }}>

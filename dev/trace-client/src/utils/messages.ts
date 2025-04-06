@@ -125,6 +125,7 @@ const Messages = {
     'The selected secured controls were unlinked successfully',
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSelectBank: 'Select a bank by clicking the button below',
+  messStockJournalDebitCreditMismatch:'Stock journal Debis and Credits mismatch',
   messSuccess: 'Successfull',
   messSureToProceed: 'Are you sure to proceed?',
   messSureOnUnLinkSecuredControl:
