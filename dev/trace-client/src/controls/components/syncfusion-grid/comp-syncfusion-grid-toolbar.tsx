@@ -1,4 +1,4 @@
-import { FC, useContext, } from "react"
+import { FC, ReactElement, useContext, } from "react"
 import { CompSyncFusionGridSearchBox } from "./comp-syncfusion-grid-search-box"
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
@@ -27,11 +27,12 @@ export function CompSyncFusionGridToolbar({
     , isSearch = true
     , minWidth = '1200px'
     , title
+    , subTitleControl = undefined
 }: CompSyncFusionGridToolbarType) {
     const context: GlobalContextType = useContext(GlobalContext)
     const dispatch: AppDispatchType = useDispatch()
     const selectedLastNoOfRows: string = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
-    
+
     const pdfExportProperties: PdfExportProperties = {
         fileName: `${title}-${Utils.getCompanyName()}-${isAllBranches ? 'All branches' : Utils.getCurrentLoginInfo().currentBranch?.branchName || ''}-${Utils.getCurrentFinYearFormattedDateRange()}.pdf`,
         header: {
@@ -56,7 +57,10 @@ export function CompSyncFusionGridToolbar({
     }
 
     return (<div className={clsx("flex items-center justify-between", className)} style={{ minWidth: `${minWidth}` }}>
-        <label className="mt-0 text-lg font-medium text-primary-500 inline-block whitespace-nowrap overflow-hidden text-ellipsis">{title}</label>
+        <div className="flex flex-col gap-1">
+            <label className="mt-0 text-lg font-medium text-primary-500 inline-block whitespace-nowrap overflow-hidden text-ellipsis">{title}</label>
+            {subTitleControl && <div className="text-sm text-gray-500">{subTitleControl}</div>}
+        </div>
         <div className="flex items-center gap-2 flex-wrap" >
             {CustomControl && <CustomControl />}
 
@@ -148,4 +152,5 @@ type CompSyncFusionGridToolbarType = {
     isSearch?: boolean
     minWidth?: string
     title: string,
+    subTitleControl?: ReactElement
 }

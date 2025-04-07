@@ -20,6 +20,7 @@ export function useCompSyncFusionGrid({
     , editColumnWidth
     , hasCheckBoxSelection
     , hasIndexColumn
+    , indexColumnWidth
     , instance
     , isLoadOnInit
     , loadData
@@ -142,7 +143,7 @@ export function useCompSyncFusionGrid({
                 field=''
                 headerText='#'
                 template={indexColumnTemplate}
-                width='20px'
+                width={indexColumnWidth}
             />)
         }
         if (hasCheckBoxSelection) {

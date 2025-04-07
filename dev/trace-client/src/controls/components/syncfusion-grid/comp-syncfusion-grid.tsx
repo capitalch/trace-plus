@@ -29,6 +29,7 @@ export function CompSyncFusionGrid({
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
     height,
+    indexColumnWidth = 40,
     isLoadOnInit = true,
     instance,
     loadData,
@@ -55,6 +56,7 @@ export function CompSyncFusionGrid({
             , dbParams
             , deleteColumnWidth
             , editColumnWidth
+            , indexColumnWidth
             , instance
             , hasCheckBoxSelection
             , hasIndexColumn
@@ -200,6 +202,7 @@ export type CompSyncFusionGridType = {
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
     height?: string
+    indexColumnWidth?: number
     instance: string
     isLoadOnInit?: boolean
     loadData?: () => void

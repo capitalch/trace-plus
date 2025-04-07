@@ -10,7 +10,6 @@ export function StockJournal() {
       <label className="mt-1 text-md font-bold text-primary-500">
         Stock Journal
       </label>
-      {/* <StockJournalCrown instance={instance} /> */}
     </div>
 
     <StockJournalMain instance={instance} />

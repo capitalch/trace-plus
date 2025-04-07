@@ -12,10 +12,7 @@ import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { AppDispatchType } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
-import {
-  //   openSlidingPane,
-  showCompAppLoader
-} from "../../../../controls/redux-components/comp-slice";
+import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { format } from "date-fns";
 import {
@@ -27,12 +24,6 @@ import { PDFViewer } from "@react-pdf/renderer";
 import { StockJournalPdf } from "./stock-journal-pdf";
 import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog";
 import { ProductLineItem, TranHeaderType } from "../shared-types";
-// import {
-//   SlidingPaneEnum,
-//   SlidingPaneMap
-// } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
-// import { NewEditBranchType } from "../../masters/branch-master/new-edit-branch";
-// import { ProductsBranchTransferPdf } from "../branch-transfer/products-branch-transfer-pdf";
 
 export function StockJournalView({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -55,7 +46,6 @@ export function StockJournalView({ instance }: { instance: string }) {
   return (
     <div className="flex flex-col max-w-max">
       <CompSyncFusionGridToolbar
-        // className="mt-2 mr-6"
         minWidth="400px"
         title="Stock Journal View"
         isPdfExport={true}
@@ -75,7 +65,6 @@ export function StockJournalView({ instance }: { instance: string }) {
         deleteColumnWidth={40}
         editColumnWidth={40}
         height="calc(100vh - 260px)"
-        // allowPaging={true}
         instance={instance}
         minWidth="400px"
         onDelete={handleOnDelete}

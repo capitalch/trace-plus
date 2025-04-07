@@ -24,6 +24,7 @@ export const DataInstancesMap = {
   commonUtilsTransferClosingBalance:
     "common-utilities-transfer-closing-balance",
   contactsAndAddresses: "contacts-and-addresses",
+  currentOrdersReport: "current-orders-report",
   expenses: "expenses",
   finYearsMaster: "fin-years-master",
   generalLedger: "general-ledger",
