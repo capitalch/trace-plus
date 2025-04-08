@@ -34,6 +34,7 @@
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 	- BS, PL, Trial Bal to retain node expanded / collapsed
 	- Product master check duplicate UPC code server side validation
+	- current order report: set to place the order to supplier through mail, whatsapp
 													- Migrate to tailwind latest version
 													- Bank reconcillation clear date, remarks not saving
 													- Behave erratic while saving
@@ -41,6 +42,7 @@
 - Inventory
 	- Reports
 													- basic architecture framework and startup
+		- Grid remove row button
 		- current orders
 		- Products list
 		- Purchase price variation

@@ -1,12 +1,19 @@
+import { shallowEqual, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BackToDashboardLink } from "../back-to-dashboard-link";
+import { RootStateType } from "../../../../../app/store/store";
+import { selectCompSwitchStateFn } from "../../../../../controls/redux-components/comp-slice";
+import { CompInstances } from "../../../../../controls/redux-components/comp-instances";
+import { CompSwitch } from "../../../../../controls/redux-components/comp-switch";
 
 export function CurrentOrdersReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.currentOrdersReport;
+  const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchCurrentOrdersReport), shallowEqual) || false
+
   const {
     buCode,
     branchId,
@@ -17,6 +24,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
 
   return <div className="flex flex-col">
     <CompSyncFusionGridToolbar
+      CustomControl={() => <CompSwitch instance={CompInstances.compSwitchCurrentOrdersReport} className="" leftLabel="All branches" rightLabel="" />}
       className="mr-4"
       minWidth="600px"
       title={title || ''}
@@ -40,7 +48,10 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
       instance={instance}
       minWidth="600px"
       sqlId={SqlIdsMap.getCurrentOrders}
-      sqlArgs={{ branchId: branchId, finYearId: finYearId }}
+      sqlArgs={{
+        branchId: isAllBranches ? null : branchId,
+        finYearId: finYearId
+      }}
     />
   </div>;
 
