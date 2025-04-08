@@ -24,7 +24,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
 
   return <div className="flex flex-col">
     <CompSyncFusionGridToolbar
-      CustomControl={() => <CompSwitch instance={CompInstances.compSwitchCurrentOrdersReport} className="" leftLabel="All branches" rightLabel="" />}
+      CustomControl={() => <CompSwitch instance={CompInstances.compSwitchCurrentOrdersReport} className="" leftLabel="Curr branch" rightLabel="All branches" toToggleLeftLabel={true} isDisabled={true} />}
       className="mr-4"
       minWidth="600px"
       title={title || ''}
@@ -44,6 +44,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
       dbName={dbName}
       dbParams={decodedDbParamsObject}
       hasIndexColumn={true}
+      hasRemoveButton={true}
       height="calc(100vh - 245px)"
       instance={instance}
       minWidth="600px"
@@ -139,7 +140,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         width: 50,
         type: "boolean",
         textAlign: "Center",
-        template: (props: any) => <input type="checkbox" checked={props.isUrgent} readOnly />
+        template: (props: any) => <input type="checkbox" checked={props.isUrgent} readOnly aria-label="Urgent" />
       },
     ];
   }

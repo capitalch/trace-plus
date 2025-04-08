@@ -28,6 +28,7 @@ export function CompSyncFusionGrid({
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
+    hasRemoveButton = false,
     height,
     indexColumnWidth = 40,
     isLoadOnInit = true,
@@ -47,6 +48,7 @@ export function CompSyncFusionGrid({
     sqlId
 }: CompSyncFusionGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
+    const gridRef: any = useRef({})
     const { getAggrColDirectives, getColumnDirectives, loading, loadDataLocal, selectedData } = useCompSyncFusionGrid(
         {
             aggregates
@@ -56,10 +58,12 @@ export function CompSyncFusionGrid({
             , dbParams
             , deleteColumnWidth
             , editColumnWidth
+            // , gridRef
             , indexColumnWidth
             , instance
             , hasCheckBoxSelection
             , hasIndexColumn
+            , hasRemoveButton
             , isLoadOnInit
             , loadData
             , onDelete
@@ -71,7 +75,7 @@ export function CompSyncFusionGrid({
         })
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
     const maxWidth = isSideBarOpenSelector ? 'calc(100vw - 240px - 12px)' : 'calc(100vw - 62px)'
-    const gridRef: any = useRef({})
+    
 
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionGrid[instance]) {
@@ -201,6 +205,7 @@ export type CompSyncFusionGridType = {
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
+    hasRemoveButton?: boolean
     height?: string
     indexColumnWidth?: number
     instance: string

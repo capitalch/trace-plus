@@ -45,6 +45,7 @@ export const DataInstancesMap = {
   productsBranchTransfer: "products-branch-transfer",
   productsOpeningBalances: "products-opening-balances",
   productSelect: "product-select",
+  productsListReport: "products-list-report",
   profitLoss: "profit-loss",
   reportAllTransactions: "report-all-transactions",
   securedControls: "secured-controls",
