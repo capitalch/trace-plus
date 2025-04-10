@@ -151,10 +151,10 @@ async def handle_auto_ref_no(sqlObject, acur):
     if not xData:  # Check if xData is None or empty
         return
     if (
-        "id" not in xData or not xData["id"] and
-        "finYearId" in xData and
-        "branchId" in xData and
-        "tranTypeId" in xData
+        ("id" not in xData or not xData["id"]) and
+        ("finYearId" in xData) and
+        ("branchId" in xData) and
+        ("tranTypeId" in xData)
     ):
         finYearId = xData["finYearId"]
         branchId = xData["branchId"]

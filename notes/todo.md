@@ -35,15 +35,19 @@
 	- BS, PL, Trial Bal to retain node expanded / collapsed
 	- Product master check duplicate UPC code server side validation
 	- current order report: set to place the order to supplier through mail, whatsapp
+	- When BU changes, Branches remain of the old BU. So error and system crash
 													- Migrate to tailwind latest version
 													- Bank reconcillation clear date, remarks not saving
 													- Behave erratic while saving
 													- No green background for altered data
+													- Super admin new client registration error: finYearId
 - Inventory
 	- Reports
 													- basic architecture framework and startup
 		- Grid remove row button
+		- Search problem in template columns
 		- current orders
+			- last no of rows not working
 		- Products list
 		- Purchase price variation
 		- Purchases

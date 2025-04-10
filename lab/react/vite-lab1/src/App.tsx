@@ -122,7 +122,7 @@ function App() {
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
       {/* <TreeGrid2 /> */}
-      {/* <SyncfusionGrid /> */}
+      <SyncfusionGrid />
       {/* <InjectSummary /> */}
       {/* <SlidingPaneViewer /> */}
       {/* <EditGrid /> */}
@@ -136,7 +136,7 @@ function App() {
       {/* <NewEditProduct /> */}
       {/* <BranchTransferForm /> */}
       {/* <TabExample /> */}
-      <SelectedRowInTable1 />
+      {/* <SelectedRowInTable1 /> */}
     </GlobalContext.Provider>
   )
 }

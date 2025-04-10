@@ -17,6 +17,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
   const {
     buCode,
     branchId,
+    context,
     dbName,
     decodedDbParamsObject,
     finYearId
@@ -44,10 +45,11 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
       dbName={dbName}
       dbParams={decodedDbParamsObject}
       hasIndexColumn={true}
-      hasRemoveButton={true}
+      // hasRemoveButton={true}
       height="calc(100vh - 245px)"
       instance={instance}
       minWidth="600px"
+      // onRemove={onRemove}
       sqlId={SqlIdsMap.getCurrentOrders}
       sqlArgs={{
         branchId: isAllBranches ? null : branchId,
@@ -144,4 +146,18 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
       },
     ];
   }
+
+  // function onRemove(props: any) {
+  //   const gridRef = context.CompSyncFusionGrid[instance].gridRef;
+  //   if (gridRef.current) {
+  //     const rowIndex = gridRef.current.getRowIndexByPrimaryKey(props.id);
+  //     gridRef.current.selectRow(rowIndex);
+  //     const selectedRecords = gridRef.current?.getSelectedRecords();
+  //     if (selectedRecords && selectedRecords.length > 0) {
+  //       gridRef.current?.deleteRecord('OrderID', selectedRecords[0]);
+  //     } else {
+  //       alert('Please select a row to delete');
+  //     }
+  //   }
+  // }
 }

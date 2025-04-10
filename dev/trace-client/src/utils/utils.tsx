@@ -155,7 +155,7 @@ async function doGenericQuery({
     buCode
     , dbName
     , dbParams
-    , instance
+    // , instance
     , sqlArgs
     , sqlId
 }: DoGenericQueryType) {
@@ -166,7 +166,7 @@ async function doGenericQuery({
             dbParams: dbParams,
             sqlArgs: sqlArgs,
             sqlId: sqlId
-        }), GraphQLQueriesMap.genericQuery.name, instance)
+        }), GraphQLQueriesMap.genericQuery.name)
     return (res?.data?.[GraphQLQueriesMap.genericQuery.name])
 }
 
@@ -364,10 +364,10 @@ async function mutateGraphQL(q: any, queryName: string) {
     }
 }
 
-async function queryGraphQL(q: any, queryName: string, instance?: string) {
+async function queryGraphQL(q: any, queryName: string,) {
     try {
         store.dispatch(showCompAppLoader({
-            instance: instance || CompInstances.compAppLoader,
+            instance: CompInstances.compAppLoader,
             isVisible: true
         }))
         const client = getApolloClient()
@@ -382,7 +382,7 @@ async function queryGraphQL(q: any, queryName: string, instance?: string) {
         return (result)
     } finally {
         store.dispatch(showCompAppLoader({
-            instance: instance || CompInstances.compAppLoader,
+            instance: CompInstances.compAppLoader,
             isVisible: false
         }))
     }
@@ -501,7 +501,7 @@ function showHideModalDialogA({ className, isOpen, title = '', element = <></>, 
     ibukiEmit(IbukiMessages["SHOW-MODAL-DIALOG-A"], args)
 }
 
-function showHideModalDialogB({className, isOpen, title = '', element = <></>, size }: ShowHideModalDialogType) {
+function showHideModalDialogB({ className, isOpen, title = '', element = <></>, size }: ShowHideModalDialogType) {
 
     const args: ShowModalDialogMessageArgsType = {
         className: className,
@@ -618,7 +618,7 @@ type ShowModalDialogMessageArgsType = {
     isOpen: boolean
     element?: ReactElement
     instanceName: string
-    size?: 'sm' | 'md' | 'lg' |'xl'
+    size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
 export type DbNameDbParamsType = {

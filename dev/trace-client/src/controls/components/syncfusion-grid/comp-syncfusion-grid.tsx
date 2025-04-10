@@ -28,7 +28,6 @@ export function CompSyncFusionGrid({
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
     hasIndexColumn = false,
-    hasRemoveButton = false,
     height,
     indexColumnWidth = 40,
     isLoadOnInit = true,
@@ -39,9 +38,11 @@ export function CompSyncFusionGrid({
     onDelete = undefined,
     onEdit = undefined,
     onPreview = undefined,
+    onRemove = undefined,
     onRowDataBound,
     previewColumnWidth,
     queryCellInfo,
+    removeButtonWidth = 40,
     rowHeight,
     rowSelected,
     sqlArgs,
@@ -54,22 +55,23 @@ export function CompSyncFusionGrid({
             aggregates
             , buCode
             , columns
+            , dataSource
             , dbName
             , dbParams
             , deleteColumnWidth
             , editColumnWidth
-            // , gridRef
             , indexColumnWidth
             , instance
             , hasCheckBoxSelection
             , hasIndexColumn
-            , hasRemoveButton
             , isLoadOnInit
             , loadData
             , onDelete
             , onEdit
             , onPreview
+            , onRemove
             , previewColumnWidth
+            , removeButtonWidth
             , sqlId
             , sqlArgs,
         })
@@ -136,7 +138,6 @@ export function CompSyncFusionGrid({
             searchSettings={searchOptions}
             rowSelected={rowSelected}
             selectionSettings={{ type: gridDragAndDropSettings?.selectionType || 'Single', }}
-
         >
             <ColumnsDirective>
                 {getColumnDirectives()}
@@ -198,6 +199,7 @@ export type CompSyncFusionGridType = {
     deleteColumnWidth?: number
     editColumnWidth?: number
     editSettings?: {
+        allowDeleting?: boolean
         allowEditing: boolean
         mode: 'Batch' | 'Dialog' | 'Normal'
         showConfirmDialog?: boolean
@@ -205,7 +207,7 @@ export type CompSyncFusionGridType = {
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean
     hasIndexColumn?: boolean
-    hasRemoveButton?: boolean
+    // hasRemoveButton?: boolean
     height?: string
     indexColumnWidth?: number
     instance: string
@@ -216,9 +218,11 @@ export type CompSyncFusionGridType = {
     onDelete?: (id: string, isUsed?: boolean | undefined) => void
     onEdit?: (args: any) => void
     onPreview?: (args: any) => void
+    onRemove?: (args: any) => void
     onRowDataBound?: (args: RowDataBoundEventArgs) => void
     previewColumnWidth?: number
     queryCellInfo?: (args: any) => void
+    removeButtonWidth?: number
     rowHeight?: number
     rowSelected?: (args: any) => void
     sqlArgs?: GraphQLQueryArgsType // SqlArgsType
