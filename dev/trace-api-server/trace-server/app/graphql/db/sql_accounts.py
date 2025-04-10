@@ -1200,8 +1200,8 @@ class SqlAccounts:
     get_current_orders = """
         with "tempMonth" as (values(EXTRACT(MONTH FROM CURRENT_DATE)::int )),
         "currentMonth" as (values(CASE WHEN (table "tempMonth") in(1,2,3) THEN (table "tempMonth") + 12 ELSE (table "tempMonth") END)),
-        "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-        --"branchId" as (values(1)), "finYearId" as (values (2025)),
+        "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),"noOfRows" as (values (%(noOfRows)s::int)),
+        --"branchId" as (values(1)), "finYearId" as (values (2025)), "noOfRows" as (values (100)),
 
         "cteStock" as (
             select * from get_stock_on_date((table "branchId"), (table "finYearId"), CURRENT_DATE)
@@ -1285,7 +1285,7 @@ class SqlAccounts:
                 CASE WHEN "clos" = 0 THEN true ELSE false END as "isUrgent"
 				from cte5 where ("finalOrder" > 0) and "clos" >= 0
                     ORDER BY "brandName", "catName", "label" 
-		) select * from cte6
+		) select * from cte6 LIMIT (table "noOfRows")
     """
     get_extBusinessContactsAccM = """
     select * 

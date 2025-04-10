@@ -27,10 +27,8 @@ export function useCompSyncFusionGrid({
     dbParams,
     deleteColumnWidth,
     editColumnWidth,
-    //   gridRef,
     hasCheckBoxSelection,
     hasIndexColumn,
-    // hasRemoveButton,
     indexColumnWidth,
     instance,
     isLoadOnInit,
@@ -44,7 +42,6 @@ export function useCompSyncFusionGrid({
     sqlId,
     sqlArgs
 }: CompSyncFusionGridType) {
-    // const context: GlobalContextType = useContext(GlobalContext)
     const selectedLastNoOfRows: any = useSelector(
         (state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows
     );

@@ -47,7 +47,9 @@
 		- Grid remove row button
 		- Search problem in template columns
 		- current orders
-			- last no of rows not working
+													- last no of rows not working
+			- Check correctness
+			- Branch incorporation
 		- Products list
 		- Purchase price variation
 		- Purchases
