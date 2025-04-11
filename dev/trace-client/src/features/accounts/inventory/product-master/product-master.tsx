@@ -49,6 +49,9 @@ export function ProductMaster() {
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
                 sqlId={SqlIdsMap.getAllProducts}
+                sqlArgs={{
+                    isActive: null
+                }}
             />
         </CompAccountsContainer>
     );
@@ -88,7 +91,7 @@ export function ProductMaster() {
             { field: 'info', headerText: 'Details', type: 'string', width: 250 },
             { field: 'id', headerText: 'ID', type: 'number', width: 80, format: 'N0', textAlign: 'Right', isPrimaryKey: true, },
             { field: 'upcCode', headerText: 'UPC', type: 'string', width: 90 },
-            { field: 'isActive', headerText: 'Active', type: 'boolean', width: 80, template: (props: any) => <input type='checkbox' checked={props.isActive} readOnly /> }
+            { field: 'isActive', headerText: 'Active', type: 'boolean', width: 80, template: (props: any) => <input type='checkbox' checked={props.isActive} aria-label="isActive" readOnly /> }
         ]);
     }
 

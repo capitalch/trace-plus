@@ -601,6 +601,8 @@ class SqlAccounts:
     """
 
     get_all_products = """
+        with "isActive" as (values(%(isActive)s::boolean))
+        --with "isActive" as (values(true::boolean))
         SELECT 
             ROW_NUMBER() OVER (ORDER BY c."catName", b."brandName", p."label") AS "index",
             p."id" AS "id",
@@ -628,7 +630,8 @@ class SqlAccounts:
         INNER JOIN "CategoryM" c ON c."id" = p."catId"
         INNER JOIN "UnitM" u ON u."id" = p."unitId"
         INNER JOIN "BrandM" b ON b."id" = p."brandId"
-        ORDER BY c."catName", b."brandName", p."label";
+		where coalesce((TABLE "isActive"), p."isActive") = p."isActive"
+        ORDER BY c."catName", b."brandName", p."label"
     """
     
     get_all_products_info_for_product_select = """

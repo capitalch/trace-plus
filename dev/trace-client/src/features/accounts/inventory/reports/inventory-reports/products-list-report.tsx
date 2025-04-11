@@ -1,114 +1,184 @@
-// import { shallowEqual, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
-import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import {
+  CompSyncFusionGrid,
+  SyncFusionGridAggregateType,
+  SyncFusionGridColumnType
+} from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BackToDashboardLink } from "../back-to-dashboard-link";
-// import { RootStateType } from "../../../../../app/store/store";
-// import { selectCompSwitchStateFn } from "../../../../../controls/redux-components/comp-slice";
-// import { CompInstances } from "../../../../../controls/redux-components/comp-instances";
-// import { CompSwitch } from "../../../../../controls/redux-components/comp-switch";
 
 export function ProductsListReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.productsListReport;
-  // const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchAllProductsReport), shallowEqual) || false;
 
-  const {
-    buCode,
-    branchId,
-    dbName,
-    decodedDbParamsObject,
-    finYearId
-  } = useUtilsInfo();
+  const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
 
   return (
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         className="mr-4"
         minWidth="600px"
-        title={title || ''}
+        title={title || ""}
         isPdfExport={true}
         isExcelExport={true}
         isCsvExport={true}
-        isLastNoOfRows={true}
         instance={instance}
         subTitleControl={<BackToDashboardLink />}
       />
 
       <CompSyncFusionGrid
         aggregates={getAggregates()}
+        allowPaging={true}
         buCode={buCode}
         className="mt-4"
         columns={getColumns()}
         dbName={dbName}
         dbParams={decodedDbParamsObject}
-        hasIndexColumn={true}
-        height="calc(100vh - 245px)"
+        height="calc(100vh - 300px)"
         instance={instance}
         isLoadOnInit={false}
-        minWidth="600px"
+        minWidth="900px"
+        pageSettings={{ pageSize: 500, pageSizes: [200, 500, 1000, 2000] }}
         sqlId={SqlIdsMap.getAllProducts}
         sqlArgs={{
-          branchId: branchId,
-          finYearId: finYearId
+          isActive: true
         }}
       />
     </div>
   );
 
   function cleanStringAllowSome(input: string) {
-    if (typeof input !== 'string') return '';
-    return input.replace(/[^a-zA-Z0-9-_ ]/g, '');
+    if (typeof input !== "string") return "";
+    return input.replace(/[^a-zA-Z0-9-_ ]/g, "");
   }
 
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
       {
-        columnName: "productCode",
+        columnName: "info",
         type: "Count",
-        field: "productCode",
+        field: "info",
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">Count: {props.Count}</span>
         )
-      },
+      }
     ];
   }
 
   function getColumns(): SyncFusionGridColumnType[] {
     return [
       {
+        field: "index",
+        headerText: "#",
+        width: 50
+      },
+      {
         field: "productCode",
-        headerText: "Product Code",
-        width: 80,
-        type: "string",
+        headerText: "P Code",
+        width: 90,
+        type: "string"
       },
       {
         field: "catName",
         headerText: "Category",
         width: 100,
-        type: "string",
+        type: "string"
       },
       {
         field: "brandName",
         headerText: "Brand",
         width: 100,
-        type: "string",
+        type: "string"
       },
       {
         field: "label",
         headerText: "Label",
-        width: 100,
-        type: "string",
+        width: 150,
+        type: "string"
       },
       {
         field: "info",
         headerText: "Details",
-        width: 100,
+        width: 200,
         type: "string",
-        valueAccessor: (field: string, data: any) => cleanStringAllowSome(data?.[field])
+        valueAccessor: (field: string, data: any) =>
+          cleanStringAllowSome(data?.[field])
       },
+      {
+        field: "salePrice",
+        headerText: "Sale pr",
+        width: 100,
+        type: "number",
+        textAlign: "Right",
+        format: "N2"
+      },
+      {
+        field: "salePriceGst",
+        headerText: "Sal pr (gst)",
+        width: 100,
+        type: "number",
+        textAlign: "Right",
+        format: "N2"
+      },
+      {
+        field: "maxRetailPrice",
+        headerText: "MRP",
+        width: 100,
+        type: "number",
+        textAlign: "Right",
+        format: "N2"
+      },
+      {
+        field: "dealerPrice",
+        headerText: "Dealer pr",
+        width: 100,
+        type: "number",
+        textAlign: "Right",
+        format: "N2"
+      },
+      {
+        field: "purPrice",
+        headerText: "Pur pr",
+        width: 100,
+        type: "number",
+        textAlign: "Right",
+        format: "N2"
+      },
+      {
+        field: "purPriceGst",
+        headerText: "Pur pr (gst)",
+        width: 100,
+        type: "number",
+        textAlign: "Right",
+        format: "N2"
+      },
+      {
+        field: "hsn",
+        headerText: "HSN",
+        width: 100,
+        type: "number"
+      },
+      {
+        field: "upcCode",
+        headerText: "UPC",
+        width: 100,
+        type: "number"
+      },
+      {
+        field: "gstRate",
+        headerText: "GST (%)",
+        width: 100,
+        type: "number",
+        textAlign: "Right"
+      },
+      {
+        field: "id",
+        headerText: "Pr id",
+        width: 100,
+        type: "number"
+      }
     ];
   }
 }

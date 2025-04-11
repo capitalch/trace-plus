@@ -108,17 +108,12 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
           </div>
         ),
       },
-      // {
-      //   field: "info",
-      //   headerText: "Details",
-      //   width: 80,
-      //   type: "string",
-      //   template: (rowData: any) => (
-      //     <div className="flex gap-2">
-      //       <label>{(rowData.info).replace(/[^a-zA-Z0-9 ]/g, '').trim()}</label>
-      //     </div>
-      //   ),
-      // },
+      { // important for search to work on this info field
+        field: "info",
+        width: 0,
+        visible: false,
+        type: "string",
+      },
       {
         field: "clos",
         headerText: "Stock",
