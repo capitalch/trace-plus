@@ -57,6 +57,11 @@ export function ProductsListReport({ title }: { title?: string }) {
     </div>
   );
 
+  function cleanStringAllowSome(input: string) {
+    if (typeof input !== 'string') return '';
+    return input.replace(/[^a-zA-Z0-9-_ ]/g, '');
+  }
+
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
       {
@@ -102,6 +107,7 @@ export function ProductsListReport({ title }: { title?: string }) {
         headerText: "Details",
         width: 100,
         type: "string",
+        valueAccessor: (field: string, data: any) => cleanStringAllowSome(data?.[field])
       },
     ];
   }

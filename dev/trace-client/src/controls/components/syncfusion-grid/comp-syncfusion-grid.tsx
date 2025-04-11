@@ -77,7 +77,7 @@ export function CompSyncFusionGrid({
         })
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
     const maxWidth = isSideBarOpenSelector ? 'calc(100vw - 240px - 12px)' : 'calc(100vw - 62px)'
-    
+
 
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionGrid[instance]) {
@@ -257,6 +257,7 @@ export type SyncFusionGridColumnType = {
     template?: any
     textAlign?: 'Center' | 'Justify' | 'Left' | 'Right'
     type?: 'string' | 'number' | 'boolean' | 'date' | 'datetime'
+    valueAccessor?: (field: string, data: any) => string
     visible?: boolean
     width?: number
 }

@@ -48,8 +48,8 @@
 		- Search problem in template columns
 		- current orders
 													- last no of rows not working
-			- Check correctness
-			- Branch incorporation
+													- Check correctness
+													- Branch incorporation
 		- Products list
 		- Purchase price variation
 		- Purchases

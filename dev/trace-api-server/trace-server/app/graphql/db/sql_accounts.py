@@ -1198,99 +1198,121 @@ class SqlAccounts:
             ) as "jsonResult"
     """
     get_current_orders = """
-        with "tempMonth" as (values(EXTRACT(MONTH FROM CURRENT_DATE)::int )),
-        "currentMonth" as (values(CASE WHEN (table "tempMonth") in(1,2,3) THEN (table "tempMonth") + 12 ELSE (table "tempMonth") END)),
-        "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),"noOfRows" as (values (%(noOfRows)s::int)),
-        --"branchId" as (values(1)), "finYearId" as (values (2025)), "noOfRows" as (values (100)),
+        WITH "branchId" AS (VALUES (%(branchId)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "noOfRows"  AS (VALUES (%(noOfRows)s::int)),
+        --with "branchId" as (values(1)), "finYearId" as (values (2024)), "noOfRows" as (values (100)),
+        -- Get current stock status
+            "cteStock" AS (
+                SELECT * 
+                FROM get_stock_on_date((TABLE "branchId"), (TABLE "finYearId"), CURRENT_DATE)
+            ),
 
-        "cteStock" as (
-            select * from get_stock_on_date((table "branchId"), (table "finYearId"), CURRENT_DATE)
-        ),
+        -- Fetch recent sales transactions for last 4 months
+            cte1 AS (
+                SELECT 
+                    s."productId", 
+                    SUM(s."qty") AS "qty", 
+                    (CURRENT_DATE - h."tranDate"::DATE) AS "daysOld"
+                FROM "TranH" h
+                JOIN "TranD" d ON h."id" = d."tranHeaderId"
+                JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+                WHERE 
+                    h."tranTypeId" = 4 
+                    AND h."tranDate" >= (CURRENT_DATE - INTERVAL '4 months')
+                    AND (COALESCE((TABLE "branchId"), h."branchId") = h."branchId")
+                GROUP BY s."productId", h."tranDate"
+            ),
 
-        cte1 as (
-            select "productId", SUM("qty") "qty", (CURRENT_DATE - "tranDate"::date) as "daysOld"
-            from "TranH" h
-                join "TranD" d
-                    on h."id" = d."tranHeaderId"
-                join "SalePurchaseDetails" s
-                    on d."id" = s."tranDetailsId"
-            where "tranTypeId" = 4 
-                and (((table "currentMonth") - EXTRACT(MONTH from "tranDate")::int) <= 4 ) 
-                and "branchId" = (table "branchId")
-            group by "productId", "tranDate"
-                order by "daysOld"
-        )
-		, cte2 as (
-			select cte1.*,
-			CASE
-				WHEN "daysOld" between 0 and 30 THEN 'days0_30'
-                WHEN "daysOld" between 31 and 60 THEN 'days31_60'
-                WHEN "daysOld" between 61 and 90 THEN 'days61_90'
-				ELSE 'days90+'
-			END as "daysLabel",
-			CASE
-				WHEN "daysOld" between 0 and 30 THEN 1.5/4
-                WHEN "daysOld" between 31 and 60 THEN 1.25/4
-                WHEN "daysOld" between 61 and 90 THEN 0.75/4
-				ELSE 0.5/4
-			END as "weight"
-			from cte1
-		)
-		, cte3 as (
-			select "productId", SUM("qty") as "qty", "daysLabel", "weight"
-				from cte2
-				GROUP BY "productId", "daysLabel", "weight"
-				order by "daysLabel"
-		)
-		, cte4 as (
-			select "productId", SUM("qty"*"weight") "qty", TRUNC(SUM("qty"*"weight"),0) "order"
-				from cte3
-				group by "productId"
-				order by "productId"
-		) --select * from cte4 order by "productId"
-        ,  cte5 as (
-			select c4."productId"
-			, p."productCode"
-			,"qty"
-			, COALESCE("clos"::int,0) as "clos"
-			, b."brandName"
-			, c."catName"
-			, p."label"
-			, ("order" - COALESCE("clos",0)::int) as "finalOrder"
-			, p."info"
-			, "price"
-				from cte4 c4
-					left join "cteStock" s
-						on c4."productId" = s."productId"
-					join "ProductM" p
-						on p."id" = c4."productId"
-					join "BrandM" b
-						on b."id" = p."brandId"
-					join "CategoryM" c
-						on c."id" = p."catId"
-			order by "productId"
-		)
-		, cte6 as (
-			select 
-                "productId",
-                "productCode",
-                "brandName", 
-                "catName", 
-                "label",
-                "catName" || ' ' ||  "brandName" || ' ' || "label" as "productDetails",
-                "info", 
-                "clos", 
-                "finalOrder", 
-                "price" * "finalOrder" as "orderValue", 
-                CASE WHEN "clos" = 0 THEN true ELSE false END as "isUrgent"
-				from cte5 where ("finalOrder" > 0) and "clos" >= 0
-                    ORDER BY "brandName", "catName", "label" 
-		) select * from cte6 LIMIT (table "noOfRows")
+        -- Categorize sales by ageing and apply weighted priority
+            cte2 AS (
+                SELECT 
+                    cte1.*,
+                    CASE
+                        WHEN "daysOld" BETWEEN 0 AND 30 THEN 'days0_30'
+                        WHEN "daysOld" BETWEEN 31 AND 60 THEN 'days31_60'
+                        WHEN "daysOld" BETWEEN 61 AND 90 THEN 'days61_90'
+                        ELSE 'days90+'
+                    END AS "daysLabel",
+                    CASE
+                        WHEN "daysOld" BETWEEN 0 AND 30 THEN 1.5 / 4
+                        WHEN "daysOld" BETWEEN 31 AND 60 THEN 1.25 / 4
+                        WHEN "daysOld" BETWEEN 61 AND 90 THEN 0.75 / 4
+                        ELSE 0.5 / 4
+                    END AS "weight"
+                FROM cte1
+            ),
+
+        -- Sum weighted quantities per product per age group
+            cte3 AS (
+                SELECT 
+                    "productId", 
+                    SUM("qty") AS "qty", 
+                    "daysLabel", 
+                    "weight"
+                FROM cte2
+                GROUP BY "productId", "daysLabel", "weight"
+            ),
+
+        -- Compute final suggested order quantity using weight
+            cte4 AS (
+                SELECT 
+                    "productId", 
+                    SUM("qty" * "weight") AS "qty", 
+                    TRUNC(SUM("qty" * "weight"), 0) AS "order"
+                FROM cte3
+                GROUP BY "productId"
+            ),
+
+        -- Enrich product info and compute difference from current stock
+            cte5 AS (
+                SELECT 
+                    c4."productId",
+                    p."productCode",
+                    c4."qty",
+                    COALESCE(s."clos"::INT, 0) AS "clos",
+                    b."brandName",
+                    c."catName",
+                    p."label",
+                    (c4."order" - COALESCE(s."clos", 0)::INT) AS "finalOrder",
+                    p."info",
+                    "price"
+                FROM cte4 c4
+                LEFT JOIN "cteStock" s ON c4."productId" = s."productId"
+                JOIN "ProductM" p ON p."id" = c4."productId"
+                JOIN "BrandM" b ON b."id" = p."brandId"
+                JOIN "CategoryM" c ON c."id" = p."catId"
+            ),
+
+        -- Build final dataset with extra labels, urgency flag, and value
+            cte6 AS (
+                SELECT 
+                    "productId",
+                    "productCode",
+                    "brandName", 
+                    "catName", 
+                    "label",
+                    "catName" || ' ' || "brandName" || ' ' || "label" AS "productDetails",
+                    "info", 
+                    "clos", 
+                    "finalOrder", 
+                    "price" * "finalOrder" AS "orderValue", 
+                    CASE 
+                        WHEN "clos" = 0 THEN TRUE 
+                        ELSE FALSE 
+                    END AS "isUrgent"
+                FROM cte5
+                WHERE "finalOrder" > 0 AND "clos" >= 0
+            )
+
+        -- Final output with limit
+        SELECT *
+        FROM cte6
+        ORDER BY "brandName", "catName", "label"
+        LIMIT (TABLE "noOfRows")
     """
     get_extBusinessContactsAccM = """
-    select * 
-	    from "ExtBusinessContactsAccM"
-		    where "accId" = %(accId)s
+        select * 
+            from "ExtBusinessContactsAccM"
+                where "accId" = %(accId)s
     """
 
     get_fin_years = """

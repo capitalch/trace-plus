@@ -122,6 +122,7 @@ export function useCompSyncFusionGrid({
                         template={col.template}
                         textAlign={col.textAlign}
                         type={col.type}
+                        valueAccessor={col.valueAccessor}
                         visible={col?.visible}
                         width={col.width}
                     />

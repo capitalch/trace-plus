@@ -9,6 +9,7 @@ import { RootStateType } from "../../../../../app/store/store";
 import { selectCompSwitchStateFn } from "../../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../../controls/redux-components/comp-instances";
 import { CompSwitch } from "../../../../../controls/redux-components/comp-switch";
+import { useEffect } from "react";
 
 export function CurrentOrdersReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.currentOrdersReport;
@@ -17,15 +18,22 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
   const {
     buCode,
     branchId,
-    // context,
+    context,
     dbName,
     decodedDbParamsObject,
     finYearId
   } = useUtilsInfo();
 
+  useEffect(() => { // This block is necessary. Otherwise branch selection not works correctly
+    const loadData = context.CompSyncFusionGrid[instance].loadData
+    if (loadData) {
+      loadData()
+    }
+  }, [isAllBranches])
+
   return <div className="flex flex-col">
     <CompSyncFusionGridToolbar
-      CustomControl={() => <CompSwitch instance={CompInstances.compSwitchCurrentOrdersReport} className="" leftLabel="Curr branch" rightLabel="All branches" toToggleLeftLabel={true} isDisabled={true} />}
+      CustomControl={() => <CompSwitch instance={CompInstances.compSwitchCurrentOrdersReport} className="" leftLabel="Curr branch" rightLabel="All branches" toToggleLeftLabel={true} />}
       className="mr-4"
       minWidth="600px"
       title={title || ''}
@@ -44,7 +52,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
       columns={getColumns()}
       dbName={dbName}
       dbParams={decodedDbParamsObject}
-      hasIndexColumn={true}
+      hasIndexColumn={true} isLoadOnInit={false}
       // hasRemoveButton={true}
       height="calc(100vh - 245px)"
       instance={instance}
