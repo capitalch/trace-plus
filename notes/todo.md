@@ -2,16 +2,17 @@
 																- Super admin clients
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
+- Old Trace
+	- Transfer of closing balance in case of stock journal and branch transfer
+															- Update sql of current orders at server
 - General
-	- Warning: [8840:15064:1215/090856.959:ERROR:CONSOLE(0)] "The source list for Content Security Policy directive 'frame-src' contains a source with an invalid path: '/?ncedge=1&features=-'. The query component, including the '?', will be ignored.", source: about:blank (0)
 	- TreeGrid width not properly managed when screen size comes down
-	- Provide appropriate logging at server
-															- Bottom left User type shows unknown
-	- At logout make sure that redux store is initialized by using redux tools
-	- Accounts
-															- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
-		- When opening balance is not zero show a warning the apening balances do not match
+	- Provide appropriate logging at server											
+	- At logout make sure that redux store is initialized by using redux tools											
+	- When opening balance is not zero show a warning the apening balances do not match
 															- In accounts title, right side show client name in dim
+															- Bottom left User type shows unknown
+															- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
 - Admin
 	- There are some issues related to bu and finyear when a new admin use logs in
 	- Provide client name and client code in the email when new Admin user is created in super admin
@@ -36,12 +37,14 @@
 	- Product master check duplicate UPC code server side validation
 	- current order report: set to place the order to supplier through mail, whatsapp
 	- When BU changes, Branches remain of the old BU. So error and system crash
+	- Inventory transfer closing balance to next year
 													- Migrate to tailwind latest version
 													- Bank reconcillation clear date, remarks not saving
 													- Behave erratic while saving
 													- No green background for altered data
 													- Super admin new client registration error: finYearId
 - Inventory
+	- Check - Transfer of closing balance in case of stock journal and branch transfer
 	- Reports
 													- basic architecture framework and startup
 		- Grid remove row button
