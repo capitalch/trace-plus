@@ -3,7 +3,7 @@
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
 - Old Trace
-	- Transfer of closing balance in case of stock journal and branch transfer
+															- Transfer of closing balance in case of stock journal and branch transfer
 															- Update sql of current orders at server
 - General
 	- TreeGrid width not properly managed when screen size comes down
@@ -37,23 +37,25 @@
 	- Product master check duplicate UPC code server side validation
 	- current order report: set to place the order to supplier through mail, whatsapp
 	- When BU changes, Branches remain of the old BU. So error and system crash
-	- Inventory transfer closing balance to next year
+													
+	- Update function get_stock_on_date in all databases
+													- Inventory transfer closing balance to next year
 													- Migrate to tailwind latest version
 													- Bank reconcillation clear date, remarks not saving
 													- Behave erratic while saving
 													- No green background for altered data
 													- Super admin new client registration error: finYearId
 - Inventory
-	- Check - Transfer of closing balance in case of stock journal and branch transfer
+													- Check - Transfer of closing balance in case of stock journal and branch transfer
 	- Reports
 													- basic architecture framework and startup
-		- Grid remove row button
-		- Search problem in template columns
-		- current orders
+													- Grid remove row button implementation
+													- Search problem in template columns
+												- current orders
 													- last no of rows not working
 													- Check correctness
 													- Branch incorporation
-		- Products list
+												- Products list
 		- Purchase price variation
 		- Purchases
 		- Sales

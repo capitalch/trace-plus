@@ -1,3 +1,8 @@
+# testing Branch Transfer stock transfer
+- create a branch transfer
+- check it in summary stock
+- Do op balance transfer
+- Check the balance
 # Product categories
 - Buttons
     - Child         : Only when isLeaf = false

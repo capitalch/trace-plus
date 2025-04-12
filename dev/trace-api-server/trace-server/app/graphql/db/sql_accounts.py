@@ -86,6 +86,38 @@ class SqlAccounts:
 				and "id" <> (table "id")))
     """
 
+    execute_stock_transfer = """
+    --with "branchId" as (values (1)), "finYearId" as (values (2022)), "closingDate" as (values ('2023-03-31')),
+        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "closingDate" as (values (%(closingDate)s)),
+        cte1 as (
+            select "productId", (table "branchId") "branchId", ((table "finYearId") + 1) "finYearId", "clos" "qty", "price" "openingPrice", "lastPurchaseDate"
+                from get_stock_on_date((table "branchId"), (table "finYearId"), (table "closingDate")::date)
+        ),
+        cte2 as (
+            insert into "ProductOpBal" ("productId", "branchId", "finYearId", "qty", "openingPrice", "lastPurchaseDate")
+                select "productId", "branchId", "finYearId", "qty", COALESCE("openingPrice",0), COALESCE("lastPurchaseDate", (table "closingDate"):: date)
+                    from cte1 where not exists(
+                        select 1 from "ProductOpBal"
+                            where "productId" = cte1."productId"
+                                and "branchId" = cte1."branchId"
+                                and "finYearId" = cte1."finYearId"
+                    )
+                returning id
+        ),
+        cte_update as (
+            update "ProductOpBal" p
+                set qty = cte1.qty,
+                "openingPrice" = COALESCE(cte1."openingPrice", 0),
+                "lastPurchaseDate" = COALESCE(cte1."lastPurchaseDate", (table "closingDate"):: date)
+            from cte1
+            where
+                p."productId" = cte1."productId"
+                and p."branchId" = cte1."branchId"
+                and p."finYearId" = cte1."finYearId"
+        )
+        select * from cte2
+    """
+
     get_account_balance = """
      with "accId" as (values (%(accId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int))
      --with "accId" AS (VALUES (117::int)), "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int))
