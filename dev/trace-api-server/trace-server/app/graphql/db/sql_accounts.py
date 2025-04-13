@@ -1544,6 +1544,79 @@ class SqlAccounts:
                 ) as "jsonResult"
     """
 
+    get_purchase_price_variation = """
+        --with "branchId" as (values (1)), "finYearId" as (values (2024)), "brandId" as (values (null::int)), "catId" as (values (null::int)),"tagId" as (values (null::int)),
+        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "brandId" as (values (%(brandId)s::int)), "catId" as (values (%(catId)s::int)),"tagId" as (values (%(tagId)s::int)),
+        selected_products AS (
+                SELECT *
+                FROM get_products_on_brand_category_tag(
+                (TABLE "brandId"),
+                (TABLE "catId"),
+                (TABLE "tagId")
+            )
+        ),
+
+        recent_transactions as (
+            select distinct on("productId", "price", "accId") "productId", 
+                "tranDate", 
+                ("price" - "discount") price, 
+                "qty", 
+                h."id" as "tranHeaderId"
+                from "TranH" h
+                    join "TranD" d
+                        on h."id" = d."tranHeaderId"
+                    join "SalePurchaseDetails" s
+                        on d."id" = s."tranDetailsId"
+                where "branchId" = (table "branchId") 
+                    and "finYearId" = (table "finYearId")
+                    and "tranTypeId" = 5
+                order by "productId","price", "accId", "tranDate"),
+                
+        customer_info as (
+            select h."id" as "tranHeaderId", 
+                "accName", 
+                "contactName", 
+                "mobileNumber", 
+                "email"
+            from "TranH" h
+                join "TranD" d
+                    on h."id" = d."tranHeaderId"
+                join "AccM" a
+                    on a."id" = d."accId"
+                join "ExtBusinessContactsAccM" e
+                    on a."id" = e."accId"
+            where "tranTypeId" = 5),
+            
+        multi_transactions as (
+            select "productId", COUNT("productId") as "productCount"
+                from recent_transactions
+            GROUP BY "productId"
+            HAVING (COUNT("productId") > 1)),
+            
+        enriched_data AS (
+            select p."productCode",
+                b."brandName", 
+                c."catName", 
+                p."label",
+                p."info",
+                t."tranDate", 
+                t."price", 
+                t."qty", 
+                i."accName", 
+                i."contactName", 
+                i."mobileNumber", 
+                i."email"
+            from recent_transactions t
+            JOIN multi_transactions m ON t."productId" = m."productId"
+            JOIN customer_info i ON t."tranHeaderId" = i."tranHeaderId"
+            JOIN selected_products p ON p."id" = t."productId"
+            JOIN "CategoryM" c ON c."id" = p."catId"
+            JOIN "BrandM" b ON b."id" = p."brandId")
+            
+        select * from enriched_data 
+        order by "brandName","catName","label", "productCode", "tranDate"
+    """
+
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"

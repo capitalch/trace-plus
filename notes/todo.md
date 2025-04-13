@@ -1,8 +1,17 @@
 ## Bug fix
+	- Accounts
+		- Categories: Change parent UI out of place
+		- Final reports showing NaN at bottom
+		- Home machine accounts master not working
+	- Admin
+		- There are some issues related to bu and finyear when a new admin use logs in
+		- Provide client name and client code in the email when new Admin user is created in super admin
+		- When a new / update BU or Fy then it should be immediately updated to accounts info
+		- When admin user logs in: From db get physical BU's and prompt to add if not present
 																- Super admin clients
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
-- Old Trace
+														- Old Trace
 															- Transfer of closing balance in case of stock journal and branch transfer
 															- Update sql of current orders at server
 - General
@@ -13,11 +22,8 @@
 															- In accounts title, right side show client name in dim
 															- Bottom left User type shows unknown
 															- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
-- Admin
-	- There are some issues related to bu and finyear when a new admin use logs in
-	- Provide client name and client code in the email when new Admin user is created in super admin
-	- When a new / update BU or Fy then it should be immediately updated to accounts info
-	- When admin user logs in: From db get physical BU's and prompt to add if not present
+														- Admin
+	
 															- Admin, Super admin menu all grids bottom summary rowHeight to be made undefined, so that it becomes proper height summary
 															- Show client name in admin screens
 															- In Accounts Info modal windows title should be aligned with grid
@@ -57,6 +63,14 @@
 													- Branch incorporation
 												- Products list
 		- Purchase price variation
+			- all branches / this branch
+			- populate grid
+				- Sql
+				- filters
+				- server function rebuild
+			- Sliding pane UI
+				- populate controls
+			- toolbar ui
 		- Purchases
 		- Sales
 		- Stock summary

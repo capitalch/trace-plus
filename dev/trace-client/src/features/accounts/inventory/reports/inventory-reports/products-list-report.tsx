@@ -38,7 +38,7 @@ export function ProductsListReport({ title }: { title?: string }) {
         height="calc(100vh - 300px)"
         instance={instance}
         isLoadOnInit={false}
-        minWidth="900px"
+        minWidth="600px"
         pageSettings={{ pageSize: 500, pageSizes: [200, 500, 1000, 2000] }}
         sqlId={SqlIdsMap.getAllProducts}
         sqlArgs={{

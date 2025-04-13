@@ -9,7 +9,7 @@ import { IconStockSummary } from "../../../../controls/icons/report-icons/icon-s
 import { IconStockTransactions } from "../../../../controls/icons/report-icons/icon-stock-transactions"
 import { CurrentOrdersReport } from "./inventory-reports/current-orders-report"
 import { ProductsListReport } from "./inventory-reports/products-list-report"
-import { PurchasePriceVariationReport } from "./inventory-reports/purchase-price-variation-report"
+import { PurchasePriceVariationReport } from "./inventory-reports/purchase-price-variation-report/purchase-price-variation-report"
 import { PurchasesReport } from "./inventory-reports/purchases-report"
 import { SalesReport } from "./inventory-reports/sales-report"
 import { StockSummaryReport } from "./inventory-reports/stock-summary-report"

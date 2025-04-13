@@ -7,7 +7,7 @@ TagM: id, tagName
 As evident the table CategoryM is hierarchical table having parentId and tagId can be associated at any level
 Create query which takes input of catId, brandId, tagId. Only one of these is not null.
 Query returns all the id's from ProductM which is associated with not null value of catId or brandId or tagId. If all are null then return all product id's
-Not that if catId is not null it means all leaf categories for that category in hierarchical manner incorporating all associated product. Similarly for tagId
+Note that if catId is not null it means all leaf categories for that category in hierarchical manner incorporating all associated product. Similarly for tagId
 
 # Working query
 
