@@ -62,6 +62,7 @@ import { BranchTransferForm } from './features/Misc/branch-transfer-form'
 import { TabExample } from './features/Misc/tabs/tab-example'
 import BranchTransferForm1 from './features/Misc/branch-transfer-form1'
 import { SelectedRowInTable1 } from './features/Misc/selected-row-in-table1'
+import FilterControl from './features/Misc/tabs/filter-control'
 
 
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
@@ -122,7 +123,7 @@ function App() {
       {/* <KeyToJson />  */}
       {/* <GridDragAndDrop /> */}
       {/* <TreeGrid2 /> */}
-      <SyncfusionGrid />
+      {/* <SyncfusionGrid /> */}
       {/* <InjectSummary /> */}
       {/* <SlidingPaneViewer /> */}
       {/* <EditGrid /> */}
@@ -137,6 +138,7 @@ function App() {
       {/* <BranchTransferForm /> */}
       {/* <TabExample /> */}
       {/* <SelectedRowInTable1 /> */}
+      <FilterControl />
     </GlobalContext.Provider>
   )
 }
