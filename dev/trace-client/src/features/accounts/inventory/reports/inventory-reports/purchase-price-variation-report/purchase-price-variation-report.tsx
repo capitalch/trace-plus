@@ -9,7 +9,7 @@ import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { BackToDashboardLink } from "../../back-to-dashboard-link";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
-import { PurchasePriceVariationToolbarCustomControl } from "./purchase-price-variation-toolbar-custom-control";
+import { PurchasePriceVariationToolbarButton } from "./purchase-price-variation-toolbar-button";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
@@ -34,7 +34,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
   return (
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
-        CustomControl={() => <PurchasePriceVariationToolbarCustomControl />}
+        CustomControl={() => <PurchasePriceVariationToolbarButton />}
         className="mr-4"
         minWidth="600px"
         title={title || ""}

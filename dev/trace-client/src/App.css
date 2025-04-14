@@ -20,6 +20,11 @@
 
 @import 'tailwindcss';
 
+/* Prime react */
+/* @import 'primereact/resources/themes/lara-light-blue/theme.css';  */
+/* @import 'primereact/resources/primereact.min.css';                */
+/* @import 'primeicons/primeicons.css';  */
+
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
 
@@ -148,10 +153,15 @@
   padding-right: '40px' !important;
 }
 
-/* React sliding pane title */
-/* .custom-pane .slide-pane__title-wrapper {
-  background: linear-gradient(135deg, #6b73ff, #000dff);
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-} */
+/* Following works in PrimeReact */
+/* Custom styles for TreeSelect */  
+.custom-tree-select {  
+  @apply border border-gray-300 rounded-md; /* Tailwind example */  
+}  
+
+/* You can further customize the TreeSelect component by targeting its inner elements */  
+.custom-tree-select .p-treeselect {  
+  @apply bg-white text-gray-700; /* Example Tailwind styles */  
+}  
+
+/* Additional custom styles for your dropdown, input, and other elements */  

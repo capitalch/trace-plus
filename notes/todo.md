@@ -3,6 +3,10 @@
 		- Categories: Change parent UI out of place
 		- Final reports showing NaN at bottom
 		- Home machine accounts master not working
+		- Bank recon
+			- HDFC bank online
+				- balance is not reflecting correctly: running total is wrong
+				- 555000 is twice. Many items are twice
 	- Admin
 		- There are some issues related to bu and finyear when a new admin use logs in
 		- Provide client name and client code in the email when new Admin user is created in super admin

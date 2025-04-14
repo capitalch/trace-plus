@@ -1,7 +1,7 @@
 import SlidingPane from "react-sliding-pane";
 import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
 import { useState } from "react";
-export function PurchasePriceVariationToolbarCustomControl({
+export function PurchasePriceVariationToolbarButton({
   className
 }: {
   className?: string;

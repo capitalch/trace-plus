@@ -61,6 +61,7 @@ export const SqlIdsMap = {
     "get_all_products_info_for_product_select",
   getAllStockJournals: "get_all_stock_journals",
   getBankRecon: "get_bank_recon",
+  getBrandsCategoriesTags: "get_brands_categories_tags",
   getBrandsCategoriesUnits: "get_brands_categories_units",
   getCurrentOrders: "get_current_orders",
   getExtBusinessContactsAccM: "get_extBusinessContactsAccM",

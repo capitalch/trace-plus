@@ -327,34 +327,6 @@ class SqlAccounts:
           "accType", "accLeaf", "accClass", "accName"
     """
 
-    get_brands_categories_units = """
-        with cte1 as (
-            SELECT "id", "brandName"
-	 			from "BrandM" order by "brandName"
-        ),
-        cte2 as (
-            select "id", "catName" , (
-				select "catName" from "CategoryM"
-					where id = c."parentId"
-			) as "parent"
-                from "CategoryM" c
-					where "isLeaf" = true order by "catName"
-        ),
-		cte22 as (
-			select "id", "catName" || ' (' || "parent" || ')' as "catName"
-				from cte2
-		),
-        cte3 as (
-            select "id", "unitName" from "UnitM" order by "unitName"
-        )
-        SELECT
-            json_build_object(
-                'brands', (SELECT json_agg(a) from cte1 a)
-                , 'categories', (SELECT json_agg(b) from cte22 b)
-                , 'units',(SELECT json_agg(c) FROM cte3 c)
-            ) as "jsonResult"
-    """
-
     get_all_banks = """
         select a."id" as "accId", "accName"
             from "AccM" a 
@@ -665,7 +637,7 @@ class SqlAccounts:
 		where coalesce((TABLE "isActive"), p."isActive") = p."isActive"
         ORDER BY c."catName", b."brandName", p."label"
     """
-    
+
     get_all_products_info_for_product_select = """
             --with "branchId" as (values(1)), "finYearId" as (values (2024)),
             with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
@@ -891,7 +863,7 @@ class SqlAccounts:
         and "branchId" = (table "branchId")
         order by "tranDate" DESC, "id" DESC LIMIT (table "noOfRows")
     """
-    
+
     get_all_transactions = """
         --WITH "noOfRows" AS (VALUES (1000::int)), "tranTypeId" AS (VALUES (null::int)), "dateFormat" AS (VALUES ('dd/MM/yyyy'::text)), "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)), "startDate" AS (VALUES ('2024-04-01'::date)), "endDate" AS (VALUES ('2025-03-31'::date)),"dateType" AS (VALUES ('entryDate'::text))
         with "noOfRows" as (values (%(noOfRows)s::int)),"tranTypeId" as (values (%(tranTypeId)s::int)), "dateFormat" as (values (%(dateFormat)s::text)), "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "dateType" AS (values (%(dateType)s::text))
@@ -1176,6 +1148,54 @@ class SqlAccounts:
 		select 
 			(select "branchCode" from "BranchM" where "id" = (table "branchId") ) as "branchCode",
 			(select "tranCode" from "TranTypeM" where "id" = (table "tranTypeId")) as "tranCode"
+    """
+
+    get_brands_categories_tags = """
+        with cte1 as(
+			select "id", "brandName"
+				from "BrandM"
+					order by "brandName"
+		), cte2 as (
+			select "id", "catName", "parentId", "isLeaf"
+				from "CategoryM"
+					order by "catName"
+		), cte3 as (
+			select "id", "tagName"
+				from "TagsM"
+					order by "tagName"
+		) select json_build_object(
+			'brands', (select json_agg(a) from cte1 a),
+			'categories',(select json_agg(b) from cte2 b),
+			'tags',(select json_agg(c) from cte3 c)
+		) as "jsonResult"
+    """
+
+    get_brands_categories_units = """
+        with cte1 as (
+            SELECT "id", "brandName"
+	 			from "BrandM" order by "brandName"
+        ),
+        cte2 as (
+            select "id", "catName" , (
+				select "catName" from "CategoryM"
+					where id = c."parentId"
+			) as "parent"
+                from "CategoryM" c
+					where "isLeaf" = true order by "catName"
+        ),
+		cte22 as (
+			select "id", "catName" || ' (' || "parent" || ')' as "catName"
+				from cte2
+		),
+        cte3 as (
+            select "id", "unitName" from "UnitM" order by "unitName"
+        )
+        SELECT
+            json_build_object(
+                'brands', (SELECT json_agg(a) from cte1 a)
+                , 'categories', (SELECT json_agg(b) from cte22 b)
+                , 'units',(SELECT json_agg(c) FROM cte3 c)
+            ) as "jsonResult"
     """
 
     get_brands_on_catId = """
@@ -1479,7 +1499,7 @@ class SqlAccounts:
                 and p."brandId" = (table "brandId")
             order by "label"
     """
-    
+
     get_product_on_product_code_upc = """
         with "productCodeOrUpc" as (values(%(productCodeOrUpc)s))
         --with "productCodeOrUpc" as (values('1063'))
@@ -1830,7 +1850,7 @@ class SqlAccounts:
             AND "branchId" = (table "branchId")
             AND "tranTypeId" = (table "tranTypeId")
     """
-    
+
     insert_product = """
         WITH new_product_code AS (
             UPDATE "Settings"
