@@ -3,13 +3,20 @@ import { CompReactSelect } from "../../../../../../controls/components/comp-reac
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
-import { DropDownTreeComponent, FieldsModel } from "@syncfusion/ej2-react-dropdowns";
+import {
+  DropDownTreeComponent,
+  FieldsModel
+} from "@syncfusion/ej2-react-dropdowns";
 
 export function PurchasePriceVariationFilterControl() {
+  const [, setRefresh] = useState({});
   const [brandOptions, setBrandOptions] = useState<BrandType[]>([]);
   const [tagOptions, setTagOptions] = useState<TagType[]>([]);
-  const [treeData, setTreeData] = useState<TreeNode[]>([])
+  const [treeData, setTreeData] = useState<TreeNode[]>([]);
   const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+
+  const [brandId, setBrandId] = useState<number | null>(null);
+  const [catId, setCatId] = useState<number | null>(1);
 
   useEffect(() => {
     loadAllOptions();
@@ -17,14 +24,13 @@ export function PurchasePriceVariationFilterControl() {
 
   const fields: FieldsModel = {
     dataSource: treeData as any,
-    value: 'id',
-    text: 'name',
-    child: 'child'
-  }
+    value: "id",
+    text: "name",
+    child: "child"
+  };
 
   return (
     <div className="flex flex-col gap-4">
-
       {/* Brands */}
       <label className="flex flex-col font-medium text-primary-800 gap-2">
         <span className="font-bold">Brands</span>
@@ -34,7 +40,7 @@ export function PurchasePriceVariationFilterControl() {
           onChange={handleBrandsOnChange}
           placeHolder="Select brand ..."
           ref={null}
-          selectedValue={null}
+          selectedValue={brandId}
           staticOptions={brandOptions}
         />
       </label>
@@ -43,12 +49,12 @@ export function PurchasePriceVariationFilterControl() {
       <label className="flex flex-col font-medium text-primary-800 gap-2">
         <span className="font-bold">Categories</span>
         <DropDownTreeComponent
-          placeholder="Select category"
+          placeholder="Select category ..."
           fields={fields}
           popupHeight="300px"
-          cssClass="custom-ddt"
           allowFiltering={true}
           filterBarPlaceholder="Search"
+          value={catId as any}
         />
       </label>
 
@@ -65,6 +71,9 @@ export function PurchasePriceVariationFilterControl() {
           staticOptions={tagOptions}
         />
       </label>
+      <button type="button" onClick={() => setCatId(3)}>
+        Test
+      </button>
     </div>
   );
 
@@ -78,6 +87,7 @@ export function PurchasePriceVariationFilterControl() {
 
   function handleTagsOnChange(selectedTag: TagType) {
     console.log(selectedTag);
+    setBrandId(null);
   }
 
   async function loadAllOptions() {
@@ -90,6 +100,14 @@ export function PurchasePriceVariationFilterControl() {
       });
       const jsonResult: JsonResultType = res?.[0]?.jsonResult;
       if (jsonResult) {
+        jsonResult.brands?.unshift({ brandName: "All brands", id: null });
+        jsonResult.tags.unshift({ tagName: "All tags", id: null });
+        jsonResult.categories.unshift({
+          catName: "All categoris",
+          id: null,
+          isLeaf: true,
+          parentId: null
+        });
         setBrandOptions(jsonResult?.brands || []);
         setTagOptions(jsonResult?.tags || []);
         buildHierarchicalTree(jsonResult?.categories || []);
@@ -101,7 +119,7 @@ export function PurchasePriceVariationFilterControl() {
   }
 
   function buildHierarchicalTree(flatList: CategoryType[]) {
-    const nodeMap = new Map<number, TreeNode>();
+    const nodeMap = new Map<number | null, TreeNode>();
     const roots: TreeNode[] = [];
 
     for (const item of flatList) {
@@ -124,28 +142,27 @@ export function PurchasePriceVariationFilterControl() {
         }
       }
     }
-    setTreeData(roots)
+    setTreeData(roots);
     // return roots;
   }
-
 }
 
 type JsonResultType = {
   brands?: BrandType[];
   categories: CategoryType[];
-  tags: { id: number; tagName: string }[];
+  tags: TagType[];
 };
 
-type BrandType = { id: number; brandName: string };
-type TagType = { id: number; tagName: string };
+type BrandType = { id: number | null; brandName: string };
+type TagType = { id: number | null; tagName: string };
 type CategoryType = {
-  id: number;
+  id: number | null;
   catName: string;
   parentId: number | null;
   isLeaf: boolean;
 };
 type TreeNode = {
-  id: number;
+  id: number | null;
   name: string;
   parentId: number | null;
   hasChildren?: boolean;

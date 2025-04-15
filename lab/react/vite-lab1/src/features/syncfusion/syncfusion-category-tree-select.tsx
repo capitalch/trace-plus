@@ -1,8 +1,8 @@
 // App.tsx or CategoryTreeSelect.tsx
-import React from 'react';
-import { DropDownTreeComponent, FieldSettingsModel, FieldsModel } from '@syncfusion/ej2-react-dropdowns';
-import '@syncfusion/ej2-base/styles/material.css';
-import '@syncfusion/ej2-react-dropdowns/styles/material.css';
+import React, { useState } from 'react';
+import { DropDownTreeComponent, FieldsModel } from '@syncfusion/ej2-react-dropdowns';
+// import '@syncfusion/ej2-base/styles/material.css';
+// import '@syncfusion/ej2-react-dropdowns/styles/material.css';
 
 type CatOption = {
   id: number;
@@ -62,6 +62,8 @@ function buildHierarchicalTree(data: CatOption[]): TreeNode[] {
 export const SyncfusionCategoryTreeSelect: React.FC = () => {
   const treeData = buildHierarchicalTree(catOptions);
 
+  const [value, setValue] = useState<number | string>(2); // default selected node ID
+
   const fields: FieldsModel = {
     dataSource: treeData as any,
     value: 'id',
@@ -79,6 +81,9 @@ export const SyncfusionCategoryTreeSelect: React.FC = () => {
         cssClass="e-outline w-full"
         allowFiltering={true}
         filterBarPlaceholder="Search category"
+        // value={2 as any}
+        // value={value as any}
+        // change={(e) => setValue(e.value)}
       />
     </div>
   );

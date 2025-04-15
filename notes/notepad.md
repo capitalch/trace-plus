@@ -74,3 +74,5 @@ WITH RECURSIVE
     )
 
 SELECT DISTINCT id FROM filtered_products;
+
+# Sider claude
