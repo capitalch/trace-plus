@@ -6,24 +6,19 @@
 @import '@syncfusion/ej2-navigations/styles/bootstrap.css' layer(base);
 @import '@syncfusion/ej2-popups/styles/bootstrap.css' layer(base);
 @import '@syncfusion/ej2-splitbuttons/styles/bootstrap.css' layer(base);
+
 @import '@syncfusion/ej2-react-grids/styles/bootstrap.css' layer(base);
-@import '../node_modules/@syncfusion/ej2-react-inputs/styles/bootstrap.css'
+@import '@syncfusion/ej2-react-inputs/styles/bootstrap.css'
   layer(base);
 @import '@syncfusion/ej2-react-treegrid/styles/bootstrap.css' layer(base);
 @import '@syncfusion/ej2-react-popups/styles/bootstrap.css' layer(base);
-@import 'primereact/resources/themes/bootstrap4-light-purple/theme.css'
-  layer(base);
-@import 'primereact/resources/primereact.min.css' layer(base);
+@import '@syncfusion/ej2-react-dropdowns/styles/bootstrap.css' layer(base);
 
 /* react-sliding pane */
 @import 'react-sliding-pane/dist/react-sliding-pane.css' layer(base);
 
 @import 'tailwindcss';
 
-/* Prime react */
-/* @import 'primereact/resources/themes/lara-light-blue/theme.css';  */
-/* @import 'primereact/resources/primereact.min.css';                */
-/* @import 'primeicons/primeicons.css';  */
 
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/forms';
@@ -33,6 +28,7 @@
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
+    /* @apply cursor-pointer; */
   }
 }
 
@@ -153,15 +149,7 @@
   padding-right: '40px' !important;
 }
 
-/* Following works in PrimeReact */
-/* Custom styles for TreeSelect */  
-.custom-tree-select {  
-  @apply border border-gray-300 rounded-md; /* Tailwind example */  
-}  
-
-/* You can further customize the TreeSelect component by targeting its inner elements */  
-.custom-tree-select .p-treeselect {  
-  @apply bg-white text-gray-700; /* Example Tailwind styles */  
-}  
-
-/* Additional custom styles for your dropdown, input, and other elements */  
+/* For syncfusion dropDownTreeComponent */
+.e-ddt-hidden {
+  display: none !important;
+}

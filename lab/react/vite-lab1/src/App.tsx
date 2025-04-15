@@ -64,6 +64,7 @@ import BranchTransferForm1 from './features/Misc/branch-transfer-form1'
 import { SelectedRowInTable1 } from './features/Misc/selected-row-in-table1'
 import FilterControl from './features/Misc/tabs/filter-control'
 import CategoryTreeSelect from './features/prime-react/category-tree-select'
+import { SyncfusionCategoryTreeSelect } from './features/syncfusion/syncfusion-category-tree-select'
 
 
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
@@ -141,6 +142,7 @@ function App() {
       {/* <SelectedRowInTable1 /> */}
       {/* <FilterControl /> */}
       <CategoryTreeSelect />
+      <SyncfusionCategoryTreeSelect />
     </GlobalContext.Provider>
   )
 }

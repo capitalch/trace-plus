@@ -111,3 +111,17 @@
   .e-numerictextbox input {
     text-align: right;
 }
+
+
+/* @layer tailwind-base, primereact, tailwind-utilities; */
+
+/* IMPORTANT: In "styled" mode you must add the PrimeReact Theme here. Do NOT include in "unstyled" mode */
+/* @import 'primereact/resources/themes/lara-light-blue/theme.css' layer(primereact); */
+
+/* @layer tailwind-base {
+  @import "tailwindcss/preflight";
+}
+
+@layer tailwind-utilities {
+  @tailwind utilities;
+} */
