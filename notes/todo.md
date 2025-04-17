@@ -68,13 +68,15 @@
 												- Products list
 		- Purchase price variation
 			- all branches / this branch
-			- populate grid
-				- Sql
-				- filters
-				- server function rebuild
-			- Sliding pane UI
-				- populate controls
-			- toolbar ui
+			- filter action across different screens
+			- Rectify category issue
+													- populate grid
+														- Sql
+														- filters
+														- server function rebuild
+													- Sliding pane UI
+														- populate controls
+													- toolbar ui
 		- Purchases
 		- Sales
 		- Stock summary
