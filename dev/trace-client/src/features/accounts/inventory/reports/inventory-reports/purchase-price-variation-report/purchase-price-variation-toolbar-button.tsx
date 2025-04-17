@@ -22,7 +22,7 @@ export function PurchasePriceVariationToolbarButton({
         isOpen={isPaneOpen}
         title="Filter Options"
         onRequestClose={() => setIsPaneOpen(false)}
-        width="400px"
+        width="500px"
       >
         <PurchasePriceVariationFilterControl />
       </SlidingPane>

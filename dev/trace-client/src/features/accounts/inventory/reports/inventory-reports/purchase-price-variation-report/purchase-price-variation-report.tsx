@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
+import { PurchasePriceVariationToolbarFilterDisplay } from "./purchase-price-variation-toolbar-filter-display";
 
 export function PurchasePriceVariationReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.purchasePriceVariationReport;
@@ -34,7 +35,11 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
   return (
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
-        CustomControl={() => <PurchasePriceVariationToolbarButton />}
+        CustomControl={() => <div className="flex items-center gap-6">
+          <PurchasePriceVariationToolbarFilterDisplay />
+          <PurchasePriceVariationToolbarButton />
+        </div>
+        }
         className="mr-4"
         minWidth="600px"
         title={title || ""}

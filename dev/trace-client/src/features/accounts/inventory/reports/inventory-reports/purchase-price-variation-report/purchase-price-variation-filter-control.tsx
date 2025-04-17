@@ -1,170 +1,198 @@
 import { useEffect, useState } from "react";
-import { CompReactSelect } from "../../../../../../controls/components/comp-react-select";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
-import {
-  DropDownTreeComponent,
-  FieldsModel
-} from "@syncfusion/ej2-react-dropdowns";
+import Select from 'react-select'
+import _ from 'lodash'
+import { DdtSelectEventArgs, DropDownTreeComponent } from "@syncfusion/ej2-react-dropdowns";
+import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { resetPurchasePriceVariationFilters, setSelectedBrand, setSelectedCategory, setSelectedTag } from "../../../../accounts-slice";
 
 export function PurchasePriceVariationFilterControl() {
-  const [, setRefresh] = useState({});
-  const [brandOptions, setBrandOptions] = useState<BrandType[]>([]);
-  const [tagOptions, setTagOptions] = useState<TagType[]>([]);
-  const [treeData, setTreeData] = useState<TreeNode[]>([]);
-  const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const dispatch: AppDispatchType = useDispatch()
+    const selectedBrandOption = useSelector((state: RootStateType) => state.accounts.purchasePriceVariationFilterState.selectedBrand);
+    const selectedCatOption = useSelector((state: RootStateType) => state.accounts.purchasePriceVariationFilterState.selectedCategory);
+    const selectedTagOption = useSelector((state: RootStateType) => state.accounts.purchasePriceVariationFilterState.selectedTag);
 
-  const [brandId, setBrandId] = useState<number | null>(null);
-  const [catId, setCatId] = useState<number | null>(1);
+    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const [brandOptions, setBrandOptions] = useState<BrandType[]>([]);
+    // const [selectedBrandOption, setSelectedBrandOption] = useState<BrandType | null>(null)
 
-  useEffect(() => {
-    loadAllOptions();
-  }, []);
+    const [tagOptions, setTagOptions] = useState<TagType[]>([]);
+    // const [selectedTagOption, setSelectedTagOption] = useState<TagType | null>(null)
 
-  const fields: FieldsModel = {
-    dataSource: treeData as any,
-    value: "id",
-    text: "name",
-    child: "child"
-  };
+    const [catOptions, setCatOptions] = useState<CategoryType[]>([]);
+    // const [selectedCatOption, setSelectedCatOption] = useState<CategoryType | null>(null)
 
-  return (
-    <div className="flex flex-col gap-4">
-      {/* Brands */}
-      <label className="flex flex-col font-medium text-primary-800 gap-2">
-        <span className="font-bold">Brands</span>
-        <CompReactSelect
-          optionLabelName="brandName"
-          optionValueName="id"
-          onChange={handleBrandsOnChange}
-          placeHolder="Select brand ..."
-          ref={null}
-          selectedValue={brandId}
-          staticOptions={brandOptions}
-        />
-      </label>
-
-      {/* Categories */}
-      <label className="flex flex-col font-medium text-primary-800 gap-2">
-        <span className="font-bold">Categories</span>
-        <DropDownTreeComponent
-          placeholder="Select category ..."
-          fields={fields}
-          popupHeight="300px"
-          allowFiltering={true}
-          filterBarPlaceholder="Search"
-          value={catId as any}
-        />
-      </label>
-
-      {/* tags */}
-      <label className="flex flex-col font-medium text-primary-800 gap-2">
-        <span className="font-bold">Tags</span>
-        <CompReactSelect
-          optionLabelName="tagName"
-          optionValueName="id"
-          onChange={handleTagsOnChange}
-          placeHolder="Select tag ..."
-          ref={null}
-          selectedValue={null}
-          staticOptions={tagOptions}
-        />
-      </label>
-      <button type="button" onClick={() => setCatId(3)}>
-        Test
-      </button>
-    </div>
-  );
-
-  function handleBrandsOnChange(selectedBrand: BrandType) {
-    console.log(selectedBrand);
-  }
-
-  // function handleCategoriesOnChange(value: any) {
-  //   console.log(value);
-  // }
-
-  function handleTagsOnChange(selectedTag: TagType) {
-    console.log(selectedTag);
-    setBrandId(null);
-  }
-
-  async function loadAllOptions() {
-    try {
-      const res = await Utils.doGenericQuery({
-        buCode: buCode || "",
-        dbName: dbName || "",
-        dbParams: decodedDbParamsObject,
-        sqlId: SqlIdsMap.getBrandsCategoriesTags
-      });
-      const jsonResult: JsonResultType = res?.[0]?.jsonResult;
-      if (jsonResult) {
-        jsonResult.brands?.unshift({ brandName: "All brands", id: null });
-        jsonResult.tags.unshift({ tagName: "All tags", id: null });
-        jsonResult.categories.unshift({
-          catName: "All categoris",
-          id: null,
-          isLeaf: true,
-          parentId: null
-        });
-        setBrandOptions(jsonResult?.brands || []);
-        setTagOptions(jsonResult?.tags || []);
-        buildHierarchicalTree(jsonResult?.categories || []);
-      }
-      console.log(res);
-    } catch (e: any) {
-      console.log(e);
-    }
-  }
-
-  function buildHierarchicalTree(flatList: CategoryType[]) {
-    const nodeMap = new Map<number | null, TreeNode>();
-    const roots: TreeNode[] = [];
-
-    for (const item of flatList) {
-      nodeMap.set(item.id, {
-        id: item.id,
-        name: item.catName,
-        parentId: item.parentId,
-        hasChildren: !item.isLeaf,
-        child: []
-      });
+    const fields = {
+        dataSource: catOptions,
+        value: 'id',
+        parentValue: 'parentId',
+        text: 'catName',
+        hasChildren: 'hasChild',
     }
 
-    for (const node of nodeMap.values()) {
-      if (node.parentId === null) {
-        roots.push(node);
-      } else {
-        const parent = nodeMap.get(node.parentId);
-        if (parent) {
-          parent.child!.push(node);
+    useEffect(() => {
+        if ((_.isEmpty(brandOptions) && (_.isEmpty(tagOptions)) && (_.isEmpty(catOptions)))) {
+            loadAllOptions()
+        } else {
+            dispatch(setSelectedBrand(brandOptions[0]))
+            dispatch(setSelectedTag(tagOptions[0]))
+            dispatch(setSelectedCategory(catOptions[0]))
+            // setTimeout(() => dispatch(setSelectedCategory(catOptions[0])),100)
+
+            // setSelectedBrandOption(brandOptions[0])
+            // setSelectedTagOption(tagOptions[0])
+            // setSelectedCatOption(catOptions[0])
+            console.log(selectedCatOption)
         }
-      }
+    }, [brandOptions, tagOptions, catOptions])
+
+    useEffect(() => {
+        return (() => {
+            dispatch(
+                resetPurchasePriceVariationFilters())
+        })
+    }, [])
+
+    return (<div className="flex flex-col gap-4">
+
+        {/* Categories */}
+        <label className="flex flex-col font-medium text-primary-800 gap-2">
+            <span className="font-bold">Categories</span>
+            <DropDownTreeComponent
+                id="dropDowntree" showClearButton={false}
+                placeholder="Select category ..."
+                fields={fields as any}
+                allowMultiSelection={false}
+                popupHeight="300px"
+                allowFiltering={true}
+                filterBarPlaceholder="Search"
+                value={selectedCatOption?.id as any}
+                select={handleOnChangeCategory}
+            // change={handleOnChange}
+            />
+        </label>
+
+        {/* Brands */}
+        <label className="flex flex-col font-medium text-primary-800 gap-2">
+            <span className="font-bold">Brands</span>
+            <Select
+                getOptionLabel={(option: BrandType) => option.brandName}
+                getOptionValue={(option: BrandType) => option.id as any}
+                options={brandOptions}
+                value={selectedBrandOption}
+                onChange={handleOnChangeBrand}
+                placeholder='Select a brand...'
+            />
+        </label>
+
+        {/* Tags */}
+        <label className="flex flex-col font-medium text-primary-800 gap-2">
+            <span className="font-bold">Tags</span>
+            <Select
+                getOptionLabel={(option: TagType) => option.tagName}
+                getOptionValue={(option: TagType) => option.id as any}
+                options={tagOptions}
+                value={selectedTagOption}
+                onChange={handleOnChangeTag}
+                placeholder='Select a brand...'
+            />
+        </label>
+    </div>)
+
+    // function handleOnChange(selected: any){
+    //     console.log(selected)
+    // }
+
+    function handleOnChangeBrand(selected: BrandType | null) {
+        dispatch(setSelectedBrand(selected));
+        dispatch(setSelectedTag(tagOptions[0]));
+        dispatch(setSelectedCategory(catOptions[0]));
+
+
+        // setSelectedTagOption(tagOptions[0])
+        // setSelectedCatOption(catOptions[0])
+        // setSelectedBrandOption(selected)
+        console.log('Selected brand:', selected)
     }
-    setTreeData(roots);
-    // return roots;
-  }
+
+    function handleOnChangeTag(selected: TagType | null) {
+        dispatch(setSelectedBrand(brandOptions[0]));
+        dispatch(setSelectedCategory(catOptions[0]));
+        setTimeout(() => dispatch(setSelectedTag(selected)))
+
+        // setSelectedTagOption(selected)
+        // setSelectedBrandOption(brandOptions[0])
+        // setSelectedCatOption(catOptions[0])
+        console.log('Selected tag:', selected)
+    }
+
+    function handleOnChangeCategory(e: DdtSelectEventArgs) {
+        dispatch(setSelectedCategory(e.itemData as any));
+        if (e.isInteracted) {
+            dispatch(setSelectedTag(tagOptions[0]));
+            dispatch(setSelectedBrand(brandOptions[0]));
+        }
+
+
+        // setSelectedCatOption(e.itemData as any)
+        // if (e.isInteracted) {
+        //     setSelectedTagOption(tagOptions[0])
+        //     setSelectedBrandOption(brandOptions[0])
+        // }
+
+        console.log('Selected cat:', e)
+    }
+
+    async function loadAllOptions() {
+        try {
+            const res = await Utils.doGenericQuery({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getBrandsCategoriesTags
+            });
+            const jsonResult: JsonResultType = res?.[0]?.jsonResult;
+            if (jsonResult) {
+                const brands = jsonResult.brands
+                brands.unshift({ brandName: "All brands", id: null });
+                setBrandOptions(brands)
+
+                const tags = jsonResult.tags
+                tags.unshift({ tagName: "All tags", id: null });
+                setTagOptions(tags)
+
+                const cats = jsonResult.categories
+                cats.unshift({
+                    catName: "All categoris",
+                    id: '0',
+                    isLeaf: true,
+                    parentId: null
+                });
+                cats.forEach((cat: CategoryType) =>
+                    cat.hasChild = !cat.isLeaf)
+                setCatOptions(cats)
+            }
+
+        } catch (e: any) {
+            console.log(e);
+        }
+    }
 }
 
+export type BrandType = { id: number | null; brandName: string };
+export type CategoryType = {
+    id: string | null;
+    catName: string;
+    parentId: number | null;
+    isLeaf: boolean;
+    hasChild?: boolean
+};
 type JsonResultType = {
-  brands?: BrandType[];
-  categories: CategoryType[];
-  tags: TagType[];
+    brands: BrandType[];
+    categories: CategoryType[];
+    tags: TagType[];
 };
-
-type BrandType = { id: number | null; brandName: string };
-type TagType = { id: number | null; tagName: string };
-type CategoryType = {
-  id: number | null;
-  catName: string;
-  parentId: number | null;
-  isLeaf: boolean;
-};
-type TreeNode = {
-  id: number | null;
-  name: string;
-  parentId: number | null;
-  hasChildren?: boolean;
-  child?: TreeNode[];
-};
+export type TagType = { id: number | null; tagName: string };

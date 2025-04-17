@@ -1,5 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootStateType } from "../../app/store/store";
+import {
+  BrandType,
+  CategoryType,
+  TagType,
+} from "./inventory/reports/inventory-reports/purchase-price-variation-report/purchase-price-variation-filter-control";
 
 const initialState: AccountsInitialStateType = {
   accSettingsChanged: 0,
@@ -20,6 +25,11 @@ const initialState: AccountsInitialStateType = {
     exportName: "",
   },
   productOpeningBalanceEdit: {},
+  purchasePriceVariationFilterState: {
+    selectedBrand: null,
+    selectedCategory: null, // { id: "0", catName: "", isLeaf: true, parentId: null },
+    selectedTag: null,
+  },
   tranHeaderEdit: {},
 };
 
@@ -75,6 +85,34 @@ const accountsSlice = createSlice({
       };
     },
 
+    // purchase price variation filter
+    setSelectedBrand: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<BrandType | null>
+    ) => {
+      state.purchasePriceVariationFilterState.selectedBrand = action.payload;
+    },
+
+    setSelectedCategory: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<CategoryType | null>
+    ) => {
+      state.purchasePriceVariationFilterState.selectedCategory = action.payload;
+    },
+
+    setSelectedTag: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<TagType | null>
+    ) => {
+      state.purchasePriceVariationFilterState.selectedTag = action.payload;
+    },
+
+    resetPurchasePriceVariationFilters: (state: AccountsInitialStateType) => {
+      state.purchasePriceVariationFilterState.selectedBrand = null;
+      state.purchasePriceVariationFilterState.selectedCategory = null;
+      state.purchasePriceVariationFilterState.selectedTag = null;
+    },
+
     // tranHeader edits
     setTranHeaderIdToEdit: (
       state: AccountsInitialStateType,
@@ -108,6 +146,13 @@ export const {
   setExportName,
   reSetProductOpeningBalanceEdit,
   setProductOpeningBalanceEdit,
+
+  // purchase price variation filters
+  resetPurchasePriceVariationFilters,
+  setSelectedBrand,
+  setSelectedCategory,
+  setSelectedTag,
+
   resetTranHeaderIdToEdit,
   setTranHeaderIdToEdit,
 } = accountsSlice.actions;
@@ -120,6 +165,7 @@ export type AccountsInitialStateType = {
     exportName: string;
   };
   productOpeningBalanceEdit: ProductOpeningBalanceEditType;
+  purchasePriceVariationFilterState: PurchasePriceVariationFilterType;
   tranHeaderEdit: {
     [key: string]: {
       id: number | null | undefined;
@@ -144,6 +190,12 @@ export type ProductOpeningBalanceEditType = {
   qty?: number;
   openingPrice?: number;
   lastPurchaseDate?: string;
+};
+
+type PurchasePriceVariationFilterType = {
+  selectedCategory: CategoryType | null;
+  selectedBrand: BrandType | null;
+  selectedTag: TagType | null;
 };
 
 export type SelectedBankType = {
