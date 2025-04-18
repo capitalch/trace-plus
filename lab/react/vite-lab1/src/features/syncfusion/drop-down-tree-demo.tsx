@@ -1,8 +1,20 @@
 import { DropDownTreeComponent } from "@syncfusion/ej2-react-dropdowns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import _ from 'lodash'
 
 export function DropDownTreeDemo() {
-  const [value, setValue] = useState<string[]>(["1"]);
+  const [,setRefresh] = useState({})
+  const [catOptions, setCatOptions] = useState<CategoryType[]>([])
+  const [selectedCatOption, setSelectedCatOption] = useState<CategoryType | null>(null)
+
+  useEffect(() => {
+    if (_.isEmpty(catOptions)) {
+      loadData()
+    } else {
+      // setValue(['0'])
+      setSelectedCatOption({ id: '1', pid: '', name: '' })
+    }
+  }, [catOptions])
 
   return (
     <div className="w-80 m-4">
@@ -11,41 +23,56 @@ export function DropDownTreeDemo() {
         id="dropDowntree"
         allowMultiSelection={false}
         fields={{
-          dataSource: sampleData as any,
+          dataSource: catOptions as any,
           value: "id",
           parentValue: "pid",
           text: "name",
           hasChildren: "hasChild"
         }}
         placeholder="Select a category"
-        value={value}
+        // value={value}
+        value={[selectedCatOption?.id ?? '']}
       />
+      <button onClick={()=>{
+        setRefresh({})
+      }}>Refresh</button>
     </div>
   );
+  function loadData() {
+    setCatOptions(sampleData)
+  }
 }
 
 const sampleData = [
-  { id: "0", name: "All categories", hasChild: undefined, expanded: undefined, pid: null },
-  { id: "1", name: "Furniture", hasChild: true, expanded: true, pid: null },
-  { id: "2", pid: "1", name: "Tables & Chairs", hasChild: undefined, expanded: undefined },
-  { id: "3", pid: "1", name: "Sofas", hasChild: undefined, expanded: undefined },
-  { id: "4", pid: "1", name: "Occasional Furniture", hasChild: undefined, expanded: undefined },
+  { id: "0", name: "All categories", pid: null, isLeaf: true },
+  { id: "1", name: "Furniture", hasChild: true, pid: null, isLeaf: false },
+  { id: "2", pid: "1", name: "Tables & Chairs", },
+  { id: "3", pid: "1", name: "Sofas", },
+  { id: "4", pid: "1", name: "Occasional Furniture", },
 
-  { id: "5", name: "Decor", hasChild: true, expanded: undefined, pid: null },
-  { id: "6", pid: "5", name: "Bed Linen", hasChild: undefined, expanded: undefined },
-  { id: "7", pid: "5", name: "Curtains & Blinds", hasChild: undefined, expanded: undefined },
-  { id: "8", pid: "5", name: "Carpets", hasChild: undefined, expanded: undefined },
+  { id: "5", name: "Decor", hasChild: true, pid: null },
+  { id: "6", pid: "5", name: "Bed Linen", },
+  { id: "7", pid: "5", name: "Curtains & Blinds", },
+  { id: "8", pid: "5", name: "Carpets", },
 
-  { id: "9", name: "Electronics", hasChild: true, expanded: undefined, pid: null },
-  { id: "10", pid: "9", name: "Televisions", hasChild: undefined, expanded: undefined },
-  { id: "11", pid: "9", name: "Home Entertainment", hasChild: undefined, expanded: undefined },
-  { id: "12", pid: "9", name: "Projectors", hasChild: undefined, expanded: undefined }
+  { id: "9", name: "Electronics", hasChild: true, pid: null },
+  { id: "10", pid: "9", name: "Televisions", },
+  { id: "11", pid: "9", name: "Home Entertainment", },
+  { id: "12", pid: "9", name: "Projectors", }
 ];
 
-interface TreeData {
-  id: string | null | number;
+// interface TreeData {
+//   id: string | null | number;
+//   name: string;
+//   hasChild?: boolean;
+//   expanded?: boolean;
+//   pid?: string | null | number; // parent id
+// }
+
+export type CategoryType = {
+  id: string;
   name: string;
+  pid: string | null;
+  isLeaf?: boolean;
   hasChild?: boolean;
-  expanded?: boolean;
-  pid?: string | null | number; // parent id
-}
+};

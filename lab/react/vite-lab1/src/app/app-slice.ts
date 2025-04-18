@@ -1,5 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+// import {
+//   BrandType,
+//   CategoryType,
+//   TagType,
+// } from "../features/syncfusion/drop-down-tree/drop-down-tree-new-demo";
 
 export const fetchData = createAsyncThunk(
   "app/fetchData",
@@ -16,10 +21,26 @@ export const fetchData = createAsyncThunk(
   }
 );
 
+// const initialState: InitialStateType = {
+//   filterState: {
+//     selectedBrand: null,
+//     selectedCategory: null,
+//     selectedTag: null,
+//   },
+// };
+
 export const appSlice = createSlice({
   name: "app",
   initialState: {},
-  reducers: {},
+  reducers: {
+    // setSelectedCategory: (
+    //   state: InitialStateType,
+    //   action: PayloadAction<CategoryType | null>
+    // ) => {
+    //   state.filterState.selectedCategory = action.payload;
+    // },
+  },
+
   extraReducers: (builder: any) => {
     builder
       .addCase(fetchData.pending, (state: any, action: any) => {
@@ -38,5 +59,14 @@ export const appSlice = createSlice({
 });
 
 export const appReducer = appSlice.reducer;
-// const { reducer } = appSlice;
-// export { reducer as appReducer };
+// export const { setSelectedCategory } = appSlice.actions;
+
+// type InitialStateType = {
+//   filterState: FilterStateType;
+// };
+
+// type FilterStateType = {
+//   selectedCategory: CategoryType | null;
+//   selectedBrand: BrandType | null;
+//   selectedTag: TagType | null;
+// };

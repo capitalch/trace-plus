@@ -66,6 +66,7 @@ import FilterControl from './features/Misc/tabs/filter-control'
 import CategoryTreeSelect from './features/prime-react/category-tree-select'
 import { SyncfusionCategoryTreeSelect } from './features/syncfusion/syncfusion-category-tree-select'
 import { DropDownTreeDemo } from './features/syncfusion/drop-down-tree-demo'
+import { DropDownTreeNewDemo } from './features/syncfusion/drop-down-tree/drop-down-tree-new-demo'
 
 
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
@@ -143,8 +144,9 @@ function App() {
       {/* <SelectedRowInTable1 /> */}
       {/* <FilterControl /> */}
       {/* <CategoryTreeSelect /> */}
-      <SyncfusionCategoryTreeSelect />
-      <DropDownTreeDemo />
+      {/* <SyncfusionCategoryTreeSelect />
+      <DropDownTreeDemo /> */}
+      <DropDownTreeNewDemo />
     </GlobalContext.Provider>
   )
 }
