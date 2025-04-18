@@ -5,6 +5,7 @@ const initialState: InitialStateType = {
   filterControlState: {
     selectedBrand: null,
     selectedCategory: null,
+    selectedCatId: '',
     selectedTag: null,
   },
 };
@@ -19,11 +20,19 @@ export const filterControlSlice = createSlice({
     ) => {
       state.filterControlState.selectedCategory = action.payload;
     },
+
+    setSelectedCatId: (
+      state: InitialStateType,
+      action: PayloadAction<string | null>
+    ) => {
+      state.filterControlState.selectedCatId = action.payload;
+    },
   },
 });
 
 export const filterControlReducer = filterControlSlice.reducer;
-export const { setSelectedCategory } = filterControlSlice.actions;
+export const { setSelectedCategory, setSelectedCatId } =
+  filterControlSlice.actions;
 
 type InitialStateType = {
   filterControlState: FilterControlStateType;
@@ -31,6 +40,7 @@ type InitialStateType = {
 
 type FilterControlStateType = {
   selectedCategory: CategoryType | null;
+  selectedCatId: string | null;
   selectedBrand: BrandType | null;
   selectedTag: TagType | null;
 };

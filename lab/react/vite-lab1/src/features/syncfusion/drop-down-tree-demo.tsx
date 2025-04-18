@@ -33,7 +33,7 @@ export function DropDownTreeDemo() {
         // value={value}
         value={[selectedCatOption?.id ?? '']}
       />
-      <button onClick={()=>{
+      <button type="button" onClick={()=>{
         setRefresh({})
       }}>Refresh</button>
     </div>
@@ -61,13 +61,6 @@ const sampleData = [
   { id: "12", pid: "9", name: "Projectors", }
 ];
 
-// interface TreeData {
-//   id: string | null | number;
-//   name: string;
-//   hasChild?: boolean;
-//   expanded?: boolean;
-//   pid?: string | null | number; // parent id
-// }
 
 export type CategoryType = {
   id: string;
