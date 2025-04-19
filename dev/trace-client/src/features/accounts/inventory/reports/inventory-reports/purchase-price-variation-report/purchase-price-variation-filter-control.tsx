@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
@@ -15,7 +15,6 @@ import {
 } from "../../../../../../app/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    resetPurchasePriceVariationFilters,
     setSelectedBrand,
     setSelectedCategory,
     setSelectedTag
@@ -23,6 +22,7 @@ import {
 
 export function PurchasePriceVariationFilterControl() {
     const dispatch: AppDispatchType = useDispatch();
+    const catRef = useRef<DropDownTreeComponent | null>(null)
     const selectedBrandOption = useSelector(
         (state: RootStateType) =>
             state.accounts.purchasePriceVariationFilterState.selectedBrand
@@ -36,20 +36,13 @@ export function PurchasePriceVariationFilterControl() {
             state.accounts.purchasePriceVariationFilterState.selectedTag
     );
 
-    //   const [catId, setCatId] = useState<string[]>([""]);
-
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const [brandOptions, setBrandOptions] = useState<BrandType[]>([]);
-    // const [selectedBrandOption, setSelectedBrandOption] = useState<BrandType | null>(null)
-
     const [tagOptions, setTagOptions] = useState<TagType[]>([]);
-    // const [selectedTagOption, setSelectedTagOption] = useState<TagType | null>(null)
-
-    const [catOptions, setCatOptions] = useState<CategoryType[]>([]);
-    // const [selectedCatOption, setSelectedCatOption] = useState<CategoryType | null>(null)
+    const [catOptions, setCatOptions] = useState<CategoryNodeType[]>([]);
 
     const fields: FieldsModel = {
-        dataSource: catOptions,
+        dataSource: catOptions as any,
         value: "id",
         parentValue: "parentId",
         text: "catName",
@@ -64,48 +57,44 @@ export function PurchasePriceVariationFilterControl() {
         ) {
             loadAllOptions();
         } else {
-            if (
-                _.isEmpty(selectedBrandOption) &&
-                _.isEmpty(selectedCatOption) &&
-                _.isEmpty(selectedTagOption)
-            ) {
-                dispatch(setSelectedBrand(brandOptions[0]));
-                dispatch(setSelectedTag(tagOptions[0]));
-                dispatch(setSelectedCategory(catOptions[0]));
+            if ((!_.isEmpty(selectedCatOption)) && catRef.current) {
+                catRef.current.value = [selectedCatOption.id]
+                catRef.current.ensureVisible(selectedCatOption.id)
             }
-            if (!_.isEmpty(selectedCatOption)) {
-                dispatch(setSelectedCategory({ id: +selectedCatOption.id, catName: selectedCatOption.catName, parentId: selectedCatOption.parentId, hasChild: selectedCatOption.hasChild }));
-            }
-            // setSelectedBrandOption(brandOptions[0])
-            // setSelectedTagOption(tagOptions[0])
-            // setSelectedCatOption(catOptions[0])
-            //   console.log(selectedCatOption);
+            // if (
+            //     _.isEmpty(selectedBrandOption) &&
+            //     _.isEmpty(selectedCatOption) &&
+            //     _.isEmpty(selectedTagOption)
+            // ) {
+            //     dispatch(setSelectedBrand(brandOptions[0]));
+            //     dispatch(setSelectedTag(tagOptions[0]));
+            //     // dispatch(setSelectedCategory(catOptions[0]));
+            // }
+            // if (!_.isEmpty(selectedCatOption)) {
+            //     // dispatch(setSelectedCategory({ id: +selectedCatOption.id, catName: selectedCatOption.catName, parentId: selectedCatOption.parentId, hasChild: selectedCatOption.hasChild }));
+            // }
         }
     }, [brandOptions, tagOptions, catOptions]);
 
-    useEffect(() => {
-        return () => {
-            // dispatch(
-            //     resetPurchasePriceVariationFilters())
-        };
-    }, []);
-    console.log(selectedCatOption);
+    // console.log(selectedCatOption);
     return (
         <div className="flex flex-col gap-4">
+
             {/* Categories */}
             <label className="flex flex-col font-medium text-primary-800 gap-2">
                 <span className="font-bold">Categories</span>
                 <DropDownTreeComponent
                     id="dropDowntree"
+                    ref={catRef}
                     showClearButton={false}
-                    placeholder="Select category ..."
+                    placeholder="Select a category ..."
                     fields={fields}
                     allowMultiSelection={false}
                     popupHeight="300px"
                     allowFiltering={true}
                     filterBarPlaceholder="Search"
                     //   value={selectedCatOption?.id ?? 0 as any}
-                    value={[selectedCatOption?.id ?? "0"]}
+                    // value={[selectedCatOption?.id ?? "0"]}
                     select={handleOnChangeCategory}
                 />
             </label>
@@ -135,60 +124,48 @@ export function PurchasePriceVariationFilterControl() {
                     placeholder="Select a brand..."
                 />
             </label>
-            <button
+            {/* <button
                 type="button"
                 onClick={() => {
-                    dispatch(setSelectedCategory(catOptions[0]));
+                    if (catRef.current?.treeViewObj) {
+                        const tree = catRef.current.treeViewObj;
+                        
+                        // Expand parent of selected node
+                        tree.expandNode(tree.getNode(catRef.current.treeViewObj.getTreeData().find(node => node.id === '1')));
+                      }
                 }}
             >
-                Test
-            </button>
+                Expand
+            </button> */}
         </div>
     );
 
     function handleOnChangeBrand(selected: BrandType | null) {
         dispatch(setSelectedBrand(selected));
         dispatch(setSelectedTag(tagOptions[0]));
-        dispatch(setSelectedCategory(catOptions[0]));
-
-        // setSelectedTagOption(tagOptions[0])
-        // setSelectedCatOption(catOptions[0])
-        // setSelectedBrandOption(selected)
-        // console.log("Selected brand:", selected);
+        if(catRef?.current){
+            catRef.current.value = [""]
+        }
     }
 
     function handleOnChangeTag(selected: TagType | null) {
         dispatch(setSelectedBrand(brandOptions[0]));
-        dispatch(setSelectedCategory(catOptions[0]));
         dispatch(setSelectedTag(selected));
-
-        // setSelectedTagOption(selected)
-        // setSelectedBrandOption(brandOptions[0])
-        // setSelectedCatOption(catOptions[0])
-        // console.log("Selected tag:", selected);
+        if(catRef?.current){
+            catRef.current.value = [""]
+        }
     }
 
     function handleOnChangeCategory(e: DdtSelectEventArgs) {
         const item: any = e.itemData
         dispatch(setSelectedCategory({
             id: item.id,
-            parentId: item.parentId,
             catName: item.text,
-            hasChild: item.hasChildren,
-            // isLeaf: !item.hasChildren
         }));
         if (e.isInteracted) {
             dispatch(setSelectedTag(tagOptions[0]));
             dispatch(setSelectedBrand(brandOptions[0]));
         }
-
-        // setSelectedCatOption(e.itemData as any)
-        // if (e.isInteracted) {
-        //     setSelectedTagOption(tagOptions[0])
-        //     setSelectedBrandOption(brandOptions[0])
-        // }
-
-        // console.log("Selected cat:", e);
     }
 
     async function loadAllOptions() {
@@ -200,10 +177,6 @@ export function PurchasePriceVariationFilterControl() {
                 sqlId: SqlIdsMap.getBrandsCategoriesTags
             });
             const jsonResult: JsonResultType = res?.[0]?.jsonResult;
-            // const prettyJson = JSON.stringify(jsonResult, null, 2);
-            // await navigator.clipboard.writeText(prettyJson); // browser only
-            // console.log(JSON.stringify(jsonResult.categories))
-            // console.log(JSON.stringify(jsonResult.brands))
             if (jsonResult) {
                 const brands = jsonResult.brands;
                 brands.unshift({ brandName: "All brands", id: null });
@@ -216,11 +189,14 @@ export function PurchasePriceVariationFilterControl() {
                 const cats = jsonResult.categories;
                 cats.unshift({
                     catName: "All categoris",
-                    id: 0,
+                    id: '',
                     isLeaf: true,
                     parentId: null
                 });
-                cats.forEach((cat: CategoryType) => (cat.hasChild = !cat.isLeaf));
+                cats.forEach((cat: CategoryNodeType) => {
+                    cat.hasChild = !cat.isLeaf
+                    // cat.expanded = true
+                });
                 setCatOptions(cats);
             }
         } catch (e: any) {
@@ -230,25 +206,23 @@ export function PurchasePriceVariationFilterControl() {
 }
 
 export type BrandType = { id: number | null; brandName: string };
-// export type CategoryType = {
-//   id: string | null ;
-//   catName: string;
-//   parentId: number | null;
-//   isLeaf: boolean;
-//   hasChild?: boolean;
-// };
 
 export type CategoryType = {
     id: string;
     catName: string;
-    parentId: string;
+}
+export type CategoryNodeType = {
+    id: string | number;
+    catName: string;
+    parentId: string | null;
     isLeaf?: boolean;
     hasChild?: boolean;
+    expanded?:boolean
 };
 
 type JsonResultType = {
     brands: BrandType[];
-    categories: CategoryType[];
+    categories: CategoryNodeType[];
     tags: TagType[];
 };
 export type TagType = { id: number | null; tagName: string };
