@@ -1,7 +1,11 @@
 import { shallowEqual, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
-import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import {
+  CompSyncFusionGrid,
+  SyncFusionGridAggregateType,
+  SyncFusionGridColumnType
+} from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BackToDashboardLink } from "../back-to-dashboard-link";
@@ -13,7 +17,15 @@ import { useEffect } from "react";
 
 export function CurrentOrdersReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.currentOrdersReport;
-  const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchCurrentOrdersReport), shallowEqual) || false
+  const isAllBranches: boolean =
+    useSelector(
+      (state: RootStateType) =>
+        selectCompSwitchStateFn(
+          state,
+          CompInstances.compSwitchCurrentOrdersReport
+        ),
+      shallowEqual
+    ) || false;
 
   const {
     buCode,
@@ -24,47 +36,59 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
     finYearId
   } = useUtilsInfo();
 
-  useEffect(() => { // This block is necessary. Otherwise branch selection not works correctly
-    const loadData = context.CompSyncFusionGrid[instance].loadData
+  useEffect(() => {
+    // This block is necessary. Otherwise branch selection not works correctly
+    const loadData = context.CompSyncFusionGrid[instance].loadData;
     if (loadData) {
-      loadData()
+      loadData();
     }
-  }, [isAllBranches])
+  }, [isAllBranches, branchId, buCode]);
 
-  return <div className="flex flex-col">
-    <CompSyncFusionGridToolbar
-      CustomControl={() => <CompSwitch instance={CompInstances.compSwitchCurrentOrdersReport} className="" leftLabel="Curr branch" rightLabel="All branches" toToggleLeftLabel={true} />}
-      className="mr-4"
-      minWidth="600px"
-      title={title || ''}
-      isPdfExport={true}
-      isExcelExport={true}
-      isCsvExport={true}
-      isLastNoOfRows={true}
-      instance={instance}
-      subTitleControl={<BackToDashboardLink />}
-    />
+  return (
+    <div className="flex flex-col">
+      <CompSyncFusionGridToolbar
+        CustomControl={() => (
+          <CompSwitch
+            instance={CompInstances.compSwitchCurrentOrdersReport}
+            className=""
+            leftLabel="Curr branch"
+            rightLabel="All branches"
+            toToggleLeftLabel={true}
+          />
+        )}
+        className="mr-4"
+        minWidth="600px"
+        title={title || ""}
+        isPdfExport={true}
+        isExcelExport={true}
+        isCsvExport={true}
+        isLastNoOfRows={true}
+        instance={instance}
+        subTitleControl={<BackToDashboardLink />}
+      />
 
-    <CompSyncFusionGrid
-      aggregates={getAggregates()}
-      buCode={buCode}
-      className="mt-4"
-      columns={getColumns()}
-      dbName={dbName}
-      dbParams={decodedDbParamsObject}
-      hasIndexColumn={true} isLoadOnInit={false}
-      // hasRemoveButton={true}
-      height="calc(100vh - 245px)"
-      instance={instance}
-      minWidth="600px"
-      // onRemove={onRemove}
-      sqlId={SqlIdsMap.getCurrentOrders}
-      sqlArgs={{
-        branchId: isAllBranches ? null : branchId,
-        finYearId: finYearId
-      }}
-    />
-  </div>;
+      <CompSyncFusionGrid
+        aggregates={getAggregates()}
+        buCode={buCode}
+        className="mt-4"
+        columns={getColumns()}
+        dbName={dbName}
+        dbParams={decodedDbParamsObject}
+        hasIndexColumn={true}
+        isLoadOnInit={false}
+        // hasRemoveButton={true}
+        height="calc(100vh - 245px)"
+        instance={instance}
+        minWidth="600px"
+        // onRemove={onRemove}
+        sqlId={SqlIdsMap.getCurrentOrders}
+        sqlArgs={{
+          branchId: isAllBranches ? null : branchId,
+          finYearId: finYearId
+        }}
+      />
+    </div>
+  );
 
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
@@ -95,7 +119,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         field: "productCode",
         headerText: "Pr code",
         width: 80,
-        type: "string",
+        type: "string"
       },
       {
         field: "productDetails",
@@ -104,15 +128,19 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         type: "string",
         template: (rowData: any) => (
           <div className="flex gap-2">
-            <label>{rowData.catName} <strong>{rowData.brandName}</strong> {rowData.label} {rowData.info}</label>
+            <label>
+              {rowData.catName} <strong>{rowData.brandName}</strong>{" "}
+              {rowData.label} {rowData.info}
+            </label>
           </div>
-        ),
+        )
       },
-      { // important for search to work on this info field
+      {
+        // important for search to work on this info field
         field: "info",
         width: 0,
         visible: false,
-        type: "string",
+        type: "string"
       },
       {
         field: "clos",
@@ -120,7 +148,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         width: 60,
         type: "number",
         format: "N0",
-        textAlign: "Right",
+        textAlign: "Right"
       },
       {
         field: "finalOrder",
@@ -137,7 +165,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         width: 80,
         type: "number",
         format: "N2",
-        textAlign: "Right",
+        textAlign: "Right"
       },
       {
         field: "isUrgent",
@@ -145,8 +173,15 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         width: 50,
         type: "boolean",
         textAlign: "Center",
-        template: (props: any) => <input type="checkbox" checked={props.isUrgent} readOnly aria-label="Urgent" />
-      },
+        template: (props: any) => (
+          <input
+            type="checkbox"
+            checked={props.isUrgent}
+            readOnly
+            aria-label="Urgent"
+          />
+        )
+      }
     ];
   }
 

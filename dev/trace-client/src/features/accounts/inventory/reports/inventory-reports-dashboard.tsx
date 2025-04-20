@@ -5,7 +5,6 @@ import { InventoryReportsRouterMap } from "./inventory-reports-map";
 export function InventoryReportsDashboard() {
   return (
     <CompAccountsContainer>
-      {/* <div className="p-4"> */}
         <label className="text-lg font-semibold mb-6 text-primary-600 mt-2">
           Inventory Reports
         </label>
@@ -20,7 +19,6 @@ export function InventoryReportsDashboard() {
               <div className="font-medium text-gray-700">{report.name}</div>
             </Link>
           ))}
-        {/* </div> */}
       </div>
       
     </CompAccountsContainer>

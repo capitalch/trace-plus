@@ -1565,7 +1565,7 @@ class SqlAccounts:
     """
 
     get_purchase_price_variation = """
-        --with "branchId" as (values (1)), "finYearId" as (values (2024)), "brandId" as (values (null::int)), "catId" as (values (null::int)),"tagId" as (values (null::int)),
+        --with "branchId" as (values (null::int)), "finYearId" as (values (2024)), "brandId" as (values (null::int)), "catId" as (values (null::int)),"tagId" as (values (null::int)),
         with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "brandId" as (values (%(brandId)s::int)), "catId" as (values (%(catId)s::int)),"tagId" as (values (%(tagId)s::int)),
         selected_products AS (
                 SELECT *
@@ -1587,7 +1587,7 @@ class SqlAccounts:
                         on h."id" = d."tranHeaderId"
                     join "SalePurchaseDetails" s
                         on d."id" = s."tranDetailsId"
-                where "branchId" = (table "branchId") 
+                where COALESCE((table "branchId"), "branchId") = "branchId" 
                     and "finYearId" = (table "finYearId")
                     and "tranTypeId" = 5
                 order by "productId","price", "accId", "tranDate"),
@@ -1635,6 +1635,86 @@ class SqlAccounts:
             
         select * from enriched_data 
         order by "brandName","catName","label", "productCode", "tranDate"
+    """
+
+    get_purchase_report = """
+        --WITH "branchId" AS (VALUES (null::int)), "finYearId" AS (VALUES (2024)), "startDate" AS (VALUES ('2024-04-01'::date)), "endDate"   AS (VALUES ('2025-03-31'::date))
+         WITH "branchId" AS (VALUES (%(branchId)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "startDate" AS (VALUES (%(startDate)s::date)), "endDate" AS (VALUES (%(endDate)s::date))
+        SELECT 
+            "autoRefNo",
+            "userRefNo",
+            "tranDate",
+            s."productId",
+            "productCode",
+            "catName",
+            "brandName",
+            "label",
+            "tranTypeId",
+            "price",
+            "discount",
+            s."gstRate",
+            s."id" AS "salePurchaseDetailsId",
+
+            CASE 
+                WHEN "tranTypeId" = 5 THEN 'Purchase' 
+                ELSE 'Return' 
+            END AS "purchaseType",
+
+            CASE 
+                WHEN "tranTypeId" = 5 THEN "qty" * ("price" - "discount") 
+                ELSE -"qty" * ("price" - "discount") 
+            END AS "aggrPurchase",
+
+            CASE 
+                WHEN "tranTypeId" = 5 THEN "qty" 
+                ELSE -"qty" 
+            END AS "qty",
+
+            CASE 
+                WHEN "tranTypeId" = 5 THEN "cgst" 
+                ELSE -"cgst" 
+            END AS "cgst",
+
+            CASE 
+                WHEN "tranTypeId" = 5 THEN "sgst" 
+                ELSE -"sgst" 
+            END AS "sgst",
+
+            CASE 
+                WHEN "tranTypeId" = 5 THEN "igst" 
+                ELSE -"igst" 
+            END AS "igst",
+
+            CASE 
+                WHEN "tranTypeId" = 5 THEN s."amount" 
+                ELSE -s."amount" 
+            END AS "amount",
+
+            (
+                SELECT DISTINCT "accName"
+                FROM "AccM" a
+                JOIN "AccClassM" m ON m."id" = a."classId"
+                JOIN "TranD" t ON a."id" = t."accId"
+                WHERE t."tranHeaderId" = h."id"
+                AND "accClass" IN ('creditor', 'debtor', 'cash', 'bank', 'card', 'ecash')
+            ) AS "party"
+
+        FROM "TranH" h
+        JOIN "TranD" d ON h."id" = d."tranHeaderId"
+        JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+        JOIN "ProductM" p ON p."id" = s."productId"
+        JOIN "CategoryM" c ON c."id" = p."catId"
+        JOIN "BrandM" b ON b."id" = p."brandId"
+
+        WHERE 
+            COALESCE((TABLE "branchId"), "branchId") =  "branchId"
+            AND "finYearId" = (TABLE "finYearId")
+            AND "tranDate" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+            AND "tranTypeId" IN (5, 10)
+
+        ORDER BY 
+            "tranDate",
+            "salePurchaseDetailsId"
     """
 
     get_settings_fin_years_branches = """

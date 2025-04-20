@@ -121,7 +121,7 @@ export function PurchasePriceVariationFilterControl({
           styles={Utils.getReactSelectStyles()}
           value={selectedTagOption}
           onChange={handleOnChangeTag}
-          placeholder="Select a brand..."
+          placeholder="Select a tag..."
         />
       </label>
     </div>
@@ -173,15 +173,15 @@ export function PurchasePriceVariationFilterControl({
       });
       const jsonResult: JsonResultType = res?.[0]?.jsonResult;
       if (jsonResult) {
-        const brands = jsonResult.brands;
+        const brands = jsonResult.brands || [];
         brands.unshift({ brandName: "All brands", id: null });
         setBrandOptions(brands);
 
-        const tags = jsonResult.tags;
+        const tags = jsonResult.tags || [];
         tags.unshift({ tagName: "All tags", id: null });
         setTagOptions(tags);
 
-        const cats = jsonResult.categories;
+        const cats = jsonResult.categories || [];
         cats.unshift({
           catName: "All categories",
           id: "",

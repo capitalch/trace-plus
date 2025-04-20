@@ -1,44 +1,27 @@
-import "react-sliding-pane/dist/react-sliding-pane.css";
-import SlidingPane from "react-sliding-pane";
-import {
-  CompSyncFusionGrid,
-  SyncFusionGridAggregateType,
-  SyncFusionGridColumnType
-} from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { useEffect, useState } from "react";
+// import SlidingPane from "react-sliding-pane";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
-import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
-import { BackToDashboardLink } from "../../back-to-dashboard-link";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
-import { format } from "date-fns";
-import { useEffect, useState } from "react";
-import { Utils } from "../../../../../../utils/utils";
-import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
-import { PurchasePriceVariationToolbarFilterDisplay } from "./purchase-price-variation-toolbar-filter-display";
-import {
-  AppDispatchType,
-  RootStateType
-} from "../../../../../../app/store/store";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
-import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";
-import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";
+import { shallowEqual, useSelector } from "react-redux";
+import { RootStateType } from "../../../../../../app/store/store";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
+import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
+import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";
+import { BackToDashboardLink } from "../../back-to-dashboard-link";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { format } from "date-fns";
+import { Utils } from "../../../../../../utils/utils";
+import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 
-export function PurchasePriceVariationReport({ title }: { title?: string }) {
-  const instance = DataInstancesMap.purchasePriceVariationReport;
-  const dispatch: AppDispatchType = useDispatch();
+export function PurchaseReport({ title }: { title?: string}) {
+  const instance = DataInstancesMap.purchaseReport;
   const isAllBranches: boolean =
     useSelector(
       (state: RootStateType) => selectCompSwitchStateFn(state, instance),
       shallowEqual
     ) || false;
-  const selectedIsPaneOpen = useSelector(
-    (state: RootStateType) =>
-      state.accounts.purchasePriceVariationFilterState.isPaneOpen
-  );
-  
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
+
   const {
     branchId,
     buCode,
@@ -51,7 +34,6 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
   useEffect(() => {
     loadData();
   }, [isAllBranches, branchId, buCode]);
-
   return (
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
@@ -64,7 +46,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
               rightLabel="All branches"
               toToggleLeftLabel={true}
             />
-            <PurchasePriceVariationToolbarFilterDisplay />
+            {/* <PurchasePriceVariationToolbarFilterDisplay /> */}
           </div>
         )}
         className="mr-4"
@@ -90,9 +72,9 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         isLoadOnInit={false}
         loadData={loadData}
         minWidth="600px"
-        queryCellInfo={handleQueryCellInfo}
+        // queryCellInfo={handleQueryCellInfo}
       />
-      <SlidingPane
+      {/* <SlidingPane
         isOpen={selectedIsPaneOpen}
         title="Filter Options"
         onRequestClose={() =>
@@ -101,7 +83,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         width="500px"
       >
         <PurchasePriceVariationFilterControl instance={instance} />
-      </SlidingPane>
+      </SlidingPane> */}
     </div>
   );
 
@@ -208,94 +190,28 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
     ];
   }
 
-  function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
-    const rowData = args.data as RowDataType;
-
-    // Light background if row has bColor
-    if (rowData.bColor && args.cell) {
-      (args.cell as any).style.backgroundColor = "#f9fef9";
-    }
-
-    // Apply text color only to "diff" column
-    if (args.column?.field === "diff" && typeof rowData.diff === "number") {
-      if (rowData.diff > 1) {
-        (args.cell as any).style.color = "red";
-      } else if (rowData.diff < -1) {
-        (args.cell as any).style.color = "blue";
-      }
-    }
-  }
-
   async function loadData() {
     try {
-      const state: RootStateType = Utils.getReduxState();
-      // const branchid = isAllBranches ? null : branchId;
-      // const currentBranch = currentBranchSelector
-      // const currentStateBranch = state.login.currentBranch
+      // const state: RootStateType = Utils.getReduxState();
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",
         dbParams: decodedDbParamsObject,
         instance: instance,
-        sqlId: SqlIdsMap.getPurchasePriceVariation,
+        sqlId: SqlIdsMap.getPurchaseReport,
         sqlArgs: {
-          branchId: isAllBranches ? null : state.login.currentBranch?.branchId, // this get the latest branchId
+          branchId: isAllBranches ? null : branchId,
           finYearId: finYearId,
-          brandId:
-            state.accounts.purchasePriceVariationFilterState.selectedBrand
-              ?.id || null,
-          catId:
-            state.accounts.purchasePriceVariationFilterState.selectedCategory
-              ?.id || null,
-          tagId:
-            state.accounts.purchasePriceVariationFilterState.selectedTag?.id ||
-            null
         }
       });
-      updateRowsDataForDisplay(rowsData);
+      setRowsData(rowsData);
     } catch (e: any) {
       console.log(e);
     }
   }
 
-  function updateRowsDataForDisplay(rows: RowDataType[]) {
-    if (rows.length > 0) {
-      let currentProductCode = rows[0].productCode;
-      let previousPrice = rows[0].price;
-      let alternateColor = false;
-
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const { productCode, price } = row;
-
-        // Toggle color on product code change
-        if (productCode !== currentProductCode) {
-          alternateColor = !alternateColor;
-          currentProductCode = productCode;
-          previousPrice = price;
-        } else if (price !== previousPrice) {
-          const diff = ((price - previousPrice) / previousPrice) * 100;
-          row.diff = Math.round(diff * 100) / 100;
-          row.absDiff = Math.abs(diff);
-          previousPrice = price;
-        }
-        row.bColor = alternateColor;
-      }
-    }
-    setRowsData(rows);
-  }
 }
 
 type RowDataType = {
-  absDiff?: number;
-  accName: string;
-  bColor: boolean;
-  diff?: number;
-  email: string;
-  label: string;
-  mobileNumber: string;
-  productCode: string;
-  price: number;
-  qty: number;
   tranDate: string;
 };

@@ -62,14 +62,17 @@
 													- Grid remove row button implementation
 													- Search problem in template columns
 												- current orders
+
 													- last no of rows not working
 													- Check correctness
 													- Branch incorporation
 												- Products list
-		- Purchase price variation
-			- all branches / this branch
-			- filter action across different screens
-			- Rectify category issue
+												- Purchase price variation
+													- Refresh does not do refresh of current branch
+													- All branches is not total of individual branches: It may not: Correct
+													- all branches / this branch
+													- filter action across different screens
+													- Rectify category issue
 													- populate grid
 														- Sql
 														- filters
@@ -78,6 +81,13 @@
 														- populate controls
 													- toolbar ui
 		- Purchases
+			- All branches / this branch
+			- Filter
+			- grid
+				- SQL
+				- filters
+			- toolbar
+
 		- Sales
 		- Stock summary
 		- Stock transactions
