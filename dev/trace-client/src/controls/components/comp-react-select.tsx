@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import _ from "lodash";
+import { Utils } from "../../utils/utils";
 
 export function CompReactSelect({
   className,
@@ -45,7 +46,7 @@ export function CompReactSelect({
       onChange={onChange}
       options={options}
       ref={selectRef}
-      styles={getStyles()}
+      styles={Utils.getReactSelectStyles()}
       placeholder={placeHolder}
     />
   );
@@ -57,24 +58,24 @@ export function CompReactSelect({
     selectRef.current.setValue(selectedOption);
   }
 
-  function getStyles() {
-    return {
-      input: (base: any) => ({
-        ...base,
-        minWidth: "15rem",
-        "input:focus": {
-          boxShadow: "none"
-        }
-      }),
-      option: (defaultStyles: any) => ({
-        ...defaultStyles,
-        paddingTop: "4px",
-        paddingBottom: "4px",
-        paddingLeft: "10px",
-        fontSize: "14px"
-      })
-    };
-  }
+  // function getStyles() {
+  //   return {
+  //     input: (base: any) => ({
+  //       ...base,
+  //       minWidth: "15rem",
+  //       "input:focus": {
+  //         boxShadow: "none"
+  //       }
+  //     }),
+  //     option: (defaultStyles: any) => ({
+  //       ...defaultStyles,
+  //       paddingTop: "4px",
+  //       paddingBottom: "4px",
+  //       paddingLeft: "10px",
+  //       fontSize: "14px"
+  //     })
+  //   };
+  // }
 }
 
 type CompReactSelectType = {

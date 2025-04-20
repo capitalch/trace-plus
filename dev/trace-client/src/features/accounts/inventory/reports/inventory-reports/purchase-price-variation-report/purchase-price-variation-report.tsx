@@ -1,4 +1,5 @@
 import "react-sliding-pane/dist/react-sliding-pane.css";
+import SlidingPane from "react-sliding-pane";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,
@@ -9,16 +10,28 @@ import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { BackToDashboardLink } from "../../back-to-dashboard-link";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
-import { PurchasePriceVariationToolbarButton } from "./purchase-price-variation-toolbar-button";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchasePriceVariationToolbarFilterDisplay } from "./purchase-price-variation-toolbar-filter-display";
+import {
+  AppDispatchType,
+  RootStateType
+} from "../../../../../../app/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
+import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";
 
 export function PurchasePriceVariationReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.purchasePriceVariationReport;
-  const [rowsData, setRowsData] = useState<RowDataType[]>([])
+  const dispatch: AppDispatchType = useDispatch();
+  const selectedIsPaneOpen = useSelector(
+    (state: RootStateType) =>
+      state.accounts.purchasePriceVariationFilterState.isPaneOpen
+  );
+
+  const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
     branchId,
     buCode,
@@ -29,20 +42,21 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   return (
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
-        CustomControl={() => <div className="flex items-center gap-6">
-          <PurchasePriceVariationToolbarFilterDisplay />
-          <PurchasePriceVariationToolbarButton />
-        </div>
-        }
+        CustomControl={() => (
+          <div className="flex items-center gap-6">
+            <PurchasePriceVariationToolbarFilterDisplay />
+          </div>
+        )}
         className="mr-4"
         minWidth="600px"
         title={title || ""}
+        isPdfExportAsLandscape={true}
         isPdfExport={true}
         isExcelExport={true}
         isCsvExport={true}
@@ -64,6 +78,16 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         minWidth="900px"
         queryCellInfo={handleQueryCellInfo}
       />
+      <SlidingPane
+        isOpen={selectedIsPaneOpen}
+        title="Filter Options"
+        onRequestClose={() =>
+          dispatch(setPurchasePriceVariationIsPaneOpen(false))
+        }
+        width="500px"
+      >
+        <PurchasePriceVariationFilterControl instance={instance} />
+      </SlidingPane>
     </div>
   );
 
@@ -158,7 +182,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
       },
       {
         field: "bColor",
-        type: 'boolean',
+        type: "boolean",
         visible: false,
         width: 0
       },
@@ -175,67 +199,75 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
 
     // Light background if row has bColor
     if (rowData.bColor && args.cell) {
-      (args.cell as any).style.backgroundColor = '#f9fef9';
+      (args.cell as any).style.backgroundColor = "#f9fef9";
     }
 
     // Apply text color only to "diff" column
-    if (args.column?.field === 'diff' && typeof rowData.diff === 'number') {
+    if (args.column?.field === "diff" && typeof rowData.diff === "number") {
       if (rowData.diff > 1) {
-        (args.cell as any).style.color = 'red';
+        (args.cell as any).style.color = "red";
       } else if (rowData.diff < -1) {
-        (args.cell as any).style.color = 'blue';
+        (args.cell as any).style.color = "blue";
       }
     }
-
   }
 
   async function loadData() {
     try {
+      const state: RootStateType = Utils.getReduxState();
+      const temp = state.accounts.purchasePriceVariationFilterState;
+      console.log(temp);
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
-        buCode: buCode || '',
-        dbName: dbName || '',
+        buCode: buCode || "",
+        dbName: dbName || "",
         dbParams: decodedDbParamsObject,
         instance: instance,
         sqlId: SqlIdsMap.getPurchasePriceVariation,
         sqlArgs: {
           branchId: branchId,
           finYearId: finYearId,
-          brandId: null,
-          catId: null,
-          tagId: null
+          brandId:
+            state.accounts.purchasePriceVariationFilterState.selectedBrand
+              ?.id || null,
+          catId:
+            state.accounts.purchasePriceVariationFilterState.selectedCategory
+              ?.id || null,
+          tagId:
+            state.accounts.purchasePriceVariationFilterState.selectedTag?.id ||
+            null
         }
-      })
-      updateRowsDataForDisplay(rowsData)
+      });
+      updateRowsDataForDisplay(rowsData);
     } catch (e: any) {
-      console.log(e)
+      console.log(e);
     }
   }
 
   function updateRowsDataForDisplay(rows: RowDataType[]) {
-    if (rows.length === 0) return;
-    let currentProductCode = rows[0].productCode;
-    let previousPrice = rows[0].price;
-    let alternateColor = false;
+    if (rows.length > 0) {
+      let currentProductCode = rows[0].productCode;
+      let previousPrice = rows[0].price;
+      let alternateColor = false;
 
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const { productCode, price } = row;
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const { productCode, price } = row;
 
-      // Toggle color on product code change
-      if (productCode !== currentProductCode) {
-        alternateColor = !alternateColor;
-        currentProductCode = productCode;
-        previousPrice = price;
-      } else if (price !== previousPrice) {
-        const diff = ((price - previousPrice) / previousPrice) * 100;
-        row.diff = Math.round(diff * 100) / 100;
-        row.absDiff = Math.abs(diff);
-        previousPrice = price;
+        // Toggle color on product code change
+        if (productCode !== currentProductCode) {
+          alternateColor = !alternateColor;
+          currentProductCode = productCode;
+          previousPrice = price;
+        } else if (price !== previousPrice) {
+          const diff = ((price - previousPrice) / previousPrice) * 100;
+          row.diff = Math.round(diff * 100) / 100;
+          row.absDiff = Math.abs(diff);
+          previousPrice = price;
+        }
+        row.bColor = alternateColor;
       }
-
-      row.bColor = alternateColor;
     }
-    setRowsData(rows)
+    setRowsData(rows);
   }
 }
 

@@ -26,8 +26,9 @@ const initialState: AccountsInitialStateType = {
   },
   productOpeningBalanceEdit: {},
   purchasePriceVariationFilterState: {
+    isPaneOpen: false,
     selectedBrand: null,
-    selectedCategory: null, // { id: "0", catName: "", isLeaf: true, parentId: null },
+    selectedCategory: null,
     selectedTag: null,
   },
   tranHeaderEdit: {},
@@ -86,6 +87,13 @@ const accountsSlice = createSlice({
     },
 
     // purchase price variation filter
+    setPurchasePriceVariationIsPaneOpen: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<boolean>
+    ) => {
+      state.purchasePriceVariationFilterState.isPaneOpen = action.payload;
+    },
+
     setSelectedBrand: (
       state: AccountsInitialStateType,
       action: PayloadAction<BrandType | null>
@@ -149,6 +157,7 @@ export const {
 
   // purchase price variation filters
   resetPurchasePriceVariationFilters,
+  setPurchasePriceVariationIsPaneOpen,
   setSelectedBrand,
   setSelectedCategory,
   setSelectedTag,
@@ -193,6 +202,7 @@ export type ProductOpeningBalanceEditType = {
 };
 
 type PurchasePriceVariationFilterType = {
+  isPaneOpen: boolean;
   selectedCategory: CategoryType | null;
   selectedBrand: BrandType | null;
   selectedTag: TagType | null;
