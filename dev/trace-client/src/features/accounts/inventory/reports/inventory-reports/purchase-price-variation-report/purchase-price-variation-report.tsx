@@ -37,7 +37,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
     (state: RootStateType) =>
       state.accounts.purchasePriceVariationFilterState.isPaneOpen
   );
-  
+
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
     branchId,
@@ -88,6 +88,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         height="calc(100vh - 245px)"
         instance={instance}
         isLoadOnInit={false}
+        isSmallerFont={true}
         loadData={loadData}
         minWidth="600px"
         queryCellInfo={handleQueryCellInfo}
@@ -123,7 +124,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
     return [
       {
         field: "productCode",
-        headerText: "P Code",
+        headerText: "P code",
         width: 90,
         type: "string"
       },
@@ -164,7 +165,6 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         field: "diff",
         headerText: "Diff (%)",
         type: "string",
-        // format: "N2",
         textAlign: "Right",
         width: 80
       },
@@ -229,9 +229,6 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
   async function loadData() {
     try {
       const state: RootStateType = Utils.getReduxState();
-      // const branchid = isAllBranches ? null : branchId;
-      // const currentBranch = currentBranchSelector
-      // const currentStateBranch = state.login.currentBranch
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",

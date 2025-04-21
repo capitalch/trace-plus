@@ -38,7 +38,7 @@ export const InventoryReportsRouterMap: InventoryReportItemType[] = [
     },
     {
         id: "all-purchases",
-        name: "Purchases",
+        name: "Purchase",
         icon: <IconPurchase className="text-cyan-500" />
     },
     {

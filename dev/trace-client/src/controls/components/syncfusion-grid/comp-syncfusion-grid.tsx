@@ -30,6 +30,7 @@ import { Utils } from "../../../utils/utils";
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
 import { useSelector } from "react-redux";
 import { isSideBarOpenSelectorFn } from "../../../features/layouts/layouts-slice";
+import clsx from "clsx";
 
 export function CompSyncFusionGrid({
   actionBegin,
@@ -53,6 +54,7 @@ export function CompSyncFusionGrid({
   height,
   indexColumnWidth = 40,
   isLoadOnInit = true,
+  isSmallerFont = false,
   instance,
   loadData,
   minWidth = "1200px",
@@ -135,7 +137,7 @@ export function CompSyncFusionGrid({
 
   return (
     <GridComponent
-      style={{ maxWidth: maxWidth, minWidth: minWidth }}
+      style={{ maxWidth: maxWidth, minWidth: minWidth, }}
       actionBegin={actionBegin}
       actionComplete={actionComplete}
       allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
@@ -147,7 +149,7 @@ export function CompSyncFusionGrid({
       allowSelection={true}
       allowTextWrap={true}
       cellEdit={onCellEdit}
-      className={className}
+      className={clsx(className, isSmallerFont ? 'smaller-font': '' )}
       created={onCreated}
       dataSource={dataSource || selectedData || []}
       editSettings={editSettings}
@@ -247,6 +249,7 @@ export type CompSyncFusionGridType = {
   indexColumnWidth?: number;
   instance: string;
   isLoadOnInit?: boolean;
+  isSmallerFont?: boolean
   loadData?: () => void;
   minWidth?: string;
   onCellEdit?: (args: any) => void;

@@ -82,10 +82,19 @@
 													- toolbar ui
 		- Purchases
 			- All branches / this branch
+			- verify branch changes
 			- Filter
 			- grid
-				- SQL
-				- filters
+													- UI
+													- SQL
+													- Same background color for same invoice
+				- filters implement
+													- format
+													- Adjust col width
+				- Aggregates for many columns
+												- fields
+													- Purh gst price
+													- party
 			- toolbar
 
 		- Sales

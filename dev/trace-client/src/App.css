@@ -153,3 +153,14 @@
 .e-ddt-hidden {
   display: none !important;
 }
+
+/* .e-grid .e-rowcell,
+.e-grid .e-headercell {
+  font-size: 12px;
+} */
+
+/* Syncfusion grid with smaller font of 12px */
+.smaller-font .e-rowcell,
+.smaller-font .e-headercell {
+  font-size: 12px;
+}
