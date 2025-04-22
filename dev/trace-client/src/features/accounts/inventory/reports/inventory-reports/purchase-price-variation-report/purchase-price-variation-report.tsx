@@ -27,16 +27,11 @@ import { selectCompSwitchStateFn } from "../../../../../../controls/redux-compon
 
 export function PurchasePriceVariationReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.purchasePriceVariationReport;
-  // const dispatch: AppDispatchType = useDispatch();
   const isAllBranches: boolean =
     useSelector(
       (state: RootStateType) => selectCompSwitchStateFn(state, instance),
       shallowEqual
     ) || false;
-  // const selectedIsPaneOpen = useSelector(
-  //   (state: RootStateType) =>
-  //     state.accounts.purchasePriceVariationFilterState.isPaneOpen
-  // );
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
@@ -93,16 +88,6 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         minWidth="600px"
         queryCellInfo={handleQueryCellInfo}
       />
-      {/* <SlidingPane
-        isOpen={selectedIsPaneOpen}
-        title="Filter Options"
-        onRequestClose={() =>
-          dispatch(setPurchasePriceVariationIsPaneOpen(false))
-        }
-        width="500px"
-      >
-        <PurchasePriceVariationFilterControl instance={instance} />
-      </SlidingPane> */}
     </div>
   );
 
