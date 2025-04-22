@@ -60,13 +60,13 @@ export function PurchaseReportFilterContol() {
         const formatDate = (date: Date) => format(date, isoFormat)
         const today = new Date()
         const prevMonth = subMonths(today, 1)
-        const fiscalYearStartMonth = 3 // April (0-based index)
+        // const fiscalYearStartMonth = 3 // April (0-based index)
         const fiscalYearStartYear = currentFinYear?.finYearId || new Date().getFullYear() // today.getMonth() < fiscalYearStartMonth ? today.getFullYear() - 1 : today.getFullYear()
-        const fiscalStartDate = new Date(fiscalYearStartYear, 3, 1) // April 1st
-        const fiscalEndDate = new Date(fiscalYearStartYear + 1, 2, 31) // March 31st next year
+        // const fiscalStartDate = new Date(fiscalYearStartYear, 3, 1) // April 1st
+        // const fiscalEndDate = new Date(fiscalYearStartYear + 1, 2, 31) // March 31st next year
 
         const logicObject: { [key: string]: { startDate: Date , endDate: Date  } } = {
-            finYear: { startDate: currentFinYear?.startDate || Date(), endDate: currentFinYear?.endDate || Date() },
+            finYear: { startDate: new Date(currentFinYear?.startDate || Date()), endDate: new Date(currentFinYear?.endDate || Date()) },
             today: { startDate: today, endDate: today },
             prevDay: { startDate: subDays(today, 1), endDate: subDays(today, 1) },
             last3Days: { startDate: subDays(today, 2), endDate: today },
