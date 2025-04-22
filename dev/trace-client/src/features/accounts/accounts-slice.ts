@@ -31,6 +31,11 @@ const initialState: AccountsInitialStateType = {
     selectedCategory: null,
     selectedTag: null,
   },
+  purchaseReportFilterState: {
+    isPaneOpen: false,
+    selectedStartDate: "",
+    selectedEndDate: "",
+  },
   tranHeaderEdit: {},
 };
 
@@ -121,6 +126,23 @@ const accountsSlice = createSlice({
       state.purchasePriceVariationFilterState.selectedTag = null;
     },
 
+    // Purchase report filter
+    setPurchaseReportFilterDateInterval: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<{ startDate: string; endDate: string }>
+    ) => {
+      state.purchaseReportFilterState.selectedStartDate =
+        action.payload.startDate;
+      state.purchaseReportFilterState.selectedEndDate = action.payload.endDate;
+    },
+
+    setPurchaseReportIsPaneOpen: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<boolean>
+    ) => {
+      state.purchaseReportFilterState.isPaneOpen = action.payload;
+    },
+
     // tranHeader edits
     setTranHeaderIdToEdit: (
       state: AccountsInitialStateType,
@@ -161,6 +183,9 @@ export const {
   setSelectedBrand,
   setSelectedCategory,
   setSelectedTag,
+  // purchase report filters
+  setPurchaseReportIsPaneOpen,
+  setPurchaseReportFilterDateInterval,
 
   resetTranHeaderIdToEdit,
   setTranHeaderIdToEdit,
@@ -175,6 +200,7 @@ export type AccountsInitialStateType = {
   };
   productOpeningBalanceEdit: ProductOpeningBalanceEditType;
   purchasePriceVariationFilterState: PurchasePriceVariationFilterType;
+  purchaseReportFilterState: PurchaseReportFilterType;
   tranHeaderEdit: {
     [key: string]: {
       id: number | null | undefined;
@@ -206,6 +232,12 @@ type PurchasePriceVariationFilterType = {
   selectedCategory: CategoryType | null;
   selectedBrand: BrandType | null;
   selectedTag: TagType | null;
+};
+
+type PurchaseReportFilterType = {
+  isPaneOpen: boolean;
+  selectedStartDate: string;
+  selectedEndDate: string;
 };
 
 export type SelectedBankType = {

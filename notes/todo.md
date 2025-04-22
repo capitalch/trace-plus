@@ -81,8 +81,8 @@
 														- populate controls
 													- toolbar ui
 		- Purchases
-			- All branches / this branch
-			- verify branch changes
+													- All branches / this branch
+													- verify branch changes
 			- Filter
 			- grid
 													- UI
@@ -91,7 +91,7 @@
 				- filters implement
 													- format
 													- Adjust col width
-				- Aggregates for many columns
+													- Aggregates for many columns
 												- fields
 													- Purh gst price
 													- party

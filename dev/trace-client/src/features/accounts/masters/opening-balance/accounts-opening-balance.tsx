@@ -92,16 +92,6 @@ export function AccountsOpeningBalance() {
         return (logicObject?.[props.accType] || '')
     }
 
-    // function HandleSetScroll() {
-    //     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-    //     const treeGridElement = gridRef?.current?.grid?.getContent();
-    //     if (treeGridElement) {
-    //         const scrollableContainer = treeGridElement.querySelector('.e-content');
-    //         scrollableContainer.scrollTop = 300
-    //         treeGridUtils.saveScrollPos(context, instance)
-    //     }
-    // }
-
     function calculateCredits() {
         const ret: Decimal = meta.current.rows.reduce((sum: Decimal, current: AccountsOpeningBalanceType) =>
             (sum.plus(current.credit || 0)), new Decimal(0))
@@ -179,16 +169,6 @@ export function AccountsOpeningBalance() {
                 customAttributes: {
                     class: 'grid-col-edit'
                 },
-                // edit: {
-                //     params:
-                //     {
-                //         decimals: 2,
-                //         format: 'N2',
-                //         showSpinButton: false,
-                //         validateDecimalOnType: true
-                //     }
-                // },
-                // editType: 'numericedit', // 'textedit',
                 editTemplate: (args: any) => (NumericEditTemplate(args, onCreditValueChanged)),
                 field: 'credit',
                 headerText: 'Credits',
@@ -259,7 +239,6 @@ export function AccountsOpeningBalance() {
                     xData: formattedData
                 })
                 Utils.showSaveMessage()
-                // Utils.treeGridUtils.saveScrollPos(context, instance)
                 await loadData()
             } catch (e: any) {
                 console.log(e)
@@ -284,7 +263,6 @@ export function AccountsOpeningBalance() {
             const res: any = await Utils.queryGraphQL(q, queryName)
             meta.current.rows = res?.data?.[queryName]
             Utils.addUniqueKeysToJson(meta.current.rows) // adds unique pkey to each record
-            // Utils.treeGridUtils.saveScrollPos(context,instance)
             if (!_.isEmpty(meta.current.rows)) {
                 sumDebitCredit()
                 flattenData(meta.current.rows)
@@ -392,7 +370,6 @@ export function AccountsOpeningBalance() {
         nodes.forEach((node: any) => calculateTotals(node));
 
         const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
-        // treeGridUtils.saveScrollPos(context, instance)
         if (gridRef) {
             gridRef.current.dataSource = nodes // resets scrollpos
             gridRef.current.endEdit()

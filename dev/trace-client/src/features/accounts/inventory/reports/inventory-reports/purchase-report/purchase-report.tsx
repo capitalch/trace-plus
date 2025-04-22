@@ -13,9 +13,15 @@ import { format } from "date-fns";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
+import { PurchaseReportToolbarFilterDisplay } from "./purchase-report-toolbar-filter-display";
 
 export function PurchaseReport({ title }: { title?: string }) {
+  // const dispatch: AppDispatchType = useDispatch()
   const instance = DataInstancesMap.purchaseReport;
+  // const selectedIsPaneOpen = useSelector(
+  //   (state: RootStateType) =>
+  //     state.accounts.purchaseReportFilterState.isPaneOpen
+  // );
   const isAllBranches: boolean =
     useSelector(
       (state: RootStateType) => selectCompSwitchStateFn(state, instance),
@@ -42,6 +48,7 @@ export function PurchaseReport({ title }: { title?: string }) {
       <CompSyncFusionGridToolbar
         CustomControl={() => (
           <div className="flex items-center gap-6">
+            <PurchaseReportToolbarFilterDisplay />
             <CompSwitch
               instance={instance}
               className=""
@@ -49,7 +56,6 @@ export function PurchaseReport({ title }: { title?: string }) {
               rightLabel="All branches"
               toToggleLeftLabel={true}
             />
-            {/* <PurchasePriceVariationToolbarFilterDisplay /> */}
           </div>
         )}
         className="mr-4"
@@ -85,11 +91,11 @@ export function PurchaseReport({ title }: { title?: string }) {
         isOpen={selectedIsPaneOpen}
         title="Filter Options"
         onRequestClose={() =>
-          dispatch(setPurchasePriceVariationIsPaneOpen(false))
+          dispatch(setPurchaseReportIsPaneOpen(false))
         }
         width="500px"
       >
-        <PurchasePriceVariationFilterControl instance={instance} />
+        <div></div>
       </SlidingPane> */}
     </div>
   );
@@ -97,14 +103,68 @@ export function PurchaseReport({ title }: { title?: string }) {
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
       {
-        columnName: "info",
+        columnName: "autoRefNo",
         type: "Count",
-        field: "info",
+        field: "autoRefNo",
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">Count: {props.Count}</span>
         )
-      }
+      },
+      {
+        columnName: "qty",
+        type: "Sum",
+        field: "qty",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "aggrPurchase",
+        type: "Sum",
+        field: "aggrPurchase",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "amount",
+        type: "Sum",
+        field: "amount",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "cgst",
+        type: "Sum",
+        field: "cgst",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "sgst",
+        type: "Sum",
+        field: "sgst",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "igst",
+        type: "Sum",
+        field: "igst",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
     ];
   }
 
@@ -144,7 +204,7 @@ export function PurchaseReport({ title }: { title?: string }) {
         type: "string"
       },
       {
-        field: "",
+        field: "info",
         headerText: "Product",
         width: 250,
         type: "string",
@@ -257,7 +317,8 @@ export function PurchaseReport({ title }: { title?: string }) {
 
   async function loadData() {
     try {
-      // const state: RootStateType = Utils.getReduxState();
+      const state: RootStateType = Utils.getReduxState();
+      const isAllBranchesState = state.reduxComp.compSwitch[instance]
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",
@@ -265,7 +326,7 @@ export function PurchaseReport({ title }: { title?: string }) {
         instance: instance,
         sqlId: SqlIdsMap.getPurchaseReport,
         sqlArgs: {
-          branchId: isAllBranches ? null : branchId,
+          branchId: isAllBranchesState ? null : state.login.currentBranch?.branchId, // this get the latest branchId
           finYearId: finYearId,
           startDate: currentFinYear?.startDate || format(Date(), isoFormat),
           endDate: currentFinYear?.endDate || format(Date(), isoFormat)

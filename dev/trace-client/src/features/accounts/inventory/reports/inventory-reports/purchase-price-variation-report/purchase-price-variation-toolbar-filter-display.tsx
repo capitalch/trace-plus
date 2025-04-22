@@ -3,11 +3,18 @@ import {
   AppDispatchType,
   RootStateType
 } from "../../../../../../app/store/store";
+import SlidingPane from "react-sliding-pane";
 import clsx from "clsx";
 import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";
+import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
+import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 
 export function PurchasePriceVariationToolbarFilterDisplay() {
   const dispatch: AppDispatchType = useDispatch();
+  const selectedIsPaneOpen = useSelector(
+    (state: RootStateType) =>
+      state.accounts.purchasePriceVariationFilterState.isPaneOpen
+  );
   const selectedBrandOption = useSelector(
     (state: RootStateType) =>
       state.accounts.purchasePriceVariationFilterState.selectedBrand
@@ -46,6 +53,16 @@ export function PurchasePriceVariationToolbarFilterDisplay() {
       >
         Open Filters
       </button>
+      <SlidingPane
+        isOpen={selectedIsPaneOpen}
+        title="Filter Options"
+        onRequestClose={() =>
+          dispatch(setPurchasePriceVariationIsPaneOpen(false))
+        }
+        width="500px"
+      >
+        <PurchasePriceVariationFilterControl instance={DataInstancesMap.purchasePriceVariationReport} />
+      </SlidingPane>
     </div>
   );
 }

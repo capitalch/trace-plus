@@ -1,5 +1,5 @@
 import "react-sliding-pane/dist/react-sliding-pane.css";
-import SlidingPane from "react-sliding-pane";
+// import SlidingPane from "react-sliding-pane";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,
@@ -16,27 +16,27 @@ import { Utils } from "../../../../../../utils/utils";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchasePriceVariationToolbarFilterDisplay } from "./purchase-price-variation-toolbar-filter-display";
 import {
-  AppDispatchType,
+  // AppDispatchType,
   RootStateType
 } from "../../../../../../app/store/store";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
-import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";
+import { shallowEqual, useSelector } from "react-redux";
+// import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
+// import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";
 import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 
 export function PurchasePriceVariationReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.purchasePriceVariationReport;
-  const dispatch: AppDispatchType = useDispatch();
+  // const dispatch: AppDispatchType = useDispatch();
   const isAllBranches: boolean =
     useSelector(
       (state: RootStateType) => selectCompSwitchStateFn(state, instance),
       shallowEqual
     ) || false;
-  const selectedIsPaneOpen = useSelector(
-    (state: RootStateType) =>
-      state.accounts.purchasePriceVariationFilterState.isPaneOpen
-  );
+  // const selectedIsPaneOpen = useSelector(
+  //   (state: RootStateType) =>
+  //     state.accounts.purchasePriceVariationFilterState.isPaneOpen
+  // );
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
@@ -56,7 +56,8 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         CustomControl={() => (
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            <PurchasePriceVariationToolbarFilterDisplay />
             <CompSwitch
               instance={instance}
               className=""
@@ -64,7 +65,6 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
               rightLabel="All branches"
               toToggleLeftLabel={true}
             />
-            <PurchasePriceVariationToolbarFilterDisplay />
           </div>
         )}
         className="mr-4"
@@ -93,7 +93,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         minWidth="600px"
         queryCellInfo={handleQueryCellInfo}
       />
-      <SlidingPane
+      {/* <SlidingPane
         isOpen={selectedIsPaneOpen}
         title="Filter Options"
         onRequestClose={() =>
@@ -102,7 +102,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         width="500px"
       >
         <PurchasePriceVariationFilterControl instance={instance} />
-      </SlidingPane>
+      </SlidingPane> */}
     </div>
   );
 
@@ -229,6 +229,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
   async function loadData() {
     try {
       const state: RootStateType = Utils.getReduxState();
+      const isAllBranchesState = state.reduxComp.compSwitch[instance]
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",
@@ -236,7 +237,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         instance: instance,
         sqlId: SqlIdsMap.getPurchasePriceVariation,
         sqlArgs: {
-          branchId: isAllBranches ? null : state.login.currentBranch?.branchId, // this get the latest branchId
+          branchId: isAllBranchesState ? null : state.login.currentBranch?.branchId, // this get the latest branchId
           finYearId: finYearId,
           brandId:
             state.accounts.purchasePriceVariationFilterState.selectedBrand
