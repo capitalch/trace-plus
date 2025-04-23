@@ -84,18 +84,20 @@
 													- All branches / this branch
 													- verify branch changes
 			- Filter
-			- grid
+				- April - Mar selection
+				- logic correction
+												- grid
 													- UI
 													- SQL
 													- Same background color for same invoice
-				- filters implement
+													- filters implement
 													- format
 													- Adjust col width
 													- Aggregates for many columns
 												- fields
 													- Purh gst price
 													- party
-			- toolbar
+													- toolbar
 
 		- Sales
 		- Stock summary

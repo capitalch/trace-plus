@@ -33,6 +33,8 @@ const initialState: AccountsInitialStateType = {
   },
   purchaseReportFilterState: {
     isPaneOpen: false,
+    selectMode: "predefined",
+    selectedPredefinedValue: null,
     selectedStartDate: "",
     selectedEndDate: "",
   },
@@ -127,6 +129,12 @@ const accountsSlice = createSlice({
     },
 
     // Purchase report filter
+    setPurchaseReportPredefinedValue: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<string | number | null>
+    ) => {
+      state.purchaseReportFilterState.selectedPredefinedValue = action.payload;
+    },
     setPurchaseReportFilterDateInterval: (
       state: AccountsInitialStateType,
       action: PayloadAction<{ startDate: string; endDate: string }>
@@ -141,6 +149,13 @@ const accountsSlice = createSlice({
       action: PayloadAction<boolean>
     ) => {
       state.purchaseReportFilterState.isPaneOpen = action.payload;
+    },
+
+    setPurchaseReportSelectMode: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<"predefined" | "custom">
+    ) => {
+      state.purchaseReportFilterState.selectMode = action.payload;
     },
 
     // tranHeader edits
@@ -186,7 +201,9 @@ export const {
   // purchase report filters
   setPurchaseReportIsPaneOpen,
   setPurchaseReportFilterDateInterval,
-
+  setPurchaseReportPredefinedValue,
+  setPurchaseReportSelectMode,
+  // tranHeader edits
   resetTranHeaderIdToEdit,
   setTranHeaderIdToEdit,
 } = accountsSlice.actions;
@@ -236,6 +253,8 @@ type PurchasePriceVariationFilterType = {
 
 type PurchaseReportFilterType = {
   isPaneOpen: boolean;
+  selectMode: "predefined" | "custom";
+  selectedPredefinedValue: string | number | null;
   selectedStartDate: string;
   selectedEndDate: string;
 };

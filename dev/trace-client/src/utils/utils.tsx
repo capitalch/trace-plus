@@ -50,6 +50,7 @@ export const Utils: UtilsType = {
   getUserDetails: getUserDetails,
   gridUtils: gridUtils,
   isNotNullOrUndefined: isNotNullOrUndefined,
+  isNumeric: isNumeric,
   loadDataInTreeGridWithSavedScrollPos: loadDataInTreeGridWithSavedScrollPos,
   mutateGraphQL: mutateGraphQL,
   queryGraphQL: queryGraphQL,
@@ -367,6 +368,10 @@ function getUserDetails(): UserDetailsType | undefined {
 
 function isNotNullOrUndefined<T>(value: T | null | undefined): boolean {
   return value !== null && value !== undefined;
+}
+
+function isNumeric(value: any): boolean {
+  return !isNaN(Number(value));
 }
 
 async function loadDataInTreeGridWithSavedScrollPos(
@@ -811,6 +816,7 @@ type UtilsType = {
   getUserDetails: () => UserDetailsType | undefined;
   gridUtils: GridUtilsType;
   isNotNullOrUndefined: (value: any) => boolean;
+  isNumeric: (value: any) => boolean;
   loadDataInTreeGridWithSavedScrollPos: (
     context: GlobalContextType,
     instance: string

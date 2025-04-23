@@ -16,23 +16,19 @@ import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchaseReportToolbarFilterDisplay } from "./purchase-report-toolbar-filter-display";
 
 export function PurchaseReport({ title }: { title?: string }) {
-  // const dispatch: AppDispatchType = useDispatch()
   const instance = DataInstancesMap.purchaseReport;
-  // const selectedIsPaneOpen = useSelector(
-  //   (state: RootStateType) =>
-  //     state.accounts.purchaseReportFilterState.isPaneOpen
-  // );
   const isAllBranches: boolean =
     useSelector(
       (state: RootStateType) => selectCompSwitchStateFn(state, instance),
       shallowEqual
     ) || false;
+  const selectedStartDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedStartDate)
+  const selectedEndDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedEndDate)
+
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
-  const isoFormat = 'yyyy-MM-dd'
   const {
     branchId,
     buCode,
-    currentFinYear,
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
@@ -40,14 +36,16 @@ export function PurchaseReport({ title }: { title?: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
-    loadData();
-  }, [isAllBranches, branchId, buCode]);
+    if(selectedStartDate && selectedEndDate) {
+      loadData();
+    }
+  }, [isAllBranches, branchId, buCode, selectedStartDate, selectedEndDate]);
 
   return (
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         CustomControl={() => (
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
             <PurchaseReportToolbarFilterDisplay />
             <CompSwitch
               instance={instance}
@@ -87,16 +85,6 @@ export function PurchaseReport({ title }: { title?: string }) {
         minWidth="800px"
         queryCellInfo={handleQueryCellInfo}
       />
-      {/* <SlidingPane
-        isOpen={selectedIsPaneOpen}
-        title="Filter Options"
-        onRequestClose={() =>
-          dispatch(setPurchaseReportIsPaneOpen(false))
-        }
-        width="500px"
-      >
-        <div></div>
-      </SlidingPane> */}
     </div>
   );
 
@@ -319,6 +307,9 @@ export function PurchaseReport({ title }: { title?: string }) {
     try {
       const state: RootStateType = Utils.getReduxState();
       const isAllBranchesState = state.reduxComp.compSwitch[instance]
+      const startDate = state.accounts.purchaseReportFilterState.selectedStartDate
+      const endDate = state.accounts.purchaseReportFilterState.selectedEndDate
+
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",
@@ -328,8 +319,8 @@ export function PurchaseReport({ title }: { title?: string }) {
         sqlArgs: {
           branchId: isAllBranchesState ? null : state.login.currentBranch?.branchId, // this get the latest branchId
           finYearId: finYearId,
-          startDate: currentFinYear?.startDate || format(Date(), isoFormat),
-          endDate: currentFinYear?.endDate || format(Date(), isoFormat)
+          startDate: startDate, //'2025-04-01', // 
+          endDate: endDate,//'2025-04-22', 
         }
       });
       setRowsDataBColor(rowsData);
