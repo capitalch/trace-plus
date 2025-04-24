@@ -1,36 +1,26 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
+import { useRef } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
-import { useEffect, useRef, useState, } from "react";
 import Select from 'react-select'
+import { setPurchaseReportCustomFilterOption, setPurchaseReportFilterDateInterval, setPurchaseReportIsPaneOpen, setPurchaseReportPredefinedFilterOption, setPurchaseReportSelectMode } from "../../../../accounts-slice";
 import { Utils } from "../../../../../../utils/utils";
-import { endOfMonth, format, formatDate, startOfMonth, startOfWeek, subDays, subMonths } from "date-fns";
-import { setPurchasePriceVariationIsPaneOpen, setPurchaseReportFilterDateInterval, setPurchaseReportPredefinedValue, setPurchaseReportSelectMode } from "../../../../accounts-slice";
-import clsx from "clsx";
+import { endOfMonth, format, startOfMonth, startOfWeek, subDays, subMonths } from "date-fns";
+// import clsx from "clsx";
 
 export function PurchaseReportFilterContol() {
-    const [, setRefresh] = useState({})
     const dispatch: AppDispatchType = useDispatch();
     const selectRef: any = useRef<Select>(null)
     const { currentDateFormat, currentFinYear, } = useUtilsInfo();
     const isoFormat = 'yyyy-MM-dd'
-
-    const selectedStartDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedStartDate)
-    const selectedEndDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedEndDate)
-    const selectedSelectMode = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectMode)
-    const selectedPredefinedValue = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedPredefinedValue)
-
     const fiscalYearStartYear = currentFinYear?.finYearId || new Date().getFullYear()
-    const predefinedDateRangeLocalState = useRef<{ startDate: string, endDate: string }>({ startDate: '', endDate: '' })
-    const customDateRangeLocalState = useRef<{ startDate: string, endDate: string }>({ startDate: '', endDate: '' })
 
-    // useEffect(() => {
-    //     if (selectRef?.current) {
-    //         // selectRef.current.setValue(periodOptions[0])
-    //         // const dateRange = getDateRange(periodOptions[0].value)
-    //         // dispatch(setPurchaseReportFilterDateInterval({ startDate: dateRange.startDate, endDate: dateRange.endDate }))
-    //     }
-    // }, [])
+    //redux
+    // const selectedStartDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedStartDate)
+    // const selectedEndDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedEndDate)
+    const selectedSelectMode = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectMode)
+    const selectedPredefinedFilterOption = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.predefinedFilterOption)
+    const selectedCustomFilterOption = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.customFilterOption)
 
     return (
         <div className="flex flex-col gap-6">
@@ -74,14 +64,12 @@ export function PurchaseReportFilterContol() {
                         options={periodOptions}
                         onChange={handleOnChangePredefinedDateRange}
                         menuPlacement="auto"
-                        value={periodOptions.find((option) => option.value === selectedPredefinedValue) || null}
+                        value={periodOptions.find((option) => option.value === selectedPredefinedFilterOption.value) || null}
                     />
 
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                        {/* <div>Start date: <span className="font-medium">{selectedStartDate ? format(selectedStartDate, currentDateFormat) : 'None'}</span></div>
-                        <div>End date: <span className="font-medium">{selectedEndDate ? format(selectedEndDate, currentDateFormat) : 'None'}</span></div> */}
-                        <div>Start date: <span className="font-medium">{predefinedDateRangeLocalState.current.startDate ? format(predefinedDateRangeLocalState.current.startDate, currentDateFormat) : 'None'}</span></div>
-                        <div>End date: <span className="font-medium">{predefinedDateRangeLocalState.current.endDate ? format(predefinedDateRangeLocalState.current.endDate, currentDateFormat) : 'None'}</span></div>
+                        <div>Start date: <span className="font-medium">{selectedPredefinedFilterOption.startDate ? format(selectedPredefinedFilterOption.startDate, currentDateFormat) : 'None'}</span></div>
+                        <div>End date: <span className="font-medium">{selectedPredefinedFilterOption.endDate ? format(selectedPredefinedFilterOption.endDate, currentDateFormat) : 'None'}</span></div>
                     </div>
                 </section>
             )}
@@ -98,11 +86,9 @@ export function PurchaseReportFilterContol() {
                             <input
                                 type="date"
                                 className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-                                value={customDateRangeLocalState.current.startDate}
+                                value={selectedCustomFilterOption.startDate}
                                 onChange={(e) => {
-                                    // dispatch(setPurchaseReportSelectMode('custom'));
                                     handleCustomStartDateChange(e.target.value);
-                                    setRefresh({}) // Force re-render to update the date
                                 }}
                             />
                         </label>
@@ -112,11 +98,9 @@ export function PurchaseReportFilterContol() {
                             <input
                                 type="date"
                                 className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-                                value={customDateRangeLocalState.current.endDate}
+                                value={selectedCustomFilterOption.endDate}
                                 onChange={(e) => {
-                                    // dispatch(setPurchaseReportSelectMode('custom'))
                                     handleCustomEndDateChange(e.target.value);
-                                    setRefresh({}) // Force re-render to update the date
                                 }}
                             />
                         </label>
@@ -127,14 +111,9 @@ export function PurchaseReportFilterContol() {
             {/* Filter Button */}
             <div className="flex justify-end px-2">
                 <button
-                    onClick={handleFilter}
+                    onClick={handleApplyFilter}
                     disabled={isApplyFilterButtonDisabled()}
-                    className={clsx(
-                        "px-5 py-2 rounded-md text-white text-sm font-medium transition",
-                        selectedStartDate && selectedEndDate
-                            ? "bg-blue-600 hover:bg-blue-700"
-                            : "bg-gray-300 cursor-not-allowed"
-                    )}
+                    className="px-5 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                     Apply Filter
                 </button>
@@ -171,27 +150,25 @@ export function PurchaseReportFilterContol() {
     function handleCustomStartDateChange(date: string) {
         const dateValue = new Date(date)
         const formattedDate = format(dateValue, isoFormat)
-        customDateRangeLocalState.current.startDate = formattedDate
-        // dispatch(setPurchaseReportFilterDateInterval({ startDate: formattedDate, endDate: selectedEndDate }))
+        dispatch(setPurchaseReportCustomFilterOption({ ...selectedCustomFilterOption, startDate: formattedDate }))
     }
 
     function handleCustomEndDateChange(date: string) {
         const dateValue = new Date(date)
         const formattedDate = format(dateValue, isoFormat)
-        customDateRangeLocalState.current.endDate = formattedDate
-        // dispatch(setPurchaseReportFilterDateInterval({ startDate: selectedStartDate, endDate: formattedDate }))
+        dispatch(setPurchaseReportCustomFilterOption({ ...selectedCustomFilterOption, endDate: formattedDate }))
     }
 
-    function handleFilter() {
-        const startDate = selectedSelectMode === 'predefined' ? predefinedDateRangeLocalState.current.startDate : customDateRangeLocalState.current.startDate
-        const endDate = selectedSelectMode === 'predefined' ? predefinedDateRangeLocalState.current.endDate : customDateRangeLocalState.current.endDate
+    function handleApplyFilter() {
+        const startDate = selectedSelectMode === 'predefined' ? selectedCustomFilterOption.startDate : selectedCustomFilterOption.startDate
+        const endDate = selectedSelectMode === 'predefined' ? selectedPredefinedFilterOption.endDate : selectedCustomFilterOption.endDate
 
         if (!startDate || !endDate) {
             return
         }
 
         dispatch(setPurchaseReportFilterDateInterval({ startDate, endDate }))
-        dispatch(setPurchasePriceVariationIsPaneOpen(false))
+        dispatch(setPurchaseReportIsPaneOpen(false))
     }
 
     function handleOnChangePredefinedDateRange(selected: { label: string, value: string } | null) {
@@ -216,24 +193,16 @@ export function PurchaseReportFilterContol() {
         } else {
             dateRange = getDateRange(selected.value)
         }
-        dispatch(setPurchaseReportPredefinedValue(selected.value))
-        predefinedDateRangeLocalState.current = dateRange
-        console.log(dateRange)
-
-        // dispatch(setPurchasePriceVariationIsPaneOpen(false))
-
-        // dispatch(setPurchaseReportFilterDateInterval({
-        //     startDate: dateRange.startDate,
-        //     endDate: dateRange.endDate
-        // }))
-
+        dispatch(setPurchaseReportPredefinedFilterOption({ startDate: dateRange.startDate, endDate: dateRange.endDate, value: selected.value }))
     }
 
     function isApplyFilterButtonDisabled(): boolean {
-        const startDate = selectedSelectMode === 'predefined' ? predefinedDateRangeLocalState.current.startDate : customDateRangeLocalState.current.startDate
-        const endDate = selectedSelectMode === 'predefined' ? predefinedDateRangeLocalState.current.endDate : customDateRangeLocalState.current.endDate
-        return ((!startDate) || (!endDate))
+        const startDate = selectedSelectMode === 'predefined' ? selectedPredefinedFilterOption.startDate : selectedCustomFilterOption.startDate
+        const endDate = selectedSelectMode === 'predefined' ? selectedPredefinedFilterOption.endDate : selectedCustomFilterOption.endDate
+        const isDisabled = (!startDate) || (!endDate)
+        return (isDisabled)
     }
+
 }
 
 const periodOptions: { label: string; value: any }[] = [

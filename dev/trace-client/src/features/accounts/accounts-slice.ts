@@ -34,7 +34,16 @@ const initialState: AccountsInitialStateType = {
   purchaseReportFilterState: {
     isPaneOpen: false,
     selectMode: "predefined",
-    selectedPredefinedValue: null,
+    predefinedFilterOption: {
+      value: "",
+      startDate: "",
+      endDate: "",
+    },
+    customFilterOption: {
+      startDate: "",
+      endDate: "",
+    },
+    // selectedPredefinedValue: null,
     selectedStartDate: "",
     selectedEndDate: "",
   },
@@ -129,11 +138,20 @@ const accountsSlice = createSlice({
     },
 
     // Purchase report filter
-    setPurchaseReportPredefinedValue: (
+    setPurchaseReportCustomFilterOption: (
       state: AccountsInitialStateType,
-      action: PayloadAction<string | number | null>
+      action: PayloadAction<{ startDate: string; endDate: string }>
     ) => {
-      state.purchaseReportFilterState.selectedPredefinedValue = action.payload;
+      state.purchaseReportFilterState.customFilterOption = action.payload;
+    },
+    setPurchaseReportPredefinedFilterOption: (
+      state: AccountsInitialStateType,
+      action: PayloadAction<{
+        value: string | number;
+        startDate: string;
+        endDate: string;}>
+    ) => {
+      state.purchaseReportFilterState.predefinedFilterOption  = action.payload;
     },
     setPurchaseReportFilterDateInterval: (
       state: AccountsInitialStateType,
@@ -199,9 +217,10 @@ export const {
   setSelectedCategory,
   setSelectedTag,
   // purchase report filters
-  setPurchaseReportIsPaneOpen,
+  setPurchaseReportCustomFilterOption,
   setPurchaseReportFilterDateInterval,
-  setPurchaseReportPredefinedValue,
+  setPurchaseReportIsPaneOpen,
+  setPurchaseReportPredefinedFilterOption,
   setPurchaseReportSelectMode,
   // tranHeader edits
   resetTranHeaderIdToEdit,
@@ -254,7 +273,16 @@ type PurchasePriceVariationFilterType = {
 type PurchaseReportFilterType = {
   isPaneOpen: boolean;
   selectMode: "predefined" | "custom";
-  selectedPredefinedValue: string | number | null;
+  predefinedFilterOption:{
+    value: string | number;
+    startDate: string;
+    endDate: string;
+  },
+  customFilterOption:{
+    startDate: string;
+    endDate: string;
+  },
+  // selectedPredefinedValue: string | number | null;
   selectedStartDate: string;
   selectedEndDate: string;
 };
