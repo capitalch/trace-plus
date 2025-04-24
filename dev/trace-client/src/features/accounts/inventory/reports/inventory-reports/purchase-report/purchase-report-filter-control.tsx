@@ -5,19 +5,17 @@ import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import Select from 'react-select'
 import { setPurchaseReportCustomFilterOption, setPurchaseReportFilterDateInterval, setPurchaseReportIsPaneOpen, setPurchaseReportPredefinedFilterOption, setPurchaseReportSelectMode } from "../../../../accounts-slice";
 import { Utils } from "../../../../../../utils/utils";
-import { endOfMonth, format, startOfMonth, startOfWeek, subDays, subMonths } from "date-fns";
-// import clsx from "clsx";
+import { format} from "date-fns";
+import { dateRangeOptions, useInventoryReportsShared } from "../inventory-reports-shared-hook";
 
 export function PurchaseReportFilterContol() {
     const dispatch: AppDispatchType = useDispatch();
     const selectRef: any = useRef<Select>(null)
-    const { currentDateFormat, currentFinYear, } = useUtilsInfo();
+    const { currentDateFormat, } = useUtilsInfo();
+    const {getDateRange, getMonthRange} = useInventoryReportsShared()
     const isoFormat = 'yyyy-MM-dd'
-    const fiscalYearStartYear = currentFinYear?.finYearId || new Date().getFullYear()
 
     //redux
-    // const selectedStartDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedStartDate)
-    // const selectedEndDate = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectedEndDate)
     const selectedSelectMode = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.selectMode)
     const selectedPredefinedFilterOption = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.predefinedFilterOption)
     const selectedCustomFilterOption = useSelector((state: RootStateType) => state.accounts.purchaseReportFilterState.customFilterOption)
@@ -61,10 +59,10 @@ export function PurchaseReportFilterContol() {
                         ref={selectRef}
                         placeholder="Select a predefined date range"
                         styles={Utils.getReactSelectStyles()}
-                        options={periodOptions}
+                        options={dateRangeOptions}
                         onChange={handleOnChangePredefinedDateRange}
                         menuPlacement="auto"
-                        value={periodOptions.find((option) => option.value === selectedPredefinedFilterOption.value) || null}
+                        value={dateRangeOptions.find((option) => option.value === selectedPredefinedFilterOption.value) || null}
                     />
 
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
@@ -122,31 +120,6 @@ export function PurchaseReportFilterContol() {
         </div>
     );
 
-    function getDateRange(range: string) {
-        const formatDate = (date: Date) => format(date, isoFormat)
-        const today = new Date()
-        const prevMonth = subMonths(today, 1)
-
-        const logicObject: { [key: string]: { startDate: Date, endDate: Date } } = {
-            finYear: { startDate: new Date(currentFinYear?.startDate || Date()), endDate: new Date(currentFinYear?.endDate || Date()) },
-            today: { startDate: today, endDate: today },
-            prevDay: { startDate: subDays(today, 1), endDate: subDays(today, 1) },
-            last3Days: { startDate: subDays(today, 2), endDate: today },
-            thisWeek: { startDate: startOfWeek(today, { weekStartsOn: 1 }), endDate: today },
-            thisMonth: { startDate: startOfMonth(today), endDate: today },
-            prevMonth: { startDate: startOfMonth(prevMonth), endDate: endOfMonth(prevMonth) },
-            last3Months: { startDate: startOfMonth(subMonths(today, 3)), endDate: endOfMonth(prevMonth) },
-            qtr1: { startDate: new Date(fiscalYearStartYear, 3, 1), endDate: new Date(fiscalYearStartYear, 5, 30) },
-            qtr2: { startDate: new Date(fiscalYearStartYear, 6, 1), endDate: new Date(fiscalYearStartYear, 8, 30) },
-            qtr3: { startDate: new Date(fiscalYearStartYear, 9, 1), endDate: new Date(fiscalYearStartYear, 11, 31) },
-            qtr4: { startDate: new Date(fiscalYearStartYear + 1, 0, 1), endDate: new Date(fiscalYearStartYear + 1, 2, 31) },
-            h1: { startDate: new Date(fiscalYearStartYear, 3, 1), endDate: new Date(fiscalYearStartYear, 8, 30) },
-            h2: { startDate: new Date(fiscalYearStartYear, 9, 1), endDate: new Date(fiscalYearStartYear + 1, 2, 31) },
-        }
-        const dateRange = logicObject[range]
-        return ({ startDate: formatDate(dateRange.startDate), endDate: formatDate(dateRange.endDate) })
-    }
-
     function handleCustomStartDateChange(date: string) {
         const dateValue = new Date(date)
         const formattedDate = format(dateValue, isoFormat)
@@ -175,18 +148,6 @@ export function PurchaseReportFilterContol() {
         if (!selected) {
             return
         }
-        const getMonthRange = (month: any) => {
-            const year =
-                month >= 4 && month <= 12
-                    ? fiscalYearStartYear
-                    : fiscalYearStartYear + 1
-            const startDate = new Date(year, month - 1, 1)
-            const endDate = endOfMonth(startDate)
-            return {
-                startDate: format(startDate, isoFormat),
-                endDate: format(endDate, isoFormat)
-            }
-        }
         let dateRange: { startDate: string, endDate: string }
         if (Utils.isNumeric(selected.value)) {
             dateRange = getMonthRange(selected.value)
@@ -204,32 +165,3 @@ export function PurchaseReportFilterContol() {
     }
 
 }
-
-const periodOptions: { label: string; value: any }[] = [
-    { label: 'Current financial year', value: 'finYear' },
-    { label: 'Today', value: 'today' },
-    { label: 'Prev day', value: 'prevDay' },
-    { label: 'last 3 days', value: 'last3Days' },
-    { label: 'This week', value: 'thisWeek' },
-    { label: 'This month', value: 'thisMonth' },
-    { label: 'Prev month', value: 'prevMonth' },
-    { label: 'Last 3 months', value: 'last3Months' },
-    { label: 'Qtr1', value: 'qtr1' },
-    { label: 'Qtr2', value: 'qtr2' },
-    { label: 'Qtr3', value: 'qtr3' },
-    { label: 'Qtr4', value: 'qtr4' },
-    { label: 'H1', value: 'h1' },
-    { label: 'H2', value: 'h2' },
-    { label: 'April', value: 4 },
-    { label: 'May', value: 5 },
-    { label: 'June', value: 6 },
-    { label: 'July', value: 7 },
-    { label: 'August', value: 8 },
-    { label: 'September', value: 9 },
-    { label: 'October', value: 10 },
-    { label: 'November', value: 11 },
-    { label: 'December', value: 12, },
-    { label: 'January', value: 1 },
-    { label: 'February', value: 2 },
-    { label: 'March', value: 3 }
-]

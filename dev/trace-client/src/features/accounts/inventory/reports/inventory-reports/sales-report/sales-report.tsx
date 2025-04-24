@@ -25,8 +25,8 @@ export function SalesReport({ title }: { title?: string }) {
       shallowEqual
     ) || false;
 
-//   const selectedStartDate = useSelector((state: RootStateType) => state.accounts.salesReportFilterState.selectedStartDate)
-//   const selectedEndDate = useSelector((state: RootStateType) => state.accounts.salesReportFilterState.selectedEndDate)
+  //   const selectedStartDate = useSelector((state: RootStateType) => state.accounts.salesReportFilterState.selectedStartDate)
+  //   const selectedEndDate = useSelector((state: RootStateType) => state.accounts.salesReportFilterState.selectedEndDate)
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
@@ -40,9 +40,9 @@ export function SalesReport({ title }: { title?: string }) {
 
   useEffect(() => {
     // if (selectedStartDate && selectedEndDate) {
-    //   loadData();
+    loadData();
     // }
-  }, [isAllBranches, branchId, buCode, ]);
+  }, [isAllBranches, branchId, buCode,]);
 
   return (
     <div className="flex flex-col">
@@ -185,31 +185,33 @@ export function SalesReport({ title }: { title?: string }) {
   }
 
   async function loadData() {
-    // try {
-    //   const state: RootStateType = Utils.getReduxState();
-    //   const isAllBranchesState = state.reduxComp.compSwitch[instance];
-    //   const startDate = state.accounts.salesReportFilterState.selectedStartDate;
-    //   const endDate = state.accounts.salesReportFilterState.selectedEndDate;
+    try {
+      const state: RootStateType = Utils.getReduxState();
+      const isAllBranchesState = state.reduxComp.compSwitch[instance];
+      // const startDate = state.accounts.salesReportFilterState.selectedStartDate;
+      // const endDate = state.accounts.salesReportFilterState.selectedEndDate;
 
-    //   const rowsData: RowDataType[] = await Utils.doGenericQuery({
-    //     buCode: buCode || "",
-    //     dbName: dbName || "",
-    //     dbParams: decodedDbParamsObject,
-    //     instance: instance,
-    //     sqlId: SqlIdsMap.getSalesReport,
-    //     sqlArgs: {
-    //       branchId: isAllBranchesState ? null : state.login.currentBranch?.branchId,
-    //       finYearId,
-    //       startDate,
-    //       endDate,
-    //     }
-    //   });
+      const rowsData: RowDataType[] = await Utils.doGenericQuery({
+        buCode: buCode || "",
+        dbName: dbName || "",
+        dbParams: decodedDbParamsObject,
+        instance: instance,
+        sqlId: SqlIdsMap.getSalesReport,
+        sqlArgs: {
+          branchId: isAllBranchesState ? null : state.login.currentBranch?.branchId,
+          finYearId,
+          tagId: 0,
+          startDate: '2024-04-01',
+          endDate: '2025-03-31',
+          days: 0
+        }
+      });
 
-    //   setRowsDataBColor(rowsData);
-    //   setRowsData(rowsData);
-    // } catch (e: any) {
-    //   console.log(e);
-    // }
+      setRowsDataBColor(rowsData);
+      setRowsData(rowsData);
+    } catch (e: any) {
+      console.log(e);
+    }
 
     function setRowsDataBColor(rowData: RowDataType[]) {
       let prevRefNo = null;

@@ -221,7 +221,6 @@ export function ProductsOpeningBalancesWorkBench() {
                             return (isBefore(selectedDate, startDate) || `${Messages.errLastPurDateLessThanStartDate} ${formattedStartDate}`)
                         }
                     })}
-                // value={lastPurchaseDate}
                 />
             </FormField>
 

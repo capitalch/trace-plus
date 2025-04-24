@@ -80,7 +80,7 @@
 													- Sliding pane UI
 														- populate controls
 													- toolbar ui
-		- Purchases
+										- Purchases
 													- All branches / this branch
 													- verify branch changes
 											- Filter
@@ -112,6 +112,7 @@
 			- grid
 				- UI
 				- SQL
+				- Optimize sql
 				- populate data
 				- Fields correction, width and display
 				- Same background color for same bill

@@ -75,6 +75,7 @@ export const SqlIdsMap = {
   getProductsOpeningBalances: "get_products_opening_balances",
   getPurchasePriceVariation: "get_purchase_price_variation",
   getPurchaseReport: "get_purchase_report",
+  getSalesReport: "get_sales_report",
   getSettingsFinYearsBranches: "get_settings_fin_years_branches",
   getStockJournalOnTranHeaderId: "get_stock_journal_on_tran_header_id",
   getSubledgerAccounts: "get_subledger_accounts",
