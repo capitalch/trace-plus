@@ -11,7 +11,7 @@ import { CurrentOrdersReport } from "./inventory-reports/current-orders-report"
 import { ProductsListReport } from "./inventory-reports/products-list-report"
 import { PurchasePriceVariationReport } from "./inventory-reports/purchase-price-variation-report/purchase-price-variation-report"
 import { PurchaseReport } from "./inventory-reports/purchase-report/purchase-report"
-import { SalesReport } from "./inventory-reports/sales-report"
+import { SalesReport } from "./inventory-reports/sales-report/sales-report"
 import { StockSummaryReport } from "./inventory-reports/stock-summary-report"
 import { StockTransactionsReport } from "./inventory-reports/stock-transactions-report"
 

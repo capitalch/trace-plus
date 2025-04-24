@@ -50,6 +50,7 @@ export const DataInstancesMap = {
   purchasePriceVariationReport:"purchase-price-variation-report",
   purchaseReport:"purchase-report",
   reportAllTransactions: "report-all-transactions",
+  salesReport: "sales-report",
   securedControls: "secured-controls",
   securedControlsLinkRoles: "secured-controls-link-roles",
   stockJournal: "stock-journal",

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import SlidingPane from "react-sliding-pane";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { shallowEqual, useSelector } from "react-redux";

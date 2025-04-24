@@ -16,6 +16,13 @@
 - Bug fixes etc.
 
 ## History
+# 24-04-2024
+	- completed
+		- current orders
+		- Product List
+		- Purchase price variation
+		- Purchase
+	- Started Sales report
 # 06-04-2025
 	- Started inventory reports
 # 05-04-2025

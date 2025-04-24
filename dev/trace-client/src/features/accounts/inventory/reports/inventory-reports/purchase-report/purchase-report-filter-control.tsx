@@ -160,14 +160,14 @@ export function PurchaseReportFilterContol() {
     }
 
     function handleApplyFilter() {
-        const startDate = selectedSelectMode === 'predefined' ? selectedCustomFilterOption.startDate : selectedCustomFilterOption.startDate
+        const startDate = selectedSelectMode === 'predefined' ? selectedPredefinedFilterOption.startDate : selectedCustomFilterOption.startDate
         const endDate = selectedSelectMode === 'predefined' ? selectedPredefinedFilterOption.endDate : selectedCustomFilterOption.endDate
 
         if (!startDate || !endDate) {
             return
         }
 
-        dispatch(setPurchaseReportFilterDateInterval({ startDate, endDate }))
+        dispatch(setPurchaseReportFilterDateInterval({ startDate:startDate, endDate:endDate }))
         dispatch(setPurchaseReportIsPaneOpen(false))
     }
 

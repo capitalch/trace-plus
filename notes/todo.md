@@ -83,9 +83,9 @@
 		- Purchases
 													- All branches / this branch
 													- verify branch changes
-			- Filter
-				- April - Mar selection
-				- logic correction
+											- Filter
+												- April - Mar selection
+												- logic correction
 												- grid
 													- UI
 													- SQL
@@ -100,6 +100,27 @@
 													- toolbar
 
 		- Sales
+			- Startup
+			- All branches / this branch
+			- verify branch changes
+			- Filter
+				- Custom date
+				- Drop down date selector
+				- Other filters
+					- Age
+					- Categories, brands, tags
+			- grid
+				- UI
+				- SQL
+				- populate data
+				- Fields correction, width and display
+				- Same background color for same bill
+				- filters implement
+				- format
+				- Adjust col width
+				- Aggregates for many columns
+				- toolbar
+
 		- Stock summary
 		- Stock transactions
 										- Stock Journal
