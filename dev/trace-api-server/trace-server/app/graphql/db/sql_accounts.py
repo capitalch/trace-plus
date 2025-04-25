@@ -1736,7 +1736,7 @@ class SqlAccounts:
         ),
         
         cte0 as( --base cte: from tranD where 4,5,9,10, branchId, finYearId, tranDate <= endDate
-        select h."id",h."remarks" as "commonRemarks", CONCAT_WS(', ', d.remarks, s."jData"->'remarks', s."jData"->'serialNumbers') as "lineRemarks", "tranDate", s."productId", "tranTypeId", "qty", ("price" - "discount") "price", "cgst", "sgst","igst"
+        select h."id",h."remarks" as "commonRemarks", CONCAT_WS(', ', d.remarks, s."jData"->'remarks') as "lineRemarks", "tranDate", s."productId", "tranTypeId", "qty", ("price" - "discount") "price", "cgst", "sgst","igst"
             , s."amount", "gstRate", s."id" as "salePurchaseDetailsId", "autoRefNo", h."timestamp" , concat_ws(' ', "contactName", "mobileNumber", "address1", "address2") as "contact"
             , '' as "dc", s."jData"->>'serialNumbers' as "serialNumbers"
             from "TranH" h
@@ -1869,7 +1869,8 @@ class SqlAccounts:
         (select c5.*, "productCode", 
 		 "catName", 
 		 "brandName", "label", "stock", "info" 
-                ,(date_part('day', (CASE WHEN (table "endDate") > CURRENT_DATE then CURRENT_DATE ELSE (table "endDate") END)::timestamp - "lastPurchaseDate"::timestamp)) as "age"
+                -- ,(date_part('day', (CASE WHEN (table "endDate") > CURRENT_DATE then CURRENT_DATE ELSE (table "endDate") END)::timestamp - "lastPurchaseDate"::timestamp)) as "age"
+				,(date_part('day', ("tranDate")::timestamp - "lastPurchaseDate"::timestamp)) as "age"
             from cte5 c5
                 join "ProductM" p
                     on p."id" = c5."productId"

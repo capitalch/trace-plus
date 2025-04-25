@@ -103,6 +103,7 @@
 													- Startup
 													- All branches / this branch
 			- verify branch changes
+			- toolbar
 			- Filter
 				- Custom date
 				- Drop down date selector
@@ -113,18 +114,17 @@
 				- UI
 				- SQL
 					- branches
-													- serial no
 					- maybe inclusion of branch transfer required
+													- serial no
 				- Optimize sql
 													- populate data
 													- Fields correction, width and display
 													- Same background color for same bill
 				- filters implement
 													- format
-				- Jakar sale indication
+													- Jakar sale indication
 													- Adjust col width
 													- Aggregates for many columns
-				- toolbar
 
 		- Stock summary
 		- Stock transactions

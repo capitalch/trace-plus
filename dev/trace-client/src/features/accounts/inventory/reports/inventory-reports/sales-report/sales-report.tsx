@@ -15,7 +15,10 @@ import {
 import { format } from "date-fns";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
-import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
+import {
+  // QueryCellInfoEventArgs,
+  RowDataBoundEventArgs
+} from "@syncfusion/ej2-react-grids";
 import clsx from "clsx";
 
 export function SalesReport({ title }: { title?: string }) {
@@ -43,7 +46,7 @@ export function SalesReport({ title }: { title?: string }) {
     // if (selectedStartDate && selectedEndDate) {
     loadData();
     // }
-  }, [isAllBranches, branchId, buCode,]);
+  }, [isAllBranches, branchId, buCode]);
 
   return (
     <div className="flex flex-col">
@@ -87,7 +90,8 @@ export function SalesReport({ title }: { title?: string }) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"
-        queryCellInfo={handleQueryCellInfo}
+        // queryCellInfo={handleQueryCellInfo}
+        onRowDataBound={handleOnRowDataBound}
       />
     </div>
   );
@@ -108,52 +112,82 @@ export function SalesReport({ title }: { title?: string }) {
         type: "Sum",
         field: "qty",
         format: "N0",
-        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
       },
       {
         columnName: "grossProfit",
         type: "Sum",
         field: "grossProfit",
         format: "N2",
-        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
       },
       {
         columnName: "amount",
         type: "Sum",
         field: "amount",
         format: "N2",
-        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
       },
       {
         columnName: "aggrSale",
         type: "Sum",
         field: "aggrSale",
         format: "N2",
-        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
       },
       {
         columnName: "cgst",
         type: "Sum",
         field: "cgst",
         format: "N2",
-        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
       },
       {
         columnName: "sgst",
         type: "Sum",
         field: "sgst",
         format: "N2",
-        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
       },
       {
         columnName: "igst",
         type: "Sum",
         field: "igst",
         format: "N2",
-        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
       }
     ];
   }
+
+  // function getCellStyle(rowData: any): React.CSSProperties {
+  //   const style: React.CSSProperties = {};
+
+  //   if (rowData.age > 360) {
+  //     style.backgroundColor = "#dbeafe"; // blue-100
+  //   } else if (rowData.bColor) {
+  //     style.backgroundColor = "#d1fae5"; // green-100
+  //   }
+
+  //   if (rowData.grossProfit < 0) {
+  //     style.color = "red";
+  //   }
+
+  //   return style;
+  // }
 
   function getColumns(): SyncFusionGridColumnType[] {
     return [
@@ -166,17 +200,25 @@ export function SalesReport({ title }: { title?: string }) {
           format(data?.[field], currentDateFormat)
       },
       {
-        field: "autoRefNo", headerText: "Ref no | Acct",
+        field: "autoRefNo",
+        headerText: "Ref no | Acct",
         width: 140,
         type: "string",
         template: (props: RowDataType) => {
           return (
-            <div className={clsx("flex flex-col", props.grossProfit < 0 ? 'text-red-500' : '')}>
+            <div
+              className={clsx(
+                "flex flex-col",
+                props.grossProfit < 0 ? "text-red-500" : "",
+                props.bColor ? "bg-green-100" : "",
+                props.age > 360 ? "bg-blue-100" : ""
+              )}
+            >
               <span>{props.autoRefNo}</span>
               <span>{props.accounts}</span>
             </div>
           );
-        },
+        }
       },
       { field: "productCode", headerText: "P code", width: 90, type: "string" },
       {
@@ -184,51 +226,185 @@ export function SalesReport({ title }: { title?: string }) {
         headerText: "Product",
         width: 250,
         type: "string",
-        template: (props: any) =>
-          "".concat(props.catName, " ", props.brandName, " ", props.label)
+        template: (props: any) => (
+          <div
+            className={clsx(
+              "flex flex-col",
+              props.grossProfit < 0 ? "text-red-500" : "",
+              props.bColor ? "bg-green-100" : "",
+              props.age > 360 ? "bg-blue-100" : ""
+            )}
+          >
+            {"".concat(props.catName, " ", props.brandName, " ", props.label)}
+          </div>
+        )
       },
       { field: "info", headerText: "Details", width: 200, type: "string" },
-      { field: "qty", headerText: "Qty", type: "number", format: "N0", textAlign: "Right", width: 70 },
-      { field: "stock", headerText: "Stock", type: "number", format: "N0", textAlign: "Right", width: 70 },
-      { field: "age", headerText: "Age", type: "number", format: "N0", textAlign: "Right", width: 70 },
-      { field: "grossProfit", headerText: "Profit(GP)", type: "number", format: "N2", textAlign: "Right", width: 120 },
-      { field: "amount", headerText: "Sale(Gst)", type: "number", format: "N2", textAlign: "Right", width: 120 },
-      { field: "aggrSale", headerText: "Sale(Aggr)", type: "number", format: "N2", textAlign: "Right", width: 120 },
-      { field: "price", headerText: "Sale price", type: "number", format: "N2", textAlign: "Right", width: 100 },
-      { field: "lastPurchasePrice", headerText: "Pur price", type: "number", format: "N2", textAlign: "Right", width: 100 },
-      { field: "gstRate", headerText: "Gst%", type: "number", format: "N2", textAlign: "Right", width: 60 },
-      { field: "cgst", headerText: "Cgst", type: "number", format: "N2", textAlign: "Right", width: 90 },
-      { field: "sgst", headerText: "Sgst", type: "number", format: "N2", textAlign: "Right", width: 90 },
-      { field: "igst", headerText: "Igst", type: "number", format: "N2", textAlign: "Right", width: 90 },
+      {
+        field: "qty",
+        headerText: "Qty",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "stock",
+        headerText: "Stock",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "age",
+        headerText: "Age",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "grossProfit",
+        headerText: "Profit(GP)",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 120
+      },
+      {
+        field: "amount",
+        headerText: "Sale(Gst)",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 120
+      },
+      {
+        field: "aggrSale",
+        headerText: "Sale(Aggr)",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 120
+      },
+      {
+        field: "price",
+        headerText: "Sale price",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 100
+      },
+      {
+        field: "lastPurchasePrice",
+        headerText: "Pur price",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 100
+      },
+      {
+        field: "gstRate",
+        headerText: "Gst%",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 60
+      },
+      {
+        field: "cgst",
+        headerText: "Cgst",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 90
+      },
+      {
+        field: "sgst",
+        headerText: "Sgst",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 90
+      },
+      {
+        field: "igst",
+        headerText: "Igst",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 90
+      },
       { field: "saleType", headerText: "Type", width: 80, type: "string" },
       {
-        field: "timestamp", headerText: "Time", width: 100, type: "string",
+        field: "timestamp",
+        headerText: "Time",
+        width: 100,
+        type: "string",
         valueAccessor: (field: string, data: any) =>
           new Date(data?.[field]).toLocaleTimeString()
       },
       { field: "contact", headerText: "Contact", width: 200, type: "string" },
-      { field: "productId", headerText: "Pr id", width: 60, type: "number", textAlign: 'Right' },
-      { field: "commonRemarks", headerText: "Common remarks", width: 200, type: "string" },
-      { field: "lineRemarks", headerText: "Line remarks", width: 200, type: "string" },
-      { field: "serialNumbers", headerText: "Serial no", width: 200, type: "string" },
+      {
+        field: "productId",
+        headerText: "Pr id",
+        width: 60,
+        type: "number",
+        textAlign: "Right"
+      },
+      {
+        field: "commonRemarks",
+        headerText: "Common remarks",
+        width: 200,
+        type: "string"
+      },
+      {
+        field: "lineRemarks",
+        headerText: "Line remarks",
+        width: 200,
+        type: "string"
+      },
+      {
+        field: "serialNumbers",
+        headerText: "Serial no",
+        width: 200,
+        type: "string"
+      },
 
       { field: "brandName", visible: false, width: 0 },
-      { field: "label", visible: false, width: 0 },
+      { field: "label", visible: false, width: 0 }
     ];
   }
 
-  function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
+  function handleOnRowDataBound(args: RowDataBoundEventArgs) {
     const rowData = args.data as RowDataType;
-    if (rowData.bColor && args.cell) {
-      (args.cell as any).style.backgroundColor = "#eaf4ea";
-    }
-    if (rowData.grossProfit < 0) {
-      (args.cell as any).style.color = "red";
-    }
-    if(rowData.age > 360){
-      (args.cell as any).style.backgroundColor = "lightBlue";
+
+    if (args.row) {
+      if (rowData.age > 360) {
+        args.row.classList.add("custom-bg-blue");
+      } else if (rowData.bColor) {
+        args.row.classList.add("custom-bg-green");
+      }
+
+      if (rowData.grossProfit < 0) {
+        args.row.classList.add("text-red-600"); // Tailwind or your own class
+      }
     }
   }
+
+  // function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
+  //   const rowData = args.data as RowDataType;
+  //   if (rowData.bColor && args.cell) {
+  //     (args.cell as any).style.backgroundColor = "#d1fae5";
+  //   }
+  //   if (rowData.grossProfit < 0) {
+  //     (args.cell as any).style.color = "red";
+  //   }
+  //   if (rowData.age > 360) {
+  //     (args.cell as any).style.backgroundColor = "#dbeafe";
+  //   }
+  // }
 
   async function loadData() {
     try {
@@ -244,11 +420,13 @@ export function SalesReport({ title }: { title?: string }) {
         instance: instance,
         sqlId: SqlIdsMap.getSalesReport,
         sqlArgs: {
-          branchId: isAllBranchesState ? null : state.login.currentBranch?.branchId,
+          branchId: isAllBranchesState
+            ? null
+            : state.login.currentBranch?.branchId,
           finYearId,
           tagId: 0,
-          startDate: '2024-04-01',
-          endDate: '2025-03-31',
+          startDate: "2024-04-01",
+          endDate: "2025-03-31",
           days: 0
         }
       });
