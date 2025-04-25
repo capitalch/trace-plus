@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
+import clsx from "clsx";
 
 export function SalesReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.salesReport;
@@ -110,9 +111,23 @@ export function SalesReport({ title }: { title?: string }) {
         footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
       },
       {
+        columnName: "grossProfit",
+        type: "Sum",
+        field: "grossProfit",
+        format: "N2",
+        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+      },
+      {
         columnName: "amount",
         type: "Sum",
         field: "amount",
+        format: "N2",
+        footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
+      },
+      {
+        columnName: "aggrSale",
+        type: "Sum",
+        field: "aggrSale",
         format: "N2",
         footerTemplate: (props: any) => <span className="text-xs">{props.Sum}</span>
       },
@@ -150,28 +165,53 @@ export function SalesReport({ title }: { title?: string }) {
         valueAccessor: (field: string, data: any) =>
           format(data?.[field], currentDateFormat)
       },
-      { field: "autoRefNo", headerText: "Ref no", width: 120, type: "string" },
-      { field: "userRefNo", headerText: "Inv no", width: 120, type: "string" },
-      { field: "party", headerText: "Customer", width: 200, type: "string" },
+      {
+        field: "autoRefNo", headerText: "Ref no | Acct",
+        width: 140,
+        type: "string",
+        template: (props: RowDataType) => {
+          return (
+            <div className={clsx("flex flex-col", props.grossProfit < 0 ? 'text-red-500' : '')}>
+              <span>{props.autoRefNo}</span>
+              <span>{props.accounts}</span>
+            </div>
+          );
+        },
+      },
       { field: "productCode", headerText: "P code", width: 90, type: "string" },
       {
-        field: "info",
+        field: "catName",
         headerText: "Product",
         width: 250,
         type: "string",
         template: (props: any) =>
           "".concat(props.catName, " ", props.brandName, " ", props.label)
       },
-      { field: "qty", headerText: "Qty", type: "number", format: "N0", textAlign: "Right", width: 80 },
+      { field: "info", headerText: "Details", width: 200, type: "string" },
+      { field: "qty", headerText: "Qty", type: "number", format: "N0", textAlign: "Right", width: 70 },
+      { field: "stock", headerText: "Stock", type: "number", format: "N0", textAlign: "Right", width: 70 },
+      { field: "age", headerText: "Age", type: "number", format: "N0", textAlign: "Right", width: 70 },
+      { field: "grossProfit", headerText: "Profit(GP)", type: "number", format: "N2", textAlign: "Right", width: 120 },
+      { field: "amount", headerText: "Sale(Gst)", type: "number", format: "N2", textAlign: "Right", width: 120 },
+      { field: "aggrSale", headerText: "Sale(Aggr)", type: "number", format: "N2", textAlign: "Right", width: 120 },
       { field: "price", headerText: "Sale price", type: "number", format: "N2", textAlign: "Right", width: 100 },
-      { field: "amount", headerText: "Total", type: "number", format: "N2", textAlign: "Right", width: 100 },
-      { field: "gstRate", headerText: "Gst(%)", type: "number", format: "N2", textAlign: "Right", width: 80 },
+      { field: "lastPurchasePrice", headerText: "Pur price", type: "number", format: "N2", textAlign: "Right", width: 100 },
+      { field: "gstRate", headerText: "Gst%", type: "number", format: "N2", textAlign: "Right", width: 60 },
       { field: "cgst", headerText: "Cgst", type: "number", format: "N2", textAlign: "Right", width: 90 },
       { field: "sgst", headerText: "Sgst", type: "number", format: "N2", textAlign: "Right", width: 90 },
       { field: "igst", headerText: "Igst", type: "number", format: "N2", textAlign: "Right", width: 90 },
       { field: "saleType", headerText: "Type", width: 80, type: "string" },
-      { field: "productId", headerText: "Pr id", width: 80, type: "number", textAlign: 'Right' },
-      { field: "catName", visible: false, width: 0 },
+      {
+        field: "timestamp", headerText: "Time", width: 100, type: "string",
+        valueAccessor: (field: string, data: any) =>
+          new Date(data?.[field]).toLocaleTimeString()
+      },
+      { field: "contact", headerText: "Contact", width: 200, type: "string" },
+      { field: "productId", headerText: "Pr id", width: 60, type: "number", textAlign: 'Right' },
+      { field: "commonRemarks", headerText: "Common remarks", width: 200, type: "string" },
+      { field: "lineRemarks", headerText: "Line remarks", width: 200, type: "string" },
+      { field: "serialNumbers", headerText: "Serial no", width: 200, type: "string" },
+
       { field: "brandName", visible: false, width: 0 },
       { field: "label", visible: false, width: 0 },
     ];
@@ -180,7 +220,13 @@ export function SalesReport({ title }: { title?: string }) {
   function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
     const rowData = args.data as RowDataType;
     if (rowData.bColor && args.cell) {
-      (args.cell as any).style.backgroundColor = "#f9f3e8";
+      (args.cell as any).style.backgroundColor = "#eaf4ea";
+    }
+    if (rowData.grossProfit < 0) {
+      (args.cell as any).style.color = "red";
+    }
+    if(rowData.age > 360){
+      (args.cell as any).style.backgroundColor = "lightBlue";
     }
   }
 
@@ -229,23 +275,33 @@ export function SalesReport({ title }: { title?: string }) {
 }
 
 type RowDataType = {
+  accounts: string;
+  age: number;
+  aggrSale: number;
   amount: number;
   autoRefNo: string;
   bColor?: boolean;
   brandName: string;
   catName: string;
   cgst: number;
+  commonRemarks: string;
+  contact: string;
+  grossProfit: number;
   gstRate: number;
   igst: number;
   info: string;
   label: string;
-  party: string;
+  lastPurchaseDate: string;
+  lastPurchasePrice: number;
+  lineRemarks: string;
   price: number;
   productCode: string;
   productId: number;
   saleType: string;
+  stock: number;
+  timestamp: string;
   qty: number;
   sgst: number;
+  serialNumbers: string;
   tranDate: string;
-  userRefNo: string;
 };

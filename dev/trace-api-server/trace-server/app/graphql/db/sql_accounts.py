@@ -1738,7 +1738,7 @@ class SqlAccounts:
         cte0 as( --base cte: from tranD where 4,5,9,10, branchId, finYearId, tranDate <= endDate
         select h."id",h."remarks" as "commonRemarks", CONCAT_WS(', ', d.remarks, s."jData"->'remarks', s."jData"->'serialNumbers') as "lineRemarks", "tranDate", s."productId", "tranTypeId", "qty", ("price" - "discount") "price", "cgst", "sgst","igst"
             , s."amount", "gstRate", s."id" as "salePurchaseDetailsId", "autoRefNo", h."timestamp" , concat_ws(' ', "contactName", "mobileNumber", "address1", "address2") as "contact"
-            , '' as "dc"
+            , '' as "dc", s."jData"->>'serialNumbers' as "serialNumbers"
             from "TranH" h
                 join "TranD" d
                     on h."id" = d."tranHeaderId"
@@ -1754,7 +1754,7 @@ class SqlAccounts:
             union all
         select h."id",h."remarks" as "commonRemarks", s."lineRemarks" as "lineRemarks", "tranDate", s."productId", "tranTypeId", "qty", "price", 0 as "cgst", 0 as "sgst", 0 as "igst"
             , 0 as "amount", 0 as "gstRate", s."id" as "salePurchaseDetailsId", "autoRefNo", h."timestamp", '' as "contact"
-            , "dc"
+            , "dc", s."jData"->>'serialNumbers' as "serialNumbers"
             from "TranH" h
                 join "StockJournal" s
                     on h."id" = s."tranHeaderId"
@@ -1803,7 +1803,7 @@ class SqlAccounts:
                 , coalesce("lastPurchasePrice","openingPrice",0) as "lastPurchasePrice"
                 , coalesce(c2."lastPurchaseDate", c1."lastPurchaseDate") as "lastPurchaseDate"
                 , c2."qty" * "price" as "aggrSale", "cgst", "sgst", "igst"
-                , "amount", "gstRate", "tranTypeId","salePurchaseDetailsId", "autoRefNo"
+                , "amount", "gstRate", "tranTypeId","salePurchaseDetailsId", "autoRefNo", c2."serialNumbers"
                     from cte2 c2
                         left join cte1 c1
                             on c2."productId" = c1."productId"
@@ -1824,7 +1824,7 @@ class SqlAccounts:
                 , CASE when "tranTypeId" = 4 then "amount" else -"amount" end as "amount"
                 , CASE when "tranTypeId" = 4 then 'Sale' else 'Return' end as "saleType"
                 , CASE when "tranTypeId" = 4 then "grossProfit" else -"grossProfit" end as "grossProfit"
-                , "lastPurchaseDate", "timestamp", "accounts"
+                , "lastPurchaseDate", "timestamp", "accounts", "serialNumbers"
                     from cte4
         ),
         cte6 as ( --for stock: cte0-> group by on productId, saleType, get columns as sale, ret, purchase

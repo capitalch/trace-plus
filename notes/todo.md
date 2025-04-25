@@ -100,8 +100,8 @@
 													- toolbar
 
 		- Sales
-			- Startup
-			- All branches / this branch
+													- Startup
+													- All branches / this branch
 			- verify branch changes
 			- Filter
 				- Custom date
@@ -112,14 +112,18 @@
 			- grid
 				- UI
 				- SQL
+					- branches
+													- serial no
+					- maybe inclusion of branch transfer required
 				- Optimize sql
-				- populate data
-				- Fields correction, width and display
-				- Same background color for same bill
+													- populate data
+													- Fields correction, width and display
+													- Same background color for same bill
 				- filters implement
-				- format
-				- Adjust col width
-				- Aggregates for many columns
+													- format
+				- Jakar sale indication
+													- Adjust col width
+													- Aggregates for many columns
 				- toolbar
 
 		- Stock summary
