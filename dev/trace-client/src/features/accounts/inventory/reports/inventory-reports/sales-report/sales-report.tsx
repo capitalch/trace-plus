@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import {
+  QueryCellInfoEventArgs,
   // QueryCellInfoEventArgs,
   RowDataBoundEventArgs
 } from "@syncfusion/ej2-react-grids";
@@ -46,7 +47,7 @@ export function SalesReport({ title }: { title?: string }) {
     // if (selectedStartDate && selectedEndDate) {
     loadData();
     // }
-  }, [isAllBranches, branchId, buCode]);
+  }, [isAllBranches, branchId, buCode, finYearId]);
 
   return (
     <div className="flex flex-col">
@@ -90,8 +91,8 @@ export function SalesReport({ title }: { title?: string }) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"
-        // queryCellInfo={handleQueryCellInfo}
-        onRowDataBound={handleOnRowDataBound}
+        queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
+        onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
       />
     </div>
   );
@@ -210,8 +211,6 @@ export function SalesReport({ title }: { title?: string }) {
               className={clsx(
                 "flex flex-col",
                 props.grossProfit < 0 ? "text-red-500" : "",
-                props.bColor ? "bg-green-100" : "",
-                props.age > 360 ? "bg-blue-100" : ""
               )}
             >
               <span>{props.autoRefNo}</span>
@@ -231,8 +230,6 @@ export function SalesReport({ title }: { title?: string }) {
             className={clsx(
               "flex flex-col",
               props.grossProfit < 0 ? "text-red-500" : "",
-              props.bColor ? "bg-green-100" : "",
-              props.age > 360 ? "bg-blue-100" : ""
             )}
           >
             {"".concat(props.catName, " ", props.brandName, " ", props.label)}
@@ -382,29 +379,33 @@ export function SalesReport({ title }: { title?: string }) {
 
     if (args.row) {
       if (rowData.age > 360) {
-        args.row.classList.add("custom-bg-blue");
+        args.row.classList.add("bg-blue-100");
       } else if (rowData.bColor) {
-        args.row.classList.add("custom-bg-green");
+        args.row.classList.add("bg-green-100");
       }
 
-      if (rowData.grossProfit < 0) {
-        args.row.classList.add("text-red-600"); // Tailwind or your own class
-      }
+      // if (rowData.grossProfit < 0) {
+      //   args.row.classList.add("custom-red-600"); // Tailwind or your own class
+      // }
+      // if (parseFloat(rowData.grossProfit as any) < 0) {
+      //   args.row.classList.remove("bg-blue-100", "bg-green-100");
+      //   args.row.classList.add("text-red-600" );
+      // }
     }
   }
 
-  // function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
-  //   const rowData = args.data as RowDataType;
-  //   if (rowData.bColor && args.cell) {
-  //     (args.cell as any).style.backgroundColor = "#d1fae5";
-  //   }
-  //   if (rowData.grossProfit < 0) {
-  //     (args.cell as any).style.color = "red";
-  //   }
-  //   if (rowData.age > 360) {
-  //     (args.cell as any).style.backgroundColor = "#dbeafe";
-  //   }
-  // }
+  function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
+    const rowData = args.data as RowDataType;
+    // if (rowData.bColor && args.cell) {
+    //   (args.cell as any).style.backgroundColor = "#d1fae5";
+    // }
+    if (rowData.grossProfit < 0) {
+      (args.cell as any).style.color = "red";
+    }
+    // if (rowData.age > 360) {
+    //   (args.cell as any).style.backgroundColor = "#dbeafe";
+    // }
+  }
 
   async function loadData() {
     try {
@@ -426,7 +427,7 @@ export function SalesReport({ title }: { title?: string }) {
           finYearId,
           tagId: 0,
           startDate: "2024-04-01",
-          endDate: "2025-03-31",
+          endDate: "2024-04-30",
           days: 0
         }
       });

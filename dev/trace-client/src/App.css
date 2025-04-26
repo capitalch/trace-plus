@@ -159,12 +159,3 @@
 .smaller-font .e-headercell {
   font-size: 12px;
 }
-
-/* Syncfusion grid row color */
-.custom-bg-green {
-  background-color: #d1fae5 !important; /* Tailwind bg-green-100 */
-}
-
-.custom-bg-blue {
-  background-color: #dbeafe !important; /* Tailwind bg-blue-100 */
-}
