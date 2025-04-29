@@ -20,7 +20,7 @@ import {
   setSelectedCategory,
   setSelectedTag
 } from "../../../../accounts-slice";
-import { BrandType, TagType } from "../../../shared-types";
+import { BrandType, CategoryNodeType, TagType } from "../../../shared-types";
 
 export function PurchasePriceVariationFilterControl({
   instance
@@ -200,37 +200,16 @@ export function PurchasePriceVariationFilterControl({
   }
 }
 
-// export type BrandType = { id: number | null; brandName: string };
-
-// export type CategoryType = {
-//   id: string;
+// export type CategoryNodeType = {
+//   id: string | number;
 //   catName: string;
+//   parentId: string | null;
+//   isLeaf?: boolean;
+//   hasChild?: boolean;
 // };
-export type CategoryNodeType = {
-  id: string | number;
-  catName: string;
-  parentId: string | null;
-  isLeaf?: boolean;
-  hasChild?: boolean;
-};
 
 type JsonResultType = {
   brands: BrandType[];
   categories: CategoryNodeType[];
   tags: TagType[];
 };
-// export type TagType = { id: number | null; tagName: string };
-
-/* <button
-    type="button"
-    onClick={() => {
-        if (catRef.current?.treeViewObj) {
-            const tree = catRef.current.treeViewObj;
-            
-            // Expand parent of selected node
-            tree.expandNode(tree.getNode(catRef.current.treeViewObj.getTreeData().find(node => node.id === '1')));
-            }
-    }}
->
-    Expand
-</button> */

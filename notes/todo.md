@@ -105,10 +105,13 @@
 			- verify branch changes
 			- toolbar
 			- Filter
-				- UI
-				- Redux slice
+				- Filter mode
+				- Age
+				- Date Range
+													- UI
+													- Redux slice
 				- logic
-			- Filter implement filter in Grid
+			- Implement filter in Grid
 												- grid
 													- UI
 													- SQL

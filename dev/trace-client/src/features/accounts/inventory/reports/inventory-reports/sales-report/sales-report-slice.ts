@@ -1,6 +1,4 @@
-// const initialState
-
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BrandType, CategoryType, TagType } from "../../../shared-types";
 
 const initialState: SalesReportInitialStateType = {
@@ -26,39 +24,51 @@ const salesReportSlice = createSlice({
   name: "salesReport",
   initialState: initialState,
   reducers: {
-    setSalesReportIsPaneOpen: (state, action) => {
+    setSalesReportIsPaneOpen: (
+      state: SalesReportInitialStateType,
+      action: PayloadAction<boolean>
+    ) => {
       state.isPaneOpen = action.payload;
     },
-    setSalesReportFilterMode: (state, action) => {
-      state.filterMode = action.payload;
+    setSalesReportFilters: (
+      state: SalesReportInitialStateType,
+      action: PayloadAction<SalesReportPayloadActionType>
+    ) => {
+      state.filterMode = action.payload.filterMode;
+      state.catFilterOption = action.payload.catFilterOption;
+      state.productCode = action.payload.productCode;
+      state.ageFilterOption = action.payload.ageFilterOption;
+      state.dateRangeFilterOption = action.payload.dateRangeFilterOption;
     },
-    // setSalesReportCatFilterOption: (state, action) => {
-    //     state.catFilterOption = action.payload;
-    // },
-    // setSalesReportProductCodeFilterOption: (state, action) => {
-    //     state.productCodeFilterOption = action.payload;
-    // },
-    // setSalesReportAgeFilterOption: (state, action) => {
-    //     state.ageFilterOption = action.payload;
-    // },
-    // setSalesReportDateRangeFilterOption: (state, action) => {
-    //     state.dateRangeFilterOption = action.payload;
-    //
   },
 });
 
 export const salesReportReducer = salesReportSlice.reducer;
 export const {
-  setSalesReportFilterMode,
+  setSalesReportFilters,
   setSalesReportIsPaneOpen,
-  // setSalesReportCatFilterOption,
-  // setSalesReportProductCodeFilterOption,
-  // setSalesReportAgeFilterOption,
-  // setSalesReportDateRangeFilterOption,
 } = salesReportSlice.actions;
 
 type SalesReportInitialStateType = {
   isPaneOpen: boolean;
+  filterMode: "category" | "productCode";
+  catFilterOption: {
+    selectedCategory: CategoryType | null;
+    selectedBrand: BrandType | null;
+    selectedTag: TagType | null;
+  };
+  productCode: number | null;
+  ageFilterOption: {
+    selectedAge: string | null;
+  };
+  dateRangeFilterOption: {
+    selectedDateRange: string | null;
+    startDate: string | null;
+    endDate: string | null;
+  };
+};
+
+type SalesReportPayloadActionType = {
   filterMode: "category" | "productCode";
   catFilterOption: {
     selectedCategory: CategoryType | null;

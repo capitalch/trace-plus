@@ -1,229 +1,274 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
-import { RootStateType } from "../../../../../../app/store/store";
-import { setSalesReportFilterMode } from "./sales-report-slice";
+import _ from "lodash";
+import {
+  AppDispatchType,
+  RootStateType
+} from "../../../../../../app/store/store";
+import {
+  //   setSalesReportFilterMode,
+  setSalesReportFilters
+} from "./sales-report-slice";
+import { Utils } from "../../../../../../utils/utils";
+import { useEffect, useRef, useState } from "react";
+import {
+  DropDownTreeComponent,
+  FieldsModel
+} from "@syncfusion/ej2-react-dropdowns";
+import { BrandType, CategoryNodeType, TagType } from "../../../shared-types";
+import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 export function SalesReportFilterControl() {
-    const selectedFilterMode = useSelector((state: RootStateType) => state.salesReport.filterMode);
-    return (
-        <div className="max-w-md mx-auto space-y-4">
+  const dispatch: AppDispatchType = useDispatch();
+  const selectedFilters = useSelector(
+    (state: RootStateType) => state.salesReport
+  );
+  const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+  const catRef = useRef<DropDownTreeComponent | null>(null);
+  const [brandOptions, setBrandOptions] = useState<BrandType[]>([]);
+  const [tagOptions, setTagOptions] = useState<TagType[]>([]);
+  const [catOptions, setCatOptions] = useState<CategoryNodeType[]>([]);
 
-            {/* Radio Group for Filter Type */}
-            <div className="space-y-2">
-                <label className="text-lg font-semibold">Filter Mode</label>
-                <div className="flex space-x-4">
-                    <label className="flex items-center space-x-2">
-                        <input
-                            type="radio"
-                            name="filterMode"
-                            value="category"
-                            checked={selectedFilterMode === "category"}
-                            onChange={() => setSalesReportFilterMode("category")}
-                        />
-                        <span>By Category</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input
-                            type="radio"
-                            name="filterMode"
-                            value="productCode"
-                            checked={selectedFilterMode === "productCode"}
-                            onChange={() => setSalesReportFilterMode("productCode")}
-                        />
-                        <span>By Product Code</span>
-                    </label>
-                </div>
-            </div>
+  const [filterMode, setFilterMode] = useState(
+    selectedFilters.filterMode || "category"
+  );
+  const fields: FieldsModel = {
+    dataSource: catOptions as any,
+    value: "id",
+    parentValue: "parentId",
+    text: "catName",
+    hasChildren: "hasChild"
+  };
 
-            {/* Group 1: Category Filters */}
-            <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <label className="text-lg font-semibold">Group 1: Category Filters</label>
-                    <div className="flex justify-end px-2">
-                        <button
-                            onClick={handleApplyFilter}
-                            disabled={isApplyFilterButtonDisabled()}
-                            className="px-5 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                        >
-                            Apply Filter
-                        </button>
-                    </div>
-                </div>
+  useEffect(() => {
+    if (
+      _.isEmpty(brandOptions) &&
+      _.isEmpty(tagOptions) &&
+      _.isEmpty(catOptions)
+    ) {
+      loadAllOptions();
+    }
+  }, []);
 
-                <Select
-                    options={categoryOptions}
-                    placeholder="Select Category"
-                // isDisabled={filterMode !== "category"}
-                />
-                <Select
-                    options={brandOptions}
-                    placeholder="Select Brand"
-                // isDisabled={filterMode !== "category"}
-                />
-                <Select
-                    options={tagOptions}
-                    placeholder="Select Tag"
-                // isDisabled={filterMode !== "category"}
-                />
-            </div>
-
-            {/* Group 2: Product Code */}
-            <div className="space-y-2">
-                <label className="text-lg font-semibold">Group 2: Product Code</label>
-                <input
-                    type="number"
-                    placeholder="Enter Product Code"
-                    className="w-full border rounded p-2"
-                // disabled={filterMode !== "productCode"}
-                // value={productCode}
-                // onChange={(e) => setProductCode(e.target.value)}
-                />
-            </div>
-
-            {/* Group 3: Age */}
-            <div className="space-y-2">
-                <label className="text-lg font-semibold">Group 3: Age Filter</label>
-                <Select
-                    options={ageOptions}
-                    placeholder="Select Age Range"
-                />
-            </div>
-
-            {/* Group 4: Date Range */}
-            <div className="space-y-2">
-                <label className="text-lg font-semibold">Group 4: Date Range</label>
-                <Select
-                    options={dateRangeOptions}
-                    menuPlacement="top"
-                    placeholder="Select Date Range"
-                />
-                <div className="flex space-x-2">
-                    <input type="date" className="flex-1 border rounded p-2" />
-                    <input type="date" className="flex-1 border rounded p-2" />
-                </div>
-            </div>
+  return (
+    <div className="max-w-md mx-auto space-y-4">
+      {/* Radio Group for Filter Mode */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="text-lg font-semibold text-blue-500">
+            Group 1: Filter Mode
+          </label>
+          <button
+            type="button"
+            onClick={handleApplyFilters}
+            disabled={isApplyFilterButtonDisabled()}
+            className="px-4 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            Apply Filters
+          </button>
         </div>
+        <div className="flex space-x-4">
+          {/* Radio buttons */}
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="radio"
+              name="filterMode"
+              value="category"
+              checked={filterMode === "category"}
+              onChange={() => setFilterMode("category")}
+            />
+            <span>By Category / Brand / Tag</span>
+          </label>
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="radio"
+              name="filterMode"
+              value="productCode"
+              checked={filterMode === "productCode"}
+              onChange={() => setFilterMode("productCode")}
+            />
+            <span>By Product Code</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Group 1: Category Filters */}
+      {filterMode === "category" && (
+        <div className="space-y-4">
+          {/* <div className="flex items-center justify-between -mt-2">
+            <label className="text-lg font-semibold text-blue-500">
+              Category Filter
+            </label>
+          </div> */}
+
+          <DropDownTreeComponent
+            id="dropDowntree"
+            ref={catRef}
+            showClearButton={false}
+            placeholder="Select a category ..."
+            fields={fields}
+            allowMultiSelection={false}
+            popupHeight="300px"
+            allowFiltering={true}
+            filterBarPlaceholder="Search"
+            // select={handleOnChangeCategory}
+          />
+          <Select
+            getOptionLabel={(option: BrandType) => option.brandName}
+            getOptionValue={(option: BrandType) => option.id as any}
+            options={brandOptions}
+            styles={Utils.getReactSelectStyles()}
+            // value={selectedBrandOption}
+            // onChange={handleOnChangeBrand}
+            placeholder="Select a brand..."
+          />
+          <Select
+            getOptionLabel={(option: TagType) => option.tagName}
+            getOptionValue={(option: TagType) => option.id as any}
+            options={tagOptions}
+            styles={Utils.getReactSelectStyles()}
+            // value={selectedTagOption}
+            // onChange={handleOnChangeTag}
+            placeholder="Select a tag..."
+          />
+        </div>
+      )}
+
+      {/* Group 1: Product Code */}
+      {filterMode === "productCode" && (
+        <div className="-mt-2">
+          <label className="text-lg font-semibold text-blue-500">
+            Product Code
+          </label>
+          <input
+            type="number"
+            placeholder="Enter Product Code"
+            className="w-full border rounded p-2 mt-2"
+            // disabled={filterMode !== "productCode"}
+            // value={productCode}
+            // onChange={(e) => setProductCode(e.target.value)}
+          />
+        </div>
+      )}
+
+      {/* Group 2: Age */}
+      <div className="space-y-2">
+        <label className="text-lg font-semibold text-blue-500">
+          Group 2: Age{" "}
+        </label>
+        <Select
+          options={ageOptions}
+          placeholder="Select Age Range"
+          className="mt-2"
+          styles={Utils.getReactSelectStyles()}
+        />
+      </div>
+
+      {/* Group 4: Date Range */}
+      <div className="space-y-2">
+        <label className="text-lg font-semibold text-blue-500">
+          Group 3: Date Range
+        </label>
+        <Select
+          options={dateRangeOptions}
+          menuPlacement="top"
+          placeholder="Select Date Range"
+          className="mt-2"
+          styles={Utils.getReactSelectStyles()}
+        />
+        <div className="flex space-x-2">
+          <input
+            type="date"
+            className="flex-1 border rounded p-2"
+            aria-label="start-date"
+          />
+          <input
+            type="date"
+            className="flex-1 border rounded p-2"
+            aria-label="end-date"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  function handleApplyFilters() {
+    dispatch(
+      setSalesReportFilters({
+        filterMode: filterMode,
+        catFilterOption: {
+          selectedBrand: null,
+          selectedCategory: null,
+          selectedTag: null
+        },
+        productCode: null,
+        ageFilterOption: { selectedAge: null },
+        dateRangeFilterOption: {
+          selectedDateRange: null,
+          startDate: null,
+          endDate: null
+        }
+      })
     );
-    // <div className="max-w-md mx-auto space-y-4">
+  }
 
-    //     {/* Category Filters */}
-    //     <div className="space-y-4">
-    //         <div className="flex items-center justify-between">
-    //             <h2 className="text-lg font-semibold">Group 1: Category Filters</h2>
-    //             {/* Filter Button */}
-    //             <div className="flex justify-end px-2">
-    //                 <button
-    //                     onClick={handleApplyFilter}
-    //                     disabled={isApplyFilterButtonDisabled()}
-    //                     className="px-5 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-    //                 >
-    //                     Apply Filter
-    //                 </button>
-    //             </div>
-    //         </div>
+  function isApplyFilterButtonDisabled() {
+    return false;
+  }
 
-    //         <Select
-    //             options={categoryOptions}
-    //             placeholder="Select Category"
-    //         //   value={selectedCategory}
-    //         //   onChange={setSelectedCategory}
-    //         />
-    //         <Select
-    //             options={brandOptions}
-    //             placeholder="Select Brand"
-    //         //   value={selectedBrand}
-    //         //   onChange={setSelectedBrand}
-    //         />
-    //         <Select
-    //             options={tagOptions}
-    //             placeholder="Select Tag"
-    //         //   value={selectedTag}
-    //         //   onChange={setSelectedTag}
-    //         />
-    //     </div>
+  async function loadAllOptions() {
+    try {
+      const res = await Utils.doGenericQuery({
+        buCode: buCode || "",
+        dbName: dbName || "",
+        dbParams: decodedDbParamsObject,
+        sqlId: SqlIdsMap.getBrandsCategoriesTags
+      });
+      const jsonResult: JsonResultType = res?.[0]?.jsonResult;
+      if (jsonResult) {
+        const brands = jsonResult.brands || [];
+        brands.unshift({ brandName: "All brands", id: null });
+        setBrandOptions(brands);
 
-    //     {/* Product code */}
-    //     <div className="space-y-2">
-    //         <h2 className="text-lg font-semibold">Group 2: Product Code</h2>
-    //         <input
-    //             type="number"
-    //             placeholder="Enter Product Code"
-    //             className="w-full border rounded p-2"
-    //         //   value={productCode}
-    //         //   onChange={(e) => setProductCode(e.target.value)}
-    //         />
-    //     </div>
+        const tags = jsonResult.tags || [];
+        tags.unshift({ tagName: "All tags", id: null });
+        setTagOptions(tags);
 
-    //     {/* Group 3 */}
-    //     <div className="space-y-2">
-    //         <h2 className="text-lg font-semibold">Group 3: Age Filter</h2>
-    //         <Select
-    //             options={ageOptions}
-    //             placeholder="Select Age Range"
-    //         //   value={selectedAge}
-    //         //   onChange={setSelectedAge}
-    //         />
-    //     </div>
-
-    //     {/* Group 4 */}
-    //     <div className="space-y-2">
-    //         <h2 className="text-lg font-semibold">Group 4: Date Range</h2>
-    //         <Select
-    //             options={dateRangeOptions}
-    //             menuPlacement="top"
-    //             placeholder="Select Date Range"
-    //         //   value={selectedDateRange}
-    //         //   onChange={handleDateRangeChange}
-    //         />
-    //         <div className="flex space-x-2">
-    //             <input
-    //                 type="date"
-    //                 className="flex-1 border rounded p-2"
-    //             // value={startDate}
-    //             // onChange={(e) => setStartDate(e.target.value)}
-    //             />
-    //             <input
-    //                 type="date"
-    //                 className="flex-1 border rounded p-2"
-    //             // value={endDate}
-    //             // onChange={(e) => setEndDate(e.target.value)}
-    //             />
-    //         </div>
-    //     </div>
-    // </div>
-
-    function handleApplyFilter() {
-
+        const cats = jsonResult.categories || [];
+        cats.unshift({
+          catName: "All categories",
+          id: "",
+          isLeaf: true,
+          parentId: null
+        });
+        cats.forEach((cat: CategoryNodeType) => {
+          cat.hasChild = !cat.isLeaf;
+        });
+        setCatOptions(cats);
+      }
+    } catch (e: any) {
+      console.log(e);
     }
-
-    function isApplyFilterButtonDisabled() {
-        return false;
-    }
+  }
 }
 
-const categoryOptions = [
-    { label: "Category A", value: "A" },
-    { label: "Category B", value: "B" },
-];
-const brandOptions = [
-    { label: "Brand X", value: "X" },
-    { label: "Brand Y", value: "Y" },
-];
-const tagOptions = [
-    { label: "Tag 1", value: "1" },
-    { label: "Tag 2", value: "2" },
-];
+type JsonResultType = {
+  brands: BrandType[];
+  categories: CategoryNodeType[];
+  tags: TagType[];
+};
 
 const ageOptions = [
-    { label: "All", value: "all" },
-    { label: "0-30 Days", value: "0-30" },
-    { label: "31-60 Days", value: "31-60" },
-    { label: "61-90 Days", value: "61-90" },
+  { label: "All", value: "all" },
+  { label: "0-30 Days", value: "0-30" },
+  { label: "31-60 Days", value: "31-60" },
+  { label: "61-90 Days", value: "61-90" }
 ];
 
 const dateRangeOptions = [
-    { label: "Today", value: "today" },
-    { label: "Last 7 Days", value: "last7" },
-    { label: "This Month", value: "thisMonth" },
-    { label: "Last Month", value: "lastMonth" },
-    { label: "Custom", value: "custom" },
+  { label: "Today", value: "today" },
+  { label: "Last 7 Days", value: "last7" },
+  { label: "This Month", value: "thisMonth" },
+  { label: "Last Month", value: "lastMonth" },
+  { label: "Custom", value: "custom" }
 ];

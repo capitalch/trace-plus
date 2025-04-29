@@ -1,5 +1,13 @@
 export type BrandType = { id: number | null; brandName: string };
 
+export type CategoryNodeType = {
+  id: string | number;
+  catName: string;
+  parentId: string | null;
+  isLeaf?: boolean;
+  hasChild?: boolean;
+};
+
 export type CategoryType = {
   id: string;
   catName: string;
