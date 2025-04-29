@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootStateType } from "../../app/store/store";
-import {
-  BrandType,
-  CategoryType,
-  TagType,
-} from "./inventory/reports/inventory-reports/purchase-price-variation-report/purchase-price-variation-filter-control";
+import { BrandType, CategoryType, TagType } from "./inventory/shared-types";
 
 const initialState: AccountsInitialStateType = {
   accSettingsChanged: 0,

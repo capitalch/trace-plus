@@ -105,22 +105,20 @@
 			- verify branch changes
 			- toolbar
 			- Filter
-				- Custom date
-				- Drop down date selector
-				- Other filters
-					- Age
-					- Categories, brands, tags
-			- grid
 				- UI
-				- SQL
-					- branches
-					- maybe inclusion of branch transfer required
+				- Redux slice
+				- logic
+			- Filter implement filter in Grid
+												- grid
+													- UI
+													- SQL
+													- branches
 													- serial no
-				- Optimize sql
+													- Optimize sql
 													- populate data
 													- Fields correction, width and display
 													- Same background color for same bill
-				- filters implement
+													- filters implement
 													- format
 													- Jakar sale indication
 													- Adjust col width

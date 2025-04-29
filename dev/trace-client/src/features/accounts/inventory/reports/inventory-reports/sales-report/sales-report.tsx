@@ -17,10 +17,10 @@ import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import {
   QueryCellInfoEventArgs,
-  // QueryCellInfoEventArgs,
   RowDataBoundEventArgs
 } from "@syncfusion/ej2-react-grids";
 import clsx from "clsx";
+import { SalesReportToolbarFilterDisplay } from "./sales-report-toolbar-filter-display";
 
 export function SalesReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.salesReport;
@@ -54,7 +54,7 @@ export function SalesReport({ title }: { title?: string }) {
       <CompSyncFusionGridToolbar
         CustomControl={() => (
           <div className="flex items-center gap-2">
-            {/* You can create a <SalesReportToolbarFilterDisplay /> similar to Purchase */}
+            <SalesReportToolbarFilterDisplay />
             <CompSwitch
               instance={instance}
               className=""
@@ -173,22 +173,6 @@ export function SalesReport({ title }: { title?: string }) {
       }
     ];
   }
-
-  // function getCellStyle(rowData: any): React.CSSProperties {
-  //   const style: React.CSSProperties = {};
-
-  //   if (rowData.age > 360) {
-  //     style.backgroundColor = "#dbeafe"; // blue-100
-  //   } else if (rowData.bColor) {
-  //     style.backgroundColor = "#d1fae5"; // green-100
-  //   }
-
-  //   if (rowData.grossProfit < 0) {
-  //     style.color = "red";
-  //   }
-
-  //   return style;
-  // }
 
   function getColumns(): SyncFusionGridColumnType[] {
     return [
@@ -315,7 +299,7 @@ export function SalesReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 90
+        width: 110
       },
       {
         field: "sgst",
@@ -323,7 +307,7 @@ export function SalesReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 90
+        width: 110
       },
       {
         field: "igst",
@@ -331,7 +315,7 @@ export function SalesReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 90
+        width: 110
       },
       { field: "saleType", headerText: "Type", width: 80, type: "string" },
       {
@@ -383,28 +367,14 @@ export function SalesReport({ title }: { title?: string }) {
       } else if (rowData.bColor) {
         args.row.classList.add("bg-green-100");
       }
-
-      // if (rowData.grossProfit < 0) {
-      //   args.row.classList.add("custom-red-600"); // Tailwind or your own class
-      // }
-      // if (parseFloat(rowData.grossProfit as any) < 0) {
-      //   args.row.classList.remove("bg-blue-100", "bg-green-100");
-      //   args.row.classList.add("text-red-600" );
-      // }
     }
   }
 
   function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
     const rowData = args.data as RowDataType;
-    // if (rowData.bColor && args.cell) {
-    //   (args.cell as any).style.backgroundColor = "#d1fae5";
-    // }
     if (rowData.grossProfit < 0) {
       (args.cell as any).style.color = "red";
     }
-    // if (rowData.age > 360) {
-    //   (args.cell as any).style.backgroundColor = "#dbeafe";
-    // }
   }
 
   async function loadData() {
@@ -424,10 +394,12 @@ export function SalesReport({ title }: { title?: string }) {
           branchId: isAllBranchesState
             ? null
             : state.login.currentBranch?.branchId,
+          brandId: null,
+          catId: null,
           finYearId,
-          tagId: 0,
+          tagId: null,
           startDate: "2024-04-01",
-          endDate: "2024-04-30",
+          endDate: "2025-03-31",
           days: 0
         }
       });
@@ -484,3 +456,20 @@ type RowDataType = {
   serialNumbers: string;
   tranDate: string;
 };
+
+// function getCellStyle(rowData: any): React.CSSProperties {
+//   const style: React.CSSProperties = {};
+
+//   if (rowData.age > 360) {
+//     style.backgroundColor = "#dbeafe"; // blue-100
+//   } else if (rowData.bColor) {
+//     style.backgroundColor = "#d1fae5"; // green-100
+//   }
+
+//   if (rowData.grossProfit < 0) {
+//     style.color = "red";
+//   }
+
+//   return style;
+// }
+

@@ -1,3 +1,10 @@
+export type BrandType = { id: number | null; brandName: string };
+
+export type CategoryType = {
+  id: string;
+  catName: string;
+};
+
 export type ProductLineItem = {
     id?: number | string;
     amount?: number;
@@ -26,6 +33,8 @@ export type ProductLineItem = {
     productId: number;
     upcCode: string;
   };
+
+  export type TagType = { id: number | null; tagName: string };
 
   export type TranHeaderType = {
     autoRefNo: string | null;

@@ -1,9 +1,10 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { layoutsReducer } from '../../features/layouts/layouts-slice'
-import { loginReducer } from '../../features/login/login-slice'
-import { queryHelperReducer } from '../graphql/query-helper-slice'
-import { accountsReducer } from '../../features/accounts/accounts-slice'
-import { reduxCompReducer } from '../../controls/redux-components/comp-slice'
+import { configureStore } from "@reduxjs/toolkit";
+import { layoutsReducer } from "../../features/layouts/layouts-slice";
+import { loginReducer } from "../../features/login/login-slice";
+import { queryHelperReducer } from "../graphql/query-helper-slice";
+import { accountsReducer } from "../../features/accounts/accounts-slice";
+import { reduxCompReducer } from "../../controls/redux-components/comp-slice";
+import { salesReportReducer } from "../../features/accounts/inventory/reports/inventory-reports/sales-report/sales-report-slice";
 
 export const store = configureStore({
   reducer: {
@@ -11,9 +12,10 @@ export const store = configureStore({
     queryHelper: queryHelperReducer,
     layouts: layoutsReducer,
     login: loginReducer,
-    reduxComp: reduxCompReducer
-  }
-})
+    reduxComp: reduxCompReducer,
+    salesReport: salesReportReducer,
+  },
+});
 
-export type RootStateType = ReturnType<typeof store.getState>
-export type AppDispatchType = typeof store.dispatch
+export type RootStateType = ReturnType<typeof store.getState>;
+export type AppDispatchType = typeof store.dispatch;

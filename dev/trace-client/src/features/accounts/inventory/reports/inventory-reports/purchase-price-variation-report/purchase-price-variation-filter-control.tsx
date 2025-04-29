@@ -20,6 +20,7 @@ import {
   setSelectedCategory,
   setSelectedTag
 } from "../../../../accounts-slice";
+import { BrandType, TagType } from "../../../shared-types";
 
 export function PurchasePriceVariationFilterControl({
   instance
@@ -199,12 +200,12 @@ export function PurchasePriceVariationFilterControl({
   }
 }
 
-export type BrandType = { id: number | null; brandName: string };
+// export type BrandType = { id: number | null; brandName: string };
 
-export type CategoryType = {
-  id: string;
-  catName: string;
-};
+// export type CategoryType = {
+//   id: string;
+//   catName: string;
+// };
 export type CategoryNodeType = {
   id: string | number;
   catName: string;
@@ -218,7 +219,7 @@ type JsonResultType = {
   categories: CategoryNodeType[];
   tags: TagType[];
 };
-export type TagType = { id: number | null; tagName: string };
+// export type TagType = { id: number | null; tagName: string };
 
 /* <button
     type="button"
