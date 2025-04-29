@@ -200,14 +200,6 @@ export function PurchasePriceVariationFilterControl({
   }
 }
 
-// export type CategoryNodeType = {
-//   id: string | number;
-//   catName: string;
-//   parentId: string | null;
-//   isLeaf?: boolean;
-//   hasChild?: boolean;
-// };
-
 type JsonResultType = {
   brands: BrandType[];
   categories: CategoryNodeType[];

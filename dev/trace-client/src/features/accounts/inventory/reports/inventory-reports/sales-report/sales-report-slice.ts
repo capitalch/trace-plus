@@ -68,7 +68,7 @@ type SalesReportInitialStateType = {
   };
 };
 
-type SalesReportPayloadActionType = {
+export type SalesReportPayloadActionType = {
   filterMode: "category" | "productCode";
   catFilterOption: {
     selectedCategory: CategoryType | null;
