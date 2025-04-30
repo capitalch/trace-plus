@@ -7,8 +7,8 @@ import {
 } from "../../../../../../app/store/store";
 import {
     SalesReportPayloadActionType,
-    //   setSalesReportFilterMode,
-    setSalesReportFilters
+    setSalesReportFilters,
+    setSalesReportIsPaneOpen
 } from "./sales-report-slice";
 import { Utils } from "../../../../../../utils/utils";
 import { useEffect, useRef, useState } from "react";
@@ -17,11 +17,12 @@ import {
     DropDownTreeComponent,
     FieldsModel
 } from "@syncfusion/ej2-react-dropdowns";
-import { ageOptions, BrandType, CategoryNodeType, TagType } from "../../../shared-definitions";
+import { ageOptions, BrandType, CategoryNodeType, dateRangeOptions, DateRangeType, TagType } from "../../../shared-definitions";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { NumberFormatValues, NumericFormat } from "react-number-format";
-import { dateRangeOptions, useInventoryReportsShared } from "../inventory-reports-shared-hook";
+import { useInventoryReportsShared } from "../inventory-reports-shared-hook";
+import { format } from "date-fns";
 export function SalesReportFilterControl() {
     const dispatch: AppDispatchType = useDispatch();
     const [, setRefresh] = useState({});
@@ -47,9 +48,9 @@ export function SalesReportFilterControl() {
         productCode: selectedFilters.productCode,
         ageFilterOption: { selectedAge: selectedFilters.ageFilterOption.selectedAge },
         dateRangeFilterOption: {
-            selectedDateRange: null,
-            startDate: null,
-            endDate: null
+            selectedDateRange: selectedFilters.dateRangeFilterOption.selectedDateRange,
+            startDate: selectedFilters.dateRangeFilterOption.startDate,
+            endDate: selectedFilters.dateRangeFilterOption.endDate
         }
     })
     const pre = meta.current;
@@ -77,6 +78,13 @@ export function SalesReportFilterControl() {
         if (_.isEmpty(pre.catFilterOption.selectedTag)) {
             pre.catFilterOption.selectedTag = tagOptions[0];
         }
+        if (_.isEmpty(pre.ageFilterOption.selectedAge)) {
+            pre.ageFilterOption.selectedAge = ageOptions[0];
+        }
+        if (_.isEmpty(pre.dateRangeFilterOption.selectedDateRange)) {
+            pre.dateRangeFilterOption.selectedDateRange = dateRangeOptions[0];
+            setDateRange(dateRangeOptions[0]);
+        }
         setRefresh({}); // Trigger a re-render
     }, [brandOptions, tagOptions]);
 
@@ -91,6 +99,13 @@ export function SalesReportFilterControl() {
                     <label className="text-lg font-semibold text-blue-500">
                         Group 1: Filter Mode
                     </label>
+                    <button
+                        type="button"
+                        onClick={handleResetFilters}
+                        className="px-4 py-2 rounded-md text-white text-sm font-medium transition bg-amber-600 hover:bg-amber-800"
+                    >
+                        Reset Filters
+                    </button>
                     <button
                         type="button"
                         onClick={handleApplyFilters}
@@ -131,6 +146,11 @@ export function SalesReportFilterControl() {
                         />
                         <span className="text-sm font-medium text-primary-500">By Product Code</span>
                     </label>
+                    {/* <button type="button" onClick={() => {
+                        console.log("Test Button Clicked");
+                        console.log(pre);
+                        isApplyFilterButtonDisabled();
+                    }}>Test</button> */}
                 </div>
             </div>
 
@@ -242,18 +262,28 @@ export function SalesReportFilterControl() {
                     className="mt-2"
                     onChange={handleOnChangeDateRange}
                     styles={Utils.getReactSelectStyles()}
-                    value={dateRangeOptions.find((option) => option.value === pre.dateRangeFilterOption.selectedDateRange) || null}
+                    value={dateRangeOptions.find((option: DateRangeType) => option.value === pre.dateRangeFilterOption.selectedDateRange?.value) || null}
                 />
                 <div className="flex space-x-4 mt-4">
                     <input
                         type="date"
                         className="flex-1 border rounded p-2"
                         aria-label="start-date"
+                        value={pre.dateRangeFilterOption.startDate || null as any}
+                        onChange={(e) => {
+                            pre.dateRangeFilterOption.startDate = e.target.value;
+                            setRefresh({});
+                        }}
                     />
                     <input
                         type="date"
                         className="flex-1 border rounded p-2"
                         aria-label="end-date"
+                        value={pre.dateRangeFilterOption.endDate || null as any}
+                        onChange={(e) => {
+                            pre.dateRangeFilterOption.endDate  = e.target.value;
+                            setRefresh({});
+                        }}
                     />
                 </div>
             </div>
@@ -272,12 +302,13 @@ export function SalesReportFilterControl() {
                 productCode: pre.productCode,
                 ageFilterOption: { selectedAge: pre.ageFilterOption.selectedAge },
                 dateRangeFilterOption: {
-                    selectedDateRange: null,
-                    startDate: null,
-                    endDate: null
+                    selectedDateRange: pre.dateRangeFilterOption.selectedDateRange,
+                    startDate: pre.dateRangeFilterOption.startDate,
+                    endDate: pre.dateRangeFilterOption.endDate
                 }
             })
         );
+        dispatch(setSalesReportIsPaneOpen(false));
     }
 
     function handleOnChangeAge(selected: any) {
@@ -293,7 +324,21 @@ export function SalesReportFilterControl() {
     }
 
     function handleOnChangeDateRange(selected: any) {
+        if (!selected) return
         pre.dateRangeFilterOption.selectedDateRange = selected;
+        setDateRange(selected);
+        setRefresh({});
+    }
+
+    function setDateRange(selected: any) {
+        let dateRange: { startDate: string, endDate: string }
+        if (Utils.isNumeric(selected.value)) {
+            dateRange = getMonthRange(selected.value)
+        } else {
+            dateRange = getDateRange(selected.value)
+        }
+        pre.dateRangeFilterOption.startDate = dateRange.startDate
+        pre.dateRangeFilterOption.endDate = dateRange.endDate
     }
 
     function handleOnChangeTag(selected: TagType | null) {
@@ -320,8 +365,31 @@ export function SalesReportFilterControl() {
         event.target.select();
     }
 
+    function handleResetFilters() {
+        pre.filterMode = "category";
+        pre.productCode = null;
+        pre.catFilterOption.selectedBrand = brandOptions[0];
+        pre.catFilterOption.selectedTag = tagOptions[0];
+        pre.catFilterOption.selectedCategory = null
+        pre.ageFilterOption.selectedAge = ageOptions[0];
+        pre.dateRangeFilterOption.selectedDateRange = dateRangeOptions[0];
+        setDateRange(dateRangeOptions[0]);
+        setRefresh({});
+        handleApplyFilters();
+    }
+
     function isApplyFilterButtonDisabled() {
-        return false;
+
+        const isProductCodeFilter = pre.productCode !== null;
+        const isAgeFilter = Boolean(pre.ageFilterOption.selectedAge?.value)
+        const isCategoryFilterBrand = Boolean(pre.catFilterOption.selectedBrand?.id)
+        const isCategoryFilterTag = Boolean(pre.catFilterOption.selectedTag?.id)
+        const isCategoryFilterCategory = Boolean(pre.catFilterOption.selectedCategory?.id)
+        const isDateRangeFilterStartDate = Boolean(pre.dateRangeFilterOption.startDate !== format(new Date(), 'yyyy-MM-dd'))
+        const isDateRangeFilterEndDate = Boolean(pre.dateRangeFilterOption.endDate !== format(new Date(), 'yyyy-MM-dd'))
+
+        const ret: boolean = isProductCodeFilter || isAgeFilter || isCategoryFilterBrand || isCategoryFilterTag || isCategoryFilterCategory || isDateRangeFilterStartDate || isDateRangeFilterEndDate
+        return (!ret);
     }
 
     async function loadAllOptions() {

@@ -1,16 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
-import { useRef } from "react";
+// import { useRef } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import Select from 'react-select'
 import { setPurchaseReportCustomFilterOption, setPurchaseReportFilterDateInterval, setPurchaseReportIsPaneOpen, setPurchaseReportPredefinedFilterOption, setPurchaseReportSelectMode } from "../../../../accounts-slice";
 import { Utils } from "../../../../../../utils/utils";
 import { format} from "date-fns";
-import { dateRangeOptions, useInventoryReportsShared } from "../inventory-reports-shared-hook";
+import { useInventoryReportsShared } from "../inventory-reports-shared-hook";
+import { dateRangeOptions, DateRangeType } from "../../../shared-definitions";
 
 export function PurchaseReportFilterContol() {
     const dispatch: AppDispatchType = useDispatch();
-    const selectRef: any = useRef<Select>(null)
+    // const selectRef: any = useRef<Select>(null)
     const { currentDateFormat, } = useUtilsInfo();
     const {getDateRange, getMonthRange} = useInventoryReportsShared()
     const isoFormat = 'yyyy-MM-dd'
@@ -57,13 +58,13 @@ export function PurchaseReportFilterContol() {
 
                     <Select
                         className="mt-2"
-                        ref={selectRef}
+                        // ref={selectRef}
                         placeholder="Select a predefined date range"
                         styles={Utils.getReactSelectStyles()}
                         options={dateRangeOptions}
                         onChange={handleOnChangePredefinedDateRange}
                         menuPlacement="auto"
-                        value={dateRangeOptions.find((option) => option.value === selectedPredefinedFilterOption.value) || null}
+                        value={dateRangeOptions.find((option: DateRangeType) => option.value === selectedPredefinedFilterOption.value) || null}
                     />
 
                     <div className="flex flex-wrap gap-4 text-sm text-gray-600">
@@ -117,7 +118,6 @@ export function PurchaseReportFilterContol() {
                     Apply Filter
                 </button>
             </div>
-
         </div>
     );
 
