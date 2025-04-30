@@ -10,7 +10,7 @@ import {
 } from "../../../../../controls/components/product-select-from-grid";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import _ from "lodash";
-import { ProductType } from "../../shared-types";
+import { ProductType } from "../../shared-definitions";
 
 export function useProductsBranchTransferLineItems(instance: string) {
   const [qtyTooltipIndex, setQtyTooltipIndex] = useState<number | null>(null);

@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { format } from "date-fns";
-import { ProductLineItem, TranHeaderType } from "../../shared-types";
+import { ProductLineItem, TranHeaderType } from "../../shared-definitions";
 import { StockJournalHeader } from "./stock-journal-header";
 import { StockJournalTabs } from "./stock-journal-tabs";
 import { useDispatch, useSelector } from "react-redux";

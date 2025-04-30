@@ -13,7 +13,7 @@ import _ from "lodash";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
-import { ProductLineItem, TranHeaderType } from "../../shared-types";
+import { ProductLineItem, TranHeaderType } from "../../shared-definitions";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   const {

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BrandType, CategoryType, TagType } from "../../../shared-types";
+import { AgeType, BrandType, CategoryType, TagType } from "../../../shared-definitions";
 
 const initialState: SalesReportInitialStateType = {
   isPaneOpen: false,
@@ -59,7 +59,7 @@ type SalesReportInitialStateType = {
   };
   productCode: number | null;
   ageFilterOption: {
-    selectedAge: string | null;
+    selectedAge: AgeType | null;
   };
   dateRangeFilterOption: {
     selectedDateRange: string | null;
@@ -77,7 +77,7 @@ export type SalesReportPayloadActionType = {
   };
   productCode: number | null;
   ageFilterOption: {
-    selectedAge: string | null;
+    selectedAge: AgeType | null;
   };
   dateRangeFilterOption: {
     selectedDateRange: string | null;

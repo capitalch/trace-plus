@@ -53,9 +53,10 @@ export function PurchaseReportFilterContol() {
             {selectedSelectMode === 'predefined' && (
                 <section className="px-4 py-5 border rounded-lg shadow-sm bg-white space-y-4 border-blue-300 ring-2 ring-blue-400">
 
-                    <h2 className="text-lg font-semibold text-primary-800">Predefined Date Range</h2>
+                    <label className="text-lg font-semibold text-primary-800">Predefined Date Range</label>
 
                     <Select
+                        className="mt-2"
                         ref={selectRef}
                         placeholder="Select a predefined date range"
                         styles={Utils.getReactSelectStyles()}
@@ -76,10 +77,10 @@ export function PurchaseReportFilterContol() {
             {selectedSelectMode === 'custom' && (
                 <section className="px-4 py-5 border rounded-lg shadow-sm bg-white space-y-4 border-green-300 ring-2 ring-green-400">
 
-                    <h2 className="text-lg font-semibold text-primary-800">Custom Date Range</h2>
+                    <label className="text-lg font-semibold text-primary-800">Custom Date Range</label>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <label className="flex flex-col gap-1 text-sm text-primary-800 font-medium">
+                        <label className="flex flex-col gap-1 text-sm text-primary-800 font-medium mt-2">
                             <span>Start Date</span>
                             <input
                                 type="date"
@@ -91,7 +92,7 @@ export function PurchaseReportFilterContol() {
                             />
                         </label>
 
-                        <label className="flex flex-col gap-1 text-sm text-primary-800 font-medium">
+                        <label className="flex flex-col gap-1 text-sm text-primary-800 font-medium mt-2">
                             <span>End Date</span>
                             <input
                                 type="date"

@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { StockJournalLineItems } from "./stock-journal-line-items";
 import { StockJournalType } from "./stock-journal-main";
-import { ProductLineItem } from "../../shared-types";
+import { ProductLineItem } from "../../shared-definitions";
 import _ from "lodash";
 import { useEffect } from "react";
 

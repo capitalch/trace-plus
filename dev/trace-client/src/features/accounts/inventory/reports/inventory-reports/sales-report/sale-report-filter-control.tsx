@@ -17,13 +17,16 @@ import {
     DropDownTreeComponent,
     FieldsModel
 } from "@syncfusion/ej2-react-dropdowns";
-import { BrandType, CategoryNodeType, TagType } from "../../../shared-types";
+import { ageOptions, BrandType, CategoryNodeType, TagType } from "../../../shared-definitions";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { NumberFormatValues, NumericFormat } from "react-number-format";
+import { dateRangeOptions, useInventoryReportsShared } from "../inventory-reports-shared-hook";
 export function SalesReportFilterControl() {
     const dispatch: AppDispatchType = useDispatch();
     const [, setRefresh] = useState({});
+    const { getDateRange, getMonthRange } = useInventoryReportsShared()
+    // const isoFormat = 'yyyy-MM-dd'
     const selectedFilters = useSelector(
         (state: RootStateType) => state.salesReport
     );
@@ -37,12 +40,12 @@ export function SalesReportFilterControl() {
     const meta = useRef<MetaType>({
         filterMode: selectedFilters.filterMode,
         catFilterOption: {
-            selectedBrand: null,
+            selectedBrand: selectedFilters.catFilterOption.selectedBrand,
             selectedCategory: selectedFilters.catFilterOption.selectedCategory,
-            selectedTag: null
+            selectedTag: selectedFilters.catFilterOption.selectedTag
         },
         productCode: selectedFilters.productCode,
-        ageFilterOption: { selectedAge: null },
+        ageFilterOption: { selectedAge: selectedFilters.ageFilterOption.selectedAge },
         dateRangeFilterOption: {
             selectedDateRange: null,
             startDate: null,
@@ -66,17 +69,18 @@ export function SalesReportFilterControl() {
             _.isEmpty(catOptions)
         ) {
             loadAllOptions();
+            return
         }
-        if (catRef.current) {
-            if (_.isEmpty(pre.catFilterOption.selectedCategory)) {
-                catRef.current.value = [""];
-            } else {
-                catRef.current.value = [pre.catFilterOption.selectedCategory.id];
-                catRef.current.ensureVisible(pre.catFilterOption.selectedCategory.id);
-            }
-            setRefresh({});
+        if (_.isEmpty(pre.catFilterOption.selectedBrand)) {
+            pre.catFilterOption.selectedBrand = brandOptions[0];
         }
-    }, [pre.catFilterOption.selectedCategory]);
+        if (_.isEmpty(pre.catFilterOption.selectedTag)) {
+            pre.catFilterOption.selectedTag = tagOptions[0];
+        }
+        setRefresh({}); // Trigger a re-render
+    }, [brandOptions, tagOptions]);
+
+    setCategory();
 
     return (
         <div className="max-w-md mx-auto space-y-4">
@@ -108,8 +112,8 @@ export function SalesReportFilterControl() {
                             onChange={() => {
                                 pre.filterMode = "category";
                                 setRefresh({})
-                            }
-                            }
+                            }}
+                            className="cursor-pointer"
                         />
                         <span className="text-sm font-medium text-primary-500">By Category / Brand / Tag</span>
                     </label>
@@ -122,83 +126,104 @@ export function SalesReportFilterControl() {
                             onChange={() => {
                                 pre.filterMode = "productCode";
                                 setRefresh({})
-                            }
-                            }
+                            }}
+                            className="cursor-pointer"
                         />
                         <span className="text-sm font-medium text-primary-500">By Product Code</span>
                     </label>
                 </div>
             </div>
 
-            {/* Group 1: Category Filters */}
-            {pre.filterMode === "category" && (
-                <div className="space-y-4">
-                    <DropDownTreeComponent
-                        className="h-10"
-                        id="dropDowntree"
-                        ref={catRef}
-                        showClearButton={false}
-                        placeholder="Select a category ..."
-                        fields={fields}
-                        allowMultiSelection={false}
-                        popupHeight="300px"
-                        allowFiltering={true}
-                        filterBarPlaceholder="Search"
-                        select={handleOnChangeCategory}
-                    />
-                    <Select
-                        getOptionLabel={(option: BrandType) => option.brandName}
-                        getOptionValue={(option: BrandType) => option.id as any}
-                        options={brandOptions}
-                        styles={Utils.getReactSelectStyles()}
-                        // value={selectedBrandOption}
-                        // onChange={handleOnChangeBrand}
-                        placeholder="Select a brand..."
-                    />
-                    <Select
-                        getOptionLabel={(option: TagType) => option.tagName}
-                        getOptionValue={(option: TagType) => option.id as any}
-                        options={tagOptions}
-                        styles={Utils.getReactSelectStyles()}
-                        // value={selectedTagOption}
-                        // onChange={handleOnChangeTag}
-                        placeholder="Select a tag..."
-                    />
-                </div>
-            )}
+            <div className="h-56">
+                {/* Group 1: Category Filters */}
+                {pre.filterMode === "category" && (
+                    <div className="space-y-4">
+                        <label className="text-sm font-semibold text-gray-400">
+                            Categories
+                        </label>
+                        <DropDownTreeComponent
+                            className="h-10"
+                            id="dropDowntree"
+                            ref={catRef}
+                            showClearButton={false}
+                            placeholder="Select a category ..."
+                            fields={fields}
+                            allowMultiSelection={false}
+                            popupHeight="300px"
+                            allowFiltering={true}
+                            filterBarPlaceholder="Search"
+                            select={handleOnChangeCategory}
+                            created={() => {
+                                if (catRef.current) {
+                                    setCategory()
+                                }
+                            }}
+                        />
 
-            {/* Group 1: Product Code */}
-            {pre.filterMode === "productCode" && (
-                <div className="-mt-2 flex flex-col">
-                    <label className="text-md font-semibold text-primary-500">
-                        Product Code
-                    </label>
-                    <NumericFormat
-                        className="border-spacing-1 mt-2 border-gray-300 h-10 rounded-md border-2 bg-white"
-                        allowNegative={false}
-                        autoFocus={true}
-                        decimalScale={0}
-                        fixedDecimalScale={true}
-                        getInputRef={productCodeRef}
-                        onFocus={handleOnFocusProductCode}
-                        placeholder="Enter Product Code"
-                        value={pre.productCode}
-                        onValueChange={(values: NumberFormatValues) => {
-                            const { value } = values;
-                            pre.productCode = +value;
-                            setRefresh({});
-                        }}
-                    />
-                </div>
-            )}
+                        <label className="text-sm font-semibold text-gray-400">
+                            Brands
+                        </label>
+                        <Select
+                            getOptionLabel={(option: BrandType) => option.brandName}
+                            getOptionValue={(option: BrandType) => option.id as any}
+                            options={brandOptions}
+                            styles={Utils.getReactSelectStyles()}
+                            value={pre.catFilterOption.selectedBrand}
+                            onChange={handleOnChangeBrand}
+                            placeholder="Select a brand..."
+                        />
+
+                        <label className="text-sm font-semibold text-gray-400">
+                            Tags
+                        </label>
+                        <Select
+                            getOptionLabel={(option: TagType) => option.tagName}
+                            getOptionValue={(option: TagType) => option.id as any}
+                            options={tagOptions}
+                            styles={Utils.getReactSelectStyles()}
+                            value={pre.catFilterOption.selectedTag}
+                            onChange={handleOnChangeTag}
+                            placeholder="Select a tag..."
+                        />
+                    </div>
+                )}
+
+                {/* Group 1: Product Code */}
+                {pre.filterMode === "productCode" && (
+                    <div className=" flex flex-col">
+                        <label className="text-sm font-semibold text-gray-400">
+                            Product Code
+                        </label>
+                        <NumericFormat
+                            className="border-spacing-1 border-gray-300 h-10 rounded-md border-2 bg-white"
+                            allowNegative={false}
+                            autoFocus={true}
+                            decimalScale={0}
+                            fixedDecimalScale={true}
+                            getInputRef={productCodeRef}
+                            onFocus={handleOnFocusProductCode}
+                            placeholder="Enter Product Code"
+                            value={pre.productCode}
+                            onValueChange={(values: NumberFormatValues) => {
+                                const { value } = values;
+                                pre.productCode = +value;
+                                setRefresh({});
+                            }}
+                        />
+                    </div>
+                )}
+
+            </div>
 
             {/* Group 2: Age */}
             <div className="space-y-2">
                 <label className="text-lg font-semibold text-blue-500">
-                    Group 2: Product Age{" "}
+                    Group 2: Filter by Product Age{" "}
                 </label>
                 <Select
                     options={ageOptions}
+                    value={pre.ageFilterOption.selectedAge}
+                    onChange={handleOnChangeAge}
                     placeholder="Select Age Range"
                     className="mt-2"
                     styles={Utils.getReactSelectStyles()}
@@ -208,16 +233,18 @@ export function SalesReportFilterControl() {
             {/* Group 4: Date Range */}
             <div className="space-y-2">
                 <label className="text-lg font-semibold text-blue-500">
-                    Group 3: Date Range
+                    Group 3: Filter by Date Range
                 </label>
                 <Select
                     options={dateRangeOptions}
                     menuPlacement="top"
                     placeholder="Select Date Range"
                     className="mt-2"
+                    onChange={handleOnChangeDateRange}
                     styles={Utils.getReactSelectStyles()}
+                    value={dateRangeOptions.find((option) => option.value === pre.dateRangeFilterOption.selectedDateRange) || null}
                 />
-                <div className="flex space-x-2">
+                <div className="flex space-x-4 mt-4">
                     <input
                         type="date"
                         className="flex-1 border rounded p-2"
@@ -238,12 +265,12 @@ export function SalesReportFilterControl() {
             setSalesReportFilters({
                 filterMode: pre.filterMode,
                 catFilterOption: {
-                    selectedBrand: null,
+                    selectedBrand: pre.catFilterOption.selectedBrand,
                     selectedCategory: pre.catFilterOption.selectedCategory,
-                    selectedTag: null
+                    selectedTag: pre.catFilterOption.selectedTag
                 },
                 productCode: pre.productCode,
-                ageFilterOption: { selectedAge: null },
+                ageFilterOption: { selectedAge: pre.ageFilterOption.selectedAge },
                 dateRangeFilterOption: {
                     selectedDateRange: null,
                     startDate: null,
@@ -253,20 +280,41 @@ export function SalesReportFilterControl() {
         );
     }
 
+    function handleOnChangeAge(selected: any) {
+        pre.ageFilterOption.selectedAge = selected;
+        setRefresh({});
+    }
+
+    function handleOnChangeBrand(selected: BrandType | null) {
+        pre.catFilterOption.selectedBrand = selected;
+        pre.catFilterOption.selectedTag = tagOptions[0];
+        pre.catFilterOption.selectedCategory = null
+        setRefresh({});
+    }
+
+    function handleOnChangeDateRange(selected: any) {
+        pre.dateRangeFilterOption.selectedDateRange = selected;
+    }
+
+    function handleOnChangeTag(selected: TagType | null) {
+        pre.catFilterOption.selectedBrand = brandOptions[0];
+        pre.catFilterOption.selectedTag = selected;
+        pre.catFilterOption.selectedCategory = null
+        setRefresh({});
+    }
+
     function handleOnChangeCategory(e: DdtSelectEventArgs) {
         const item: any = e.itemData;
         pre.catFilterOption.selectedCategory = {
             id: item.id,
             catName: item.text
         }
-        setRefresh({});
-        // if (e.isInteracted) {
-        //   dispatch(setSelectedTag(tagOptions[0]));
-        //   dispatch(setSelectedBrand(brandOptions[0]));
-        //   context.CompSyncFusionGrid[instance].loadData();
-        //   dispatch(setPurchasePriceVariationIsPaneOpen(false));
-        // }
-      }
+        if (e.isInteracted) {
+            pre.catFilterOption.selectedTag = tagOptions[0];
+            pre.catFilterOption.selectedBrand = brandOptions[0];
+            setRefresh({});
+        }
+    }
 
     function handleOnFocusProductCode(event: any) {
         event.target.select();
@@ -310,6 +358,17 @@ export function SalesReportFilterControl() {
             console.log(e);
         }
     }
+
+    function setCategory() {
+        if (catRef.current) {
+            if (_.isEmpty(pre.catFilterOption.selectedCategory)) {
+                catRef.current.value = [""];
+            } else {
+                catRef.current.value = [pre.catFilterOption.selectedCategory.id];
+                catRef.current.ensureVisible(pre.catFilterOption.selectedCategory.id);
+            }
+        }
+    }
 }
 
 type JsonResultType = {
@@ -320,17 +379,3 @@ type JsonResultType = {
 
 type MetaType = SalesReportPayloadActionType
 
-const ageOptions = [
-    { label: "All", value: "all" },
-    { label: "0-30 Days", value: "0-30" },
-    { label: "31-60 Days", value: "31-60" },
-    { label: "61-90 Days", value: "61-90" }
-];
-
-const dateRangeOptions = [
-    { label: "Today", value: "today" },
-    { label: "Last 7 Days", value: "last7" },
-    { label: "This Month", value: "thisMonth" },
-    { label: "Last Month", value: "lastMonth" },
-    { label: "Custom", value: "custom" }
-];

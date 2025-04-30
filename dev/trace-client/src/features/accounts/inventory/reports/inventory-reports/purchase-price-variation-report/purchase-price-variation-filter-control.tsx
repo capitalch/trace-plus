@@ -20,7 +20,7 @@ import {
   setSelectedCategory,
   setSelectedTag
 } from "../../../../accounts-slice";
-import { BrandType, CategoryNodeType, TagType } from "../../../shared-types";
+import { BrandType, CategoryNodeType, TagType } from "../../../shared-definitions";
 
 export function PurchasePriceVariationFilterControl({
   instance

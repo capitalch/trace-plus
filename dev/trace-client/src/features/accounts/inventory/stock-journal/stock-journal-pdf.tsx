@@ -1,7 +1,7 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { UnitInfoType, Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
-import { TranHeaderType } from "../shared-types";
+import { TranHeaderType } from "../shared-definitions";
 
 type StockJournalPdfProps = {
   inputLineItems: any[];
