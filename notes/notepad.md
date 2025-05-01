@@ -1,18 +1,16 @@
--- new sales report
-set search_path to capitalchowringhee;
-WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "startDate" AS (VALUES ('2024-04-01' :: DATE)), "endDate" AS (VALUES ('2025-03-31' :: DATE)), "days" AS (VALUES (0)),
-     -- with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandIdId)s::int)), "catId" as (values(%(catId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "days" as (values (COALESCE(%(days)s,0))),
+set search_path to capitalchowringhee; -- Sales report on productCode
+WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "productCode" as (VALUES (1089::text)), "startDate" AS (VALUES ('2024-04-01' :: DATE)), "endDate" AS (VALUES ('2025-03-31' :: DATE)), "days" AS (VALUES (0)),
+      --with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "days" as (values (COALESCE(%(days)s,0))),
 
      filtered_products AS (
         SELECT *
-            FROM get_products_on_brand_category_tag(
-            (TABLE "brandId"),
-            (TABLE "catId"),
-            (TABLE "tagId"))
+            FROM "ProductM"
+                WHERE "productCode" = (table "productCode")
     ),
+    
 
      -- Other accounts involved in transactions (excluding Sale accounts)
-     cte_other_accounts AS (
+     cte_other_accounts AS MATERIALIZED (
          SELECT h."id", STRING_AGG(a."accName", ', ') AS "accounts"
          FROM "TranH" h
          JOIN "TranD" d ON h."id" = d."tranHeaderId"
@@ -24,12 +22,17 @@ WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VAL
            AND "finYearId" = (TABLE "finYearId")
          GROUP BY h."id"
      ),
-
+     
      -- Base Sale and Sale Return Transactions
      cte_sale AS (
          SELECT 
              h."id",
              d."accId",
+             p."catId",
+             p."brandId",
+             p."productCode",
+             p."info",
+             p."label",
              a.accounts,
              h."remarks" AS "commonRemarks", 
              CONCAT_WS(', ', d.remarks, s."jData" -> 'remarks') AS "lineRemarks",
@@ -42,7 +45,7 @@ WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VAL
              "sgst",
              "igst",
              s."amount", 
-             "gstRate", 
+             s."gstRate", 
              s."id" AS "salePurchaseDetailsId", 
              "autoRefNo", 
              h."timestamp", 
@@ -59,7 +62,8 @@ WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VAL
              AND "finYearId" = (TABLE "finYearId")
              AND "tranDate" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
              AND "tranTypeId" IN (4, 9)
-     ),
+     )
+     select * from cte_sale;
 
      -- Find Last Purchase Before Each Sale
      cte_combined AS (
@@ -100,6 +104,13 @@ WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VAL
          SELECT 
              c."id",
              c."accId",
+             c."catId",
+             c."brandId",
+             c."productCode",
+             c."info",
+             c."label",
+             b."brandName",
+             t."catName",
              c.accounts,
              c."commonRemarks",
              c."lineRemarks",
@@ -118,13 +129,14 @@ WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VAL
              c."autoRefNo",
              c."timestamp",
              c."contact",
-             -- c."dc",
              c."serialNumbers",
              -- If cte_combined has NULL, fallback to ProductOpBal
              COALESCE(c."lastPurchasePrice", p."openingPrice") AS "lastPurchasePrice",
              COALESCE(c."lastPurchaseDate", p."lastPurchaseDate") AS "lastPurchaseDate"
          FROM cte_combined c
          LEFT JOIN cte_opbal p ON p."productId" = c."productId"
+         join "CategoryM" t on t.id = c."catId"
+         join "BrandM" b on b.id = c."brandId"
      ),
 
      -- Compute Gross Profit per Line
@@ -144,6 +156,11 @@ WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VAL
          SELECT c."id",
                 c."accId",
                 c.accounts,
+                c."brandName",
+                c."catName",
+                c."productCode",
+                c."label",
+                c."info",
                 c."commonRemarks",
                 c."lineRemarks",
                 c."tranDate",
@@ -169,7 +186,7 @@ WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VAL
                 CASE WHEN "tranTypeId" = 4 THEN "grossProfit" ELSE -"grossProfit" END AS "grossProfit",
                 date_part('day', COALESCE(c."tranDate"::timestamp, '2010-01-01'::timestamp) - COALESCE(c."lastPurchaseDate"::timestamp, '2010-01-01'::timestamp))::int as age
 
-         FROM cte_combined2 c
+         FROM cte_combined2 c order by "tranDate", "salePurchaseDetailsId"
      )
 
 SELECT * FROM cte_final where age >= (table days)

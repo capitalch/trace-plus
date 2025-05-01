@@ -30,7 +30,8 @@ export function SalesReport({ title }: { title?: string }) {
       shallowEqual
     ) || false;
   const selectedFilters = useSelector(
-    (state: RootStateType) => state.salesReport)
+    (state: RootStateType) => state.salesReport
+  );
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
@@ -43,10 +44,26 @@ export function SalesReport({ title }: { title?: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
-    // if (selectedStartDate && selectedEndDate) {
-    loadData();
-    // }
-  }, [isAllBranches, branchId, buCode, finYearId,]);
+    if (selectedFilters.filterMode === "productCode") {
+      if (selectedFilters.productCode) {
+        loadDataOnProductCode();
+      }
+    } else {
+      loadData();
+    }
+  }, [
+    isAllBranches,
+    branchId,
+    buCode,
+    finYearId,
+    selectedFilters.catFilterOption.selectedBrand.id,
+    selectedFilters.catFilterOption.selectedCategory.id,
+    selectedFilters.catFilterOption.selectedTag.id,
+    selectedFilters.dateRangeFilterOption.startDate,
+    selectedFilters.dateRangeFilterOption.endDate,
+    selectedFilters.ageFilterOption.selectedAge.value,
+    selectedFilters.productCode
+  ]);
 
   return (
     <div className="flex flex-col">
@@ -193,7 +210,7 @@ export function SalesReport({ title }: { title?: string }) {
             <div
               className={clsx(
                 "flex flex-col",
-                props.grossProfit < 0 ? "text-red-500" : "",
+                props.grossProfit < 0 ? "text-red-500" : ""
               )}
             >
               <span>{props.autoRefNo}</span>
@@ -212,7 +229,7 @@ export function SalesReport({ title }: { title?: string }) {
           <div
             className={clsx(
               "flex flex-col",
-              props.grossProfit < 0 ? "text-red-500" : "",
+              props.grossProfit < 0 ? "text-red-500" : ""
             )}
           >
             {"".concat(props.catName, " ", props.brandName, " ", props.label)}
@@ -380,8 +397,7 @@ export function SalesReport({ title }: { title?: string }) {
     try {
       const state: RootStateType = Utils.getReduxState();
       const isAllBranchesState = state.reduxComp.compSwitch[instance];
-      // const startDate = state.accounts.salesReportFilterState.selectedStartDate;
-      // const endDate = state.accounts.salesReportFilterState.selectedEndDate;
+      const selectedFiltersState = state.salesReport;
 
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
@@ -393,13 +409,15 @@ export function SalesReport({ title }: { title?: string }) {
           branchId: isAllBranchesState
             ? null
             : state.login.currentBranch?.branchId,
-          brandId: null,
-          catId: null,
+          brandId:
+            selectedFiltersState.catFilterOption.selectedBrand?.id || null,
+          catId:
+            selectedFiltersState.catFilterOption.selectedCategory?.id || null,
+          tagId: selectedFiltersState.catFilterOption.selectedTag?.id || null,
           finYearId,
-          tagId: null,
-          startDate: "2024-04-01",
-          endDate: "2025-03-31",
-          days: 0
+          startDate: selectedFiltersState.dateRangeFilterOption.startDate,
+          endDate: selectedFiltersState.dateRangeFilterOption.endDate,
+          days: selectedFiltersState.ageFilterOption.selectedAge?.value || 0
         }
       });
 
@@ -420,6 +438,25 @@ export function SalesReport({ title }: { title?: string }) {
           bColor = !bColor;
         }
       }
+    }
+  }
+
+  async function loadDataOnProductCode() {
+    try {
+      const rowsData: RowDataType[] = await Utils.doGenericQuery({
+        buCode: buCode || "",
+        dbName: dbName || "",
+        dbParams: decodedDbParamsObject,
+        instance: instance,
+        sqlId: SqlIdsMap.getSalesReport,
+        sqlArgs: {
+          branchId: isAllBranches ? null : branchId,
+          productCode: selectedFilters.productCode
+        }
+      });
+      setRowsData(rowsData);
+    } catch (e: any) {
+      console.log(e);
     }
   }
 }
@@ -455,20 +492,3 @@ type RowDataType = {
   serialNumbers: string;
   tranDate: string;
 };
-
-// function getCellStyle(rowData: any): React.CSSProperties {
-//   const style: React.CSSProperties = {};
-
-//   if (rowData.age > 360) {
-//     style.backgroundColor = "#dbeafe"; // blue-100
-//   } else if (rowData.bColor) {
-//     style.backgroundColor = "#d1fae5"; // green-100
-//   }
-
-//   if (rowData.grossProfit < 0) {
-//     style.color = "red";
-//   }
-
-//   return style;
-// }
-
