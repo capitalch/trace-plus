@@ -51,7 +51,7 @@ export function SalesReportToolbarFilterDisplay() {
                         {selectedFilters.catFilterOption.selectedTag.tagName}
                     </div>}
                     <div className="w-24 truncate text-blue-500 font-bold">
-                        <span className="font-semibold text-primary-600">Age:</span>{' '}
+                        <span className="font-semibold text-primary-600"></span>{' '}
                         {selectedFilters.ageFilterOption.selectedAge?.label || 'All'}
                     </div>
                     <div className="w-48 truncate text-blue-500 font-bold">

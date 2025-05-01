@@ -100,19 +100,20 @@
 													- toolbar
 
 		- Sales
+			- When mode is changed then make productCode as null. Otherwise issue happens.
 			- Purchase refresh button click date error at startup
 													- Startup
 													- All branches / this branch
-			- verify branch changes
-			- toolbar
-			- Filter
-				- Filter mode
-				- Age
-				- Date Range
+													- verify branch changes
+													- toolbar
+											- Filter
+													- Filter mode
+													- Age
+													- Date Range
 													- UI
 													- Redux slice
-				- logic
-			- Implement filter in Grid
+													- logic
+											- Implement filter in Grid
 												- grid
 													- UI
 													- SQL

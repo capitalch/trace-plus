@@ -1720,16 +1720,24 @@ class SqlAccounts:
     """
 
     get_sales_report = """
-     --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "startDate" AS (VALUES ('2024-04-01' :: DATE)), "endDate" AS (VALUES ('2025-03-31' :: DATE)), "days" AS (VALUES (0)),
-      with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "days" as (values (COALESCE(%(days)s,0))),
+    --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)),"productCode" as (VALUES (null::text)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "startDate" AS (VALUES ('2024-04-01' :: DATE)), "endDate" AS (VALUES ('2025-03-31' :: DATE)), "days" AS (VALUES (0)),
+    with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "productCode" as (VALUES (%(productCode)s::text)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "days" as (values (COALESCE(%(days)s,0))),
 
-     filtered_products AS (
-        SELECT *
-            FROM get_products_on_brand_category_tag(
-            (TABLE "brandId"),
-            (TABLE "catId"),
-            (TABLE "tagId"))
-    ),
+	filtered_products AS (
+	    SELECT id, "productCode", "catId", "brandId", label, info 
+		FROM "ProductM"
+	    WHERE "productCode" = (TABLE "productCode")
+	    AND (TABLE "productCode") IS NOT NULL
+	
+	    UNION ALL
+	
+	    SELECT * FROM get_products_on_brand_category_tag(
+	        (TABLE "brandId"),
+	        (TABLE "catId"),
+	        (TABLE "tagId")
+	    )
+	    WHERE (TABLE "productCode") IS NULL
+  	),
 
      -- Other accounts involved in transactions (excluding Sale accounts)
      cte_other_accounts AS MATERIALIZED (
@@ -1910,7 +1918,7 @@ class SqlAccounts:
          FROM cte_combined2 c order by "tranDate", "salePurchaseDetailsId"
      )
 
-SELECT * FROM cte_final where age >= (table days)
+        SELECT * FROM cte_final where age >= (table days)
     """
     
     get_sales_report2 = """

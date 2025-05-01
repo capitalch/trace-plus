@@ -44,11 +44,7 @@ export function SalesReport({ title }: { title?: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
-    if (selectedFilters.filterMode === "productCode") {
-      if (selectedFilters.productCode) {
-        loadDataOnProductCode();
-      }
-    } else {
+    {
       loadData();
     }
   }, [
@@ -409,6 +405,7 @@ export function SalesReport({ title }: { title?: string }) {
           branchId: isAllBranchesState
             ? null
             : state.login.currentBranch?.branchId,
+          productCode: selectedFiltersState.productCode,
           brandId:
             selectedFiltersState.catFilterOption.selectedBrand?.id || null,
           catId:
@@ -438,25 +435,6 @@ export function SalesReport({ title }: { title?: string }) {
           bColor = !bColor;
         }
       }
-    }
-  }
-
-  async function loadDataOnProductCode() {
-    try {
-      const rowsData: RowDataType[] = await Utils.doGenericQuery({
-        buCode: buCode || "",
-        dbName: dbName || "",
-        dbParams: decodedDbParamsObject,
-        instance: instance,
-        sqlId: SqlIdsMap.getSalesReport,
-        sqlArgs: {
-          branchId: isAllBranches ? null : branchId,
-          productCode: selectedFilters.productCode
-        }
-      });
-      setRowsData(rowsData);
-    } catch (e: any) {
-      console.log(e);
     }
   }
 }
