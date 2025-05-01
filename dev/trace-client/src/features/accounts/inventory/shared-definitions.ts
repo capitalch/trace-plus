@@ -1,9 +1,9 @@
 export const ageOptions: AgeType[] = [
   { label: "All", value: null },
-  { label: "Age >= 90 days", value: "90" },
-  { label: "Age >= 180 days", value: "180" },
-  { label: "Age >= 270 days", value: "270" },
-  { label: "Age >= 360 days", value: "360" },
+  { label: "Age >= 90", value: "90" },
+  { label: "Age >= 180", value: "180" },
+  { label: "Age >= 270", value: "270" },
+  { label: "Age >= 360", value: "360" },
 ];
 
 export const dateRangeOptions: { label: string; value: any }[] = [

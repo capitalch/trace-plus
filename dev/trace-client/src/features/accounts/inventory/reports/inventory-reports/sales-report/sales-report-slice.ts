@@ -1,22 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AgeType, BrandType, CategoryType, DateRangeType, TagType } from "../../../shared-definitions";
+import {
+  AgeType,
+  BrandType,
+  CategoryType,
+  DateRangeType,
+  TagType,
+} from "../../../shared-definitions";
+import { format } from "date-fns";
 
 const initialState: SalesReportInitialStateType = {
   isPaneOpen: false,
   filterMode: "category",
   catFilterOption: {
-    selectedCategory: null,
-    selectedBrand: null,
-    selectedTag: null,
+    selectedCategory: { catName: "All", id: "" },
+    selectedBrand: { brandName: "All", id: null },
+    selectedTag: { id: null, tagName: "All" },
   },
   productCode: null,
   ageFilterOption: {
-    selectedAge: null,
+    selectedAge: { value: null, label: "All" },
   },
   dateRangeFilterOption: {
-    selectedDateRange: null,
-    startDate: null,
-    endDate: null,
+    selectedDateRange: { label: "today", value: "today" },
+    startDate: format(new Date(), 'yyyy-MM-dd'),
+    endDate: format(new Date(), 'yyyy-MM-dd'),
   },
 };
 
@@ -44,44 +51,42 @@ const salesReportSlice = createSlice({
 });
 
 export const salesReportReducer = salesReportSlice.reducer;
-export const {
-  setSalesReportFilters,
-  setSalesReportIsPaneOpen,
-} = salesReportSlice.actions;
+export const { setSalesReportFilters, setSalesReportIsPaneOpen } =
+  salesReportSlice.actions;
 
 type SalesReportInitialStateType = {
   isPaneOpen: boolean;
   filterMode: "category" | "productCode";
   catFilterOption: {
-    selectedCategory: CategoryType | null;
-    selectedBrand: BrandType | null;
-    selectedTag: TagType | null;
+    selectedCategory: CategoryType;
+    selectedBrand: BrandType;
+    selectedTag: TagType;
   };
   productCode: number | null;
   ageFilterOption: {
-    selectedAge: AgeType | null;
+    selectedAge: AgeType;
   };
   dateRangeFilterOption: {
-    selectedDateRange: DateRangeType | null;
-    startDate: string | null;
-    endDate: string | null;
+    selectedDateRange: DateRangeType;
+    startDate: string;
+    endDate: string;
   };
 };
 
 export type SalesReportPayloadActionType = {
   filterMode: "category" | "productCode";
   catFilterOption: {
-    selectedCategory: CategoryType | null;
-    selectedBrand: BrandType | null;
-    selectedTag: TagType | null;
+    selectedCategory: CategoryType;
+    selectedBrand: BrandType;
+    selectedTag: TagType;
   };
   productCode: number | null;
   ageFilterOption: {
-    selectedAge: AgeType | null;
+    selectedAge: AgeType;
   };
   dateRangeFilterOption: {
-    selectedDateRange: DateRangeType | null;
-    startDate: string | null;
-    endDate: string | null;
+    selectedDateRange: DateRangeType;
+    startDate: string;
+    endDate: string;
   };
 };

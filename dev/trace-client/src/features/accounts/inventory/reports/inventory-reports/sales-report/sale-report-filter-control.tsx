@@ -269,7 +269,7 @@ export function SalesReportFilterControl() {
                         type="date"
                         className="flex-1 border rounded p-2"
                         aria-label="start-date"
-                        value={pre.dateRangeFilterOption.startDate || null as any}
+                        value={pre.dateRangeFilterOption.startDate || ''}
                         onChange={(e) => {
                             pre.dateRangeFilterOption.startDate = e.target.value;
                             setRefresh({});
@@ -279,9 +279,9 @@ export function SalesReportFilterControl() {
                         type="date"
                         className="flex-1 border rounded p-2"
                         aria-label="end-date"
-                        value={pre.dateRangeFilterOption.endDate || null as any}
+                        value={pre.dateRangeFilterOption.endDate || ''}
                         onChange={(e) => {
-                            pre.dateRangeFilterOption.endDate  = e.target.value;
+                            pre.dateRangeFilterOption.endDate = e.target.value;
                             setRefresh({});
                         }}
                     />
@@ -317,9 +317,9 @@ export function SalesReportFilterControl() {
     }
 
     function handleOnChangeBrand(selected: BrandType | null) {
-        pre.catFilterOption.selectedBrand = selected;
+        pre.catFilterOption.selectedBrand = selected || brandOptions[0];
         pre.catFilterOption.selectedTag = tagOptions[0];
-        pre.catFilterOption.selectedCategory = null
+        pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
         setRefresh({});
     }
 
@@ -343,8 +343,8 @@ export function SalesReportFilterControl() {
 
     function handleOnChangeTag(selected: TagType | null) {
         pre.catFilterOption.selectedBrand = brandOptions[0];
-        pre.catFilterOption.selectedTag = selected;
-        pre.catFilterOption.selectedCategory = null
+        pre.catFilterOption.selectedTag = selected || tagOptions[0];
+        pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
         setRefresh({});
     }
 
@@ -370,7 +370,7 @@ export function SalesReportFilterControl() {
         pre.productCode = null;
         pre.catFilterOption.selectedBrand = brandOptions[0];
         pre.catFilterOption.selectedTag = tagOptions[0];
-        pre.catFilterOption.selectedCategory = null
+        pre.catFilterOption.selectedCategory = { catName: "All", id: '' }
         pre.ageFilterOption.selectedAge = ageOptions[0];
         pre.dateRangeFilterOption.selectedDateRange = dateRangeOptions[0];
         setDateRange(dateRangeOptions[0]);
@@ -403,16 +403,16 @@ export function SalesReportFilterControl() {
             const jsonResult: JsonResultType = res?.[0]?.jsonResult;
             if (jsonResult) {
                 const brands = jsonResult.brands || [];
-                brands.unshift({ brandName: "All brands", id: null });
+                brands.unshift({ brandName: "All", id: null });
                 setBrandOptions(brands);
 
                 const tags = jsonResult.tags || [];
-                tags.unshift({ tagName: "All tags", id: null });
+                tags.unshift({ tagName: "All", id: null });
                 setTagOptions(tags);
 
                 const cats = jsonResult.categories || [];
                 cats.unshift({
-                    catName: "All categories",
+                    catName: "All",
                     id: "",
                     isLeaf: true,
                     parentId: null

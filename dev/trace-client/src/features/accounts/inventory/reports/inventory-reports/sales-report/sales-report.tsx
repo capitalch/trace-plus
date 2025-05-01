@@ -29,9 +29,8 @@ export function SalesReport({ title }: { title?: string }) {
       (state: RootStateType) => selectCompSwitchStateFn(state, instance),
       shallowEqual
     ) || false;
-
-  //   const selectedStartDate = useSelector((state: RootStateType) => state.accounts.salesReportFilterState.selectedStartDate)
-  //   const selectedEndDate = useSelector((state: RootStateType) => state.accounts.salesReportFilterState.selectedEndDate)
+  const selectedFilters = useSelector(
+    (state: RootStateType) => state.salesReport)
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
@@ -47,7 +46,7 @@ export function SalesReport({ title }: { title?: string }) {
     // if (selectedStartDate && selectedEndDate) {
     loadData();
     // }
-  }, [isAllBranches, branchId, buCode, finYearId]);
+  }, [isAllBranches, branchId, buCode, finYearId, ]);
 
   return (
     <div className="flex flex-col">
