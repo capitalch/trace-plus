@@ -5,6 +5,7 @@ import { queryHelperReducer } from "../graphql/query-helper-slice";
 import { accountsReducer } from "../../features/accounts/accounts-slice";
 import { reduxCompReducer } from "../../controls/redux-components/comp-slice";
 import { salesReportReducer } from "../../features/accounts/inventory/reports/inventory-reports/sales-report/sales-report-slice";
+import { stockSummaryReportReducer } from "../../features/accounts/inventory/reports/inventory-reports/stock-summary-report/stock-summary-report-slice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     login: loginReducer,
     reduxComp: reduxCompReducer,
     salesReport: salesReportReducer,
+    stockSummaryReport: stockSummaryReportReducer,
   },
 });
 

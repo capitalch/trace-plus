@@ -1,5 +1,4 @@
 import { FC, ReactElement } from "react"
-// import { IconArrange } from "../../../../controls/icons/icon-arrange"
 import { IconCurrentOrders } from "../../../../controls/icons/report-icons/icon-current-order"
 import { IconProductList } from "../../../../controls/icons/report-icons/icon-product-list"
 import { IconPurchasePriceVariation } from "../../../../controls/icons/report-icons/icon-purchase-price-variation"
@@ -12,8 +11,9 @@ import { ProductsListReport } from "./inventory-reports/products-list-report"
 import { PurchasePriceVariationReport } from "./inventory-reports/purchase-price-variation-report/purchase-price-variation-report"
 import { PurchaseReport } from "./inventory-reports/purchase-report/purchase-report"
 import { SalesReport } from "./inventory-reports/sales-report/sales-report"
-import { StockSummaryReport } from "./inventory-reports/stock-summary-report"
+// import { StockSummaryReport } from "./inventory-reports/stock-summary-report"
 import { StockTransactionsReport } from "./inventory-reports/stock-transactions-report"
+import { StockSummaryReport } from "./inventory-reports/stock-summary-report/stock-summary-report"
 
 type InventoryReportItemType = {
     id: string

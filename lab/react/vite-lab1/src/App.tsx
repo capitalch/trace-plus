@@ -1,5 +1,5 @@
-import { createContext } from 'react'
-import './App.css'
+import { createContext } from "react";
+import "./App.css";
 // import { Layouts } from './features/navigation/layouts/layouts'
 // import { ArrayTrick } from './features/array-trick/array-trick'
 // import { Counter } from './features/redux-counter/counter'
@@ -22,12 +22,12 @@ import './App.css'
 // import { PrimeReact } from './features/prime-react/PrimeReact';
 // import { PrimeReactProvider } from 'primereact/api'
 // import { DeepObjectReset } from './features/deep-object-reset/deep-object-reset'
-import 'primereact/resources/themes/nova/theme.css'
-import 'primereact/resources/primereact.min.css'
-import 'primeicons/primeicons.css'
+import "primereact/resources/themes/nova/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 // import { ToastContainer } from 'react-toastify'
 // import { ReactToastify } from './features/react-toastify/ReactToastify';
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 // import { ReactSelectTypeAheadAsync } from './features/react-select/react-select-type-ahead-async'
 // import { ReactSelectTypeAhead } from './features/react-select/react-select-type-ahead'
 // import { ReactSelectTypeAheadAsync1 } from './features/react-select/react-select-type-ahead-async1'
@@ -40,34 +40,34 @@ import 'react-toastify/dist/ReactToastify.css';
 // import { ReactSelectAsync } from './features/react-select/react-select-async'
 // import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
 // import { TreeGrid2 } from './features/syncfusion/tree-grid2'
-import { SyncfusionGrid } from './features/syncfusion/syncfusion-grid'
-import { InjectSummary } from './features/Misc/inject-summary'
-import { SlidingPaneViewer } from './features/react-sliding-pane/slide-pane-viewer'
-import { EditGrid } from './features/syncfusion/edit-grid'
-import { Spinners } from './features/spinners/spinners'
-import { SyncfusionTreeGrid } from './features/syncfusion/syncfusion-tree-grid'
-import { SyncfusionTreeGrid1 } from './features/syncfusion/syncfusion-tree-grid1'
-import { SyncFusionTreeGridEditTemplate } from './features/syncfusion/syncfusion-tree-grid-edit-template'
-import { SyncFusionTreeGridEditTemplate1 } from './features/syncfusion/syncfusion-tree-grid-edit-template1'
-import { ReactDatePicker } from './features/react-datepicker/react-date-picker'
-import { ExportDropDown } from './features/Misc/export-drop-down'
+import { SyncfusionGrid } from "./features/syncfusion/syncfusion-grid";
+import { InjectSummary } from "./features/Misc/inject-summary";
+import { SlidingPaneViewer } from "./features/react-sliding-pane/slide-pane-viewer";
+import { EditGrid } from "./features/syncfusion/edit-grid";
+import { Spinners } from "./features/spinners/spinners";
+import { SyncfusionTreeGrid } from "./features/syncfusion/syncfusion-tree-grid";
+import { SyncfusionTreeGrid1 } from "./features/syncfusion/syncfusion-tree-grid1";
+import { SyncFusionTreeGridEditTemplate } from "./features/syncfusion/syncfusion-tree-grid-edit-template";
+import { SyncFusionTreeGridEditTemplate1 } from "./features/syncfusion/syncfusion-tree-grid-edit-template1";
+import { ReactDatePicker } from "./features/react-datepicker/react-date-picker";
+import { ExportDropDown } from "./features/Misc/export-drop-down";
 // import DynamicFilteringGrid from './features/syncfusion/dynamic-filtering-grid'
-import GenericFilteringGridContainer from './features/syncfusion/filtering/generic-filtering-grid-container'
-import ReportAllTransactionsFilter from './features/ai-generated/report-all-transactions-filter'
-import CompactTransactionFilter from './features/ai-generated/show-filtered-values'
-import { NewEditProduct } from './features/Misc/new-edit-product'
-import { NewEditProduct1 } from './features/Misc/new-edit-product1'
-import ProductForm from './features/Misc/product-form'
-import { BranchTransferForm } from './features/Misc/branch-transfer-form'
-import { TabExample } from './features/Misc/tabs/tab-example'
-import BranchTransferForm1 from './features/Misc/branch-transfer-form1'
-import { SelectedRowInTable1 } from './features/Misc/selected-row-in-table1'
-import FilterControl from './features/Misc/tabs/filter-control'
-import CategoryTreeSelect from './features/prime-react/category-tree-select'
-import { SyncfusionCategoryTreeSelect } from './features/syncfusion/syncfusion-category-tree-select'
-import { DropDownTreeDemo } from './features/syncfusion/drop-down-tree-demo'
-import { DropDownTreeNewDemo } from './features/syncfusion/drop-down-tree/drop-down-tree-new-demo'
-
+import GenericFilteringGridContainer from "./features/syncfusion/filtering/generic-filtering-grid-container";
+import ReportAllTransactionsFilter from "./features/ai-generated/report-all-transactions-filter";
+import CompactTransactionFilter from "./features/ai-generated/show-filtered-values";
+import { NewEditProduct } from "./features/Misc/new-edit-product";
+import { NewEditProduct1 } from "./features/Misc/new-edit-product1";
+import ProductForm from "./features/Misc/product-form";
+import { BranchTransferForm } from "./features/Misc/branch-transfer-form";
+import { TabExample } from "./features/Misc/tabs/tab-example";
+import BranchTransferForm1 from "./features/Misc/branch-transfer-form1";
+import { SelectedRowInTable1 } from "./features/Misc/selected-row-in-table1";
+import FilterControl from "./features/Misc/tabs/filter-control";
+import CategoryTreeSelect from "./features/prime-react/category-tree-select";
+import { SyncfusionCategoryTreeSelect } from "./features/syncfusion/syncfusion-category-tree-select";
+import { DropDownTreeDemo } from "./features/syncfusion/drop-down-tree-demo";
+import { DropDownTreeNewDemo } from "./features/syncfusion/drop-down-tree/drop-down-tree-new-demo";
+import { PositioningPanel } from "./features/Misc/positioning-panel";
 
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
@@ -76,12 +76,13 @@ import { DropDownTreeNewDemo } from './features/syncfusion/drop-down-tree/drop-d
 // import { Counter } from './features/redux-counter/counter';
 // import { ReactTooltip, ReactTooltip1Control } from './features/tooltip/react-tooltip';
 // import { Violations } from './features/Misc/violations';
-export const GlobalContext: any = createContext({})
+export const GlobalContext: any = createContext({});
 
 function App() {
-
   return (
-    <GlobalContext.Provider value={{ profile: { name: 'Sushant', address: '12 J.L' } }}>
+    <GlobalContext.Provider
+      value={{ profile: { name: "Sushant", address: "12 J.L" } }}
+    >
       {/* <PrimeReactProvider value = {{appendTo:'self'}} > */}
       {/* <RouterProvider router={router} /> */}
       {/* <Counter /> */}
@@ -96,7 +97,7 @@ function App() {
       {/* <DeepObjectReset /> */}
       {/* <div className=''> */}
       {/* <Layouts />
-         */}
+       */}
       {/* <SignalsCounter /> */}
       {/* <ArrayTrick /> */}
       {/* <LoginForm /> */}
@@ -146,9 +147,10 @@ function App() {
       {/* <CategoryTreeSelect /> */}
       {/* <SyncfusionCategoryTreeSelect />
       <DropDownTreeDemo /> */}
-      <DropDownTreeNewDemo />
+      {/* <DropDownTreeNewDemo /> */}
+      <PositioningPanel />
     </GlobalContext.Provider>
-  )
+  );
 }
 
-export default App
+export default App;

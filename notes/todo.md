@@ -139,6 +139,7 @@
 				- Redux slice
 				- logic
 			- Grid
+				- X button
 				- UI
 				- SQL
 				- Optimize Sql
