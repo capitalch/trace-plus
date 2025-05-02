@@ -5,6 +5,7 @@ import { SalesReportFilterControl } from "./sale-report-filter-control";
 import { setSalesReportIsPaneOpen } from "./sales-report-slice";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { format } from "date-fns";
+import clsx from "clsx";
 
 export function SalesReportToolbarFilterDisplay() {
     const dispatch: AppDispatchType = useDispatch();
@@ -36,7 +37,7 @@ export function SalesReportToolbarFilterDisplay() {
                         {selectedFilters.productCode || 'None'}
                     </div>}
                     <button
-                        className="w-32 h-6 px-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 shrink-0 ml-2"
+                        className={clsx("w-32 h-6 px-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 shrink-0", isCategoryFilterMode ? 'ml-2' : 'ml-10')}
                         onClick={() => dispatch(setSalesReportIsPaneOpen(true))}
                         type="button"
                     >

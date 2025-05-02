@@ -8,13 +8,13 @@ export const ageOptions: AgeType[] = [
 
 export const dateRangeOptions: { label: string; value: any }[] = [
   { label: 'Today', value: 'today' },
-  { label: 'Current financial year', value: 'finYear' },
   { label: 'Prev day', value: 'prevDay' },
   { label: 'last 3 days', value: 'last3Days' },
   { label: 'This week', value: 'thisWeek' },
   { label: 'This month', value: 'thisMonth' },
   { label: 'Prev month', value: 'prevMonth' },
   { label: 'Last 3 months', value: 'last3Months' },
+  { label: 'Financial year', value: 'finYear' },
   { label: 'Qtr1', value: 'qtr1' },
   { label: 'Qtr2', value: 'qtr2' },
   { label: 'Qtr3', value: 'qtr3' },

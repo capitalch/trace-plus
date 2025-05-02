@@ -100,7 +100,8 @@
 													- toolbar
 
 		- Sales
-			- When mode is changed then make productCode as null. Otherwise issue happens.
+			- When date range as financial year filter is selected: Main FY is changed then filter is not changed. So start date and end date remains same which leads to issue
+													- When mode is changed then make productCode as null. Otherwise issue happens.
 			- Purchase refresh button click date error at startup
 													- Startup
 													- All branches / this branch

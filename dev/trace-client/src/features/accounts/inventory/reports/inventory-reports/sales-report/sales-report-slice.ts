@@ -62,7 +62,7 @@ type SalesReportInitialStateType = {
     selectedBrand: BrandType;
     selectedTag: TagType;
   };
-  productCode: number | null;
+  productCode: string | null;
   ageFilterOption: {
     selectedAge: AgeType;
   };
@@ -80,7 +80,7 @@ export type SalesReportPayloadActionType = {
     selectedBrand: BrandType;
     selectedTag: TagType;
   };
-  productCode: number | null;
+  productCode: string | null;
   ageFilterOption: {
     selectedAge: AgeType;
   };

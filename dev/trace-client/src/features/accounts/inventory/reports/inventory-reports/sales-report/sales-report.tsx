@@ -405,7 +405,7 @@ export function SalesReport({ title }: { title?: string }) {
           branchId: isAllBranchesState
             ? null
             : state.login.currentBranch?.branchId,
-          productCode: selectedFiltersState.productCode,
+          productCode: selectedFiltersState.productCode || null,
           brandId:
             selectedFiltersState.catFilterOption.selectedBrand?.id || null,
           catId:

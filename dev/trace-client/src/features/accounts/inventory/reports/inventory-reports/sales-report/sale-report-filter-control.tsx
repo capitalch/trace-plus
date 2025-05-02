@@ -20,20 +20,19 @@ import {
 import { ageOptions, BrandType, CategoryNodeType, dateRangeOptions, DateRangeType, TagType } from "../../../shared-definitions";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
-import { NumberFormatValues, NumericFormat } from "react-number-format";
 import { useInventoryReportsShared } from "../inventory-reports-shared-hook";
 import { format } from "date-fns";
+import { NumberFormatValues, NumericFormat } from "react-number-format";
 export function SalesReportFilterControl() {
     const dispatch: AppDispatchType = useDispatch();
     const [, setRefresh] = useState({});
     const { getDateRange, getMonthRange } = useInventoryReportsShared()
-    // const isoFormat = 'yyyy-MM-dd'
     const selectedFilters = useSelector(
         (state: RootStateType) => state.salesReport
     );
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const catRef = useRef<DropDownTreeComponent | null>(null);
-    const productCodeRef = useRef<any>(null)
+    // const productCodeRef = useRef<any>(null)
     const [brandOptions, setBrandOptions] = useState<BrandType[]>([]);
     const [tagOptions, setTagOptions] = useState<TagType[]>([]);
     const [catOptions, setCatOptions] = useState<CategoryNodeType[]>([]);
@@ -99,6 +98,7 @@ export function SalesReportFilterControl() {
                     <label className="text-lg font-semibold text-blue-500">
                         Group 1: Filter Mode
                     </label>
+                    {/* Reset button */}
                     <button
                         type="button"
                         onClick={handleResetFilters}
@@ -106,6 +106,7 @@ export function SalesReportFilterControl() {
                     >
                         Reset Filters
                     </button>
+                    {/* Apply filters button */}
                     <button
                         type="button"
                         onClick={handleApplyFilters}
@@ -118,6 +119,7 @@ export function SalesReportFilterControl() {
 
                 {/* Radio buttons */}
                 <div className="flex space-x-4 mt-4">
+                    {/* By Category radio button */}
                     <label className="flex items-center space-x-2 cursor-pointer">
                         <input
                             type="radio"
@@ -126,12 +128,14 @@ export function SalesReportFilterControl() {
                             checked={pre.filterMode === "category"}
                             onChange={() => {
                                 pre.filterMode = "category";
+                                pre.productCode = '';
                                 setRefresh({})
                             }}
                             className="cursor-pointer"
                         />
                         <span className="text-sm font-medium text-primary-500">By Category / Brand / Tag</span>
                     </label>
+                    {/* By product code radio button */}
                     <label className="flex items-center space-x-2 cursor-pointer ml-2">
                         <input
                             type="radio"
@@ -155,7 +159,7 @@ export function SalesReportFilterControl() {
             </div>
 
             <div className="h-56">
-                {/* Group 1: Category Filters */}
+                {/* Category Filters */}
                 {pre.filterMode === "category" && (
                     <div className="space-y-4">
                         <label className="text-sm font-semibold text-gray-400">
@@ -208,28 +212,41 @@ export function SalesReportFilterControl() {
                     </div>
                 )}
 
-                {/* Group 1: Product Code */}
+                {/* Product Code */}
                 {pre.filterMode === "productCode" && (
-                    <div className=" flex flex-col">
+                    <div className="relative w-full max-w-xs">
                         <label className="text-sm font-semibold text-gray-400">
-                            Product Code
+                            Product Code:
+                            <NumericFormat
+                                className="border-spacing-1 border-gray-300 h-10 rounded-md border-2 bg-white ml-2"
+                                allowNegative={false}
+                                autoFocus={true}
+                                decimalScale={0}
+                                fixedDecimalScale={true}
+                                // getInputRef={productCodeRef}
+                                onFocus={handleOnFocusProductCode}
+                                placeholder="Enter Product Code"
+                                value={pre.productCode}
+                                onValueChange={(values: NumberFormatValues) => {
+                                    const { value } = values;
+                                    pre.productCode = value || null;
+                                    setRefresh({});
+                                }}
+                            />
                         </label>
-                        <NumericFormat
-                            className="border-spacing-1 border-gray-300 h-10 rounded-md border-2 bg-white"
-                            allowNegative={false}
-                            autoFocus={true}
-                            decimalScale={0}
-                            fixedDecimalScale={true}
-                            getInputRef={productCodeRef}
-                            onFocus={handleOnFocusProductCode}
-                            placeholder="Enter Product Code"
-                            value={pre.productCode}
-                            onValueChange={(values: NumberFormatValues) => {
-                                const { value } = values;
-                                pre.productCode = +value;
-                                setRefresh({});
-                            }}
-                        />
+                        {pre.productCode && (
+                            <button
+                                type="button"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
+                                onClick={() => {
+                                    pre.productCode = '';
+                                    setRefresh({});
+                                }}
+                            >
+                                ✕
+                            </button>
+                        )}
+
                     </div>
                 )}
 
