@@ -22,8 +22,8 @@ const initialState: SalesReportInitialStateType = {
   },
   dateRangeFilterOption: {
     selectedDateRange: { label: "today", value: "today" },
-    startDate: format(new Date(), 'yyyy-MM-dd'),
-    endDate: format(new Date(), 'yyyy-MM-dd'),
+    startDate: format(new Date(), "yyyy-MM-dd"),
+    endDate: format(new Date(), "yyyy-MM-dd"),
   },
 };
 
@@ -47,12 +47,22 @@ const salesReportSlice = createSlice({
       state.ageFilterOption = action.payload.ageFilterOption;
       state.dateRangeFilterOption = action.payload.dateRangeFilterOption;
     },
+    setSalesReportDateRange: (
+      state: SalesReportInitialStateType,
+      action: PayloadAction<{ startDate: string; endDate: string }>
+    ) => {
+      state.dateRangeFilterOption.startDate = action.payload.startDate;
+      state.dateRangeFilterOption.endDate = action.payload.endDate;
+    },
   },
 });
 
 export const salesReportReducer = salesReportSlice.reducer;
-export const { setSalesReportFilters, setSalesReportIsPaneOpen } =
-  salesReportSlice.actions;
+export const {
+  setSalesReportDateRange,
+  setSalesReportFilters,
+  setSalesReportIsPaneOpen,
+} = salesReportSlice.actions;
 
 type SalesReportInitialStateType = {
   isPaneOpen: boolean;

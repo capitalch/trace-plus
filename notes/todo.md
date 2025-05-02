@@ -100,9 +100,9 @@
 													- toolbar
 
 		- Sales
-			- When date range as financial year filter is selected: Main FY is changed then filter is not changed. So start date and end date remains same which leads to issue
+													- When date range as financial year filter is selected: Main FY is changed then filter is not changed. So start date and end date remains same.
 													- When mode is changed then make productCode as null. Otherwise issue happens.
-			- Purchase refresh button click date error at startup
+													- Purchase refresh button click date error at startup
 													- Startup
 													- All branches / this branch
 													- verify branch changes
@@ -131,6 +131,22 @@
 													- Aggregates for many columns
 
 		- Stock summary
+			- Start up
+			- Branches checkup
+			- Filter
+				- UI
+				- All filters
+				- Redux slice
+				- logic
+			- Grid
+				- UI
+				- SQL
+				- Optimize Sql
+				- populate data
+				- format columns
+				- Jakar
+				- Adjust col width
+				- Aggregates
 		- Stock transactions
 										- Stock Journal
 											- Final testing

@@ -16,6 +16,9 @@
 - Bug fixes etc.
 
 ## History
+# 02-05-2025
+	- Completed sales report
+	- Started Inventory report
 # 24-04-2024
 	- completed
 		- current orders

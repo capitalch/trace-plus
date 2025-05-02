@@ -109,7 +109,7 @@ export function useCompSyncFusionGrid({
                 return (
                     <ColumnDirective
                         allowEditing={col?.allowEditing}
-                        clipMode="EllipsisWithTooltip"
+                        clipMode="Clip" //EllipsisWithTooltip
                         customAttributes={col?.customAttributes}
                         edit={col?.edit}
                         editTemplate={col?.editTemplate}

@@ -309,6 +309,10 @@ export function PurchaseReport({ title }: { title?: string }) {
       const startDate = state.accounts.purchaseReportFilterState.selectedStartDate
       const endDate = state.accounts.purchaseReportFilterState.selectedEndDate
 
+      if (!startDate || !endDate) {
+        return;
+      }
+
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",

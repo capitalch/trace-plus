@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
-import { shallowEqual, useSelector } from "react-redux";
-import { RootStateType } from "../../../../../../app/store/store";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import {
+  AppDispatchType,
+  RootStateType
+} from "../../../../../../app/store/store";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";
@@ -21,8 +24,10 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import clsx from "clsx";
 import { SalesReportToolbarFilterDisplay } from "./sales-report-toolbar-filter-display";
+import { setSalesReportDateRange } from "./sales-report-slice";
 
 export function SalesReport({ title }: { title?: string }) {
+  const dispatch: AppDispatchType = useDispatch();
   const instance = DataInstancesMap.salesReport;
   const isAllBranches: boolean =
     useSelector(
@@ -40,7 +45,8 @@ export function SalesReport({ title }: { title?: string }) {
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
-    finYearId
+    finYearId,
+    currentFinYear
   } = useUtilsInfo();
 
   useEffect(() => {
@@ -394,6 +400,23 @@ export function SalesReport({ title }: { title?: string }) {
       const state: RootStateType = Utils.getReduxState();
       const isAllBranchesState = state.reduxComp.compSwitch[instance];
       const selectedFiltersState = state.salesReport;
+      const currentStartDate = currentFinYear?.startDate || "";
+      const currentEndDate = currentFinYear?.endDate || "";
+      const startDate = selectedFiltersState.dateRangeFilterOption.startDate;
+      const endDate = selectedFiltersState.dateRangeFilterOption.endDate;
+      const selectedDateRange =
+        selectedFiltersState.dateRangeFilterOption.selectedDateRange;
+      if (selectedDateRange.value === "finYear") {
+        if (currentStartDate !== startDate || currentEndDate !== endDate) {
+          dispatch(
+            setSalesReportDateRange({
+              startDate: currentStartDate,
+              endDate: currentEndDate
+            })
+          );
+          return;
+        }
+      }
 
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
