@@ -9,6 +9,7 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: StockSummaryReportInitialStateType = {
+  isFilterPanelVisible: false,
   catFilterOption: {
     selectedCategory: { catName: "All", id: "" },
     selectedBrand: { brandName: "All", id: null },
@@ -23,24 +24,39 @@ const stockSummaryReportSlice = createSlice({
   name: "stockSummaryReport",
   initialState,
   reducers: {
+    setStockSummaryReportIsFilterPanelVisible: (
+      state: StockSummaryReportInitialStateType,
+      action: PayloadAction<boolean>
+    ) => {
+      state.isFilterPanelVisible = action.payload;
+    },
     setStockReportFilters: (
       state: StockSummaryReportInitialStateType,
       action: PayloadAction<StockSummaryReportPayloadActionType>
     ) => {
-        state.catFilterOption.selectedCategory = action.payload.catFilterOption.selectedCategory;
-        state.catFilterOption.selectedBrand = action.payload.catFilterOption.selectedBrand;
-        state.catFilterOption.selectedTag = action.payload.catFilterOption.selectedTag;
-        state.productCode = action.payload.productCode;
-        state.ageFilterOption.selectedAge = action.payload.ageFilterOption.selectedAge;
-        state.onDate = action.payload.onDate;
+      state.catFilterOption.selectedCategory =
+        action.payload.catFilterOption.selectedCategory;
+      state.catFilterOption.selectedBrand =
+        action.payload.catFilterOption.selectedBrand;
+      state.catFilterOption.selectedTag =
+        action.payload.catFilterOption.selectedTag;
+      state.productCode = action.payload.productCode;
+      state.ageFilterOption.selectedAge =
+        action.payload.ageFilterOption.selectedAge;
+      state.onDate = action.payload.onDate;
+    },
+    toggleStockSummaryReportIsFilterPanelVisible: (state: StockSummaryReportInitialStateType) => {
+      state.isFilterPanelVisible = !state.isFilterPanelVisible;
     },
   },
 });
 
 export const stockSummaryReportReducer = stockSummaryReportSlice.reducer;
-export const { setStockReportFilters } = stockSummaryReportSlice.actions;
+export const { setStockSummaryReportIsFilterPanelVisible, setStockReportFilters, toggleStockSummaryReportIsFilterPanelVisible } =
+  stockSummaryReportSlice.actions;
 
 type StockSummaryReportInitialStateType = {
+  isFilterPanelVisible: boolean;
   catFilterOption: {
     selectedCategory: CategoryType;
     selectedBrand: BrandType;

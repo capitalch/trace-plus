@@ -23,6 +23,8 @@ import {
   RowDataBoundEventArgs
 } from "@syncfusion/ej2-react-grids";
 import { StockSummaryReportFilterPanel } from "./stock-summary-report-filter-panel";
+import { toggleStockSummaryReportIsFilterPanelVisible } from "./stock-summary-report-slice";
+import { format } from "date-fns";
 
 export function StockSummaryReport({ title }: { title?: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -35,6 +37,9 @@ export function StockSummaryReport({ title }: { title?: string }) {
   const selectedFilters = useSelector(
     (state: RootStateType) => state.stockSummaryReport
   );
+  const isFilterPanelVisible = useSelector(
+    (state: RootStateType) => state.stockSummaryReport.isFilterPanelVisible
+  );
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
@@ -43,8 +48,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
-    finYearId,
-    currentFinYear
+    finYearId
+    // currentFinYear
   } = useUtilsInfo();
 
   useEffect(() => {
@@ -65,11 +70,18 @@ export function StockSummaryReport({ title }: { title?: string }) {
 
   return (
     <div className="flex flex-col relative">
-      <CompSyncFusionGridToolbar 
+      <CompSyncFusionGridToolbar
         CustomControl={() => (
           <div className="flex items-center gap-2">
             {/* <SalesReportToolbarFilterDisplay /> */}
-            <StockSummaryReportFilterPanel />
+            <button
+              type="button"
+              onClick={handleOnClickFilter}
+              className="bg-blue-500 text-white px-2 py-1 rounded-full font-medium text-sm hover:bg-blue-700"
+            >
+              Filter
+            </button>
+            <StockSummaryReportFilterPanel isVisible={isFilterPanelVisible} />
             <CompSwitch
               instance={instance}
               className=""
@@ -88,7 +100,6 @@ export function StockSummaryReport({ title }: { title?: string }) {
         isCsvExport={true}
         instance={instance}
         subTitleControl={<BackToDashboardLink />}
-        
       />
 
       <CompSyncFusionGrid
@@ -156,7 +167,12 @@ export function StockSummaryReport({ title }: { title?: string }) {
 
   function getColumns(): SyncFusionGridColumnType[] {
     return [
-      { field: "productCode", headerText: "P code", width: 90, type: "string" },
+      {
+        field: "productCode",
+        headerText: "Pr code",
+        width: 90,
+        type: "string"
+      },
       {
         field: "catName",
         headerText: "Product",
@@ -183,16 +199,32 @@ export function StockSummaryReport({ title }: { title?: string }) {
         width: 70
       },
       {
-        field: "stock",
-        headerText: "Stock",
+        field: "op",
+        headerText: "Op",
         type: "number",
         format: "N0",
         textAlign: "Right",
         width: 70
       },
       {
-        field: "age",
-        headerText: "Age",
+        field: "dr",
+        headerText: "Dr",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "cr",
+        headerText: "Cr",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "clos",
+        headerText: "Clos",
         type: "number",
         format: "N0",
         textAlign: "Right",
@@ -207,16 +239,24 @@ export function StockSummaryReport({ title }: { title?: string }) {
         width: 120
       },
       {
-        field: "amount",
-        headerText: "Sale(Gst)",
+        field: "age",
+        headerText: "Age",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "openingPrice",
+        headerText: "Op price",
         type: "number",
         format: "N2",
         textAlign: "Right",
         width: 120
       },
       {
-        field: "price",
-        headerText: "Sale price",
+        field: "opValue",
+        headerText: "Op value",
         type: "number",
         format: "N2",
         textAlign: "Right",
@@ -224,11 +264,99 @@ export function StockSummaryReport({ title }: { title?: string }) {
       },
       {
         field: "lastPurchasePrice",
-        headerText: "Pur price",
+        headerText: "Clos price",
         type: "number",
         format: "N2",
         textAlign: "Right",
         width: 100
+      },
+      {
+        field: "closValue",
+        headerText: "Clos value",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 100
+      },
+      {
+        field: "lastPurchaseDate",
+        headerText: "Lst pur dt",
+        type: "string",
+        width: 90,
+        valueAccessor: (field: string, data: any) =>
+          format(data?.[field], currentDateFormat)
+      },
+      {
+        field: "lastSaleDate",
+        headerText: "Lst sal dt",
+        type: "string",
+        width: 90,
+        valueAccessor: (field: string, data: any) =>
+          format(data?.[field], currentDateFormat)
+      },
+      {
+        field: "purchase",
+        headerText: "Pur",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "sale",
+        headerText: "Sal",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "purchaseRet",
+        headerText: "Pur ret",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "saleRet",
+        headerText: "Sal ret",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "stockJournalDebits",
+        headerText: "Stk Jr Dr",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "stockJournalCredits",
+        headerText: "Stk Jr Cr",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "branchTransferDebits",
+        headerText: "Br Trf Dr",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
+      },
+      {
+        field: "branchTransferCredits",
+        headerText: "Br Trf Cr",
+        type: "number",
+        format: "N0",
+        textAlign: "Right",
+        width: 70
       },
       {
         field: "productId",
@@ -240,6 +368,10 @@ export function StockSummaryReport({ title }: { title?: string }) {
       { field: "brandName", visible: false, width: 0 },
       { field: "label", visible: false, width: 0 }
     ];
+  }
+
+  function handleOnClickFilter() {
+    dispatch(toggleStockSummaryReportIsFilterPanelVisible());
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {

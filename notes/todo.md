@@ -1,3 +1,16 @@
+## Home pc setup
+- git
+				- Python
+				- cmder
+				- winrar
+	- NVIDIA
+				- Node
+				- pgadmin
+				- NVM
+				- Code
+				- Copy project folders
+				- softwares copy
+				- backups copy
 ## Bug fix
 	- Accounts
 		- Categories: Change parent UI out of place
@@ -99,7 +112,7 @@
 													- party
 													- toolbar
 
-		- Sales
+										- Sales
 													- When date range as financial year filter is selected: Main FY is changed then filter is not changed. So start date and end date remains same.
 													- When mode is changed then make productCode as null. Otherwise issue happens.
 													- Purchase refresh button click date error at startup

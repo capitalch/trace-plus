@@ -63,7 +63,7 @@ export function CompSyncFusionGridToolbar({
         }
       ]
     },
-    pageOrientation: isPdfExportAsLandscape ? "Landscape" : "Portrait",
+    pageOrientation: isPdfExportAsLandscape ? "Landscape" : "Portrait"
   };
 
   return (
