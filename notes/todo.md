@@ -1,16 +1,18 @@
 ## Home pc setup
-- git
-				- Python
-				- cmder
-				- winrar
+			- Anydesk
+			- sublime text
+			- git
+	- Python
+			- cmder
+			- winrar
 	- NVIDIA
-				- Node
-				- pgadmin
-				- NVM
-				- Code
-				- Copy project folders
-				- softwares copy
-				- backups copy
+	- Node
+			- pgadmin
+	- NVM
+			- Code
+	- Copy project folders
+	- softwares copy
+	- backups copy
 ## Bug fix
 	- Accounts
 		- Categories: Change parent UI out of place
