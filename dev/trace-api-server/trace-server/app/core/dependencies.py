@@ -8,7 +8,7 @@ class AppHttpException(HTTPException):
         self.message = message
         self.status_code = status_code
         self.detail = detail  # detail is must
-
+import os
 import logging
 from datetime import datetime
 from app.security.security_utils import validate_token
@@ -34,7 +34,11 @@ def configure_logger():
     # Logging levels are Debug:10, Info: 20, Warning: 30, Error: 40, Critical: 50
     currentMonth = datetime.now().strftime("%b")
     currentYear = datetime.now().year
+    log_dir = "logs"
+    log_file = f"{log_dir}/{currentMonth}-{currentYear}.log"
     logFormatStr = "%(asctime)s  %(levelname)s - %(message)s"
+    # Create logs directory if it doesn't exist
+    os.makedirs(log_dir, exist_ok=True)
     logging.basicConfig(
         filename=f"logs/{currentMonth}-{currentYear}.log",
         force=True,
@@ -47,7 +51,6 @@ async def exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as ex:
-        # you probably want some kind of logging here
         mess = Messages.err_internal_server_error
         statusCode = status.HTTP_500_INTERNAL_SERVER_ERROR
         if len(ex.args) > 0:

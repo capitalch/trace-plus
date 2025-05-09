@@ -2,17 +2,17 @@
 			- Anydesk
 			- sublime text
 			- git
-	- Python
+			- Python
 			- cmder
 			- winrar
-	- NVIDIA
-	- Node
+			- NVIDIA
+			- Node
 			- pgadmin
-	- NVM
+			- NVM
 			- Code
-	- Copy project folders
-	- softwares copy
-	- backups copy
+			- Copy project folders
+			- softwares copy
+			- backups copy
 ## Bug fix
 	- Accounts
 		- Categories: Change parent UI out of place
