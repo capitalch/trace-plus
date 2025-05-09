@@ -1,4 +1,4 @@
-## **Fast api**
+cd ..## **Fast api**
 - Create virtual env and pip install fastapi uvicorn[standard]
   from typing import Union
   from fastapi import FastAPI

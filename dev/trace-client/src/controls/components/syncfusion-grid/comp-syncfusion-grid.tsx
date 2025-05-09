@@ -37,6 +37,7 @@ export function CompSyncFusionGrid({
   actionComplete,
   aggregates,
   allowPaging = false,
+  allowTextWrap = true,
   buCode,
   className = "",
   columns,
@@ -137,7 +138,7 @@ export function CompSyncFusionGrid({
 
   return (
     <GridComponent
-      style={{ maxWidth: maxWidth, minWidth: minWidth, }}
+      style={{ maxWidth: maxWidth, minWidth: minWidth }}
       actionBegin={actionBegin}
       actionComplete={actionComplete}
       allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
@@ -147,9 +148,9 @@ export function CompSyncFusionGrid({
       allowResizing={true}
       allowSorting={true}
       allowSelection={true}
-      allowTextWrap={true}
+      allowTextWrap={allowTextWrap}
       cellEdit={onCellEdit}
-      className={clsx(className, isSmallerFont ? 'smaller-font': '' )}
+      className={clsx(className, isSmallerFont ? "smaller-font" : "")}
       created={onCreated}
       dataSource={dataSource || selectedData || []}
       editSettings={editSettings}
@@ -227,6 +228,7 @@ export type CompSyncFusionGridType = {
   actionComplete?: (args: any) => void;
   aggregates?: SyncFusionGridAggregateType[];
   allowPaging?: boolean;
+  allowTextWrap?: boolean;
   buCode?: string;
   className?: string;
   columns: SyncFusionGridColumnType[];
@@ -249,7 +251,7 @@ export type CompSyncFusionGridType = {
   indexColumnWidth?: number;
   instance: string;
   isLoadOnInit?: boolean;
-  isSmallerFont?: boolean
+  isSmallerFont?: boolean;
   loadData?: () => void;
   minWidth?: string;
   onCellEdit?: (args: any) => void;
@@ -279,6 +281,7 @@ export type SyncFusionGridAggregateType = {
 
 export type SyncFusionGridColumnType = {
   allowEditing?: boolean;
+  clipMode?: ClipModeType;
   customAttributes?: {
     [key: string]: string;
   };
@@ -300,6 +303,8 @@ export type SyncFusionGridColumnType = {
   visible?: boolean;
   width?: number;
 };
+
+export type ClipModeType = "EllipsisWithTooltip" | "Clip" | "Ellipsis";
 
 export type SqlArgsType = {
   [key: string]: string | number;

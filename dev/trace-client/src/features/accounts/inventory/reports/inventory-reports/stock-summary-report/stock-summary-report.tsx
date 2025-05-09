@@ -105,11 +105,13 @@ export function StockSummaryReport({ title }: { title?: string }) {
       <CompSyncFusionGrid
         aggregates={getAggregates()}
         allowPaging={true}
+        allowTextWrap={false}
         pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000] }}
         buCode={buCode}
         className="mt-4"
         columns={getColumns()}
         dataSource={rowsData}
+        hasCheckBoxSelection={true}
         hasIndexColumn={true}
         height="calc(100vh - 300px)"
         indexColumnWidth={60}
@@ -118,6 +120,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"
+        rowHeight={30}
         queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
         onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
       />
@@ -126,19 +129,46 @@ export function StockSummaryReport({ title }: { title?: string }) {
 
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
-      //   {
-      //     columnName: "autoRefNo",
-      //     type: "Count",
-      //     field: "autoRefNo",
-      //     format: "N0",
-      //     footerTemplate: (props: any) => (
-      //       <span className="text-xs">Count: {props.Count}</span>
-      //     )
-      //   },
       {
-        columnName: "qty",
+        columnName: "catName",
+        type: "Count",
+        field: "catName",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">Count: {props.Count}</span>
+        )
+      },
+      {
+        columnName: "op",
         type: "Sum",
-        field: "qty",
+        field: "op",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "dr",
+        type: "Sum",
+        field: "dr",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "cr",
+        type: "Sum",
+        field: "cr",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "clos",
+        type: "Sum",
+        field: "clos",
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
@@ -154,10 +184,91 @@ export function StockSummaryReport({ title }: { title?: string }) {
         )
       },
       {
-        columnName: "amount",
+        columnName: "opValue",
         type: "Sum",
-        field: "amount",
+        field: "opValue",
         format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "closValue",
+        type: "Sum",
+        field: "closValue",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "purchase",
+        type: "Sum",
+        field: "purchase",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "sale",
+        type: "Sum",
+        field: "sale",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "purchaseRet",
+        type: "Sum",
+        field: "purchaseRet",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "saleRet",
+        type: "Sum",
+        field: "saleRet",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "stockJournalDebits",
+        type: "Sum",
+        field: "stockJournalDebits",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "stockJournalCredits",
+        type: "Sum",
+        field: "stockJournalCredits",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "branchTransferDebits",
+        type: "Sum",
+        field: "branchTransferDebits",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "branchTransferCredits",
+        type: "Sum",
+        field: "branchTransferCredits",
+        format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
         )
@@ -176,8 +287,9 @@ export function StockSummaryReport({ title }: { title?: string }) {
       {
         field: "catName",
         headerText: "Product",
-        width: 250,
+        width: 300,
         type: "string",
+        clipMode: "EllipsisWithTooltip",
         template: (props: any) => (
           <div
             className={clsx(
@@ -189,14 +301,12 @@ export function StockSummaryReport({ title }: { title?: string }) {
           </div>
         )
       },
-      { field: "info", headerText: "Details", width: 200, type: "string" },
       {
-        field: "qty",
-        headerText: "Qty",
-        type: "number",
-        format: "N0",
-        textAlign: "Right",
-        width: 70
+        field: "info",
+        clipMode: "EllipsisWithTooltip",
+        headerText: "Details",
+        width: 250,
+        type: "string"
       },
       {
         field: "op",
@@ -260,7 +370,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 100
+        width: 150
       },
       {
         field: "lastPurchasePrice",
@@ -276,7 +386,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 100
+        width: 150
       },
       {
         field: "lastPurchaseDate",
@@ -332,7 +442,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 80
       },
       {
         field: "stockJournalCredits",
@@ -340,7 +450,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 80
       },
       {
         field: "branchTransferDebits",
@@ -348,7 +458,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 80
       },
       {
         field: "branchTransferCredits",
@@ -356,7 +466,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 80
       },
       {
         field: "productId",

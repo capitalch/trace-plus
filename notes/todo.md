@@ -154,15 +154,16 @@
 				- Redux slice
 				- logic
 			- Grid
-				- X button
-				- UI
+													- Selectabel
+				- Delete button
+													- UI
 				- SQL
 				- Optimize Sql
-				- populate data
-				- format columns
-				- Jakar
-				- Adjust col width
-				- Aggregates
+													- populate data
+													- format columns
+													- Jakar
+													- Adjust col width
+													- Aggregates
 		- Stock transactions
 										- Stock Journal
 											- Final testing
