@@ -32,7 +32,6 @@ export function SalesReportFilterControl() {
     );
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const catRef = useRef<DropDownTreeComponent | null>(null);
-    // const productCodeRef = useRef<any>(null)
     const [brandOptions, setBrandOptions] = useState<BrandType[]>([]);
     const [tagOptions, setTagOptions] = useState<TagType[]>([]);
     const [catOptions, setCatOptions] = useState<CategoryNodeType[]>([]);
@@ -150,11 +149,6 @@ export function SalesReportFilterControl() {
                         />
                         <span className="text-sm font-medium text-primary-500">By Product Code</span>
                     </label>
-                    {/* <button type="button" onClick={() => {
-                        console.log("Test Button Clicked");
-                        console.log(pre);
-                        isApplyFilterButtonDisabled();
-                    }}>Test</button> */}
                 </div>
             </div>
 

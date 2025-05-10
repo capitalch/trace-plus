@@ -1,7 +1,7 @@
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import {
-  AppDispatchType,
-  RootStateType
+  // AppDispatchType,
+  RootStateType,
 } from "../../../../../../app/store/store";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
@@ -15,20 +15,21 @@ import { BackToDashboardLink } from "../../back-to-dashboard-link";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,
-  SyncFusionGridColumnType
+  SyncFusionGridColumnType,
 } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import clsx from "clsx";
 import {
   QueryCellInfoEventArgs,
-  RowDataBoundEventArgs
+  RowDataBoundEventArgs,
 } from "@syncfusion/ej2-react-grids";
-import { StockSummaryReportFilterPanel } from "./stock-summary-report-filter-panel";
-import { toggleStockSummaryReportIsFilterPanelVisible } from "./stock-summary-report-slice";
+// import { StockSummaryReportFilterPanel } from "./stock-summary-report-filter-panel";
+// import { toggleStockSummaryReportIsFilterPanelVisible } from "./stock-summary-report-slice";
 import { format } from "date-fns";
+import { StockSummaryReportFilterControl } from "./stock-summary-report-filter-control";
 // import { StockSummaryReportFilterControl } from "./stock-summary-report-filter-control";
 
 export function StockSummaryReport({ title }: { title?: string }) {
-  const dispatch: AppDispatchType = useDispatch();
+  // const dispatch: AppDispatchType = useDispatch();
   const instance = DataInstancesMap.stockSummaryReport;
   const isAllBranches: boolean =
     useSelector(
@@ -38,9 +39,9 @@ export function StockSummaryReport({ title }: { title?: string }) {
   const selectedFilters = useSelector(
     (state: RootStateType) => state.stockSummaryReport
   );
-  const isFilterPanelVisible = useSelector(
-    (state: RootStateType) => state.stockSummaryReport.isFilterPanelVisible
-  );
+  // const isFilterPanelVisible = useSelector(
+  //   (state: RootStateType) => state.stockSummaryReport.isFilterPanelVisible
+  // );
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
@@ -50,7 +51,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
-    finYearId
+    finYearId,
     // currentFinYear
   } = useUtilsInfo();
 
@@ -67,14 +68,13 @@ export function StockSummaryReport({ title }: { title?: string }) {
     selectedFilters.catFilterOption.selectedCategory.id,
     selectedFilters.catFilterOption.selectedTag.id,
     selectedFilters.ageFilterOption.selectedAge.value,
-    selectedFilters.productCode
+    selectedFilters.productCode,
   ]);
 
   return (
     <div className="flex flex-col relative">
       <CompSyncFusionGridToolbar
-        CustomControl={() =>
-        (
+        CustomControl={() => (
           <div className="flex items-center gap-2">
             {/* <SalesReportToolbarFilterDisplay /> */}
             <button
@@ -84,7 +84,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
             >
               Filter
             </button>
-            <StockSummaryReportFilterPanel isVisible={isFilterPanelVisible} />
+            {/* <StockSummaryReportFilterPanel isVisible={isFilterPanelVisible} /> */}
             <CompSwitch
               instance={instance}
               className=""
@@ -93,8 +93,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
               toToggleLeftLabel={true}
             />
           </div>
-        )
-        }
+        )}
         className="mr-4"
         minWidth="600px"
         title={title || ""}
@@ -147,7 +146,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">Count: {props.Count}</span>
-        )
+        ),
       },
       {
         columnName: "op",
@@ -156,7 +155,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "dr",
@@ -165,7 +164,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "cr",
@@ -174,7 +173,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "clos",
@@ -183,7 +182,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "grossProfit",
@@ -192,7 +191,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N2",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "opValue",
@@ -201,7 +200,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N2",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "closValue",
@@ -210,7 +209,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N2",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "purchase",
@@ -219,7 +218,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "sale",
@@ -228,7 +227,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "purchaseRet",
@@ -237,7 +236,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "saleRet",
@@ -246,7 +245,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "stockJournalDebits",
@@ -255,7 +254,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "stockJournalCredits",
@@ -264,7 +263,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "branchTransferDebits",
@@ -273,7 +272,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
+        ),
       },
       {
         columnName: "branchTransferCredits",
@@ -282,8 +281,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
         format: "N0",
         footerTemplate: (props: any) => (
           <span className="text-xs">{props.Sum}</span>
-        )
-      }
+        ),
+      },
     ];
   }
 
@@ -293,7 +292,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         field: "productCode",
         headerText: "Pr code",
         width: 90,
-        type: "string"
+        type: "string",
       },
       {
         field: "catName",
@@ -310,14 +309,14 @@ export function StockSummaryReport({ title }: { title?: string }) {
           >
             {"".concat(props.catName, " ", props.brandName, " ", props.label)}
           </div>
-        )
+        ),
       },
       {
         field: "info",
         clipMode: "EllipsisWithTooltip",
         headerText: "Details",
         width: 250,
-        type: "string"
+        type: "string",
       },
       {
         field: "op",
@@ -325,7 +324,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "dr",
@@ -333,7 +332,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "cr",
@@ -341,7 +340,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "clos",
@@ -349,7 +348,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "grossProfit",
@@ -357,7 +356,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 120
+        width: 120,
       },
       {
         field: "age",
@@ -365,7 +364,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "openingPrice",
@@ -373,7 +372,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 120
+        width: 120,
       },
       {
         field: "opValue",
@@ -381,7 +380,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 150
+        width: 150,
       },
       {
         field: "lastPurchasePrice",
@@ -389,7 +388,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 100
+        width: 100,
       },
       {
         field: "closValue",
@@ -397,7 +396,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 150
+        width: 150,
       },
       {
         field: "lastPurchaseDate",
@@ -405,7 +404,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "string",
         width: 90,
         valueAccessor: (field: string, data: any) =>
-          format(data?.[field], currentDateFormat)
+          format(data?.[field], currentDateFormat),
       },
       {
         field: "lastSaleDate",
@@ -413,7 +412,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "string",
         width: 90,
         valueAccessor: (field: string, data: any) =>
-          format(data?.[field], currentDateFormat)
+          format(data?.[field], currentDateFormat),
       },
       {
         field: "purchase",
@@ -421,7 +420,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "sale",
@@ -429,7 +428,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "purchaseRet",
@@ -437,7 +436,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "saleRet",
@@ -445,7 +444,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 70
+        width: 70,
       },
       {
         field: "stockJournalDebits",
@@ -453,7 +452,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 80
+        width: 80,
       },
       {
         field: "stockJournalCredits",
@@ -461,7 +460,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 80
+        width: 80,
       },
       {
         field: "branchTransferDebits",
@@ -469,7 +468,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 80
+        width: 80,
       },
       {
         field: "branchTransferCredits",
@@ -477,7 +476,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "number",
         format: "N0",
         textAlign: "Right",
-        width: 80
+        width: 80,
       },
       {
         field: "productId",
@@ -488,7 +487,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         isPrimaryKey: true,
       },
       { field: "brandName", visible: false, width: 0 },
-      { field: "label", visible: false, width: 0 }
+      { field: "label", visible: false, width: 0 },
     ];
   }
 
@@ -496,15 +495,16 @@ export function StockSummaryReport({ title }: { title?: string }) {
     // dispatch(toggleStockSummaryReportIsFilterPanelVisible());
     Utils.showHideModalDialogA({
       isOpen: true,
+      size: "md",
       title: "Filter",
-      element: <></>,
-    })
+      element: <StockSummaryReportFilterControl />,
+    });
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
     const rowData = args.data as RowDataType;
 
-    if ((args.row) && (rowData.age > 360) && (rowData.clos > 0)) {
+    if (args.row && rowData.age > 360 && rowData.clos > 0) {
       args.row.classList.add("bg-blue-100");
     }
   }
@@ -540,8 +540,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
             selectedFiltersState.catFilterOption.selectedCategory?.id || null,
           tagId: selectedFiltersState.catFilterOption.selectedTag?.id || null,
           onDate: selectedFiltersState.onDate,
-          days: selectedFiltersState.ageFilterOption.selectedAge?.value || 0
-        }
+          days: selectedFiltersState.ageFilterOption.selectedAge?.value || 0,
+        },
       });
 
       setRowsData(rowsData);
@@ -551,7 +551,9 @@ export function StockSummaryReport({ title }: { title?: string }) {
   }
 
   function handleOnRemove(props: any) {
-    setRowsData(prev => prev.filter((item: RowDataType) => item.productId !== props.productId));
+    setRowsData((prev) =>
+      prev.filter((item: RowDataType) => item.productId !== props.productId)
+    );
   }
 }
 

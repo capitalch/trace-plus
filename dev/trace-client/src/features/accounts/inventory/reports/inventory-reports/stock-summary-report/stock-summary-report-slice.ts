@@ -3,7 +3,7 @@ import {
   AgeType,
   BrandType,
   CategoryType,
-  //   DateRangeType,
+  GrossProfitStatusType,
   TagType,
 } from "../../../shared-definitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -18,6 +18,7 @@ const initialState: StockSummaryReportInitialStateType = {
   productCode: null,
   ageFilterOption: { selectedAge: { value: null, label: "All" } },
   onDate: format(new Date(), "yyyy-MM-dd"),
+  selectedGrossProfitStatus: { label: "All", value: 0 },
 };
 
 const stockSummaryReportSlice = createSlice({
@@ -30,6 +31,7 @@ const stockSummaryReportSlice = createSlice({
     ) => {
       state.isFilterPanelVisible = action.payload;
     },
+
     setStockReportFilters: (
       state: StockSummaryReportInitialStateType,
       action: PayloadAction<StockSummaryReportPayloadActionType>
@@ -45,15 +47,21 @@ const stockSummaryReportSlice = createSlice({
         action.payload.ageFilterOption.selectedAge;
       state.onDate = action.payload.onDate;
     },
-    toggleStockSummaryReportIsFilterPanelVisible: (state: StockSummaryReportInitialStateType) => {
+
+    toggleStockSummaryReportIsFilterPanelVisible: (
+      state: StockSummaryReportInitialStateType
+    ) => {
       state.isFilterPanelVisible = !state.isFilterPanelVisible;
     },
   },
 });
 
 export const stockSummaryReportReducer = stockSummaryReportSlice.reducer;
-export const { setStockSummaryReportIsFilterPanelVisible, setStockReportFilters, toggleStockSummaryReportIsFilterPanelVisible } =
-  stockSummaryReportSlice.actions;
+export const {
+  setStockSummaryReportIsFilterPanelVisible,
+  setStockReportFilters,
+  toggleStockSummaryReportIsFilterPanelVisible,
+} = stockSummaryReportSlice.actions;
 
 type StockSummaryReportInitialStateType = {
   isFilterPanelVisible: boolean;
@@ -67,9 +75,10 @@ type StockSummaryReportInitialStateType = {
     selectedAge: AgeType;
   };
   onDate: string;
+  selectedGrossProfitStatus: GrossProfitStatusType;
 };
 
-type StockSummaryReportPayloadActionType = {
+export type StockSummaryReportPayloadActionType = {
   catFilterOption: {
     selectedCategory: CategoryType;
     selectedBrand: BrandType;
@@ -80,4 +89,5 @@ type StockSummaryReportPayloadActionType = {
     selectedAge: AgeType;
   };
   onDate: string;
+  selectedGrossProfitStatus: GrossProfitStatusType;
 };

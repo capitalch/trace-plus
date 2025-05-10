@@ -60,6 +60,11 @@ export type DateRangeType = {
   value: string | number | null;
 }
 
+export type GrossProfitStatusType = {
+  label: string;
+  value: 0 | -1 | 1;
+}
+
 export type ProductLineItem = {
   id?: number | string;
   amount?: number;
