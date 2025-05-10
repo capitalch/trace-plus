@@ -25,6 +25,7 @@ import {
 import { StockSummaryReportFilterPanel } from "./stock-summary-report-filter-panel";
 import { toggleStockSummaryReportIsFilterPanelVisible } from "./stock-summary-report-slice";
 import { format } from "date-fns";
+// import { StockSummaryReportFilterControl } from "./stock-summary-report-filter-control";
 
 export function StockSummaryReport({ title }: { title?: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -45,6 +46,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
   const {
     branchId,
     buCode,
+    // context,
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
@@ -71,7 +73,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
   return (
     <div className="flex flex-col relative">
       <CompSyncFusionGridToolbar
-        CustomControl={() => (
+        CustomControl={() =>
+        (
           <div className="flex items-center gap-2">
             {/* <SalesReportToolbarFilterDisplay /> */}
             <button
@@ -90,7 +93,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
               toToggleLeftLabel={true}
             />
           </div>
-        )}
+        )
+        }
         className="mr-4"
         minWidth="600px"
         title={title || ""}
@@ -111,6 +115,11 @@ export function StockSummaryReport({ title }: { title?: string }) {
         className="mt-4"
         columns={getColumns()}
         dataSource={rowsData}
+        editSettings={{
+          allowEditing: false,
+          allowDeleting: false,
+          mode: "Normal",
+        }}
         hasCheckBoxSelection={true}
         hasIndexColumn={true}
         height="calc(100vh - 300px)"
@@ -120,6 +129,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"
+        onRemove={handleOnRemove}
+        // removeButtonWidth={40}
         rowHeight={30}
         queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
         onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
@@ -473,7 +484,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
         headerText: "Pr id",
         width: 60,
         type: "number",
-        textAlign: "Right"
+        textAlign: "Right",
+        isPrimaryKey: true,
       },
       { field: "brandName", visible: false, width: 0 },
       { field: "label", visible: false, width: 0 }
@@ -481,16 +493,19 @@ export function StockSummaryReport({ title }: { title?: string }) {
   }
 
   function handleOnClickFilter() {
-    dispatch(toggleStockSummaryReportIsFilterPanelVisible());
+    // dispatch(toggleStockSummaryReportIsFilterPanelVisible());
+    Utils.showHideModalDialogA({
+      isOpen: true,
+      title: "Filter",
+      element: <></>,
+    })
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
     const rowData = args.data as RowDataType;
 
-    if (args.row) {
-      if (rowData.age > 360) {
-        args.row.classList.add("bg-blue-100");
-      }
+    if ((args.row) && (rowData.age > 360) && (rowData.clos > 0)) {
+      args.row.classList.add("bg-blue-100");
     }
   }
 
@@ -534,17 +549,25 @@ export function StockSummaryReport({ title }: { title?: string }) {
       console.log(e);
     }
   }
+
+  function handleOnRemove(props: any) {
+    setRowsData(prev => prev.filter((item: RowDataType) => item.productId !== props.productId));
+  }
 }
 
 type RowDataType = {
   age: number;
   brandName: string;
   catName: string;
+  cr: number;
+  clos: number;
+  dr: number;
   grossProfit: number;
   info: string;
   label: string;
   lastPurchaseDate: string;
   lastPurchasePrice: number;
+  op: number;
   price: number;
   productCode: string;
   productId: number;

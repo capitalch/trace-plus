@@ -187,7 +187,7 @@ export function useCompSyncFusionGrid({
           key="R"
           allowEditing={false}
           field=""
-          headerText="R"
+          headerText=""
           template={removeTemplate}
           width={removeButtonWidth || 30}
         />

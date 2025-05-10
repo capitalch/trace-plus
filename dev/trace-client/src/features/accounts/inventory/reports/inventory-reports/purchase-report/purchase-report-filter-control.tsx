@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
-// import { useRef } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import Select from 'react-select'
 import { setPurchaseReportCustomFilterOption, setPurchaseReportFilterDateInterval, setPurchaseReportIsPaneOpen, setPurchaseReportPredefinedFilterOption, setPurchaseReportSelectMode } from "../../../../accounts-slice";
@@ -11,7 +10,6 @@ import { dateRangeOptions, DateRangeType } from "../../../shared-definitions";
 
 export function PurchaseReportFilterContol() {
     const dispatch: AppDispatchType = useDispatch();
-    // const selectRef: any = useRef<Select>(null)
     const { currentDateFormat, } = useUtilsInfo();
     const {getDateRange, getMonthRange} = useInventoryReportsShared()
     const isoFormat = 'yyyy-MM-dd'

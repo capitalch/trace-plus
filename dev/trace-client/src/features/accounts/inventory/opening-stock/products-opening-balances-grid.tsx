@@ -63,6 +63,7 @@ export function ProductsOpeningBalancesGrid() {
         minWidth="800px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
+        onRemove={handleOnDelete}
         sqlId={SqlIdsMap.getProductsOpeningBalances}
         sqlArgs={{
           branchId: branchId,

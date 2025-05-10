@@ -402,20 +402,28 @@ export function SalesReport({ title }: { title?: string }) {
       const selectedFiltersState = state.salesReport;
       const currentStartDate = currentFinYear?.startDate || "";
       const currentEndDate = currentFinYear?.endDate || "";
-      const startDate = selectedFiltersState.dateRangeFilterOption.startDate;
-      const endDate = selectedFiltersState.dateRangeFilterOption.endDate;
-      const selectedDateRange =
-        selectedFiltersState.dateRangeFilterOption.selectedDateRange;
-      if (selectedDateRange.value === "finYear") {
-        if (currentStartDate !== startDate || currentEndDate !== endDate) {
-          dispatch(
-            setSalesReportDateRange({
-              startDate: currentStartDate,
-              endDate: currentEndDate
-            })
-          );
-          return;
+      const { startDate, endDate, selectedDateRange } = selectedFiltersState.dateRangeFilterOption;
+      const setRowsDataBColor = (rowData: RowDataType[]) => {
+        let prevRefNo = null;
+        let bColor: boolean = false;
+        for (let i = 0; i < rowData.length; i++) {
+          rowData[i].bColor = bColor;
+          if (rowData[i].autoRefNo !== prevRefNo) {
+            rowData[i].bColor = !bColor;
+            prevRefNo = rowData[i].autoRefNo;
+            bColor = !bColor;
+          }
         }
+      }
+
+      if ((selectedDateRange.value === "finYear") && (currentStartDate !== startDate || currentEndDate !== endDate)) {
+        dispatch(
+          setSalesReportDateRange({
+            startDate: currentStartDate,
+            endDate: currentEndDate
+          })
+        );
+        return;
       }
 
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
@@ -445,19 +453,6 @@ export function SalesReport({ title }: { title?: string }) {
       setRowsData(rowsData);
     } catch (e: any) {
       console.log(e);
-    }
-
-    function setRowsDataBColor(rowData: RowDataType[]) {
-      let prevRefNo = null;
-      let bColor: boolean = false;
-      for (let i = 0; i < rowData.length; i++) {
-        rowData[i].bColor = bColor;
-        if (rowData[i].autoRefNo !== prevRefNo) {
-          rowData[i].bColor = !bColor;
-          prevRefNo = rowData[i].autoRefNo;
-          bColor = !bColor;
-        }
-      }
     }
   }
 }

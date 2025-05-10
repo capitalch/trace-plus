@@ -63,7 +63,7 @@ export function CompSyncFusionGrid({
   onDelete = undefined,
   onEdit = undefined,
   onPreview = undefined,
-  onRemove = undefined,
+  onRemove ,
   onRowDataBound,
   pageSettings,
   previewColumnWidth,
