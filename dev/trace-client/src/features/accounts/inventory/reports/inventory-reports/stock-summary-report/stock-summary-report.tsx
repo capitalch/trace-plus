@@ -1,8 +1,5 @@
-import { shallowEqual, useSelector } from "react-redux";
-import {
-  // AppDispatchType,
-  RootStateType,
-} from "../../../../../../app/store/store";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { AppDispatchType, RootStateType, } from "../../../../../../app/store/store";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
@@ -22,14 +19,13 @@ import {
   QueryCellInfoEventArgs,
   RowDataBoundEventArgs,
 } from "@syncfusion/ej2-react-grids";
-// import { StockSummaryReportFilterPanel } from "./stock-summary-report-filter-panel";
-// import { toggleStockSummaryReportIsFilterPanelVisible } from "./stock-summary-report-slice";
 import { format } from "date-fns";
 import { StockSummaryReportFilterControl } from "./stock-summary-report-filter-control";
-// import { StockSummaryReportFilterControl } from "./stock-summary-report-filter-control";
+import { StockSummaryReportToolbarFilterDisplay } from "./stock-summary-report-toolbar-filter-display";
+import { setStockSummaryReportFilters } from "./stock-summary-report-slice";
 
 export function StockSummaryReport({ title }: { title?: string }) {
-  // const dispatch: AppDispatchType = useDispatch();
+  const dispatch: AppDispatchType = useDispatch()
   const instance = DataInstancesMap.stockSummaryReport;
   const isAllBranches: boolean =
     useSelector(
@@ -39,20 +35,15 @@ export function StockSummaryReport({ title }: { title?: string }) {
   const selectedFilters = useSelector(
     (state: RootStateType) => state.stockSummaryReport
   );
-  // const isFilterPanelVisible = useSelector(
-  //   (state: RootStateType) => state.stockSummaryReport.isFilterPanelVisible
-  // );
 
   const [rowsData, setRowsData] = useState<RowDataType[]>([]);
   const {
     branchId,
     buCode,
-    // context,
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
     finYearId,
-    // currentFinYear
   } = useUtilsInfo();
 
   useEffect(() => {
@@ -68,23 +59,37 @@ export function StockSummaryReport({ title }: { title?: string }) {
     selectedFilters.catFilterOption.selectedCategory.id,
     selectedFilters.catFilterOption.selectedTag.id,
     selectedFilters.ageFilterOption.selectedAge.value,
-    selectedFilters.productCode,
+    selectedFilters.onDate,
+    selectedFilters.selectedGrossProfitStatus.value
   ]);
 
   return (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         CustomControl={() => (
           <div className="flex items-center gap-2">
-            {/* <SalesReportToolbarFilterDisplay /> */}
+            <StockSummaryReportToolbarFilterDisplay />
             <button
               type="button"
               onClick={handleOnClickFilter}
-              className="bg-blue-500 text-white px-2 py-1 rounded-full font-medium text-sm hover:bg-blue-700"
+              className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
             >
               Filter
             </button>
-            {/* <StockSummaryReportFilterPanel isVisible={isFilterPanelVisible} /> */}
+            <button
+              type="button"
+              onClick={handleOnClickResetFilter}
+              className="bg-amber-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-amber-700"
+            >
+              Reset Filter
+            </button>
+            <button
+              type="button"
+              onClick={handleOnClickTrim}
+              className="bg-green-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-purple-700"
+            >
+              Trim
+            </button>
             <CompSwitch
               instance={instance}
               className=""
@@ -129,7 +134,6 @@ export function StockSummaryReport({ title }: { title?: string }) {
         loadData={loadData}
         minWidth="800px"
         onRemove={handleOnRemove}
-        // removeButtonWidth={40}
         rowHeight={30}
         queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
         onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
@@ -492,13 +496,33 @@ export function StockSummaryReport({ title }: { title?: string }) {
   }
 
   function handleOnClickFilter() {
-    // dispatch(toggleStockSummaryReportIsFilterPanelVisible());
     Utils.showHideModalDialogA({
       isOpen: true,
       size: "md",
-      title: "Filter",
+      title: "Stock Summary Report Filter",
       element: <StockSummaryReportFilterControl />,
     });
+  }
+
+  function handleOnClickResetFilter() {
+    dispatch(
+      setStockSummaryReportFilters({
+        catFilterOption: {
+          selectedBrand: { brandName: 'All', id: null },
+          selectedCategory: { catName: 'All', id: "" },
+          selectedTag: { tagName: 'All', id: null },
+        },
+        ageFilterOption: { selectedAge: { value: null, label: "All" } },
+        onDate: format(new Date(), "yyyy-MM-dd"),
+        selectedGrossProfitStatus: { label: "All", value: 0 },
+      })
+    );
+  }
+
+  function handleOnClickTrim() {
+    setRowsData((prev) =>
+      prev.filter((item: RowDataType) => item.clos !== 0)
+    );
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
@@ -533,7 +557,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
             ? null
             : state.login.currentBranch?.branchId,
           finYearId: finYearId,
-          productCode: selectedFiltersState.productCode || null,
+          productCode: null,
           brandId:
             selectedFiltersState.catFilterOption.selectedBrand?.id || null,
           catId:

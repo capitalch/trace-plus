@@ -9,17 +9,23 @@ import {
   ageOptions,
   BrandType,
   CategoryNodeType,
+  grossProfitOptions,
   TagType,
 } from "../../../shared-definitions";
-import { StockSummaryReportPayloadActionType } from "./stock-summary-report-slice";
+import {
+  setStockSummaryReportFilters,
+  StockSummaryReportPayloadActionType,
+} from "./stock-summary-report-slice";
 import { useEffect, useRef, useState } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import {
+  DdtSelectEventArgs,
   DropDownTreeComponent,
   FieldsModel,
 } from "@syncfusion/ej2-react-dropdowns";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../../../utils/utils";
+import { format } from "date-fns";
 
 export function StockSummaryReportFilterControl() {
   const dispatch: AppDispatchType = useDispatch();
@@ -39,7 +45,7 @@ export function StockSummaryReportFilterControl() {
       selectedCategory: selectedFilters.catFilterOption.selectedCategory,
       selectedTag: selectedFilters.catFilterOption.selectedTag,
     },
-    productCode: selectedFilters.productCode,
+
     ageFilterOption: {
       selectedAge: selectedFilters.ageFilterOption.selectedAge,
     },
@@ -82,15 +88,35 @@ export function StockSummaryReportFilterControl() {
 
   return (
     <div className="p-4 space-y-4 bg-white rounded shadow-sm">
-      <div className="flex flex-wrap gap-4">
+      <div className="flex w-full justify-between">
+        {/* Reset button */}
+        <button
+          type="button"
+          onClick={handleResetFilters}
+          className="px-4 py-2 rounded-md text-white text-sm font-medium transition bg-amber-600 hover:bg-amber-800"
+        >
+          Reset Filters
+        </button>
 
+        {/* Apply filters button */}
+        <button
+          type="button"
+          onClick={handleApplyFilters}
+          disabled={isApplyFilterButtonDisabled()}
+          className="px-4 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          Apply Filters
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-4">
         {/* On Date */}
         <label className="flex flex-col text-sm font-semibold text-gray-600 w-40">
           On Date
           <input
             type="date"
             className="mt-1 border rounded px-2 py-2 text-sm"
-            aria-label="start-date"
+            aria-label="on-date"
+            max={format(new Date(),'yyyy-MM-dd')}
             value={pre.onDate || ""}
             onChange={(e) => {
               pre.onDate = e.target.value;
@@ -106,7 +132,8 @@ export function StockSummaryReportFilterControl() {
             options={ageOptions}
             value={pre.ageFilterOption.selectedAge}
             placeholder="Select Age Range"
-            className="mt-1 w-40"
+            onChange={handleOnChangeAge}
+            className="mt-1 w-36"
             styles={Utils.getReactSelectStyles()}
           />
         </label>
@@ -115,10 +142,11 @@ export function StockSummaryReportFilterControl() {
         <label className="flex flex-col text-sm font-semibold text-gray-600">
           Gross Profit
           <Select
-            options={ageOptions}
-            value={pre.ageFilterOption.selectedAge}
+            options={grossProfitOptions}
+            value={pre.selectedGrossProfitStatus}
+            onChange={handleOnChangeGrossProfit}
             placeholder="Select Gross Profit"
-            className="mt-1 w-36"
+            className="mt-1 w-42"
             styles={Utils.getReactSelectStyles()}
           />
         </label>
@@ -140,6 +168,7 @@ export function StockSummaryReportFilterControl() {
           popupHeight="300px"
           allowFiltering={true}
           filterBarPlaceholder="Search"
+          select={handleOnChangeCategory}
           created={() => {
             if (catRef.current) {
               setCategory();
@@ -160,6 +189,7 @@ export function StockSummaryReportFilterControl() {
             options={brandOptions}
             styles={Utils.getReactSelectStyles()}
             value={pre.catFilterOption.selectedBrand}
+            onChange={handleOnChangeBrand}
             placeholder="Select a brand..."
           />
         </label>
@@ -174,12 +204,95 @@ export function StockSummaryReportFilterControl() {
             options={tagOptions}
             styles={Utils.getReactSelectStyles()}
             value={pre.catFilterOption.selectedTag}
+            onChange={handleOnChangeTag}
             placeholder="Select a tag..."
           />
         </label>
       </div>
     </div>
   );
+
+  function handleApplyFilters() {
+    dispatch(
+      setStockSummaryReportFilters({
+        catFilterOption: {
+          selectedBrand: pre.catFilterOption.selectedBrand,
+          selectedCategory: pre.catFilterOption.selectedCategory,
+          selectedTag: pre.catFilterOption.selectedTag,
+        },
+        ageFilterOption: { selectedAge: pre.ageFilterOption.selectedAge },
+        onDate: pre.onDate,
+        selectedGrossProfitStatus: pre.selectedGrossProfitStatus,
+      })
+    );
+    Utils.showHideModalDialogA({ isOpen: false });
+  }
+
+  function handleOnChangeAge(selected: any) {
+    pre.ageFilterOption.selectedAge = selected;
+    setRefresh({});
+  }
+
+  function handleOnChangeBrand(selected: BrandType | null) {
+    pre.catFilterOption.selectedBrand = selected || brandOptions[0];
+    pre.catFilterOption.selectedTag = tagOptions[0];
+    pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
+    setRefresh({});
+  }
+
+  function handleOnChangeCategory(e: DdtSelectEventArgs) {
+    const item: any = e.itemData;
+    pre.catFilterOption.selectedCategory = {
+      id: item.id,
+      catName: item.text
+    }
+    if (e.isInteracted) {
+      pre.catFilterOption.selectedTag = tagOptions[0];
+      pre.catFilterOption.selectedBrand = brandOptions[0];
+      setRefresh({});
+    }
+  }
+
+  function handleOnChangeTag(selected: TagType | null) {
+    pre.catFilterOption.selectedBrand = brandOptions[0];
+    pre.catFilterOption.selectedTag = selected || tagOptions[0];
+    pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
+    setRefresh({});
+  }
+
+  function handleOnChangeGrossProfit(selected: any) {
+    pre.selectedGrossProfitStatus = selected
+    setRefresh({})
+  }
+
+  function handleResetFilters() {
+    pre.catFilterOption.selectedBrand = brandOptions[0];
+    pre.catFilterOption.selectedTag = tagOptions[0];
+    pre.catFilterOption.selectedCategory = { catName: "All", id: "" };
+    pre.ageFilterOption.selectedAge = ageOptions[0];
+    pre.selectedGrossProfitStatus = grossProfitOptions[0];
+    pre.onDate = format(new Date(), "yyyy-MM-dd");
+    setRefresh({});
+    handleApplyFilters();
+  }
+
+  function isApplyFilterButtonDisabled() {
+    const isAgeFilter = Boolean(pre.ageFilterOption.selectedAge?.value);
+    const isCategoryFilterBrand = Boolean(pre.catFilterOption.selectedBrand?.id);
+    const isCategoryFilterTag = Boolean(pre.catFilterOption.selectedTag?.id);
+    const isCategoryFilterCategory = Boolean(pre.catFilterOption.selectedCategory?.id);
+    const isOnDate = Boolean(pre.onDate !== format(new Date(), "yyyy-MM-dd"));
+    const isGrossProfitStatus = Boolean(pre.selectedGrossProfitStatus.value);
+
+    const ret: boolean =
+      isAgeFilter ||
+      isCategoryFilterBrand ||
+      isCategoryFilterTag ||
+      isCategoryFilterCategory ||
+      isOnDate ||
+      isGrossProfitStatus;
+    return !ret;
+  }
 
   async function loadAllOptions() {
     try {

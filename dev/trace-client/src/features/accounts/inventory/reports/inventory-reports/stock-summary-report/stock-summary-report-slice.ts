@@ -9,13 +9,11 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: StockSummaryReportInitialStateType = {
-  isFilterPanelVisible: false,
   catFilterOption: {
     selectedCategory: { catName: "All", id: "" },
     selectedBrand: { brandName: "All", id: null },
     selectedTag: { id: null, tagName: "All" },
   },
-  productCode: null,
   ageFilterOption: { selectedAge: { value: null, label: "All" } },
   onDate: format(new Date(), "yyyy-MM-dd"),
   selectedGrossProfitStatus: { label: "All", value: 0 },
@@ -25,14 +23,7 @@ const stockSummaryReportSlice = createSlice({
   name: "stockSummaryReport",
   initialState,
   reducers: {
-    setStockSummaryReportIsFilterPanelVisible: (
-      state: StockSummaryReportInitialStateType,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isFilterPanelVisible = action.payload;
-    },
-
-    setStockReportFilters: (
+    setStockSummaryReportFilters: (
       state: StockSummaryReportInitialStateType,
       action: PayloadAction<StockSummaryReportPayloadActionType>
     ) => {
@@ -42,35 +33,27 @@ const stockSummaryReportSlice = createSlice({
         action.payload.catFilterOption.selectedBrand;
       state.catFilterOption.selectedTag =
         action.payload.catFilterOption.selectedTag;
-      state.productCode = action.payload.productCode;
+
       state.ageFilterOption.selectedAge =
         action.payload.ageFilterOption.selectedAge;
-      state.onDate = action.payload.onDate;
-    },
 
-    toggleStockSummaryReportIsFilterPanelVisible: (
-      state: StockSummaryReportInitialStateType
-    ) => {
-      state.isFilterPanelVisible = !state.isFilterPanelVisible;
+      state.onDate = action.payload.onDate;
+
+      state.selectedGrossProfitStatus =
+        action.payload.selectedGrossProfitStatus;
     },
   },
 });
 
 export const stockSummaryReportReducer = stockSummaryReportSlice.reducer;
-export const {
-  setStockSummaryReportIsFilterPanelVisible,
-  setStockReportFilters,
-  toggleStockSummaryReportIsFilterPanelVisible,
-} = stockSummaryReportSlice.actions;
+export const { setStockSummaryReportFilters } = stockSummaryReportSlice.actions;
 
 type StockSummaryReportInitialStateType = {
-  isFilterPanelVisible: boolean;
   catFilterOption: {
     selectedCategory: CategoryType;
     selectedBrand: BrandType;
     selectedTag: TagType;
   };
-  productCode: string | null;
   ageFilterOption: {
     selectedAge: AgeType;
   };
@@ -84,7 +67,6 @@ export type StockSummaryReportPayloadActionType = {
     selectedBrand: BrandType;
     selectedTag: TagType;
   };
-  productCode: string | null;
   ageFilterOption: {
     selectedAge: AgeType;
   };

@@ -43,9 +43,6 @@ logging.info("Server started")
 async def graphql(request: Request):
     # Handle token verification over here. It does not work in middleware
     # if valid token then proceed
-    # path = request.url.path
-    # if(path):
-    #     if('exempted' not in path):
         await validate_token(request)  # Comment this line if authentication is off
         return await GraphQLApp.handle_request(request)
 

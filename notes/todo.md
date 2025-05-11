@@ -146,19 +146,27 @@
 													- Aggregates for many columns
 
 		- Stock summary
-			- Start up
-			- Branches checkup
-			- Filter
-				- UI
-				- All filters
-				- Redux slice
-				- logic
-			- Grid
-													- Selectabel
-				- Delete button
-													- UI
-				- SQL
+													- Start up
+													- Branches checkup
+													- trim button
+			- SQL
+				- Modify SQL
 				- Optimize Sql
+			- Filter control
+				- gp in query
+													- Wire up events
+													- Populate local with default
+													- On apply set redux
+													- Reset on reset click
+													- Display filter in report
+													- Set args of query in report as per filter
+													- UI
+													- All filters
+													- Redux slice
+			- Grid
+													- Selectable
+													- Delete button
+													- UI
 													- populate data
 													- format columns
 													- Jakar
