@@ -62,7 +62,7 @@
 	- Product master check duplicate UPC code server side validation
 	- current order report: set to place the order to supplier through mail, whatsapp
 	- When BU changes, Branches remain of the old BU. So error and system crash
-													
+	- Validation for stock Journal: dealerPrice or purPrice for the output product must be there. Don't allow to make purPrice as 0 when the product is in stockJournal output
 	- Update function get_stock_on_date in all databases
 													- Inventory transfer closing balance to next year
 													- Migrate to tailwind latest version
@@ -146,6 +146,12 @@
 													- Aggregates for many columns
 
 		- Stock summary
+			- Issues to address
+				- Stock journal price is being taken as lastPurchasePrice, which is wrong
+				- last sale dt is coming as 01/01/1970 in some places: wrong: it should be blank
+				- Make correction for clos price
+				- Check for age
+				- GP in args
 													- Start up
 													- Branches checkup
 													- trim button

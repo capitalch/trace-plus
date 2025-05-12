@@ -35,7 +35,7 @@ export function PurchaseReport({ title }: { title?: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
-    if(selectedStartDate && selectedEndDate) {
+    if (selectedStartDate && selectedEndDate) {
       loadData();
     }
   }, [isAllBranches, branchId, buCode, selectedStartDate, selectedEndDate]);

@@ -557,7 +557,6 @@ export function StockSummaryReport({ title }: { title?: string }) {
             ? null
             : state.login.currentBranch?.branchId,
           finYearId: finYearId,
-          productCode: null,
           brandId:
             selectedFiltersState.catFilterOption.selectedBrand?.id || null,
           catId:

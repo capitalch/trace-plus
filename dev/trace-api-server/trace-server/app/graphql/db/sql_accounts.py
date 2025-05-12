@@ -1989,25 +1989,16 @@ class SqlAccounts:
     """
 
     get_stock_summary_report = """
-        --with "branchId" as (values(null::int)), "finYearId" as (values (2024)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "onDate" as (values(CURRENT_DATE)), "days" as (values(0)),
-            with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "productCode" as (VALUES (%(productCode)s::text)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "onDate" as (values(%(onDate)s ::date)), "days" as (values(%(days)s::int)),     
+        --with "branchId" as (values(null::int)), "finYearId" as (values (2024)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "onDate" as (values(CURRENT_DATE)), "days" as (values(0)),
+            with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "onDate" as (values(%(onDate)s ::date)), "days" as (values(%(days)s::int)),     
             "cteProduct" AS (
-			    SELECT id, "productCode", "catId", "brandId", label, info 
-				FROM "ProductM"
-			    WHERE "productCode" = (TABLE "productCode")
-			    AND (TABLE "productCode") IS NOT NULL
-			
-			    UNION ALL
-			
 			    SELECT * FROM get_products_on_brand_category_tag(
 			        (TABLE "brandId"),
 			        (TABLE "catId"),
 			        (TABLE "tagId")
 			    )
-			    WHERE (TABLE "productCode") IS NULL
   			),
 			
-			--"cteProduct" as (select * from get_productids_on_brand_category_tag((table "type") , (table "value") )),
             cte0 as( --base cte used many times in next
                 select h."id", "productId", "tranTypeId", "qty", ("price" - "discount") "price", "discount", "tranDate", '' as "dc"
                     from "TranH" h
@@ -2015,8 +2006,7 @@ class SqlAccounts:
                             on h."id" = d."tranHeaderId"
                         join "SalePurchaseDetails" s
                             on d."id" = s."tranDetailsId"
-                    where 
-                        --"branchId" = (table "branchId") 
+                    where
                         (COALESCE((TABLE "branchId"), "branchId") = "branchId")
                         and "finYearId" =(table "finYearId")
                         and "tranDate" <= coalesce((table "onDate"), CURRENT_DATE)
@@ -2025,8 +2015,7 @@ class SqlAccounts:
                     from "TranH" h
                         join "StockJournal" s
                             on h."id" = s."tranHeaderId"
-                    where 
-                        --"branchId" = (table "branchId") 
+                    where
                         (COALESCE((TABLE "branchId"), "branchId") = "branchId")
                         and "finYearId" =(table "finYearId")
                         and "tranDate" <= coalesce((table "onDate"), CURRENT_DATE)
@@ -2035,8 +2024,7 @@ class SqlAccounts:
                     from "TranH" h
                         join "BranchTransfer" b
                             on h."id" = b."tranHeaderId"
-                    where 
-                        --"branchId" = (table "branchId") 
+                    where
                         (COALESCE((TABLE "branchId"), "branchId") = "branchId")
                         and "finYearId" =(table "finYearId")
                         and "tranDate" <= coalesce((table "onDate"), CURRENT_DATE)
@@ -2054,8 +2042,7 @@ class SqlAccounts:
                 , cte1 as ( -- opening balance
                     select "productId", SUM("qty") as "qty", MAX("openingPrice") as "openingPrice", MAX("lastPurchaseDate") as "lastPurchaseDate"
                         from "ProductOpBal" p 
-                    where 
-                        --"branchId" = (table "branchId") 
+                    where
                         (COALESCE((TABLE "branchId"), "branchId") = "branchId")
                         and "finYearId" =(table "finYearId")
                     GROUP BY "productId"
