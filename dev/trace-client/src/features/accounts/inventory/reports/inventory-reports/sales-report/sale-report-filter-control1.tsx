@@ -23,7 +23,7 @@ import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { useInventoryReportsShared } from "../inventory-reports-shared-hook";
 import { format } from "date-fns";
 import { NumberFormatValues, NumericFormat } from "react-number-format";
-export function SalesReportFilterControl() {
+export function SalesReportFilterControl1() {
     const dispatch: AppDispatchType = useDispatch();
     const [, setRefresh] = useState({});
     const { getDateRange, getMonthRange } = useInventoryReportsShared()

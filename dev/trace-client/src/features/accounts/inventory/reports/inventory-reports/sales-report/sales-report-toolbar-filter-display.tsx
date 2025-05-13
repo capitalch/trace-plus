@@ -1,7 +1,7 @@
 import SlidingPane from "react-sliding-pane";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
-import { SalesReportFilterControl } from "./sale-report-filter-control";
+import { SalesReportFilterControl } from "./sales-report-filter-control";
 import { setSalesReportIsPaneOpen } from "./sales-report-slice";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { format } from "date-fns";

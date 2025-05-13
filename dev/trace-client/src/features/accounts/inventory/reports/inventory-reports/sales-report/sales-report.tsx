@@ -24,7 +24,8 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import clsx from "clsx";
 import { SalesReportToolbarFilterDisplay } from "./sales-report-toolbar-filter-display";
-import { setSalesReportDateRange } from "./sales-report-slice";
+import { setSalesReportDateRange, setSalesReportFilters } from "./sales-report-slice";
+import { SalesReportFilterControl } from "./sales-report-filter-control";
 
 export function SalesReport({ title }: { title?: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -73,6 +74,20 @@ export function SalesReport({ title }: { title?: string }) {
         CustomControl={() => (
           <div className="flex items-center gap-2">
             <SalesReportToolbarFilterDisplay />
+            <button
+              type="button"
+              onClick={handleOnClickFilter}
+              className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
+            >
+              Filter
+            </button>
+            <button
+              type="button"
+              onClick={handleOnClickResetFilter}
+              className="bg-amber-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-amber-700"
+            >
+              Reset Filter
+            </button>
             <CompSwitch
               instance={instance}
               className=""
@@ -374,6 +389,35 @@ export function SalesReport({ title }: { title?: string }) {
       { field: "brandName", visible: false, width: 0 },
       { field: "label", visible: false, width: 0 }
     ];
+  }
+
+  function handleOnClickFilter() {
+    Utils.showHideModalDialogA({
+      isOpen: true,
+      size: "md",
+      title: "Sales Report Filter",
+      element: <SalesReportFilterControl />,
+    });
+  }
+
+  function handleOnClickResetFilter() {
+    dispatch(
+      setSalesReportFilters({
+        filterMode: 'category',
+        catFilterOption: {
+          selectedBrand: { brandName: 'All', id: null },
+          selectedCategory: { catName: 'All', id: "" },
+          selectedTag: { tagName: 'All', id: null },
+        },
+        productCode: null,
+        ageFilterOption: { selectedAge: { value: null, label: "All" } },
+        dateRangeFilterOption: {
+          selectedDateRange: { label: "today", value: "today" },
+          startDate: format(new Date(), "yyyy-MM-dd"),
+          endDate: format(new Date(), "yyyy-MM-dd"),
+        }
+      })
+    );
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {

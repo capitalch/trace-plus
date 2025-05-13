@@ -114,7 +114,11 @@
 													- party
 													- toolbar
 
-										- Sales
+		- Sales
+			- Filter display
+			- Filter control
+			- Slice modify
+			- Changes in Sales report
 													- When date range as financial year filter is selected: Main FY is changed then filter is not changed. So start date and end date remains same.
 													- When mode is changed then make productCode as null. Otherwise issue happens.
 													- Purchase refresh button click date error at startup
