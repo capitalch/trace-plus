@@ -408,7 +408,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "string",
         width: 90,
         valueAccessor: (field: string, data: any) =>
-          format(data?.[field], currentDateFormat),
+          data?.[field] ? format(data?.[field], currentDateFormat) : '',
       },
       {
         field: "lastSaleDate",
@@ -416,7 +416,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "string",
         width: 90,
         valueAccessor: (field: string, data: any) =>
-          format(data?.[field], currentDateFormat),
+          data?.[field] ? format(data?.[field], currentDateFormat) : '',
       },
       {
         field: "purchase",
@@ -564,6 +564,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
           tagId: selectedFiltersState.catFilterOption.selectedTag?.id || null,
           onDate: selectedFiltersState.onDate,
           days: selectedFiltersState.ageFilterOption.selectedAge?.value || 0,
+          grossProfitFilter: selectedFiltersState.selectedGrossProfitStatus.value
         },
       });
 

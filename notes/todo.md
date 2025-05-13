@@ -145,21 +145,20 @@
 													- Adjust col width
 													- Aggregates for many columns
 
-		- Stock summary
-			- Issues to address
-				- Stock journal price is being taken as lastPurchasePrice, which is wrong
-				- last sale dt is coming as 01/01/1970 in some places: wrong: it should be blank
-				- Make correction for clos price
-				- Check for age
-				- GP in args
+											- Stock summary
+												- Issues to address
+													- last sale dt is coming as 01/01/1970 in some places: wrong: it should be blank
+													- Make correction for clos price
+													- Check for age
+													- GP in args
 													- Start up
 													- Branches checkup
 													- trim button
-			- SQL
-				- Modify SQL
-				- Optimize Sql
-			- Filter control
-				- gp in query
+												- SQL
+													- Modify SQL
+													- Optimize Sql
+												- Filter control
+													- gp in query
 													- Wire up events
 													- Populate local with default
 													- On apply set redux
@@ -169,7 +168,7 @@
 													- UI
 													- All filters
 													- Redux slice
-			- Grid
+												- Grid
 													- Selectable
 													- Delete button
 													- UI
