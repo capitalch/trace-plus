@@ -1803,7 +1803,7 @@ class SqlAccounts:
                 FROM cte_sale cs
                 LEFT JOIN LATERAL (
                     SELECT 
-                        s."price",
+                        s."price" - s."discount" as "price",
                         h."tranDate"
                     FROM "TranH" h
                     JOIN "TranD" d ON h.id = d."tranHeaderId"

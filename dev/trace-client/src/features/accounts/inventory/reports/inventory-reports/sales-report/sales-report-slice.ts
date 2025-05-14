@@ -9,7 +9,6 @@ import {
 import { format } from "date-fns";
 
 const initialState: SalesReportInitialStateType = {
-  isPaneOpen: false,
   filterMode: "category",
   catFilterOption: {
     selectedCategory: { catName: "All", id: "" },
@@ -31,12 +30,6 @@ const salesReportSlice = createSlice({
   name: "salesReport",
   initialState: initialState,
   reducers: {
-    setSalesReportIsPaneOpen: (
-      state: SalesReportInitialStateType,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isPaneOpen = action.payload;
-    },
     setSalesReportFilters: (
       state: SalesReportInitialStateType,
       action: PayloadAction<SalesReportPayloadActionType>
@@ -61,11 +54,9 @@ export const salesReportReducer = salesReportSlice.reducer;
 export const {
   setSalesReportDateRange,
   setSalesReportFilters,
-  setSalesReportIsPaneOpen,
 } = salesReportSlice.actions;
 
 type SalesReportInitialStateType = {
-  isPaneOpen: boolean;
   filterMode: "category" | "productCode";
   catFilterOption: {
     selectedCategory: CategoryType;

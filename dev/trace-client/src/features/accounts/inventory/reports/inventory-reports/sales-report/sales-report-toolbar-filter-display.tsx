@@ -1,79 +1,41 @@
-import SlidingPane from "react-sliding-pane";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
-import { SalesReportFilterControl } from "./sales-report-filter-control";
-import { setSalesReportIsPaneOpen } from "./sales-report-slice";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../../../../../../app/store/store";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { format } from "date-fns";
-import clsx from "clsx";
 
 export function SalesReportToolbarFilterDisplay() {
-    const dispatch: AppDispatchType = useDispatch();
     const selectedFilters = useSelector(
         (state: RootStateType) => state.salesReport)
     const { currentDateFormat } = useUtilsInfo();
-    const selectedIsPaneOpen = useSelector(
-        (state: RootStateType) =>
-            state.salesReport.isPaneOpen
-    );
-    const isCategoryFilterMode = selectedFilters.filterMode === 'category';
-    const isProductCodeFilterMode = selectedFilters.filterMode === 'productCode';
+    const displayFilter = {
+        age: selectedFilters.ageFilterOption.selectedAge,
+        filterMode: selectedFilters.filterMode,
+        category: selectedFilters.catFilterOption.selectedCategory,
+        brand: selectedFilters.catFilterOption.selectedBrand,
+        tag: selectedFilters.catFilterOption.selectedTag,
+        productCode: selectedFilters.productCode,
+        selectedDateRange: selectedFilters.dateRangeFilterOption.selectedDateRange,
+        startDate: selectedFilters.dateRangeFilterOption.startDate,
+        endDate: selectedFilters.dateRangeFilterOption.endDate
+    }
     return (
-        <div>
-            <div className="max-w-xl grid grid-rows-2 gap-y-1 px-1 bg-gray-50 rounded-lg text-sm text-gray-700">
-                {/* Row 1 */}
-                <div className="flex items-center gap-x-2 w-full">
+        <div className="flex flex-wrap bg-amber-100 p-1 text-sm rounded-md gap-1 xl:w-[550px] lg:w-[450px] md:w-[350px] sm:w-[200px] w-[200px]">
+            {getDisplayControl({ label: 'Date Range: ', value: displayFilter.selectedDateRange.label })}
+            {getDisplayControl({ label: 'Start Date: ', value: format(displayFilter.startDate, currentDateFormat) })}
+            {getDisplayControl({ label: 'End Date: ', value: format(displayFilter.endDate, currentDateFormat) })}
+            {displayFilter.age.value && getDisplayControl({ label: 'Age: ', value: displayFilter.age.label.slice(4) })}
 
-                    {isCategoryFilterMode && <div className="w-64 truncate text-blue-500 font-bold">
-                        <span className="font-semibold text-primary-600">Cat:</span>{' '}
-                        {selectedFilters.catFilterOption.selectedCategory.catName}
-                    </div>}
-                    {isCategoryFilterMode && <div className="w-32 truncate text-blue-500 font-bold">
-                        <span className="font-semibold text-primary-600">Brand:</span>{' '}
-                        {selectedFilters.catFilterOption.selectedBrand.brandName}
-                    </div>}
-                    {isProductCodeFilterMode && <div className="w-64 truncate text-blue-500 font-bold">
-                        <span className="font-semibold text-primary-600">Product code:</span>{' '}
-                        {selectedFilters.productCode || 'None'}
-                    </div>}
-                    <button
-                        className={clsx("w-32 h-6 px-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 shrink-0", isCategoryFilterMode ? 'ml-2' : 'ml-10')}
-                        onClick={() => dispatch(setSalesReportIsPaneOpen(true))}
-                        type="button"
-                    >
-                        Open Filters
-                    </button>
-                </div>
+            {(displayFilter.productCode) && getDisplayControl({ label: "Pr Code: ", value: displayFilter.productCode })}
+            {(displayFilter.category.id) && getDisplayControl({ label: 'Category: ', value: displayFilter.category.catName })}
+            {(displayFilter.brand.id) && getDisplayControl({ label: 'Brand: ', value: displayFilter.brand.brandName })}
+            {(displayFilter.tag.id) && getDisplayControl({ label: 'Tag: ', value: displayFilter.tag.tagName })}
+        </div>)
 
-                {/* Row 2 */}
-                <div className="flex items-center gap-x-2 w-full">
-                    {isCategoryFilterMode && <div className="w-24 truncate text-blue-500 font-bold">
-                        <span className="font-semibold text-primary-600">Tag:</span>{' '}
-                        {selectedFilters.catFilterOption.selectedTag.tagName}
-                    </div>}
-                    <div className="w-24 truncate text-blue-500 font-bold">
-                        <span className="font-semibold text-primary-600"></span>{' '}
-                        {selectedFilters.ageFilterOption.selectedAge?.label || 'All'}
-                    </div>
-                    <div className="w-48 truncate text-blue-500 font-bold">
-                        <span className="font-semibold text-primary-600">Start dt:</span>{' '}
-                        {format(selectedFilters.dateRangeFilterOption.startDate, currentDateFormat)}
-                    </div>
-                    <div className="w-48 truncate text-blue-500 font-bold ml-auto">
-                        <span className="font-semibold text-primary-600">End dt:</span>{' '}
-                        {format(selectedFilters.dateRangeFilterOption.endDate, currentDateFormat)}
-                    </div>
-                </div>
-            </div>
-
-            <SlidingPane
-                isOpen={selectedIsPaneOpen}
-                title="Filter Options"
-                onRequestClose={() => dispatch(setSalesReportIsPaneOpen(false))}
-                width="500px"
-            >
-                <SalesReportFilterControl />
-            </SlidingPane>
-        </div>
-    );
+    function getDisplayControl(item: { label: string, value: string }) {
+        return (
+            <label className="font-medium px-1 text-gray-800  even:bg-slate-100 odd:bg-white">
+                {item.label}
+                <span className="font-normal">{item.value}</span>
+            </label>)
+    }
 }

@@ -72,7 +72,7 @@ export function SalesReport({ title }: { title?: string }) {
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         CustomControl={() => (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <SalesReportToolbarFilterDisplay />
             <button
               type="button"

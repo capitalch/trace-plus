@@ -16,15 +16,15 @@ export function StockSummaryReportToolbarFilterDisplay() {
         brand: selectedFilters.catFilterOption.selectedBrand,
         tag: selectedFilters.catFilterOption.selectedTag
     }
-    return (<div className="flex flex-wrap bg-amber-100 p-1 text-sm rounded-md gap-1">
-        {getDisplayControl({ label: 'Stock On Date: ', value: format(displayFilter.onDate, currentDateFormat) })}
-        {displayFilter.age.value && getDisplayControl({ label: 'Age: ', value: displayFilter.age.label.slice(4) })}
-        {(displayFilter.grossProfitStatus.value !== 0) && getDisplayControl({ label: 'Gross Profit:', value: displayFilter.grossProfitStatus.label.slice(12) })}
-        {(displayFilter.category.id) && getDisplayControl({ label: 'Category: ', value: displayFilter.category.catName })}
-        {(displayFilter.brand.id) && getDisplayControl({ label: 'Brand: ', value: displayFilter.brand.brandName })}
-        {(displayFilter.tag.id) && getDisplayControl({ label: 'Tag: ', value: displayFilter.tag.tagName })}
-
-    </div>)
+    return (
+        <div className="flex flex-wrap bg-amber-100 p-1 text-sm rounded-md gap-1">
+            {getDisplayControl({ label: 'Stock On Date: ', value: format(displayFilter.onDate, currentDateFormat) })}
+            {displayFilter.age.value && getDisplayControl({ label: 'Age: ', value: displayFilter.age.label.slice(4) })}
+            {(displayFilter.grossProfitStatus.value !== 0) && getDisplayControl({ label: 'Gross Profit:', value: displayFilter.grossProfitStatus.label.slice(12) })}
+            {(displayFilter.category.id) && getDisplayControl({ label: 'Category: ', value: displayFilter.category.catName })}
+            {(displayFilter.brand.id) && getDisplayControl({ label: 'Brand: ', value: displayFilter.brand.brandName })}
+            {(displayFilter.tag.id) && getDisplayControl({ label: 'Tag: ', value: displayFilter.tag.tagName })}
+        </div>)
 
     function getDisplayControl(item: { label: string, value: string }) {
         return (

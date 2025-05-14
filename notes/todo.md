@@ -29,6 +29,8 @@
 		- When admin user logs in: From db get physical BU's and prompt to add if not present
 																- Super admin clients
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
+	- Nav bar
+		- When u change bu, the branches of bu are not changed to reflect branches of new BU. It retains the old branches.
 ## To do
 														- Old Trace
 															- Transfer of closing balance in case of stock journal and branch transfer
@@ -115,10 +117,11 @@
 													- toolbar
 
 		- Sales
-			- Filter display
-			- Filter control
-			- Slice modify
-			- Changes in Sales report
+			- Clos stock
+													- Filter display
+													- Filter control
+													- Slice modify
+													- Changes in Sales report
 													- When date range as financial year filter is selected: Main FY is changed then filter is not changed. So start date and end date remains same.
 													- When mode is changed then make productCode as null. Otherwise issue happens.
 													- Purchase refresh button click date error at startup
@@ -182,6 +185,8 @@
 													- Adjust col width
 													- Aggregates
 		- Stock transactions
+			- Refresh does not respect filters
+			- Should jakar show 0 stock items?
 										- Stock Journal
 											- Final testing
 													- Add
