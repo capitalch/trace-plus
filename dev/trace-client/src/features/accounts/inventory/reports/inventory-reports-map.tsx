@@ -12,7 +12,7 @@ import { PurchasePriceVariationReport } from "./inventory-reports/purchase-price
 import { PurchaseReport } from "./inventory-reports/purchase-report/purchase-report"
 import { SalesReport } from "./inventory-reports/sales-report/sales-report"
 // import { StockSummaryReport } from "./inventory-reports/stock-summary-report"
-import { StockTransactionsReport } from "./inventory-reports/stock-transactions-report"
+import { StockTransReport } from "./inventory-reports/stock-trans-report/stock-trans-report"
 import { StockSummaryReport } from "./inventory-reports/stock-summary-report/stock-summary-report"
 
 type InventoryReportItemType = {
@@ -65,6 +65,6 @@ export const InventoryReportsComponentsMap : Record<string,FC> = {
     "all-purchases": PurchaseReport,
     "all-sales": SalesReport,
     "stock-summary": StockSummaryReport,
-    "stock-transactions": StockTransactionsReport
+    "stock-transactions": StockTransReport
 }
 

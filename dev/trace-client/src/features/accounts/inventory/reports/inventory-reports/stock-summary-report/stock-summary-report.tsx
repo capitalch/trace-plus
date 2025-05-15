@@ -14,7 +14,6 @@ import {
   SyncFusionGridAggregateType,
   SyncFusionGridColumnType,
 } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
-import clsx from "clsx";
 import {
   QueryCellInfoEventArgs,
   RowDataBoundEventArgs,
@@ -299,21 +298,28 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "string",
       },
       {
-        field: "catName",
+        field:'catName',
+        headerText:'Category',
+        width:100,
+        type:'string',
+        clipMode: "EllipsisWithTooltip",
+      },
+      {
+        field: "product",
         headerText: "Product",
         width: 300,
         type: "string",
         clipMode: "EllipsisWithTooltip",
-        template: (props: any) => (
-          <div
-            className={clsx(
-              "flex flex-col",
-              props.grossProfit < 0 ? "text-red-500" : ""
-            )}
-          >
-            {"".concat(props.catName, " ", props.brandName, " ", props.label)}
-          </div>
-        ),
+        // template: (props: any) => (
+        //   <div
+        //     className={clsx(
+        //       "flex flex-col",
+        //       props.grossProfit < 0 ? "text-red-500" : ""
+        //     )}
+        //   >
+        //     {"".concat(props.catName, " ", props.brandName, " ", props.label)}
+        //   </div>
+        // ),
       },
       {
         field: "info",
@@ -490,8 +496,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
         textAlign: "Right",
         isPrimaryKey: true,
       },
-      { field: "brandName", visible: false, width: 0 },
-      { field: "label", visible: false, width: 0 },
+      // { field: "brandName", visible: false, width: 0 },
+      // { field: "label", visible: false, width: 0 },
     ];
   }
 

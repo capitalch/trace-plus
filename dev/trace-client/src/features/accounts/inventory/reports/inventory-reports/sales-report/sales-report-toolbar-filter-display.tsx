@@ -21,8 +21,8 @@ export function SalesReportToolbarFilterDisplay() {
     return (
         <div className="flex flex-wrap bg-amber-100 p-1 text-sm rounded-md gap-1 xl:w-[550px] lg:w-[450px] md:w-[350px] sm:w-[200px] w-[200px]">
             {getDisplayControl({ label: 'Date Range: ', value: displayFilter.selectedDateRange.label })}
-            {getDisplayControl({ label: 'Start Date: ', value: format(displayFilter.startDate, currentDateFormat) })}
-            {getDisplayControl({ label: 'End Date: ', value: format(displayFilter.endDate, currentDateFormat) })}
+            {getDisplayControl({ label: 'From Date: ', value: format(displayFilter.startDate, currentDateFormat) })}
+            {getDisplayControl({ label: 'To Date: ', value: format(displayFilter.endDate, currentDateFormat) })}
             {displayFilter.age.value && getDisplayControl({ label: 'Age: ', value: displayFilter.age.label.slice(4) })}
 
             {(displayFilter.productCode) && getDisplayControl({ label: "Pr Code: ", value: displayFilter.productCode })}

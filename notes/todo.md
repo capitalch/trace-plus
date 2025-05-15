@@ -75,6 +75,17 @@
 - Inventory
 													- Check - Transfer of closing balance in case of stock journal and branch transfer
 	- Reports
+		- Stock Transactions report
+			- Startup
+			- slice
+			- SQL
+			- Branch validations
+			- Filter display
+				- Filter control
+			- Grid
+				- Show data
+				- Columns
+				- Aggregates
 													- basic architecture framework and startup
 													- Grid remove row button implementation
 													- Search problem in template columns
@@ -117,7 +128,9 @@
 													- toolbar
 
 		- Sales
-			- Clos stock
+													- Clos stock
+			- Remove cross icon
+													- Check box
 													- Filter display
 													- Filter control
 													- Slice modify
@@ -152,7 +165,7 @@
 													- Adjust col width
 													- Aggregates for many columns
 
-											- Stock summary
+											- Stock summary report
 												- Issues to address
 													- last sale dt is coming as 01/01/1970 in some places: wrong: it should be blank
 													- Make correction for clos price
@@ -184,11 +197,9 @@
 													- Jakar
 													- Adjust col width
 													- Aggregates
-		- Stock transactions
-			- Refresh does not respect filters
-			- Should jakar show 0 stock items?
-										- Stock Journal
-											- Final testing
+													- Refresh does not respect filters
+												- Stock Journal
+													- Final testing
 													- Add
 													- modify
 													- delete whole voucher

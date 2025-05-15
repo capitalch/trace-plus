@@ -116,6 +116,7 @@ export function SalesReport({ title }: { title?: string }) {
         className="mt-4"
         columns={getColumns()}
         dataSource={rowsData}
+        hasCheckBoxSelection={true}
         hasIndexColumn={true}
         height="calc(100vh - 300px)"
         indexColumnWidth={60}
@@ -236,22 +237,28 @@ export function SalesReport({ title }: { title?: string }) {
           );
         }
       },
-      { field: "productCode", headerText: "P code", width: 90, type: "string" },
+      { field: "productCode", headerText: "Pr code", width: 90, type: "string" },
       {
-        field: "catName",
+        field:'catName',
+        headerText:'Category',
+        width:100,
+        type:'string',
+      },
+      {
+        field: "product",
         headerText: "Product",
         width: 250,
         type: "string",
-        template: (props: any) => (
-          <div
-            className={clsx(
-              "flex flex-col",
-              props.grossProfit < 0 ? "text-red-500" : ""
-            )}
-          >
-            {"".concat(props.catName, " ", props.brandName, " ", props.label)}
-          </div>
-        )
+        // template: (props: any) => (
+        //   <div
+        //     className={clsx(
+        //       "flex flex-col",
+        //       props.grossProfit < 0 ? "text-red-500" : ""
+        //     )}
+        //   >
+        //     {"".concat(props.catName, " ", props.brandName, " ", props.label)}
+        //   </div>
+        // )
       },
       { field: "info", headerText: "Details", width: 200, type: "string" },
       {
@@ -386,8 +393,8 @@ export function SalesReport({ title }: { title?: string }) {
         type: "string"
       },
 
-      { field: "brandName", visible: false, width: 0 },
-      { field: "label", visible: false, width: 0 }
+      // { field: "brandName", visible: false, width: 0 },
+      // { field: "label", visible: false, width: 0 }
     ];
   }
 

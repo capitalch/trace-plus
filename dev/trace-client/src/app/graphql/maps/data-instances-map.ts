@@ -55,6 +55,7 @@ export const DataInstancesMap = {
   securedControlsLinkRoles: "secured-controls-link-roles",
   stockJournal: "stock-journal",
   stockSummaryReport: "stock-summary-report",
+  stockTransReport:"stock-trans-report",
   superAdminAdminUsers: "super-admin-admin-users",
   superAdminDashBoard: "super-admin-dashboard",
   superAdminClients: "super-admin-clients",
