@@ -159,3 +159,12 @@
 .smaller-font .e-headercell {
   font-size: 12px;
 }
+
+/* Syncfusion grid custom font for aggregate rows */
+/* .e-grid .e-summaryrow .e-summarycell {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;                   
+  font-weight: 400;                  
+  color: #1f2937;                   
+  padding-right: 18px;
+} */

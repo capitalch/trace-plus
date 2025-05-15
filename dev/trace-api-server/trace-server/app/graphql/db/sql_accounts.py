@@ -2359,7 +2359,7 @@ class SqlAccounts:
     """
 
     get_stock_trans_report = """
-           --WITH "branchId" AS (VALUES (NULL::INT)), "finYearId" AS (VALUES (2025)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (NULL::INT)), "brandId"   AS (VALUES (NULL::INT)), "tagId" AS (VALUES (NULL::INT)), "onDate"    AS (VALUES (CURRENT_DATE)), "days" AS (VALUES (0)),          
+			--WITH "branchId" AS (VALUES (NULL::INT)), "finYearId" AS (VALUES (2025)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (NULL::INT)), "brandId"   AS (VALUES (NULL::INT)), "tagId" AS (VALUES (NULL::INT)), "onDate"    AS (VALUES (CURRENT_DATE)), "days" AS (VALUES (0)),          
         with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "productCode" as (VALUES (%(productCode)s::text)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "onDate" as (values(%(onDate)s ::date)), "days" as (values(%(days)s::int)),
 			"startDate" as (select "startDate" from "FinYearM" where "id" = (table "finYearId"))
 			, "endDate" as (select "endDate" from "FinYearM" where "id" = (table "finYearId"))
@@ -2566,7 +2566,7 @@ class SqlAccounts:
 				from cte7 c7
 			) select * from cte8
 				order by "product","tranDate", "timestamp"
-    """,
+    """
 
     get_subledger_accounts = """
         with "accId" as (values (%(accId)s::int))
