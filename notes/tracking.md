@@ -16,9 +16,12 @@
 - Bug fixes etc.
 
 ## History
+# 15-05-2025
+	- Completed stock summary report
+	- started stock tran report
 # 02-05-2025
 	- Completed sales report
-	- Started Inventory report
+	- Started Inventory report / Stock summary report
 # 24-04-2024
 	- completed
 		- current orders
