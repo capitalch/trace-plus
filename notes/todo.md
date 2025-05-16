@@ -83,9 +83,17 @@
 			- Filter display
 				- Filter control
 			- Grid
-				- Show data
-				- Columns
-				- Aggregates
+				- Index numbers to show blank for same index
+				- Pr code to show blank in repeat
+				- 0 debits and credits to be blank
+				- Opening balance row
+				- Summary row
+				- Remove rows with 0 debits and credits
+				- Negative balance to show red when in summary
+				- GP should be correct
+													- Show data
+													- Columns
+													- Aggregates
 													- basic architecture framework and startup
 													- Grid remove row button implementation
 													- Search problem in template columns

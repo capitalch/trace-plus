@@ -11,6 +11,8 @@ import { CompSwitch } from "../../../../../../controls/redux-components/comp-swi
 import { BackToDashboardLink } from "../../back-to-dashboard-link";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { format } from "date-fns";
+import _ from 'lodash';
+import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 
 export function StockTransReport({ title }: { title?: string; }) {
 
@@ -114,9 +116,9 @@ export function StockTransReport({ title }: { title?: string; }) {
       loadData={loadData}
       minWidth="800px"
       // onRemove={handleOnRemove}
-      rowHeight={30}
-    // queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
-    // onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
+      rowHeight={35}
+      // queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
+      onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
     />
   </div>)
 
@@ -179,10 +181,10 @@ export function StockTransReport({ title }: { title?: string; }) {
         type: "string",
       },
       {
-        field:'catName',
-        headerText:'Category',
-        width:100,
-        type:'string',
+        field: 'catName',
+        headerText: 'Category',
+        width: 100,
+        type: 'string',
         clipMode: "EllipsisWithTooltip",
       },
       {
@@ -207,6 +209,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         format: "N0",
         textAlign: "Right",
         width: 70,
+        valueAccessor: (field: string, data: any) => data?.[field] ? data[field] : ''
       },
       {
         field: "credits",
@@ -215,6 +218,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         format: "N0",
         textAlign: "Right",
         width: 70,
+        valueAccessor: (field: string, data: any) => data?.[field] ? data[field] : ''
       },
       {
         field: "balance",
@@ -236,7 +240,8 @@ export function StockTransReport({ title }: { title?: string; }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 120,
+        width: 100,
+        valueAccessor: (field: string, data: any) => data?.[field] ? data[field] : ''
       },
       {
         field: "grossProfit",
@@ -244,7 +249,8 @@ export function StockTransReport({ title }: { title?: string; }) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 120,
+        width: 100,
+        valueAccessor: (field: string, data: any) => data?.[field] ? data[field] : ''
       },
       {
         field: "remarks",
@@ -253,6 +259,16 @@ export function StockTransReport({ title }: { title?: string; }) {
         type: "string",
       },
     ]
+  }
+
+  function handleOnRowDataBound(args: RowDataBoundEventArgs) {
+    const rowData = args.data as RowDataType;
+
+    if (args.row && !rowData.tranType) {
+      if(rowData.bColor)
+        args.row.classList.add("bg-amber-50");
+      // args.row.classList.add("text-red-500");
+    }
   }
 
   async function loadData() {
@@ -282,30 +298,51 @@ export function StockTransReport({ title }: { title?: string; }) {
           days: selectedFiltersState.ageFilterOption.selectedAge?.value || 0,
         },
       });
-
-      setRowsData(rowsData);
+      processRowsData(rowsData)
+      // setRowsData(rowsData);
     } catch (e: any) {
       console.log(e);
     }
   }
+
+  function processRowsData(rowsData: RowDataType[]) {
+    let op = 0;
+    let bColor = true;
+    rowsData.forEach((r: RowDataType,) => {
+      r.bColor = bColor
+      if (r.remarks === 'Opening balance') {
+        op = r.balance
+      }
+      if(r.remarks === 'Summary'){
+        bColor = !bColor
+      }
+      if (!_.isEmpty(r.tranType)) {
+        r.product = ''
+        r.productCode = ''
+        r.catName = ''
+        r.balance = r.balance + op
+        op = r.balance
+      }
+    })
+    setRowsData(rowsData)
+  }
 }
 
 type RowDataType = {
-  age: number;
-  brandName: string;
+  balance: number;
+  bColor: boolean;
   catName: string;
-  cr: number;
-  clos: number;
-  dr: number;
+  credits: number;
+  debits: number;
   grossProfit: number;
   info: string;
   label: string;
-  lastPurchaseDate: string;
-  lastPurchasePrice: number;
-  op: number;
   price: number;
+  product: string;
   productCode: string;
   productId: number;
-  qty: number;
-  stock: number;
+  remarks: string;
+  timestamp: string;
+  tranDate: string;
+  tranType: string;
 };
