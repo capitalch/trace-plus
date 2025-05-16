@@ -158,7 +158,15 @@
 .smaller-font .e-rowcell,
 .smaller-font .e-headercell {
   font-size: 12px;
+  /* font-weight: ; */
 }
+
+/* .font-medium-custom {
+  font-weight: 800;
+}
+.red-custom {
+  color:red !important
+} */
 
 /* Syncfusion grid custom font for aggregate rows */
 /* .e-grid .e-summaryrow .e-summarycell {

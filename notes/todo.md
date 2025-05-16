@@ -84,12 +84,12 @@
 				- Filter control
 			- Grid
 				- Index numbers to show blank for same index
-				- Pr code to show blank in repeat
-				- 0 debits and credits to be blank
-				- Opening balance row
-				- Summary row
+													- Pr code to show blank in repeat
+													- 0 debits and credits to be blank
+													- Opening balance row
+													- Summary row
 				- Remove rows with 0 debits and credits
-				- Negative balance to show red when in summary
+													- Negative balance to show red when in summary
 				- GP should be correct
 													- Show data
 													- Columns

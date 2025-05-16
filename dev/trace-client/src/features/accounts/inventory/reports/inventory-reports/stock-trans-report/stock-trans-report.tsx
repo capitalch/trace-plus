@@ -12,7 +12,7 @@ import { BackToDashboardLink } from "../../back-to-dashboard-link";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { format } from "date-fns";
 import _ from 'lodash';
-import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
+import { QueryCellInfoEventArgs, RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 
 export function StockTransReport({ title }: { title?: string; }) {
 
@@ -96,7 +96,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       aggregates={getAggregates()}
       allowPaging={true}
       allowTextWrap={false}
-      pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000] }}
+      pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000, 5000, 10000] }}
       buCode={buCode}
       className="mt-4"
       columns={getColumns()}
@@ -107,7 +107,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         mode: "Normal",
       }}
       hasCheckBoxSelection={true}
-      hasIndexColumn={true}
+      // hasIndexColumn={true}
       height="calc(100vh - 300px)"
       indexColumnWidth={60}
       instance={instance}
@@ -117,7 +117,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       minWidth="800px"
       // onRemove={handleOnRemove}
       rowHeight={35}
-      // queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
+      queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
       onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
     />
   </div>)
@@ -174,6 +174,13 @@ export function StockTransReport({ title }: { title?: string; }) {
 
   function getColumns(): SyncFusionGridColumnType[] {
     return [
+      {
+        field: 'index',
+        headerText:'#',
+        width: 60,
+        type:'string',
+        valueAccessor: (field: string, data: any) => data?.[field] ? data[field] : ''
+      },
       {
         field: "productCode",
         headerText: "Pr code",
@@ -250,13 +257,15 @@ export function StockTransReport({ title }: { title?: string; }) {
         format: "N2",
         textAlign: "Right",
         width: 100,
-        valueAccessor: (field: string, data: any) => data?.[field] ? data[field] : ''
+        valueAccessor: (field: string, data: any) => data?.[field] ? data[field] : '',
+        template: (props: RowDataType) => props.remarks === 'Summary' ? <label className="text-blue-500">{Utils.toDecimalFormat(props.grossProfitSummary)}</label> : Utils.toDecimalFormat(props.grossProfit)
       },
       {
         field: "remarks",
         headerText: "Remarks",
-        width: 300,
+        width: 350,
         type: "string",
+        clipMode: 'EllipsisWithTooltip'
       },
     ]
   }
@@ -264,10 +273,20 @@ export function StockTransReport({ title }: { title?: string; }) {
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
     const rowData = args.data as RowDataType;
 
-    if (args.row && !rowData.tranType) {
-      if(rowData.bColor)
-        args.row.classList.add("bg-amber-50");
-      // args.row.classList.add("text-red-500");
+    if (args.row) {
+      if (rowData.bColor) {
+        args.row.classList.add("bg-amber-50",);
+      }
+    }
+  }
+
+  function handleQueryCellInfo(args: QueryCellInfoEventArgs) {
+    const rowData = args.data as RowDataType;
+    if (rowData.grossProfit < 0) {
+      args.cell?.classList.add('text-red-500')
+    }
+    if (rowData.remarks === 'Summary') {
+      args.cell?.classList.add('text-blue-500')
     }
   }
 
@@ -308,19 +327,25 @@ export function StockTransReport({ title }: { title?: string; }) {
   function processRowsData(rowsData: RowDataType[]) {
     let op = 0;
     let bColor = true;
+    let i = 1;
     rowsData.forEach((r: RowDataType,) => {
       r.bColor = bColor
+      r.index = i
       if (r.remarks === 'Opening balance') {
         op = r.balance
       }
-      if(r.remarks === 'Summary'){
+      if (r.remarks === 'Summary') {
         bColor = !bColor
+        r.grossProfitSummary = r.grossProfit
+        r.grossProfit = 0
+        i++
       }
       if (!_.isEmpty(r.tranType)) {
         r.product = ''
         r.productCode = ''
         r.catName = ''
         r.balance = r.balance + op
+        r.index = 0
         op = r.balance
       }
     })
@@ -335,6 +360,8 @@ type RowDataType = {
   credits: number;
   debits: number;
   grossProfit: number;
+  grossProfitSummary: number;
+  index: number;
   info: string;
   label: string;
   price: number;
