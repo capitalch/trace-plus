@@ -88,9 +88,11 @@
 													- 0 debits and credits to be blank
 													- Opening balance row
 													- Summary row
-				- Remove rows with 0 debits and credits
 													- Negative balance to show red when in summary
 				- GP should be correct
+													- Sales return should show -ve
+				- ageing of stock summary report is not correct
+													- Optimize height of grid
 													- Show data
 													- Columns
 													- Aggregates

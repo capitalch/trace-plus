@@ -108,7 +108,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       }}
       hasCheckBoxSelection={true}
       // hasIndexColumn={true}
-      height="calc(100vh - 300px)"
+      height="calc(100vh - 290px)"
       indexColumnWidth={60}
       instance={instance}
       isLoadOnInit={false}
@@ -338,12 +338,13 @@ export function StockTransReport({ title }: { title?: string; }) {
         bColor = !bColor
         r.grossProfitSummary = r.grossProfit
         r.grossProfit = 0
+        r.index = 0
         i++
       }
       if (!_.isEmpty(r.tranType)) {
-        r.product = ''
-        r.productCode = ''
-        r.catName = ''
+        // r.product = ''
+        // r.productCode = ''
+        // r.catName = ''
         r.balance = r.balance + op
         r.index = 0
         op = r.balance

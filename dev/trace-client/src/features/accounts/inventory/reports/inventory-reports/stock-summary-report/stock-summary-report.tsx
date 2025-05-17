@@ -125,7 +125,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         }}
         hasCheckBoxSelection={true}
         hasIndexColumn={true}
-        height="calc(100vh - 300px)"
+        height="calc(100vh - 290px)"
         indexColumnWidth={60}
         instance={instance}
         isLoadOnInit={false}

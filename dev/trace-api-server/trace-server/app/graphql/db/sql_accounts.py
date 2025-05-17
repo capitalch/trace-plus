@@ -2359,7 +2359,7 @@ class SqlAccounts:
     """
 
     get_stock_trans_report = """
-			--WITH "branchId" AS (VALUES (NULL::INT)), "finYearId" AS (VALUES (2025)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (NULL::INT)), "brandId"   AS (VALUES (NULL::INT)), "tagId" AS (VALUES (NULL::INT)), "onDate"    AS (VALUES (CURRENT_DATE)), "days" AS (VALUES (0)),          
+			--WITH "branchId" AS (VALUES (NULL::INT)), "finYearId" AS (VALUES (2024)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (NULL::INT)), "brandId"   AS (VALUES (NULL::INT)), "tagId" AS (VALUES (NULL::INT)), "onDate"    AS (VALUES (CURRENT_DATE)), "days" AS (VALUES (0)),          
         with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "productCode" as (VALUES (%(productCode)s::text)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "onDate" as (values(%(onDate)s ::date)), "days" as (values(%(days)s::int)),
 			"startDate" as (select "startDate" from "FinYearM" where "id" = (table "finYearId"))
 			, "endDate" as (select "endDate" from "FinYearM" where "id" = (table "finYearId"))
@@ -2422,7 +2422,6 @@ class SqlAccounts:
                     join "CategoryM" c
                         on c."id" = p."catId"
                 where (COALESCE((TABLE "branchId"), "branchId") = "branchId")
-				 --"branchId" = (table "branchId") 
 				 and "finYearId" = (table "finYearId"))			
 			, cte22 as ( -- add lastTranPurchasePrice
 				select c2.*
@@ -2438,7 +2437,12 @@ class SqlAccounts:
 							on p."productId" = c2."productId"
 			)
 			, cte222 as ( --add gross profit
-				select cte22.*, "qty" * ("price" - COALESCE("lastTranPurchasePrice", "openingPrice")) as "grossProfit"
+				select cte22.*, 
+				CASE WHEN "tranTypeId" =  4 then "qty" * ("price" - COALESCE("lastTranPurchasePrice", "openingPrice"))
+					WHEN "tranTypeId" = 9 then -("qty" * ("price" - COALESCE("lastTranPurchasePrice", "openingPrice"))) 
+					else 0
+					end
+				as "grossProfit"
 					from cte22
 			)
             , cte3 as ( -- cte1 join cte2 for getting accountNames
@@ -2528,7 +2532,6 @@ class SqlAccounts:
                         full join "ProductOpBal" op
                             on c4."productId" = op."productId"
 								where (COALESCE((TABLE "branchId"), "branchId") = "branchId")
-				--"branchId" = (table "branchId") 
 				and  op."finYearId" = (table "finYearId")
             ),
 			cte6 as ( -- union all
@@ -2542,10 +2545,10 @@ class SqlAccounts:
 					from cte5 c5
 						join "cteProduct" p
 							on p."id" = c5."productId"
-					join "BrandM" b
-						on b."id" = p."brandId"
-					join "CategoryM" c
-						on c."id" = p."catId"
+						join "BrandM" b
+							on b."id" = p."brandId"
+						join "CategoryM" c
+							on c."id" = p."catId"
 				order by "product", "tranDate", "timestamp"
 			),
 			cte7 as ( -- calculate closing
@@ -2553,19 +2556,39 @@ class SqlAccounts:
 					from cte6 c6
 				GROUP BY "productId", "productCode", "product"
 					order by "productId"
-			), cte8 as ( -- Everything
-				select "productId", "productCode", "product","tranDate", "debits", "credits",  ("debits" - "credits") as "balance"
-				, "tranType", "price", "remarks", "timestamp", "grossProfit"
-					from cte6 c6
-				union all
-				select c7."productId", c7."productCode", c7."product", (table "endDate") as "tranDate"
-				, "debits"
-				, "credits"
-				, "balance"
-				, '' as "tranType", 0 as "price", 'Summary' as "remarks", CURRENT_TIMESTAMP as timestamp, "grossProfit"
-				from cte7 c7
-			) select * from cte8
-				order by "product","tranDate", "timestamp"
+			)
+			, cte8 as ( -- Everything
+		    select 
+		        "productId", "productCode", "product",
+		        "tranDate", "debits", "credits", 
+		        ("debits" - "credits") as "balance",
+		        "tranType", "price", "remarks", "timestamp", "grossProfit"
+		    from cte6 c6
+		    -- exclude 'Opening balance' rows where both debits and credits are 0 and no transactions exist
+		    where NOT (
+		        "remarks" = 'Opening balance'
+		        AND "debits" = 0
+		        AND "credits" = 0
+		        AND NOT EXISTS (
+		            select 1 from cte4 tx where tx."productId" = c6."productId"
+		        )
+		    )
+		    
+		    union all
+		    
+		    select 
+		        c7."productId", c7."productCode", c7."product", 
+		        (table "endDate") as "tranDate",
+		        "debits", "credits", "balance",
+		        '' as "tranType", 0 as "price", 
+		        'Summary' as "remarks", CURRENT_TIMESTAMP as timestamp, 
+		        "grossProfit"
+		    from cte7 c7
+		    where NOT (
+		        "debits" = 0 AND "credits" = 0 AND "balance" = 0
+		    ))
+			select * from cte8
+			order by "product","tranDate", "timestamp"
     """
 
     get_subledger_accounts = """
