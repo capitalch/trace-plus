@@ -110,6 +110,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
       />
 
       <CompSyncFusionGrid
+        // actionBegin={onActionBegin}
         aggregates={getAggregates()}
         allowPaging={true}
         allowTextWrap={false}
@@ -134,11 +135,16 @@ export function StockSummaryReport({ title }: { title?: string }) {
         minWidth="800px"
         onRemove={handleOnRemove}
         rowHeight={30}
+        searchFields={['productCode', 'catName', 'product']}
         queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
         onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
       />
     </div>
   );
+
+  // function onActionBegin(props: any) {
+  //   console.log(props)
+  // }
 
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
@@ -298,10 +304,10 @@ export function StockSummaryReport({ title }: { title?: string }) {
         type: "string",
       },
       {
-        field:'catName',
-        headerText:'Category',
-        width:100,
-        type:'string',
+        field: 'catName',
+        headerText: 'Category',
+        width: 100,
+        type: 'string',
         clipMode: "EllipsisWithTooltip",
       },
       {

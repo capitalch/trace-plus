@@ -21,6 +21,7 @@ import {
   VirtualScroll,
   Page
 } from "@syncfusion/ej2-react-grids";
+import _ from 'lodash'
 import { FC, useContext, useEffect, useRef } from "react";
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator";
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook";
@@ -63,7 +64,7 @@ export function CompSyncFusionGrid({
   onDelete = undefined,
   onEdit = undefined,
   onPreview = undefined,
-  onRemove ,
+  onRemove,
   onRowDataBound,
   pageSettings,
   previewColumnWidth,
@@ -71,6 +72,7 @@ export function CompSyncFusionGrid({
   removeButtonWidth = 40,
   rowHeight,
   rowSelected,
+  searchFields,
   sqlArgs,
   sqlId
 }: CompSyncFusionGridType) {
@@ -133,7 +135,8 @@ export function CompSyncFusionGrid({
   const searchOptions: SearchSettingsModel = {
     ignoreAccent: true,
     ignoreCase: true,
-    operator: "contains"
+    operator: "contains",
+    fields: _.isEmpty(searchFields) ? undefined : searchFields
   };
 
   return (
@@ -266,6 +269,7 @@ export type CompSyncFusionGridType = {
   removeButtonWidth?: number;
   rowHeight?: number;
   rowSelected?: (args: any) => void;
+  searchFields?: string[];
   sqlArgs?: GraphQLQueryArgsType; // SqlArgsType
   sqlId?: string;
 };

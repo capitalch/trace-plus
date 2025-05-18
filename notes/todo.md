@@ -75,6 +75,7 @@
 - Inventory
 													- Check - Transfer of closing balance in case of stock journal and branch transfer
 	- Reports
+		- Difference in gp between Stock Summary and Sales
 		- Stock Transactions report
 			- Startup
 			- slice
@@ -91,7 +92,7 @@
 													- Negative balance to show red when in summary
 				- GP should be correct
 													- Sales return should show -ve
-				- ageing of stock summary report is not correct
+													- ageing of stock summary report is not correct
 													- Optimize height of grid
 													- Show data
 													- Columns

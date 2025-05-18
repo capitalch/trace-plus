@@ -117,6 +117,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       minWidth="800px"
       // onRemove={handleOnRemove}
       rowHeight={35}
+      searchFields={['productCode', 'catName', 'product', 'tranType', 'remarks']}
       queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
       onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
     />

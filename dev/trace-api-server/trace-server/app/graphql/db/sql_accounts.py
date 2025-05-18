@@ -1720,7 +1720,7 @@ class SqlAccounts:
     """
 
     get_sales_report = """
-            --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2025)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "startDate" AS (VALUES ('2025-04-01' :: DATE)), "endDate" AS (VALUES ('2026-03-31' :: DATE)), "days" AS (VALUES (0)),
+            --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "startDate" AS (VALUES ('2024-04-01' :: DATE)), "endDate" AS (VALUES ('2025-03-31' :: DATE)), "days" AS (VALUES (0)),
             with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "productCode" as (VALUES (%(productCode)s::text)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "days" as (values (COALESCE(%(days)s,0))),
 
             filtered_products AS (
@@ -1808,7 +1808,7 @@ class SqlAccounts:
                     FROM "TranH" h
                     JOIN "TranD" d ON h.id = d."tranHeaderId"
                     JOIN "SalePurchaseDetails" s ON d.id = s."tranDetailsId"
-                    --left join "StockJournal" j on h.id = j."tranHeaderId"
+                    left join "StockJournal" j on h.id = j."tranHeaderId"
                     WHERE 
                         s."productId" = cs."productId"
                         AND h."tranDate" <= cs."tranDate" -- Only purchases before sale date
@@ -1905,7 +1905,6 @@ class SqlAccounts:
                 FROM "TranH" h
                 JOIN "TranD" d ON h."id" = d."tranHeaderId"
                 JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
-				--join cte_sale cs on cs."productId" = s."productId"
                 WHERE COALESCE((TABLE "branchId"), "branchId") = "branchId"
                     AND "finYearId" = (TABLE "finYearId")
                     AND h."tranDate" <= COALESCE((TABLE "endDate"), CURRENT_DATE)
@@ -1918,7 +1917,6 @@ class SqlAccounts:
                     "dc"
                 FROM "TranH" h
                 JOIN "StockJournal" s ON h."id" = s."tranHeaderId"
-				--right join cte_sale cs on cs."productId" = s."productId"
                 WHERE COALESCE((TABLE "branchId"), "branchId") = "branchId"
                     AND "finYearId" = (TABLE "finYearId")
                     AND h."tranDate" <= COALESCE((TABLE "endDate"), CURRENT_DATE)
@@ -1931,7 +1929,6 @@ class SqlAccounts:
                     'C' AS "dc"
                 FROM "TranH" h
                 JOIN "BranchTransfer" b ON h."id" = b."tranHeaderId"
-				--right join cte_sale cs on cs."productId" = b."productId"
                 WHERE COALESCE((TABLE "branchId"), "branchId") = "branchId"
                     AND "finYearId" = (TABLE "finYearId")
                     AND h."tranDate" <= COALESCE((TABLE "endDate"), CURRENT_DATE)
@@ -2027,7 +2024,7 @@ class SqlAccounts:
                         c."serialNumbers",
                         c."lastPurchasePrice",
                         c."lastPurchaseDate",
-                        c."aggrSale",
+                        --c."aggrSale",
 						c1.clos as stock,
                         CASE WHEN "tranTypeId" = 4 THEN "qty" ELSE -"qty" END AS "qty",
                         CASE WHEN "tranTypeId" = 4 THEN c."aggrSale" ELSE -c."aggrSale" END AS "aggrSale",
@@ -2114,7 +2111,7 @@ class SqlAccounts:
     """
 
     get_stock_summary_report = """
-        -- WITH "branchId" AS (VALUES (NULL::INT)), "finYearId" AS (VALUES (2025)), "catId" AS (VALUES (NULL::INT)), "brandId"   AS (VALUES (NULL::INT)), "tagId" AS (VALUES (NULL::INT)), "onDate"    AS (VALUES (CURRENT_DATE)), "days" AS (VALUES (0)), "grossProfitFilter" AS (VALUES (0)),          
+        --WITH "branchId" AS (VALUES (NULL::INT)), "finYearId" AS (VALUES (2024)), "catId" AS (VALUES (NULL::INT)), "brandId"   AS (VALUES (NULL::INT)), "tagId" AS (VALUES (NULL::INT)), "onDate"    AS (VALUES (CURRENT_DATE)), "days" AS (VALUES (0)), "grossProfitFilter" AS (VALUES (0)),          
         with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "onDate" as (values(%(onDate)s ::date)), "days" as (values(%(days)s::int)), "grossProfitFilter" as (values(%(grossProfitFilter)s::int)),
             -- ========== PRODUCT FILTER ==========
             "cteProduct" AS (
@@ -2131,7 +2128,7 @@ class SqlAccounts:
                 -- Sales & Purchases
                 SELECT 
                     h."id", "productId", "tranTypeId", "qty", 
-                    ("price" - "discount") AS "price", "discount", "tranDate", '' AS "dc"
+                    ("price" - "discount") AS "price", "tranDate", '' AS "dc"
                 FROM "TranH" h
                 JOIN "TranD" d ON h."id" = d."tranHeaderId"
                 JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
@@ -2144,7 +2141,7 @@ class SqlAccounts:
                 -- Stock Journals
                 SELECT 
                     h."id", "productId", "tranTypeId", "qty", 
-                    "price", 0 AS "discount", "tranDate", "dc"
+                    "price", "tranDate", "dc"
                 FROM "TranH" h
                 JOIN "StockJournal" s ON h."id" = s."tranHeaderId"
                 WHERE COALESCE((TABLE "branchId"), "branchId") = "branchId"
@@ -2156,7 +2153,7 @@ class SqlAccounts:
                 -- Branch Transfer Credits
                 SELECT 
                     h."id", "productId", "tranTypeId", "qty", 
-                    "price", 0 AS "discount", "tranDate", 'C' AS "dc"
+                    "price", "tranDate", 'C' AS "dc"
                 FROM "TranH" h
                 JOIN "BranchTransfer" b ON h."id" = b."tranHeaderId"
                 WHERE COALESCE((TABLE "branchId"), "branchId") = "branchId"
@@ -2168,7 +2165,7 @@ class SqlAccounts:
                 -- Branch Transfer Debits
                 SELECT 
                     h."id", "productId", "tranTypeId", "qty", 
-                    "price", 0 AS "discount", "tranDate", 'D' AS "dc"
+                    "price", "tranDate", 'D' AS "dc"
                 FROM "TranH" h
                 JOIN "BranchTransfer" b ON h."id" = b."tranHeaderId"
                 WHERE COALESCE((TABLE "branchId"), "destBranchId") = "destBranchId"
@@ -2200,6 +2197,7 @@ class SqlAccounts:
                         AND "tranDate" <= c0."tranDate"
                         AND "productId" = c0."productId"
                         AND "price" IS NOT NULL AND "price" <> 0
+						AND dc <> 'C'
                         ORDER BY "productId", "tranDate" DESC, "id" DESC
                     ) AS "lastTranPurchasePrice",
                     "openingPrice",
@@ -2214,15 +2212,15 @@ class SqlAccounts:
                 SELECT 
                     cte00.*,
                     CASE 
-                        WHEN "tranTypeId" = 4 THEN "qty" * ("price" - "discount" - COALESCE("lastTranPurchasePrice", "openingPrice", "purPrice"))
-                        WHEN "tranTypeId" = 9 THEN -"qty" * ("price" - "discount" - COALESCE("lastTranPurchasePrice", "openingPrice", "purPrice"))
+                        WHEN "tranTypeId" = 4 THEN "qty" * ("price"  - COALESCE("lastTranPurchasePrice", "openingPrice", "purPrice"))
+                        WHEN "tranTypeId" = 9 THEN -"qty" * ("price"  - COALESCE("lastTranPurchasePrice", "openingPrice", "purPrice"))
                         ELSE 0
                     END AS "grossProfit"
                 FROM cte00
             ),
 
             -- ========== AGGREGATE TRANSACTION TYPES ==========
-            cte2 AS (
+            cte22 AS (
                 SELECT 
                     "productId", "tranTypeId",
                     SUM(CASE WHEN "tranTypeId" = 4 THEN "qty" ELSE 0 END) AS "sale",
@@ -2234,17 +2232,21 @@ class SqlAccounts:
                     SUM(CASE WHEN "tranTypeId" = 12 AND "dc" = 'D' THEN "qty" ELSE 0 END) AS "branchTransferDebits",
                     SUM(CASE WHEN "tranTypeId" = 12 AND "dc" = 'C' THEN "qty" ELSE 0 END) AS "branchTransferCredits",
                     MAX(CASE WHEN "tranTypeId" = 4 THEN "tranDate" END) AS "lastSaleDate",
-                    MAX(CASE WHEN "tranTypeId" IN (5,11) THEN "tranDate" END) AS "lastPurchaseDate",
-                    SUM(
-                        CASE 
-                            WHEN "tranTypeId" = 4 THEN "grossProfit"
-                            WHEN "tranTypeId" = 9 THEN -("grossProfit")
-                            ELSE 0
-                        END
-                    ) AS "grossProfit"
+                    SUM( "grossProfit") AS "grossProfit"
                 FROM cte000
                 GROUP BY "productId", "tranTypeId"
             ),
+			cte222 as (
+				select c0."productId",
+					MAX("tranDate") AS "lastPurchaseDate"
+				FROM cte000 c0 left join cte22 c22 on c0."productId" = c22."productId"
+					where c0."tranTypeId" in(5,11) and "tranDate" <= "lastSaleDate" and dc <> 'C'
+                GROUP BY c0."productId"
+			 ),
+			cte2 as (
+				select c22.*, c222."lastPurchaseDate"
+				from cte22 as c22 left join cte222 as c222 on c22."productId" = c222."productId"
+			),
 
             -- ========== COMBINE ALL TRANSACTION TYPES ==========
             cte3 AS (
@@ -2311,15 +2313,22 @@ class SqlAccounts:
                         "stockJournalDebits" - "stockJournalCredits" + 
                         "branchTransferDebits" - "branchTransferCredits", 0
                     ) AS "clos",
-                    "grossProfit"
+                    "grossProfit",
+                    DATE_PART('day', COALESCE((TABLE "onDate"), CURRENT_DATE::timestamp) - COALESCE("lastPurchaseDate"::timestamp, (CURRENT_DATE - 360)::timestamp)  ) AS "tempAge"
                 FROM cte4 c4
                 FULL JOIN cte5 c5 ON c4."productId" = c5."productId"
                 join "ProductM" p on p.id = c4."productId"
-                WHERE date_part('day', CURRENT_DATE::timestamp - COALESCE("lastPurchaseDate"::timestamp, (CURRENT_DATE - 360)::timestamp)) >= COALESCE((TABLE "days"), 0)
+            ),
+
+            cte7 as (
+                select c6.*,
+                CASE WHEN clos = 0 THEN DATE_PART('day', COALESCE("lastSaleDate", (TABLE "onDate"), CURRENT_DATE::timestamp) - "lastPurchaseDate"::timestamp)
+                ELSE "tempAge" END as "age"
+                from cte6 c6
             ),
 
             -- ========== FINAL JOIN WITH PRODUCT INFO ==========
-            cte7 AS (
+            cte8 AS (
                 SELECT 
                     p."id" AS "productId", "productCode", "catName", "brandName", "label",
                     "brandName" || ' ' || "label" as "product",
@@ -2337,25 +2346,23 @@ class SqlAccounts:
                     COALESCE("clos", 0)::NUMERIC(10,2) AS "clos",
                     "lastPurchasePrice",
                     ("clos" * "lastPurchasePrice")::NUMERIC(12,2) AS "closValue",
-                    "lastPurchaseDate", "lastSaleDate",
-                    DATE_PART('day', COALESCE((TABLE "onDate"), CURRENT_DATE::timestamp) - "lastPurchaseDate"::timestamp) AS "age",
-                    "info", "grossProfit"
-                FROM cte6 c6
-                RIGHT JOIN "cteProduct" p ON p."id" = c6."productId"
+                    "lastPurchaseDate", "lastSaleDate", "info", "grossProfit", "age"
+                FROM cte7 c7
+                RIGHT JOIN "cteProduct" p ON p."id" = c7."productId"
                 JOIN "CategoryM" c ON c."id" = p."catId"
                 JOIN "BrandM" b ON b."id" = p."brandId"
                 WHERE NOT (
                     "clos" = 0 AND "op" = 0 AND "sale" = 0 AND "purchase" = 0 AND 
                     "saleRet" = 0 AND "purchaseRet" = 0 AND "stockJournalDebits" = 0 AND "stockJournalCredits" = 0
-                )
+                ) AND
+                GREATEST("age",0) >= COALESCE((TABLE "days"), 0)
                 ORDER BY "catName", "brandName", "label"
             )
-
-            -- ========== FINAL OUTPUT ==========
-            SELECT * FROM cte7 c7
+			
+            SELECT * FROM cte8 c8
                 where (((TABLE "grossProfitFilter") = 0)
-                OR (((TABLE "grossProfitFilter") = 1) AND c7."grossProfit" >= 0)
-                OR (((TABLE "grossProfitFilter") = -1) AND c7."grossProfit" < 0))
+                OR (((TABLE "grossProfitFilter") = 1) AND c8."grossProfit" >= 0)
+                OR (((TABLE "grossProfitFilter") = -1) AND c8."grossProfit" < 0))
     """
 
     get_stock_trans_report = """
