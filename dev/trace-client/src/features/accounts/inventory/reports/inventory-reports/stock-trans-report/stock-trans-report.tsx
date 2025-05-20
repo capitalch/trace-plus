@@ -48,9 +48,7 @@ export function StockTransReport({ title }: { title?: string; }) {
     selectedFilters.catFilterOption.selectedBrand.id,
     selectedFilters.catFilterOption.selectedCategory.id,
     selectedFilters.catFilterOption.selectedTag.id,
-    selectedFilters.ageFilterOption.selectedAge.value,
-    selectedFilters.onDate,
-    // selectedFilters.selectedGrossProfitStatus.value
+    selectedFilters.productCode
   ]);
 
   return (<div className="flex flex-col">
@@ -198,7 +196,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       {
         field: "product",
         headerText: "Product",
-        width: 300,
+        width: 350,
         type: "string",
         clipMode: "EllipsisWithTooltip",
       },
@@ -239,7 +237,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       {
         field: "tranType",
         headerText: "Tr Type",
-        width: 70,
+        width: 100,
         type: "string",
       },
       {
@@ -264,7 +262,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       {
         field: "remarks",
         headerText: "Remarks",
-        width: 350,
+        width: 450,
         type: "string",
         clipMode: 'EllipsisWithTooltip'
       },
@@ -308,18 +306,16 @@ export function StockTransReport({ title }: { title?: string; }) {
             ? null
             : state.login.currentBranch?.branchId,
           finYearId: finYearId,
-          productCode: null,
+          productCode: selectedFiltersState.productCode,
           brandId:
             selectedFiltersState.catFilterOption.selectedBrand?.id || null,
           catId:
             selectedFiltersState.catFilterOption.selectedCategory?.id || null,
           tagId: selectedFiltersState.catFilterOption.selectedTag?.id || null,
-          onDate: selectedFiltersState.onDate,
-          days: selectedFiltersState.ageFilterOption.selectedAge?.value || 0,
+          
         },
       });
       processRowsData(rowsData)
-      // setRowsData(rowsData);
     } catch (e: any) {
       console.log(e);
     }
@@ -343,9 +339,6 @@ export function StockTransReport({ title }: { title?: string; }) {
         i++
       }
       if (!_.isEmpty(r.tranType)) {
-        // r.product = ''
-        // r.productCode = ''
-        // r.catName = ''
         r.balance = r.balance + op
         r.index = 0
         op = r.balance

@@ -1,15 +1,15 @@
-import { format } from "date-fns";
-import { AgeType, BrandType, CategoryType, TagType } from "../../../shared-definitions";
+// import { format } from "date-fns";
+import { BrandType, CategoryType, TagType } from "../../../shared-definitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: StockTransReportInitialStateType = {
+  filterMode: 'category',
   catFilterOption: {
     selectedCategory: { catName: "All", id: "" },
     selectedBrand: { brandName: "All", id: null },
     selectedTag: { id: null, tagName: "All" },
   },
-  ageFilterOption: { selectedAge: { value: null, label: "All" } },
-  onDate: format(new Date(), "yyyy-MM-dd"),
+  productCode: null,
 };
 
 const stockTransReportSlice = createSlice({
@@ -26,12 +26,7 @@ const stockTransReportSlice = createSlice({
         action.payload.catFilterOption.selectedBrand;
       state.catFilterOption.selectedTag =
         action.payload.catFilterOption.selectedTag;
-
-      state.ageFilterOption.selectedAge =
-        action.payload.ageFilterOption.selectedAge;
-
-      state.onDate = action.payload.onDate;
-
+      state.productCode = action.payload.productCode;
     },
   },
 });
@@ -39,14 +34,12 @@ const stockTransReportSlice = createSlice({
 export const stockTransReportReducer = stockTransReportSlice.reducer;
 export const { setStockTransReportFilters } = stockTransReportSlice.actions;
 
-type StockTransReportInitialStateType = {
+export type StockTransReportInitialStateType = {
+  filterMode: "category" | "productCode";
   catFilterOption: {
     selectedCategory: CategoryType;
     selectedBrand: BrandType;
     selectedTag: TagType;
   };
-  ageFilterOption: {
-    selectedAge: AgeType;
-  };
-  onDate: string;
+  productCode: string | null;
 };

@@ -57,25 +57,6 @@ export function CompReactSelect({
     );
     selectRef.current.setValue(selectedOption);
   }
-
-  // function getStyles() {
-  //   return {
-  //     input: (base: any) => ({
-  //       ...base,
-  //       minWidth: "15rem",
-  //       "input:focus": {
-  //         boxShadow: "none"
-  //       }
-  //     }),
-  //     option: (defaultStyles: any) => ({
-  //       ...defaultStyles,
-  //       paddingTop: "4px",
-  //       paddingBottom: "4px",
-  //       paddingLeft: "10px",
-  //       fontSize: "14px"
-  //     })
-  //   };
-  // }
 }
 
 type CompReactSelectType = {

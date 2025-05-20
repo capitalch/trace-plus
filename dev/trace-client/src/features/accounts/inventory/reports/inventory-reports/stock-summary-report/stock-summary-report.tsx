@@ -142,10 +142,6 @@ export function StockSummaryReport({ title }: { title?: string }) {
     </div>
   );
 
-  // function onActionBegin(props: any) {
-  //   console.log(props)
-  // }
-
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
       {

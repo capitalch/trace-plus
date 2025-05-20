@@ -1,18 +1,40 @@
-## Home pc setup
-			- Anydesk
-			- sublime text
-			- git
-			- Python
-			- cmder
-			- winrar
-			- NVIDIA
-			- Node
-			- pgadmin
-			- NVM
-			- Code
-			- Copy project folders
-			- softwares copy
-			- backups copy
+## Logic for checking gp in all reports: SR,SSR, TSR reports
+					- Sale transaction of a product in profit
+						- SR, SSR and TSR OK in Trace+
+			- Repeat sales with discount
+				- *** SSR problem in Trace when sold with discount in sales ***
+				- All reports in Trace+ OK
+					- Do a purchase with discount and corresponding sale
+						- OK
+					- Sale transaction of a product incurring loss
+						- OK
+			- Sale transaction of a product incurring loss also add sales discount
+				- *** SSR problem in Trace  ***
+					- Normal sales return
+						- ** Trace: SR: Ok SSR: Error TSR: Error **
+						- Trace+  : Ok
+					- Sales return with discount
+						- ** Trace: SR: OK, SSR: Error, TSR: Error **
+						- Trace+: All OK
+	- Stock journal of a product before sale
+		- Trace: All OK
+		- Trace+: All OK
+		- Sale of the debited product 
+			- After stock journal date
+				Trace: SR: OK, SSR: Error in GP, TSR: Error in GP
+				Trace+: All OK
+			- Before stock journal date
+				Trace: SR: Tran not showing, SSR: OK, TSR: OK
+				Trace+: SR: Ok, SSR: OK, TSR: OK
+		- Sale of credited product
+			- After stock journal date
+				Trace: SR: Ok, SSR: Error, TSR: OK
+				Trace+: OK
+			- Before stock journal date
+				Trace: Ok
+				Trace+: Ok
+	
+	- Branch transfer
 ## Bug fix
 	- Accounts
 		- Categories: Change parent UI out of place
@@ -65,6 +87,9 @@
 	- current order report: set to place the order to supplier through mail, whatsapp
 	- When BU changes, Branches remain of the old BU. So error and system crash
 	- Validation for stock Journal: dealerPrice or purPrice for the output product must be there. Don't allow to make purPrice as 0 when the product is in stockJournal output
+	- In new product registration UPC is mandatory, which should not
+	- Product label is not allowing + symbol. It should allow that
+	- Product Code in Stock Journal report missing
 	- Update function get_stock_on_date in all databases
 													- Inventory transfer closing balance to next year
 													- Migrate to tailwind latest version
@@ -73,13 +98,15 @@
 													- No green background for altered data
 													- Super admin new client registration error: finYearId
 - Inventory
+													- Fix the code for Branch transfer in respect of react-select
 													- Check - Transfer of closing balance in case of stock journal and branch transfer
 	- Reports
 		- Difference in gp between Stock Summary and Sales
 		- Stock Transactions report
-			- Startup
-			- slice
-			- SQL
+			- Branch transfer tran is not visible
+													- Startup
+													- slice
+													- SQL
 			- Branch validations
 			- Filter display
 				- Filter control

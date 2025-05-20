@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { FormField } from "../../../../../controls/widgets/form-field";
 import { Messages } from "../../../../../utils/messages";
-import { CompReactSelect } from "../../../../../controls/components/comp-react-select";
+import Select from "react-select";
 import { IconReset } from "../../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../../controls/icons/icon-submit";
 import { useFormContext } from "react-hook-form";
@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BranchTransferType } from "./products-branch-transfer-main";
 import _ from "lodash";
+import { Utils } from "../../../../../utils/utils";
 
 export function ProductsBranchTransferHeader() {
   const { branchId } = useUtilsInfo();
@@ -36,6 +37,7 @@ export function ProductsBranchTransferHeader() {
 
   return (
     <div className="flex items-center align-middle gap-2 flex-wrap">
+
       {/* Auto ref no */}
       <FormField label="Auto ref no" className="w-52 ">
         <input
@@ -76,16 +78,17 @@ export function ProductsBranchTransferHeader() {
         required
         error={errors.destBranchId?.message}
       >
-        <CompReactSelect
+        <Select
+          className="mt-1 w-full"
           menuPlacement="auto"
-          optionLabelName="branchName"
-          optionValueName="branchId"
-          placeHolder="Select dest branch ..."
+          getOptionLabel={(option: any) => option.branchName}
+          getOptionValue={(option: any) => option.branchId}
+          placeholder='Select dest branch ...'
           {...register("destBranchId", { required: Messages.errRequired })}
           onChange={handleOnChangeDestBranch}
-          ref={null}
-          staticOptions={availableDestBranches || []}
-          selectedValue={watch("destBranchId")}
+          options={availableDestBranches || []}
+          styles={Utils.getReactSelectStyles()}
+          value={selectedBranch()}
         />
       </FormField>
 
@@ -137,5 +140,11 @@ export function ProductsBranchTransferHeader() {
       setValue("destBranchId", selectedBranch?.branchId, { shouldDirty: true });
       clearErrors("destBranchId");
     }
+  }
+
+  function selectedBranch() {
+    const destBranchId = watch("destBranchId")
+    const sb = availableDestBranches.find((branch: BranchType) => branch.branchId === destBranchId)
+    return (sb)
   }
 }
