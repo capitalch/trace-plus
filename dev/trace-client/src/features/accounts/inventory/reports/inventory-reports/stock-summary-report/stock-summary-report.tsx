@@ -110,7 +110,6 @@ export function StockSummaryReport({ title }: { title?: string }) {
       />
 
       <CompSyncFusionGrid
-        // actionBegin={onActionBegin}
         aggregates={getAggregates()}
         allowPaging={true}
         allowTextWrap={false}

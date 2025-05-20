@@ -13,6 +13,7 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { format } from "date-fns";
 import _ from 'lodash';
 import { QueryCellInfoEventArgs, RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
+import { StockTransReportFilterControl } from "./stock-trans-report-filter-control";
 
 export function StockTransReport({ title }: { title?: string; }) {
 
@@ -58,7 +59,7 @@ export function StockTransReport({ title }: { title?: string; }) {
           {/* <StockSummaryReportToolbarFilterDisplay /> */}
           <button
             type="button"
-            // onClick={handleOnClickFilter}
+            onClick={handleOnClickFilter}
             className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
           >
             Filter
@@ -268,6 +269,15 @@ export function StockTransReport({ title }: { title?: string; }) {
       },
     ]
   }
+
+  function handleOnClickFilter() {
+      Utils.showHideModalDialogA({
+        isOpen: true,
+        size: "md",
+        title: "Stock Transactions Report Filter",
+        element: <StockTransReportFilterControl />,
+      });
+    }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
     const rowData = args.data as RowDataType;

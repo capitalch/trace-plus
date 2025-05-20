@@ -400,6 +400,7 @@ export function SalesReportFilterControl() {
             }
         }
     }
+    
     function setDateRange(selected: any) {
         let dateRange: { startDate: string, endDate: string }
         if (Utils.isNumeric(selected.value)) {
