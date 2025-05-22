@@ -1,3 +1,5 @@
+## cloudjiffy
+entry point: /usr/lib/systemd/systemd
 ## Logic for checking gp in all reports: SR,SSR, TSR reports
 					- Sale transaction of a product in profit
 						- SR, SSR and TSR OK in Trace+

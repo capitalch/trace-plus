@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import _ from 'lodash';
 import { QueryCellInfoEventArgs, RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { StockTransReportFilterControl } from "./stock-trans-report-filter-control";
+import { StockTransReportToolbarFilterDisplay } from "./stock-trans-report-toolbar-filter-display";
 
 export function StockTransReport({ title }: { title?: string; }) {
 
@@ -56,7 +57,7 @@ export function StockTransReport({ title }: { title?: string; }) {
     <CompSyncFusionGridToolbar
       CustomControl={() => (
         <div className="flex items-center gap-2">
-          {/* <StockSummaryReportToolbarFilterDisplay /> */}
+          <StockTransReportToolbarFilterDisplay />
           <button
             type="button"
             onClick={handleOnClickFilter}
@@ -305,7 +306,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       const isAllBranchesState = state.reduxComp.compSwitch[instance];
       const selectedFiltersState = state.stockTransReport;
 
-      const rowsData: RowDataType[] = await Utils.doGenericQuery({
+      const rowsData: RowDataType[] =  await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",
         dbParams: decodedDbParamsObject,
@@ -316,13 +317,12 @@ export function StockTransReport({ title }: { title?: string; }) {
             ? null
             : state.login.currentBranch?.branchId,
           finYearId: finYearId,
-          productCode: selectedFiltersState.productCode,
+          productCode: selectedFiltersState.productCode || null,
           brandId:
             selectedFiltersState.catFilterOption.selectedBrand?.id || null,
           catId:
             selectedFiltersState.catFilterOption.selectedCategory?.id || null,
           tagId: selectedFiltersState.catFilterOption.selectedTag?.id || null,
-          
         },
       });
       processRowsData(rowsData)

@@ -61,10 +61,12 @@ export function StockTransReportFilterControl() {
   }, [brandOptions, tagOptions]);
 
   setCategory();
-  
+
   return (<div className="p-4 space-y-6 bg-white rounded shadow-sm h-[415px]">
 
-    {/* Buttons */}
+    {/* Buttons + filter mode toggle */}
+
+    {/*  Reset */}
     <div className="flex justify-between items-center">
       <button
         type="button"
@@ -89,6 +91,7 @@ export function StockTransReportFilterControl() {
         <span>Filter by Product Code</span>
       </label>
 
+      {/* Apply filters */}
       <button
         type="button"
         onClick={handleApplyFilters}
@@ -206,31 +209,31 @@ export function StockTransReportFilterControl() {
   }
 
   function handleOnChangeBrand(selected: BrandType | null) {
-        pre.catFilterOption.selectedBrand = selected || brandOptions[0];
-        pre.catFilterOption.selectedTag = tagOptions[0];
-        pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
-        setRefresh({});
-    }
+    pre.catFilterOption.selectedBrand = selected || brandOptions[0];
+    pre.catFilterOption.selectedTag = tagOptions[0];
+    pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
+    setRefresh({});
+  }
 
   function handleOnChangeCategory(e: DdtSelectEventArgs) {
-        const item: any = e.itemData;
-        pre.catFilterOption.selectedCategory = {
-            id: item.id,
-            catName: item.text
-        }
-        if (e.isInteracted) {
-            pre.catFilterOption.selectedTag = tagOptions[0];
-            pre.catFilterOption.selectedBrand = brandOptions[0];
-            setRefresh({});
-        }
+    const item: any = e.itemData;
+    pre.catFilterOption.selectedCategory = {
+      id: item.id,
+      catName: item.text
     }
+    if (e.isInteracted) {
+      pre.catFilterOption.selectedTag = tagOptions[0];
+      pre.catFilterOption.selectedBrand = brandOptions[0];
+      setRefresh({});
+    }
+  }
 
-    function handleOnChangeTag(selected: TagType | null) {
-        pre.catFilterOption.selectedBrand = brandOptions[0];
-        pre.catFilterOption.selectedTag = selected || tagOptions[0];
-        pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
-        setRefresh({});
-    }
+  function handleOnChangeTag(selected: TagType | null) {
+    pre.catFilterOption.selectedBrand = brandOptions[0];
+    pre.catFilterOption.selectedTag = selected || tagOptions[0];
+    pre.catFilterOption.selectedCategory = { catName: 'All', id: '' }
+    setRefresh({});
+  }
 
   function handleResetFilters() {
     pre.filterMode = "category";
@@ -288,15 +291,15 @@ export function StockTransReportFilterControl() {
   }
 
   function setCategory() {
-        if (catRef.current) {
-            if (_.isEmpty(pre.catFilterOption.selectedCategory)) {
-                catRef.current.value = [""];
-            } else {
-                catRef.current.value = [pre.catFilterOption.selectedCategory.id];
-                catRef.current.ensureVisible(pre.catFilterOption.selectedCategory.id);
-            }
-        }
+    if (catRef.current) {
+      if (_.isEmpty(pre.catFilterOption.selectedCategory)) {
+        catRef.current.value = [""];
+      } else {
+        catRef.current.value = [pre.catFilterOption.selectedCategory.id];
+        catRef.current.ensureVisible(pre.catFilterOption.selectedCategory.id);
+      }
     }
+  }
 }
 
 type JsonResultType = {

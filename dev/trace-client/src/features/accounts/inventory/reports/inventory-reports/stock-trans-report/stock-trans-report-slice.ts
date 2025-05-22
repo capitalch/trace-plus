@@ -20,6 +20,7 @@ const stockTransReportSlice = createSlice({
       state: StockTransReportInitialStateType,
       action: PayloadAction<StockTransReportInitialStateType>
     ) => {
+      state.filterMode = action.payload.filterMode
       state.catFilterOption.selectedCategory =
         action.payload.catFilterOption.selectedCategory;
       state.catFilterOption.selectedBrand =
