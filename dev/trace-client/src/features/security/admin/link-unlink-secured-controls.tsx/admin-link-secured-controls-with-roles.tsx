@@ -200,7 +200,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 const parentItem = targetRowData.parentItem
                 expandedKeys.push(parentItem.pkey)
             }
-            context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys
+            context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = new Set(expandedKeys)
         }
 
     }

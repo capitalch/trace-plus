@@ -88,5 +88,6 @@ export type SlidingPaneMapType = {
     },
     reportAllTransactionsFilter: {
         content: FC<any>
-    }
+    },
+    [key: string]: any
 }

@@ -19,7 +19,7 @@ export function NavBar() {
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
     const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
 
-    const SlidingPaneChildComp: FC<any>  = SlidingPaneMap[identifier]?.content
+    const SlidingPaneChildComp: FC<any>  = SlidingPaneMap[identifier]?.content 
     const slidingPaneChildCompProps: any = SlidingPaneMap[identifier]?.props
     
     return (

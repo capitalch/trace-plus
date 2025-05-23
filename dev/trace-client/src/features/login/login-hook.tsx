@@ -34,6 +34,7 @@ function useLogin(setValue: any) {
     }
 
     async function onSubmit(data: any) {
+        // console.log('Login data:', data)
         const hostUrl = Utils.getHostUrl()
         const loginUrl = urlJoin(hostUrl, 'login')
         try {
@@ -49,6 +50,7 @@ function useLogin(setValue: any) {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 },
             })
+            // console.log('Login response:', ret)
             const accessToken: string = ret?.data?.accessToken
             const payloadData: LoginType = ret?.data?.payload
             if (accessToken) {

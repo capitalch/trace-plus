@@ -1,0 +1,8 @@
+{
+    "python.languageServer": "Pylance",
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": true
+    }
+}
