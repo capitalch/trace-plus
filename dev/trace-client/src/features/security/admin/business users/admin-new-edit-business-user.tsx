@@ -199,7 +199,7 @@ export function AdminNewEditBusinessUser({
             await loadData()
             Utils.showSaveMessage();
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 
@@ -248,7 +248,7 @@ export function AdminNewEditBusinessUser({
             }
             return ret;
         } catch (e: any) {
-            console.log(e?.message);
+            console.log(e);
         }
     }
 }

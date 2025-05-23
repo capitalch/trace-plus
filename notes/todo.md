@@ -1,5 +1,9 @@
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd
+
+## Deployment
+- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
+- Trace+ logo is not coming
 ## Logic for checking gp in all reports: SR,SSR, TSR reports
 					- Sale transaction of a product in profit
 						- SR, SSR and TSR OK in Trace+
@@ -99,27 +103,27 @@ entry point: /usr/lib/systemd/systemd
 													- Behave erratic while saving
 													- No green background for altered data
 													- Super admin new client registration error: finYearId
-- Inventory
+										- Inventory
 													- Fix the code for Branch transfer in respect of react-select
 													- Check - Transfer of closing balance in case of stock journal and branch transfer
-	- Reports
-		- Difference in gp between Stock Summary and Sales
-		- Stock Transactions report
-			- Branch transfer tran is not visible
+											- Reports
+												- Difference in gp between Stock Summary and Sales
+												- Stock Transactions report
+													- Branch transfer tran is not visible
 													- Startup
 													- slice
 													- SQL
-			- Branch validations
-			- Filter display
-				- Filter control
-			- Grid
-				- Index numbers to show blank for same index
+													- Branch validations
+												- Filter display
+													- Filter control
+												- Grid
+													- Index numbers to show blank for same index
 													- Pr code to show blank in repeat
 													- 0 debits and credits to be blank
 													- Opening balance row
 													- Summary row
 													- Negative balance to show red when in summary
-				- GP should be correct
+													- GP should be correct
 													- Sales return should show -ve
 													- ageing of stock summary report is not correct
 													- Optimize height of grid

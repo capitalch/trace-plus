@@ -100,16 +100,6 @@ export function StockJournalHeader({ instance }: { instance: string }) {
         >
           <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
         </button>
-        {/* <button
-          onClick={() => {
-            console.log(isDirty);
-            console.log(isSubmitting);
-            console.log(errors);
-          }}
-          type="button"
-        >
-          Test
-        </button> */}
       </div>
     </div>
   );

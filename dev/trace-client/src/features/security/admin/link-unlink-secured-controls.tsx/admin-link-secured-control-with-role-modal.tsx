@@ -94,7 +94,7 @@ export function AdminLinkSecuredControlWithRoleModal({ roleId, instance }: Admin
             context.CompSyncFusionTreeGrid[instance].loadData();
             Utils.showSaveMessage();
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 }

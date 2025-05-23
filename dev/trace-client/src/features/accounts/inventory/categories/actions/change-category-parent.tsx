@@ -20,7 +20,6 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         , decodedDbParamsObject
     } = useUtilsInfo()
 
-    console.log(catId)
     return (<div className="flex flex-col">
         <CompSyncFusionTreeGridToolbar
             CustomControl={() => <button className="px-2 py-1 bg-primary-400 text-gray-100 rounded-md hover:bg-primary-800 hover:text-white text-xs" onClick={handleNoParent}>No parent</button>}

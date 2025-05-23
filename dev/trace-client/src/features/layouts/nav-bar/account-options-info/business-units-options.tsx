@@ -54,7 +54,6 @@ export function BusinessUnitsOptions() {
             return
         }
         try {
-            console.log('loginInfo', loginInfo)
             const q = GraphQLQueriesMap.genericQuery(dbName, {
                 buCode: loginInfo.currentBusinessUnit?.buCode,
                 dbParams: dbParamsObject,
@@ -62,7 +61,6 @@ export function BusinessUnitsOptions() {
                 sqlArgs: {}
             });
             const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
-            console.log('res', res)
             const result: any = res?.data?.genericQuery?.[0]?.jsonResult
             if (result) {
                 dispatch(setFinYearsBranchesAccSettings({ accSettings: result?.allSettings, finYears: result.allFinYears, branches: result.allBranches }))
@@ -72,7 +70,7 @@ export function BusinessUnitsOptions() {
             // navigate('/')
             // dispatch(setSideBarSelectedChildId({ id: '0' }))
         } catch (e: any) {
-            console.log(e?.message)
+            console.log(e)
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errFailFetchingDataFromAccounts })
             dispatch(doLogout())
         }

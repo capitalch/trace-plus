@@ -177,7 +177,7 @@ export function AdminLinkUsersWithBu() {
                     sourceGridRef.current.clearSelection() /// clear selection of source grid
                 }
             } catch (e: any) {
-                console.log(e.message);
+                console.log(e);
             }
         }
 
@@ -308,7 +308,7 @@ export function AdminLinkUsersWithBu() {
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messUserUnlinkedSuccess);
                 } catch (e: any) {
-                    console.log(e?.message)
+                    console.log(e)
                 }
             }
         )
@@ -330,7 +330,7 @@ export function AdminLinkUsersWithBu() {
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messBusinessUsersUnlinkSuccess);
                 } catch (e: any) {
-                    console.log(e?.message)
+                    console.log(e)
                 }
             }
         )

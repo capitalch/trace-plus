@@ -123,9 +123,6 @@ export function CompSyncFusionGrid({
     }
     context.CompSyncFusionGrid[instance].loadData = loadData || loadDataLocal;
     context.CompSyncFusionGrid[instance].gridRef = gridRef;
-    return () => {
-      console.log("Syncfusion cleanup");
-    };
   }, []);
 
   if (loading) {

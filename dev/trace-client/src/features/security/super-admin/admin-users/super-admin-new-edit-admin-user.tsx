@@ -183,7 +183,7 @@ export function SuperAdminNewEditAdminUser({
             context.CompSyncFusionGrid[dataInstance].loadData();
             Utils.showSaveMessage();
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 
@@ -234,7 +234,7 @@ export function SuperAdminNewEditAdminUser({
             }
             return (ret)
         } catch (e: any) {
-            console.log(e?.message)
+            console.log(e)
         }
     }
 }

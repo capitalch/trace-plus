@@ -220,7 +220,6 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
   }
 
   async function handleOnEdit(props: any) {
-    console.log(props);
     dispatch(
       setActiveTabIndex({
         instance: instance,

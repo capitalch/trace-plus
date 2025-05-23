@@ -5,7 +5,6 @@ import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-
 import jsonData from './secured-controls.json'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-// import { GlobalContext } from "../../../../App";
 
 export function SuperAdminNewSecuredControlButtons({ dataInstance }: { dataInstance: string }) {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -23,7 +22,7 @@ export function SuperAdminNewSecuredControlButtons({ dataInstance }: { dataInsta
             await Utils.mutateGraphQL(q, queryName);
             context.CompSyncFusionGrid[dataInstance].loadData()
         } catch (e: any) {
-            console.log(e.message)
+            console.log(e)
         }
     }
 

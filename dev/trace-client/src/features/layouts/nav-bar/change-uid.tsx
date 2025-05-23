@@ -166,7 +166,7 @@ export function ChangeUid() {
             }
             return ret;
         } catch (e: any) {
-            console.log(e?.message);
+            console.log(e);
         }
     }
 }

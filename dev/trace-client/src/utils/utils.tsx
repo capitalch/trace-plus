@@ -16,6 +16,7 @@ import {
 } from "../features/login/login-slice";
 import {
   GraphQLQueriesMap,
+  GraphQLQueriesMapNames,
   GraphQLUpdateArgsType
 } from "../app/graphql/maps/graphql-queries-map";
 import { showCompAppLoader } from "../controls/redux-components/comp-slice";
@@ -131,7 +132,7 @@ function addUniqueKeysToJson(data: any) {
 
 async function decodeExtDbParams(encodedDbParams: string) {
   const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams);
-  const qName = GraphQLQueriesMap.decodeExtDbParams.name;
+  const qName = GraphQLQueriesMapNames.decodeExtDbParams;
   try {
     const res: any = await Utils.queryGraphQL(q, qName);
     const dbParamsString = res?.data?.[qName];

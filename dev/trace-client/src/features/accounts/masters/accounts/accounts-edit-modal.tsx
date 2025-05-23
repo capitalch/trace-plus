@@ -197,12 +197,3 @@ type ParentOptionsType = {
     accType: 'A' | 'L' | 'E' | 'I'
     fullName: string
 }
-
-// console.log(selectedParent)
-// const xData: XDataObjectType = {
-//     accCode: data.accountCode,
-//     accName: data.accountName,
-//     parentId: selectedParent?.accId,
-//     accId: accId,
-//     accLeaf: accLeaf
-// }

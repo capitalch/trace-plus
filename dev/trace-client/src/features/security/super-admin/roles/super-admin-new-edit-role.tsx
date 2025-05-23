@@ -118,7 +118,7 @@ export function SuperAdminNewEditRole({
             context.CompSyncFusionGrid[dataInstance].loadData();
             Utils.showSaveMessage()
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 

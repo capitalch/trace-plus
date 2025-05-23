@@ -166,9 +166,8 @@ export function CompSyncfusionTreeGrid({
         </div>
     )
 
-    function handleScroll(args: any) {
+    function handleScroll() {
         Utils.treeGridUtils.saveScrollPos(context, instance)
-        console.log(args)
     }
 
     function onRowCollapsed(args: any) {

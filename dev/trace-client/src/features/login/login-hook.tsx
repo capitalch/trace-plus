@@ -28,13 +28,10 @@ function useLogin(setValue: any) {
         } else if (userType === UserTypesEnum.Admin) {
             setValue('username', 'capital')
             setValue('password', 'su$hant123')
-        } else if (userType === UserTypesEnum.BusinessUser) {
-            console.log('')
         }
     }
 
     async function onSubmit(data: any) {
-        // console.log('Login data:', data)
         const hostUrl = Utils.getHostUrl()
         const loginUrl = urlJoin(hostUrl, 'login')
         try {
@@ -50,7 +47,6 @@ function useLogin(setValue: any) {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 },
             })
-            // console.log('Login response:', ret)
             const accessToken: string = ret?.data?.accessToken
             const payloadData: LoginType = ret?.data?.payload
             if (accessToken) {

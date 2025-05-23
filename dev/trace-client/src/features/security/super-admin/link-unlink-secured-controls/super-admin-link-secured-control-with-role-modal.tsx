@@ -94,7 +94,7 @@ export function SuperAdminLinkSecuredControlWithRoleModal({ roleId, instance }: 
             await context.CompSyncFusionTreeGrid[instance].loadData();
             Utils.showSaveMessage();
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 }

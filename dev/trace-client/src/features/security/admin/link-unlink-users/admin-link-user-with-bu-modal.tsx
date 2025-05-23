@@ -94,7 +94,7 @@ export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModal
             context.CompSyncFusionTreeGrid[instance].loadData();
             Utils.showSaveMessage();
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 }

@@ -4,6 +4,25 @@ import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enum
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../global-constants'
 import { DocumentNode } from 'graphql'
 
+export const GraphQLQueriesMapNames = {
+  accountsMaster: 'accountsMaster',
+  accountsOpeningBalance: 'accountsOpeningBalance',
+  balanceSheetProfitLoss: 'balanceSheetProfitLoss',
+  changePwd: 'changePwd',
+  changeUid: 'changeUid',
+  createBu: 'createBu',
+  decodeExtDbParams: 'decodeExtDbParams',
+  genericQuery: 'genericQuery',
+  genericUpdate: 'genericUpdate',
+  genericUpdateQuery: 'genericUpdateQuery',
+  importSecuredControls: 'importSecuredControls',
+  productCategories: 'productCategories',
+  trialBalance: 'trialBalance',
+  updateClient: 'updateClient',
+  updateUser: 'updateUser',
+  hello: 'hello'
+}
+
 export const GraphQLQueriesMap: GraphQLQueriesMapType = {
   accountsMaster: accountsMaster,
   accountsOpeningBalance: accountsOpeningBalance,

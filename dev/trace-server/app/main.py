@@ -40,7 +40,7 @@ app.add_exception_handler(AppHttpException, app_http_exception_handler)
 logging.info("Server started")
 
 
-@app.route("/graphql/", methods=["POST", "GET"])
+@app.route("/graphql/", methods=["POST"])
 async def graphql(request: Request):
     # Handle token verification over here. It does not work in middleware
     # if valid token then proceed

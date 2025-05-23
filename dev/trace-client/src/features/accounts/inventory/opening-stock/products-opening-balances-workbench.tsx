@@ -346,7 +346,6 @@ export function ProductsOpeningBalancesWorkBench() {
         } catch (e: any) {
             console.log(e)
         }
-        console.log(data)
     }
 
     function resetBrandsOptions() {

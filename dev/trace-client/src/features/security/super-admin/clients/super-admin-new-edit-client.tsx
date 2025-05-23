@@ -165,7 +165,7 @@ export function SuperAdminNewEditClient({
             })
             context.CompSyncFusionGrid[dataInstance].loadData()
         } catch (e: any) { // Error handling allready done in mutateGraphQL
-            console.log(e.message)
+            console.log(e)
         }
     }
 

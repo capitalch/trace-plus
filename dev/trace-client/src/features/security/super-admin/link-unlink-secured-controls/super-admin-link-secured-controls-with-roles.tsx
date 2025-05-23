@@ -181,7 +181,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     sourceGridRef.current.clearSelection() /// clear selection of source grid
                 }
             } catch (e: any) {
-                console.log(e.message);
+                console.log(e);
             }
         }
 
@@ -295,7 +295,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
-                    console.log(e?.message)
+                    console.log(e)
                 }
             }
         )
@@ -317,7 +317,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
-                    console.log(e?.message)
+                    console.log(e)
                 }
             }
         )

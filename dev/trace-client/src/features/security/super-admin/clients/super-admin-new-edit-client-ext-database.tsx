@@ -304,7 +304,6 @@ export function SuperAdminNewEditClientExtDatabase({
         setValue('port', dbParams?.port)
         setValue('user', dbParams?.user)
         setValue('url', dbParams?.url)
-        console.log('dbParams:', dbParams)
     }
 
     async function handleTestDbConnection() {
@@ -334,7 +333,7 @@ export function SuperAdminNewEditClientExtDatabase({
             }
         } catch (e: any) {
             Utils.showFailureAlertMessage({ message: Messages.messDbConnFailure, title: Messages.messFailure })
-            console.log(e.message)
+            console.log(e)
         }
     }
 
@@ -380,7 +379,7 @@ export function SuperAdminNewEditClientExtDatabase({
             })
             context.CompSyncFusionGrid[dataInstance].loadData()
         } catch (e: any) { // Error handling allready done in mutateGraphQL
-            console.log(e.message)
+            console.log(e)
         }
     }
 

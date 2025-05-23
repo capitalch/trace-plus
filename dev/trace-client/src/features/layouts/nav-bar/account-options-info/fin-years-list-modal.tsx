@@ -81,7 +81,7 @@ export function FinYearsListModal() {
             Utils.showHideModalDialogA({ isOpen: false });
             Utils.showSuccessAlertMessage({ title: 'Ok', message: Messages.messFinYearSuccessfullySelected });
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 }

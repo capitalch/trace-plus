@@ -23,7 +23,7 @@ export function FinYearsOptions() {
     return (
         <div className="ml-4 flex items-center">
             {/* Plus */}
-            <button onClick={handleOnClickPlus}>
+            <button onClick={handleOnClickPlus} title="Next Financial Year" className="ml-1" type="button">
                 <IconPlusCircle className="h-7 w-7" />
             </button>
             {/* Financial year */}
@@ -37,7 +37,7 @@ export function FinYearsOptions() {
             text-sm font-medium">{`${currentFinYear?.finYearId} (${formattedStartDate} - ${formattedEndDate})`}</span>
             </button>
             {/* minus */}
-            <button onClick={handleOnClickMinus} className="ml-1">
+            <button onClick={handleOnClickMinus} className="ml-1" type="button" title="Previous Financial Year">
                 <IconMinusCircle className="h-7 w-7" />
             </button>
         </div>)
@@ -97,7 +97,7 @@ export function FinYearsOptions() {
             Utils.showHideModalDialogA({ isOpen: false });
             Utils.showSuccessAlertMessage({ title: 'Ok', message: Messages.messFinYearSuccessfullyChanged });
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 

@@ -186,7 +186,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     sourceGridRef.current.clearSelection() /// clear selection of source grid
                 }
             } catch (e: any) {
-                console.log(e.message);
+                console.log(e);
             }
         }
 
@@ -255,7 +255,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         let ret = <></>
         if ((props.level === 0)) {
             ret = <TooltipComponent content={Messages.messAutoLinkBuiltinRoles}>
-                <button onClick={() => handleOnClickAutoLinkFromBuiltinRoles(props)}>
+                <button onClick={() => handleOnClickAutoLinkFromBuiltinRoles(props)} type="button" title="Auto link from built-in roles">
                     <IconAutoLink className="w-5 h-5 ml-4 text-teal-500"></IconAutoLink></button>
             </TooltipComponent>
         }
@@ -274,11 +274,11 @@ export function AdminLinkSecuredControlsWithRoles() {
         let ret = null
         if (props.level === 0) {
             ret = <TooltipComponent content={Messages.messLinkSecuredControl}>
-                <button onClick={() => handleOnClickLink(props)}><IconLink className="w-5 h-5 ml-2 text-blue-500"></IconLink></button>
+                <button type="button" title="link" onClick={() => handleOnClickLink(props)}><IconLink className="w-5 h-5 ml-2 text-blue-500"></IconLink></button>
             </TooltipComponent>
         } else {
             ret = <TooltipComponent content={Messages.messUnlinkSecuredControl}>
-                <button onClick={() => handleOnClickUnlink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+                <button type='button' title="link" onClick={() => handleOnClickUnlink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)
@@ -289,7 +289,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         const isVisible: boolean = (props?.securedControls?.length || 0) > 0
         if ((props.level === 0) && isVisible) {
             ret = <TooltipComponent content={Messages.messUnlinkAllSecuredControl}>
-                <button onClick={() => handleOnClickUnlinkAll(props)}>
+                <button type ='button' title="unlink" onClick={() => handleOnClickUnlinkAll(props)}>
                     <IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
@@ -320,7 +320,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
-                    console.log(e?.message)
+                    console.log(e)
                 }
             }
         )
@@ -342,7 +342,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
                 } catch (e: any) {
-                    console.log(e?.message)
+                    console.log(e)
                 }
             }
         )

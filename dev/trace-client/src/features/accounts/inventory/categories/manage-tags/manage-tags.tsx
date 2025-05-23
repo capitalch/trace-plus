@@ -100,7 +100,6 @@ export function ManageTags() {
     }
 
     async function handleOnEdit(props: any) {
-        console.log(props)
         Utils.showHideModalDialogB({
             title: "Edit Tag",
             isOpen: true,

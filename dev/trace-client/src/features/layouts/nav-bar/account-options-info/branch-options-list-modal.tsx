@@ -79,7 +79,7 @@ export function BranchOptionsListModal() {
             Utils.showHideModalDialogA({ isOpen: false });
             Utils.showSuccessAlertMessage({ title: 'Ok', message: Messages.messBranchSuccessfullySelected });
         } catch (e: any) {
-            console.log(e.message);
+            console.log(e);
         }
     }
 }

@@ -4,7 +4,6 @@ import { StockJournalLineItems } from "./stock-journal-line-items";
 import { StockJournalType } from "./stock-journal-main";
 import { ProductLineItem } from "../../shared-definitions";
 import _ from "lodash";
-import { useEffect } from "react";
 
 export function StockJournalTabs({ instance }: { instance: string }) {
   const { watch } = useFormContext<StockJournalType>()
@@ -25,10 +24,6 @@ export function StockJournalTabs({ instance }: { instance: string }) {
       tagLine: "Added to stock"
     }
   ];
-
-  useEffect(() => {
-    console.log("trigger");
-  });
 
   return (<CompTabs tabsInfo={tabsInfo} instance={instance} />)
 
