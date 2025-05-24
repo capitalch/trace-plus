@@ -6,7 +6,7 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
@@ -64,7 +64,7 @@ export function SuperAdminLinkSecuredControlWithRoleModal({ roleId, instance }: 
             sqlId: SqlIdsMap.getSecuredControlsNotLinkedWithRoleId
             , sqlArgs: { roleId: roleId }
         });
-        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
+        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
         setOptions(res.data.genericQuery);
     }
 
@@ -88,7 +88,7 @@ export function SuperAdminLinkSecuredControlWithRoleModal({ roleId, instance }: 
 
         try {
             const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+            const queryName: string = GraphQLQueriesMapNames.genericUpdate;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
             await context.CompSyncFusionTreeGrid[instance].loadData();

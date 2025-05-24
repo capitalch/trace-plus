@@ -7,7 +7,7 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 import { AdminNewBusinessUnitButton } from "./admin-new-business-unit-button";
 import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit";
@@ -79,7 +79,7 @@ export function AdminBusinessUnits() {
         Utils.showDeleteConfirmDialog(doDelete);
         async function doDelete() {
             try {
-                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name);
+                await Utils.mutateGraphQL(q, GraphQLQueriesMapNames.genericUpdate);
                 Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }
                     , () => {
                         dispatch(resetQueryHelperData({ instance: instance }))

@@ -6,7 +6,7 @@ import { WidgetFormErrorMessage } from "../../../controls/widgets/widget-form-er
 import { WidgetFormHelperText } from "../../../controls/widgets/widget-form-helper-text";
 import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../utils/validators-hook";
-import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/graphql/maps/graphql-queries-map";
 import { Utils } from "../../../utils/utils";
 import { doLogout, LoginType } from "../../login/login-slice";
 import { AppDispatchType } from "../../../app/store/store";
@@ -83,7 +83,7 @@ export function ChangePassword() {
                 userName: loginInfo.userDetails?.userName,
             };
             const q: any = GraphQLQueriesMap.changePwd(dataWithId);
-            const qName: string = GraphQLQueriesMap.changePwd.name;
+            const qName: string = GraphQLQueriesMapNames.changePwd;
             await Utils.mutateGraphQL(q, qName);
             Utils.showHideModalDialogA({ isOpen: false });
             Utils.showSaveMessage();

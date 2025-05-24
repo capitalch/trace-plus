@@ -7,7 +7,7 @@ import { SuperAdminNewClientButtons } from "./super-admin-new-client-buttons";
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditClient } from "./super-admin-new-edit-client";
 import { SuperAdminNewEditClientExtDatabase } from "./super-admin-new-edit-client-ext-database";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
@@ -81,7 +81,7 @@ export function SuperAdminClients() {
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
         async function doDelete() {
             try {
-                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)
+                await Utils.mutateGraphQL(q, GraphQLQueriesMapNames.genericUpdate)
                 Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }, () => {
                     context.CompSyncFusionGrid[instance].loadData() // this is executed when OK button is pressed on the alert message
                 })

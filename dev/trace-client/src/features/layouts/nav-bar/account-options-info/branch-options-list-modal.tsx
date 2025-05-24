@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppDispatchType } from "../../../../app/store/store";
 import { Utils } from "../../../../utils/utils";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Messages } from "../../../../utils/messages";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
@@ -74,7 +74,7 @@ export function BranchOptionsListModal() {
         };
         try {
             const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+            const queryName: string = GraphQLQueriesMapNames.genericUpdate;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
             Utils.showSuccessAlertMessage({ title: 'Ok', message: Messages.messBranchSuccessfullySelected });

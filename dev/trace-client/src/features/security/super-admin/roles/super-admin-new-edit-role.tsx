@@ -9,7 +9,7 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
 import { useContext, useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
@@ -110,7 +110,7 @@ export function SuperAdminNewEditRole({
         };
         try {
             const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+            const queryName: string = GraphQLQueriesMapNames.genericUpdate;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -140,7 +140,7 @@ export function SuperAdminNewEditRole({
                     sqlId: SqlIdsMap.getSuperAdminRoleOnRoleName,
                     sqlArgs: { roleName: value?.roleName }
                 }),
-            GraphQLQueriesMap.genericQuery.name);
+            GraphQLQueriesMapNames.genericQuery);
         if (res?.data?.genericQuery[0]) {
             setError("root.roleName", {
                 type: "serverError",

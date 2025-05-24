@@ -4,7 +4,7 @@ import { Messages } from "../../../../utils/messages";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
@@ -64,7 +64,7 @@ export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModal
             sqlId: SqlIdsMap.getUsersNotLinkedWithBuIdExcludeAdmin
             , sqlArgs: { buId:buId}
         });
-        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
+        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
         setOptions(res.data.genericQuery);
     }
 
@@ -88,7 +88,7 @@ export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModal
 
         try {
             const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+            const queryName: string = GraphQLQueriesMapNames.genericUpdate;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
             context.CompSyncFusionTreeGrid[instance].loadData();

@@ -9,7 +9,7 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip"
 import { useContext, useEffect, useState } from "react"
 import { useValidators } from "../../../../utils/validators-hook"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils"
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
@@ -158,7 +158,7 @@ export function SuperAdminNewEditClient({
         }
         try {
             const q: any = GraphQLQueriesMap.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
-            const queryName: string = GraphQLQueriesMap.updateClient.name
+            const queryName: string = GraphQLQueriesMapNames.updateClient
             await Utils.mutateGraphQL(q, queryName)
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -189,7 +189,7 @@ export function SuperAdminNewEditClient({
                     sqlId: SqlIdsMap.getClientOnClientCode
                     , sqlArgs: { clientCode: value?.clientCode }
                 })
-            , GraphQLQueriesMap.genericQuery.name)
+            , GraphQLQueriesMapNames.genericQuery)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientCode', {
                 type: 'serverError',
@@ -208,7 +208,7 @@ export function SuperAdminNewEditClient({
                     sqlId: SqlIdsMap.getClientOnClientName
                     , sqlArgs: { clientName: value?.clientName }
                 })
-            , GraphQLQueriesMap.genericQuery.name)
+            , GraphQLQueriesMapNames.genericQuery)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientName', {
                 type: 'serverError',

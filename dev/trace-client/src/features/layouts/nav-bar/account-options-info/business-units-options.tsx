@@ -6,7 +6,7 @@ import { BusinessUnitsListModal } from "./business-units-list-modal"
 import { useEffect, } from "react"
 import { AppDispatchType, RootStateType } from "../../../../app/store/store"
 import { Messages } from "../../../../utils/messages"
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 
 export function BusinessUnitsOptions() {
@@ -60,7 +60,7 @@ export function BusinessUnitsOptions() {
                 sqlId: SqlIdsMap.getSettingsFinYearsBranches,
                 sqlArgs: {}
             });
-            const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
+            const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
             const result: any = res?.data?.genericQuery?.[0]?.jsonResult
             if (result) {
                 dispatch(setFinYearsBranchesAccSettings({ accSettings: result?.allSettings, finYears: result.allFinYears, branches: result.allBranches }))

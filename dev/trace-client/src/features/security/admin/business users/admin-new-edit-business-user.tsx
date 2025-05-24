@@ -8,7 +8,7 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
@@ -167,7 +167,7 @@ export function AdminNewEditBusinessUser({
 
     async function getRoleOptions(setOptions: (args: any) => void) {
         const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getAllRoleNamesOnClientIdWithBuiltinRoles, sqlArgs: { clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId } });
-        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
+        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
         setOptions(res.data.genericQuery);
     }
 
@@ -193,7 +193,7 @@ export function AdminNewEditBusinessUser({
         };
         try {
             const q: any = GraphQLQueriesMap.updateUser(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.updateUser.name;
+            const queryName: string = GraphQLQueriesMapNames.updateUser;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
             await loadData()
@@ -234,7 +234,7 @@ export function AdminNewEditBusinessUser({
                         userEmail: userEmail,
                     },
                 }),
-                GraphQLQueriesMap.genericQuery.name
+                GraphQLQueriesMapNames.genericQuery
             );
 
             if (!_.isEmpty(res?.data?.genericQuery[0])) {
