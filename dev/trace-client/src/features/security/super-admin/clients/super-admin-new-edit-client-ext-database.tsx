@@ -6,7 +6,7 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 import { Messages } from "../../../../utils/messages"
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Utils } from "../../../../utils/utils"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
@@ -324,7 +324,7 @@ export function SuperAdminNewEditClientExtDatabase({
                 sqlId: SqlIdsMap.testConnection,
                 dbParams: dbParams
             })
-            const queryName: string = GraphQLQueriesMap.genericQuery.name
+            const queryName: string = GraphQLQueriesMapNames.genericQuery
             const res: any = await Utils.queryGraphQL(q, queryName)
             if (res?.data?.[queryName]?.[0]?.connection) {
                 Utils.showSuccessAlertMessage({ message: Messages.messDbConnSuccessful, title: Messages.messSuccess },)
@@ -372,7 +372,7 @@ export function SuperAdminNewEditClientExtDatabase({
         }
         try {
             const q: any = GraphQLQueriesMap.updateClient(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject)
-            const queryName: string = GraphQLQueriesMap.updateClient.name
+            const queryName: string = GraphQLQueriesMapNames.updateClient
             await Utils.mutateGraphQL(q, queryName)
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -403,7 +403,7 @@ export function SuperAdminNewEditClientExtDatabase({
                     sqlId: SqlIdsMap.getClientOnClientCode
                     , sqlArgs: { clientCode: value?.clientCode }
                 })
-            , GraphQLQueriesMap.genericQuery.name)
+            , GraphQLQueriesMapNames.genericQuery)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientCode', {
                 type: 'serverError',
@@ -422,7 +422,7 @@ export function SuperAdminNewEditClientExtDatabase({
                     sqlId: SqlIdsMap.getClientOnClientName
                     , sqlArgs: { clientName: value?.clientName }
                 })
-            , GraphQLQueriesMap.genericQuery.name)
+            , GraphQLQueriesMapNames.genericQuery)
         if (res?.data?.genericQuery[0]) {
             setError('root.clientName', {
                 type: 'serverError',

@@ -10,7 +10,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { SuperAdminNewRoleButton } from "./super-admin-new-role-button";
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditRole } from "./super-admin-new-edit-role";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
@@ -74,7 +74,7 @@ export function SuperAdminRoles() {
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
         async function doDelete() {
             try {
-                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)
+                await Utils.mutateGraphQL(q, GraphQLQueriesMapNames.genericUpdate)
                 Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }, () => {
                     context.CompSyncFusionGrid[instance].loadData() // this is executed when OK button is pressed on the alert message
                 })

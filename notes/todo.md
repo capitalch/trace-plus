@@ -2,7 +2,8 @@
 entry point: /usr/lib/systemd/systemd
 
 ## Deployment
-- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
+- Checkup all screens
+						- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
 - Trace+ logo is not coming
 ## Logic for checking gp in all reports: SR,SSR, TSR reports
 					- Sale transaction of a product in profit
@@ -97,6 +98,16 @@ entry point: /usr/lib/systemd/systemd
 	- Product label is not allowing + symbol. It should allow that
 	- Product Code in Stock Journal report missing
 	- Update function get_stock_on_date in all databases
+
+	- Deployment
+		- Fix
+			- Masters
+			- Categories
+				- Grid populate
+				- Manage HSN
+			- Trial balance
+			- Bank Recon
+				- Select bank going off screen
 													- Inventory transfer closing balance to next year
 													- Migrate to tailwind latest version
 													- Bank reconcillation clear date, remarks not saving

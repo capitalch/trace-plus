@@ -4,7 +4,7 @@ import { GlobalContext, GlobalContextType } from "../../../../app/global-context
 import { useContext } from "react";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
@@ -62,7 +62,7 @@ export function AdminAutoLinkSecuredControlsFromBuiltinRolesModal({ adminRoleId,
         const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, {
             sqlId: SqlIdsMap.getBuiltinRoles
         });
-        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name);
+        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
         setOptions(res.data.genericQuery);
     }
 
@@ -86,7 +86,7 @@ export function AdminAutoLinkSecuredControlsFromBuiltinRolesModal({ adminRoleId,
                             , superAdminRoleId: data.superAdminRoleId
                         }
                     }),
-                GraphQLQueriesMap.genericQuery.name
+                GraphQLQueriesMapNames.genericQuery
             )
             if (res?.data.genericQuery) {
                 Utils.showHideModalDialogA({ isOpen: false });

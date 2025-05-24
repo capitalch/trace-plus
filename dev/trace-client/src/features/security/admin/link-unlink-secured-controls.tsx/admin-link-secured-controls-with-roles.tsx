@@ -11,7 +11,7 @@ import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/s
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { IconControls } from "../../../../controls/icons/icon-controls";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconLink } from "../../../../controls/icons/icon-link";
@@ -178,7 +178,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     return
                 }
                 const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-                const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+                const queryName: string = GraphQLQueriesMapNames.genericUpdate;
                 await Utils.mutateGraphQL(q, queryName);
                 context.CompSyncFusionTreeGrid[linksInstance].loadData();
                 Utils.showSaveMessage();
@@ -315,7 +315,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 };
                 try {
                     const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-                    const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+                    const queryName: string = GraphQLQueriesMapNames.genericUpdate;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
@@ -337,7 +337,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 };
                 try {
                     const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-                    const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+                    const queryName: string = GraphQLQueriesMapNames.genericUpdate;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);

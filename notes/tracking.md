@@ -1,21 +1,26 @@
 ## Target
 - Dec 2024
-																			- General ledger		: 22-12-2024
-																			- Bank Reconcillation	: 31-12-2024
-																			- Masters: Accounts		: Targetted: 31-12-2024, Completed: 19-01-2025
-																			- Unit info, General settings: Opening balances, Branches, 
-																				Financial years		: Targetted: 12-01-2025, Completed: 04-02-2025
-																			- Common utilities, Exports	: Targetted: 19-01-2025, Completed: 15-02-2025
-																			- Reports: Completed on 28-02-2025
-- Mar 2025
-	- Inventory				: 31-03-2025
-- Apr 2025
-	- Vouchers				: 30-04-2025
-- May 2025
-	- sales / purchases		: 31-05-2025
+																		- General ledger		: 22-12-2024
+																		- Bank Reconcillation	: 31-12-2024
+																		- Masters: Accounts		: Targetted: 31-12-2024, Completed: 19-01-2025
+																		- Unit info, General settings: Opening balances, Branches, 
+																			Financial years		: Targetted: 12-01-2025, Completed: 04-02-2025
+																		- Common utilities, Exports	: Targetted: 19-01-2025, Completed: 15-02-2025
+																		- Reports: Completed on 28-02-2025
+																		- Inventory: Targetted at 31-03-2025, Completed on 22-05-2025
+- Deployment: May 2025
+
+- June 2025
+	- Vouchers				: 31-06-2025
+- July 2025
+	- sales / purchases		: 30-07-2025
 - Bug fixes etc.
+	- QA and release		: 30-08-2025
 
 ## History
+# 22-05-2025
+	- Completed Stock Trans report
+	- stated deployment
 # 15-05-2025
 	- Completed stock summary report
 	- started stock tran report

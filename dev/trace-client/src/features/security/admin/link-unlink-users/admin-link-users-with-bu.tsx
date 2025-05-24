@@ -9,7 +9,7 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { GlobalContext, GlobalContextType } from '../../../../app/global-context';
 import { useContext } from 'react';
 import { AdminLinkUserWithBuModal } from './admin-link-user-with-bu-modal';
-import { GraphQLQueriesMap } from '../../../../app/graphql/maps/graphql-queries-map';
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from '../../../../app/graphql/maps/graphql-queries-map';
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants';
 import { TraceDataObjectType } from '../../../../utils/global-types-interfaces-enums';
 import { Messages } from '../../../../utils/messages';
@@ -169,7 +169,7 @@ export function AdminLinkUsersWithBu() {
                     return
                 }
                 const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-                const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+                const queryName: string = GraphQLQueriesMapNames.genericUpdate;
                 await Utils.mutateGraphQL(q, queryName);
                 context.CompSyncFusionTreeGrid[linksInstance].loadData();
                 Utils.showSaveMessage();
@@ -303,7 +303,7 @@ export function AdminLinkUsersWithBu() {
                 };
                 try {
                     const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-                    const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+                    const queryName: string = GraphQLQueriesMapNames.genericUpdate;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messUserUnlinkedSuccess);
@@ -325,7 +325,7 @@ export function AdminLinkUsersWithBu() {
                 };
                 try {
                     const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-                    const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+                    const queryName: string = GraphQLQueriesMapNames.genericUpdate;
                     await Utils.mutateGraphQL(q, queryName);
                     await context.CompSyncFusionTreeGrid[linksInstance].loadData();
                     Utils.showCustomMessage(Messages.messBusinessUsersUnlinkSuccess);

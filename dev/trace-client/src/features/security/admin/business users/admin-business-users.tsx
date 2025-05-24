@@ -11,7 +11,7 @@ import {
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 import { AdminNewBusinessUserButton } from "./admin-new-business-user-button";
 import { AdminNewEditBusinessUser } from "./admin-new-edit-business-user";
@@ -116,7 +116,7 @@ export function AdminBusinessUsers() {
         Utils.showDeleteConfirmDialog(doDelete);
         async function doDelete() {
             try {
-                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name);
+                await Utils.mutateGraphQL(q, GraphQLQueriesMapNames.genericUpdate);
                 Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }, () => {
                     dispatch(resetQueryHelperData({ instance: instance }))
                     context.CompSyncFusionGrid[instance].loadData();

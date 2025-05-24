@@ -9,7 +9,7 @@ import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
 import { useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
@@ -139,7 +139,7 @@ export function AdminNewEditBusinessUnit({
         };
         try {
             const q: any = GraphQLQueriesMap.createBu(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.createBu.name;
+            const queryName: string = GraphQLQueriesMapNames.createBu;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -169,7 +169,7 @@ export function AdminNewEditBusinessUnit({
                     sqlId: SqlIdsMap.getBuOnBuCodeAndClientId,
                     sqlArgs: { buCode: value?.buCode, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId }
                 }),
-            GraphQLQueriesMap.genericQuery.name);
+            GraphQLQueriesMapNames.genericQuery);
         if (res?.data?.genericQuery[0]) {
             setError("root.buCode", {
                 type: "serverError",

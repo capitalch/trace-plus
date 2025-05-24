@@ -9,7 +9,7 @@ import { AppDispatchType, RootStateType } from "../../../app/store/store"
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
 import { CompSwitch } from "../../../controls/redux-components/comp-switch"
 import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
-import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/graphql/maps/graphql-queries-map"
 import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
@@ -204,7 +204,7 @@ export function ProfitLoss() {
     }
 
     async function loadData() {
-        const queryName: string = GraphQLQueriesMap.balanceSheetProfitLoss.name
+        const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss
         const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
             dbName || '',
             {

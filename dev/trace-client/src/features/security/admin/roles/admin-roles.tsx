@@ -7,7 +7,7 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 import { AdminNewRoleButton } from "./admin-new-role-button";
 import { AdminNewEditRole } from "./admin-new-edit-role";
@@ -80,7 +80,7 @@ export function AdminRoles() {
 
         async function doDelete() {
             try {
-                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name);
+                await Utils.mutateGraphQL(q, GraphQLQueriesMapNames.genericUpdate);
                 Utils.showSuccessAlertMessage(
                     { message: Messages.messRecordDeleted, title: Messages.messSuccess },
                     () => {

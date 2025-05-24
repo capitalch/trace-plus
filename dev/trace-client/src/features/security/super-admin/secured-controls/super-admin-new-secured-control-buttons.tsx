@@ -1,5 +1,5 @@
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { Utils } from "../../../../utils/utils"
 import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
 import jsonData from './secured-controls.json'
@@ -18,7 +18,7 @@ export function SuperAdminNewSecuredControlButtons({ dataInstance }: { dataInsta
         //Sends secured-controls.json file to server for import into database
         try {
             const q: any = GraphQLQueriesMap.importSecuredControls(GLOBAL_SECURITY_DATABASE_NAME, jsonData);
-            const queryName: string = GraphQLQueriesMap.importSecuredControls.name;
+            const queryName: string = GraphQLQueriesMapNames.importSecuredControls;
             await Utils.mutateGraphQL(q, queryName);
             context.CompSyncFusionGrid[dataInstance].loadData()
         } catch (e: any) {

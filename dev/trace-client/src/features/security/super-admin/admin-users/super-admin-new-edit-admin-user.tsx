@@ -8,7 +8,7 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { useContext, useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
@@ -150,7 +150,7 @@ export function SuperAdminNewEditAdminUser({
 
     async function getClientOptions(setOptions: (args: any) => void) {
         const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getAllClientNamesNoArgs })
-        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMap.genericQuery.name,)
+        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery,)
         setOptions(res.data.genericQuery)
     }
 
@@ -175,7 +175,7 @@ export function SuperAdminNewEditAdminUser({
         };
         try {
             const q: any = GraphQLQueriesMap.updateUser(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.updateUser.name;
+            const queryName: string = GraphQLQueriesMapNames.updateUser;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({
                 isOpen: false,
@@ -221,7 +221,7 @@ export function SuperAdminNewEditAdminUser({
                         }
                     }
                 ),
-                GraphQLQueriesMap.genericQuery.name);
+                GraphQLQueriesMapNames.genericQuery);
 
             if (!_.isEmpty(res?.data?.genericQuery[0])) {
                 setError("root.userEmail", {

@@ -9,8 +9,6 @@ import { Utils } from "../../utils/utils";
 import urlJoin from "url-join";
 import axios from "axios";
 import { CompTypeAhead } from "../../controls/components/comp-type-ahead";
-// import { Utils } from "../../utils/utils";
-// import { GraphQLQueriesMap } from "../../app/graphql/maps/graphql-queries-map";
 
 export function ForgotPassword() {
     const instance = 'forgot-password'

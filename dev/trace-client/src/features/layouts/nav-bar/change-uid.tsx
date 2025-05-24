@@ -6,7 +6,7 @@ import { WidgetFormHelperText } from "../../../controls/widgets/widget-form-help
 import { WidgetButtonSubmitFullWidth } from "../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../utils/validators-hook";
-import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/graphql/maps/graphql-queries-map";
 import { Utils } from "../../../utils/utils";
 import { LoginType, setUid } from "../../login/login-slice";
 import { AppDispatchType } from "../../../app/store/store";
@@ -90,7 +90,7 @@ export function ChangeUid() {
                 userName: loginInfo?.userDetails?.userName
             }
             const q: any = GraphQLQueriesMap.changeUid(dataWithId)
-            const qName: string = GraphQLQueriesMap.changeUid.name
+            const qName: string = GraphQLQueriesMapNames.changeUid
             await Utils.mutateGraphQL(q, qName)
             dispatch(setUid({ uid: data.uid }))
             Utils.showHideModalDialogA({ isOpen: false })
@@ -152,7 +152,7 @@ export function ChangeUid() {
                         uid: uid,
                     },
                 }),
-                GraphQLQueriesMap.genericQuery.name
+                GraphQLQueriesMapNames.genericQuery
             );
 
             if (!_.isEmpty(res?.data?.genericQuery[0])) {

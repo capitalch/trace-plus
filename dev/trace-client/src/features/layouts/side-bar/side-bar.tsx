@@ -16,7 +16,7 @@ function SideBar() {
         {/* SideBar header */}
         <div className="flex h-12 w-max items-center border-b-[1px] border-primary-100 pl-2">
             <div className="h-12">
-                <img src="trace-logo.png" className="mr-5 mt-3" alt='' />
+                <img src="/trace-logo.png" className="mr-5 mt-3" alt='' />
             </div>
             <button onClick={handleHideSideBar}>
                 <IconMenuFold className='h-6 text-primary-500' />

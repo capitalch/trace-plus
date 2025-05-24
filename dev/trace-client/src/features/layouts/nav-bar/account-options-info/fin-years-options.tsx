@@ -8,7 +8,7 @@ import { FinYearsListModal } from "./fin-years-list-modal";
 import { AppDispatchType } from "../../../../app/store/store";
 import { Messages } from "../../../../utils/messages";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
@@ -92,7 +92,7 @@ export function FinYearsOptions() {
         };
         try {
             const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
-            const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+            const queryName: string = GraphQLQueriesMapNames.genericUpdate;
             await Utils.mutateGraphQL(q, queryName);
             Utils.showHideModalDialogA({ isOpen: false });
             Utils.showSuccessAlertMessage({ title: 'Ok', message: Messages.messFinYearSuccessfullyChanged });

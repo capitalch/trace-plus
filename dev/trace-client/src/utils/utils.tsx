@@ -160,7 +160,7 @@ async function doGenericDelete({
     deletedIds: deletedIds
   };
   const q: any = GraphQLQueriesMap.genericUpdate(dbName || "", traceDataObject);
-  const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+  const queryName: string = GraphQLQueriesMapNames.genericUpdate;
   const res: any = await mutateGraphQL(q, queryName);
   return res;
 }
@@ -180,9 +180,9 @@ async function doGenericQuery({
       sqlArgs: sqlArgs,
       sqlId: sqlId
     }),
-    GraphQLQueriesMap.genericQuery.name
+    GraphQLQueriesMapNames.genericQuery
   );
-  return res?.data?.[GraphQLQueriesMap.genericQuery.name];
+  return res?.data?.[GraphQLQueriesMapNames.genericQuery];
 }
 
 async function doGenericUpdate({
@@ -199,7 +199,7 @@ async function doGenericUpdate({
     buCode: buCode
   };
   const q: any = GraphQLQueriesMap.genericUpdate(dbName || "", traceDataObject);
-  const queryName: string = GraphQLQueriesMap.genericUpdate.name;
+  const queryName: string = GraphQLQueriesMapNames.genericUpdate;
   const res: any = await mutateGraphQL(q, queryName);
   return res;
 }
@@ -219,9 +219,9 @@ async function doGenericUpdateQuery({
       sqlArgs: sqlArgs,
       sqlId: sqlId
     }),
-    GraphQLQueriesMap.genericUpdateQuery.name
+    GraphQLQueriesMapNames.genericUpdateQuery
   );
-  return res?.data?.[GraphQLQueriesMap.genericUpdateQuery.name];
+  return res?.data?.[GraphQLQueriesMapNames.genericUpdateQuery];
 }
 
 function getCompanyName(): string {

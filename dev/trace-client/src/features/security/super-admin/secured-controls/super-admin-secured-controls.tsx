@@ -7,7 +7,7 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { Utils } from "../../../../utils/utils"
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
 import { SuperAdminNewSecuredControlButtons } from "./super-admin-new-secured-control-buttons"
 import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
@@ -80,7 +80,7 @@ export function SuperAdminSecuredControls() {
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called
         async function doDelete() {
             try {
-                await Utils.mutateGraphQL(q, GraphQLQueriesMap.genericUpdate.name)
+                await Utils.mutateGraphQL(q, GraphQLQueriesMapNames.genericUpdate)
                 Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }, () => {
                     context.CompSyncFusionGrid[instance].loadData() // this is executed when OK button is pressed on the alert message
                 })

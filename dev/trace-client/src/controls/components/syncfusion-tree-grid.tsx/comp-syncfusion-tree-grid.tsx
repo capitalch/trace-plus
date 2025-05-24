@@ -22,7 +22,6 @@ export function CompSyncfusionTreeGrid({
     childMapping,
     className = '',
     columns,
-    // dataBound,
     dataPath,
     dataSource,
     dbName,
