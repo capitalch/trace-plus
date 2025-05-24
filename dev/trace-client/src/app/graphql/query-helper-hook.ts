@@ -1,6 +1,7 @@
 import { DocumentNode, useLazyQuery } from '@apollo/client'
 import {
   GraphQLQueriesMap,
+  GraphQLQueriesMapNames,
   GraphQLQueryArgsType
 } from './maps/graphql-queries-map'
 import _ from 'lodash'
@@ -42,6 +43,7 @@ export function useQueryHelper ({
 
   async function loadData () {
     const queryName: string = graphQlQueryFromMap.name
+    // const queryName: string = GraphQLQueriesMapNames.genericQuery
     const result: any = await getQueryData({ fetchPolicy: 'no-cache' })
     if (result?.data?.[queryName]?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
