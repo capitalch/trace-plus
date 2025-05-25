@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map"
-import { GraphQLQueriesMap } from "../../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../../app/graphql/maps/graphql-queries-map"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompSyncFusionTreeGridToolbar } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width"
@@ -41,6 +41,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
+            graphQlQueryName={GraphQLQueriesMapNames.productCategories}
             hasCheckBoxSelection={true}
             isLoadOnInit={true}
             columns={getColumns()}

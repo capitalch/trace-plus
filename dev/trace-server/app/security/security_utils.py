@@ -1,6 +1,6 @@
-import bcrypt
-import jwt
-import logging
+import bcrypt, jwt, logging, random, json, string
+# import jwt
+# import logging
 from fastapi import Request, status
 from app.config import Config
 from app.core.messages import Messages
@@ -11,8 +11,8 @@ from jwt.exceptions import (
     InvalidSignatureError,
     InvalidTokenError,
 )
-import random
-import string
+# import random, json, string
+# import string
 
 ACCESS_TOKEN_EXPIRE_HOURS = Config.ACCESS_TOKEN_EXPIRE_HOURS
 ALGORITHM = Config.ALGORITHM
@@ -24,7 +24,7 @@ def create_access_token(subject: dict) -> str:
     expiresDelta = datetime.now(timezone.utc) + timedelta(
         hours=int(ACCESS_TOKEN_EXPIRE_HOURS)
     )
-    toEncode = {"exp": expiresDelta, "sub": subject}
+    toEncode = {"exp": expiresDelta, "sub": json.dumps(subject)}
     encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)
     return encodedJwt
 
@@ -32,7 +32,7 @@ def create_access_token(subject: dict) -> str:
 def create_jwt_token(expireMinutes: int, data: dict) -> str:
     expiresDelta = datetime.now() + timedelta(minutes=expireMinutes)
     toEncode = {
-        "exp": expiresDelta, "data": data
+        "exp": expiresDelta, "data": json.dumps(data)
     }
     encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)
     return (encodedJwt)

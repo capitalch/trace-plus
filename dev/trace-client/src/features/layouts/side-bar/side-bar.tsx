@@ -6,6 +6,7 @@ import { SideMenu } from "./side-menu"
 import { IconMenuFold } from "../../../controls/icons/icon-menu-fold"
 import { UserDetailsType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
+import logo from '../../../assets/trace-logo.png'
 
 function SideBar() {
     const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn)
@@ -16,9 +17,9 @@ function SideBar() {
         {/* SideBar header */}
         <div className="flex h-12 w-max items-center border-b-[1px] border-primary-100 pl-2">
             <div className="h-12">
-                <img src="/trace-logo.png" className="mr-5 mt-3" alt='' />
+                <img src={logo} className="mr-5 mt-3" alt='' />
             </div>
-            <button onClick={handleHideSideBar}>
+            <button onClick={handleHideSideBar} type="button" title="Hide side menu">
                 <IconMenuFold className='h-6 text-primary-500' />
             </button>
         </div>

@@ -4,7 +4,6 @@ import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
 import { AppDispatchType } from "../../../app/store/store";
 import { useDispatch } from "react-redux";
-import { CompReactSelect } from "../../../controls/components/comp-react-select";
 import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { Messages } from "../../../utils/messages";
 import { WidgetFormErrorMessage } from "../../../controls/widgets/widget-form-error-message";
@@ -13,6 +12,7 @@ import _ from "lodash";
 import { GeneralSettingsType, Utils } from "../../../utils/utils";
 import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
 import { changeAccSettings } from "../accounts-slice";
+import Select from "react-select";
 
 export function GeneralSettings() {
     const dispatch: AppDispatchType = useDispatch()
@@ -25,6 +25,7 @@ export function GeneralSettings() {
         handleSubmit,
         setValue,
         formState: { errors, isDirty, isSubmitting },
+        watch
     } = useForm<GeneralSettingsType>({
         mode: "onTouched",
         criteriaMode: "all",
@@ -42,16 +43,16 @@ export function GeneralSettings() {
             {/* Date format */}
             <label className="flex flex-col font-medium text-primary-800">
                 <span className="font-bold">Date format</span>
-                <CompReactSelect
+                <Select
                     className="mt-1.5"
-                    staticOptions={dateFormatOptions}
-                    optionLabelName="dateFormatName"
-                    optionValueName="dateFormatValue"
-                    {...register('dateFormat')}
+                    options={dateFormatOptions}
+                    getOptionLabel={(option) => option.dateFormatName}
+                    getOptionValue={(option) => option.dateFormatValue}
                     onChange={handleOnChangeDateFormat}
-                    ref={null} // required for react-hook-form to work with
-                    selectedValue='DD/MM/YYYY'
+                    styles={Utils.getReactSelectStyles()}
+                    value={dateFormatOptions.find(option => option.dateFormatValue === watch('dateFormat'))}
                 />
+
             </label>
 
             {/* Auto log off time in mins */}
@@ -82,7 +83,10 @@ export function GeneralSettings() {
         </form>
     </CompAccountsContainer>)
 
-    function handleOnChangeDateFormat(selectedObject: { dateFormatValue: string, dateFormatName: string }) {
+    function handleOnChangeDateFormat(selectedObject: { dateFormatValue: string, dateFormatName: string } | null) {
+        if (!selectedObject) {
+            return
+        }
         setValue('dateFormat', selectedObject.dateFormatValue, { shouldDirty: true })
     }
 

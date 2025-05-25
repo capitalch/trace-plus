@@ -40,7 +40,7 @@ export function ProductsOpeningBalancesGrid() {
         CustomControl={() => <ProductsStockTransfer instance={instance} />}
         className="mt-2 mr-6"
         minWidth="500px"
-        title="Products opening balances"
+        title={"Products opening balances"}
         isPdfExport={true}
         isExcelExport={true}
         isCsvExport={true}
@@ -63,7 +63,7 @@ export function ProductsOpeningBalancesGrid() {
         minWidth="800px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
-        onRemove={handleOnDelete}
+        // onRemove={handleOnDelete}
         sqlId={SqlIdsMap.getProductsOpeningBalances}
         sqlArgs={{
           branchId: branchId,

@@ -1,4 +1,4 @@
-cd ..## **Fast api**
+## **Fast api**
 - Create virtual env and pip install fastapi uvicorn[standard]
   from typing import Union
   from fastapi import FastAPI
@@ -18,6 +18,7 @@ cd c:\projects\trace-plus
 1. python -m pip install virtualenv
 2. python -m venv env
 3. env\Scripts\activate
+4. See notes for latest lib list
 4. pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg2 psycopg[binary,pool] asyncpg
 # This was used in case of Trace
 4. pip install flask demjson simplejson psycopg2 requests ariadne pandas flask_cors nested_lookup flask_mail pyjwt datetime bcrypt autopep8 xlsxwriter flask_scss flask_weasyprint babel

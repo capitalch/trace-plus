@@ -105,7 +105,6 @@ export const appRouter = createBrowserRouter(
           path: "inventory-reports-dashboard",
           element: <InventoryReportsDashboard />
         },
-
         {
           path: "/inventory-reports/:id",
           element: <InventoryReportsContainer />

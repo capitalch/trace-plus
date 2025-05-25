@@ -268,26 +268,3 @@ def get_super_admin_details_from_config():
             error_code="e1004",
             message=Messages.err_internal_server_error,
         )
-
-
-# user = UserClass(
-#             businessUnits=businessUnits,
-#             clientCode=userDetails["clientCode"],
-#             clientId=userDetails["clientId"],
-#             clientName=userDetails["clientName"],
-#             dbName=userDetails["dbName"],
-#             dbParams=userDetails["dbParams"],
-#             email=userDetails["userEmail"],
-#             id=userDetails["id"],
-#             isClientActive=userDetails["isClientActive"],
-#             isExternalDb=userDetails["isExternalDb"],
-#             isUserActive=userDetails["isUserActive"],
-#             lastUsedBranchId=userDetails["lastUsedBranchId"],
-#             lastUsedBuId=userDetails["lastUsedBuId"],
-#             mobileNo=userDetails["mobileNo"],
-#             role=role,
-#             roleId=userDetails["roleId"],
-#             uid=userDetails["uid"],
-#             userName=userDetails["userName"],
-#             userType=userType,
-#         )

@@ -190,7 +190,7 @@ export function BalanceSheet() {
                 customAggregate: (data: any) => customClosingAggregate(data, 'closing', 'closing_dc'),
                 field: 'closing',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
                 type: 'Custom',
             }
         ])
@@ -221,6 +221,8 @@ export function BalanceSheet() {
             const res: any = await Utils.queryGraphQL(q, queryName)
             const jsonResult: any = res?.data[queryName][0]?.jsonResult
             const profitOrLoss = jsonResult?.profitOrLoss
+            jsonResult[liabsInstance] = jsonResult?.[liabsInstance] || []
+            jsonResult[assetsInstance] = jsonResult?.[assetsInstance] || []
             if (profitOrLoss < 0) {
                 jsonResult[assetsInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
             } else {

@@ -3,7 +3,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
-import { GraphQLQueriesMap } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { Utils } from "../../../../utils/utils"
 import { IconPlus } from "../../../../controls/icons/icon-plus"
 import _ from "lodash"
@@ -48,6 +48,7 @@ export function ProductCategories() {
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
+            graphQlQueryName={GraphQLQueriesMapNames.productCategories}
             isLoadOnInit={true}
             columns={getColumns()}
             height="calc(100vh - 230px)"

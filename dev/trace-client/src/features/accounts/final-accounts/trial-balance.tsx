@@ -3,7 +3,7 @@ import { CompAccountsContainer } from "../../../controls/components/comp-account
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
-import { GraphQLQueriesMap } from "../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/graphql/maps/graphql-queries-map";
 import { useEffect } from "react";
 import { CompSwitch } from "../../../controls/redux-components/comp-switch";
 import { CompInstances } from "../../../controls/redux-components/comp-instances";
@@ -51,6 +51,7 @@ export function TrialBalance() {
                 dbName={dbName}
                 dbParams={decodedDbParamsObject}
                 graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
+                graphQlQueryName={GraphQLQueriesMapNames.trialBalance}
                 isLoadOnInit={false}
                 sqlArgs={{
                     branchId: isAllBranches ? null : branchId || 0,

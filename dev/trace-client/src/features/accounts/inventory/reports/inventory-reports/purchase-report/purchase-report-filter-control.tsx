@@ -56,7 +56,6 @@ export function PurchaseReportFilterContol() {
 
                     <Select
                         className="mt-2"
-                        // ref={selectRef}
                         placeholder="Select a predefined date range"
                         styles={Utils.getReactSelectStyles()}
                         options={dateRangeOptions}
@@ -108,7 +107,7 @@ export function PurchaseReportFilterContol() {
 
             {/* Filter Button */}
             <div className="flex justify-end px-2">
-                <button
+                <button type="button"
                     onClick={handleApplyFilter}
                     disabled={isApplyFilterButtonDisabled()}
                     className="px-5 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"

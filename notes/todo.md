@@ -2,8 +2,13 @@
 entry point: /usr/lib/systemd/systemd
 
 ## Deployment
-- Checkup all screens
-						- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
+									- Checkup all screens
+											- Journals, Payments, Receipts, Contra should show WIP
+											- Purch / Sales all screens should show WIP
+										- Fix Masters
+											- Company Info
+											- General Settings
+											- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
 - Trace+ logo is not coming
 ## Logic for checking gp in all reports: SR,SSR, TSR reports
 					- Sale transaction of a product in profit
@@ -45,7 +50,7 @@ entry point: /usr/lib/systemd/systemd
 ## Bug fix
 	- Accounts
 		- Categories: Change parent UI out of place
-		- Final reports showing NaN at bottom
+																	- Final reports showing NaN at bottom
 		- Home machine accounts master not working
 		- Bank recon
 			- HDFC bank online
@@ -80,7 +85,6 @@ entry point: /usr/lib/systemd/systemd
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Misc
-	- In 2022-23 demo, trial balance op bal show NAN
 	- In all grids show a margin of 10 px from bottom
 	- Grid fix up sizes for edit, delete and preview buttons
 	- Check Capichow bank recon double entry

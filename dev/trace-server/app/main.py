@@ -58,6 +58,8 @@ async def serve_react_app():
         return FileResponse(index_path)
     return {"error": "index.html not found"}
 
+# Optional: also serve root-level static files like /trace-logo.png
+# app.mount("/", StaticFiles(directory="../trace-client/dist", html=True), name="static")
 
 @app.exception_handler(
     404

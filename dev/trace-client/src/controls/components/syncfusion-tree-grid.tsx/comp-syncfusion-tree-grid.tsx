@@ -3,7 +3,7 @@ import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
 import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, Edit, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Selection, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
-import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMapNames, GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 import { shallowEqual, useSelector } from "react-redux"
 import { RootStateType } from "../../../app/store/store"
@@ -28,6 +28,7 @@ export function CompSyncfusionTreeGrid({
     dbParams,
     editSettings,
     graphQlQueryFromMap,
+    graphQlQueryName = GraphQLQueriesMapNames.genericQuery,
     gridDragAndDropSettings,
     hasCheckBoxSelection = false,
     height,
@@ -47,7 +48,7 @@ export function CompSyncfusionTreeGrid({
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
     const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
@@ -231,6 +232,7 @@ export type CompSyncfusionTreeGridType = {
         dbName: string,
         val: GraphQLQueryArgsType
     ) => DocumentNode,
+    graphQlQueryName?: string
     gridDragAndDropSettings?: GridDragAndDropSettingsType
     hasCheckBoxSelection?: boolean
     height?: string

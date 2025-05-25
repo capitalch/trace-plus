@@ -7,7 +7,7 @@ import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { Messages } from "../../../../utils/messages";
 import indiaStatesJson from './india-states-gst-codes.json'
-import { CompReactSelect } from "../../../../controls/components/comp-react-select";
+// import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { useEffect, useState } from "react";
 import { UnitInfoType, Utils } from "../../../../utils/utils";
 import _ from "lodash";
@@ -16,10 +16,11 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { AppDispatchType } from "../../../../app/store/store";
 import { changeAccSettings } from "../../accounts-slice";
+import Select from "react-select";
 
 export function CompanyInfo() {
     const dispatch: AppDispatchType = useDispatch()
-    const [indiaStates, setIndiaStates] = useState({})
+    const [indiaStates, setIndiaStates] = useState<IndiaStateType[]>([])
     const instance: string = DataInstancesMap.companyInfo
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
@@ -38,10 +39,10 @@ export function CompanyInfo() {
 
     const {
         register,
-        getValues,
         handleSubmit,
         setValue,
         formState: { errors, isDirty, isSubmitting },
+        watch
     } = useForm<UnitInfoType>({
         mode: "onTouched",
         criteriaMode: "all",
@@ -148,16 +149,19 @@ export function CompanyInfo() {
                 {/* State */}
                 <label className="flex flex-col font-medium text-primary-800">
                     <span className="font-bold">State</span>
-                    <CompReactSelect
+                    <Select
                         className="mt-1.5"
-                        staticOptions={indiaStates}
-                        optionLabelName="stateName"
-                        optionValueName="stateValue"
+                        options={indiaStates}
+                        getOptionLabel={(option: IndiaStateType) => option.stateName}
+                        getOptionValue={(option: IndiaStateType) => option.stateValue}
+                        menuPlacement="auto"
+                        placeholder="--- select  state---"
                         {...register('state')}
                         onChange={handleOnChangeState}
-                        ref={null} // required for react-hook-form to work with
-                        selectedValue={getValues('state') || ''}
+                        styles={Utils.getReactSelectStyles()}
+                        value={indiaStates.find((st: IndiaStateType) => st.stateValue === watch('state')) || null}
                     />
+
                 </label>
 
                 {/* Email */}
@@ -238,12 +242,17 @@ export function CompanyInfo() {
         </CompAccountsContainer>
     )
 
-    function handleOnChangeState(selectedObject: { stateValue: string, stateName: string }) {
-        setValue('state', selectedObject.stateValue, { shouldDirty: true })
+    function handleOnChangeState(
+        selectedObject: IndiaStateType | null,
+    ) {
+        if (!selectedObject || selectedObject.stateValue === '') {
+            return;
+        }
+        setValue('state', selectedObject.stateValue, { shouldDirty: true });
     }
 
     function loadIndiaStates() {
-        const indiaStates: { stateValue: string, stateName: string }[]
+        const indiaStates: IndiaStateType[]
             = Object.entries(indiaStatesJson)
                 .map(([stateValue, stateName]) => ({ stateValue, stateName }))
         indiaStates.unshift({ stateValue: '', stateName: '--- select ---' })
@@ -273,17 +282,7 @@ export function CompanyInfo() {
     }
 }
 
-// function populateData() {
-//     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
-//     setValue('address1', unitInfo.address1 || '')
-//     setValue('address2', unitInfo.address2)
-//     setValue('email', unitInfo.email || '')
-//     setValue('gstin', unitInfo.gstin)
-//     setValue('landPhone', unitInfo.landPhone)
-//     setValue('mobileNumber', unitInfo.mobileNumber || '')
-//     setValue('pin', unitInfo.pin || '')
-//     setValue('shortName', unitInfo.shortName || '')
-//     setValue('state', unitInfo.state)
-//     setValue('unitName', unitInfo.unitName || '')
-//     setValue('webSite', unitInfo.webSite)
-// }
+type IndiaStateType = {
+    stateValue: string;
+    stateName: string;
+}

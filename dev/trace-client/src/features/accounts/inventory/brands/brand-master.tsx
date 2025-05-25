@@ -87,7 +87,7 @@ export function BrandMaster() {
                 headerText: 'Used',
                 type: 'boolean',
                 width: 50,
-                template: (props: any) => <input type="checkbox" checked={props.isUsed} readOnly />
+                template: (props: any) => <input type="checkbox" checked={props.isUsed} readOnly title="Is used" />
             }
         ]);
     }

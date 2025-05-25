@@ -1,15 +1,11 @@
-- 
-	
-			- 
-
 																									## Bug
 																									- Stock reports problem
 																									- Stock transaction report not working
 																									## Bugs
 																									- Purchase entry then sales then back to purchase entry shows product of sales
-- Purchase price variation report error
-- Stock transactions op balance error
-- Sales report does not show sales return
+																									- Purchase price variation report error
+																									- Stock transactions op balance error
+																									- Sales report does not show sales return
 # library to add
 	react-sliding-pane
 ## New features to include

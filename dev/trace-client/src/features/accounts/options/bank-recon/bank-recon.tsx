@@ -82,7 +82,6 @@ export function BankRecon() {
             editSettings={{
                 allowEditing: true,
                 mode: 'Normal',
-                // showConfirmDialog: false
             }}
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
@@ -94,7 +93,6 @@ export function BankRecon() {
             onCellEdit={onCellEdit}
             onDelete={handleOnDelete}
             queryCellInfo={onQueryCellInfo}
-        // onRowDataBound={onRowDataBound}
         />
         {isVisibleAppLoader && <CompAppLoader />}
     </CompAccountsContainer>)
@@ -152,9 +150,6 @@ export function BankRecon() {
             },
             {
                 allowEditing: true,
-                // customAttributes: {
-                //     class: 'grid-col-edit'
-                // },
                 edit: datePickerParams,
                 editType: 'datepickeredit',
                 field: 'clearDate',
@@ -191,9 +186,6 @@ export function BankRecon() {
             },
             {
                 allowEditing: true,
-                // customAttributes: {
-                //     class: 'grid-col-edit'
-                // },
                 field: 'clearRemarks',
                 headerText: 'Clear remarks',
                 type: 'string',

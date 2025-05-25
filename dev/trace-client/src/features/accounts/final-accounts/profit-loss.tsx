@@ -189,7 +189,7 @@ export function ProfitLoss() {
                 customAggregate: (data: any) => customClosingAggregate(data, 'closing', 'closing_dc'),
                 field: 'closing',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
                 type: 'Custom',
             }
         ])
@@ -220,6 +220,8 @@ export function ProfitLoss() {
             const res: any = await Utils.queryGraphQL(q, queryName)
             const jsonResult: any = res?.data[queryName][0]?.jsonResult
             const profitOrLoss = jsonResult?.profitOrLoss
+            jsonResult[expensesInstance] = jsonResult?.expenses || []
+            jsonResult[incomesInstance] = jsonResult?.incomes || []
             if (profitOrLoss < 0) {
                 jsonResult[incomesInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'C', parentId: null })
             } else {

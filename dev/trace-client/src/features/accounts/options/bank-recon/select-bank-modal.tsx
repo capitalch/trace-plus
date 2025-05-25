@@ -37,7 +37,7 @@ export function SelectBankModal() {
         return (<WidgetLoadingIndicator />)
     }
 
-    return (<div className='min-w-96'>
+    return (<div>
         <ListBoxComponent
             change={handleOnChange}
             dataBound={onDataBound}

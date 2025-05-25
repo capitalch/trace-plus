@@ -9,5 +9,6 @@ export default defineConfig({
   },
   build: {
     sourcemap: true // Enable source maps for production builds
-  }
+  },
+  // base: './', // Set base path for assets
 })

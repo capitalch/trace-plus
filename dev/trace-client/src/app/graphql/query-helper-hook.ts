@@ -18,6 +18,7 @@ export function useQueryHelper ({
   dbName = GLOBAL_SECURITY_DATABASE_NAME,
   getQueryArgs,
   graphQlQueryFromMap = GraphQLQueriesMap.genericQuery,
+  graphQlQueryName = GraphQLQueriesMapNames.genericQuery,
   instance,
   isExecQueryOnLoad = true
 }: QueryHelperType) {
@@ -42,8 +43,7 @@ export function useQueryHelper ({
   }
 
   async function loadData () {
-    const queryName: string = graphQlQueryFromMap.name
-    // const queryName: string = GraphQLQueriesMapNames.genericQuery
+    const queryName = graphQlQueryName
     const result: any = await getQueryData({ fetchPolicy: 'no-cache' })
     if (result?.data?.[queryName]?.error?.content) {
       Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
@@ -79,6 +79,7 @@ type QueryHelperType = {
     dbName: string,
     val: GraphQLQueryArgsType
   ) => DocumentNode
+  graphQlQueryName?: string
   instance: string
   isExecQueryOnLoad?: boolean
 }

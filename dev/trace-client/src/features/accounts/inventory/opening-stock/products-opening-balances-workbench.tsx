@@ -79,7 +79,6 @@ export function ProductsOpeningBalancesWorkBench() {
     const labelId = watch('labelId')
     const qty = watch('qty')
     const openingPrice = watch('openingPrice')
-    // const lastPurchaseDate = watch('lastPurchaseDate')
 
     useEffect(() => {
         if (_.isEmpty(productLabelsOnCatIdBrandId)) {
@@ -115,7 +114,7 @@ export function ProductsOpeningBalancesWorkBench() {
         return (<WidgetLoadingIndicator />)
     }
 
-    return (<div className="flex flex-col border-2 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-[calc(100vh - 120px)]">
+    return (<div className="flex flex-col border-2 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-full">
         <div className="flex justify-between items-center align-middle">
             <label className="text-lg mb-1 font-medium text-primary-500">Opening Balance</label>
             <label className="text-sm text-primary-400 font-bold">{id ? 'Edit' : 'New'}</label>
