@@ -49,17 +49,14 @@ async def graphql(request: Request):
 
 
 # Serve React static files
-app.mount("/assets", StaticFiles(directory="../trace-client/dist/assets"), name="assets")
+# app.mount("/assets", StaticFiles(directory="../trace-client/dist/assets"), name="assets")
 
-@app.get("/{full_path:path}")
-async def serve_react_app():
-    index_path = "../trace-client/dist/index.html"
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {"error": "index.html not found"}
-
-# Optional: also serve root-level static files like /trace-logo.png
-# app.mount("/", StaticFiles(directory="../trace-client/dist", html=True), name="static")
+# @app.get("/{full_path:path}")
+# async def serve_react_app():
+#     index_path = "../trace-client/dist/index.html"
+#     if os.path.exists(index_path):
+#         return FileResponse(index_path)
+#     return {"error": "index.html not found"}
 
 @app.exception_handler(
     404
