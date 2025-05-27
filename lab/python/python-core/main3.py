@@ -1,7 +1,9 @@
-class MyClass:
-    prop1 = "This is prop1"
-    prop2 = "This is prop2"
-    prop3 = "This is prop3"
+from cryptography.fernet import Fernet
 
+key = Fernet.generate_key()
+f = Fernet(key)
 
-print(getattr(MyClass,"prop1"))
+token = f.encrypt(b"my secret")
+print("Encrypted:", token)
+
+print("Decrypted:", f.decrypt(token).decode())
