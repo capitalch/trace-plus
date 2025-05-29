@@ -70,7 +70,7 @@ python3.13 --version
 	sudo ln -s /usr/local/bin/pip3.13 /usr/bin/pip
 
 # install TraceServer dependencies
-pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg[binary,pool] asyncpg python-multipart fpdf xlsxwriter fastapi_mail pandas
+pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg[binary,pool] python-multipart fpdf xlsxwriter fastapi_mail pandas cryptography
 
 # Upload TraceServer and dist
 - final.zip: TraceServer and dist folders
