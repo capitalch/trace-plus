@@ -17,8 +17,6 @@ from jwt.exceptions import (
 ACCESS_TOKEN_EXPIRE_HOURS = Config.ACCESS_TOKEN_EXPIRE_HOURS
 ALGORITHM = Config.ALGORITHM
 ACCESS_TOKEN_SECRET_KEY = Config.ACCESS_TOKEN_SECRET_KEY
-ACCESS_TOKEN_EXPIRE_SECONDS_TEST = Config.ACCESS_TOKEN_EXPIRE_SECONDS_TEST
-
 
 def create_access_token(subject: dict) -> str:
     expiresDelta = datetime.now(timezone.utc) + timedelta(

@@ -2,6 +2,16 @@
 entry point: /usr/lib/systemd/systemd
 
 ## Deployment
+	- Change api calls
+											- api/test
+											- /api
+											- /export-file
+											- /login
+											- /countries
+											- /login-clients
+											- /test
+											- /forgot-password
+		- /graphql/
 									- Checkup all screens
 											- Journals, Payments, Receipts, Contra should show WIP
 											- Purch / Sales all screens should show WIP

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.dependencies import (
@@ -12,7 +12,7 @@ from app.core.messages import Messages
 from app.security.security_router import securityRouter
 from app.graphql.graphql_router import GraphQLApp
 from app.security.security_utils import validate_token
-import logging, os
+import logging
 
 app = FastAPI()
 configure_logger()
@@ -38,6 +38,7 @@ app.middleware("http")(exceptions_middleware)
 app.add_exception_handler(AppHttpException, app_http_exception_handler)
 
 logging.info("Server started")
+logging.debug("Debugging enabled")
 
 
 @app.route("/graphql/", methods=["POST"])
@@ -48,16 +49,6 @@ async def graphql(request: Request):
         return await GraphQLApp.handle_request(request)
 
 
-# Serve React static files
-# app.mount("/assets", StaticFiles(directory="../trace-client/dist/assets"), name="assets")
-
-# @app.get("/{full_path:path}")
-# async def serve_react_app():
-#     index_path = "../trace-client/dist/index.html"
-#     if os.path.exists(index_path):
-#         return FileResponse(index_path)
-#     return {"error": "index.html not found"}
-
 @app.exception_handler(
     404
 )  # This is a custom exception handler for 404 error when endpoint is not found
@@ -67,3 +58,13 @@ async def custom_404_handler(_, __):
         status_code=404,
         content={"error_code": "e1001", "message": Messages.err_url_not_found},
     )
+
+# Serve React static files
+# app.mount("/assets", StaticFiles(directory="../trace-client/dist/assets"), name="assets")
+
+# @app.get("/{full_path:path}")
+# async def serve_react_app():
+#     index_path = "../trace-client/dist/index.html"
+#     if os.path.exists(index_path):
+#         return FileResponse(index_path)
+#     return {"error": "index.html not found"}

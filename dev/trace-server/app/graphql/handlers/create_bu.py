@@ -5,7 +5,7 @@ from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import status
-from app.graphql.db.helpers.psycopg_async_helper import (
+from app.graphql.db.psycopg_async_helper import (
     exec_sql,
     exec_sql_dml,
     exec_sql_object,

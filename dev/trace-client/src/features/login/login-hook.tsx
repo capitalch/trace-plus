@@ -33,7 +33,7 @@ function useLogin(setValue: any) {
 
     async function onSubmit(data: any) {
         const hostUrl = Utils.getHostUrl()
-        const loginUrl = urlJoin(hostUrl, 'login')
+        const loginUrl = urlJoin(hostUrl, 'api/login')
         try {
             const ret: any = await axios({
                 method: 'post',

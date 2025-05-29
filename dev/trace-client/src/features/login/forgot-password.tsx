@@ -12,7 +12,7 @@ import { CompTypeAhead } from "../../controls/components/comp-type-ahead";
 
 export function ForgotPassword() {
     const instance = 'forgot-password'
-    const clientsUrl = urlJoin(Utils.getHostUrl(), 'login-clients')
+    const clientsUrl = urlJoin(Utils.getHostUrl(), 'api/login-clients')
     const { clearErrors, handleSubmit, register, setValue, formState: { errors } } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
@@ -84,7 +84,7 @@ export function ForgotPassword() {
         // Use clientId also from login form
         try {
             const hostUrl = Utils.getHostUrl()
-            const forgotPasswordUrl = urlJoin(hostUrl, 'forgot-password')
+            const forgotPasswordUrl = urlJoin(hostUrl, 'api/forgot-password')
             await axios({
                 method: 'post',
                 url: forgotPasswordUrl,

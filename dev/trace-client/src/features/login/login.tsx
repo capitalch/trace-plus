@@ -18,7 +18,7 @@ function Login() {
     const { handleForgotPassword, handleTestSignIn, onSubmit } = useLogin(setValue)
     const { checkPassword, checkUserNameOrEmail }: any = useValidators()
     const instance = 'user-login'
-    const clientsUrl = urlJoin(Utils.getHostUrl(), 'login-clients')
+    const clientsUrl = urlJoin(Utils.getHostUrl(), 'api/login-clients')
 
     const registerClientId = register('clientId', {
         required: Messages.errRequired

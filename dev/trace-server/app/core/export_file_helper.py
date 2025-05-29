@@ -7,7 +7,7 @@ from typing import Any, Optional
 from fpdf import FPDF
 import io
 from app.graphql.db.sql_accounts import SqlAccounts
-from app.graphql.db.helpers.psycopg_async_helper import exec_sql
+from app.graphql.db.psycopg_async_helper import exec_sql
 
 
 class ExportFileParams(BaseModel):

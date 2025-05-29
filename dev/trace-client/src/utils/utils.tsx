@@ -291,14 +291,13 @@ function getGeneralSettings(): GeneralSettingsType {
 }
 
 function getHostUrl() {
-  // let url: string;
-  // if (import.meta.env.DEV) {
-  //   url = import.meta.env["VITE_APP_LOCAL_SERVER_URL"];
-  // } else {
-  //   url = window.location.href;
-  // }
-  // return url;
-  return('http://localhost:8000')
+  let url: string;
+  if (import.meta.env.DEV) {
+    url = import.meta.env["VITE_APP_LOCAL_SERVER_URL"];
+  } else {
+    url = window.location.origin; // Use this to get the current host URL
+  }
+  return url;
 }
 
 function getIntegerFormatter() {

@@ -62,7 +62,7 @@ export function useExport() {
             }))
             const response = await axios({
                 method: 'post',
-                url: urlJoin(hostUrl, 'export-file'),
+                url: urlJoin(hostUrl, 'api/export-file'),
                 data: { valueString: encodeObj(requestData) },
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
                 responseType: 'blob'

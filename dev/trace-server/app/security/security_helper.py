@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 from app.core.dependencies import (
     AppHttpException,
     UserClass,
-    UserDetails,
     SuperAdminUserClass,
 )
 from app.core.messages import Messages
@@ -16,8 +15,8 @@ from app.security.security_utils import (
     verify_password,
 )
 from app.graphql.db.sql_security import SqlSecurity
-from app.graphql.db.helpers.psycopg_async_helper import exec_sql
-from app.core.utils import is_not_none_or_empty, getSqlQueryObject
+from app.graphql.db.psycopg_async_helper import exec_sql
+from app.core.utils import is_not_none_or_empty, get_env
 from app.core.messages import EmailMessages
 from app.core.mail import send_email
 from jwt.exceptions import (
@@ -29,8 +28,8 @@ from app.security.security_utils import (
     getRandomPassword,
     getPasswordHash,
 )
-import base64
-import jwt
+from app.core.utils import get_env
+import base64, logging, jwt
 
 
 async def forgot_password_helper(request: Request):
@@ -127,7 +126,8 @@ async def reset_password_helper(token: str):
 async def login_clients_helper(request: Request):
     body = await request.json()
     criteria = body.get("criteria")
-
+    env = get_env()
+    logging.debug(f"Login clients helper called in environment: {env}")
     if criteria:
         sqlArgs = {"criteria": criteria}
         sql = SqlSecurity.get_clients_on_criteria

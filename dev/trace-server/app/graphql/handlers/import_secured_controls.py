@@ -1,5 +1,5 @@
 from typing import Any
-from app.graphql.db.helpers.psycopg_async_helper import get_conn_info
+from app.graphql.db.psycopg_async_helper import get_conn_info
 from psycopg import OperationalError, AsyncConnection
 from psycopg.rows import dict_row
 from app.graphql.db.sql_security import SqlSecurity

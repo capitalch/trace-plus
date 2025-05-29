@@ -3,6 +3,8 @@ from app.graphql.db.sql_accounts import SqlAccounts
 from app.graphql.db.sql_security import SqlSecurity
 from app.config import Config
 from cryptography.fernet import Fernet
+import os
+
 
 def is_not_none_or_empty(value):
     ret = True
@@ -12,11 +14,13 @@ def is_not_none_or_empty(value):
         ret = False
     return ret
 
+
 def decrypt(input: str):
     key = Config.CRYPTO_KEY
     cipher_suite = Fernet(key)
     decoded_text = cipher_suite.decrypt(input.encode())
     return (decoded_text.decode())
+
 
 def encrypt(input: str):
     key = Config.CRYPTO_KEY
@@ -24,10 +28,15 @@ def encrypt(input: str):
     # encode converts string to bytes, decode does opposite
     encoded_text = cipher_suite.encrypt(input.encode('utf-8'))
     return (encoded_text.decode())
-    
+
+
+def get_env():
+    env: str = os.getenv("APP_ENV", "development")  # default to development
+    return (env)
+
+
 def getSqlQueryObject(dbName: str):
     queryObject = SqlAccounts
     if (dbName == 'traceAuth'):
         queryObject = SqlSecurity
     return (queryObject)
-
