@@ -34,6 +34,13 @@ def get_env():
     env: str = os.getenv("APP_ENV", "development")  # default to development
     return (env)
 
+def get_host_port():
+    env = get_env()
+    dbConfig = Config.DB_HOST.get(env,'development')
+    port = dbConfig.get('port', 5432)
+    host = dbConfig.get('host', 'localhost')
+    return (host, port)
+
 
 def getSqlQueryObject(dbName: str):
     queryObject = SqlAccounts

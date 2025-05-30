@@ -125,6 +125,15 @@ function useValidators() {
     return error;
   }
 
+  function checkIpAddress(input: string) {
+    let error = undefined;
+    const regex = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
+    if (!regex.test(input)) {
+      error = Messages.errInvalidIpAddress;
+    }
+    return error;
+  }
+
   function checkMobileNos(input: string | undefined) {
     let error = undefined;
     if (!input) {
@@ -272,6 +281,7 @@ function useValidators() {
     checkAtLeast8Chars,
     checkEmail,
     checkGstin,
+    checkIpAddress,
     checkGstStateCode,
     checkLandPhone,
     checkLandPhones,

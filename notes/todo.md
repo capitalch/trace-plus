@@ -2,7 +2,10 @@
 entry point: /usr/lib/systemd/systemd
 
 ## Deployment
-	- Change api calls
+- db connect
+	- client accommodat Internal IP, Internal Port
+	- Server: change code
+									- Change api calls
 											- api/test
 											- /api
 											- /export-file
@@ -11,7 +14,7 @@ entry point: /usr/lib/systemd/systemd
 											- /login-clients
 											- /test
 											- /forgot-password
-		- /graphql/
+											- /graphql/
 									- Checkup all screens
 											- Journals, Payments, Receipts, Contra should show WIP
 											- Purch / Sales all screens should show WIP

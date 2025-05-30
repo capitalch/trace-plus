@@ -39,6 +39,7 @@ const Messages = {
   errInvalidEmail: 'Invalid email',
   errInvalidGstin: 'Invalid GSTIN no',
   errInvalidGstStateCode: 'Invalid state code',
+  errInvalidIpAddress: 'Invalid IP address',
   errInvalidLandPhone: 'Invalid land phone',
   errInvalidMobileNo: 'Invalid mobile no',
   errInvalidPinCode: 'Invalid pin code',

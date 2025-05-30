@@ -5,15 +5,16 @@ from psycopg.rows import dict_row
 from app.config import Config
 from typing import Any
 from types import FunctionType
-from psycopg_pool import AsyncConnectionPool
+from app.core.utils import get_host_port, get_env
 from app.graphql.db.sql_accounts import SqlAccounts
-import psycopg
 
 dbParams: dict = {
     "user": Config.DB_USER,
     "password": Config.DB_PASSWORD,
-    "port": Config.DB_PORT,
-    "host": Config.DB_HOST,
+    "ipAddress": "10.0.0.1",  # Placeholder
+    "internalPort": "5432",   # Placeholder
+    # "port": get_host_port()[1], # Config.DB_PORT,
+    # "host": get_host_port()[0] # Config.DB_HOST,
 }
 
 
@@ -21,17 +22,35 @@ def get_conn_info(
     dbName: str = Config.DB_SECURITY_DATABASE, db_params: dict[str, str] = dbParams
 ) -> str:
     dbName = Config.DB_SECURITY_DATABASE if dbName is None else dbName
-    db_params = dbParams if db_params is None else db_params
-    # Ensure db_params has the dbname key set to dbName if not already present
-    # db_params.setdefault("dbname", dbName)
-    db_params['dbname'] = dbName
-    # for keepalive settings. Doing this helped overcoming error whens some queries which took more time would show server closed connection.
-    # After using keepalives, that error did not happen even once
-    db_params['keepalives'] = 1
-    db_params['keepalives_idle'] = 30
-    # db_params.update({"dbname": dbName}) # dbName and dbname are different
+    db_params = dbParams.copy() if db_params is None else db_params.copy()
+    env = get_env()
+    # Decide host and port based on environment
+    if env == "development":
+        host, port = get_host_port()
+        db_params.pop("ipAddress")
+        db_params.pop("internalPort")
+    else:
+        host = db_params.pop("ipAddress", "")
+        port = db_params.pop("internalPort", 5432)
+
+    db_params["host"] = host
+    db_params["port"] = port
+
+    # Set dbname and keepalive settings
+    db_params["dbname"] = dbName
+    db_params["keepalives"] = 1
+    db_params["keepalives_idle"] = 30
+
     connInfo = make_conninfo("", **db_params)
     return connInfo
+
+    # dbName = Config.DB_SECURITY_DATABASE if dbName is None else dbName
+    # db_params = dbParams if db_params is None else db_params
+    # db_params['dbname'] = dbName
+    # db_params['keepalives'] = 1
+    # db_params['keepalives_idle'] = 30
+    # connInfo = make_conninfo("", **db_params)
+    # return connInfo
 
 
 async def exec_sql(

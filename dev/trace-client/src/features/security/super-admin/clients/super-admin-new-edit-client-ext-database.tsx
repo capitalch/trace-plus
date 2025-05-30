@@ -28,8 +28,7 @@ export function SuperAdminNewEditClientExtDatabase({
     , isActive = false
     , isExternalDb
 }: SuperAdminNewEditClientExtDatabaseType) {
-    // const [active, setActive] = useState(false)
-    const { checkNoSpaceOrSpecialChar, checkNoSpaceOrSpecialCharAllowDot, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
+    const {checkIpAddress, checkNoSpaceOrSpecialChar, checkNoSpaceOrSpecialCharAllowDot, checkNoSpecialChar, checkUrl, shouldBePositive, shouldNotBeZero } = useValidators()
     const { clearErrors, handleSubmit, register, setError, setValue, getValues, trigger, formState: { errors, }, } = useForm<FormDataType>({
         mode: 'onTouched', criteriaMode: 'firstError',
     })
@@ -92,6 +91,23 @@ export function SuperAdminNewEditClientExtDatabase({
         required: Messages.errRequired
     })
 
+    const registerInternalPort = register('internalPort', {
+        required: Messages.errRequired
+        , validate: {
+            shouldNotBeZero: shouldNotBeZero,
+            shouldBePositive: shouldBePositive
+        }
+    })
+
+    const registerIpAddress = register('ipAddress', {
+        required: Messages.errRequired
+        , validate: {
+            validIpAddress: checkIpAddress
+        }
+    })
+
+
+
     const registerPort = register('port', {
         required: Messages.errRequired
         , validate: {
@@ -127,37 +143,37 @@ export function SuperAdminNewEditClientExtDatabase({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex w-auto min-w-80 flex-col gap-2'>
+            <div className='flex w-auto min-w-80 flex-col gap-2 text-xs'>
 
                 {/* Client code */}
-                <label className='flex flex-col font-medium text-primary-400'>
+                <label className='flex flex-col text-primary-400 font-medium gap-1'>
                     <span className='font-bold'>Client code <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g battle" autoComplete="off"
-                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+                        className='h-8 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic'
                         {...registerClientCode}
                     />
                     <span className="flex justify-between">
                         {(errors.clientCode)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientCode.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <WidgetTooltip title={Messages.messClientCode} className="-top-5! border-2 border-gray-200 bg-white text-sm font-normal text-blue-500!">
-                            <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
+                        <WidgetTooltip title={Messages.messClientCode} className="-top-5! border bg-white text-sm text-blue-500!">
+                            <span className='ml-auto text-xs text-primary-400 cursor-pointer'>?</span>
                         </WidgetTooltip>
                     </span>
                 </label>
 
                 {/* Client name */}
-                <label className='flex flex-col font-medium text-primary-400'>
+                <label className='flex flex-col text-primary-400 font-medium gap-1'>
                     <span className='font-bold'>Client name <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g Battle ground" autoComplete="off"
-                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName}
+                        className='h-8 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName}
                     />
                     <span className="flex justify-between">
                         {(errors.clientName)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientName.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <WidgetTooltip title={Messages.messClientName} className="-top-5! border-2 border-gray-200 bg-white text-sm font-normal text-blue-500!">
-                            <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
+                        <WidgetTooltip title={Messages.messClientName} className="-top-5! border bg-white text-sm text-blue-500!">
+                            <span className='ml-auto text-xs text-primary-400 cursor-pointer'>?</span>
                         </WidgetTooltip>
                     </span>
                 </label>
@@ -165,118 +181,119 @@ export function SuperAdminNewEditClientExtDatabase({
                 {/* Is active  */}
                 <div className="flex items-center">
                     <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
-                        // checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
                         {...registerIsClientActive} />
-                    <label htmlFor="isActive" className="ml-3 cursor-pointer text-sm text-primary-500">Is this client active</label>
+                    <label htmlFor="isActive" className="ml-2 cursor-pointer text-primary-500">Is this client active</label>
                 </div>
 
                 {/* External database details */}
-                <div className="flex w-full flex-col bg-slate-100 p-2">
-                    <label className="text-sm font-bold text-primary-500">External database connection details</label>
+                <div className="flex w-full flex-col bg-slate-100 p-1 gap-1">
+                    <label className="text-xs font-bold text-primary-500">External database connection details</label>
 
                     {/* db name and host */}
-                    <div className="mt-1 flex w-auto gap-2">
-
+                    <div className="flex w-auto gap-1">
                         {/* db name */}
-                        <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1'>
                             <span className='text-xs font-bold'>DB name <WidgetAstrix /></span>
                             <input type='text' placeholder="e.g Battle_database" autoComplete="off"
-                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerDbName}
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerDbName}
                             />
                             <span className="flex justify-between">
                                 {(errors.dbName)
                                     ? <WidgetFormErrorMessage errorMessage={errors.dbName.message} />
                                     : <WidgetFormHelperText helperText='&nbsp;' />}
-
                             </span>
                         </label>
 
                         {/* db host */}
-                        <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+                        <label className='flex w-1/2 flex-col pr-1 font-medium text-primary-400 gap-1'>
                             <span className='text-xs font-bold'>DB host <WidgetAstrix /></span>
                             <input type='text' placeholder="e.g host name" autoComplete="off"
-                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
-                                {...registerHost}
-                            />
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerHost} />
                             <span className="flex justify-between">
                                 {(errors.host)
                                     ? <WidgetFormErrorMessage errorMessage={errors.host.message} />
                                     : <WidgetFormHelperText helperText='&nbsp;' />}
-
                             </span>
                         </label>
                     </div>
 
                     {/* User name and password */}
-                    <div className="mt-1 flex w-auto gap-2">
-
-                        {/* db User name */}
-                        <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+                    <div className="flex w-auto gap-1">
+                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1'>
                             <span className='text-xs font-bold'>DB user name <WidgetAstrix /></span>
                             <input type='text' autoComplete="off"
-                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
-                                {...registerUser}
-                            />
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerUser} />
                             <span className="flex justify-between">
                                 {(errors.user)
                                     ? <WidgetFormErrorMessage errorMessage={errors.user.message} />
                                     : <WidgetFormHelperText helperText='&nbsp;' />}
-
                             </span>
                         </label>
 
-                        {/* db password */}
-                        <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+                        <label className='flex w-1/2 flex-col pr-1 font-medium text-primary-400 gap-1'>
                             <span className='text-xs font-bold'>DB password <WidgetAstrix /></span>
                             <input type='password' autoComplete="off"
-                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
-                                {...registerPassword}
-                            />
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerPassword} />
                             <span className="flex justify-between">
                                 {(errors.password)
                                     ? <WidgetFormErrorMessage errorMessage={errors.password.message} />
                                     : <WidgetFormHelperText helperText='&nbsp;' />}
-
                             </span>
                         </label>
                     </div>
 
                     {/* DB port and DB url */}
-                    <div className="mt-1 flex w-auto gap-2">
-
-                        {/* db port */}
-                        <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
-                            <span className='text-xs font-bold'>DB port <WidgetAstrix /></span>
+                    <div className="flex w-auto gap-1">
+                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1'>
+                            <span className='text-xs font-bold'>DB public port <WidgetAstrix /></span>
                             <input type='number' autoComplete="off"
-                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
-                                {...registerPort}
-                            />
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerPort} />
                             <span className="flex justify-between">
                                 {(errors.port)
                                     ? <WidgetFormErrorMessage errorMessage={errors.port.message} />
                                     : <WidgetFormHelperText helperText='&nbsp;' />}
-
                             </span>
                         </label>
 
-                        {/* db url */}
-                        <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+                        <label className='flex w-1/2 flex-col pr-1 font-medium text-primary-400 gap-1'>
                             <span className='text-xs font-bold'>DB url </span>
                             <input type='text' autoComplete="off"
-                                className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
-                                {...registerUrl}
-                            />
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerUrl} />
                             <span className="flex justify-between">
                                 {(errors.url)
                                     ? <WidgetFormErrorMessage errorMessage={errors.url.message} />
                                     : <WidgetFormHelperText helperText='&nbsp;' />}
-
                             </span>
                         </label>
                     </div>
+
+                    {/* IP address and internal port */}
+                    <div className="flex w-auto gap-1">
+                        <label className='flex w-1/2 flex-col  font-medium text-primary-400 gap-1'>
+                            <span className='text-xs font-bold'>DB IP address <WidgetAstrix /></span>
+                            <input type='text' autoComplete="off"
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerIpAddress} />
+                            <span className="flex justify-between">
+                                {(errors.ipAddress)
+                                    ? <WidgetFormErrorMessage errorMessage={errors.ipAddress.message} />
+                                    : <WidgetFormHelperText helperText='&nbsp;' />}
+                            </span>
+                        </label>
+                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1 pr-1'>
+                            <span className='text-xs font-bold'>DB internal port <WidgetAstrix /></span>
+                            <input type='number' autoComplete="off"
+                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerInternalPort} />
+                            <span className="flex justify-between">
+                                {(errors.internalPort)
+                                    ? <WidgetFormErrorMessage errorMessage={errors.internalPort.message} />
+                                    : <WidgetFormHelperText helperText='&nbsp;' />}
+                            </span>
+                        </label>
+                    </div>
+
                     <button type="button" onClick={handleTestDbConnection}
                         disabled={isDbValidationErrors()}
-                        className="ml-auto mt-1 h-7 w-max rounded-md bg-lime-600 px-2 text-xs text-white hover:bg-lime-700 disabled:bg-slate-300 active:shadow-primary-2">
+                        className="ml-auto h-7 w-max rounded-md bg-lime-600 px-2 text-xs text-white hover:bg-lime-700 disabled:bg-slate-300 active:shadow-primary-2">
                         Test database connection
                     </button>
                 </div>
@@ -304,10 +321,12 @@ export function SuperAdminNewEditClientExtDatabase({
         setValue('port', dbParams?.port)
         setValue('user', dbParams?.user)
         setValue('url', dbParams?.url)
+        setValue('ipAddress', dbParams?.ipAddress || '')
+        setValue('internalPort', dbParams?.internalPort || 5432)
     }
 
     async function handleTestDbConnection() {
-        const ret = await trigger(['dbName', 'host', 'user', 'password', 'port'])
+        const ret = await trigger(['dbName', 'host', 'user', 'password', 'port', 'internalPort', 'ipAddress'])
         if (!ret) {
             return
         }
@@ -318,6 +337,8 @@ export function SuperAdminNewEditClientExtDatabase({
             user: data.user, // 'web',
             password: data.password, // 'K',
             port: data.port, //1
+            internalPort: data.internalPort, // 5432,
+            ipAddress: data.ipAddress, // '
         }
         try {
             const q: any = GraphQLQueriesMap.genericQuery(data.dbName, {
@@ -344,6 +365,8 @@ export function SuperAdminNewEditClientExtDatabase({
             || errors.password
             || errors.port
             || errors.url
+            || errors.internalPort
+            || errors.ipAddress
 
         return (ret)
     }
@@ -356,7 +379,9 @@ export function SuperAdminNewEditClientExtDatabase({
             user: data?.user,
             password: data?.password,
             port: +data?.port,
-            url: data?.url
+            url: data?.url,
+            internalPort: +data?.internalPort || 5432, // Default port is 5432
+            ipAddress: data?.ipAddress || ''
         }
         const traceDataObject: TraceDataObjectType = {
             tableName: DatabaseTablesMap.ClientM // When id is present then considered as update
@@ -439,6 +464,8 @@ type FormDataType = {
     clientName: string
     dbName: string
     id?: string
+    internalPort: number
+    ipAddress: string
     isActive: boolean
     isExternalDb?: boolean
     host: string
@@ -458,3 +485,204 @@ type SuperAdminNewEditClientExtDatabaseType = {
     isActive?: boolean
     isExternalDb?: boolean
 }
+
+// <form onSubmit={handleSubmit(onSubmit)}>
+//     <div className='flex w-auto min-w-80 flex-col '>
+
+//         {/* Client code */}
+//         <label className='flex flex-col font-medium text-primary-400'>
+//             <span className='font-bold'>Client code <WidgetAstrix /></span>
+//             <input type='text' placeholder="e.g battle" autoComplete="off"
+//                 className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                 {...registerClientCode}
+//             />
+//             <span className="flex justify-between">
+//                 {(errors.clientCode)
+//                     ? <WidgetFormErrorMessage errorMessage={errors.clientCode.message} />
+//                     : <WidgetFormHelperText helperText='&nbsp;' />}
+//                 <WidgetTooltip title={Messages.messClientCode} className="-top-5! border-2 border-gray-200 bg-white text-sm font-normal text-blue-500!">
+//                     <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
+//                 </WidgetTooltip>
+//             </span>
+//         </label>
+
+//         {/* Client name */}
+//         <label className='flex flex-col font-medium text-primary-400'>
+//             <span className='font-bold'>Client name <WidgetAstrix /></span>
+//             <input type='text' placeholder="e.g Battle ground" autoComplete="off"
+//                 className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName}
+//             />
+//             <span className="flex justify-between">
+//                 {(errors.clientName)
+//                     ? <WidgetFormErrorMessage errorMessage={errors.clientName.message} />
+//                     : <WidgetFormHelperText helperText='&nbsp;' />}
+//                 <WidgetTooltip title={Messages.messClientName} className="-top-5! border-2 border-gray-200 bg-white text-sm font-normal text-blue-500!">
+//                     <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
+//                 </WidgetTooltip>
+//             </span>
+//         </label>
+
+//         {/* Is active  */}
+//         <div className="flex items-center">
+//             <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
+//                 // checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
+//                 {...registerIsClientActive} />
+//             <label htmlFor="isActive" className="ml-3 cursor-pointer text-sm text-primary-500">Is this client active</label>
+//         </div>
+
+//         {/* External database details */}
+//         <div className="flex w-full flex-col bg-slate-100 p-2">
+//             <label className="text-sm font-bold text-primary-500">External database connection details</label>
+
+//             {/* db name and host */}
+//             <div className="mt-1 flex w-auto gap-2">
+
+//                 {/* db name */}
+//                 <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB name <WidgetAstrix /></span>
+//                     <input type='text' placeholder="e.g Battle_database" autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic' {...registerDbName}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.dbName)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.dbName.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+
+//                 {/* db host */}
+//                 <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB host <WidgetAstrix /></span>
+//                     <input type='text' placeholder="e.g host name" autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                         {...registerHost}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.host)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.host.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+//             </div>
+
+//             {/* User name and password */}
+//             <div className="flex w-auto gap-2">
+
+//                 {/* db User name */}
+//                 <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB user name <WidgetAstrix /></span>
+//                     <input type='text' autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                         {...registerUser}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.user)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.user.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+
+//                 {/* db password */}
+//                 <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB password <WidgetAstrix /></span>
+//                     <input type='password' autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                         {...registerPassword}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.password)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.password.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+//             </div>
+
+//             {/* DB port and DB url */}
+//             <div className="flex w-auto gap-2">
+
+//                 {/* db port */}
+//                 <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB port <WidgetAstrix /></span>
+//                     <input type='number' autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                         {...registerPort}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.port)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.port.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+
+//                 {/* db url */}
+//                 <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB url </span>
+//                     <input type='text' autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                         {...registerUrl}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.url)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.url.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+//             </div>
+
+//             {/* DB port and DB url */}
+//             <div className="flex w-auto gap-2">
+
+//                 {/* db port */}
+//                 <label className='flex w-1/2 flex-col gap-1 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB port <WidgetAstrix /></span>
+//                     <input type='number' autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                         {...registerPort}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.port)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.port.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+
+//                 {/* db url */}
+//                 <label className='flex w-1/2 flex-col gap-1 pr-2 font-medium text-primary-400'>
+//                     <span className='text-xs font-bold'>DB url </span>
+//                     <input type='text' autoComplete="off"
+//                         className='h-8 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+//                         {...registerUrl}
+//                     />
+//                     <span className="flex justify-between">
+//                         {(errors.url)
+//                             ? <WidgetFormErrorMessage errorMessage={errors.url.message} />
+//                             : <WidgetFormHelperText helperText='&nbsp;' />}
+
+//                     </span>
+//                 </label>
+//             </div>
+
+
+//             <button type="button" onClick={handleTestDbConnection}
+//                 disabled={isDbValidationErrors()}
+//                 className="ml-auto h-7 w-max rounded-md bg-lime-600 px-2 text-xs text-white hover:bg-lime-700 disabled:bg-slate-300 active:shadow-primary-2">
+//                 Test database connection
+//             </button>
+//         </div>
+
+//         {/* Save */}
+//         <div className='flex justify-start'>
+//             <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
+//         </div>
+//         <span>
+//             {showServerValidationError()}
+//         </span>
+//     </div>
+// </form>
