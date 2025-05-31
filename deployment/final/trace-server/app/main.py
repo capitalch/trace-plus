@@ -38,8 +38,6 @@ app.middleware("http")(exceptions_middleware)
 app.add_exception_handler(AppHttpException, app_http_exception_handler)
 
 logging.info("Server started")
-logging.debug("Debugging enabled")
-
 
 @app.route("/graphql/", methods=["POST"])
 async def graphql(request: Request):

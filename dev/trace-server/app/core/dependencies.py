@@ -42,7 +42,7 @@ def configure_logger():
     logging.basicConfig(
         filename=f"logs/{currentMonth}-{currentYear}.log",
         force=True,
-        level=logging.DEBUG,
+        level=logging.INFO,
         format=logFormatStr,
     )
 

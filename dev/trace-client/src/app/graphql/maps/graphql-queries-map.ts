@@ -263,7 +263,6 @@ export type GraphQLQueriesMapType = {
   changeUid: (val: ChangeUidType) => DocumentNode
   createBu: (dbName: string, val: TraceDataObjectType) => DocumentNode
   decodeExtDbParams: (val: string) => DocumentNode
-  // downloadTestXlsx: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode;
   genericQuery: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode
   genericUpdate: (dbName: string, val: GraphQLUpdateArgsType) => DocumentNode
   genericUpdateQuery: (

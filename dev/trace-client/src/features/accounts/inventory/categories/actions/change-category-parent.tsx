@@ -8,7 +8,6 @@ import { Messages } from "../../../../../utils/messages"
 import { Utils } from "../../../../../utils/utils"
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook"
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map"
-// import _ from "lodash"
 
 export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
     const instance = DataInstancesMap.changeCategoryParent
@@ -20,7 +19,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         , decodedDbParamsObject
     } = useUtilsInfo()
 
-    return (<div className="flex flex-col">
+    return (<div className="flex flex-col w-full">
         <CompSyncFusionTreeGridToolbar
             CustomControl={() => <button className="px-2 py-1 bg-primary-400 text-gray-100 rounded-md hover:bg-primary-800 hover:text-white text-xs" onClick={handleNoParent}>No parent</button>}
             className=""
@@ -32,23 +31,24 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
             isPdfExport={false}
             isExcelExport={false}
         />
-        <CompSyncfusionTreeGrid
+        <CompSyncfusionTreeGrid 
             addUniqueKeyToJson={true}
             aggregates={getAggregates()}
             buCode={buCode}
             childMapping="children"
-            className="mr-6"
+            className="mr-4"
+            columns={getColumns()}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
             graphQlQueryName={GraphQLQueriesMapNames.productCategories}
             hasCheckBoxSelection={true}
-            isLoadOnInit={true}
-            columns={getColumns()}
-            height="calc(100vh - 240px)"
+            height="calc(100vh - 290px)"
             instance={instance}
-            minWidth='400px'
+            isLoadOnInit={true}
+            minWidth='500px'
             rowDeselected={rowDeselected}
+            // rowHeight={80}
             rowSelecting={rowSelecting}
             rowSelected={rowSelected}
             treeColumnIndex={1}
@@ -57,7 +57,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         {/* Submit */}
         <WidgetButtonSubmitFullWidth
             label="Submit"
-            className="mt-4 ml-auto w-40"
+            className="mt-2 ml-auto w-40"
             onClick={handleOnSubmit}
             disabled={parentId ? false : true}
         />
@@ -84,7 +84,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
             {
                 field: 'descr',
                 headerText: 'Descr',
-                width: 100
+                width: 150
             },
             {
                 field: 'leaf',

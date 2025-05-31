@@ -127,7 +127,7 @@ async def login_clients_helper(request: Request):
     body = await request.json()
     criteria = body.get("criteria")
     env = get_env()
-    logging.debug(f"Login clients helper called in environment: {env}")
+    # logging.debug(f"Login clients helper called in environment: {env}")
     if criteria:
         sqlArgs = {"criteria": criteria}
         sql = SqlSecurity.get_clients_on_criteria

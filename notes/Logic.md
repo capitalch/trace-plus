@@ -1,3 +1,40 @@
+# Logic for checking gp in all reports: SR,SSR, TSR reports
+                    - Sale transaction of a product in profit
+                        - SR, SSR and TSR OK in Trace+
+            - Repeat sales with discount
+                - *** SSR problem in Trace when sold with discount in sales ***
+                - All reports in Trace+ OK
+                    - Do a purchase with discount and corresponding sale
+                        - OK
+                    - Sale transaction of a product incurring loss
+                        - OK
+            - Sale transaction of a product incurring loss also add sales discount
+                - *** SSR problem in Trace  ***
+                    - Normal sales return
+                        - ** Trace: SR: Ok SSR: Error TSR: Error **
+                        - Trace+  : Ok
+                    - Sales return with discount
+                        - ** Trace: SR: OK, SSR: Error, TSR: Error **
+                        - Trace+: All OK
+    - Stock journal of a product before sale
+        - Trace: All OK
+        - Trace+: All OK
+        - Sale of the debited product 
+            - After stock journal date
+                Trace: SR: OK, SSR: Error in GP, TSR: Error in GP
+                Trace+: All OK
+            - Before stock journal date
+                Trace: SR: Tran not showing, SSR: OK, TSR: OK
+                Trace+: SR: Ok, SSR: OK, TSR: OK
+        - Sale of credited product
+            - After stock journal date
+                Trace: SR: Ok, SSR: Error, TSR: OK
+                Trace+: OK
+            - Before stock journal date
+                Trace: Ok
+                Trace+: Ok
+    
+    - Branch transfer
 # testing Branch Transfer stock transfer
 - create a branch transfer
 - check it in summary stock

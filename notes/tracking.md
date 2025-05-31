@@ -8,7 +8,7 @@
 																		- Common utilities, Exports	: Targetted: 19-01-2025, Completed: 15-02-2025
 																		- Reports: Completed on 28-02-2025
 																		- Inventory: Targetted at 31-03-2025, Completed on 22-05-2025
-- Deployment: May 2025
+																		- Deployment: May 2025
 
 - June 2025
 	- Vouchers				: 31-06-2025
@@ -18,6 +18,9 @@
 	- QA and release		: 30-08-2025
 
 ## History
+# 31-05-2025
+	- Complted deployment
+	- Started documentation
 # 22-05-2025
 	- Completed Stock Trans report
 	- stated deployment

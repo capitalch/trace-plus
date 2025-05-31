@@ -25,7 +25,6 @@ def get_conn_info(
     dbName = Config.DB_NAME if dbName is None else dbName
     db_params = dbParams.copy() if db_params is None else db_params.copy()
     env = get_env()
-    logging.debug(f"Environment: {env}, DB Name: {dbName}, DB Params: {db_params}")
     # Decide host and port based on environment
     if env == "development":
         db_params.pop("ipAddress")
@@ -38,17 +37,8 @@ def get_conn_info(
     db_params["dbname"] = dbName
     db_params["keepalives"] = 1
     db_params["keepalives_idle"] = 30
-
     connInfo = make_conninfo("", **db_params)
     return connInfo
-
-    # dbName = Config.DB_SECURITY_DATABASE if dbName is None else dbName
-    # db_params = dbParams if db_params is None else db_params
-    # db_params['dbname'] = dbName
-    # db_params['keepalives'] = 1
-    # db_params['keepalives_idle'] = 30
-    # connInfo = make_conninfo("", **db_params)
-    # return connInfo
 
 
 async def exec_sql(
