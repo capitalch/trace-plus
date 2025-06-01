@@ -25,14 +25,24 @@ entry point: /usr/lib/systemd/systemd
 											- Trace+ logo is not coming
 
 ## Bug fix
-	- When opening balance is not zero show a warning the apening balances do not match
-	- Nan sometimes appear at trial balance
+	- On change BU
+		- Company info
+		- Settings
+		- Accounts
+		- Opening balances
+		- Branches
+		- Financial Years
+				- Enable security to upload at cloud
+	- Each branch can have separate address. If branch address not present, take address of unit
+	- Cleanup clients
+																	- When opening balance is not zero show a warning the opening balances do not match
+																	- Nan sometimes appear at trial balance
+																	- Accounts master edit account breaks
 	- In ledger subledger do a direct search on party name inside subledger
-	- rename generic-switch to comp-generic-switch in Master accounts
-	- In new product registration UPC is mandatory, which should not
-	- Product master check duplicate UPC code server side validation
-	- Product label is not allowing + symbol. It should allow that
-	- Product Code in Stock Journal report missing
+																	- rename generic-switch to comp-generic-switch in Master accounts
+																	- In new product registration UPC is mandatory, which should not
+																	- Product label is not allowing + symbol. It should allow that
+																	- Product Code in Stock Journal report missing
 	- Update function get_stock_on_date in all databases
 	- Change bucode should refresh the branches of that bu
 	- Change of fin year and branch should refresh / reset the report
@@ -74,6 +84,7 @@ entry point: /usr/lib/systemd/systemd
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Misc
+	- Product master check duplicate UPC code server side validation
 	- In all grids show a margin of 10 px from bottom
 	- Grid fix up sizes for edit, delete and preview buttons
 	- Check Capichow bank recon double entry

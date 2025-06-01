@@ -33,12 +33,12 @@ function useValidators() {
     return error;
   }
 
-  function checkAllowSomeSpecialChars(input: string | undefined) {
+  function checkAllowSomeSpecialChars(input: string | undefined | null) {
     let error = undefined;
     if (!input) {
       return error;
     }
-    if (input.search(/^[A-Za-z0-9 .@$#+:(),_-]+$/) < 0) {
+    if (input.search(/^[A-Za-z0-9 *&.@$#+:(),_-]+$/) < 0) {
       error = Messages.errForbiddenChar;
     }
     return error;
@@ -49,8 +49,8 @@ function useValidators() {
     if (!input) {
       return error;
     }
-    if (input.search(/^[A-Za-z0-9 ()-]+$/) < 0) {
-      error = Messages.errForbiddenChar;
+    if (input.search(/^[A-Za-z0-9 ()-_+*]+$/) < 0) {
+      error = Messages.errForbiddenChar1;
     }
     return error;
   }

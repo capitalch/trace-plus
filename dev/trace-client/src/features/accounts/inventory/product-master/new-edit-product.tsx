@@ -56,8 +56,8 @@ export function NewEditProduct({ props }: any) {
             brandId: undefined,
             unitId: undefined,
             label: undefined,
-            hsn: undefined,
-            upcCode: undefined,
+            hsn: null,
+            upcCode: null,
             gstRate: 0,
             salePrice: 0,
             isActive: true,
@@ -66,7 +66,7 @@ export function NewEditProduct({ props }: any) {
             salePriceGst: 0,
             purPriceGst: 0,
             purPrice: 0,
-            info: undefined
+            info: null
         },
     });
 
@@ -148,32 +148,29 @@ export function NewEditProduct({ props }: any) {
                             />
                         </FormField>
 
-                        <div className="">
-
-                            {/* product label */}
-                            <FormField
-                                label="Product Label"
-                                required
-                                error={errors.label?.message}
-                                className="">
-                                <input
-                                    type="text"
-                                    className={inputFormFieldStyles}
-                                    placeholder="Enter product name"
-                                    {...register('label', {
-                                        required: Messages.errRequired,
-                                        minLength: {
-                                            value: 2,
-                                            message: Messages.messMin2CharsRequired
-                                        },
-                                        validate: checkAllowSomeSpecialChars1,
-                                        onChange: (e: any) => {
-                                            ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-PRODUCT-LABEL'], { label: e.target.value })
-                                        }
-                                    })}
-                                />
-                            </FormField>
-                        </div>
+                        {/* product label */}
+                        <FormField
+                            label="Product Label"
+                            required
+                            error={errors.label?.message}
+                            className="">
+                            <input
+                                type="text"
+                                className={inputFormFieldStyles}
+                                placeholder="Enter product name"
+                                {...register('label', {
+                                    required: Messages.errRequired,
+                                    minLength: {
+                                        value: 2,
+                                        message: Messages.messMin2CharsRequired
+                                    },
+                                    validate: checkAllowSomeSpecialChars1,
+                                    onChange: (e: any) => {
+                                        ibukiDdebounceEmit(IbukiMessages['DEBOUNCE-PRODUCT-LABEL'], { label: e.target.value })
+                                    }
+                                })}
+                            />
+                        </FormField>
                     </div>
                     <div className="grid grid-cols-4 gap-2">
 
@@ -183,7 +180,11 @@ export function NewEditProduct({ props }: any) {
                                 allowNegative={false}
                                 className={inputFormFieldStyles}
                                 isAllowed={(values) => values.value.length <= 8}
-                                onValueChange={(values) => setValue('hsn', values.floatValue)}
+                                onValueChange={(values) => setValue('hsn', values.floatValue || null)}
+                                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                {...register('hsn', {
+                                    validate: (value) => ((value ?? 0) < (10000000)) || Messages.errHsnTooHigh
+                                })}
                                 placeholder="00000000"
                                 value={watch('hsn')}
                             />
@@ -213,8 +214,9 @@ export function NewEditProduct({ props }: any) {
                                 decimalScale={2}
                                 className={inputFormFieldStyles}
                                 placeholder="000000000000"
+                                {...register('upcCode')}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                onValueChange={(values) => setValue('upcCode', values.floatValue)}
+                                onValueChange={(values) => setValue('upcCode', values.floatValue || null)}
                                 value={watch('upcCode')}
                             />
                         </FormField>
@@ -253,6 +255,7 @@ export function NewEditProduct({ props }: any) {
                                 },
                                 validate: checkAllowSomeSpecialChars
                             })}
+                        // value={watch('info') || null}
                         />
                         <span className="text-xs text-gray-500 mt-1 flex justify-end">
                             <span className={watch("info")?.length || 0 > 400 ? "text-amber-500" : ""}>
@@ -478,8 +481,8 @@ export type NewEditProductType = {
     brandId?: number;
     unitId?: number;
     label: string;
-    hsn?: number;
-    upcCode?: number;
+    hsn: number | null;
+    upcCode: number | null;
     gstRate?: number;
     salePrice?: number;
     isActive?: boolean;
@@ -488,7 +491,7 @@ export type NewEditProductType = {
     salePriceGst?: number;
     purPriceGst?: number;
     purPrice?: number;
-    info?: string;
+    info?: string | null;
 };
 
 // const inputStyles = clsx(

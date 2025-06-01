@@ -27,9 +27,10 @@ const Messages = {
     'The existing account has children. You cannot change parent account to ledger type',
   errFailFetchingDataFromAccounts:
     'Failed in fetching data from accounts database. Hence logging out',
-  errForbiddenChar: 'Forbidden char is present. Allowed .@$#+:(),_-',
-  errForbiddenChar1: 'Forbidden char is present. Allowed ()_-',
+  errForbiddenChar: 'Forbidden char is present. Allowed .@$#+:(),_-*&',
+  errForbiddenChar1: 'Forbidden char is present. Allowed ()_-+*',
   errGstRateTooHigh: 'Gst rate is too high',
+  errHsnTooHigh: 'HSN code is too high',
   errIncrementedFinYearNotExists:
     'Incremented financial year does not exist. Please create a new financial year in the accounts',
   errInputMustBeUrl: 'Input must be a valid URL',
@@ -108,6 +109,7 @@ const Messages = {
   messNotAllowed: 'This operation is not allowed',
   messNoBusinessUnitsDefined:
     'No business units are defined for this client. Admin must define at least one business unit',
+  messOpeningBalancesMismatch: "There was error in opening balances of accounts. Sum of debits and credits do not match",
   messOpBalClearDateChangeNotAllowed:
     'Opening balance clear date cannot be changed',
   messOperationNotAllowed: 'This operation is not allowed',
@@ -126,7 +128,7 @@ const Messages = {
     'The selected secured controls were unlinked successfully',
   messSelectClientName: 'Type first 6 chars to select a client name',
   messSelectBank: 'Select a bank by clicking the button below',
-  messStockJournalDebitCreditMismatch:'Stock journal Debis and Credits mismatch',
+  messStockJournalDebitCreditMismatch: 'Stock journal Debis and Credits mismatch',
   messSuccess: 'Successfull',
   messSureToProceed: 'Are you sure to proceed?',
   messSureOnUnLinkSecuredControl:

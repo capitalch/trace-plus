@@ -1,5 +1,5 @@
-import { useForm } from "react-hook-form";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
+import { useForm } from "react-hook-form";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { Messages } from "../../../../utils/messages";
@@ -66,7 +66,7 @@ export function AccountsAddGroupModal() {
             <label className="flex flex-col font-medium text-primary-400">
                 <span className="font-bold">Account Code <WidgetAstrix /></span>
                 <input
-                    type="text"
+                    type="text" aria-label="Account Code"
                     placeholder="e.g. cashAccount"
                     autoComplete="off"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
@@ -107,7 +107,7 @@ export function AccountsAddGroupModal() {
             {/* Account Type */}
             <label className="flex flex-col font-medium text-primary-400">
                 <span className="font-bold">Account Type <WidgetAstrix /></span>
-                <select
+                <select aria-label="Account Type" title="Account Type"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
                     {...register('accountType', { required: Messages.errRequired })}>
                     <option value="">--- select ---</option>
@@ -121,7 +121,7 @@ export function AccountsAddGroupModal() {
             {/* Account Class */}
             <label className="flex flex-col font-medium text-primary-400">
                 <span className="font-bold">Account Class <WidgetAstrix /></span>
-                <select
+                <select aria-label="Account Class" title="Account Class"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2 text-gray-700"
                     {...register('accountClass', { required: Messages.errRequired })}
                     disabled={!accountType}>

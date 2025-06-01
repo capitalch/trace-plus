@@ -63,7 +63,7 @@ export function AccountsEditModal({
         return (<WidgetLoadingIndicator />)
     }
 
-    return (<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 min-w-72 w-96">
+    return (<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 ">
 
         {/* Account Code */}
         <label className="flex flex-col font-medium text-primary-400">

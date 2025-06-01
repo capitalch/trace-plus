@@ -48,7 +48,8 @@
     "react-sliding-pane": "^7.3.0",
     "rxjs": "^7.8.2",
     "sweetalert2": "^11.17.2",
-    "url-join": "^5.0.0"
+    "url-join": "^5.0.0",
+    "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",

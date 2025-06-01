@@ -11,6 +11,7 @@ import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootStateType } from '../../../app/store/store';
 import { selectCompSwitchStateFn } from '../../../controls/redux-components/comp-slice';
+import { Utils } from '../../../utils/utils';
 
 export function TrialBalance() {
     const instance: string = DataInstancesMap.trialBalance
@@ -128,23 +129,23 @@ export function TrialBalance() {
                 customAggregate: (data: any) => customOpeningClosingAggregate(data, 'opening', 'opening_dc'),
                 field: 'opening',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 py-2 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 py-2 font-semibold">{Utils.toDecimalFormat(props.Custom || 0)}</span>,
                 type: 'Custom',
             },
             {
                 columnName: 'debit',
                 customAggregate: (data: any) => customDebitCreditAggregate(data, 'debit'),
                 field: 'debit',
-                // format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{Utils.toDecimalFormat(props.Custom)}</span>,
                 type: 'Custom',
             },
             {
                 columnName: 'credit',
                 customAggregate: (data: any) => customDebitCreditAggregate(data, 'credit'),
                 field: 'credit',
-                // format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                format: 'N2',
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{Utils.toDecimalFormat(props.Custom || 0)}</span>,
                 type: 'Custom',
             },
             {
@@ -152,7 +153,7 @@ export function TrialBalance() {
                 customAggregate: (data: any) => customOpeningClosingAggregate(data, 'closing', 'closing_dc'),
                 field: 'closing',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{decFormatter.format(props.Custom)}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{Utils.toDecimalFormat(props.Custom)}</span>,
                 type: 'Custom',
             }
         ])

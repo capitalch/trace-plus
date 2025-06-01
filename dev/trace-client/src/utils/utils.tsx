@@ -67,37 +67,10 @@ export const Utils: UtilsType = {
   showOptionsSelect: showOptionsSelect,
   showSaveMessage: showSaveMessage,
   showSuccessAlertMessage: showSuccessAlertMessage,
+  showWarningMessage: showWarningMessage,
   toDecimalFormat: toDecimalFormat,
   treeGridUtils: treeGridUtils
 };
-
-// function addUniqueKeysToJson1(data: any) { // Created by AI
-//     let runningKey = 100000; // This is child series
-
-//     const traverseAndAddKeys = (node: any, parentKey: number) => {
-//         // Add a running key to child nodes, but the parent keeps the same key
-//         const nodeWithKey = { ...node, pkey: parentKey };
-
-//         // Traverse through child nodes if present
-//         Object.keys(nodeWithKey).forEach((key) => {
-//             if (Array.isArray(nodeWithKey[key])) {
-//                 // Children will have unique running keys
-//                 nodeWithKey[key] = nodeWithKey[key].map((child: any) => traverseAndAddKeys(child, runningKey++));
-//             } else if (typeof nodeWithKey[key] === 'object' && nodeWithKey[key] !== null) {
-//                 nodeWithKey[key] = traverseAndAddKeys(nodeWithKey[key], runningKey++);
-//             }
-//         });
-
-//         return nodeWithKey;
-//     };
-
-//     return data.map((item: any, index: number) => {
-//         // Assign a consistent parent key based on index or some stable property
-//         const parentKey = index + 1; // Can also be item.id if available
-//         return traverseAndAddKeys(item, parentKey);
-//     });
-
-// }
 
 function addUniqueKeysToJson(data: any) {
   // AI created
@@ -532,7 +505,6 @@ function showErrorMessage(
   const status =
     error?.response?.status || error?.networkError?.statusCode || 500;
   Swal.fire({
-    // allowOutsideClick:true, // Does not work in toast mode
     toast: true,
     position: "bottom-right",
     color: "white",
@@ -662,6 +634,27 @@ function showFailureAlertMessage(alertMessage: AlertMessageType) {
     title: alertMessage.title,
     text: alertMessage.message,
     icon: "error"
+  });
+}
+
+function showWarningMessage(
+  warningMessage: string
+): void {
+  Swal.fire({
+    toast: true,
+    position: "bottom-left",
+    color: "white",
+    background: "orange",
+    timer: 60000,
+    timerProgressBar: true,
+    title: `Warning: ${warningMessage}`,
+    padding: "10px",
+    showConfirmButton: false,
+    icon: "warning",
+    iconColor: "white",
+    width: "auto",
+    showCloseButton: true,
+    allowEscapeKey: true
   });
 }
 
@@ -852,6 +845,7 @@ type UtilsType = {
     action: (result: any) => void
   ) => void;
   showSaveMessage: () => void;
+  showWarningMessage: (warningMessage: string) => void;
   toDecimalFormat: (s: any) => string;
   treeGridUtils: TreeGridUtilsType;
 };

@@ -1,14 +1,12 @@
 import clsx from "clsx"
 import { ChangeEvent } from "react"
-// import { AccountsMasterType } from "./accounts-master"
 
-export function GenericSwitch({
+export function CompGenericSwitch({
     customData,
     defaultChecked,
     disabled,
     onChange,
-    // props
-}: GenericSwitchType) {
+}: CompGenericSwitchType) {
     return (
         <label className={clsx("inline-flex items-center cursor-pointer", disabled && "opacity-50 cursor-not-allowed")}>
             <input
@@ -17,6 +15,7 @@ export function GenericSwitch({
                 disabled={disabled}
                 onChange={onChange ? (event: ChangeEvent<HTMLInputElement>) => onChange(event, customData) : undefined}
                 className="peer sr-only"
+                aria-label="Toggle switch"
             />
             <div
                 className={clsx(
@@ -29,16 +28,15 @@ export function GenericSwitch({
                         ? "after:bg-gray-400 after:border-gray-500"
                         : "after:bg-white after:border-gray-300",
                     "after:border after:content-['']"
-                )}
-            ></div>
+                )}>
+                </div>
         </label>
     )
 }
 
-export type GenericSwitchType = {
+export type CompGenericSwitchType = {
     customData?: any
     defaultChecked?: boolean
     disabled: boolean
     onChange?: (event: ChangeEvent<HTMLInputElement>, customData?: any) => void
-    // props: AccountsMasterType
 }

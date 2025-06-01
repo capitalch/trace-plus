@@ -8,6 +8,8 @@ import { AppDispatchType, RootStateType } from "../../../../app/store/store"
 import { Messages } from "../../../../utils/messages"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+// import { Navigate } from "react-router-dom"
+// import { setSideBarSelectedChildId } from "../../layouts-slice"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
@@ -23,7 +25,7 @@ export function BusinessUnitsOptions() {
 
     return (
         <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectAccSettingsChanged)}>
-            <button onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow-sm">
+            <button type="button" onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow-sm">
 
                 {/* Badge section */}
                 <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
@@ -67,7 +69,7 @@ export function BusinessUnitsOptions() {
                 dispatch(setCurrentDateFormat('DD/MM/YYYY'))
             }
             // clean up content area and reset side menu by deselecting any menu item
-            // navigate('/')
+            // Navigate({ to: '/', replace: true })
             // dispatch(setSideBarSelectedChildId({ id: '0' }))
         } catch (e: any) {
             console.log(e)

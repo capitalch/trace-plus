@@ -52,7 +52,7 @@ function Login() {
                         <span className="font-bold">Client name <WidgetAstrix /></span>
                         <CompTypeAhead
                             instance={instance}
-                            noOfCharsToType={1}
+                            noOfCharsToType={2}
                             optionLabel="clientName"
                             optionValue="id"
                             url={clientsUrl}

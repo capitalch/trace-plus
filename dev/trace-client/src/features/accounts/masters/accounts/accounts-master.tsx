@@ -7,7 +7,7 @@ import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/s
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { Utils } from "../../../../utils/utils"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
-import { GenericSwitch } from "./generic-switch"
+import { CompGenericSwitch } from "../../../../controls/components/comp-generic-switch"
 import { AppDispatchType } from "../../../../app/store/store"
 import { useDispatch } from "react-redux"
 import { SlidingPaneEnum, SlidingPaneMap, } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
@@ -252,7 +252,7 @@ export function AccountsMaster() {
     function autoSubledgerTemplate(props: AccountsMasterType) {
         const isVisible: boolean = (props.accLeaf === 'L') && props.accClass === 'debtor'
         const isDisabled: boolean = (props?.children && (props.children.length > 0)) ? true : false
-        return (isVisible && <GenericSwitch
+        return (isVisible && <CompGenericSwitch
             customData={props}
             defaultChecked={props.isAutoSubledger}
             disabled={isDisabled}

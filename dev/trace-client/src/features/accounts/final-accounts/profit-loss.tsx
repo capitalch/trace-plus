@@ -17,6 +17,7 @@ import { CompInstances } from "../../../controls/redux-components/comp-instances
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
 import { useUtilsInfo } from "../../../utils/utils-info-hook"
+import { Messages } from "../../../utils/messages"
 
 export function ProfitLoss() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
@@ -189,7 +190,7 @@ export function ProfitLoss() {
                 customAggregate: (data: any) => customClosingAggregate(data, 'closing', 'closing_dc'),
                 field: 'closing',
                 format: 'N2',
-                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{props.Custom}</span>,
+                footerTemplate: (props: any) => <span className="mr-3 font-semibold">{Utils.toDecimalFormat(props.Custom)}</span>,
                 type: 'Custom',
             }
         ])
@@ -235,6 +236,11 @@ export function ProfitLoss() {
                 instance: incomesInstance,
                 data: jsonResult?.[incomesInstance]
             }))
+            const incomesClosing = customClosingAggregate(jsonResult[incomesInstance], 'closing', 'closing_dc')
+            const expensesClosing = customClosingAggregate(jsonResult[expensesInstance], 'closing', 'closing_dc')
+            if (incomesClosing !== expensesClosing) {
+                Utils.showWarningMessage(Messages.messOpeningBalancesMismatch)
+            }
         } catch (e: any) {
             console.log(e)
         }

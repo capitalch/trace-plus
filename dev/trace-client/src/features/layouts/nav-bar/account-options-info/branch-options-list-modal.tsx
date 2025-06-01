@@ -49,9 +49,9 @@ export function BranchOptionsListModal() {
     function onDataBound() {
         const currentBranchId = currentBranch?.branchId;
         const currBranch: any = listBoxBranches.find((br: any) => br.id === currentBranchId);
-        const currFinYearText = currBranch?.text;
-        if (listRef?.current) {
-            listRef.current.selectItems([currFinYearText]);
+        const currBranchText = currBranch?.text;
+        if (listRef?.current && currBranchText) {
+            listRef.current.selectItems([currBranchText]);
         }
     }
 

@@ -13,13 +13,15 @@ import { GeneralSettingsType, Utils } from "../../../utils/utils";
 import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
 import { changeAccSettings } from "../accounts-slice";
 import Select from "react-select";
+// import { useEffect} from "react";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 export function GeneralSettings() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalSettings
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
-    const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
-
+    const generalSettings: GeneralSettingsType = Utils.getGeneralSettings() || {}
+    
     const {
         register,
         handleSubmit,
@@ -30,11 +32,19 @@ export function GeneralSettings() {
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: {
-            dateFormat: generalSettings.dateFormat,
-            autoLogoutTimeInMins: generalSettings.autoLogoutTimeInMins,
-            auditLockDate: generalSettings.auditLockDate
+            dateFormat: generalSettings?.dateFormat,
+            autoLogoutTimeInMins: generalSettings?.autoLogoutTimeInMins || null,
+            auditLockDate: generalSettings?.auditLockDate || null
         },
     });
+
+    useDeepCompareEffect(() => {
+        if (buCode && dbName) {
+            setValue('dateFormat', generalSettings?.dateFormat || 'DD/MM/YYYY', { shouldDirty: true })
+            setValue('autoLogoutTimeInMins', generalSettings?.autoLogoutTimeInMins || null, { shouldDirty: true })
+            setValue('auditLockDate', generalSettings?.auditLockDate || null, { shouldDirty: true })
+        }
+    }, [generalSettings])
 
     return (<CompAccountsContainer className="h-[calc(100vh-80px)] overflow-y-scroll">
         <form onSubmit={handleSubmit(onSubmit)}
@@ -66,6 +76,7 @@ export function GeneralSettings() {
                     {...register('autoLogoutTimeInMins', {
                         required: Messages.errRequired,
                     })}
+                    value={watch('autoLogoutTimeInMins') || ''}
                 />
                 {errors.autoLogoutTimeInMins && <WidgetFormErrorMessage errorMessage={errors.autoLogoutTimeInMins.message} />}
             </label>
@@ -77,6 +88,7 @@ export function GeneralSettings() {
                     type="date"
                     className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300 w-full"
                     {...register('auditLockDate')}
+                    value={watch('auditLockDate') || ''}
                 />
             </label>
             <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96 mt-4" disabled={(isSubmitting) || (!_.isEmpty(errors))} />

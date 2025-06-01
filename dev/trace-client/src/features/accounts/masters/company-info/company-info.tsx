@@ -7,7 +7,6 @@ import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { Messages } from "../../../../utils/messages";
 import indiaStatesJson from './india-states-gst-codes.json'
-// import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { useEffect, useState } from "react";
 import { UnitInfoType, Utils } from "../../../../utils/utils";
 import _ from "lodash";
@@ -17,6 +16,7 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { AppDispatchType } from "../../../../app/store/store";
 import { changeAccSettings } from "../../accounts-slice";
 import Select from "react-select";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 export function CompanyInfo() {
     const dispatch: AppDispatchType = useDispatch()
@@ -40,7 +40,7 @@ export function CompanyInfo() {
     const {
         register,
         handleSubmit,
-        setValue,
+        setValue, clearErrors, reset,
         formState: { errors, isDirty, isSubmitting },
         watch
     } = useForm<UnitInfoType>({
@@ -65,6 +65,24 @@ export function CompanyInfo() {
         loadIndiaStates()
     }, [])
 
+    useDeepCompareEffect(() => {
+        if (buCode && dbName) {
+            reset()
+            clearErrors() // Clear errors when unitInfo changes
+            setValue('address1', unitInfo.address1 || '', { shouldDirty: true })
+            setValue('address2', unitInfo.address2 || '', { shouldDirty: true })
+            setValue('email', unitInfo.email || '', { shouldDirty: true })
+            setValue('gstin', unitInfo.gstin || '', { shouldDirty: true })
+            setValue('landPhone', unitInfo.landPhone || '', { shouldDirty: true })
+            setValue('mobileNumber', unitInfo.mobileNumber || '', { shouldDirty: true })
+            setValue('pin', unitInfo.pin || '', { shouldDirty: true })
+            setValue('shortName', unitInfo.shortName || '', { shouldDirty: true })
+            setValue('state', unitInfo.state || '', { shouldDirty: true })
+            setValue('unitName', unitInfo.unitName || '', { shouldDirty: true })
+            setValue('webSite', unitInfo.webSite || '', { shouldDirty: true })
+        }
+    }, [unitInfo])
+
     return (
         <CompAccountsContainer className="h-[calc(100vh-80px)] overflow-y-scroll">
             <form
@@ -82,6 +100,7 @@ export function CompanyInfo() {
                             required: Messages.errRequired,
                             validate: checkNoSpecialChar
                         })}
+                        value={watch('unitName') || undefined} // Ensure controlled input
                     />
                     {errors.unitName && <WidgetFormErrorMessage errorMessage={errors.unitName.message} />}
                 </label>
@@ -97,6 +116,7 @@ export function CompanyInfo() {
                             required: Messages.errRequired,
                             validate: checkNoSpaceOrSpecialChar
                         })}
+                        value={watch('shortName') || undefined} // Ensure controlled input
                     />
                     {errors.shortName && <WidgetFormErrorMessage errorMessage={errors.shortName.message} />}
                 </label>

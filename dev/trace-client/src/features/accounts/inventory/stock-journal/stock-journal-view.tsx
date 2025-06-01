@@ -1,4 +1,3 @@
-// import ReactSlidingPane from "react-sliding-pane";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import {
   CompSyncFusionGrid,
@@ -151,6 +150,12 @@ export function StockJournalView({ instance }: { instance: string }) {
         headerText: "User ref",
         type: "string",
         width: 100
+      },
+      {
+        field: "productCode",
+        headerText: "P Code",
+        type: "string",
+        width: 90
       },
       {
         field: "productDetails",

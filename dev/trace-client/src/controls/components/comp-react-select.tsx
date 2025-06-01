@@ -55,7 +55,9 @@ export function CompReactSelect({
     const selectedOption: any = options.find(
       (option: any) => option[optionValueName] === selectedValue
     );
-    selectRef.current.setValue(selectedOption);
+    if (selectedOption && selectRef.current) {
+      selectRef.current.setValue(selectedOption);
+    }
   }
 }
 
