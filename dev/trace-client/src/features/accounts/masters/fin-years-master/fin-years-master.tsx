@@ -11,12 +11,21 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 import { changeAccSettings } from "../../accounts-slice";
 import { NewEditFinYear } from "./new-edit-fin-year";
 import { NewFinYearButton } from "./new-fin-year-button";
+import { useEffect } from "react";
 
 export function FinYearsMaster() {
     const instance = DataInstancesMap.finYearsMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const dateFormat: string = Utils.getCurrentDateFormat()
+
+    useEffect(() => {
+        const loadData = context?.CompSyncFusionGrid[instance]?.loadData
+        if (loadData && buCode) {
+            loadData()
+        }
+    }, [buCode])
+
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             CustomControl={() => <NewFinYearButton />}
@@ -39,7 +48,7 @@ export function FinYearsMaster() {
             hasIndexColumn={true}
             height="calc(100vh - 250px)"
             instance={instance}
-            isLoadOnInit={true}
+            isLoadOnInit={false}
             minWidth="1400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}

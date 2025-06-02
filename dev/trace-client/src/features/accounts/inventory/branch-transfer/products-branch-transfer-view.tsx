@@ -14,7 +14,7 @@ import {
   setActiveTabIndex,
   showCompAppLoader
 } from "../../../../controls/redux-components/comp-slice";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactSlidingPane from "react-sliding-pane";
 import { PDFViewer } from "@react-pdf/renderer";
 import { ProductsBranchTransferPdf } from "./products-branch-transfer-pdf";
@@ -39,6 +39,14 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
     decodedDbParamsObject,
     finYearId
   } = useUtilsInfo();
+
+  useEffect(() => {
+          const loadData = context?.CompSyncFusionGrid[instance]?.loadData
+          if (loadData && buCode) {
+              loadData()
+          }
+      }, [buCode, finYearId, branchId]);
+
 
   return (
     <div className="flex flex-col w-full">
@@ -65,6 +73,7 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         height="calc(100vh - 410px)"
         allowPaging={true}
         instance={instance}
+        isLoadOnInit={false}
         minWidth="1300px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}

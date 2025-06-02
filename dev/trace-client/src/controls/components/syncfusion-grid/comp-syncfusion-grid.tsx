@@ -48,8 +48,6 @@ export function CompSyncFusionGrid({
   deleteColumnWidth,
   editColumnWidth,
   editSettings,
-  // enableInfiniteScrolling,
-  // enableVirtualization = false,
   gridDragAndDropSettings,
   hasCheckBoxSelection = false,
   hasIndexColumn = false,

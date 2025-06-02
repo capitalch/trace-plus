@@ -25,13 +25,37 @@ entry point: /usr/lib/systemd/systemd
 											- Trace+ logo is not coming
 
 ## Bug fix
-	- On change BU
-		- Company info
-		- Settings
-		- Accounts
-		- Opening balances
-		- Branches
-		- Financial Years
+	- Maybe isLoadOnInit be removed from grid permanently
+	- Table TagsM does not exist in Demounit2
+	- On change BU, Branch, FinYearId
+																	- Company info
+																	- Settings
+																	- Accounts
+																	- Opening balances
+																	- Branches
+																	- Financial Years
+																	- Final accounts
+		- Options
+			- Bank Recon
+			- All Transactions
+				- Refresh not working correctly
+		- inventory
+			- Categories
+			- Brands
+			- Product Master
+			- Opening Stock
+				- Not working in Kush Enclave
+			- Reports
+				- Current Orders
+				- Products List
+				- Pur price var
+				- Purchase
+				- Sales
+				- Stock Summary
+				- Stock Transactions
+			- Stock Journal
+			- Branch Transfer
+
 				- Enable security to upload at cloud
 	- Each branch can have separate address. If branch address not present, take address of unit
 	- Cleanup clients

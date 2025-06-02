@@ -100,7 +100,7 @@ export function CompanyInfo() {
                             required: Messages.errRequired,
                             validate: checkNoSpecialChar
                         })}
-                        value={watch('unitName') || undefined} // Ensure controlled input
+                        value={watch('unitName') || ''} // Ensure controlled input
                     />
                     {errors.unitName && <WidgetFormErrorMessage errorMessage={errors.unitName.message} />}
                 </label>
@@ -116,7 +116,7 @@ export function CompanyInfo() {
                             required: Messages.errRequired,
                             validate: checkNoSpaceOrSpecialChar
                         })}
-                        value={watch('shortName') || undefined} // Ensure controlled input
+                        value={watch('shortName') || ''} // Ensure controlled input
                     />
                     {errors.shortName && <WidgetFormErrorMessage errorMessage={errors.shortName.message} />}
                 </label>

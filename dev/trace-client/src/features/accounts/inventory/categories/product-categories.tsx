@@ -18,6 +18,7 @@ import { AddChildCategoryModal } from "./actions/add-child-category-modal"
 import { EditCategoryModal } from "./actions/edit-category-modal"
 import { AssociateTagModal } from "./actions/associate-tag-modal"
 import { ChangeCatgoryParent } from "./actions/change-category-parent"
+import { useEffect } from "react"
 
 export function ProductCategories() {
     const instance: string = DataInstancesMap.productCategories
@@ -27,6 +28,13 @@ export function ProductCategories() {
         , dbName
         , decodedDbParamsObject
     } = useUtilsInfo()
+
+    useEffect(() => {
+        const loadData = context?.CompSyncFusionTreeGrid[instance]?.loadData
+        if (loadData && buCode) {
+            loadData()
+        }
+    }, [buCode])
 
     return (<CompAccountsContainer>
         <CompSyncFusionTreeGridToolbar
@@ -49,7 +57,7 @@ export function ProductCategories() {
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
             graphQlQueryName={GraphQLQueriesMapNames.productCategories}
-            isLoadOnInit={true}
+            isLoadOnInit={false}
             columns={getColumns()}
             height="calc(100vh - 230px)"
             instance={instance}
@@ -120,12 +128,12 @@ export function ProductCategories() {
             })
         }
 
-        function handeleOnClickChangeParent(){
+        function handeleOnClickChangeParent() {
             Utils.showHideModalDialogA({
                 title: `Select New Parent for '${props.catName}'`,
                 isOpen: true,
                 element: <ChangeCatgoryParent catId={props.id} />, // id is tag id
-                size:'md'
+                size: 'md'
             })
         }
 

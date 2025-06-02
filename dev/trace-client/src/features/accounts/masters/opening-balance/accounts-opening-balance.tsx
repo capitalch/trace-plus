@@ -37,10 +37,9 @@ export function AccountsOpeningBalance() {
 
     useEffect(() => {
         loadData()
-    }, [finYearId, buCode])
+    }, [finYearId, buCode, branchId])
 
     return (<CompAccountsContainer>
-        {/* <button onClick={HandleSetScroll}>Set scroll</button> */}
         <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} />}
             title='Accounts opening balances'
             isLastNoOfRows={false}

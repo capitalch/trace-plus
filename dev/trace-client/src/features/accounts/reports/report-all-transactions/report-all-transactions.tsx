@@ -50,9 +50,9 @@ export function ReportAllTransactions() {
     }, [selectedAllTransactionsFilter, selectedLastNoOfRows])
 
     useEffect(() => {
-
-    }, [])
-
+        loadData()
+    }, [buCode, branchId, finYearId])
+    
     return (
         <CompAccountsContainer className="z-0">
             <CompSyncFusionGridToolbar className='mt-2 mr-6'
@@ -75,9 +75,6 @@ export function ReportAllTransactions() {
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
                 editColumnWidth={40}
-                // enableInfiniteScrolling={true}
-                // enableVirtualization={false}
-
                 hasIndexColumn={false}
                 height="calc(100vh - 300px)"
                 instance={instance}

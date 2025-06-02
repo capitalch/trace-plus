@@ -13,11 +13,19 @@ import { openSlidingPane } from "../../../../controls/redux-components/comp-slic
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewBranchButton } from "./new-branch-button";
 import { changeAccSettings } from "../../accounts-slice";
+import { useEffect } from "react";
 
 export function BranchMaster() {
     const instance = DataInstancesMap.branchMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
+
+    useEffect(() => {
+        const loadData = context?.CompSyncFusionGrid[instance]?.loadData
+        if (loadData && buCode) {
+            loadData()
+        }
+    }, [buCode])
 
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
@@ -41,7 +49,7 @@ export function BranchMaster() {
             hasIndexColumn={true}
             height="calc(100vh - 250px)"
             instance={instance}
-            isLoadOnInit={true}
+            isLoadOnInit={false}
             minWidth="1400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}

@@ -13,11 +13,19 @@ import { changeAccSettings } from "../../accounts-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { NewEditProductType } from "./new-edit-product";
+import { useEffect } from "react";
 
 export function ProductMaster() {
     const instance = DataInstancesMap.productMaster;
     const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
+
+    useEffect(() => {
+        const loadData = context?.CompSyncFusionGrid[instance]?.loadData
+        if (loadData && buCode) {
+            loadData()
+        }
+    }, [buCode])
 
     return (
         <CompAccountsContainer>
@@ -44,7 +52,7 @@ export function ProductMaster() {
                 editColumnWidth={40}
                 height="calc(100vh - 290px)"
                 instance={instance}
-                isLoadOnInit={true}
+                isLoadOnInit={false}
                 minWidth="1500px"
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}

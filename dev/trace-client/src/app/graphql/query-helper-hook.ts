@@ -6,13 +6,88 @@ import {
 } from './maps/graphql-queries-map'
 import _ from 'lodash'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
-import { useEffect, useMemo, useCallback } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { Utils } from '../../utils/utils'
 import { AppDispatchType } from '../store/store'
 import { useDispatch } from 'react-redux'
 import { resetQueryHelperData, setQueryHelperData } from './query-helper-slice'
 
 export function useQueryHelper({
+  addUniqueKeyToJson = false,
+  dataPath,
+  dbName = GLOBAL_SECURITY_DATABASE_NAME,
+  getQueryArgs,
+  graphQlQueryFromMap = GraphQLQueriesMap.genericQuery,
+  graphQlQueryName = GraphQLQueriesMapNames.genericQuery,
+  instance,
+  isExecQueryOnLoad = true
+}: QueryHelperType) {
+  const dispatch: AppDispatchType = useDispatch()
+  const [getQueryData, { error, loading }] = useLazyQuery(
+    graphQlQueryFromMap(dbName, getQueryArgs()),
+    { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
+  )
+
+  useEffect(() => {
+    if (isExecQueryOnLoad) {
+      loadData()
+    }
+    return () => {
+      // Cleanup data. Otherwise syncfusion grid loads the old data
+      dispatch(resetQueryHelperData({ instance: instance }))
+    }
+  }, [])
+
+  if (error) {
+    Utils.showErrorMessage(error)
+  }
+
+  async function loadData() {
+    const queryName = graphQlQueryName
+    const result: any = await getQueryData({ fetchPolicy: 'no-cache' })
+    if (result?.data?.[queryName]?.error?.content) {
+      Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
+    }
+    const data = _.isEmpty(result?.data?.[queryName])
+      ? []
+      : result.data[queryName]
+    if (addUniqueKeyToJson) { // Creates persistence of expanded rows by adding unique pkey to each record
+      if (data?.[0]?.jsonResult) {
+        if (dataPath) {
+          Utils.addUniqueKeysToJson(data[0].jsonResult[dataPath])
+        } else {
+          Utils.addUniqueKeysToJson(data[0].jsonResult)
+        }
+      }
+    }
+    // Dispatch the data to the store after a short delay to ensure UI updates correctly
+    setTimeout(() => dispatch(
+      setQueryHelperData({
+        data: data,
+        instance: instance
+      })
+    ), 100)
+
+  }
+  return { loadData, loading }
+}
+
+type QueryHelperType = {
+  addUniqueKeyToJson?: boolean
+  dataPath?: string
+  dbName?: string
+  getQueryArgs: () => GraphQLQueryArgsType
+  graphQlQueryFromMap?: (
+    dbName: string,
+    val: GraphQLQueryArgsType
+  ) => DocumentNode
+  graphQlQueryName?: string
+  instance: string
+  isExecQueryOnLoad?: boolean
+}
+
+// AI generated code for a custom hook to handle GraphQL queries in a React application.
+export function useQueryHelper1({
   addUniqueKeyToJson = false,
   dataPath,
   dbName = GLOBAL_SECURITY_DATABASE_NAME,
@@ -81,18 +156,4 @@ export function useQueryHelper({
   }
 
   return { loadData, loading }
-}
-
-type QueryHelperType = {
-  addUniqueKeyToJson?: boolean
-  dataPath?: string
-  dbName?: string
-  getQueryArgs: () => GraphQLQueryArgsType
-  graphQlQueryFromMap?: (
-    dbName: string,
-    val: GraphQLQueryArgsType
-  ) => DocumentNode
-  graphQlQueryName?: string
-  instance: string
-  isExecQueryOnLoad?: boolean
 }

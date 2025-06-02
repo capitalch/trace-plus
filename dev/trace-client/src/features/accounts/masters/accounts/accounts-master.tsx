@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, } from "react"
+import { ChangeEvent, ReactElement, useEffect, } from "react"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
@@ -31,6 +31,13 @@ export function AccountsMaster() {
         , decodedDbParamsObject
     } = useUtilsInfo()
 
+    useEffect(() => {
+        const loadData = context?.CompSyncFusionTreeGrid[instance]?.loadData
+        if (loadData && buCode) {
+            loadData()
+        }
+    }, [buCode])
+
     return (<CompAccountsContainer>
         <CompSyncFusionTreeGridToolbar className="mt-2"
             title='Accounts master'
@@ -49,7 +56,7 @@ export function AccountsMaster() {
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.accountsMaster}
             graphQlQueryName={GraphQLQueriesMapNames.accountsMaster}
-            isLoadOnInit={true}
+            isLoadOnInit={false}
             columns={getColumns()}
             height="calc(100vh - 245px)"
             instance={instance}

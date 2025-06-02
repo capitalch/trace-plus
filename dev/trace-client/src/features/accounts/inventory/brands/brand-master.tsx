@@ -14,11 +14,19 @@ import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-comp
 import { NewBrandButton } from "./new-brand-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { Messages } from "../../../../utils/messages";
+import { useEffect } from "react";
 
 export function BrandMaster() {
     const instance = DataInstancesMap.brandMaster;
     const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
+
+    useEffect(() => {
+        const loadData = context?.CompSyncFusionGrid[instance]?.loadData;
+        if (loadData && buCode) {
+            loadData();
+        }
+    }, [buCode]);
 
     return (
         <CompAccountsContainer>
@@ -44,7 +52,7 @@ export function BrandMaster() {
                 hasIndexColumn={true}
                 height="calc(100vh - 240px)"
                 instance={instance}
-                isLoadOnInit={true}
+                isLoadOnInit={false}
                 minWidth="600px"
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
