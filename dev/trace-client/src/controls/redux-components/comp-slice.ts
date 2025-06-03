@@ -223,7 +223,6 @@ type SlidingPanePayloadActionType = {
 };
 
 // selectors
-// compCheckBox
 export const selectCompCheckBoxStateFn = (
   state: RootStateType,
   instance: string

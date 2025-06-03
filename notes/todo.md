@@ -25,8 +25,9 @@ entry point: /usr/lib/systemd/systemd
 											- Trace+ logo is not coming
 
 ## Bug fix
+	- When bu is changed, sometimes branch is not changed and remains old one
+	- When bu is changed then fin yar id is uncertain
 	- Maybe isLoadOnInit be removed from grid permanently
-	- Table TagsM does not exist in Demounit2
 	- On change BU, Branch, FinYearId
 																	- Company info
 																	- Settings
@@ -44,18 +45,18 @@ entry point: /usr/lib/systemd/systemd
 																	- Brands
 																	- Product Master
 			- Opening Stock
-				- Not working in Kush Enclave
+				- Not working properly. Maybe issue with dataSource
 			- Reports
-				- Current Orders
-					- Not working with capital behala
+																- Current Orders
+																	- Not working with capital behala
 																	- Products List
-				- Pur price var
-					- Kush enclave not working
-				- Purchase
-					- Not working correctly
-				- Sales
-				- Stock Summary
-				- Stock Transactions
+																- Pur price var
+																	- Kush enclave not working
+																- Purchase
+																	- Not working correctly
+																	- Sales
+																	- Stock Summary
+																	- Stock Transactions
 			- Stock Journal
 			- Branch Transfer
 

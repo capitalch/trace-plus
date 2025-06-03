@@ -38,7 +38,12 @@ export function PurchaseReport({ title }: { title?: string }) {
     if (selectedStartDate && selectedEndDate) {
       loadData();
     }
-  }, [isAllBranches, branchId, buCode, selectedStartDate, selectedEndDate]);
+  }, [isAllBranches,
+    branchId,
+    buCode,
+    finYearId,
+    selectedStartDate,
+    selectedEndDate]);
 
   return (
     <div className="flex flex-col">
@@ -306,6 +311,8 @@ export function PurchaseReport({ title }: { title?: string }) {
     try {
       const state: RootStateType = Utils.getReduxState();
       const isAllBranchesState = state.reduxComp.compSwitch[instance]
+      const buCode = state.login.currentBusinessUnit?.buCode;
+      const finYearId = state.login.currentFinYear?.finYearId;
       const startDate = state.accounts.purchaseReportFilterState.selectedStartDate
       const endDate = state.accounts.purchaseReportFilterState.selectedEndDate
 

@@ -24,9 +24,6 @@ from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
 from app.graphql.handlers.import_secured_controls import import_secured_controls
 
-# from .db.helpers.psycopg2_helper import exec_sql as exec_sql_psycopg2
-# import asyncio
-
 logger = logging.getLogger(__name__)
 
 

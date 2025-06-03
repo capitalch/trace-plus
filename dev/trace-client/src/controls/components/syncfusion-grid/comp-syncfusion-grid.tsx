@@ -135,7 +135,7 @@ export function CompSyncFusionGrid({
   };
 
   return (
-    <GridComponent
+    <GridComponent 
       style={{ maxWidth: maxWidth, minWidth: minWidth }}
       actionBegin={actionBegin}
       actionComplete={actionComplete}

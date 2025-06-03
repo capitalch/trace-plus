@@ -239,10 +239,10 @@ export function SalesReport({ title }: { title?: string }) {
       },
       { field: "productCode", headerText: "Pr code", width: 90, type: "string" },
       {
-        field:'catName',
-        headerText:'Category',
-        width:100,
-        type:'string',
+        field: 'catName',
+        headerText: 'Category',
+        width: 100,
+        type: 'string',
       },
       {
         field: "product",
@@ -447,8 +447,10 @@ export function SalesReport({ title }: { title?: string }) {
   }
 
   async function loadData() {
-    try {
+    try { 
       const state: RootStateType = Utils.getReduxState();
+      const buCode = state.login.currentBusinessUnit?.buCode;
+      const finYearId = state.login.currentFinYear?.finYearId;
       const isAllBranchesState = state.reduxComp.compSwitch[instance];
       const selectedFiltersState = state.salesReport;
       const currentStartDate = currentFinYear?.startDate || "";
@@ -501,6 +503,7 @@ export function SalesReport({ title }: { title?: string }) {
       });
 
       setRowsDataBColor(rowsData);
+
       setRowsData(rowsData);
     } catch (e: any) {
       console.log(e);

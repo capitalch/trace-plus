@@ -209,6 +209,8 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
     try {
       const state: RootStateType = Utils.getReduxState();
       const isAllBranchesState = state.reduxComp.compSwitch[instance]
+      const buCode = state.login.currentBusinessUnit?.buCode;
+      const finYearId = state.login.currentFinYear?.finYearId;
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",

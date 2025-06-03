@@ -182,18 +182,4 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
       }
     ];
   }
-
-  // function onRemove(props: any) {
-  //   const gridRef = context.CompSyncFusionGrid[instance].gridRef;
-  //   if (gridRef.current) {
-  //     const rowIndex = gridRef.current.getRowIndexByPrimaryKey(props.id);
-  //     gridRef.current.selectRow(rowIndex);
-  //     const selectedRecords = gridRef.current?.getSelectedRecords();
-  //     if (selectedRecords && selectedRecords.length > 0) {
-  //       gridRef.current?.deleteRecord('OrderID', selectedRecords[0]);
-  //     } else {
-  //       alert('Please select a row to delete');
-  //     }
-  //   }
-  // }
 }

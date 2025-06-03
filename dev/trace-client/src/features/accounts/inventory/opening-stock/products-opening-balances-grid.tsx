@@ -17,6 +17,7 @@ import {
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { ProductsStockTransfer } from "./products-stock-transfer-button";
+import { useEffect } from "react";
 
 export function ProductsOpeningBalancesGrid() {
   const instance = DataInstancesMap.productsOpeningBalances;
@@ -34,6 +35,16 @@ export function ProductsOpeningBalancesGrid() {
     const ret: any = state.queryHelper[instance]?.data;
     return ret;
   });
+
+  useEffect(() => {
+    // This block is necessary. Otherwise branch selection not works correctly
+    const loadData = context.CompSyncFusionGrid[instance].loadData;
+    if (loadData) {
+      loadData();
+    }
+  }, [branchId, buCode]);
+ 
+  
   return (
     <div className="border-2 border-amber-100 rounded-lg">
       <CompSyncFusionGridToolbar
@@ -59,11 +70,10 @@ export function ProductsOpeningBalancesGrid() {
         editColumnWidth={40}
         height="calc(100vh - 260px)"
         instance={instance}
-        isLoadOnInit={true}
+        isLoadOnInit={false}
         minWidth="800px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
-        // onRemove={handleOnDelete}
         sqlId={SqlIdsMap.getProductsOpeningBalances}
         sqlArgs={{
           branchId: branchId,
