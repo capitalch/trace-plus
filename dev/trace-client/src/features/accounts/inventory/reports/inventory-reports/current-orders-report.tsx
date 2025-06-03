@@ -76,11 +76,9 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         dbParams={decodedDbParamsObject}
         hasIndexColumn={true}
         isLoadOnInit={false}
-        // hasRemoveButton={true}
         height="calc(100vh - 245px)"
         instance={instance}
         minWidth="600px"
-        // onRemove={onRemove}
         sqlId={SqlIdsMap.getCurrentOrders}
         sqlArgs={{
           branchId: isAllBranches ? null : branchId,

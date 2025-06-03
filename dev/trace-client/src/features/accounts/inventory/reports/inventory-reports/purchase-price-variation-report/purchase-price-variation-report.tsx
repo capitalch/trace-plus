@@ -1,5 +1,4 @@
 import "react-sliding-pane/dist/react-sliding-pane.css";
-// import SlidingPane from "react-sliding-pane";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,
@@ -15,13 +14,8 @@ import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchasePriceVariationToolbarFilterDisplay } from "./purchase-price-variation-toolbar-filter-display";
-import {
-  // AppDispatchType,
-  RootStateType
-} from "../../../../../../app/store/store";
+import {  RootStateType} from "../../../../../../app/store/store";
 import { shallowEqual, useSelector } from "react-redux";
-// import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
-// import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";
 import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 
@@ -45,7 +39,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
 
   useEffect(() => {
     loadData();
-  }, [isAllBranches, branchId, buCode]);
+  }, [isAllBranches, branchId, buCode, finYearId]);
 
   return (
     <div className="flex flex-col">

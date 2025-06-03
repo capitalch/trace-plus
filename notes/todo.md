@@ -40,16 +40,19 @@ entry point: /usr/lib/systemd/systemd
 			- All Transactions
 				- Refresh not working correctly
 		- inventory
-			- Categories
-			- Brands
-			- Product Master
+																	- Categories
+																	- Brands
+																	- Product Master
 			- Opening Stock
 				- Not working in Kush Enclave
 			- Reports
 				- Current Orders
-				- Products List
+					- Not working with capital behala
+																	- Products List
 				- Pur price var
+					- Kush enclave not working
 				- Purchase
+					- Not working correctly
 				- Sales
 				- Stock Summary
 				- Stock Transactions

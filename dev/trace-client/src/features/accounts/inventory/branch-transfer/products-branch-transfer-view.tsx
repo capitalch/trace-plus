@@ -41,11 +41,11 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
-          const loadData = context?.CompSyncFusionGrid[instance]?.loadData
-          if (loadData && buCode) {
-              loadData()
-          }
-      }, [buCode, finYearId, branchId]);
+    const loadData = context?.CompSyncFusionGrid[instance]?.loadData
+    if (loadData && buCode) {
+      loadData()
+    }
+  }, [buCode, finYearId, branchId]);
 
 
   return (

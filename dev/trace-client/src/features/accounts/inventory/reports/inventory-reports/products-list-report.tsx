@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import {
@@ -12,7 +13,14 @@ import { BackToDashboardLink } from "../back-to-dashboard-link";
 export function ProductsListReport({ title }: { title?: string }) {
   const instance = DataInstancesMap.productsListReport;
 
-  const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+  const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
+
+useEffect(() => {
+        const loadData = context?.CompSyncFusionGrid[instance]?.loadData
+        if (loadData && buCode) {
+            loadData()
+        }
+    }, [buCode])
 
   return (
     <div className="flex flex-col">
