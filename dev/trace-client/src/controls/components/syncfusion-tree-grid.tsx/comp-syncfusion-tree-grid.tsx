@@ -33,7 +33,7 @@ export function CompSyncfusionTreeGrid({
     hasCheckBoxSelection = false,
     height,
     instance,
-    isLoadOnInit = true,
+    // isLoadOnInit = false,
     loadData,
     minWidth = '600px',
     pageSize = 50,
@@ -48,7 +48,7 @@ export function CompSyncfusionTreeGrid({
     treeColumnIndex = 0
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, isLoadOnInit, sqlId, sqlArgs, treeColumnIndex })
+    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, sqlId, sqlArgs, treeColumnIndex })
     const gridRef: any = useRef({})
     const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
@@ -237,7 +237,7 @@ export type CompSyncfusionTreeGridType = {
     hasCheckBoxSelection?: boolean
     height?: string
     instance: string
-    isLoadOnInit?: boolean
+    // isLoadOnInit?: boolean
     loadData?: () => void
     minWidth?: string
     pageSize?: number

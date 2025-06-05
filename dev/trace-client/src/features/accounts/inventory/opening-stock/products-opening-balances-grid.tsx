@@ -28,7 +28,7 @@ export function ProductsOpeningBalancesGrid() {
   const {
     branchId,
     buCode,
-    context,
+    // context,
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
@@ -71,7 +71,7 @@ export function ProductsOpeningBalancesGrid() {
         editColumnWidth={40}
         height="calc(100vh - 260px)"
         instance={instance}
-        isLoadOnInit={false}
+        // isLoadOnInit={false}
         loadData={loadData}
         minWidth="800px"
         onDelete={handleOnDelete}
@@ -175,9 +175,9 @@ export function ProductsOpeningBalancesGrid() {
         headerText: "Active",
         type: "boolean",
         width: 80,
-        template: (props: any) => (
-          <input aria-label="isActive" type="checkbox" checked={props.isActive} readOnly disabled />
-        )
+        // template: (props: any) => (
+        //   <input aria-label="isActive" type="checkbox" checked={props.isActive} readOnly disabled />
+        // )
       }
     ];
   }
@@ -192,10 +192,10 @@ export function ProductsOpeningBalancesGrid() {
           deletedIds: [id]
         });
         Utils.showSaveMessage();
-        const loadData = context.CompSyncFusionGrid[instance].loadData;
-        if (loadData) {
-          await loadData();
-        }
+        // const loadData = context.CompSyncFusionGrid[instance].loadData;
+        // if (loadData) {
+        await loadData();
+        // }
       } catch (e: any) {
         console.log(e);
       }

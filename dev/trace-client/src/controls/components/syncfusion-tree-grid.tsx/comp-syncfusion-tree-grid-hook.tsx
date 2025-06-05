@@ -17,7 +17,7 @@ export function useCompSyncfusionTreeGrid({
     , graphQlQueryName
     , hasCheckBoxSelection
     , instance
-    , isLoadOnInit
+    // , isLoadOnInit
     , sqlId
     , sqlArgs
 }: CompSyncfusionTreeGridType) {
@@ -37,7 +37,7 @@ export function useCompSyncfusionTreeGrid({
         graphQlQueryFromMap: graphQlQueryFromMap,
         graphQlQueryName: graphQlQueryName,
         instance: instance,
-        isExecQueryOnLoad: isLoadOnInit,
+        // isExecQueryOnLoad: isLoadOnInit,
     })
 
     const selectedData: any = useSelector((state: RootStateType) => {

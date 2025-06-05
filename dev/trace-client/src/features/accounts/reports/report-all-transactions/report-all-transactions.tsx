@@ -81,7 +81,7 @@ export function ReportAllTransactions() {
                 hasIndexColumn={false}
                 height="calc(100vh - 300px)"
                 instance={instance}
-                isLoadOnInit={false}
+                // isLoadOnInit={false}
                 loadData={loadData}
                 minWidth="1400px"
                 onEdit={handleOnEdit}

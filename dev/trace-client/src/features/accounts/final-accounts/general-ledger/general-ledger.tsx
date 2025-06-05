@@ -126,7 +126,7 @@ export function GeneralLedger() {
                 hasIndexColumn={false}
                 height="calc(100vh - 300px)"
                 instance={instance}
-                isLoadOnInit={false}
+                // isLoadOnInit={false}
                 loadData={loadData}
                 onRowDataBound={onRowDataBound}
             />

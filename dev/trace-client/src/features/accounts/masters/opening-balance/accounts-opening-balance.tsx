@@ -63,7 +63,7 @@ export function AccountsOpeningBalance() {
             }}
             height="calc(100vh - 240px)"
             instance={instance}
-            isLoadOnInit={false}
+            // isLoadOnInit={false}
             loadData={loadData}
             minWidth='950px'
             queryCellInfo={onQueryCellInfo}

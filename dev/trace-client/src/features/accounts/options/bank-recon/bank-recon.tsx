@@ -92,7 +92,7 @@ export function BankRecon() {
             height="calc(100vh - 240px)"
             instance={instance}
 
-            isLoadOnInit={false}
+            // isLoadOnInit={false}
             loadData={loadData}
             minWidth="1400px"
             onCellEdit={onCellEdit}

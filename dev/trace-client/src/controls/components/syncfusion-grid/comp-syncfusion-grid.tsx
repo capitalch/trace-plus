@@ -53,7 +53,7 @@ export function CompSyncFusionGrid({
   hasIndexColumn = false,
   height,
   indexColumnWidth = 40,
-  isLoadOnInit = true,
+  // isLoadOnInit = false,
   isSmallerFont = false,
   instance,
   loadData,
@@ -97,7 +97,7 @@ export function CompSyncFusionGrid({
     instance,
     hasCheckBoxSelection,
     hasIndexColumn,
-    isLoadOnInit,
+    // isLoadOnInit,
     loadData,
     onDelete,
     onEdit,
@@ -251,7 +251,7 @@ export type CompSyncFusionGridType = {
   height?: string;
   indexColumnWidth?: number;
   instance: string;
-  isLoadOnInit?: boolean;
+  // isLoadOnInit?: boolean;
   isSmallerFont?: boolean;
   loadData?: () => void;
   minWidth?: string;

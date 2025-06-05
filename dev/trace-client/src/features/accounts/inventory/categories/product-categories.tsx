@@ -57,7 +57,7 @@ export function ProductCategories() {
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.productCategories}
             graphQlQueryName={GraphQLQueriesMapNames.productCategories}
-            isLoadOnInit={false}
+            // isLoadOnInit={false}
             columns={getColumns()}
             height="calc(100vh - 230px)"
             instance={instance}

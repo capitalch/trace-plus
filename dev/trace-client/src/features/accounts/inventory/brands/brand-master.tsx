@@ -52,7 +52,7 @@ export function BrandMaster() {
                 hasIndexColumn={true}
                 height="calc(100vh - 240px)"
                 instance={instance}
-                isLoadOnInit={false}
+                // isLoadOnInit={false}
                 minWidth="600px"
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}

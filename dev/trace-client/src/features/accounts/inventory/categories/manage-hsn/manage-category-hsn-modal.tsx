@@ -72,9 +72,8 @@ export function ManageCategoryHsn() {
             hasIndexColumn={false}
             height="calc(100vh - 250px)"
             instance={instance}
-            isLoadOnInit={false}
+            // isLoadOnInit={false}
             minWidth="550px"
-            // onCellEdit={onCellEdit}
             queryCellInfo={onQueryCellInfo}
             sqlId={SqlIdsMap.getLeafCategories}
             sqlArgs={{}}

@@ -53,7 +53,7 @@ export function TrialBalance() {
                 dbParams={decodedDbParamsObject}
                 graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
                 graphQlQueryName={GraphQLQueriesMapNames.trialBalance}
-                isLoadOnInit={false}
+                // isLoadOnInit={false}
                 sqlArgs={{
                     branchId: isAllBranches ? null : branchId || 0,
                     finYearId: finYearId || 1900,

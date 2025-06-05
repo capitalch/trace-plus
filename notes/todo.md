@@ -25,11 +25,17 @@ entry point: /usr/lib/systemd/systemd
 											- Trace+ logo is not coming
 
 ## Bug fix
+	- Bank recon: select bank is blank
+																	- Product opening balance grid is very slow
+																- Error in
+																	- Accounts opening balance
+																	- Balance sheet
+																	- pl account
 	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the bu cannot be deleted.
 		So prevent user from deletion when its bu is existing. First delete bu then user
 	- When bu is changed, sometimes branch is not changed and remains old one
 	- When bu is changed then fin yar id is uncertain
-	- Maybe isLoadOnInit be removed from grid permanently
+																	- Maybe isLoadOnInit be removed from grid permanently
 	- On change BU, Branch, FinYearId
 																	- Company info
 																	- Settings
@@ -64,9 +70,9 @@ entry point: /usr/lib/systemd/systemd
 																	- Stock Journal
 																	- Branch Transfer
 
-				- Enable security to upload at cloud
+																	- Enable security to upload at cloud
 	
-	- Cleanup clients
+																	- Cleanup clients
 																	- When opening balance is not zero show a warning the opening balances do not match
 																	- Nan sometimes appear at trial balance
 																	- Accounts master edit account breaks
@@ -76,8 +82,8 @@ entry point: /usr/lib/systemd/systemd
 																	- Product label is not allowing + symbol. It should allow that
 																	- Product Code in Stock Journal report missing
 	- Update function get_stock_on_date in all databases
-	- Change bucode should refresh the branches of that bu
-	- Change of fin year and branch should refresh / reset the report
+																	- Change bucode should refresh the branches of that bu
+																	- Change of fin year and branch should refresh / reset the report
 	- QA complete functionality
 	- Bank recon
 		- HDFC bank online

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../../app/graphql/maps/graphql-queries-map"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
@@ -18,6 +18,13 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         , dbName
         , decodedDbParamsObject
     } = useUtilsInfo()
+
+    useEffect(() => {
+            const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
+            if (loadData) {
+                loadData()
+            }
+        }, [buCode])
 
     return (<div className="flex flex-col w-full">
         <CompSyncFusionTreeGridToolbar
@@ -45,10 +52,9 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
             hasCheckBoxSelection={true}
             height="calc(100vh - 290px)"
             instance={instance}
-            isLoadOnInit={true}
+            // isLoadOnInit={false}
             minWidth='500px'
             rowDeselected={rowDeselected}
-            // rowHeight={80}
             rowSelecting={rowSelecting}
             rowSelected={rowSelected}
             treeColumnIndex={1}

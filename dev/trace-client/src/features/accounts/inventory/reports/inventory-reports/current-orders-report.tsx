@@ -75,7 +75,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         dbName={dbName}
         dbParams={decodedDbParamsObject}
         hasIndexColumn={true}
-        isLoadOnInit={false}
+        // isLoadOnInit={false}
         height="calc(100vh - 245px)"
         instance={instance}
         minWidth="600px"

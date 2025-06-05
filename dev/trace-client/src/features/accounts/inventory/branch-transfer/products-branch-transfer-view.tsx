@@ -73,7 +73,7 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         height="calc(100vh - 410px)"
         allowPaging={true}
         instance={instance}
-        isLoadOnInit={false}
+        // isLoadOnInit={false}
         minWidth="1300px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}

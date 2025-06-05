@@ -76,7 +76,7 @@ export function BalanceSheet() {
                     dataSource={liabsData}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
-                    isLoadOnInit={false}
+                    // isLoadOnInit={false}
                     columns={getColumns('L')}
                     height="calc(100vh - 260px)"
                     instance={liabsInstance}
@@ -102,7 +102,7 @@ export function BalanceSheet() {
                     dataSource={assetsData}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
-                    isLoadOnInit={false}
+                    // isLoadOnInit={false}
                     columns={getColumns('A')}
                     height="calc(100vh - 260px)"
                     instance={assetsInstance}

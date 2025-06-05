@@ -52,7 +52,7 @@ export function ProductMaster() {
                 editColumnWidth={40}
                 height="calc(100vh - 290px)"
                 instance={instance}
-                isLoadOnInit={false}
+                // isLoadOnInit={false}
                 minWidth="1500px"
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}

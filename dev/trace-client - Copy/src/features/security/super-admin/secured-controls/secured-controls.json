@@ -1,0 +1,111 @@
+[
+    {
+      "controlNo": 1,
+      "controlName": "payment-save",
+      "controlType": "button",
+      "descr": "Can save payment"
+    },
+    {
+      "controlNo": 2,
+      "controlName": "payment-edit",
+      "controlType": "button",
+      "descr": "Can edit payment"
+    },
+    {
+      "controlNo": 3,
+      "controlName": "payment-delete",
+      "controlType": "button",
+      "descr": "Can delete payment"
+    },
+    {
+      "controlNo": 4,
+      "controlName": "receipt-save",
+      "controlType": "button",
+      "descr": "Can save receipt"
+    },
+    {
+      "controlNo": 5,
+      "controlName": "receipt-edit",
+      "controlType": "button",
+      "descr": "Can edit receipt"
+    },
+    {
+      "controlNo": 6,
+      "controlName": "receipt-delete",
+      "controlType": "button",
+      "descr": "Can delete receipt"
+    },
+    {
+      "controlNo": 7,
+      "controlName": "contra-save",
+      "controlType": "button",
+      "descr": "Can save contra"
+    },
+    {
+      "controlNo": 8,
+      "controlName": "contra-edit",
+      "controlType": "button",
+      "descr": "Can edit contra"
+    },
+    {
+      "controlNo": 9,
+      "controlName": "contra-delete",
+      "controlType": "button",
+      "descr": "Can delete contra"
+    },
+    {
+      "controlNo": 10,
+      "controlName": "journal-save",
+      "controlType": "button",
+      "descr": "Can save journal"
+    },
+    {
+      "controlNo": 11,
+      "controlName": "journal-edit",
+      "controlType": "button",
+      "descr": "Can edit journal"
+    },
+    {
+      "controlNo": 12,
+      "controlName": "journal-delete",
+      "controlType": "button",
+      "descr": "Can delete journal"
+    },
+    {
+      "controlNo": 13,
+      "controlName": "debit-note-save",
+      "controlType": "button",
+      "descr": "Can save debit note"
+    },
+    {
+      "controlNo": 14,
+      "controlName": "debit-note-edit",
+      "controlType": "button",
+      "descr": "Can edit debit note"
+    },
+    {
+      "controlNo": 15,
+      "controlName": "debit-note-delete",
+      "controlType": "button",
+      "descr": "Can delete debit note"
+    },
+    {
+      "controlNo": 16,
+      "controlName": "credit-note-save",
+      "controlType": "button",
+      "descr": "Can save credit note"
+    },
+    {
+      "controlNo": 17,
+      "controlName": "credit-note-edit",
+      "controlType": "button",
+      "descr": "Can edit credit note"
+    },
+    {
+      "controlNo": 18,
+      "controlName": "credit-note-delete",
+      "controlType": "button",
+      "descr": "Can delete credit note"
+    }
+  ]
+  

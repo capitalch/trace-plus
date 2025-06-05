@@ -31,7 +31,7 @@ export function useCompSyncFusionGrid({
   hasIndexColumn,
   indexColumnWidth,
   instance,
-  isLoadOnInit,
+  // isLoadOnInit,
   loadData,
   onDelete,
   onEdit,
@@ -68,7 +68,7 @@ export function useCompSyncFusionGrid({
     dbName: dbName,
     getQueryArgs: () => args,
     instance: instance,
-    isExecQueryOnLoad: isLoadOnInit
+    // isExecQueryOnLoad: isLoadOnInit
   });
 
   const selectedData: any = useSelector((state: RootStateType) => {

@@ -35,9 +35,8 @@ export function ManageTags() {
                 dbParams={decodedDbParamsObject}
                 editColumnWidth={35}
                 hasIndexColumn={true}
-                // height="calc(100vh - 250px)"
                 instance={instance}
-                isLoadOnInit={false}
+                // isLoadOnInit={false}
                 minWidth="500px"
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}

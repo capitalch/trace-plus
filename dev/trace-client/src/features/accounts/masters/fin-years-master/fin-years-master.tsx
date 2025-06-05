@@ -48,7 +48,7 @@ export function FinYearsMaster() {
             hasIndexColumn={true}
             height="calc(100vh - 250px)"
             instance={instance}
-            isLoadOnInit={false}
+            // isLoadOnInit={false}
             minWidth="1400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}

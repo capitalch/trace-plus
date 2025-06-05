@@ -6,7 +6,7 @@ import {
 } from './maps/graphql-queries-map'
 import _ from 'lodash'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
-import { useEffect, useCallback, useMemo } from 'react'
+import { useEffect } from 'react'
 import { Utils } from '../../utils/utils'
 import { AppDispatchType } from '../store/store'
 import { useDispatch } from 'react-redux'
@@ -20,7 +20,7 @@ export function useQueryHelper({
   graphQlQueryFromMap = GraphQLQueriesMap.genericQuery,
   graphQlQueryName = GraphQLQueriesMapNames.genericQuery,
   instance,
-  isExecQueryOnLoad = true
+  isExecQueryOnLoad = false
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
   const [getQueryData, { error, loading }] = useLazyQuery(
@@ -87,73 +87,73 @@ type QueryHelperType = {
 }
 
 // AI generated code for a custom hook to handle GraphQL queries in a React application.
-export function useQueryHelper1({
-  addUniqueKeyToJson = false,
-  dataPath,
-  dbName = GLOBAL_SECURITY_DATABASE_NAME,
-  getQueryArgs,
-  graphQlQueryFromMap = GraphQLQueriesMap.genericQuery,
-  graphQlQueryName = GraphQLQueriesMapNames.genericQuery,
-  instance,
-  isExecQueryOnLoad = true
-}: QueryHelperType) {
-  const dispatch: AppDispatchType = useDispatch()
+// export function useQueryHelper1({
+//   addUniqueKeyToJson = false,
+//   dataPath,
+//   dbName = GLOBAL_SECURITY_DATABASE_NAME,
+//   getQueryArgs,
+//   graphQlQueryFromMap = GraphQLQueriesMap.genericQuery,
+//   graphQlQueryName = GraphQLQueriesMapNames.genericQuery,
+//   instance,
+//   isExecQueryOnLoad = true
+// }: QueryHelperType) {
+//   const dispatch: AppDispatchType = useDispatch()
 
-  // ✅ Memoize the query args
-  const queryArgs = useMemo(() => getQueryArgs(), [getQueryArgs])
+//   // ✅ Memoize the query args
+//   const queryArgs = useMemo(() => getQueryArgs(), [getQueryArgs])
 
-  // ✅ Memoize the document node
-  const graphQLDoc: DocumentNode = useMemo(
-    () => graphQlQueryFromMap(dbName, queryArgs),
-    [dbName, queryArgs, graphQlQueryFromMap]
-  )
+//   // ✅ Memoize the document node
+//   const graphQLDoc: DocumentNode = useMemo(
+//     () => graphQlQueryFromMap(dbName, queryArgs),
+//     [dbName, queryArgs, graphQlQueryFromMap]
+//   )
 
-  const [getQueryData, { error, loading }] = useLazyQuery(graphQLDoc, {
-    notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'network-only'
-  })
+//   const [getQueryData, { error, loading }] = useLazyQuery(graphQLDoc, {
+//     notifyOnNetworkStatusChange: true,
+//     fetchPolicy: 'network-only'
+//   })
 
-  // ✅ Stable version of loadData so it doesn’t reinitialize
-  const loadData = useCallback(async () => {
-    const queryName = graphQlQueryName
-    const result: any = await getQueryData({ fetchPolicy: 'no-cache' })
+//   // ✅ Stable version of loadData so it doesn’t reinitialize
+//   const loadData = useCallback(async () => {
+//     const queryName = graphQlQueryName
+//     const result: any = await getQueryData({ fetchPolicy: 'no-cache' })
 
-    if (result?.data?.[queryName]?.error?.content) {
-      Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
-    }
+//     if (result?.data?.[queryName]?.error?.content) {
+//       Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
+//     }
 
-    const data = _.isEmpty(result?.data?.[queryName])
-      ? []
-      : result.data[queryName]
+//     const data = _.isEmpty(result?.data?.[queryName])
+//       ? []
+//       : result.data[queryName]
 
-    if (addUniqueKeyToJson && data?.[0]?.jsonResult) {
-      const targetJson = dataPath
-        ? data[0].jsonResult[dataPath]
-        : data[0].jsonResult
-      Utils.addUniqueKeysToJson(targetJson)
-    }
+//     if (addUniqueKeyToJson && data?.[0]?.jsonResult) {
+//       const targetJson = dataPath
+//         ? data[0].jsonResult[dataPath]
+//         : data[0].jsonResult
+//       Utils.addUniqueKeysToJson(targetJson)
+//     }
 
-    dispatch(
-      setQueryHelperData({
-        data: data,
-        instance: instance
-      })
-    )
-  }, [getQueryData, graphQlQueryName, dispatch, instance, addUniqueKeyToJson, dataPath])
+//     dispatch(
+//       setQueryHelperData({
+//         data: data,
+//         instance: instance
+//       })
+//     )
+//   }, [getQueryData, graphQlQueryName, dispatch, instance, addUniqueKeyToJson, dataPath])
 
-  // ✅ Call loadData on mount if required
-  useEffect(() => {
-    if (isExecQueryOnLoad) {
-      loadData()
-    }
-    return () => {
-      dispatch(resetQueryHelperData({ instance }))
-    }
-  }, [loadData, dispatch, instance, isExecQueryOnLoad])
+//   // ✅ Call loadData on mount if required
+//   useEffect(() => {
+//     if (isExecQueryOnLoad) {
+//       loadData()
+//     }
+//     return () => {
+//       dispatch(resetQueryHelperData({ instance }))
+//     }
+//   }, [loadData, dispatch, instance, isExecQueryOnLoad])
 
-  if (error) {
-    Utils.showErrorMessage(error)
-  }
+//   if (error) {
+//     Utils.showErrorMessage(error)
+//   }
 
-  return { loadData, loading }
-}
+//   return { loadData, loading }
+// }
