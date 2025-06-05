@@ -25,6 +25,8 @@ entry point: /usr/lib/systemd/systemd
 											- Trace+ logo is not coming
 
 ## Bug fix
+	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the bu cannot be deleted.
+		So prevent user from deletion when its bu is existing. First delete bu then user
 	- When bu is changed, sometimes branch is not changed and remains old one
 	- When bu is changed then fin yar id is uncertain
 	- Maybe isLoadOnInit be removed from grid permanently
@@ -36,17 +38,19 @@ entry point: /usr/lib/systemd/systemd
 																	- Branches
 																	- Financial Years
 																	- Final accounts
-		- Options
-			- Bank Recon
-			- All Transactions
-				- Refresh not working correctly
-		- inventory
+															- Options
+																- Bank Recon
+																	- opening balance
+																	- Not working properly
+																	- All Transactions
+																		- Refresh not working correctly
+														- inventory
 																	- Categories
 																	- Brands
 																	- Product Master
-			- Opening Stock
-				- Not working properly. Maybe issue with dataSource
-			- Reports
+																- Opening Stock
+																	- Not working properly. Maybe issue with dataSource
+															- Reports
 																- Current Orders
 																	- Not working with capital behala
 																	- Products List
@@ -57,11 +61,11 @@ entry point: /usr/lib/systemd/systemd
 																	- Sales
 																	- Stock Summary
 																	- Stock Transactions
-			- Stock Journal
-			- Branch Transfer
+																	- Stock Journal
+																	- Branch Transfer
 
 				- Enable security to upload at cloud
-	- Each branch can have separate address. If branch address not present, take address of unit
+	
 	- Cleanup clients
 																	- When opening balance is not zero show a warning the opening balances do not match
 																	- Nan sometimes appear at trial balance
@@ -112,6 +116,7 @@ entry point: /usr/lib/systemd/systemd
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Misc
+	- Each branch can have separate address. If branch address not present, take address of unit
 	- Product master check duplicate UPC code server side validation
 	- In all grids show a margin of 10 px from bottom
 	- Grid fix up sizes for edit, delete and preview buttons

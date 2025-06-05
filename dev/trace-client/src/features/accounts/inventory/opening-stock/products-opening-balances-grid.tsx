@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
 import {
@@ -17,9 +17,12 @@ import {
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { ProductsStockTransfer } from "./products-stock-transfer-button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
+import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 
 export function ProductsOpeningBalancesGrid() {
+  const [apiData, setApiData] = useState([])
   const instance = DataInstancesMap.productsOpeningBalances;
   const dispatch: AppDispatchType = useDispatch();
   const {
@@ -31,20 +34,20 @@ export function ProductsOpeningBalancesGrid() {
     decodedDbParamsObject,
     finYearId
   } = useUtilsInfo();
-  const selectedData: any = useSelector((state: RootStateType) => {
-    const ret: any = state.queryHelper[instance]?.data;
-    return ret;
-  });
+  // const selectedData: any = useSelector((state: RootStateType) => {
+  //   const ret: any = state.queryHelper[instance]?.data;
+  //   return ret;
+  // });
 
   useEffect(() => {
     // This block is necessary. Otherwise branch selection not works correctly
-    const loadData = context.CompSyncFusionGrid[instance].loadData;
-    if (loadData) {
-      loadData();
-    }
-  }, [branchId, buCode]);
- 
-  
+    // const loadData = context.CompSyncFusionGrid[instance].loadData;
+    // if (loadData) {
+    loadData();
+    // }
+  }, [branchId, buCode, finYearId]);
+
+
   return (
     <div className="border-2 border-amber-100 rounded-lg">
       <CompSyncFusionGridToolbar
@@ -63,22 +66,16 @@ export function ProductsOpeningBalancesGrid() {
         buCode={buCode}
         className="mt-4"
         columns={getColumns()}
-        dataSource={selectedData?.[0]?.jsonResult?.openingBalances}
-        dbName={dbName}
-        dbParams={decodedDbParamsObject}
+        dataSource={apiData}
         deleteColumnWidth={40}
         editColumnWidth={40}
         height="calc(100vh - 260px)"
         instance={instance}
         isLoadOnInit={false}
+        loadData={loadData}
         minWidth="800px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
-        sqlId={SqlIdsMap.getProductsOpeningBalances}
-        sqlArgs={{
-          branchId: branchId,
-          finYearId: finYearId
-        }}
       />
     </div>
   );
@@ -217,5 +214,38 @@ export function ProductsOpeningBalancesGrid() {
         lastPurchaseDate: args.lastPurchaseDate
       })
     );
+  }
+
+  async function loadData() {
+    const state: RootStateType = Utils.getReduxState();
+    const finYearId = state.login.currentFinYear?.finYearId;
+    const branchId = state.login.currentBranch?.branchId;
+    const buCode = state.login.currentBusinessUnit?.buCode;
+    dispatch(showCompAppLoader({
+      isVisible: true,
+      instance: CompInstances.compAppLoader
+    }))
+
+    try {
+      const res: any = await Utils.doGenericQuery({
+        buCode: buCode || '',
+        dbName: dbName || '',
+        dbParams: decodedDbParamsObject,
+        instance: instance,
+        sqlArgs: {
+          branchId: branchId,
+          finYearId: finYearId
+        },
+        sqlId: SqlIdsMap.getProductsOpeningBalances
+      })
+      setApiData(res?.[0]?.jsonResult?.openingBalances || []) // Set the data to state
+    } catch (e: any) {
+      console.log(e)
+    } finally {
+      dispatch(showCompAppLoader({
+        isVisible: false,
+        instance: CompInstances.compAppLoader
+      }))
+    }
   }
 }

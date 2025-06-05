@@ -83,7 +83,7 @@ function Login() {
                     {/* Password */}
                     <label className="flex flex-col font-medium text-primary-400">
                         <span className="font-bold">Password <WidgetAstrix /></span>
-                        <input type="password" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
+                        <input placeholder="*****" type="password" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
                         {(errors.password
                             ? <WidgetFormErrorMessage errorMessage={errors.password.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />)}

@@ -135,7 +135,6 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         width: 80,
         template: (props: any) =>
           format(props.tranDate, currentDateFormat)
-        // format: currentDateFormat, // For PDF export only used template. format gives error is exports
       },
       {
         field: "autoRefNo",

@@ -6,7 +6,7 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { Utils } from "../../../../utils/utils"
-import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
+// import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { bankReconSelectedBankFn, selectBank, SelectedBankType } from "../../accounts-slice"
 import { Messages } from "../../../../utils/messages"
@@ -24,13 +24,14 @@ export function BankRecon() {
     const [, setRefresh] = useState({})
     const instance = DataInstancesMap.bankRecon
     const dispatch: AppDispatchType = useDispatch()
-    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
+    // const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn, shallowEqual)
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
     const isoFormat = 'yyyy-MM-dd'
 
-    const { buCode
+    const {// branchId
+        buCode
         , context
         , dbName
         , decodedDbParamsObject
@@ -45,13 +46,17 @@ export function BankRecon() {
         if (selectedBank.accId) {
             loadData()
         }
-    }, [selectedBank])
+    }, [selectedBank, finYearId])
 
     useEffect(() => {
         return (() => {
             dispatch(selectBank({ accId: undefined, accName: '' })) //cleanup
         })
     }, [])
+
+    useEffect(() => {
+        resetData()
+    }, [buCode])
 
     const datePickerParams = {
         params: {
@@ -251,6 +256,10 @@ export function BankRecon() {
 
     async function loadData() {
         const gridRef = context.CompSyncFusionGrid[instance].gridRef
+        const state: RootStateType = Utils.getReduxState();
+        const currentFinYear = state.login.currentFinYear || Utils.getRunningFinYear()
+        const finYearId = state.login.currentFinYear?.finYearId;
+        const buCode = state.login.currentBusinessUnit?.buCode;
         if (gridRef) {
             gridRef.current.endEdit()
             gridRef.current.refresh() // required. Otherwise grid is not updated when edit is performed
@@ -338,6 +347,20 @@ export function BankRecon() {
                 args.cell.style.backgroundColor = 'lightyellow';
             }
         }
+    }
+
+    function resetData() {
+        const gridRef = context.CompSyncFusionGrid[instance].gridRef
+        meta.current.rows.length = 0 // clear existing data
+        if (gridRef) {
+            // setTimeout(() => {
+            gridRef.current.endEdit() // end any ongoing edit
+            gridRef.current.dataSource = [];
+            gridRef.current.refresh();
+            // }, 100)
+        }
+        dispatch(selectBank({ accId: undefined, accName: '' })) // reset selected bank
+        setRefresh({}) // trigger re-render
     }
 }
 

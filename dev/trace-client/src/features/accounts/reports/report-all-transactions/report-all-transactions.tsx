@@ -8,20 +8,22 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { ReportAllTransactionsFilterBar } from "./report-all-transactions-filter-bar";
 import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Utils } from "../../../../utils/utils";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";
-import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
+// import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 export function ReportAllTransactions() {
     const dispatch: AppDispatchType = useDispatch()
+    const [apiData, setApiData] = useState<any[]>([]) /////
     const instance: string = DataInstancesMap.reportAllTransactions
-    const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
+    // const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const {
         branchId
@@ -35,7 +37,7 @@ export function ReportAllTransactions() {
 
     const selectedAllTransactionsFilter: AllTransactionsFilterType = useSelector((state: RootStateType) => state.accounts.allTransactionsFilter, shallowEqual)
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         dispatch(setAllTransactionFilter({
             ...selectedAllTransactionsFilter,
             startDate: currentFinYear.startDate,
@@ -43,16 +45,16 @@ export function ReportAllTransactions() {
         }))
     }, [currentFinYear])
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         if (selectedAllTransactionsFilter.startDate) {
             loadData()
         }
-    }, [selectedAllTransactionsFilter, selectedLastNoOfRows])
+    }, [selectedAllTransactionsFilter])
 
     useEffect(() => {
         loadData()
     }, [buCode, branchId, finYearId])
-    
+
     return (
         <CompAccountsContainer className="z-0">
             <CompSyncFusionGridToolbar className='mt-2 mr-6'
@@ -62,7 +64,7 @@ export function ReportAllTransactions() {
                 isPdfExport={false}
                 isExcelExport={false}
                 isCsvExport={true}
-                isLastNoOfRows={true}
+                // isLastNoOfRows={true}
                 instance={instance}
             />
             <CompSyncFusionGrid
@@ -71,6 +73,7 @@ export function ReportAllTransactions() {
                 buCode={buCode}
                 className="mr-6 mt-4"
                 columns={getColumns()}
+                dataSource={apiData} //////
                 dbName={dbName}
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
@@ -245,6 +248,14 @@ export function ReportAllTransactions() {
     }
 
     async function loadData() {
+        const state: RootStateType = Utils.getReduxState();
+        const buCode = state.login.currentBusinessUnit?.buCode;
+        const finYearId = state.login.currentFinYear?.finYearId;
+        const branchId = state.login.currentBranch?.branchId;
+        const startDate:string = state.accounts.allTransactionsFilter.startDate //|| currentFinYear.startDate;
+        const endDate:string = state.accounts.allTransactionsFilter.endDate //|| currentFinYear.endDate;
+        const tranTypeId: number | null = state.accounts.allTransactionsFilter.transactionType ? transactionTypes[state.accounts.allTransactionsFilter.transactionType]?.value : null;
+        const dateType: string = state.accounts.allTransactionsFilter.dateType //|| 'entryDate'; // entryDate or transactionDate
         dispatch(showCompAppLoader({
             isVisible: true,
             instance: CompInstances.compAppLoader
@@ -257,20 +268,22 @@ export function ReportAllTransactions() {
                 instance: instance,
                 sqlArgs: {
                     dateFormat: currentDateFormat,
-                    endDate: selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
+                    endDate: endDate, //selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
                     finYearId: finYearId,
                     branchId: branchId,
-                    startDate: selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
-                    tranTypeId: transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null,
-                    noOfRows: selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null,
-                    dateType: selectedAllTransactionsFilter.dateType // entryDate or transactionDate
+                    startDate: startDate , //selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
+                    tranTypeId: tranTypeId, //transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null,
+                    // noOfRows: selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null,
+                    noOfRows: null,
+                    dateType: dateType //selectedAllTransactionsFilter.dateType // entryDate or transactionDate
                 },
                 sqlId: SqlIdsMap.getAllTransactions
             })
-            dispatch(setQueryHelperData({
-                instance: instance,
-                data: res
-            }))
+            setApiData(res || []) // Set the data to state
+            // dispatch(setQueryHelperData({
+            //     instance: instance,
+            //     data: res
+            // }))
         } catch (e: any) {
             console.log(e)
         } finally {

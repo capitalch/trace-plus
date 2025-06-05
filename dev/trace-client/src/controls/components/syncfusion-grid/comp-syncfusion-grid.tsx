@@ -22,7 +22,7 @@ import {
   Page
 } from "@syncfusion/ej2-react-grids";
 import _ from 'lodash'
-import { FC, useContext, useEffect, useRef } from "react";
+import { FC, useContext, useEffect, useRef, } from "react";
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator";
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
@@ -71,9 +71,11 @@ export function CompSyncFusionGrid({
   rowHeight,
   rowSelected,
   searchFields,
+  // setRefresh,
   sqlArgs,
   sqlId
 }: CompSyncFusionGridType) {
+  // const [, setRefresh] = useState({})
   const context: GlobalContextType = useContext(GlobalContext);
   const gridRef: any = useRef({});
   const {
@@ -121,6 +123,7 @@ export function CompSyncFusionGrid({
     }
     context.CompSyncFusionGrid[instance].loadData = loadData || loadDataLocal;
     context.CompSyncFusionGrid[instance].gridRef = gridRef;
+    // context.CompSyncFusionGrid[instance].setRefresh = setRefresh;
   }, []);
 
   if (loading) {
@@ -135,7 +138,7 @@ export function CompSyncFusionGrid({
   };
 
   return (
-    <GridComponent 
+    <GridComponent
       style={{ maxWidth: maxWidth, minWidth: minWidth }}
       actionBegin={actionBegin}
       actionComplete={actionComplete}
@@ -265,6 +268,7 @@ export type CompSyncFusionGridType = {
   rowHeight?: number;
   rowSelected?: (args: any) => void;
   searchFields?: string[];
+  // setRefresh?: (value: any) => void; // For refresh button
   sqlArgs?: GraphQLQueryArgsType; // SqlArgsType
   sqlId?: string;
 };

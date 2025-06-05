@@ -14,7 +14,7 @@ import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-comp
 import { NewBrandButton } from "./new-brand-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { Messages } from "../../../../utils/messages";
-import { useEffect } from "react";
+import { useEffect} from "react";
 
 export function BrandMaster() {
     const instance = DataInstancesMap.brandMaster;

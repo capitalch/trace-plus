@@ -27,6 +27,7 @@ export function CompSyncFusionGridToolbar({
   isSearch = true,
   minWidth = "1200px",
   title,
+  setToggleReload,
   subTitleControl = undefined
 }: CompSyncFusionGridToolbarType) {
   const context: GlobalContextType = useContext(GlobalContext);
@@ -36,22 +37,20 @@ export function CompSyncFusionGridToolbar({
   );
 
   const pdfExportProperties: PdfExportProperties = {
-    fileName: `${title}-${Utils.getCompanyName()}-${
-      isAllBranches
-        ? "All branches"
-        : Utils.getCurrentLoginInfo().currentBranch?.branchName || ""
-    }-${Utils.getCurrentFinYearFormattedDateRange()}.pdf`,
+    fileName: `${title}-${Utils.getCompanyName()}-${isAllBranches
+      ? "All branches"
+      : Utils.getCurrentLoginInfo().currentBranch?.branchName || ""
+      }-${Utils.getCurrentFinYearFormattedDateRange()}.pdf`,
     header: {
       fromTop: 0,
       height: 50,
       contents: [
         {
           type: "Text",
-          value: `${Utils.getCompanyName()}, Branch: ${
-            isAllBranches
-              ? "All branches"
-              : Utils.getCurrentLoginInfo().currentBranch?.branchName || ""
-          }`,
+          value: `${Utils.getCompanyName()}, Branch: ${isAllBranches
+            ? "All branches"
+            : Utils.getCurrentLoginInfo().currentBranch?.branchName || ""
+            }`,
           position: { x: 0, y: 0 },
           style: { textBrushColor: "#000000", fontSize: 16 }
         },
@@ -164,7 +163,10 @@ export function CompSyncFusionGridToolbar({
               handleRefresh={async () => {
                 const loadData: any =
                   context.CompSyncFusionGrid[instance].loadData;
-                if (loadData) {
+
+                if (setToggleReload) {
+                  setToggleReload((prev: boolean) => !prev)
+                } else if (loadData) {
                   await loadData();
                 }
                 const state: RootStateType = Utils.getReduxState();
@@ -205,6 +207,7 @@ type CompSyncFusionGridToolbarType = {
   isRefresh?: boolean;
   isSearch?: boolean;
   minWidth?: string;
-  title: string;
   subTitleControl?: ReactElement;
+  title: string;
+  setToggleReload?: (value: (val: boolean) => boolean) => void;
 };

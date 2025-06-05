@@ -26,7 +26,6 @@ export function SuperAdminClients() {
                 columns={getColumns()}
                 height="calc(100vh - 260px)"
                 instance={instance}
-                // rowHeight={40}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
                 sqlId={SqlIdsMap.allClients}
                 onDelete={handleOnDelete}

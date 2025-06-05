@@ -249,16 +249,6 @@ export function SalesReport({ title }: { title?: string }) {
         headerText: "Product",
         width: 250,
         type: "string",
-        // template: (props: any) => (
-        //   <div
-        //     className={clsx(
-        //       "flex flex-col",
-        //       props.grossProfit < 0 ? "text-red-500" : ""
-        //     )}
-        //   >
-        //     {"".concat(props.catName, " ", props.brandName, " ", props.label)}
-        //   </div>
-        // )
       },
       { field: "info", headerText: "Details", width: 200, type: "string" },
       {

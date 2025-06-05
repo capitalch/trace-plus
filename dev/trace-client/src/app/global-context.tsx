@@ -20,6 +20,7 @@ export type GlobalContextType = {
       gridRef?: any;
       loadData?: any;
       scrollPos?: number;
+      // setRefresh?: (a: any) => void;
     };
   };
   CompSyncFusionTreeGrid: {
@@ -32,7 +33,7 @@ export type GlobalContextType = {
   };
   DataInstances: {
     [key: string]: {
-      deletedIds: (number | string) [];
+      deletedIds: (number | string)[];
     };
   };
 };

@@ -540,6 +540,8 @@ export function StockSummaryReport({ title }: { title?: string }) {
       const state: RootStateType = Utils.getReduxState();
       const isAllBranchesState = state.reduxComp.compSwitch[instance];
       const selectedFiltersState = state.stockSummaryReport;
+      const buCode = state.login.currentBusinessUnit?.buCode;
+      const finYearId = state.login.currentFinYear?.finYearId;
 
       const rowsData: RowDataType[] = await Utils.doGenericQuery({
         buCode: buCode || "",

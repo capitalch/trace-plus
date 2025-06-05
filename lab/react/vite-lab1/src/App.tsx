@@ -68,6 +68,7 @@ import { SyncfusionCategoryTreeSelect } from "./features/syncfusion/syncfusion-c
 import { DropDownTreeDemo } from "./features/syncfusion/drop-down-tree-demo";
 import { DropDownTreeNewDemo } from "./features/syncfusion/drop-down-tree/drop-down-tree-new-demo";
 import { PositioningPanel } from "./features/Misc/positioning-panel";
+import { ToggleEffect } from "./features/Misc/toggle-effect";
 
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
@@ -148,7 +149,8 @@ function App() {
       {/* <SyncfusionCategoryTreeSelect />
       <DropDownTreeDemo /> */}
       {/* <DropDownTreeNewDemo /> */}
-      <PositioningPanel />
+      {/* <PositioningPanel /> */}
+      <ToggleEffect />
     </GlobalContext.Provider>
   );
 }
