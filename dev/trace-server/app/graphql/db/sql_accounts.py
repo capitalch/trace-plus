@@ -204,6 +204,22 @@ class SqlAccounts:
         ) as "jsonResult"
     """
 
+    get_account_names = """
+        select
+            id,
+            "accCode",
+            "accName",
+            "accType",
+            "parentId",
+            CASE 
+                WHEN "accLeaf" = 'Y' THEN true
+                WHEN "accLeaf" = 'N' THEN false
+                WHEN "accLeaf" = 'L' THEN false
+                WHEN "accLeaf" = 'S' THEN true
+            END as "isLeaf"
+        from "AccM"
+    """
+
     get_accounts_master = """
     -- modified by AI
         WITH RECURSIVE "children_cte" AS (

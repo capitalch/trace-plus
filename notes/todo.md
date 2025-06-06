@@ -1,6 +1,12 @@
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd
 
+## select account control in place of ledger / subledger control
+	- sql
+	- create fields
+	- select event
+	- created event
+
 ## Deployment
 										- db connect
 											- client accommodat Internal IP, Internal Port
@@ -25,7 +31,8 @@ entry point: /usr/lib/systemd/systemd
 											- Trace+ logo is not coming
 
 ## Bug fix
-	- Bank recon: select bank is blank
+	- Check  at large data the grid with template columns become slow
+																	- Bank recon: select bank is blank
 																	- Product opening balance grid is very slow
 																- Error in
 																	- Accounts opening balance
@@ -36,7 +43,7 @@ entry point: /usr/lib/systemd/systemd
 	- When bu is changed, sometimes branch is not changed and remains old one
 	- When bu is changed then fin yar id is uncertain
 																	- Maybe isLoadOnInit be removed from grid permanently
-	- On change BU, Branch, FinYearId
+																- On change BU, Branch, FinYearId
 																	- Company info
 																	- Settings
 																	- Accounts
@@ -84,11 +91,12 @@ entry point: /usr/lib/systemd/systemd
 	- Update function get_stock_on_date in all databases
 																	- Change bucode should refresh the branches of that bu
 																	- Change of fin year and branch should refresh / reset the report
-	- QA complete functionality
-	- Bank recon
-		- HDFC bank online
-			- balance is not reflecting correctly: running total is wrong
-			- 555000 is twice. Many items are twice
+														- QA complete functionality
+															- Bank recon
+																- HDFC bank online
+																	- balance is not reflecting correctly: running total is wrong
+																	- 555000 is twice. Many items are twice
+																	- Corrected bank-recon data and created unique constraint for tranDetailsId for extBankReconTranD table in all schemas and databases
 	
 																	- Categories: Change parent UI out of place
 																	- Final reports showing NaN at bottom

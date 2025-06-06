@@ -17,7 +17,6 @@ export function useCompSyncfusionTreeGrid({
     , graphQlQueryName
     , hasCheckBoxSelection
     , instance
-    // , isLoadOnInit
     , sqlId
     , sqlArgs
 }: CompSyncfusionTreeGridType) {

@@ -25,10 +25,12 @@ import { PDFViewer } from "@react-pdf/renderer"
 import { GeneralLedgerPdf } from "./general-ledger-pdf"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
+import { DropDownTreeComponent } from "@syncfusion/ej2-react-dropdowns"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
     const [isPaneOpen, setIsPaneOpen] = useState(false);
+    const ledgerRef = useRef<DropDownTreeComponent | null>(null);
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear() //Utils.getCurrentLoginInfo().currentFinYear || Utils.getRunningFinYear()
@@ -70,6 +72,7 @@ export function GeneralLedger() {
     }, [selectedAccId, isAllBranches, currentFinYear])
 
     useEffect(() => {
+        loadAccountOptions()
         return (() => { //cleanup
             dispatch(setCompCheckBoxState({
                 instance: [CompInstances.compCheckBoxBalanceLedger
@@ -116,6 +119,24 @@ export function GeneralLedger() {
                     isAllBranches={isAllBranches}
                     showAccountBalance={true}
                     sqlId={SqlIdsMap.getLedgerLeafAccounts} />
+                <DropDownTreeComponent
+                    className="h-10"
+                    id="dropDowntree"
+                    ref={ledgerRef}
+                    showClearButton={true}
+                    placeholder="Select account / subledger a/c ..."
+                    //   fields={fields}
+                    allowMultiSelection={false}
+                    popupHeight="300px"
+                    allowFiltering={true}
+                    filterBarPlaceholder="Search"
+                //   select={handleOnChangeCategory}
+                //   created={() => {
+                //     if (catRef.current) {
+                //       setCategory();
+                //     }
+                //   }}
+                />
             </div>
 
             <CompSyncFusionGrid
@@ -305,6 +326,17 @@ export function GeneralLedger() {
                 textAlign: 'Left'
             },
         ])
+    }
+
+    async function loadAccountOptions() {
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject || {},
+            instance: instance,
+            sqlId: SqlIdsMap.getAccountNames,
+        })
+        console.log('Account options:', res)
     }
 
     async function loadData() {
