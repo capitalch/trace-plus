@@ -137,7 +137,6 @@ export function LedgerSubledger({
     }
 
     function handleOnClickRefresh() {
-        // loadData()
         loadFirstSelectOptions()
         dispatch(updateLedgerSubledger({
             instance: instance,
