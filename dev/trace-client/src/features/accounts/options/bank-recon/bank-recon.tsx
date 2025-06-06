@@ -81,6 +81,7 @@ export function BankRecon() {
             actionComplete={onActionComplete}
             aggregates={getAggregates()}
             className="mr-6 mt-4"
+            hasCheckBoxSelection={true}
             columns={getColumns()}
             dataSource={meta?.current?.rows || []}
             deleteColumnWidth={40}
@@ -91,10 +92,9 @@ export function BankRecon() {
             hasIndexColumn={false}
             height="calc(100vh - 240px)"
             instance={instance}
-
-            // isLoadOnInit={false}
             loadData={loadData}
             minWidth="1400px"
+            rowHeight={25}
             onCellEdit={onCellEdit}
             onDelete={handleOnDelete}
             queryCellInfo={onQueryCellInfo}
@@ -195,7 +195,8 @@ export function BankRecon() {
                 headerText: 'Clear remarks',
                 type: 'string',
                 width: 150,
-                editType: 'textedit'
+                editType: 'textedit',
+                clipMode: "EllipsisWithTooltip",
             },
             {
                 allowEditing: false,
@@ -203,22 +204,31 @@ export function BankRecon() {
                 headerText: 'Accounts',
                 width: 200,
                 textAlign: 'Left',
-                type: 'string'
+                type: 'string',
+                clipMode: "EllipsisWithTooltip",
             },
             {
                 allowEditing: false,
                 field: 'info',
                 headerText: 'Info',
                 type: 'string',
-                width: 300
+                width: 300,
+                clipMode: "EllipsisWithTooltip",
             },
             {
+                allowEditing: false,
+                field: 'id',
+                headerText: 'Header id',
+                width: 150,
+            },
+            {
+                headerText: 'Details id',
                 allowEditing: false,
                 field: 'tranDetailsId',
                 type: 'number',
                 isPrimaryKey: true,
-                visible: false,
-                width: 0
+                // visible: false,
+                width: 150
             }
         ])
     }

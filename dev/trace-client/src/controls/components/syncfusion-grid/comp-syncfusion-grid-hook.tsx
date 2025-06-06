@@ -196,7 +196,7 @@ export function useCompSyncFusionGrid({
 
     if (hasCheckBoxSelection) {
       colDirectives.unshift(
-        <ColumnDirective key="X" type="checkbox" width="50" />
+        <ColumnDirective key="X" type="checkbox" width="50" headerTemplate={selectHeaderTemplate} />
       );
     }
     return colDirectives;
@@ -295,6 +295,11 @@ export function useCompSyncFusionGrid({
       </Button>
     );
   }
+
+  // Custom header template function
+    function selectHeaderTemplate() {
+        return <div></div>; // Empty div removes the checkbox, or add custom content if desired
+    }
 
   return {
     getAggrColDirectives,
