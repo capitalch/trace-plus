@@ -6,6 +6,12 @@ entry point: /usr/lib/systemd/systemd
 	- create fields
 	- select event
 	- created event
+## Generic dropDownTree for accounts in place of ledgerSubledger
+	- Reset data when no account selected
+																	- Populate data
+																	- redux slice
+																	- placement
+	- cleanup
 
 ## Deployment
 										- db connect

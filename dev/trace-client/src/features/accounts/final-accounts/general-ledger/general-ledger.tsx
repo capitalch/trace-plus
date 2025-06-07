@@ -1,6 +1,6 @@
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import _ from 'lodash'
-import Decimal, { } from 'decimal.js'
+import Decimal from 'decimal.js'
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
 import { LedgerSubledger } from "../../../../controls/redux-components/ledger-subledger"
@@ -25,15 +25,12 @@ import { PDFViewer } from "@react-pdf/renderer"
 import { GeneralLedgerPdf } from "./general-ledger-pdf"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
-import { DropDownTreeComponent, FieldsModel } from "@syncfusion/ej2-react-dropdowns"
+import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
     const [isPaneOpen, setIsPaneOpen] = useState(false);
-    const ledgerRef = useRef<DropDownTreeComponent | null>(null);
     const dispatch: AppDispatchType = useDispatch()
-    const [accountOptions, setAccountOptions] = useState<any[]>([])
-    const [accId, setAccId] = useState<number>(0)
     const instance: string = DataInstancesMap.generalLedger
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear() //Utils.getCurrentLoginInfo().currentFinYear || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
@@ -50,13 +47,7 @@ export function GeneralLedger() {
         transactions: [],
         transactionsCopy: []
     })
-    const fields: FieldsModel = {
-        dataSource: accountOptions as any,
-        value: "id",
-        parentValue: "parentId",
-        text: "accName",
-        hasChildren: "hasChild",
-    };
+    const selectedAccountPickerAccId = useSelector((state: RootStateType) => state.accountPickerTree[instance]?.id || 0)
 
     const {
         branchId
@@ -69,7 +60,7 @@ export function GeneralLedger() {
     } = useUtilsInfo()
 
     useEffect(() => {
-        if (accId || selectedAccId) {
+        if (selectedAccountPickerAccId || selectedAccId) {
             loadData()
         } else {
             // Reset data
@@ -78,10 +69,9 @@ export function GeneralLedger() {
                 gridRef.current.dataSource = []
             }
         }
-    }, [accId, selectedAccId, isAllBranches, currentFinYear])
+    }, [selectedAccountPickerAccId, selectedAccId, isAllBranches, currentFinYear])
 
     useEffect(() => {
-        loadAccountOptions()
         return (() => { //cleanup
             dispatch(setCompCheckBoxState({
                 instance: [CompInstances.compCheckBoxBalanceLedger
@@ -128,26 +118,8 @@ export function GeneralLedger() {
                     isAllBranches={isAllBranches}
                     showAccountBalance={true}
                     sqlId={SqlIdsMap.getLedgerLeafAccounts} />
-                <DropDownTreeComponent
-                    allowFiltering={true}
-                    allowMultiSelection={false}
-                    className="h-10"
-                    //   created={() => {
-                    //     if (catRef.current) {
-                    //       setCategory();
-                    //     }
-                    //   }}
-                    fields={fields}
-                    filterBarPlaceholder="Search"
-                    filterType="Contains"
-                    id="dropDowntree"
-                    placeholder="Select account / subledger a/c ..."
-                    popupHeight="300px"
-                    ref={ledgerRef}
-                    showClearButton={true}
-                    select={handleOnSelectAccount}
 
-                />
+                <AccountPickerTree instance={instance} showAccountBalance={true} />
             </div>
 
             <CompSyncFusionGrid
@@ -158,7 +130,6 @@ export function GeneralLedger() {
                 hasIndexColumn={false}
                 height="calc(100vh - 300px)"
                 instance={instance}
-                // isLoadOnInit={false}
                 loadData={loadData}
                 onRowDataBound={onRowDataBound}
             />
@@ -228,7 +199,6 @@ export function GeneralLedger() {
                 format: 'N2',
                 type: 'Custom',
                 customAggregate: calculateDebits,
-                // footerTemplate: (props: any) => props?.['debit - custom'] || 0
                 footerTemplate: (props: any) => <span>{`${decFormatter.format(props?.['debit - custom'] || 0)}`}</span>
             },
             {
@@ -348,34 +318,10 @@ export function GeneralLedger() {
         ])
     }
 
-    function handleOnSelectAccount(args: any) {
-        const selectedAcc: any = args?.itemData || {}
-        setAccId(selectedAcc?.id || 0)
-    }
-
-    async function loadAccountOptions() {
-        try {
-            const res: any = await Utils.doGenericQuery({
-                buCode: buCode || '',
-                dbName: dbName || '',
-                dbParams: decodedDbParamsObject || {},
-                instance: instance,
-                sqlId: SqlIdsMap.getAccountNames,
-            })
-            res.forEach((item: any) => {
-                item.hasChild = !item.isLeaf
-                item.selectable = item.isLeaf
-            })
-            setAccountOptions(res || [])
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
     async function loadData() {
         const finalAccId: number = Utils.getReduxState().reduxComp.ledgerSubledger[instance].finalAccId || 0
         const hasAllBranches: boolean = Utils.getReduxState().reduxComp.compSwitch[instance] || false
-        if ((!finalAccId) && (!accId)) {
+        if ((!finalAccId) && (!selectedAccountPickerAccId)) {
             meta.current.transactions = []
             meta.current.transactionsCopy = []
             return
@@ -386,7 +332,7 @@ export function GeneralLedger() {
             dbParams: decodedDbParamsObject || {},
             instance: instance,
             sqlArgs: {
-                accId: accId || finalAccId,
+                accId: selectedAccountPickerAccId || finalAccId,
                 finYearId: finYearId,
                 branchId: hasAllBranches ? null : branchId
             },
@@ -512,7 +458,6 @@ export function GeneralLedger() {
         const rowData: TranType = args.data as any
         if (rowData.autoRefNo === 'Summary') {
             (args.row as HTMLElement).style.backgroundColor = '#ecf0f2';
-            // (args.row as HTMLElement).style.color = '#ecf0f2'; 
             (args.row as HTMLElement).style.fontWeight = 'bold';
         }
     }

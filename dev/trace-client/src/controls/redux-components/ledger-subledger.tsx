@@ -39,7 +39,6 @@ export function LedgerSubledger({
         , dbName
         , decFormatter
         , decodedDbParamsObject
-        // , finYearId
     } = useUtilsInfo()
 
     useEffect(() => {
