@@ -87,13 +87,14 @@ export function StockJournalMain({ instance }: { instance: string }) {
     if (debits.equals(credits)) {
       await onSave();
     } else {
-      Utils.showConfirmDialog(
-        "Oops!",
-        Messages.messStockJournalDebitCreditMismatch,
-        async () => {
-          await onSave();
-        }
-      );
+      Utils.showAlertMessage('Validation Error', Messages.messStockJournalDebitCreditMismatch)
+      // Utils.showConfirmDialog(
+      //   "Oops!",
+      //   Messages.messStockJournalDebitCreditMismatch,
+      //   async () => {
+      //     await onSave();
+      //   }
+      // );
     }
   }
 
@@ -236,11 +237,11 @@ export function StockJournalMain({ instance }: { instance: string }) {
   function formatSerialNumbers(serialNumbers: string | null) {
     return serialNumbers
       ? JSON.stringify({
-          serialNumbers: serialNumbers
-            .split(/[,;]\s*/)
-            .filter((sn) => sn.trim() !== "")
-            .join(", "),
-        })
+        serialNumbers: serialNumbers
+          .split(/[,;]\s*/)
+          .filter((sn) => sn.trim() !== "")
+          .join(", "),
+      })
       : null;
   }
 

@@ -1,53 +1,71 @@
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd
 
-## select account control in place of ledger / subledger control
-	- sql
-	- create fields
-	- select event
-	- created event
+## Final issues as on 08-06-2025
+																	- Strict validation of debits equal credits in Stock Journals
+- Avoid keeping large data in redux in many places. Use page level state i.e useState for that
+- Check  at large data the grid with template columns become slow
+- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the 	bu cannot be deleted. So prevent user from deletion when its bu is existing. First delete bu then user
+- When bu is changed, sometimes branch is not changed and remains old one
+- When bu is changed then fin yar id is uncertain
+- Provide client name and client code in the email when new Admin user is created in super admin
+- When a new / update BU or Fy then it should be immediately updated to accounts info
+- When admin user logs in: From db get physical BU's and prompt to add if not present
+- Update function get_stock_on_date in all databases
+- TreeGrid width not properly managed when screen size comes down
+- Provide appropriate logging at server											
+- At logout make sure that redux store is initialized by using redux tools
+- Each branch can have separate address. If branch address not present, take address of unit
+- Product master check duplicate UPC code server side validation
+- In all grids show a margin of 10 px from bottom
+- Grid fix up sizes for edit, delete and preview buttons
+- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
+- BS, PL, Trial Bal to retain node expanded / collapsed
+- current order report: set to place the order to supplier through mail, whatsapp
+
 ## Generic dropDownTree for accounts in place of ledgerSubledger
-	- Reset data when no account selected
+																- general ledger
+																	- show balance, Reverse, Daily summary
+																	- sql
+																	- create fields
+																	- select event
+																	- created event
+																	- Reset data when no account selected
 																	- Populate data
 																	- redux slice
 																	- placement
-	- cleanup
+																	- cleanup
 
 ## Deployment
-										- db connect
-											- client accommodat Internal IP, Internal Port
-											- Server: change code
-									- Change api calls
-											- api/test
-											- /api
-											- /export-file
-											- /login
-											- /countries
-											- /login-clients
-											- /test
-											- /forgot-password
-											- /graphql/
-									- Checkup all screens
-											- Journals, Payments, Receipts, Contra should show WIP
-											- Purch / Sales all screens should show WIP
-										- Fix Masters
-											- Company Info
-											- General Settings
-											- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
-											- Trace+ logo is not coming
+																- db connect
+																	- client accommodat Internal IP, Internal Port
+																	- Server: change code
+															- Change api calls
+																	- api/test
+																	- /api
+																	- /export-file
+																	- /login
+																	- /countries
+																	- /login-clients
+																	- /test
+																	- /forgot-password
+																	- /graphql/
+															- Checkup all screens
+																	- Journals, Payments, Receipts, Contra should show WIP
+																	- Purch / Sales all screens should show WIP
+																- Fix Masters
+																	- Company Info
+																	- General Settings
+																	- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
+																	- Trace+ logo is not coming
 
 ## Bug fix
-	- Check  at large data the grid with template columns become slow
 																	- Bank recon: select bank is blank
 																	- Product opening balance grid is very slow
 																- Error in
 																	- Accounts opening balance
 																	- Balance sheet
 																	- pl account
-	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the bu cannot be deleted.
-		So prevent user from deletion when its bu is existing. First delete bu then user
-	- When bu is changed, sometimes branch is not changed and remains old one
-	- When bu is changed then fin yar id is uncertain
 																	- Maybe isLoadOnInit be removed from grid permanently
 																- On change BU, Branch, FinYearId
 																	- Company info
@@ -89,12 +107,10 @@ entry point: /usr/lib/systemd/systemd
 																	- When opening balance is not zero show a warning the opening balances do not match
 																	- Nan sometimes appear at trial balance
 																	- Accounts master edit account breaks
-	- In ledger subledger do a direct search on party name inside subledger
 																	- rename generic-switch to comp-generic-switch in Master accounts
 																	- In new product registration UPC is mandatory, which should not
 																	- Product label is not allowing + symbol. It should allow that
 																	- Product Code in Stock Journal report missing
-	- Update function get_stock_on_date in all databases
 																	- Change bucode should refresh the branches of that bu
 																	- Change of fin year and branch should refresh / reset the report
 														- QA complete functionality
@@ -109,22 +125,13 @@ entry point: /usr/lib/systemd/systemd
 																	- Home machine accounts master not working
 		
 	- Admin
-		- There are some issues related to bu and finyear when a new admin use logs in
-		- Provide client name and client code in the email when new Admin user is created in super admin
-		- When a new / update BU or Fy then it should be immediately updated to accounts info
-		- When admin user logs in: From db get physical BU's and prompt to add if not present
 																- Super admin clients
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
-	- Nav bar
-		- When u change bu, the branches of bu are not changed to reflect branches of new BU. It retains the old branches.
 ## To do
 														- Old Trace
 															- Transfer of closing balance in case of stock journal and branch transfer
 															- Update sql of current orders at server
-- General
-	- TreeGrid width not properly managed when screen size comes down
-	- Provide appropriate logging at server											
-	- At logout make sure that redux store is initialized by using redux tools											
+- General											
 															- In accounts title, right side show client name in dim
 															- Bottom left User type shows unknown
 															- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
@@ -136,19 +143,10 @@ entry point: /usr/lib/systemd/systemd
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
 - Misc
-	- Each branch can have separate address. If branch address not present, take address of unit
-	- Product master check duplicate UPC code server side validation
-	- In all grids show a margin of 10 px from bottom
-	- Grid fix up sizes for edit, delete and preview buttons
-	- Check Capichow bank recon double entry
-	- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
-	- XData showing typescript error in many places. Need to correct the types
-	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
-	- BS, PL, Trial Bal to retain node expanded / collapsed
-	- current order report: set to place the order to supplier through mail, whatsapp
-	- When BU changes, Branches remain of the old BU. So error and system crash
-	- Validation for stock Journal: dealerPrice or purPrice for the output product must be there. Don't allow to make purPrice as 0 when the product is in stockJournal output
-	- Strict validation of debits equal credits in Stock Journals
+	
+															- Check Capichow bank recon double entry
+															- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
+															- XData showing typescript error in many places. Need to correct the types
 	
 
 										- Deployment

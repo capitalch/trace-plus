@@ -1,4 +1,4 @@
-import { DropDownTreeComponent, FieldsModel, SelectEventArgs } from "@syncfusion/ej2-react-dropdowns";
+import { DdtSelectEventArgs, DropDownTreeComponent, FieldsModel } from "@syncfusion/ej2-react-dropdowns";
 import { useEffect, useRef, useState } from "react";
 import { AppDispatchType, RootStateType } from "../../../app/store/store";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -10,6 +10,10 @@ import clsx from "clsx";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconRefresh } from "../../icons/icon-refresh";
 import { selectCompSwitchStateFn } from "../comp-slice";
+// import { IconClear } from "../../icons/icon-clear";
+// import { IconClear1 } from "../../icons/icon-clear1";
+// import { IconReset } from "../../icons/icon-reset";
+import { IconCross } from "../../icons/icon-cross";
 
 export function AccountPickerTree({
     className,
@@ -17,7 +21,7 @@ export function AccountPickerTree({
     showAccountBalance = false,
 }: AccountPickerTreeType) {
     const dispatch: AppDispatchType = useDispatch();
-    const ledgerRef = useRef<DropDownTreeComponent | null>(null);
+    const dropDownTreeRef = useRef<DropDownTreeComponent | null>(null);
     const [accountOptions, setAccountOptions] = useState<AccountOptionType[]>([])
     const [accountBalance, setAccountBalance] = useState<number>(0);
     const isAllBranches: boolean =
@@ -47,10 +51,15 @@ export function AccountPickerTree({
     }, [])
 
     return (
-        <div className={clsx('flex flex-col gap-2', className,)}>
+        <div className={clsx('flex flex-col gap-2 w-96 mr-6 mb-8', className,)}>
             {/* Header */}
-            <div className='h-6 bg-slate-50 flex text-md items-center'>
+            <div className='h-6 bg-slate-50 flex text-md items-center justify-between'>
                 <label className='font-medium text-primary-400'>Accounts</label>
+                <TooltipComponent className='ml-8 mt-2' content='Clear' position='TopCenter'>
+                    <button onClick={handleClear}>
+                        <IconCross className='text-blue-500 h-5 w-5' />
+                    </button>
+                </TooltipComponent>
                 <TooltipComponent className='ml-8 mt-2' content='Refresh' position='TopCenter'>
                     <button onClick={loadAccountOptions}>
                         <IconRefresh className='text-blue-500 h-5 w-5' />
@@ -71,9 +80,9 @@ export function AccountPickerTree({
                 id="dropDowntree"
                 placeholder="Select account / subledger a/c ..."
                 popupHeight="300px"
-                ref={ledgerRef}
+                ref={dropDownTreeRef}
                 select={handleOnSelectAccount}
-                showClearButton={true}
+                showClearButton={false}
             />
         </div>
     );
@@ -98,14 +107,26 @@ export function AccountPickerTree({
         }
     }
 
-    function handleOnSelectAccount(args: SelectEventArgs) {
+    function handleClear() {
+        setAccountBalance(0)
+        dispatch(setAccountPickerAccId({
+            instance: instance,
+            id: null
+        }))
+        if (dropDownTreeRef.current) {
+            dropDownTreeRef.current.value = [];
+            dropDownTreeRef.current.dataBind();
+        }
+    }
+
+    function handleOnSelectAccount(args: DdtSelectEventArgs) {
         const selectedAcc: any = args?.itemData || {}
         dispatch(setAccountPickerAccId({
             instance: instance,
-            id: selectedAcc?.id || undefined
+            id: selectedAcc?.id || null
         }))
         if (showAccountBalance) {
-            fetchAccountBalance(selectedAcc?.id || 0)
+            fetchAccountBalance(selectedAcc?.id || null)
         }
     }
 
@@ -116,7 +137,7 @@ export function AccountPickerTree({
                 dbName: dbName || '',
                 dbParams: decodedDbParamsObject || {},
                 instance: instance,
-                sqlId: SqlIdsMap.getAccountNames,
+                sqlId: SqlIdsMap.getLedgerLeafSubLedgerAccounts,
             })
             res.forEach((item: any) => {
                 item.hasChild = !item.isLeaf

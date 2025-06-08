@@ -3,17 +3,15 @@ import _ from 'lodash'
 import Decimal from 'decimal.js'
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
-import { LedgerSubledger } from "../../../../controls/redux-components/ledger-subledger"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { CompSwitch } from "../../../../controls/redux-components/comp-switch"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
-import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, selectLedgerSubledgerFieldFn, setCompCheckBoxState } from "../../../../controls/redux-components/comp-slice"
+import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, setCompCheckBoxState } from "../../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../../app/store/store"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { useEffect, useRef, useState } from "react"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
 import { Utils } from "../../../../utils/utils"
-import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice"
 import { CompAppLoader } from "../../../../controls/redux-components/comp-app-loader"
 import { CompCheckBox } from "../../../../controls/redux-components/comp-checkbox"
 import { CompInstances } from "../../../../controls/redux-components/comp-instances"
@@ -26,28 +24,28 @@ import { GeneralLedgerPdf } from "./general-ledger-pdf"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
 import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
+import { setAccountPickerAccId } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree-slice"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
     const [isPaneOpen, setIsPaneOpen] = useState(false);
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
-    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear() //Utils.getCurrentLoginInfo().currentFinYear || Utils.getRunningFinYear()
-    const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
-    const selectedAccId: any = useSelector((state: RootStateType) => selectLedgerSubledgerFieldFn(state, instance, 'finalAccId'))
-    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance))
+    // Selectors
+    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
+    const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance), shallowEqual)
+    const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
+    const toShowBalance: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxBalanceLedger), shallowEqual)
+    const toShowReverse: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxReverseLedger), shallowEqual)
+    const toShowSummaryRow: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxSummaryLedger), shallowEqual)
+    const selectedAccountPickerAccId = useSelector((state: RootStateType) => state.accountPickerTree[instance]?.id, shallowEqual)
 
-    const toShowBalance: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxBalanceLedger))
-    const toShowReverse: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxReverseLedger))
-    const toShowSummaryRow: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxSummaryLedger))
-
-    const selectedData: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.data, shallowEqual)
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
-    const meta: any = useRef<{ transactions: TranType[], transactionsCopy: TranType[] }>({
+    const meta = useRef<{ accName: string, transactions: TranType[], transactionsCopy: TranType[] }>({
+        accName: '',
         transactions: [],
         transactionsCopy: []
     })
-    const selectedAccountPickerAccId = useSelector((state: RootStateType) => state.accountPickerTree[instance]?.id || 0)
 
     const {
         branchId
@@ -60,16 +58,20 @@ export function GeneralLedger() {
     } = useUtilsInfo()
 
     useEffect(() => {
-        if (selectedAccountPickerAccId || selectedAccId) {
+        if (selectedAccountPickerAccId) {
             loadData()
         } else {
+            meta.current.accName = ''
+            meta.current.transactions = []
+            meta.current.transactionsCopy = []
+            setRefresh({})
             // Reset data
             const gridRef: any = context.CompSyncFusionGrid[instance]?.gridRef
             if (gridRef?.current) {
                 gridRef.current.dataSource = []
             }
         }
-    }, [selectedAccountPickerAccId, selectedAccId, isAllBranches, currentFinYear])
+    }, [selectedAccountPickerAccId, isAllBranches, currentFinYear.finYearId, branchId])
 
     useEffect(() => {
         return (() => { //cleanup
@@ -79,11 +81,16 @@ export function GeneralLedger() {
                     , CompInstances.compCheckBoxSummaryLedger]
                 , checkBoxState: false
             }))
+            dispatch(setAccountPickerAccId({ instance: instance, id: null }))
         })
     }, [])
 
     useEffect(() => {
         formatData()
+        const gridRef: any = context.CompSyncFusionGrid[instance]?.gridRef
+        if (gridRef?.current) {
+            gridRef.current.dataSource = meta.current.transactions
+        }
         setRefresh({})
     }, [toShowBalance, toShowReverse, toShowSummaryRow])
 
@@ -92,7 +99,7 @@ export function GeneralLedger() {
             <div className="flex items-center mt-6 min-w-[1200px]">
                 <div className="flex flex-col w-72">
                     <label className="text-lg font-medium text-primary-400">General ledger</label>
-                    <label className="text-blue-500 font-medium">{selectedData?.accName}</label>
+                    <label className="text-blue-500 font-medium">{meta?.current?.accName}</label>
                 </div>
                 <div className="flex flex-col items-end flex-wrap mr-8 min-w-[150px]">
                     <CompCheckBox label="Show balance" instance={CompInstances.compCheckBoxBalanceLedger} />
@@ -111,14 +118,6 @@ export function GeneralLedger() {
                     isPdfExport={false}
                     minWidth="500px"
                 />
-                <LedgerSubledger
-                    className="-mt-4 w-80 ml-auto mr-6"
-                    heading="All accounts"
-                    instance={instance}
-                    isAllBranches={isAllBranches}
-                    showAccountBalance={true}
-                    sqlId={SqlIdsMap.getLedgerLeafAccounts} />
-
                 <AccountPickerTree instance={instance} showAccountBalance={true} />
             </div>
 
@@ -128,7 +127,7 @@ export function GeneralLedger() {
                 columns={getColumns()}
                 dataSource={meta?.current?.transactions || []}
                 hasIndexColumn={false}
-                height="calc(100vh - 300px)"
+                height="calc(100vh - 320px)"
                 instance={instance}
                 loadData={loadData}
                 onRowDataBound={onRowDataBound}
@@ -146,15 +145,15 @@ export function GeneralLedger() {
                 onRequestClose={() => setIsPaneOpen(false)}>
                 {/* PDF Viewer inside the sliding pane */}
                 <PDFViewer style={{ width: '100%', height: '100%' }}>
-                    <GeneralLedgerPdf accName={selectedData?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} />
+                    <GeneralLedgerPdf accName={meta?.current?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} />
                 </PDFViewer>
             </ReactSlidingPane>
         </CompAccountsContainer>
     )
 
     function calculateClosing() {
-        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))
-        const r: number = ret.toNumber()
+        const ret = meta.current.transactionsCopy.reduce((sum: Decimal, current: TranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))
+        const r = ret.toNumber()
         return (r)
     }
 
@@ -163,13 +162,13 @@ export function GeneralLedger() {
     }
 
     function calculateCredits() {
-        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.credit || 0)), new Decimal(0))
+        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: TranType) => (sum.plus(current.credit || 0)), new Decimal(0))
         const r: number = ret.toNumber()
         return (r)
     }
 
     function calculateDebits() {
-        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: DecTranType) => (sum.plus(current.debit || 0)), new Decimal(0))
+        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: TranType) => (sum.plus(current.debit || 0)), new Decimal(0))
         const r: number = ret.toNumber()
         return (r)
     }
@@ -319,9 +318,8 @@ export function GeneralLedger() {
     }
 
     async function loadData() {
-        const finalAccId: number = Utils.getReduxState().reduxComp.ledgerSubledger[instance].finalAccId || 0
         const hasAllBranches: boolean = Utils.getReduxState().reduxComp.compSwitch[instance] || false
-        if ((!finalAccId) && (!selectedAccountPickerAccId)) {
+        if (!selectedAccountPickerAccId) {
             meta.current.transactions = []
             meta.current.transactionsCopy = []
             return
@@ -332,7 +330,7 @@ export function GeneralLedger() {
             dbParams: decodedDbParamsObject || {},
             instance: instance,
             sqlArgs: {
-                accId: selectedAccountPickerAccId || finalAccId,
+                accId: selectedAccountPickerAccId,
                 finYearId: finYearId,
                 branchId: hasAllBranches ? null : branchId
             },
@@ -355,11 +353,9 @@ export function GeneralLedger() {
         // Add index field for reversing
         jsonResult.transactions.forEach((item: any, index: number) => item.index = index + 1)
         meta.current.transactionsCopy = jsonResult.transactions.map((x: any) => ({ ...x }))
+        meta.current.accName = jsonResult.accName
         formatData()
-        dispatch(setQueryHelperData({
-            instance: instance,
-            data: jsonResult
-        }))
+        setRefresh({})
     }
 
     function showDailySummary() {

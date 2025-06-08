@@ -11,7 +11,7 @@ const accountPickerTreeSlice = createSlice({
         setAccountPickerAccId: (state: ReduxCompStateType, action: PayloadAction<AccountPickerTreePayloadActionType>) => {
             const instance = action.payload.instance;
             if (!state[instance]) {
-                state[instance] = { id: undefined };
+                state[instance] = { id: null };
             }
             state[instance].id = action.payload.id;
         },
@@ -23,12 +23,12 @@ export const { setAccountPickerAccId } = accountPickerTreeSlice.actions;
 
 type ReduxCompStateType = {
     [key: string]: {
-        id: string | undefined
+        id: string | null
     };
 }
 
 type AccountPickerTreePayloadActionType = {
     instance: string;
-    id: string | undefined
+    id: string | null
 
 }
