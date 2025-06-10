@@ -59,7 +59,7 @@ export function BusinessUnitsOptions() {
             const q = GraphQLQueriesMap.genericQuery(dbName, {
                 buCode: loginInfo.currentBusinessUnit?.buCode,
                 dbParams: dbParamsObject,
-                sqlId: SqlIdsMap.getSettingsFinYearsBranches,
+                sqlId: SqlIdsMap.getSettingsFinYearsBranches, //accSettings, All finYears, All branches
                 sqlArgs: {}
             });
             const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);

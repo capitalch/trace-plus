@@ -1405,6 +1405,57 @@ class SqlAccounts:
             order by "accName"
     """
 
+    get_ledger_leaf_subledger_accounts = """
+        WITH RECURSIVE acc_tree AS (
+        SELECT 
+            id,
+            "accCode",
+            "accName",
+            "accType",
+            "parentId",
+            "accLeaf",
+            CASE 
+            WHEN "accLeaf" = 'Y' THEN true
+            WHEN "accLeaf" = 'N' THEN false
+            WHEN "accLeaf" = 'L' THEN false
+            WHEN "accLeaf" = 'S' THEN true
+            END as "isLeaf",
+            id AS leaf_ancestor
+        FROM "AccM"
+        WHERE "accLeaf" IN ('Y', 'S')  -- leaf nodes only
+
+        UNION ALL
+
+        SELECT 
+            a.id,
+            a."accCode",
+            a."accName",
+            a."accType",
+            a."parentId",
+            a."accLeaf",
+            CASE 
+            WHEN a."accLeaf" = 'Y' THEN true
+            WHEN a."accLeaf" = 'N' THEN false
+            WHEN a."accLeaf" = 'L' THEN false
+            WHEN a."accLeaf" = 'S' THEN true
+            END,
+            acc_tree.leaf_ancestor
+        FROM "AccM" a
+        JOIN acc_tree ON a.id = acc_tree."parentId"
+)
+SELECT DISTINCT
+  id,
+  "accCode",
+  "accName",
+  "accType",
+  "parentId",
+  "accLeaf",
+  "isLeaf"
+FROM acc_tree
+ORDER BY "accName";
+
+    """
+
     get_leaf_categories = """
         select id, "catName","descr", "hsn"
             from "CategoryM"

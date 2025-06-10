@@ -30,7 +30,7 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
             dbParams={decodedDbParamsObject}
             height='calc(100vh - 280px)'
             instance={instance}
-            isLoadOnInit={false}
+            // isLoadOnInit={false}
             minWidth="800px"
             rowSelected={onRowSelected}
             sqlId={SqlIdsMap.getAllProductsInfoForProductSelect}

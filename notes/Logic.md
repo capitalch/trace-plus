@@ -1,3 +1,27 @@
+# logic for initialization
+- account-options-info: container for bu, finYear, branch
+    - sets current bu in redux
+    
+    - business-units-options: container for bu's
+        - displays current bu
+        - fetches acc-settings, all branches, all finyears for the current bu
+        - provides list for change of bu
+    
+    - fin-years-branches-options: container
+        - sets current fin year and currentbranch in redux. Makes use of lastUsedFinYearId and lastUsedBranchId stored in redux through login
+
+        - fin-years-options: container
+            - displays current fin-year
+            - makes possible the change in fin year and sets current fin year in redux state when user changes fin year
+            - saves changed finYearId as last used finYearId in DB
+
+        - branches-options: container
+            - displays current branch
+            - makes possible the change in branch and sets the newly selected branch in redux state
+            - saves changed branchId in db as last used branchId
+- to do
+    - during logout set lastBuid, finYearId, buId against user in DB if found null
+
 # Logic for checking gp in all reports: SR,SSR, TSR reports
                     - Sale transaction of a product in profit
                         - SR, SSR and TSR OK in Trace+

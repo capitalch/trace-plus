@@ -5,6 +5,7 @@ import { Utils } from "../../../../utils/utils"
 import { AppDispatchType } from "../../../../app/store/store"
 import { FinYearsOptions } from "./fin-years-options"
 import { BranchesOptions } from "./branches-options"
+import _ from 'lodash'
 
 export function FinYearsBranchesOptions() {
     const allFinYearsBranchesSelector = useSelector(allFinYearsBranchesSelectorFn, shallowEqual)
@@ -32,11 +33,11 @@ export function FinYearsBranchesOptions() {
         const currentFinYearObject: FinYearType | undefined = allFinYears?.find((f: FinYearType) =>
             f.finYearId === currentFinYearId)
         const currentBranchObject: BranchType | undefined = allBranches?.find((b: BranchType) => b.branchId === currentBranchId)
-        if (!currentBranchObject) {
+        if (_.isEmpty(currentBranchObject)) {
             // error
             return
         }
-        if(!currentFinYearObject){
+        if(_.isEmpty(currentFinYearObject)){
             //error
             return
         }

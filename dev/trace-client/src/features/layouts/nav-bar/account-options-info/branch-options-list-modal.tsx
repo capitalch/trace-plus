@@ -42,7 +42,7 @@ export function BranchOptionsListModal() {
         }
         
         if (currentBranch?.branchId !== selectedBranchId) {
-            saveLastUsedFinYearId(selectedBranchId);
+            saveLastUsedBranchId(selectedBranchId);
         }
     }
 
@@ -63,7 +63,7 @@ export function BranchOptionsListModal() {
         setListBoxBranches(cBranches);
     }
 
-    async function saveLastUsedFinYearId(branchId: number) {
+    async function saveLastUsedBranchId(branchId: number) {
         const userId: number | undefined = Utils.getCurrentLoginInfo().userDetails?.id;
         const traceDataObject: TraceDataObjectType = {
             tableName: DatabaseTablesMap.UserM,
