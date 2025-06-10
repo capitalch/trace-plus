@@ -90,7 +90,7 @@ export function BankRecon() {
                 mode: 'Normal',
             }}
             hasIndexColumn={false}
-            height="calc(100vh - 240px)"
+            height="calc(100vh - 217px)"
             instance={instance}
             loadData={loadData}
             minWidth="1400px"

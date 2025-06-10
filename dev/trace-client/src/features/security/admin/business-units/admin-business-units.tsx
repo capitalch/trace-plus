@@ -33,7 +33,7 @@ export function AdminBusinessUnits() {
                 aggregates={getAggregates()}
                 columns={getColumns()}
                 hasIndexColumn={true}
-                height="calc(100vh - 260px)"
+                height="calc(100vh - 258px)"
                 instance={instance}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allBusinessUnits}

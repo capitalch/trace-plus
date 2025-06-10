@@ -2,26 +2,36 @@
 entry point: /usr/lib/systemd/systemd
 
 ## Final issues as on 08-06-2025
+- Important																
+	- Avoid keeping large data in redux in many places. Use page level state i.e useState for that
+		- Accounts master
+		- trial balance
+		- balance sheet, PL
+		- Brand master
+		- Product categories
+		- product master
+		- inventory reports
+
+	- Check  at large data the grid with template columns become slow
+	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the 	bu cannot be deleted. So prevent user from deletion when its bu is existing. First delete bu then user
+	- Provide client name and client code in the email when new Admin user is created in super admin
+	- When a new / update BU or Fy then it should be immediately updated to accounts info
+	- When admin user logs in: From db get physical BU's and prompt to add if not present
+																	- Update function get_stock_on_date in all databases			
+	- Product master check duplicate UPC code server side validation
+	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
+																	- When bu is changed, sometimes branch is not changed and remains old one
+																	- When bu is changed then fin yar id is uncertain
+																	- At logout make sure that redux store is initialized by using redux tools
+																	- In all grids show a margin of 10 px from bottom
+																	- Grid fix up sizes for edit, delete and preview buttons
 																	- Strict validation of debits equal credits in Stock Journals
-- Avoid keeping large data in redux in many places. Use page level state i.e useState for that
-- Check  at large data the grid with template columns become slow
-- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the 	bu cannot be deleted. So prevent user from deletion when its bu is existing. First delete bu then user
-- When bu is changed, sometimes branch is not changed and remains old one
-- When bu is changed then fin yar id is uncertain
-- Provide client name and client code in the email when new Admin user is created in super admin
-- When a new / update BU or Fy then it should be immediately updated to accounts info
-- When admin user logs in: From db get physical BU's and prompt to add if not present
-- Update function get_stock_on_date in all databases
-- TreeGrid width not properly managed when screen size comes down
-- Provide appropriate logging at server											
-- At logout make sure that redux store is initialized by using redux tools
-- Each branch can have separate address. If branch address not present, take address of unit
-- Product master check duplicate UPC code server side validation
-- In all grids show a margin of 10 px from bottom
-- Grid fix up sizes for edit, delete and preview buttons
-- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
-- BS, PL, Trial Bal to retain node expanded / collapsed
-- current order report: set to place the order to supplier through mail, whatsapp
+
+- Nice to have
+	- current order report: set to place the order to supplier through mail, whatsapp
+	- BS, PL, Trial Bal to retain node expanded / collapsed
+	- Each branch can have separate address. If branch address not present, take address of unit
+	- Provide appropriate logging at server
 
 ## Generic dropDownTree for accounts in place of ledgerSubledger
 																- general ledger

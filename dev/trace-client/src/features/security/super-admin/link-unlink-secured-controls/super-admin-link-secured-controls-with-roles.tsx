@@ -49,7 +49,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                                 targetId: linksInstance
                             }}
                         hasCheckBoxSelection={true}
-                        height="calc(100vh - 308px)"
+                        height="calc(100vh - 273px)"
                         instance={securedControlsInstance}
                         minWidth='600px'
                         rowHeight={40}
@@ -69,7 +69,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                         className="mt-2 "
                         childMapping="securedControls"
                         columns={getLinkColumns()}
-                        height="calc(100vh - 290px)"
+                        height="calc(100vh - 273px)"
                         instance={linksInstance}
                         minWidth='700px'
                         pageSize={11}

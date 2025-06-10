@@ -79,9 +79,8 @@ export function ReportAllTransactions() {
                 deleteColumnWidth={40}
                 editColumnWidth={40}
                 hasIndexColumn={false}
-                height="calc(100vh - 300px)"
+                height="calc(100vh - 295px)"
                 instance={instance}
-                // isLoadOnInit={false}
                 loadData={loadData}
                 minWidth="1400px"
                 onEdit={handleOnEdit}

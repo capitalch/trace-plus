@@ -80,10 +80,9 @@ export function PurchaseReport({ title }: { title?: string }) {
         columns={getColumns()}
         dataSource={rowsData}
         hasIndexColumn={true}
-        height="calc(100vh - 300px)"
+        height="calc(100vh - 303px)"
         indexColumnWidth={60}
         instance={instance}
-        // isLoadOnInit={false}
         isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"

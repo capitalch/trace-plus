@@ -73,7 +73,6 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         height="calc(100vh - 410px)"
         allowPaging={true}
         instance={instance}
-        // isLoadOnInit={false}
         minWidth="1300px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
@@ -97,7 +96,6 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
             branchTransfers={meta.current.branchTransfers}
             tranH={meta.current.tranH}
           />
-          {/* <StockJournalPdf inputLineItems={[]} outputLineItems={[]} tranH={meta.current.tranH}/> */}
         </PDFViewer>
       </ReactSlidingPane>
     </div>

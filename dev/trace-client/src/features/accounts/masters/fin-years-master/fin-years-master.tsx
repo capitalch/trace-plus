@@ -46,7 +46,7 @@ export function FinYearsMaster() {
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             hasIndexColumn={true}
-            height="calc(100vh - 250px)"
+            height="calc(100vh - 238px)"
             instance={instance}
             // isLoadOnInit={false}
             minWidth="1400px"

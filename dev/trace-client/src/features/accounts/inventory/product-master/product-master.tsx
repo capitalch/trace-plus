@@ -50,9 +50,8 @@ export function ProductMaster() {
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
                 editColumnWidth={40}
-                height="calc(100vh - 290px)"
+                height="calc(100vh - 293px)"
                 instance={instance}
-                // isLoadOnInit={false}
                 minWidth="1500px"
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}

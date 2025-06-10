@@ -2,7 +2,7 @@ import clsx from "clsx";
 import ClickAwayListener from "react-click-away-listener"
 import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDown, showNavBarDropDownFn } from "../layouts-slice";
-import { AppDispatchType, RootStateType, } from "../../../app/store/store";
+import { AppDispatchType, RESET_STORE, RootStateType, } from "../../../app/store/store";
 import { doLogout, LoginType, UserDetailsType } from "../../login/login-slice";
 import { ChangeUid } from "./change-uid";
 import { ChangePassword } from "./change-password";
@@ -104,6 +104,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
         handleOnClickAway() // Otherwise the menu remains open
         resetGlobalContext(context)
         dispatch(doLogout())
+        dispatch(RESET_STORE)
     }
     function handleShowDropdown() {
         dispatch(setShowNavBarDropDown({ toShowNavBarDropDown: !toShowNavBarDropDownSelector }))

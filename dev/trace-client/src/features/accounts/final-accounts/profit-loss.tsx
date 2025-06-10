@@ -76,7 +76,7 @@ export function ProfitLoss() {
                     dbParams={decodedDbParamsObject}
                     // isLoadOnInit={false}
                     columns={getColumns('L')}
-                    height="calc(100vh - 260px)"
+                    height="calc(100vh - 245px)"
                     instance={expensesInstance}
                     treeColumnIndex={0}
                 />
@@ -100,9 +100,8 @@ export function ProfitLoss() {
                     dataSource={incomesData}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
-                    // isLoadOnInit={false}
                     columns={getColumns('A')}
-                    height="calc(100vh - 260px)"
+                    height="calc(100vh - 245px)"
                     instance={incomesInstance}
                     treeColumnIndex={0}
                 />

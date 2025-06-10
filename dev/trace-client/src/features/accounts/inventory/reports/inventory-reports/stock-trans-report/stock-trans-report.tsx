@@ -107,15 +107,12 @@ export function StockTransReport({ title }: { title?: string; }) {
         mode: "Normal",
       }}
       hasCheckBoxSelection={true}
-      // hasIndexColumn={true}
-      height="calc(100vh - 290px)"
+      height="calc(100vh - 285px)"
       indexColumnWidth={60}
       instance={instance}
-      // isLoadOnInit={false}
       isSmallerFont={true}
       loadData={loadData}
       minWidth="800px"
-      // onRemove={handleOnRemove}
       rowHeight={35}
       searchFields={['productCode', 'catName', 'product', 'tranType', 'remarks']}
       queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo

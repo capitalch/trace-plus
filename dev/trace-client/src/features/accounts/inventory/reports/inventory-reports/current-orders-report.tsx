@@ -75,8 +75,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         dbName={dbName}
         dbParams={decodedDbParamsObject}
         hasIndexColumn={true}
-        // isLoadOnInit={false}
-        height="calc(100vh - 245px)"
+        height="calc(100vh - 247px)"
         instance={instance}
         minWidth="600px"
         sqlId={SqlIdsMap.getCurrentOrders}

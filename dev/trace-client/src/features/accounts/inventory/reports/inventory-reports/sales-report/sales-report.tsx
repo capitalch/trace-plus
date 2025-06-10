@@ -118,10 +118,9 @@ export function SalesReport({ title }: { title?: string }) {
         dataSource={rowsData}
         hasCheckBoxSelection={true}
         hasIndexColumn={true}
-        height="calc(100vh - 300px)"
+        height="calc(100vh - 303px)"
         indexColumnWidth={60}
         instance={instance}
-        // isLoadOnInit={false}
         isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"
@@ -382,9 +381,6 @@ export function SalesReport({ title }: { title?: string }) {
         width: 200,
         type: "string"
       },
-
-      // { field: "brandName", visible: false, width: 0 },
-      // { field: "label", visible: false, width: 0 }
     ];
   }
 

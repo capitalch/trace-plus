@@ -47,9 +47,8 @@ export function BranchMaster() {
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             hasIndexColumn={true}
-            height="calc(100vh - 250px)"
+            height="calc(100vh - 240px)"
             instance={instance}
-            // isLoadOnInit={false}
             minWidth="1400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}

@@ -56,9 +56,8 @@ export function AccountsMaster() {
             dbParams={decodedDbParamsObject}
             graphQlQueryFromMap={GraphQLQueriesMap.accountsMaster}
             graphQlQueryName={GraphQLQueriesMapNames.accountsMaster}
-            // isLoadOnInit={false}
             columns={getColumns()}
-            height="calc(100vh - 245px)"
+            height="calc(100vh - 227px)"
             instance={instance}
             minWidth='950px'
             treeColumnIndex={0}
