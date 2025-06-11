@@ -18,6 +18,8 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 
 export function SuperAdminNewEditAdminUser({
     clientId,
+    clientCode,
+    clientName,
     userName,
     mobileNo,
     userEmail,
@@ -65,6 +67,8 @@ export function SuperAdminNewEditAdminUser({
 
     useEffect(() => {
         setValue("clientId", clientId || "", { shouldDirty: true, shouldTouch: true });
+        setValue("clientCode", clientCode || "");
+        setValue("clientName", clientName || "");
         setValue("userName", userName || "");
         setValue("mobileNo", mobileNo || "");
         setValue("userEmail", userEmail || "");
@@ -156,6 +160,8 @@ export function SuperAdminNewEditAdminUser({
 
     function handleOnChangeClient(selectedObject: any) {
         setValue('clientId', selectedObject?.id)
+        setValue('clientCode', selectedObject?.clientCode)
+        setValue('clientName', selectedObject?.clientName)
         clearErrors('clientId')
         validateUserEmailAtServer({})
     }
@@ -240,7 +246,9 @@ export function SuperAdminNewEditAdminUser({
 }
 
 type FormDataType = {
+    clientCode: string;
     clientId: string;
+    clientName: string;
     userName: string;
     mobileNo: string;
     userEmail: string;
@@ -250,7 +258,9 @@ type FormDataType = {
 };
 
 type SuperAdminNewEditAdminUserType = {
+    clientCode?: string;
     clientId?: string;
+    clientName?: string;
     userName?: string;
     mobileNo?: string;
     userEmail?: string;

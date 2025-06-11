@@ -53,6 +53,13 @@ export const loginSlice = createSlice({
       state.currentBranch = action.payload
     },
 
+    setAllBusinessUnits:(
+      state:LoginType,
+      action:PayloadAction<BusinessUnitType[]>
+    ) => {
+      state.allBusinessUnits = action.payload
+    },
+
     setCurrentBusinessUnit: (
       state: LoginType,
       action: PayloadAction<BusinessUnitType>
@@ -116,6 +123,7 @@ export const loginReducer = loginSlice.reducer
 export const {
   doLogin,
   doLogout,
+  setAllBusinessUnits,
   setCurrentBranch,
   setCurrentBusinessUnit,
   setCurrentDateFormat,

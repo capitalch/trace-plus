@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
@@ -11,15 +11,34 @@ import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graph
 import { Messages } from "../../../../utils/messages";
 import { AdminNewBusinessUnitButton } from "./admin-new-business-unit-button";
 import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit";
-import { AppDispatchType } from "../../../../app/store/store";
-import { useDispatch } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { useDispatch, useSelector } from "react-redux";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { BusinessUnitType, setAllBusinessUnits, setUserBusinessUnits } from "../../../login/login-slice";
+import _ from 'lodash'
 
 export function AdminBusinessUnits() {
     const context: GlobalContextType = useContext(GlobalContext);
     const instance = DataInstancesMap.adminBusinessUnits; // Grid instance for Business Units
+    const selectedData = useSelector((state: RootStateType) => state.queryHelper[instance])
     const dispatch: AppDispatchType = useDispatch()
+
+    useEffect(() => {
+        if (_.isEmpty(selectedData?.data)) {
+            return
+        }
+        const allBusinessUnits: BusinessUnitType[] = selectedData.data.map((bu: any) => {
+            return ({
+                buCode: bu.buCode,
+                buName: bu.buName,
+                buId: bu.id
+            })
+        })
+        dispatch(setAllBusinessUnits(allBusinessUnits))
+        dispatch(setUserBusinessUnits(allBusinessUnits))
+    }, [selectedData])
+
     return (
         <CompContentContainer title='Admin business units' CustomControl={() => <label className="text-primary-300">{Utils.getUserDetails()?.clientName}</label>}>
             <CompSyncFusionGridToolbar
@@ -45,7 +64,7 @@ export function AdminBusinessUnits() {
 
     function getAggregates(): SyncFusionGridAggregateType[] {
         return [
-            {columnName:'buCode', type: 'Count', field: 'buCode', format: 'N0', footerTemplate: buCodeAggrTemplate }
+            { columnName: 'buCode', type: 'Count', field: 'buCode', format: 'N0', footerTemplate: buCodeAggrTemplate }
         ];
     }
 

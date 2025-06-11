@@ -113,6 +113,7 @@ class SqlSecurity:
         --with "noOfRows" as (values(null::int))
             select c.id as "clientId" 
 				, "clientName"
+                , "clientCode"
 				, u."id"
 				, "uid"
 				, "userName"
@@ -172,7 +173,7 @@ class SqlSecurity:
     """
 
     get_all_client_names_no_args = """
-        select "id", "clientName" from "ClientM"
+        select "id", "clientName", "clientCode" from "ClientM"
                 order by "clientName"
     """
 
