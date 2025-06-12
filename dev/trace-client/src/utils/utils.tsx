@@ -142,7 +142,6 @@ async function doGenericQuery({
   buCode,
   dbName,
   dbParams,
-  // , instance
   sqlArgs,
   sqlId
 }: DoGenericQueryType) {
@@ -181,7 +180,6 @@ async function doGenericUpdateQuery({
   buCode,
   dbName,
   dbParams,
-  // , instance
   sqlArgs,
   sqlId
 }: DoGenericUpdateQueryType) {

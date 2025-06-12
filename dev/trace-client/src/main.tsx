@@ -8,8 +8,8 @@ import {registerLicense} from '@syncfusion/ej2-base'
 import { getApolloClient } from './app/graphql/apollo-client.ts'
 
 const apolloClient = getApolloClient()
-// 28.x license registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1feXVWRWNcUUZwXEs=')
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXledXRcR2VZU0RxXkdWYUA=')
+//registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1feXVWRWNcUUZwXEs=') //28.x license 
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXledXRcR2VZU0RxXkdWYUA=') // 29.x
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
   <Provider store={store}>

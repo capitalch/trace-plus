@@ -1,5 +1,13 @@
 class SqlSecurity:
-
+    delete_business_unit = """
+            WITH updated AS (
+                UPDATE "UserM"
+                SET "lastUsedBuId" = NULL
+                WHERE "lastUsedBuId" = %(id)s
+            )
+            DELETE FROM "BuM"
+            WHERE id = %(id)s
+    """
     does_database_exist = """
         with "dbName" as (values(%(dbName)s::text))
         --with "dbName" as (values('client-capital'))

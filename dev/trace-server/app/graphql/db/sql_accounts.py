@@ -826,6 +826,13 @@ class SqlAccounts:
         FROM cte7
     """
 
+    get_all_schemas_in_database = """
+        SELECT nspname
+        FROM pg_namespace
+        WHERE nspname NOT LIKE %(pg)s AND nspname <> %(inf)s
+        ORDER BY nspname
+    """
+
     get_all_stock_journals = """
         with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "noOfRows" as (values (%(noOfRows)s::int))
         --with "branchId" as (values (1)), "finYearId" as (values (2024)), "noOfRows" as (values (100))

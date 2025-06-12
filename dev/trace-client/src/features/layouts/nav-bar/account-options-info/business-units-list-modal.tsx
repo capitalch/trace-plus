@@ -58,7 +58,7 @@ export function BusinessUnitsListModal() {
                 id: x.buId,
                 text: `${x.buCode}: ${x.buName}`
             })
-        })
+        }).sort((a, b) => a.text.localeCompare(b.text)); // sort by text
         setListBoxBusinessUnits(cBus)
     }
 

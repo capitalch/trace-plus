@@ -33,7 +33,6 @@ export function CompSyncfusionTreeGrid({
     hasCheckBoxSelection = false,
     height,
     instance,
-    // isLoadOnInit = false,
     loadData,
     minWidth = '600px',
     pageSize = 50,
@@ -237,7 +236,6 @@ export type CompSyncfusionTreeGridType = {
     hasCheckBoxSelection?: boolean
     height?: string
     instance: string
-    // isLoadOnInit?: boolean
     loadData?: () => void
     minWidth?: string
     pageSize?: number

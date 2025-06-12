@@ -8,7 +8,8 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    sourcemap: true // Enable source maps for production builds
+    // sourcemap: true // Enable source maps for production builds
+    // sourcemap: process.env.NODE_ENV !== 'production'
   },
   // base: './', // Set base path for assets
 })
