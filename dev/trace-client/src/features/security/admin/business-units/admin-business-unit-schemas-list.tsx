@@ -14,14 +14,19 @@ export function AdminBusinessUnitSchemasLisr() {
         loadSchemas()
     }, [])
 
-    return (<ListBoxComponent
-        // change={onChange}
-        // dataBound={onDataBound}
-        dataSource={dataSource}
-        height='200'
-        ref={listRef}
-        selectionSettings={{ mode: 'Multiple' }}
-    />)
+    return (
+        <div className="flex flex-col">
+            <ListBoxComponent
+                // change={onChange}
+                // dataBound={onDataBound}
+                dataSource={dataSource}
+                height='200'
+                ref={listRef}
+                selectionSettings={{ mode: 'Multiple' }}
+            />
+            <button>Submit</button>
+        </div>
+    )
 
     async function loadSchemas() {
         try {
@@ -51,12 +56,12 @@ export function AdminBusinessUnitSchemasLisr() {
     }
 
     // function onChange(args: any) {
-        // const selectedBuId: number = args.items[0].id
-        // const selectedBu: BusinessUnitType = currentBusinessUnitsSelector.find((u: BusinessUnitType) => u.buId === selectedBuId) || {}
-        // dispatch(setCurrentBusinessUnit(selectedBu))
-        // if (currentBusinessUnitSelector.buId !== selectedBuId) {
-        //     saveLastUsedBuId(selectedBuId)
-        // }
+    // const selectedBuId: number = args.items[0].id
+    // const selectedBu: BusinessUnitType = currentBusinessUnitsSelector.find((u: BusinessUnitType) => u.buId === selectedBuId) || {}
+    // dispatch(setCurrentBusinessUnit(selectedBu))
+    // if (currentBusinessUnitSelector.buId !== selectedBuId) {
+    //     saveLastUsedBuId(selectedBuId)
+    // }
     // }
 
     function prepareData(allSchemasRes: { nspname: string }[],
@@ -66,7 +71,7 @@ export function AdminBusinessUnitSchemasLisr() {
 
         // Get schemas that are in allSchemas but not in allBusinessUnits
         const diff = allSchemas.filter(schema => !allBusinessUnits.includes(schema))
-        
+
         // Prepare for ListBoxComponent
         const formatted = diff.map((schema) => ({
             id: schema,
