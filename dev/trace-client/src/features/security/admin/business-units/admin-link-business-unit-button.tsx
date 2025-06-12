@@ -13,7 +13,7 @@ export function AdminLinkBusinessUnitButton({ className }: { className?: string 
     function handleNewBu() {
         // const loadData: () => void = () => isTreeGrid ? context.CompSyncFusionTreeGrid[dataInstance].loadData() : context.CompSyncFusionGrid[dataInstance].loadData()
         Utils.showHideModalDialogA({
-            title: "Assign Business Units Not Yet Linked",
+            title: "Link Business Units",
             isOpen: true,
             element: <AdminBusinessUnitSchemasLisr />,
         })

@@ -30,7 +30,7 @@ export function AdminBusinessUnitSchemasLisr() {
 
     async function loadSchemas() {
         try {
-            const [resAllSchemas, allBusinessUnits] = await Promise.all([
+            const [resAllSchemas, resAllBusinessUnits] = await Promise.all([
                 Utils.doGenericQuery({
                     dbName: dbName || '',
                     buCode: '',
@@ -48,8 +48,8 @@ export function AdminBusinessUnitSchemasLisr() {
                     sqlArgs: { clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }
                 })
             ])
-            console.log(resAllSchemas, allBusinessUnits)
-            prepareData(resAllSchemas, allBusinessUnits)
+            // console.log(resAllSchemas, allBusinessUnits)
+            prepareData(resAllSchemas, resAllBusinessUnits)
         } catch (e) {
             console.error(e)
         }

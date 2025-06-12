@@ -49,7 +49,7 @@ export function AdminBusinessUnits() {
                         <AdminNewBusinessUnitButton dataInstance={instance} />
                     </div>
                 }
-                title="Linked Business units"
+                title="Linked Business Units View"
                 isLastNoOfRows={true}
                 instance={instance}
             />

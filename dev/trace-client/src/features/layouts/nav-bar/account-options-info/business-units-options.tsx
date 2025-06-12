@@ -1,5 +1,5 @@
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-import { BusinessUnitType, currentBusinessUnitSelectorFn, doLogout, LoginType, setCurrentDateFormat, setDecodedDbParamsObject, setFinYearsBranchesAccSettings, UserDetailsType } from "../../../login/login-slice"
+import { BusinessUnitType, currentBusinessUnitSelectorFn, doLogout, LoginType, setCurrentDateFormat, setFinYearsBranchesAccSettings, UserDetailsType } from "../../../login/login-slice"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { Utils } from "../../../../utils/utils"
 import { BusinessUnitsListModal } from "./business-units-list-modal"
@@ -42,13 +42,14 @@ export function BusinessUnitsOptions() {
     async function fetchAccDetails() {
         const userDetails: UserDetailsType = loginInfo.userDetails || {}
         const dbName: string = userDetails.dbName || ''
-        const isExternalDb: boolean = userDetails.isExternalDb || false
-        const dbParams: string | undefined = userDetails?.dbParams
-        let dbParamsObject: any
-        if (isExternalDb && dbParams) {
-            dbParamsObject = await Utils.decodeExtDbParams(dbParams)
-            dispatch(setDecodedDbParamsObject(dbParamsObject))
-        }
+        const dbParamsObject = userDetails.decodedDbParamsObject
+        // const isExternalDb: boolean = userDetails.isExternalDb || false
+        // const dbParams: string | undefined = userDetails?.dbParams
+        // let dbParamsObject: any
+        // if (isExternalDb && dbParams) {
+        //     dbParamsObject = await Utils.decodeExtDbParams(dbParams)
+        //     dispatch(setDecodedDbParamsObject(dbParamsObject))
+        // }
         // If there is no current business unit then show message and logout
         if (!loginInfo?.currentBusinessUnit?.buCode) {
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.messNoBusinessUnitsDefined })
