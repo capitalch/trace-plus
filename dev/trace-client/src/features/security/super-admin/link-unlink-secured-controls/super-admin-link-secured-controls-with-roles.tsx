@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
@@ -23,6 +23,13 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.securedControls
     const linksInstance: string = DataInstancesMap.securedControlsLinkRoles
     const context: GlobalContextType = useContext(GlobalContext);
+
+    useEffect(()=>{
+        const loadDataLinks = context.CompSyncFusionTreeGrid[linksInstance].loadData
+        if(loadDataLinks){
+            loadDataLinks()
+        }
+    },[])
 
     return (
         <div className='flex flex-col ml-8'>

@@ -220,7 +220,6 @@ export type CompSyncfusionTreeGridType = {
     columns: SyncFusionTreeGridColumnType[]
     dataPath?: string
     dataSource?: any
-    // dataBound?: (args: any) => void
     dbName?: string
     dbParams?: { [key: string]: string | undefined }
     editSettings?: {

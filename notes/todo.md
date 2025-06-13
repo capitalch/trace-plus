@@ -1,11 +1,16 @@
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd
 
+## features
+- Sales
+	- Interchange sale bill type: cash, bill sale, institutional
+- Vouchers
+	- Interchange voucher types
 ## Final issues as on 08-06-2025
 - Important
-	- ledger show clos balance should be false																								
-	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the 	bu cannot be deleted. So prevent user from deletion when its bu is existing. First delete bu then user	
-	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
+																	- ledger show clos balance should be false																									
+																	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
+																		- Link ctrls <-> roles, the roles grid is not auto populated
 																	- When bu is changed, sometimes branch is not changed and remains old one
 																	- When bu is changed then fin yar id is uncertain
 																	- At logout make sure that redux store is initialized by using redux tools
