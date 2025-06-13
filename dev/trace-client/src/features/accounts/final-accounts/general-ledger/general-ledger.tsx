@@ -118,7 +118,7 @@ export function GeneralLedger() {
                     isPdfExport={false}
                     minWidth="500px"
                 />
-                <AccountPickerTree instance={instance} showAccountBalance={true} />
+                <AccountPickerTree instance={instance} showAccountBalance={false} />
             </div>
 
             <CompSyncFusionGrid

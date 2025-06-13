@@ -65,10 +65,10 @@ export function AccountPickerTree({
                         <IconRefresh className='text-blue-500 h-5 w-5' />
                     </button>
                 </TooltipComponent>
-                <span className='ml-auto'>
+                {showAccountBalance && <span className='ml-auto'>
                     <label className='font-medium text-blue-400'>{decFormatter.format(Math.abs(accountBalance))}</label>
                     {showAccountBalance && <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>}
-                </span>
+                </span>}
             </div>
             <DropDownTreeComponent
                 allowFiltering={true}

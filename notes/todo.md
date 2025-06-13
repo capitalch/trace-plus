@@ -2,7 +2,8 @@
 entry point: /usr/lib/systemd/systemd
 
 ## Final issues as on 08-06-2025
-- Important																								
+- Important
+	- ledger show clos balance should be false																								
 	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the 	bu cannot be deleted. So prevent user from deletion when its bu is existing. First delete bu then user	
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 																	- When bu is changed, sometimes branch is not changed and remains old one
