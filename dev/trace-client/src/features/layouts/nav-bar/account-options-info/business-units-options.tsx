@@ -1,5 +1,5 @@
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-import { BusinessUnitType, currentBusinessUnitSelectorFn, doLogout, LoginType, setCurrentDateFormat, setFinYearsBranchesAccSettings, UserDetailsType } from "../../../login/login-slice"
+import { BusinessUnitType, currentBusinessUnitSelectorFn, doLogout, LoginType, setCurrentBusinessUnit, setCurrentDateFormat, setFinYearsBranchesAccSettings, setUserBusinessUnits, userBusinessUnitsSelectorFn, UserDetailsType } from "../../../login/login-slice"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { Utils } from "../../../../utils/utils"
 import { BusinessUnitsListModal } from "./business-units-list-modal"
@@ -8,20 +8,29 @@ import { AppDispatchType, RootStateType } from "../../../../app/store/store"
 import { Messages } from "../../../../utils/messages"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { UserTypesEnum } from "../../../../utils/global-types-interfaces-enums"
 // import { Navigate } from "react-router-dom"
 // import { setSideBarSelectedChildId } from "../../layouts-slice"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
     const currentBusinessUnitSelector: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
+    const currentBusinessUnitsSelector: BusinessUnitType[] = useSelector(userBusinessUnitsSelectorFn) || []
+
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const selectAccSettingsChanged = useSelector((state: RootStateType) => state.accounts.accSettingsChanged) // to reload this component when accSettings like unitInfo changes
 
+    useEffect(() => {
+        setBusinessUnit()
+    }, [currentBusinessUnitsSelector])
+    
     useEffect(() => {
         if (currentBusinessUnitSelector.buCode) {
             fetchAccDetails()
         }
     }, [currentBusinessUnitSelector, selectAccSettingsChanged])
+
+
 
     return (
         <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectAccSettingsChanged)}>
@@ -86,5 +95,42 @@ export function BusinessUnitsOptions() {
             isOpen: true,
             element: <BusinessUnitsListModal />,
         })
+    }
+
+    function setBusinessUnit() {
+        let bu: BusinessUnitType = {}
+        const allBusinessUnits: BusinessUnitType[] = loginInfo.allBusinessUnits || []
+        const userDetails: UserDetailsType = loginInfo?.userDetails || {}
+        const userBusinessUnits: BusinessUnitType[] = loginInfo?.userBusinessUnits || []
+        const lastUsedBuId: number | undefined = userDetails?.lastUsedBuId
+        const userType: string | undefined = userDetails.userType
+
+        if (userType === UserTypesEnum.Admin) {
+            if (allBusinessUnits.length > 0) {
+                if (lastUsedBuId) {
+                    bu = allBusinessUnits.find(bu => bu.buId === lastUsedBuId) || {}
+                } else {
+                    bu = allBusinessUnits[0]
+                }
+                dispatch(setCurrentBusinessUnit(bu))
+                dispatch(setUserBusinessUnits(allBusinessUnits))
+            } else { // throw error and logout
+                dispatch(setCurrentBusinessUnit({}))
+                Utils.showAlertMessage('Information', Messages.messNoBusinessUnitsDefined)
+            }
+        }
+        if (userType === UserTypesEnum.BusinessUser) {
+            if (userBusinessUnits.length > 0) {
+                if (lastUsedBuId) {
+                    bu = userBusinessUnits.find(bu => bu.buId === lastUsedBuId) || {}
+                } else {
+                    bu = userBusinessUnits[0]
+                }
+                dispatch(setCurrentBusinessUnit(bu))
+            } else {
+                Utils.showAlertMessage('Information', Messages.messUserNotAssociatedWithBu)
+                dispatch(doLogout())
+            }
+        }
     }
 }

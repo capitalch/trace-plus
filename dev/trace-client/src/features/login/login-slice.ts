@@ -53,9 +53,9 @@ export const loginSlice = createSlice({
       state.currentBranch = action.payload
     },
 
-    setAllBusinessUnits:(
-      state:LoginType,
-      action:PayloadAction<BusinessUnitType[]>
+    setAllBusinessUnits: (
+      state: LoginType,
+      action: PayloadAction<BusinessUnitType[]>
     ) => {
       state.allBusinessUnits = action.payload
     },
@@ -103,6 +103,11 @@ export const loginSlice = createSlice({
       state.userDetails.decodedDbParamsObject = action.payload
     },
 
+    setToken: (state: LoginType,
+      action: PayloadAction<string>) => {
+      state.token = action.payload
+    },
+
     setUserBusinessUnits: (
       state: LoginType,
       action: PayloadAction<BusinessUnitType[]>
@@ -130,6 +135,7 @@ export const {
   setCurrentFinYear,
   setDecodedDbParamsObject,
   setFinYearsBranchesAccSettings,
+  setToken,
   setUserBusinessUnits,
   setUid
 } = loginSlice.actions

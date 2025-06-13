@@ -64,6 +64,7 @@ const Messages = {
   errSuperAdminControlNameExists: 'Super admin control name already exists',
   errTagNameExists: 'Tag name altready exists',
   errUidExistsForClient: 'This uid already exists for the current client',
+  errUpcCodeExists:'UpcCode for the product already exists',
   errUnknown: 'An unknown error occurred in the operation',
 
   messAutoLinkBuiltinRoles: 'Add controls from built-in roles',
@@ -150,6 +151,7 @@ const Messages = {
     'The selected user will only be unlinked from the business unit. The user will not be deleted.',
   messTransferClosingBalance:
     'Transfer closing balances from current financial year to next financial year',
+  messUnlinkBu:'The business unit will be unlinked but not deleted. You can later on link the business unit',
   messUnlinkSecuredControl: 'Unlink this secured control from role',
   messUnlinkAllSecuredControl: 'Unlink all secured controls from this role',
   messUnlinkAllBusinessUsers:

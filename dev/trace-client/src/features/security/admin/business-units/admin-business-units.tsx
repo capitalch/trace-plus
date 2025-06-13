@@ -18,15 +18,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { BusinessUnitType, setAllBusinessUnits, setUserBusinessUnits } from "../../../login/login-slice";
 import _ from 'lodash'
 import { AdminLinkBusinessUnitButton } from "./admin-link-business-unit-button";
+import { Messages } from "../../../../utils/messages";
+import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 
 export function AdminBusinessUnits() {
-    // const context: GlobalContextType = useContext(GlobalContext);
+    const context: GlobalContextType = useContext(GlobalContext);
     const instance = DataInstancesMap.adminBusinessUnits; // Grid instance for Business Units
     const selectedData = useSelector((state: RootStateType) => state.queryHelper[instance])
     const dispatch: AppDispatchType = useDispatch()
 
     useEffect(() => {
         if (_.isEmpty(selectedData?.data)) {
+            dispatch(setAllBusinessUnits([]))
+            dispatch(setUserBusinessUnits([]))
             return
         }
         const allBusinessUnits: BusinessUnitType[] = selectedData.data.map((bu: any) => {
@@ -97,27 +101,6 @@ export function AdminBusinessUnits() {
         ];
     }
 
-    // async function handleOnDelete(id: string) {
-    //     const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-    //         tableName: DatabaseTablesMap.BuM,
-    //         deletedIds: [id]
-    //     });
-    //     Utils.showDeleteConfirmDialog(doDelete);
-    //     async function doDelete() {
-    //         try {
-    //             await Utils.mutateGraphQL(q, GraphQLQueriesMapNames.genericUpdate);
-    //             Utils.showSuccessAlertMessage({ message: Messages.messRecordDeleted, title: Messages.messSuccess }
-    //                 , () => {
-    //                     dispatch(resetQueryHelperData({ instance: instance }))
-    //                     context.CompSyncFusionGrid[instance].loadData();
-    //                 }
-    //             );
-    //         } catch (e: any) {
-    //             Utils.showFailureAlertMessage({ message: e?.message || '', title: 'Failed' });
-    //         }
-    //     }
-    // }
-
     async function handleOnEdit(props: any) {
         Utils.showHideModalDialogA({
             title: 'Edit business unit',
@@ -134,13 +117,22 @@ export function AdminBusinessUnits() {
 
     async function handleOnRemove(item: any) {
         const id = item.id
-        await Utils.doGenericUpdateQuery({
-            dbName: GLOBAL_SECURITY_DATABASE_NAME,
-            buCode: 'public',
-            sqlId: SqlIdsMap.deleteBusinessUnit,
-            sqlArgs: { id: id }
-        })
-        console.log(id)
+        const deleteBu = async () => {
+            await Utils.doGenericUpdateQuery({
+                dbName: GLOBAL_SECURITY_DATABASE_NAME,
+                buCode: 'public',
+                sqlId: SqlIdsMap.deleteBusinessUnit,
+                sqlArgs: { id: id }
+            })
+            const loadData = context.CompSyncFusionGrid[DataInstancesMap.adminBusinessUnits].loadData
+            if (loadData) {
+                await loadData()
+            }
+        }
+        Utils.showConfirmDialog(
+            Messages.messSureToProceed,
+            Messages.messUnlinkBu,
+            deleteBu)
     }
 
     function buCodeAggrTemplate(props: any) {

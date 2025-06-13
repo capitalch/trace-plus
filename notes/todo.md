@@ -3,10 +3,7 @@ entry point: /usr/lib/systemd/systemd
 
 ## Final issues as on 08-06-2025
 - Important																								
-	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the 	bu cannot be deleted. So prevent user from deletion when its bu is existing. First delete bu then user
-	- When admin user logs in: From db get physical BU's and prompt to add if not present
-		- Link button		
-	- Product master check duplicate UPC code server side validation
+	- Maybe create userId in BuM as fKey. At present admin user can create a bu. User can be deleted but bu remains. Without admin user login the 	bu cannot be deleted. So prevent user from deletion when its bu is existing. First delete bu then user	
 	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 																	- When bu is changed, sometimes branch is not changed and remains old one
 																	- When bu is changed then fin yar id is uncertain
@@ -18,6 +15,9 @@ entry point: /usr/lib/systemd/systemd
 																	- Provide client name and client code in the email when new Admin user is created in super admin
 																	- When a new / update BU or Fy then it should be immediately updated to accounts info
 																	- Update function get_stock_on_date in all databases
+																	- When admin user logs in: From db get physical BU's and prompt to add if not present
+																		- Link button
+																	- Product master check duplicate UPC code server side validation
 
 - Nice to have
 	- current order report: set to place the order to supplier through mail, whatsapp

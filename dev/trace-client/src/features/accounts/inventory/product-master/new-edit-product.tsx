@@ -74,8 +74,13 @@ export function NewEditProduct({ props }: any) {
         const subs1 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-PRODUCT-LABEL'], 1200).subscribe(async () => {
             validateCatIdBrandIdLabel()
         })
+        const subs2 = ibukiDebounceFilterOn(IbukiMessages['DEBOUNCE-PRODUCT-UPC-CODE'], 1200).subscribe(async (d: any) => {
+            setValue('upcCode', d.data?.upcCode)
+            validateUpcCode()
+        })
         return (() => {
             subs1.unsubscribe()
+            subs2.unsubscribe()
             dispatch(resetQueryHelperData({ instance: DataInstancesMap.productOnId }))
         })
     }, [])
@@ -216,7 +221,10 @@ export function NewEditProduct({ props }: any) {
                                 placeholder="000000000000"
                                 {...register('upcCode')}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                onValueChange={(values) => setValue('upcCode', values.floatValue || null)}
+                                onValueChange={(values) =>
+                                    // setValue('upcCode', values.floatValue || null)
+                                    ibukiDdebounceEmit(IbukiMessages["DEBOUNCE-PRODUCT-UPC-CODE"], { upcCode: values.floatValue || null })
+                                }
                                 value={watch('upcCode')}
                             />
                         </FormField>
@@ -441,7 +449,11 @@ export function NewEditProduct({ props }: any) {
         let Ret = <></>
         if (errors?.root?.catIdBrandIdLabel) {
             Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.catIdBrandIdLabel.message} />
-        } else {
+        }
+        else if (errors?.root?.upcCode) {
+            Ret = <WidgetFormErrorMessage errorMessage={errors?.root?.upcCode.message} />
+        }
+        else {
             Ret = <WidgetFormHelperText helperText='&nbsp;' />
         }
         return (Ret)
@@ -473,7 +485,34 @@ export function NewEditProduct({ props }: any) {
             clearErrors('root.catIdBrandIdLabel')
         }
     }
+
+    async function validateUpcCode() {
+        const values = getValues()
+        const upcCode = values.upcCode
+        if (!upcCode) {
+            return
+        }
+        const res: any = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.doesUpcCodeExist,
+            sqlArgs: {
+                upcCode: upcCode
+            }
+        })
+        if (res?.[0]?.exists) {
+            setError('root.upcCode', {
+                type: 'serverError',
+                message: Messages.errUpcCodeExists
+            })
+        } else {
+            clearErrors('root.upcCode')
+        }
+    }
 }
+
+
 
 export type NewEditProductType = {
     id?: number;

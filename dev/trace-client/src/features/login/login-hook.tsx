@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import urlJoin from "url-join"
 import axios from "axios"
 import qs from 'qs'
-import { doLogin, LoginType, UserDetailsType, } from "./login-slice"
+import { doLogin, LoginType, setToken, UserDetailsType, } from "./login-slice"
 import { Utils } from "../../utils/utils"
 import { ForgotPassword } from "./forgot-password"
 import { UserTypesEnum } from "../../utils/global-types-interfaces-enums"
@@ -50,6 +50,7 @@ function useLogin(setValue: any) {
             const accessToken: string = ret?.data?.accessToken
             const payloadData: LoginType = ret?.data?.payload
             if (accessToken) {
+                dispatch(setToken(accessToken))
                 await setDecodeExtDbParams(payloadData)
                 dispatch(doLogin({
                     allBusinessUnits: payloadData.allBusinessUnits,
@@ -76,7 +77,6 @@ function useLogin(setValue: any) {
         if (isExternalDb && dbParams && payloadData?.userDetails) {
             dbParamsObject = await Utils.decodeExtDbParams(dbParams)
             payloadData.userDetails.decodedDbParamsObject = dbParamsObject
-            // dispatch(setDecodedDbParamsObject(dbParamsObject))
         }
     }
 

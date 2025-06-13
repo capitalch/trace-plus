@@ -86,6 +86,15 @@ class SqlAccounts:
 				and "id" <> (table "id")))
     """
 
+    does_upc_code_exist = """
+    with "upcCode" as (values (%(upcCode)s::text))
+        --with "upcCode" AS (VALUES (1::text))
+    SELECT EXISTS (
+                SELECT 1
+                    FROM "ProductM"
+                WHERE ("upcCode" = (table "upcCode")))
+    """
+
     execute_stock_transfer = """
     --with "branchId" as (values (1)), "finYearId" as (values (2022)), "closingDate" as (values ('2023-03-31')),
         with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "closingDate" as (values (%(closingDate)s)),

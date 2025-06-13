@@ -159,18 +159,19 @@ async function doGenericQuery({
 
 async function doGenericUpdate({
   buCode,
+  dbName,
   tableName,
   xData
 }: DoGenericUpdateType) {
   const userDetails: UserDetailsType = Utils.getUserDetails() || {};
-  const { dbName, decodedDbParamsObject } = userDetails;
+  const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
   const traceDataObject: GraphQLUpdateArgsType = {
     tableName: tableName,
     dbParams: decodedDbParamsObject,
     xData: xData,
     buCode: buCode
   };
-  const q: any = GraphQLQueriesMap.genericUpdate(dbName || "", traceDataObject);
+  const q: any = GraphQLQueriesMap.genericUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.genericUpdate;
   const res: any = await mutateGraphQL(q, queryName);
   return res;
@@ -733,6 +734,7 @@ export type DoGenericQueryType = {
 
 export type DoGenericUpdateType = {
   buCode: string;
+  dbName?:string;
   tableName?: string;
   xData: Record<string, any>[] | Record<string, any>;
 };
