@@ -23,6 +23,11 @@ export const MasterMenuData: MenuDataType = {
       iconColorClass: "text-primary-500",
       children: [
         {
+          id: "10",
+          label: "All Vouchers",
+          path: "/all-vouchers",
+        },
+        {
           id: "11",
           label: "Journals",
           path: "/blogs",

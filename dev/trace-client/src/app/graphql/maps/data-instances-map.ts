@@ -11,6 +11,7 @@ export const DataInstancesMap = {
   adminSecuredControlsLinkRoles: "admin-ecured-controls-link-roles",
   allBanks: "all-banks",
   allTags: "all-tags",
+  allVouchers:'all-vouchers',
   assets: "assets",
   balanceSheet: "balance-sheet",
   bankRecon: "bank-recon",

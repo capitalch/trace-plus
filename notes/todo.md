@@ -15,12 +15,21 @@ entry point: /usr/lib/systemd/systemd
 		- voucher selection buttons
 		- tabs
 		- View tab
+			- Sql
+			- Filters
 		- Entry tab
 			- full transaction
 			- Edit
 			- validation
 			- submit
 			- Gst
+		- Controls
+			- linear-account-picker
+			- voucher-type-select-control
+			- common-crown
+			- payment, contra, receipt, journal voucher
+			- reset-submit control
+		- Implement break forms
 															## Final issues as on 08-06-2025
 																- Important
 																	- ledger show clos balance should be false																									
