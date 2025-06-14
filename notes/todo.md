@@ -6,8 +6,23 @@ entry point: /usr/lib/systemd/systemd
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
 	- Interchange voucher types
-## Final issues as on 08-06-2025
-- Important
+## Transactions
+- Vouchers
+	- Final the screen layout
+	- Startup design and architecture
+	- voucher-slice
+	- Design screen
+		- voucher selection buttons
+		- tabs
+		- View tab
+		- Entry tab
+			- full transaction
+			- Edit
+			- validation
+			- submit
+			- Gst
+															## Final issues as on 08-06-2025
+																- Important
 																	- ledger show clos balance should be false																									
 																	- Drag n drop in Link controls for admin and superadmin does not retain grid expanded status. Also gives error
 																		- Link ctrls <-> roles, the roles grid is not auto populated
@@ -40,7 +55,7 @@ entry point: /usr/lib/systemd/systemd
 		- product master
 		- inventory reports
 
-## Generic dropDownTree for accounts in place of ledgerSubledger
+															## Generic dropDownTree for accounts in place of ledgerSubledger
 																- general ledger
 																	- show balance, Reverse, Daily summary
 																	- sql
@@ -53,7 +68,7 @@ entry point: /usr/lib/systemd/systemd
 																	- placement
 																	- cleanup
 
-## Deployment
+															## Deployment
 																- db connect
 																	- client accommodat Internal IP, Internal Port
 																	- Server: change code
@@ -76,7 +91,7 @@ entry point: /usr/lib/systemd/systemd
 																	- Change code for .name in GraphQLQueriesMap -> GraphQLQueriesMapNames
 																	- Trace+ logo is not coming
 
-## Bug fix
+														## Bug fix
 																	- Bank recon: select bank is blank
 																	- Product opening balance grid is very slow
 																- Error in
@@ -141,14 +156,14 @@ entry point: /usr/lib/systemd/systemd
 																	- Final reports showing NaN at bottom
 																	- Home machine accounts master not working
 		
-	- Admin
+															- Admin
 																- Super admin clients
 																	- New client with ext db. When test connection button is clicked, then client is made inactive from active
 ## To do
 														- Old Trace
 															- Transfer of closing balance in case of stock journal and branch transfer
 															- Update sql of current orders at server
-- General											
+													- General											
 															- In accounts title, right side show client name in dim
 															- Bottom left User type shows unknown
 															- Utils.currentFinYear is misleading. Change it to perhaps nowFinYear
@@ -159,7 +174,7 @@ entry point: /usr/lib/systemd/systemd
 															- In Accounts Info modal windows title should be aligned with grid
 															- Check why query execution taking longer time. Is is because of external database?
 															- Sometimes while switching the client goes in wait mode for ever: Server close connection unexpetdly
-- Misc
+										- Misc
 	
 															- Check Capichow bank recon double entry
 															- Rename globally TraceDataObjectType --> XDetailsType, XDataObjectType --> XDataType
@@ -249,9 +264,9 @@ entry point: /usr/lib/systemd/systemd
 													- party
 													- toolbar
 
-		- Sales
+											- Sales
 													- Clos stock
-			- Remove cross icon
+													- Remove cross icon
 													- Check box
 													- Filter display
 													- Filter control
