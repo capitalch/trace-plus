@@ -88,13 +88,6 @@ export function StockJournalMain({ instance }: { instance: string }) {
       await onSave();
     } else {
       Utils.showAlertMessage('Validation Error', Messages.messStockJournalDebitCreditMismatch)
-      // Utils.showConfirmDialog(
-      //   "Oops!",
-      //   Messages.messStockJournalDebitCreditMismatch,
-      //   async () => {
-      //     await onSave();
-      //   }
-      // );
     }
   }
 

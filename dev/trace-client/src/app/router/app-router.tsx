@@ -39,7 +39,7 @@ import { ProductsBranchTransfers } from "../../features/accounts/inventory/branc
 import { StockJournal } from "../../features/accounts/inventory/stock-journal/stock-journal";
 import { InventoryReportsDashboard } from "../../features/accounts/inventory/reports/inventory-reports-dashboard";
 import { InventoryReportsContainer } from "../../features/accounts/inventory/reports/inventory-reports-container";
-import { AllVouchersMain } from "../../features/accounts/vouchers/all-vouchers/all-vouchers-main";
+import { AllVouchers } from "../../features/accounts/vouchers/all-vouchers/all-vouchers";
 
 
 export const appRouter = createBrowserRouter(
@@ -113,7 +113,7 @@ export const appRouter = createBrowserRouter(
         },
         {
           path: "/all-vouchers",
-          element: <AllVouchersMain />
+          element: <AllVouchers/>
         }
       ]
     },

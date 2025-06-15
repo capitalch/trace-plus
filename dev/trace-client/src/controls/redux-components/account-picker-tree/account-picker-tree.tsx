@@ -10,9 +10,6 @@ import clsx from "clsx";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconRefresh } from "../../icons/icon-refresh";
 import { selectCompSwitchStateFn } from "../comp-slice";
-// import { IconClear } from "../../icons/icon-clear";
-// import { IconClear1 } from "../../icons/icon-clear1";
-// import { IconReset } from "../../icons/icon-reset";
 import { IconCross } from "../../icons/icon-cross";
 
 export function AccountPickerTree({

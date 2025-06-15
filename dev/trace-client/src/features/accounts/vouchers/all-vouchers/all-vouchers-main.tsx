@@ -1,24 +1,38 @@
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
-import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
+import { FormProvider, useForm } from "react-hook-form";
+import { AllVouchersCrown } from "./all-vouchers-crown";
+import { VourcherType } from "../voucher-slice";
+import { VoucherTypeOptions } from "./voucher-type-options";
+import { VoucherCommonHeader } from "./voucher-common-header";
+import { format } from "date-fns";
 
 export function AllVouchersMain() {
-    const instance = DataInstancesMap.allVouchers;
-    const tabsInfo: CompTabsType = [
+
+    const methods = useForm<VoucherFormDataType>(
         {
-            label: "New / Edit",
-            content: <></>
-        },
-        {
-            label: "View",
-            content: <></>
-        }
-    ];
-    return (
-        <CompAccountsContainer>
-            <label className="mt-1 text-md font-bold text-primary-500">
-                All Vouchers
-            </label>
-            <CompTabs tabsInfo={tabsInfo} className="mt-4" instance={instance} />
-        </CompAccountsContainer>)
+            defaultValues:
+            {
+                tranDate: format(new Date(), "yyyy-MM-dd"),
+                voucherType: 'Payment'
+            }
+        });
+
+    return (<FormProvider {...methods}>
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col relative">
+            <AllVouchersCrown className="absolute -top-22.5 right-6" />
+            <VoucherTypeOptions className="absolute -top-14 right-6" />
+            <VoucherCommonHeader/>
+        </form>
+    </FormProvider>)
+
+    function onSubmit(data: VoucherFormDataType) {
+        console.log(data)
+    }
+}
+
+export type VoucherFormDataType = {
+    autoRefNo: string
+    remarks?: string
+    tranDate: string
+    userRefNo?: string
+    voucherType: VourcherType
 }

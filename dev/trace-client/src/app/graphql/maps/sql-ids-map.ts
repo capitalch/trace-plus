@@ -71,6 +71,7 @@ export const SqlIdsMap = {
   getFinYears: "get_fin_years",
   getLeafCategories: "get_leaf_categories",
   getLeafCategoriesWithParent: "get_leaf_categories_with_parent",
+  getLeafSubledgerAccountsOnClass:"get_leaf_subledger_accounts_on_class",
   getLedgerLeafAccounts: "get_ledger_leaf_accounts",
   getLedgerLeafSubLedgerAccounts: 'get_ledger_leaf_subledger_accounts',
   getProductLabelsOnCatIdBrandId: "get_product_labels_on_catId_brandId",

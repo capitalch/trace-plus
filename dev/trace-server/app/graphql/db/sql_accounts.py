@@ -1458,18 +1458,17 @@ class SqlAccounts:
             acc_tree.leaf_ancestor
         FROM "AccM" a
         JOIN acc_tree ON a.id = acc_tree."parentId"
-)
-SELECT DISTINCT
-  id,
-  "accCode",
-  "accName",
-  "accType",
-  "parentId",
-  "accLeaf",
-  "isLeaf"
-FROM acc_tree
-ORDER BY "accName";
-
+        )
+        SELECT DISTINCT
+        id,
+        "accCode",
+        "accName",
+        "accType",
+        "parentId",
+        "accLeaf",
+        "isLeaf"
+        FROM acc_tree
+        ORDER BY "accName";
     """
 
     get_leaf_categories = """
@@ -1490,6 +1489,31 @@ ORDER BY "accName";
                     on c.id = p."catId"	
                 where "isLeaf" 
                 order by "catName"
+    """
+
+    get_leaf_subledger_accounts_on_class = """
+        with "accClassNames" as (values (%(accClassNames)s::text))
+        --with "accClassNames" as  (values ('sale,purchase,debtor,cash'::text))
+        , cte1 as (
+            SELECT 
+                a.id,
+                "accName",
+                "parentId",
+                CASE 
+                WHEN "accLeaf" = 'Y' THEN false
+                WHEN "accLeaf" = 'S' THEN true
+                END as "isSubledger"
+            FROM "AccM" a
+                join "AccClassM" c on c."id" = a."classId"
+            WHERE "accLeaf" IN ('Y', 'S')
+                AND "accClass" = ANY(string_to_array((table "accClassNames"),','))
+        )
+        select c."id",
+                c."accName" || ': ' || a."accName" as "accName",
+                c."isSubledger"
+            FROM cte1 c 
+                join "AccM" a on a.id = c."parentId"
+            ORDER by c."accName"
     """
 
     get_product_categories = """

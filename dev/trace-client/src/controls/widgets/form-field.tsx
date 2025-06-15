@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { WidgetAstrix } from "../widgets/widget-astrix";
 import { WidgetFormErrorMessage } from "../widgets/widget-form-error-message";
-// import { FieldError, } from "react-hook-form";
 
 export function FormField({ label, children, required, error, className }: {
     label: string;

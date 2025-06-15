@@ -69,6 +69,7 @@ import { DropDownTreeDemo } from "./features/syncfusion/drop-down-tree-demo";
 import { DropDownTreeNewDemo } from "./features/syncfusion/drop-down-tree/drop-down-tree-new-demo";
 import { PositioningPanel } from "./features/Misc/positioning-panel";
 import { ToggleEffect } from "./features/Misc/toggle-effect";
+import { OrderForm } from "./features/react-hook-form/order-form";
 
 // import ReportAllTransactionsFilter1 from './features/ai-generated/report-all-transactions-filter1'
 // import { KeyToJson } from './features/unique-key-to-json/key-to-json'
@@ -150,7 +151,8 @@ function App() {
       <DropDownTreeDemo /> */}
       {/* <DropDownTreeNewDemo /> */}
       {/* <PositioningPanel /> */}
-      <ToggleEffect />
+      {/* <ToggleEffect /> */}
+      <OrderForm />
     </GlobalContext.Provider>
   );
 }
