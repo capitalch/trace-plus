@@ -8,12 +8,22 @@ entry point: /usr/lib/systemd/systemd
 	- Interchange voucher types
 ## Transactions
 - Vouchers
-	- Final the screen layout
-	- Startup design and architecture
-	- voucher-slice
+	- UI
+		- Provide a datasource property for accountPicker to avoid repetitive load of data
+		- instrNo, lineRefNo, amount reduce width
+		- All validations
+			- Error show border red
+		- Reset, XReset
+		- Clear button
+		- Not allow to delete single row
+		- GST
+		- Add next button next to remove button
+																- Final the screen layout
+																- Startup design and architecture
+																- voucher-slice
 	- Design screen
-		- voucher selection buttons
-		- tabs
+																- voucher selection buttons
+																- tabs
 		- View tab
 			- Sql
 			- Filters
@@ -24,12 +34,12 @@ entry point: /usr/lib/systemd/systemd
 			- submit
 			- Gst
 		- Controls
-			- linear-account-picker
-			- voucher-type-select-control
-			- common-crown
+																- linear-account-picker
+																- voucher-type-select-control
+																- common-crown
 			- payment, contra, receipt, journal voucher
 			- reset-submit control
-		- Implement break forms
+																- Implement break forms
 															## Final issues as on 08-06-2025
 																- Important
 																	- ledger show clos balance should be false																									

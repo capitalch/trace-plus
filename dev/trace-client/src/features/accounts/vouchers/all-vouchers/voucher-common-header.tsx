@@ -16,7 +16,7 @@ export function VoucherCommonHeader() {
         formState: { errors, /*isSubmitting, isDirty */ }
     } = useFormContext<VoucherFormDataType>();
     return (
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-4 flex-wrap">
 
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-52 ">

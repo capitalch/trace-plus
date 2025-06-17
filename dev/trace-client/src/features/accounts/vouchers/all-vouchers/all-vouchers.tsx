@@ -21,5 +21,6 @@ export function AllVouchers() {
                 All Vouchers
             </label>
             <CompTabs tabsInfo={tabsInfo} className="mt-3" instance={instance} />
-        </CompAccountsContainer>)
+        </CompAccountsContainer>
+    )
 }

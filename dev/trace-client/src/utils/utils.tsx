@@ -299,6 +299,7 @@ function getReactSelectStyles() {
     })
   };
 }
+
 function getReduxState(): RootStateType {
   return store.getState();
 }

@@ -1506,10 +1506,15 @@ class SqlAccounts:
             FROM "AccM" a
                 join "AccClassM" c on c."id" = a."classId"
             WHERE "accLeaf" IN ('Y', 'S')
-                AND "accClass" = ANY(string_to_array((table "accClassNames"),','))
+                AND (
+				((table "accClassNames") is null) OR
+				("accClass" = ANY(string_to_array((table "accClassNames"),',')))
+				)
         )
         select c."id",
-                c."accName" || ': ' || a."accName" as "accName",
+                --c."accName" || ': ' || a."accName" as "accName",
+				c."accName",
+				a."accName" as "accParent",
                 c."isSubledger"
             FROM cte1 c 
                 join "AccM" a on a.id = c."parentId"
