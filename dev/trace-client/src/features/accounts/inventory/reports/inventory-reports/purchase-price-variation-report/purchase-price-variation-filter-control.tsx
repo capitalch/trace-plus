@@ -93,6 +93,7 @@ export function PurchasePriceVariationFilterControl({
           allowMultiSelection={false}
           popupHeight="300px"
           allowFiltering={true}
+          filterType="Contains"
           filterBarPlaceholder="Search"
           select={handleOnChangeCategory}
         />

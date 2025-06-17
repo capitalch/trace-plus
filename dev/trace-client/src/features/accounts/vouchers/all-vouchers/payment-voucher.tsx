@@ -21,10 +21,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
         formState: { errors },
     } = useFormContext<VoucherFormDataType>();
 
-    const creditEntries = useFieldArray({ control, name: "creditEntries" });
-    const debitEntries = useFieldArray({ control, name: "debitEntries" });
-
-    const { fields: creditFields } = creditEntries;
+    const { fields: creditFields } = useFieldArray({ control, name: "creditEntries" });
     const { fields: debitFields, append, remove } = useFieldArray({ control, name: "debitEntries" });
 
     const debitAmounts = watch("debitEntries")?.map(e => e.amount) || [];
@@ -132,7 +129,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                 <div className="flex flex-col gap-4">
                     {debitFields.map((field, index) => (
                         <motion.div
-                            key={field.id}
+                            // key={field.id}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
