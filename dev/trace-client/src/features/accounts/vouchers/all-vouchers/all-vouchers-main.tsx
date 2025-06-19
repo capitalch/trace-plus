@@ -15,6 +15,8 @@ export function AllVouchersMain() {
     const selectedVoucherType = useSelector((state: RootStateType) => state.vouchers.voucherType)
     const methods = useForm<VoucherFormDataType>(
         {
+            mode: "onTouched",
+            criteriaMode: "all",
             defaultValues:
             {
                 tranDate: format(new Date(), "yyyy-MM-dd"),
@@ -29,7 +31,7 @@ export function AllVouchersMain() {
                     lineRefNo: '',
                     lineRemarks: ''
                 }],
-                debitEntries:[{
+                debitEntries: [{
                     accId: null,
                     amount: 0,
                     dc: 'D',

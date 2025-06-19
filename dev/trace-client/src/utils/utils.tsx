@@ -50,6 +50,7 @@ export const Utils: UtilsType = {
   getUnitInfo: getUnitInfo,
   getUserDetails: getUserDetails,
   gridUtils: gridUtils,
+  getUniqueId: getUniqueId,
   isNotNullOrUndefined: isNotNullOrUndefined,
   isNumeric: isNumeric,
   loadDataInTreeGridWithSavedScrollPos: loadDataInTreeGridWithSavedScrollPos,
@@ -71,6 +72,8 @@ export const Utils: UtilsType = {
   toDecimalFormat: toDecimalFormat,
   treeGridUtils: treeGridUtils
 };
+
+let uniqueId: number = 1
 
 function addUniqueKeysToJson(data: any) {
   // AI created
@@ -338,6 +341,10 @@ function getUnitInfo(): UnitInfoType | undefined {
 
 function getUserDetails(): UserDetailsType | undefined {
   return getCurrentLoginInfo().userDetails;
+}
+
+function getUniqueId() {
+  return (uniqueId++)
 }
 
 function isNotNullOrUndefined<T>(value: T | null | undefined): boolean {
@@ -735,7 +742,7 @@ export type DoGenericQueryType = {
 
 export type DoGenericUpdateType = {
   buCode: string;
-  dbName?:string;
+  dbName?: string;
   tableName?: string;
   xData: Record<string, any>[] | Record<string, any>;
 };
@@ -809,6 +816,7 @@ type UtilsType = {
   getToken: () => string | undefined;
   getUnitInfo: () => UnitInfoType | undefined;
   getUserDetails: () => UserDetailsType | undefined;
+  getUniqueId: () => number;
   gridUtils: GridUtilsType;
   isNotNullOrUndefined: (value: any) => boolean;
   isNumeric: (value: any) => boolean;

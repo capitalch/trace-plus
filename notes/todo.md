@@ -9,15 +9,25 @@ entry point: /usr/lib/systemd/systemd
 ## Transactions
 - Vouchers
 	- UI
-		- Provide a datasource property for accountPicker to avoid repetitive load of data
-		- instrNo, lineRefNo, amount reduce width
-		- All validations
-			- Error show border red
-		- Reset, XReset
-		- Clear button
-		- Not allow to delete single row
+		- populate crown debits, credits
+		- alignment of controls
 		- GST
-		- Add next button next to remove button
+																- Provide a datasource property for accountPicker to avoid repetitive load of data
+		- Reset, XReset
+																- Clear control, below index
+		- enhancement of UI
+		- Generalization
+		- Submit
+		- Edit
+		- View
+			- Delete
+
+																- Show account balance in accountPicker
+																- index col
+																- Show refresh in accountPicker
+																- All validations
+																- Not allow to delete single row
+																- Add next button next to remove button
 																- Final the screen layout
 																- Startup design and architecture
 																- voucher-slice

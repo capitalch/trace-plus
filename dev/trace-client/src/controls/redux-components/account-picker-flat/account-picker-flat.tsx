@@ -2,64 +2,109 @@ import { useEffect, useRef, useState } from 'react';
 import Select from 'react-select'
 import { Utils } from '../../../utils/utils';
 import { useUtilsInfo } from '../../../utils/utils-info-hook';
-// import { shallowEqual, useSelector } from 'react-redux';
-// import { RootStateType } from '../../../app/store/store';
-// import { selectCompSwitchStateFn } from '../comp-slice';
 import { SqlIdsMap } from '../../../app/graphql/maps/sql-ids-map';
 import clsx from 'clsx';
-
-// import { components } from 'react-select';
+import { IconRefresh } from '../../icons/icon-refresh';
+import { shallowEqual, useSelector } from 'react-redux';
+import { RootStateType } from '../../../app/store/store';
+import { selectCompSwitchStateFn } from '../comp-slice';
 
 export function AccountPickerFlat({
     accClassNames = [null],
+    accountOptions,
     className,
     instance,
+    loadData,
     onChange,
-    // showAccountBalance,
+    showAccountBalance = false,
     value
 }: AccountPickerFlatType) {
     const selectRef: any = useRef<Select>(null);
-    const [accountOptions, setAccountOptions] = useState<AccountOptionType[]>([])
+    const [options, setOptions] = useState<AccountOptionType[]>([])
+    const [accountBalance, setAccountBalance] = useState<number>(0)
 
-    // const isAllBranches: boolean =
-    //     useSelector(
-    //         (state: RootStateType) => selectCompSwitchStateFn(state, instance),
-    //         shallowEqual
-    //     ) || false;
+    const isAllBranches: boolean =
+        useSelector(
+            (state: RootStateType) => selectCompSwitchStateFn(state, instance),
+            shallowEqual
+        ) || false;
 
     const {
-        // branchId
+        branchId,
         buCode
-        // , currentFinYear
+        , currentFinYear
         , dbName
-        // , decFormatter
+        , decFormatter
         , decodedDbParamsObject
     } = useUtilsInfo()
 
     useEffect(() => {
-        loadAccountOptions()
-    }, [])
+        if (accountOptions) {
+            setOptions(accountOptions)
+        } else {
+            loadLocalData()
+        }
+    }, [accountOptions])
 
     return (
-        <Select
-            className={clsx('w-full', className)}
-            getOptionLabel={(option: AccountOptionType) => option.accName}
-            getOptionValue={(option: AccountOptionType) => option.id}
-            menuPlacement="auto"
-            onChange={handleOnSelectAccount}
-            options={accountOptions}
-            placeholder="Select an account"
-            ref={selectRef}
-            styles={Utils.getReactSelectStyles()}
-            components={{ Option: CustomOption }}
-            value={accountOptions.find((opt: AccountOptionType) => opt.id === value) || null}
-        />)
+        <div className='relative'>
+            <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-6.5 left-1/2 -translate-x-1/2 '><IconRefresh className='w-5 h-5' /></button>
+            <span className='absolute -top-7.5 right-1'>
+                <label className='font-medium text-blue-400'>{decFormatter.format(Math.abs(accountBalance))}</label>
+                {showAccountBalance && <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>}
+            </span>
+            <Select
+                className={clsx('w-full', className)}
+                getOptionLabel={(option: AccountOptionType) => option.accName}
+                getOptionValue={(option: AccountOptionType) => option.id}
+                menuPlacement="auto"
+                onChange={handleOnSelectAccount}
+                options={options}
+                placeholder="Select an account"
+                ref={selectRef}
+                styles={Utils.getReactSelectStyles()}
+                components={{ Option: CustomOption }}
+                value={options.find((opt: AccountOptionType) => opt.id === value) || null}
+            />
+        </div>)
+
+    async function fetchAccountBalance(accId: string) {
+        try {
+            const res: any = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject || {},
+                sqlArgs: {
+                    branchId: isAllBranches ? null : branchId,
+                    accId: accId,
+                    finYearId: currentFinYear?.finYearId,
+                },
+                sqlId: SqlIdsMap.getAccountBalance,
+            })
+            setAccountBalance(res?.[0]?.accountBalance || 0)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    function handleOnClickRefresh() {
+        if (loadData) {
+            loadData()
+        } else {
+            loadLocalData()
+        }
+    }
 
     function handleOnSelectAccount(selectedAcc: AccountOptionType | null) {
+        if (showAccountBalance) {
+            if (selectedAcc?.id) {
+                fetchAccountBalance(selectedAcc.id)
+            }
+        }
         onChange?.(selectedAcc?.id || null)
     }
 
-    async function loadAccountOptions() {
+    async function loadLocalData() {
         try {
             const res: AccountOptionType[] = await Utils.doGenericQuery({
                 buCode: buCode || '',
@@ -72,7 +117,7 @@ export function AccountPickerFlat({
                 }
             })
 
-            setAccountOptions(res || [])
+            setOptions(res || [])
         } catch (error) {
             console.error(error)
         }
@@ -143,15 +188,17 @@ function CustomOption(props: any) {
 }
 
 type AccountPickerFlatType = {
-    accClassNames: AccClassName[] | null
+    accClassNames?: AccClassName[] | null
+    accountOptions?: AccountOptionType[]
     className?: string;
     instance: string
+    loadData?: () => void
     onChange?: (value: string | null) => void;
     showAccountBalance?: boolean
     value?: string | null;
 }
 
-type AccountOptionType = {
+export type AccountOptionType = {
     id: string;
     accName: string;
     accParent: string;

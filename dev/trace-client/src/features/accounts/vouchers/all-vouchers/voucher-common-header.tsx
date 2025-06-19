@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { FormField } from "../../../../controls/widgets/form-field";
 import { useFormContext, } from "react-hook-form";
-// import { VourcherType } from "../vouchers-slice";
 import { VoucherFormDataType } from "./all-vouchers-main";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import { Messages } from "../../../../utils/messages";
