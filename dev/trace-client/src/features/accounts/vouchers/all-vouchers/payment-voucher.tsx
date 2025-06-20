@@ -52,7 +52,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             {/* 💳 Credit Section */}
             <div>
                 <h3 className="text-md font-semibold  text-secondary-400">Credit Entries</h3>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 mt-4">
                     {creditFields.map((_, index) => (
                         <div key={index} className="grid grid-cols-[30px_repeat(6,_1fr)] gap-4 items-start bg-gray-50 p-4 rounded shadow-sm">
 
