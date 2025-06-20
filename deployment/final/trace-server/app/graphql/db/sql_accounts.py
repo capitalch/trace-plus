@@ -86,6 +86,15 @@ class SqlAccounts:
 				and "id" <> (table "id")))
     """
 
+    does_upc_code_exist = """
+    with "upcCode" as (values (%(upcCode)s::text))
+        --with "upcCode" AS (VALUES (1::text))
+    SELECT EXISTS (
+                SELECT 1
+                    FROM "ProductM"
+                WHERE ("upcCode" = (table "upcCode")))
+    """
+
     execute_stock_transfer = """
     --with "branchId" as (values (1)), "finYearId" as (values (2022)), "closingDate" as (values ('2023-03-31')),
         with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "closingDate" as (values (%(closingDate)s)),
@@ -826,6 +835,13 @@ class SqlAccounts:
         FROM cte7
     """
 
+    get_all_schemas_in_database = """
+        SELECT nspname
+        FROM pg_namespace
+        WHERE nspname NOT LIKE %(pg)s AND nspname <> %(inf)s
+        ORDER BY nspname
+    """
+
     get_all_stock_journals = """
         with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "noOfRows" as (values (%(noOfRows)s::int))
         --with "branchId" as (values (1)), "finYearId" as (values (2024)), "noOfRows" as (values (100))
@@ -1442,18 +1458,17 @@ class SqlAccounts:
             acc_tree.leaf_ancestor
         FROM "AccM" a
         JOIN acc_tree ON a.id = acc_tree."parentId"
-)
-SELECT DISTINCT
-  id,
-  "accCode",
-  "accName",
-  "accType",
-  "parentId",
-  "accLeaf",
-  "isLeaf"
-FROM acc_tree
-ORDER BY "accName";
-
+        )
+        SELECT DISTINCT
+        id,
+        "accCode",
+        "accName",
+        "accType",
+        "parentId",
+        "accLeaf",
+        "isLeaf"
+        FROM acc_tree
+        ORDER BY "accName";
     """
 
     get_leaf_categories = """
@@ -1474,6 +1489,36 @@ ORDER BY "accName";
                     on c.id = p."catId"	
                 where "isLeaf" 
                 order by "catName"
+    """
+
+    get_leaf_subledger_accounts_on_class = """
+        with "accClassNames" as (values (%(accClassNames)s::text))
+        --with "accClassNames" as  (values ('sale,purchase,debtor,cash'::text))
+        , cte1 as (
+            SELECT 
+                a.id,
+                "accName",
+                "parentId",
+                CASE 
+                WHEN "accLeaf" = 'Y' THEN false
+                WHEN "accLeaf" = 'S' THEN true
+                END as "isSubledger"
+            FROM "AccM" a
+                join "AccClassM" c on c."id" = a."classId"
+            WHERE "accLeaf" IN ('Y', 'S')
+                AND (
+				((table "accClassNames") is null) OR
+				("accClass" = ANY(string_to_array((table "accClassNames"),',')))
+				)
+        )
+        select c."id",
+                --c."accName" || ': ' || a."accName" as "accName",
+				c."accName",
+				a."accName" as "accParent",
+                c."isSubledger"
+            FROM cte1 c 
+                join "AccM" a on a.id = c."parentId"
+            ORDER by c."accName"
     """
 
     get_product_categories = """

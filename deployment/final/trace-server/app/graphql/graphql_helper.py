@@ -334,6 +334,7 @@ async def import_secured_controls_helper(info, value: str):
         return create_graphql_exception(e)
     return data
 
+
 async def product_categories_helper(info, dbName, value):
     data = []
     valueString = unquote(value)
@@ -361,6 +362,7 @@ async def product_categories_helper(info, dbName, value):
         # At client check data for error attribut and take action accordingly
         return create_graphql_exception(e)
     return data
+
 
 async def trial_balance_helper(info, dbName, value):
     data = []
@@ -449,9 +451,11 @@ async def update_user_helper(info, value: str):
                 pwd = getRandomPassword()
                 tHash = getPasswordHash(pwd)
                 xData["hash"] = tHash
+        clientCode = xData.pop('clientCode', None)
+        clientName = xData.pop('clientName', None)
         data = await exec_sql_object(dbName=operationName, sqlObject=sqlObj)
         # Mail settings: in config.py: Only effective as long as domain kushinfotech.in is working from milesweb. At present subscription is for 3 years till Nov 2027
-        await send_mail_for_update_user(isUpdate, xData, pwd)
+        await send_mail_for_update_user(isUpdate, xData, pwd, clientCode, clientName)
     except Exception as e:
         return create_graphql_exception(e)
     return data
@@ -541,19 +545,21 @@ async def send_mail_for_change_uid(
         )
 
 
-async def send_mail_for_update_user(isUpdate: bool, xData: any, pwd: str):
+async def send_mail_for_update_user(isUpdate: bool, xData: any, pwd: str, clientCode:str, clientName: str):
     uid = xData.get("uid", None)
     email = xData.get("userEmail", None)
     userName = xData.get("userName", "user")
     companyName = Config.PACKAGE_NAME + " team."
     roleId = xData.get("roleId", None)
     userType = "Admin user" if roleId is None else "Business user"
+    # clientCode = xData.get("clientCode", None)
+    # clientName = xData.get("clientName", None)
     if isUpdate:
         subject = (
             Config.PACKAGE_NAME + " " + EmailMessages.email_subject_update_user
         )  # Note that this not a function
         body = EmailMessages.email_body_update_user(
-            userName=userName, companyName=companyName
+            userName=userName, companyName=companyName, clientCode=clientCode, clientName=clientName
         )
     else:
         subject = (
@@ -567,6 +573,8 @@ async def send_mail_for_update_user(isUpdate: bool, xData: any, pwd: str):
             userName=userName,
             companyName=companyName,
             userType=userType,
+            clientCode=clientCode,
+            clientName=clientName
         )
     recipients = [email]
     try:

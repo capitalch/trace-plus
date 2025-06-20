@@ -1,5 +1,13 @@
 class SqlSecurity:
-
+    delete_business_unit = """
+            WITH updated AS (
+                UPDATE "UserM"
+                SET "lastUsedBuId" = NULL
+                WHERE "lastUsedBuId" = %(id)s
+            )
+            DELETE FROM "BuM"
+            WHERE id = %(id)s
+    """
     does_database_exist = """
         with "dbName" as (values(%(dbName)s::text))
         --with "dbName" as (values('client-capital'))
@@ -113,6 +121,7 @@ class SqlSecurity:
         --with "noOfRows" as (values(null::int))
             select c.id as "clientId" 
 				, "clientName"
+                , "clientCode"
 				, u."id"
 				, "uid"
 				, "userName"
@@ -172,7 +181,7 @@ class SqlSecurity:
     """
 
     get_all_client_names_no_args = """
-        select "id", "clientName" from "ClientM"
+        select "id", "clientName", "clientCode" from "ClientM"
                 order by "clientName"
     """
 
