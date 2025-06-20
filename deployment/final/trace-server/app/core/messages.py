@@ -264,7 +264,7 @@ class EmailMessages:
         </html>
     """
 
-    def email_body_new_user(userName, companyName, uid, password, userType):
+    def email_body_new_user(userName, companyName, uid, password, userType, clientCode, clientName):
         return f"""
         <!DOCTYPE html>
         <html>
@@ -318,6 +318,8 @@ class EmailMessages:
             <ul>
             <li>uid: <b>{uid}</b></li>
             <li>Password: <b>{password}</b></li>
+            <li>ClientCode:{ clientCode}</li>
+            <li>ClientName:{ clientName}</li>
             </ul>
             <p>Please change your uid and password to a human-readable format as soon as possible. You can login either using your email address or your uid.</p>
             <p>If you have any questions, please do not hesitate to contact us.</p>
@@ -328,7 +330,7 @@ class EmailMessages:
         </html>
     """
 
-    def email_body_update_user(userName, companyName):
+    def email_body_update_user(userName, companyName, clientCode, clientName):
         return f"""
     <!DOCTYPE html>
         <html>
@@ -341,6 +343,8 @@ class EmailMessages:
         <p>This is to inform you that your user credentials have been updated. Your uid and password remain the same.</p>
         <p>Please login using your email address or your uid.</p>
         <p>If you have any questions, please do not hesitate to contact us.</p>
+        <p>Client Code: {clientCode}</p>
+        <p>Client Name: {clientName}</p>
         <p>Thank you,</p>
         <p>{companyName}</p>
         </body>

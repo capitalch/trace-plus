@@ -52,9 +52,9 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             {/* 💳 Credit Section */}
             <div>
                 <h3 className="text-md font-semibold  text-secondary-400">Credit Entries</h3>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 mt-4">
                     {creditFields.map((_, index) => (
-                        <div key={index} className="grid grid-cols-[30px_repeat(6,_1fr)] gap-4 items-start bg-gray-50 p-4 rounded shadow-sm">
+                        <div key={index} className="grid grid-cols-[30px_1.6fr_1fr_1.5fr_repeat(2,_1fr)] gap-4 items-start bg-gray-50 p-4 rounded shadow-sm">
 
                             {/* index */}
                             <div className="flex flex-col items-start gap-4 mt-2">
@@ -75,7 +75,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                             </div>
 
                             {/* accId */}
-                            <FormField label="Credit Account" className="col-span-2" required error={errors?.creditEntries?.[index]?.accId?.message}>
+                            <FormField label="Credit Account" className="col-span-1" required error={errors?.creditEntries?.[index]?.accId?.message}>
                                 <AccountPickerFlat
                                     accClassNames={['cash', 'bank', 'ecash', 'card']}
                                     instance={`${instance}-credit-${index}`}
@@ -94,7 +94,6 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                                     decimalScale={2}
                                     defaultValue={0}
                                     fixedDecimalScale={true}
-                                    // {...register(`debitEntries.${index}.amount`)}
                                     thousandSeparator={true}
                                     value={totalDebitAmount.toNumber()}
                                     className={clsx(
@@ -166,14 +165,17 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                             validate: (value) =>
                                 value !== 0 || Messages.errRequired
                         })
+                        // const amount = watch(`debitEntries.${index}.amount`)
+                        // const gstRate = watch(`debitEntries.${index}.gstRate`)
+                        // const isIgst = watch(`debitEntries.${index}.isIgst`)
+
                         return <motion.div
                             key={field.id}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
                             transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                            className="grid grid-cols-[30px_repeat(6,_1fr)] gap-4 items-start bg-white p-4 border rounded relative">
-                            {/* className="grid grid-cols-[30px_260px_90px_240px_repeat(3,_1fr)] gap-3 items-start"> */}
+                            className="grid grid-cols-[30px_1.6fr_1fr_1.5fr_repeat(2,_1fr)] gap-4 items-start bg-white p-4 border rounded relative">
 
                             {/* index */}
                             <div className="flex flex-col items-start gap-4 mt-2">
@@ -194,7 +196,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                             </div>
 
                             {/* accId */}
-                            <FormField label="Debit Account" className="col-span-2" required error={errors?.debitEntries?.[index]?.accId?.message}>
+                            <FormField label="Debit Account" className="col-span-1" required error={errors?.debitEntries?.[index]?.accId?.message}>
                                 <AccountPickerFlat
                                     accountOptions={debitAccountOptions}
                                     accClassNames={['debtor', 'creditor', 'dexp', 'iexp']}
@@ -219,13 +221,17 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                                     fixedDecimalScale={true}
                                     // Should not use register here; but use value and onValueChange props
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                    onValueChange={(values) =>
+                                    onValueChange={(values) => {
                                         setValue(
                                             `debitEntries.${index}.amount`,
                                             values.floatValue ?? 0,
                                             { shouldValidate: true, shouldDirty: true }
                                         )
-                                    }
+                                        calculateGst(
+                                            watch(`debitEntries.${index}.amount`),
+                                            watch(`debitEntries.${index}.gstRate`) || 0,
+                                            watch(`debitEntries.${index}.isIgst`) || false)
+                                    }}
                                     thousandSeparator={true}
                                     value={watch(`debitEntries.${index}.amount`)}
                                     className={clsx(
@@ -235,58 +241,72 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                                 />
 
                             </FormField>
-                            {/* instrNo */}
-                            {/* <div className="bg-gray-300"></div> */}
 
                             {/* GST Section */}
                             {isGst ? (
-                                <div className="flex flex-col gap-2 w-60">
-                                    <div className="flex gap-2">
-                                        {/* GST Rate */}
-                                        <FormField label="GST Rate (%)" className="w-1/2">
-                                            <input
-                                                type="number"
-                                                min={0}
-                                                step={0.01}
-                                                className={clsx("h-10", inputFormFieldStyles)}
-                                                {...register(`debitEntries.${index}.gstRate`)}
-                                            />
-                                        </FormField>
-
-                                        {/* HSN Code */}
-                                        <FormField label="HSN Code" className="w-1/2">
-                                            <input
-                                                type="text"
-                                                className={clsx("h-10", inputFormFieldStyles)}
-                                                {...register(`debitEntries.${index}.hsn`)}
-                                            />
-                                        </FormField>
-                                    </div>
-
-                                    {/* IGST Toggle */}
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <input
-                                            type="checkbox"
-                                            id={`debitEntries.${index}.isIgst`}
-                                            {...register(`debitEntries.${index}.isIgst`)}
-                                            className="w-4 h-4"
+                                <div className="flex gap-1 mt-1.5">
+                                    {/* GST Rate */}
+                                    <FormField label="GST Rate" className="w-20">
+                                        <NumericFormat
+                                            allowNegative={false}
+                                            decimalScale={2}
+                                            defaultValue={0}
+                                            fixedDecimalScale={true}
+                                            className={clsx("h-8 mt-1 text-sm text-right", inputFormFieldStyles)}
+                                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                            onValueChange={(values) =>
+                                                setValue(
+                                                    `debitEntries.${index}.gstRate`,
+                                                    values.floatValue ?? 0,
+                                                    { shouldValidate: true, shouldDirty: true }
+                                                )
+                                            }
+                                            value={watch(`debitEntries.${index}.gstRate`)}
+                                        // {...register(`debitEntries.${index}.gstRate`)}
                                         />
-                                        <label htmlFor={`debitEntries.${index}.isIgst`} className="text-sm text-gray-700">
-                                            Apply IGST instead of CGST+SGST
-                                        </label>
-                                    </div>
+                                    </FormField>
+
+                                    {/* HSN Code */}
+                                    <FormField label="HSN Code" className="w-26">
+                                        <NumericFormat
+                                            allowNegative={false}
+                                            decimalScale={0}
+                                            // defaultValue={0}
+                                            fixedDecimalScale={true}
+                                            className={clsx("h-8 mt-1 text-sm", inputFormFieldStyles)}
+                                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                            onValueChange={(values) =>
+                                                setValue(
+                                                    `debitEntries.${index}.hsn`,
+                                                    values.floatValue ?? 0,
+                                                    { shouldValidate: true, shouldDirty: true }
+                                                )
+                                            }
+                                            value={watch(`debitEntries.${index}.hsn`)}
+                                        // {...register(`debitEntries.${index}.hsn`)}
+                                        />
+                                    </FormField>
 
                                     {/* Tax Breakdown Display */}
-                                    <div className="text-xs text-gray-600 space-y-1 ml-1 border-l-2 pl-2 border-gray-300">
-                                        {/* <div><strong>CGST:</strong> {watch(`debitEntries.${index}.isIgst`) ? '0%' : `${watch(`debitEntries.${index}.gstRate`) / 2 || 0}%`}</div>
-                                        <div><strong>SGST:</strong> {watch(`debitEntries.${index}.isIgst`) ? '0%' : `${watch(`debitEntries.${index}.gstRate`) / 2 || 0}%`}</div>
-                                        <div><strong>IGST:</strong> {watch(`debitEntries.${index}.isIgst`) ? `${watch(`debitEntries.${index}.gstRate`) || 0}%` : '0%'}</div> */}
+                                    <div className="text-xs text-gray-700 space-y-1 ml-1 border-l-2 pl-2 border-blue-200">
+                                        {/* IGST Toggle */}
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <input
+                                                type="checkbox"
+                                                id={`debitEntries.${index}.isIgst`}
+                                                {...register(`debitEntries.${index}.isIgst`)}
+                                                className="w-4 h-4 cursor-pointer"
+                                            />
+                                            <label htmlFor={`debitEntries.${index}.isIgst`} className="text-sm text-gray-700 cursor-pointer">
+                                                Apply IGST
+                                            </label>
+                                        </div>
                                         <div><strong>CGST:</strong> {123.45}</div>
                                         <div><strong>SGST:</strong> {145.54}</div>
                                         <div><strong>IGST:</strong> {14445.76}</div>
                                     </div>
                                 </div>
-                            ) : <div></div>}
+                            ) : <div className="col-span-1"></div>}
 
                             {/* lineRefNo */}
                             <FormField label="Line Ref No" error={errors?.debitEntries?.[index]?.lineRefNo?.message}>
@@ -348,6 +368,16 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             </AnimatePresence>
         </div>
     );
+
+    function calculateGst(amount: number, gstRate: number, isIgst: boolean) {
+        if (!isGst) {
+            return
+        }
+        const gst = amount / (1 + gstRate / 100) * (gstRate / 100)
+        // if(isGst){
+
+        // }
+    }
 
     async function loadDebitAccountOptions() {
         try {
