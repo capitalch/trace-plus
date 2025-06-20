@@ -7,7 +7,6 @@ import { PaymentVoucher } from "./payment-voucher";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../../app/store/store";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-// import { TranHeaderType } from "../../inventory/shared-definitions";
 import { VourcherType } from "../voucher-slice";
 
 export function AllVouchersMain() {
@@ -21,11 +20,17 @@ export function AllVouchersMain() {
             {
                 tranDate: format(new Date(), "yyyy-MM-dd"),
                 voucherType: 'Payment',
+                isGst: false,
                 creditEntries: [{
                     accId: null,
                     amount: 0,
                     dc: 'C',
                     entryId: null,
+                    gstRate: 0,
+                    hsn: null,
+                    igst: 0,
+                    sgst: 0,
+                    cgst: 0,
                     instrNo: '',
                     tranHeaderId: null,
                     lineRefNo: '',
@@ -36,6 +41,11 @@ export function AllVouchersMain() {
                     amount: 0,
                     dc: 'D',
                     entryId: null,
+                    gstRate: 0,
+                    hsn: null,
+                    igst: 0,
+                    sgst: 0,
+                    cgst: 0,
                     instrNo: '',
                     tranHeaderId: null,
                     lineRefNo: '',
@@ -44,14 +54,16 @@ export function AllVouchersMain() {
             }
         });
 
-    return (<FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col relative">
-            <AllVouchersCrown className="absolute -top-22.5 right-6" />
-            <VoucherTypeOptions className="absolute -top-14 right-6" />
-            <VoucherCommonHeader />
-            {getVoucherTypeControl()}
-        </form>
-    </FormProvider>)
+    return (
+        <FormProvider {...methods}>
+            <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col relative">
+                <AllVouchersCrown className="absolute -top-22.5 right-6" />
+                <VoucherTypeOptions className="absolute -top-14 right-6" />
+                <VoucherCommonHeader />
+                {getVoucherTypeControl()}
+            </form>
+        </FormProvider>
+    )
 
     function getVoucherTypeControl() {
         const logicObject: any = {
@@ -72,6 +84,7 @@ export function AllVouchersMain() {
 export type VoucherFormDataType = //TranHeaderType
     {
         autoRefNo: string
+        isGst: boolean
         remarks?: string
         tranDate: string
         userRefNo?: string
@@ -85,6 +98,12 @@ type VoucherEntryType = {
     amount: number;
     dc: 'D' | 'C';
     entryId: number | null;
+    gstRate?: number |null;
+    hsn?: number | null;
+    isIgst?: boolean;
+    igst?: number | null;
+    sgst?: number | null;
+    cgst?: number | null;
     instrNo: string;
     tranHeaderId: number | null;
     lineRefNo: string;

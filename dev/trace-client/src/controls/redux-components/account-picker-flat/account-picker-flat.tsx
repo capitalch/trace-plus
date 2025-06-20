@@ -46,6 +46,12 @@ export function AccountPickerFlat({
         }
     }, [accountOptions])
 
+    useEffect(() => {
+        if (value === null) {
+            setAccountBalance(0)
+        }
+    }, [value])
+
     return (
         <div className='relative'>
             <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-6.5 left-1/2 -translate-x-1/2 '><IconRefresh className='w-5 h-5' /></button>

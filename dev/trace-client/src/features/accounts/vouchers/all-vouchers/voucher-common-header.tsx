@@ -6,14 +6,19 @@ import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-fi
 import { Messages } from "../../../../utils/messages";
 import { useValidators } from "../../../../utils/validators-hook";
 import { FormActionButtons } from "./form-action-buttons";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+
 
 export function VoucherCommonHeader() {
     const { checkAllowedDate } = useValidators();
+    const { hasGstin } = useUtilsInfo()
     const {
+        setValue,
         watch,
         register,
         formState: { errors, /*isSubmitting, isDirty */ }
     } = useFormContext<VoucherFormDataType>();
+
     return (
         <div className="flex gap-4 flex-wrap">
 
@@ -65,6 +70,37 @@ export function VoucherCommonHeader() {
                 />
             </FormField>
 
+            {/* GST Toggle */}
+            {hasGstin && (
+                <FormField label="GST Applicable" className="ml-4 items-center">
+                    <div className="flex items-center gap-2 mt-3">
+                        <button
+                            type="button"
+                            className={clsx(
+                                "px-4 py-1 text-sm rounded-full border",
+                                watch("isGst")
+                                    ? "bg-green-500 text-white border-green-600"
+                                    : "bg-white text-gray-600 border-gray-300"
+                            )}
+                            onClick={() => setValue("isGst", true, { shouldDirty: true })}
+                        >
+                            Yes
+                        </button>
+                        <button
+                            type="button"
+                            className={clsx(
+                                "px-4 py-1 text-sm rounded-full border",
+                                !watch("isGst")
+                                    ? "bg-red-500 text-white border-red-600"
+                                    : "bg-white text-gray-600 border-gray-300"
+                            )}
+                            onClick={() => setValue("isGst", false, { shouldDirty: true })}
+                        >
+                            No
+                        </button>
+                    </div>
+                </FormField>
+            )}
             <FormActionButtons className="mt-8 ml-auto" />
         </div>
     )

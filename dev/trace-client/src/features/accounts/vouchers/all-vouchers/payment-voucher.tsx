@@ -44,6 +44,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
     useEffect(() => {
         loadDebitAccountOptions()
     }, [])
+    const isGst = watch('isGst')
 
     return (
         <div className="flex flex-col gap-4 mr-6">
@@ -172,6 +173,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                             exit={{ opacity: 0, y: 10 }}
                             transition={{ type: "spring", stiffness: 100, damping: 15 }}
                             className="grid grid-cols-[30px_repeat(6,_1fr)] gap-4 items-start bg-white p-4 border rounded relative">
+                            {/* className="grid grid-cols-[30px_260px_90px_240px_repeat(3,_1fr)] gap-3 items-start"> */}
 
                             {/* index */}
                             <div className="flex flex-col items-start gap-4 mt-2">
@@ -234,14 +236,57 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
 
                             </FormField>
                             {/* instrNo */}
-                            <div className="bg-gray-300"></div>
-                            {/* <FormField label="Instr No" error={errors?.debitEntries?.[index]?.instrNo?.message}>
-                                <input
-                                    type="text"
-                                    readOnly
-                                    className={clsx("border p-2 rounded h-10 w-full bg-gray-200", inputFormFieldStyles)}
-                                />
-                            </FormField> */}
+                            {/* <div className="bg-gray-300"></div> */}
+
+                            {/* GST Section */}
+                            {isGst ? (
+                                <div className="flex flex-col gap-2 w-60">
+                                    <div className="flex gap-2">
+                                        {/* GST Rate */}
+                                        <FormField label="GST Rate (%)" className="w-1/2">
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                step={0.01}
+                                                className={clsx("h-10", inputFormFieldStyles)}
+                                                {...register(`debitEntries.${index}.gstRate`)}
+                                            />
+                                        </FormField>
+
+                                        {/* HSN Code */}
+                                        <FormField label="HSN Code" className="w-1/2">
+                                            <input
+                                                type="text"
+                                                className={clsx("h-10", inputFormFieldStyles)}
+                                                {...register(`debitEntries.${index}.hsn`)}
+                                            />
+                                        </FormField>
+                                    </div>
+
+                                    {/* IGST Toggle */}
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <input
+                                            type="checkbox"
+                                            id={`debitEntries.${index}.isIgst`}
+                                            {...register(`debitEntries.${index}.isIgst`)}
+                                            className="w-4 h-4"
+                                        />
+                                        <label htmlFor={`debitEntries.${index}.isIgst`} className="text-sm text-gray-700">
+                                            Apply IGST instead of CGST+SGST
+                                        </label>
+                                    </div>
+
+                                    {/* Tax Breakdown Display */}
+                                    <div className="text-xs text-gray-600 space-y-1 ml-1 border-l-2 pl-2 border-gray-300">
+                                        {/* <div><strong>CGST:</strong> {watch(`debitEntries.${index}.isIgst`) ? '0%' : `${watch(`debitEntries.${index}.gstRate`) / 2 || 0}%`}</div>
+                                        <div><strong>SGST:</strong> {watch(`debitEntries.${index}.isIgst`) ? '0%' : `${watch(`debitEntries.${index}.gstRate`) / 2 || 0}%`}</div>
+                                        <div><strong>IGST:</strong> {watch(`debitEntries.${index}.isIgst`) ? `${watch(`debitEntries.${index}.gstRate`) || 0}%` : '0%'}</div> */}
+                                        <div><strong>CGST:</strong> {123.45}</div>
+                                        <div><strong>SGST:</strong> {145.54}</div>
+                                        <div><strong>IGST:</strong> {14445.76}</div>
+                                    </div>
+                                </div>
+                            ) : <div></div>}
 
                             {/* lineRefNo */}
                             <FormField label="Line Ref No" error={errors?.debitEntries?.[index]?.lineRefNo?.message}>
