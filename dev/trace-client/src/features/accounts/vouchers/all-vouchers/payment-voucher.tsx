@@ -165,9 +165,11 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                             validate: (value) =>
                                 value !== 0 || Messages.errRequired
                         })
-                        // const amount = watch(`debitEntries.${index}.amount`)
-                        // const gstRate = watch(`debitEntries.${index}.gstRate`)
-                        // const isIgst = watch(`debitEntries.${index}.isIgst`)
+
+                        // Watch dependent values
+                        // const amount = watch(`debitEntries.${index}.amount`);
+                        // const gstRate = watch(`debitEntries.${index}.gstRate`);
+                        // const isIgst = watch(`debitEntries.${index}.isIgst`);
 
                         return <motion.div
                             key={field.id}
@@ -227,10 +229,12 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                                             values.floatValue ?? 0,
                                             { shouldValidate: true, shouldDirty: true }
                                         )
-                                        calculateGst(
-                                            watch(`debitEntries.${index}.amount`),
-                                            watch(`debitEntries.${index}.gstRate`) || 0,
-                                            watch(`debitEntries.${index}.isIgst`) || false)
+                                        // calculateGst(
+                                        //     watch(`debitEntries.${index}.amount`),
+                                        //     watch(`debitEntries.${index}.gstRate`) || 0,
+                                        //     watch(`debitEntries.${index}.isIgst`) || false,
+                                        //     index
+                                        // )
                                     }}
                                     thousandSeparator={true}
                                     value={watch(`debitEntries.${index}.amount`)}
@@ -244,7 +248,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
 
                             {/* GST Section */}
                             {isGst ? (
-                                <div className="flex gap-1 mt-1.5">
+                                <div className="flex gap-1  bg-gray-50 border p-1 rounded-sm">
                                     {/* GST Rate */}
                                     <FormField label="GST Rate" className="w-20">
                                         <NumericFormat
@@ -301,9 +305,9 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                                                 Apply IGST
                                             </label>
                                         </div>
-                                        <div><strong>CGST:</strong> {123.45}</div>
-                                        <div><strong>SGST:</strong> {145.54}</div>
-                                        <div><strong>IGST:</strong> {14445.76}</div>
+                                        <div><strong>CGST:</strong> {watch(`debitEntries.${index}.cgst`)}</div>
+                                        <div><strong>SGST:</strong> {watch(`debitEntries.${index}.sgst`)}</div>
+                                        <div><strong>IGST:</strong> {watch(`debitEntries.${index}.igst`)}</div>
                                     </div>
                                 </div>
                             ) : <div className="col-span-1"></div>}
@@ -369,15 +373,28 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
         </div>
     );
 
-    function calculateGst(amount: number, gstRate: number, isIgst: boolean) {
-        if (!isGst) {
-            return
-        }
-        const gst = amount / (1 + gstRate / 100) * (gstRate / 100)
-        // if(isGst){
+    // function calculateGst({ amount, gstRate, isIgst, index }: { amount: number, gstRate: number, isIgst: boolean, index: number }) {
+    //     if (!isGst || !amount || !gstRate) return;
 
-        // }
-    }
+    //     const amt = new Decimal(amount);
+    //     const rate = new Decimal(gstRate);
+
+    //     // GST = [amount / (1 + gstRate/100)] * gstRate/100
+    //     const divisor = new Decimal(1).plus(rate.div(100));
+    //     const taxableAmount = amt.div(divisor);
+    //     const gst = taxableAmount.mul(rate.div(100)).toDecimalPlaces(2);
+    //     const gstHalf = gst.div(2).toDecimalPlaces(2);
+
+    //     if (isIgst) {
+    //         setValue(`debitEntries.${index}.igst`, gst.toNumber(), { shouldDirty: true });
+    //         setValue(`debitEntries.${index}.cgst`, 0, { shouldDirty: true });
+    //         setValue(`debitEntries.${index}.sgst`, 0, { shouldDirty: true });
+    //     } else {
+    //         setValue(`debitEntries.${index}.igst`, 0, { shouldDirty: true });
+    //         setValue(`debitEntries.${index}.cgst`, gstHalf.toNumber(), { shouldDirty: true });
+    //         setValue(`debitEntries.${index}.sgst`, gstHalf.toNumber(), { shouldDirty: true });
+    //     }
+    // }
 
     async function loadDebitAccountOptions() {
         try {

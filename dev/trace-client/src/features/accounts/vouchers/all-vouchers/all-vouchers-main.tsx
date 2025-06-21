@@ -109,3 +109,20 @@ type VoucherEntryType = {
     lineRefNo: string;
     lineRemarks: string;
 }
+
+export type DebitEntryType = {
+    accId: string | null;
+    amount: number;
+    dc: "D" | "C";
+    entryId: string | null;
+    tranHeaderId: string | null;
+    instrNo: string;
+    lineRefNo: string;
+    lineRemarks: string;
+    gstRate?: number;
+    hsn?: number;
+    isIgst?: boolean;
+    cgst?: number;
+    sgst?: number;
+    igst?: number;
+};
