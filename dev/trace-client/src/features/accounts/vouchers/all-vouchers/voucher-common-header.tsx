@@ -26,7 +26,7 @@ export function VoucherCommonHeader() {
             <FormField label="Auto ref no" className="w-52 ">
                 <input
                     type="text"
-                    className={clsx("mt-1 bg-gray-200 rounded-lg")}
+                    className={clsx("mt-1 bg-gray-200 rounded-lg",inputFormFieldStyles)}
                     readOnly
                     disabled
                     title="Auto reference number"
@@ -39,7 +39,7 @@ export function VoucherCommonHeader() {
                 <input
                     type="date"
                     className={clsx(
-                        "text-right rounded-lg h-10",
+                        "text-right rounded-lg",
                         inputFormFieldStyles,
                         errors?.tranDate && "border-red-500 bg-red-100"
                     )}

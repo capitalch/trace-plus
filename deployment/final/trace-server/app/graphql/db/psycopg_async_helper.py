@@ -7,7 +7,8 @@ from typing import Any
 from types import FunctionType
 from app.core.utils import get_env
 from app.graphql.db.sql_accounts import SqlAccounts
-import logging
+from app.core.utils import decrypt
+import json
 
 dbParams: dict = {
     "user": Config.DB_USER,
@@ -24,6 +25,10 @@ def get_conn_info(
 ) -> str:
     dbName = Config.DB_NAME if dbName is None else dbName
     db_params = dbParams.copy() if db_params is None else db_params.copy()
+    conn = db_params.get('conn',None)
+    if(conn):
+        conn =decrypt(conn)
+        db_params = json.loads(conn)
     env = get_env()
     # Decide host and port based on environment
     if env == "development":

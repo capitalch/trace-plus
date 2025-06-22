@@ -13,9 +13,16 @@ entry point: /usr/lib/systemd/systemd
 		- populate crown debits, credits
 		- alignment of controls
 		- GST
+		- Provide a datasource property for accountPicker to avoid repetitive load of data
 		- Reset, XReset
 		- enhancement of UI
 		- Generalization
+			- GstControl as separate control
+				- GST validation
+																- accountPicker population
+			- AccountPicker UI responsive
+			- calculateGst method
+			- Sum Total debits and populate total credits
 		- Submit
 		- Edit
 		- View
