@@ -9,19 +9,19 @@ entry point: /usr/lib/systemd/systemd
 ## Transactions
 - Vouchers
 	- UI
+		- fix top
 		- populate crown debits, credits
 		- alignment of controls
 		- GST
-																- Provide a datasource property for accountPicker to avoid repetitive load of data
 		- Reset, XReset
-																- Clear control, below index
 		- enhancement of UI
 		- Generalization
 		- Submit
 		- Edit
 		- View
 			- Delete
-
+																- Provide a datasource property for accountPicker to avoid repetitive load of data
+																- Clear control, below index
 																- Show account balance in accountPicker
 																- index col
 																- Show refresh in accountPicker
