@@ -10,7 +10,7 @@ import { RootStateType } from '../../../app/store/store';
 import { selectCompSwitchStateFn } from '../comp-slice';
 
 export function AccountPickerFlat({
-    accClassNames = [null],
+    accClassNames = null,
     accountOptions,
     className,
     instance,
@@ -211,7 +211,7 @@ export type AccountOptionType = {
     isSubledger: boolean;
 }
 
-type AccClassName =
+export type AccClassName =
     null
     | 'capital'
     | 'loan'

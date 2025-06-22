@@ -1,5 +1,5 @@
 // DebitEntryRow.tsx (or directly in PaymentVoucher.tsx above the main component)
-import React, { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import Decimal from "decimal.js";

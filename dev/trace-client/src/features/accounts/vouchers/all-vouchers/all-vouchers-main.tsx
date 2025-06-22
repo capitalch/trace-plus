@@ -89,11 +89,12 @@ export type VoucherFormDataType = //TranHeaderType
         tranDate: string
         userRefNo?: string
         voucherType: VourcherType
-        creditEntries: VoucherEntryType[]
-        debitEntries: VoucherEntryType[]
+        creditEntries: VoucherLineItemEntryDataType[]
+        debitEntries: VoucherLineItemEntryDataType[]
+        // lineItemEntries: VoucherLineItemEntryType[]
     }
 
-type VoucherEntryType = {
+type VoucherLineItemEntryDataType = {
     accId: string | null;
     amount: number;
     dc: 'D' | 'C';

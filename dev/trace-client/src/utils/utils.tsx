@@ -1,6 +1,6 @@
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
-import _ from "lodash";
+// import _ from "lodash";
 import { RootStateType, store } from "../app/store/store";
 import { Messages } from "./messages";
 import { ReactElement } from "react";
@@ -107,16 +107,17 @@ function addUniqueKeysToJson(data: any) {
 }
 
 async function decodeExtDbParams(encodedDbParams: string) {
-  const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams);
-  const qName = GraphQLQueriesMapNames.decodeExtDbParams;
+  // const q = GraphQLQueriesMap.decodeExtDbParams(encodedDbParams);
+  // const qName = GraphQLQueriesMapNames.decodeExtDbParams;
   try {
-    const res: any = await Utils.queryGraphQL(q, qName);
-    const dbParamsString = res?.data?.[qName];
-    const dbParams: object = JSON.parse(dbParamsString);
-    if (_.isEmpty(dbParams)) {
-      throw new Error(Messages.errExtDbParamsFormatError);
-    }
-    return dbParams;
+    // const res: any = await Utils.queryGraphQL(q, qName);
+    // const dbParamsString = res?.data?.[qName];
+    // const dbParams: object = JSON.parse(dbParamsString);
+    // if (_.isEmpty(dbParams)) {
+    //   throw new Error(Messages.errExtDbParamsFormatError);
+    // }
+    // return dbParams;
+    return ({ conn: encodedDbParams })
   } catch (e: any) {
     Utils.showErrorMessage(e);
   }
