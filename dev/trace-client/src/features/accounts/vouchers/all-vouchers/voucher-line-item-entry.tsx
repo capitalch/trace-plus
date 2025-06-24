@@ -13,16 +13,19 @@ import clsx from "clsx";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import { IconCross } from "../../../../controls/icons/icon-cross";
 import { GstInLinePanel } from "./gst-inline-panel";
+import { useEffect } from "react";
 
 export function VoucherLineItemEntry({
     accountOptions,
     accClassNames,
     allowAddRemove = false,
+    amount,
     dc,
     instance,
     isAmountFieldDisabled = false,
     lineItemEntryName,
     loadData,
+    onChangeAmount,
     title,
     toShowInstrNo,
     tranTypeName
@@ -36,14 +39,14 @@ export function VoucherLineItemEntry({
         formState: { errors },
     } = useFormContext<VoucherFormDataType>();
 
-    // const {
-    //     buCode
-    //     , dbName
-    //     , decodedDbParamsObject
-    // } = useUtilsInfo()
-
     const { fields: lineItemFields, append, remove, insert } = useFieldArray({ control, name: lineItemEntryName });
     const isGst = watch('isGst')
+
+    useEffect(() => {
+        if (amount) {
+            setValue(`${lineItemEntryName}.${0}.amount`, amount);
+        }
+    }, [amount, lineItemEntryName, setValue])
 
     return (<AnimatePresence>
         <div key={1} className="flex justify-between items-center ">
@@ -86,7 +89,7 @@ export function VoucherLineItemEntry({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                    className="grid grid-cols-[30px_1.6fr_1fr_1.5fr_repeat(2,_1fr)] gap-4 items-start bg-white p-4 border rounded relative">
+                    className="grid grid-cols-[30px_1.6fr_1fr_1.5fr_repeat(2,_1fr)] gap-4 items-start bg-white px-4 pt-4 pb-2 border rounded relative">
 
                     {/* index */}
                     <div className="flex flex-col items-start gap-4 mt-2">
@@ -139,6 +142,9 @@ export function VoucherLineItemEntry({
                                     values.floatValue ?? 0,
                                     { shouldValidate: true, shouldDirty: true }
                                 )
+                                if (onChangeAmount) {
+                                    onChangeAmount(index, values.floatValue ?? 0);
+                                }
                             }}
                             thousandSeparator={true}
                             value={watch(`${lineItemEntryName}.${index}.amount`)}
@@ -170,10 +176,11 @@ export function VoucherLineItemEntry({
                         />
                     </FormField>
 
-                    {allowAddRemove && <div>
+                    {/* <div> tag takes extra vertical spacing hence used <> tag  */}
+                    {allowAddRemove && <>
                         <button
                             type="button"
-                            className="absolute top-2 right-12 text-blue-500 hover:text-blue-700"
+                            className="absolute top-4 right-12 text-blue-500 hover:text-blue-700"
                             onClick={() => insert(index + 1, {
                                 accId: null,
                                 amount: 0,
@@ -189,11 +196,11 @@ export function VoucherLineItemEntry({
 
                         <button
                             type="button"
-                            className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                            className="absolute top-4 right-2 text-red-500 hover:text-red-700"
                             onClick={() => lineItemFields.length > 1 && remove(index)}>
                             <IconCross className="w-5 h-5" />
                         </button>
-                    </div>}
+                    </>}
                 </motion.div>
 
             })}
@@ -221,11 +228,13 @@ type VoucherLineItemEntryType = {
     accClassNames?: AccClassName[]
     accountOptions?: AccountOptionType[]
     allowAddRemove: boolean
+    amount?: number
     dc: 'D' | 'C'
     instance: string
     isAmountFieldDisabled: boolean
     lineItemEntryName: 'debitEntries' | 'creditEntries'
     loadData?: () => void
+    onChangeAmount?: (index: number, value: number) => void;
     title: string;
     toShowInstrNo: boolean;
     tranTypeName: 'Debit' | 'Credit'

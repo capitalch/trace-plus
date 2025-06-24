@@ -4,9 +4,16 @@ import { AccountOptionType } from "../../../../controls/redux-components/account
 import { Utils } from "../../../../utils/utils"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { VoucherLineItemEntry } from "./voucher-line-item-entry"
+import { useFormContext } from "react-hook-form"
+import { VoucherFormDataType } from "./all-vouchers-main"
+import Decimal from "decimal.js"
 
 export function PaymentVoucher({ instance }: PaymentVoucherType) {
     const [debitAccountOptions, setDebitAccountOptions] = useState<AccountOptionType[]>([])
+    const [debitTotal, setDebitTotal] = useState<number>(0)
+    const {
+        watch,
+    } = useFormContext<VoucherFormDataType>();
     const {
         buCode
         , dbName
@@ -21,6 +28,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
         <VoucherLineItemEntry
             accClassNames={['cash', 'bank', 'ecash', 'card']}
             allowAddRemove={false}
+            amount={debitTotal}
             dc='C'
             instance={instance}
             isAmountFieldDisabled={true}
@@ -29,14 +37,17 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             toShowInstrNo={true}
             tranTypeName="Credit"
         />
+
         <VoucherLineItemEntry
             accountOptions={debitAccountOptions}
+            // allowAddRemove={false}
             allowAddRemove={true}
             dc='D'
             instance={instance}
             isAmountFieldDisabled={false}
             lineItemEntryName="debitEntries"
             loadData={loadDebitAccountOptions}
+            onChangeAmount={onChangeDebitAmount}
             title="Debit Entries"
             toShowInstrNo={false}
             tranTypeName="Debit"
@@ -60,6 +71,13 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
         } catch (error) {
             console.error(error)
         }
+    }
+
+    function onChangeDebitAmount(index: number, value: number) {
+        const debitAmounts = watch("debitEntries")?.map(e => e.amount) || [];
+        const totalDebitAmount = debitAmounts.reduce((acc, amt) => { return (acc.plus(new Decimal(amt || 0))) }, new Decimal(0));
+        setDebitTotal(totalDebitAmount.toNumber())
+        console.log(`Amount changed for index ${index}: ${value}`)
     }
 }
 
