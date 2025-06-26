@@ -8,8 +8,13 @@ import { useSelector } from "react-redux";
 import { RootStateType } from "../../../../app/store/store";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { VourcherType } from "../voucher-slice";
+import { TraceDataObjectType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { Utils } from "../../../../utils/utils";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AllVouchersMain() {
+    const { branchId, buCode, dbName, finYearId } = useUtilsInfo();
     const instance = DataInstancesMap.allVouchers
     const selectedVoucherType = useSelector((state: RootStateType) => state.vouchers.voucherType)
     const methods = useForm<VoucherFormDataType>(
@@ -53,12 +58,16 @@ export function AllVouchersMain() {
                 }]
             }
         });
-
+    const { watch, getValues } = methods;
     return (
         <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col relative">
+            <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col relative">
                 <AllVouchersCrown className="absolute -top-22.5 right-6" />
-                <VoucherTypeOptions className="absolute -top-14 right-6" />
+
+                {/* Sticky Header Wrapper */}
+                <div className="sticky top-0 z-50 flex justify-end bg-white border-b px-4 py-2">
+                    <VoucherTypeOptions />
+                </div>
                 <VoucherCommonHeader />
                 {getVoucherTypeControl()}
             </form>
@@ -76,14 +85,79 @@ export function AllVouchersMain() {
         return (Ret)
     }
 
-    async function onSubmit(data: VoucherFormDataType) {
+    async function finalizeAndSubmitVoucher(data: VoucherFormDataType) {
         console.log(data)
+        try {
+            const xData: XDataObjectType = getTranHeaderRow();
+            await Utils.doGenericUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: DatabaseTablesMap.TranH,
+                xData: xData,
+            });
+            Utils.showSaveMessage();
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function getTranHeaderRow(): XDataObjectType {
+        return {
+            id: (getValues("id")) || undefined,
+            autoRefNo: getValues("autoRefNo"),
+            branchId,
+            finYearId,
+            jData: "{}",
+            posId: 1,
+            remarks: getValues("remarks"),
+            tranDate: getValues("tranDate"),
+            tranTypeId: getTranTypeId(),
+            userRefNo: getValues("userRefNo"),
+            details: getTranDetailsRows(),
+        };
+    }
+
+    function getTranTypeId() {
+        const tranTypeIdMap: Record<VourcherType, number> = {
+            Payment: 2,
+            Receipt: 3,
+            Contra: 6,
+            Journal: 1
+        };
+        return tranTypeIdMap[selectedVoucherType]
+
+    }
+
+    function getTranDetailsRows() {
+        const details: TraceDataObjectType[] = [{
+            tableName: DatabaseTablesMap.TranD,
+            fkeyName: "tranHeaderId",
+            xData: getTranDetailsData()
+        }];
+        return (details)
+    }
+
+    function getTranDetailsData(): XDataObjectType[] {
+        const creditEntries = watch("creditEntries") || [];
+        const debitEntries = watch("debitEntries") || [];
+        const credits: XDataObjectType[] = creditEntries.map((entry) => ({
+            id: entry.entryId || undefined,
+        }));
+        const debits: XDataObjectType[] = debitEntries.map((entry) => ({
+            id: entry.entryId || undefined,
+        }));
+        return [...credits, ...debits];
     }
 }
 
+
+
 export type VoucherFormDataType = //TranHeaderType
     {
+        id?: string
         autoRefNo: string
+        gstin?: string
         isGst: boolean
         remarks?: string
         tranDate: string
@@ -91,7 +165,6 @@ export type VoucherFormDataType = //TranHeaderType
         voucherType: VourcherType
         creditEntries: VoucherLineItemEntryDataType[]
         debitEntries: VoucherLineItemEntryDataType[]
-        // lineItemEntries: VoucherLineItemEntryType[]
     }
 
 type VoucherLineItemEntryDataType = {
@@ -99,7 +172,7 @@ type VoucherLineItemEntryDataType = {
     amount: number;
     dc: 'D' | 'C';
     entryId: number | null;
-    gstRate?: number |null;
+    gstRate?: number | null;
     hsn?: number | null;
     isIgst?: boolean;
     igst?: number | null;
@@ -110,20 +183,3 @@ type VoucherLineItemEntryDataType = {
     lineRefNo: string;
     lineRemarks: string;
 }
-
-export type DebitEntryType = {
-    accId: string | null;
-    amount: number;
-    dc: "D" | "C";
-    entryId: string | null;
-    tranHeaderId: string | null;
-    instrNo: string;
-    lineRefNo: string;
-    lineRemarks: string;
-    gstRate?: number;
-    hsn?: number;
-    isIgst?: boolean;
-    cgst?: number;
-    sgst?: number;
-    igst?: number;
-};

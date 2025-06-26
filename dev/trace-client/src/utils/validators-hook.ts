@@ -294,6 +294,8 @@ function useValidators() {
     checkPinCode,
     checkUrl,
     checkUserNameOrEmail,
+    isValidGstin,
+    isValidEmail,
     shouldBePositive,
     shouldNotBeZero,
   };

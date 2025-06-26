@@ -10,7 +10,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 
 
 export function VoucherCommonHeader() {
-    const { checkAllowedDate } = useValidators();
+    const { checkAllowedDate, isValidGstin } = useValidators();
     const { hasGstin } = useUtilsInfo()
     const {
         setValue,
@@ -20,13 +20,13 @@ export function VoucherCommonHeader() {
     } = useFormContext<VoucherFormDataType>();
 
     return (
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex gap-4 flex-wrap mt-2">
 
             {/* Auto ref no */}
-            <FormField label="Auto ref no" className="w-52 ">
+            <FormField label="Auto ref no" className="w-40 ">
                 <input
                     type="text"
-                    className={clsx("mt-1 bg-gray-200 rounded-lg",inputFormFieldStyles)}
+                    className={clsx("mt-1 bg-gray-200 rounded-lg", inputFormFieldStyles)}
                     readOnly
                     disabled
                     title="Auto reference number"
@@ -51,7 +51,7 @@ export function VoucherCommonHeader() {
             </FormField>
 
             {/* User ref no */}
-            <FormField label="User ref no">
+            <FormField label="User ref no" className="max-w-44">
                 <input
                     type="text"
                     className={clsx(inputFormFieldStyles, "mt-1")}
@@ -72,7 +72,7 @@ export function VoucherCommonHeader() {
 
             {/* GST Toggle */}
             {hasGstin && (
-                <FormField label="GST Applicable" className="ml-4 items-center">
+                <FormField label="GST Applicable" className="items-center">
                     <div className="flex items-center gap-2 mt-3">
                         <button
                             type="button"
@@ -101,6 +101,27 @@ export function VoucherCommonHeader() {
                     </div>
                 </FormField>
             )}
+
+            {/* GSTIN no */}
+            {watch('isGst') && <FormField label="GSTIN No" error={errors?.gstin?.message}>
+                <input
+                    type="text"
+                    className={clsx(inputFormFieldStyles, "mt-2 text-xs")}
+                    placeholder="Enter GSTIN No"
+                    {...register("gstin", {
+                        validate: (value) => {
+                            const liveIsGst = watch("isGst");
+                            if (!liveIsGst) return true; // Skip validation if GST is not applicable
+                            if (!value) return Messages.errRequiredShort;
+                            if (!isValidGstin(value)) {
+                                return (Messages.errInvalidGstin);
+                            }
+                        }
+                    })}
+                />
+            </FormField>}
+
+
             <FormActionButtons className="mt-8 ml-auto" />
         </div>
     )

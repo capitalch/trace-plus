@@ -23,5 +23,6 @@ export const DatabaseTablesMap = {
   StockJournal: "StockJournal",
   TagsM: "TagsM",
   TranH: "TranH",
+  TranD: "TranD",
   ExtBusinessContactsAccM: "ExtBusinessContactsAccM",
 };

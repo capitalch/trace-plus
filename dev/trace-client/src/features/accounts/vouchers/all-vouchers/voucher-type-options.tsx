@@ -1,9 +1,10 @@
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "./all-vouchers-main";
+import { voucherTypes } from "../../../../utils/global-types-interfaces-enums";
 
 export function VoucherTypeOptions({className}: VoucherTypeOptionsType) {
-    const voucherTypes = ["Payment", "Receipt", "Contra", "Journal"];
+    
     const { register, watch } = useFormContext<VoucherFormDataType>();
     const selectedType = watch("voucherType");
 
@@ -31,6 +32,8 @@ export function VoucherTypeOptions({className}: VoucherTypeOptionsType) {
         </div>
     )
 }
+
+
 
 type VoucherTypeOptionsType = {
     className?: string

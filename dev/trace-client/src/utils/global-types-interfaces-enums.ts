@@ -17,3 +17,5 @@ export type XDataObjectType = {
   [key: string]: string | number | boolean | any;
   details?: TraceDataObjectType[];
 };
+
+export const voucherTypes = ["Payment", "Receipt", "Contra", "Journal"];

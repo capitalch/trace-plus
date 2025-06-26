@@ -9,19 +9,22 @@ entry point: /usr/lib/systemd/systemd
 ## Transactions
 - Vouchers
 	- UI
-		- fix top
-		- populate crown debits, credits
+		- Redux apply for retention
+																- Provide GSTIN no with validation
+																- When clear button click, HSN not clear. Totals don't clear
+																- fix top
+																- populate crown debits, credits
 																- alignment of controls
 																- GST
 																- Provide a datasource property for accountPicker to avoid repetitive load of data
-		- Reset, XReset
-		- Generalization
+																- Reset
+														- Generalization
 															- GstControl as separate control
-																- GST validation
+																- GST validation not working for 2nd row
 																- accountPicker population
 																- AccountPicker UI responsive
 																- calculateGst method
-			- Sum Total debits and populate total credits
+																- Sum Total debits and populate total credits
 		- Submit
 		- Edit
 		- View
