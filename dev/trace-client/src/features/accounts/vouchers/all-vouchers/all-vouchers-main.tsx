@@ -89,12 +89,13 @@ export function AllVouchersMain() {
         console.log(data)
         try {
             const xData: XDataObjectType = getTranHeaderRow();
-            await Utils.doGenericUpdate({
-                buCode: buCode || "",
-                dbName: dbName || "",
-                tableName: DatabaseTablesMap.TranH,
-                xData: xData,
-            });
+            console.log("xData", xData);
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: DatabaseTablesMap.TranH,
+            //     xData: xData,
+            // });
             Utils.showSaveMessage();
 
         } catch (e) {
