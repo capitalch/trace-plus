@@ -17,6 +17,7 @@ export const DatabaseTablesMap = {
   BranchM: "BranchM",
   CategoryM: "CategoryM",
   ExtBankReconTranD: "ExtBankReconTranD",
+  ExtGstTranD: "ExtGstTranD",
   FinYearsM: "FinYearM",
   ProductM: "ProductM",
   ProductOpBal: "ProductOpBal",

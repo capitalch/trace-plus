@@ -90,12 +90,12 @@ export function AllVouchersMain() {
         try {
             const xData: XDataObjectType = getTranHeaderRow();
             console.log("xData", xData);
-            // await Utils.doGenericUpdate({
-            //     buCode: buCode || "",
-            //     dbName: dbName || "",
-            //     tableName: DatabaseTablesMap.TranH,
-            //     xData: xData,
-            // });
+            await Utils.doGenericUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: DatabaseTablesMap.TranH,
+                xData: xData,
+            });
             Utils.showSaveMessage();
 
         } catch (e) {
@@ -119,17 +119,6 @@ export function AllVouchersMain() {
         };
     }
 
-    function getTranTypeId() {
-        const tranTypeIdMap: Record<VourcherType, number> = {
-            Payment: 2,
-            Receipt: 3,
-            Contra: 6,
-            Journal: 1
-        };
-        return tranTypeIdMap[selectedVoucherType]
-
-    }
-
     function getTranDetailsRows() {
         const details: TraceDataObjectType[] = [{
             tableName: DatabaseTablesMap.TranD,
@@ -144,11 +133,47 @@ export function AllVouchersMain() {
         const debitEntries = watch("debitEntries") || [];
         const credits: XDataObjectType[] = creditEntries.map((entry) => ({
             id: entry.entryId || undefined,
+            accId: entry.accId || null,
+            amount: entry.amount,
+            dc: entry.dc,
+            tranHeaderId: entry.tranHeaderId || undefined,
+            instrNo: entry.instrNo || undefined,
+            lineRefNo: entry.lineRefNo || undefined,
+            lineRemarks: entry.lineRemarks || undefined,
+            details: getExtGstTranD(entry)
         }));
         const debits: XDataObjectType[] = debitEntries.map((entry) => ({
             id: entry.entryId || undefined,
         }));
         return [...credits, ...debits];
+    }
+
+    function getExtGstTranD(entry: VoucherLineItemEntryDataType): TraceDataObjectType[] {
+        if (!getValues("isGst")) return [];
+        return [{
+            tableName: DatabaseTablesMap.ExtGstTranD,
+            fkeyName: "tranDetailId",
+            xData: {
+                id: entry.entryId || undefined,
+                gstRate: entry.gstRate || 0,
+                hsn: entry.hsn || null,
+                isIgst: entry.isIgst || false,
+                igst: entry.igst || null,
+                cgst: entry.cgst || null,
+                sgst: entry.sgst || null
+            }
+        }];
+    }
+
+    function getTranTypeId() {
+        const tranTypeIdMap: Record<VourcherType, number> = {
+            Payment: 2,
+            Receipt: 3,
+            Contra: 6,
+            Journal: 1
+        };
+        return tranTypeIdMap[selectedVoucherType]
+
     }
 }
 

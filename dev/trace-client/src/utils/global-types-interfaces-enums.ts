@@ -15,7 +15,7 @@ export type XDataObjectType = {
   id?: number | string;
   isIdInsert?: boolean;
   [key: string]: string | number | boolean | any;
-  details?: TraceDataObjectType[];
+  details?: TraceDataObjectType[] | TraceDataObjectType;
 };
 
 export const voucherTypes = ["Payment", "Receipt", "Contra", "Journal"];
