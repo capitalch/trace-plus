@@ -13,6 +13,7 @@ entry point: /usr/lib/systemd/systemd
 		- Receipts
 		- Contra
 		- Journals
+	- voucher PDF
 	- UI
 		- Redux apply for retention
 																- When you change tabs, credit amount is not retained

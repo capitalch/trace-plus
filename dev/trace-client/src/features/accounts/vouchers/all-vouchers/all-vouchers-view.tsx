@@ -4,6 +4,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import clsx from "clsx";
 // import { StockJournalPdf } from "../../inventory/stock-journal/stock-journal-pdf";
 // import { PDFViewer } from "@react-pdf/renderer";
 // import { format } from "date-fns";
@@ -21,7 +22,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     } = useUtilsInfo();
 
     return (
-        <div className="flex flex-col max-w-max">
+        <div className={clsx("flex flex-col max-w-max", className)}>
             <CompSyncFusionGridToolbar
                 minWidth="400px"
                 title="Stock Journal View"
