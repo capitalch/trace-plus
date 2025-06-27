@@ -3,11 +3,11 @@ import { FormField } from "../../../../controls/widgets/form-field";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
-import { VoucherFormDataType } from "./all-vouchers-main";
 import { useCallback, useEffect } from "react";
 import { Messages } from "../../../../utils/messages";
 import Decimal from "decimal.js";
 import { Utils } from "../../../../utils/utils";
+import { VoucherFormDataType } from "./all-vouchers";
 
 export function GstInLinePanel({
     className = '',
@@ -111,8 +111,6 @@ export function GstInLinePanel({
                                 return Messages.errInvalidHsn; // Custom message
                             }
                             return true;
-                            // if (liveIsGst && (!value || value === 0)) return Messages.errRequiredShort;
-                            // return true;
                         },
                     })}
                 />

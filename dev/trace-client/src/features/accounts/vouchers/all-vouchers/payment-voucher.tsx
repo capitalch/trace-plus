@@ -5,8 +5,8 @@ import { Utils } from "../../../../utils/utils"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { VoucherLineItemEntry } from "./voucher-line-item-entry"
 import { useFormContext } from "react-hook-form"
-import { VoucherFormDataType } from "./all-vouchers-main"
 import Decimal from "decimal.js"
+import { VoucherFormDataType } from "./all-vouchers"
 
 export function PaymentVoucher({ instance }: PaymentVoucherType) {
     const [debitAccountOptions, setDebitAccountOptions] = useState<AccountOptionType[]>([])

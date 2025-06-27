@@ -2,7 +2,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { IconPlus } from "../../../../controls/icons/icon-plus";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { VoucherFormDataType } from "./all-vouchers-main";
 import { Messages } from "../../../../utils/messages";
 import { IconClear } from "../../../../controls/icons/icon-clear";
 import { AccClassName, AccountOptionType, AccountPickerFlat } from "../../../../controls/redux-components/account-picker-flat/account-picker-flat";
@@ -13,6 +12,7 @@ import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-fi
 import { IconCross } from "../../../../controls/icons/icon-cross";
 import { GstInLinePanel } from "./gst-inline-panel";
 import { useEffect } from "react";
+import { VoucherFormDataType } from "./all-vouchers";
 
 export function VoucherLineItemEntry({
     accountOptions,

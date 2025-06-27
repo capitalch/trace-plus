@@ -10,6 +10,7 @@ entry point: /usr/lib/systemd/systemd
 - Vouchers
 	- UI
 		- Redux apply for retention
+		- When you change tabs, credit amount is not retained
 																- Provide GSTIN no with validation
 																- When clear button click, HSN not clear. Totals don't clear
 																- fix top

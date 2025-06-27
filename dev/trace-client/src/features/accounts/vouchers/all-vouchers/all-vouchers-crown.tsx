@@ -1,8 +1,8 @@
 import clsx from "clsx"
-import { VoucherFormDataType } from "./all-vouchers-main"
 import { useFormContext } from "react-hook-form"
 import Decimal from "decimal.js";
 import { Utils } from "../../../../utils/utils";
+import { VoucherFormDataType } from "./all-vouchers";
 
 export function AllVouchersCrown({ className }: AllVouchersCrownType) {
     const {
@@ -75,39 +75,6 @@ export function AllVouchersCrown({ className }: AllVouchersCrownType) {
             </div>
         </div>
     );
-
-    // return (
-    //     <div className={clsx("flex gap-4 text-sm font-medium text-amber-800", className)}>
-    //         <div className="space-x-1">
-    //             <label>GST Debits:</label>
-    //             <span>{Utils.toDecimalFormat(gstDebits.toFixed(2))}</span>
-    //         </div>
-
-    //         <div className="space-x-1">
-    //             <label>GST Credits:</label>
-    //             <span>{Utils.toDecimalFormat(gstCredits.toFixed(2))}</span>
-    //         </div>
-
-    //         {/* Debits */}
-    //         <div className="space-x-1">
-    //             <label>Debits:</label>
-    //             <span>{Utils.toDecimalFormat(totalDebits.toFixed(2))}</span>
-    //         </div>
-
-    //         {/* Credits */}
-    //         <div className="space-x-1">
-    //             <label>Credits:</label>
-    //             <span>{Utils.toDecimalFormat(totalCredits.toFixed(2))}</span>
-    //         </div>
-
-    //         {/* Diff */}
-    //         <div className={clsx("space-x-1", diff.isZero() ? "text-green-600" : "text-red-600")}>
-    //             <label>Diff:</label>
-    //             <span>{Utils.toDecimalFormat(diffAbs.toString())}</span>
-    //             <label>{diff.isZero() ? null : diffSide}</label>
-    //         </div>
-    //     </div>
-    // );
 }
 
 type AllVouchersCrownType = {

@@ -1,12 +1,13 @@
 import clsx from "clsx";
 import { FormField } from "../../../../controls/widgets/form-field";
 import { useFormContext, } from "react-hook-form";
-import { VoucherFormDataType } from "./all-vouchers-main";
+// import { VoucherFormDataType } from "./all-vouchers-main";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import { Messages } from "../../../../utils/messages";
 import { useValidators } from "../../../../utils/validators-hook";
 import { FormActionButtons } from "./form-action-buttons";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { VoucherFormDataType } from "./all-vouchers";
 
 
 export function VoucherCommonHeader() {

@@ -16,9 +16,9 @@ export function CompTabs({
 }) {
   const dispatch: AppDispatchType = useDispatch();
   const ripple =
-    "relative overflow-hidden px-8 py-2 rounded-md shadow-md transition-all duration-300 active:scale-95 group ";
+    "px-8 py-2 rounded-md shadow-md transition-all duration-300 active:scale-95 group ";
   const spanRipple =
-    "absolute inset-0 bg-white opacity-30 scale-0 group-active:scale-200 transition-transform duration-500 ";
+    "inset-0 bg-white opacity-30 scale-0 group-active:scale-200 transition-transform duration-500 ";
   const compTabsInstance = useSelector(
     (state: RootStateType) => state.reduxComp.compTabs[instance]
   );

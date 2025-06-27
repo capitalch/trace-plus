@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
 import { IconReset } from "../../../../controls/icons/icon-reset";
-import { VoucherFormDataType } from "./all-vouchers-main";
 import { IconSubmit } from "../../../../controls/icons/icon-submit";
+import { VoucherFormDataType } from "./all-vouchers";
 
 export function FormActionButtons({ className }: FormActionButtonsType) {
     const {
