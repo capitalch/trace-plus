@@ -13,6 +13,8 @@ import { IconCross } from "../../../../controls/icons/icon-cross";
 import { GstInLinePanel } from "./gst-inline-panel";
 import { useEffect } from "react";
 import { VoucherFormDataType } from "./all-vouchers";
+import { Utils } from "../../../../utils/utils";
+import Decimal from "decimal.js";
 
 export function VoucherLineItemEntry({
     accountOptions,
@@ -27,6 +29,7 @@ export function VoucherLineItemEntry({
     onChangeAmount,
     title,
     toShowInstrNo,
+    toShowSummary = false,
     tranTypeName
 }: VoucherLineItemEntryType) {
 
@@ -40,6 +43,10 @@ export function VoucherLineItemEntry({
 
     const { fields, append, remove, insert } = useFieldArray({ control, name: lineItemEntryName });
     const isGst = watch('isGst')
+
+    useEffect(() => {
+        onChangeAmount?.(0, 0);
+    }, [onChangeAmount])
 
     useEffect(() => {
         if (amount || amount === 0) {
@@ -254,6 +261,26 @@ export function VoucherLineItemEntry({
                     );
                 })}
             </div>
+
+            {/* Summary Footer */}
+            {toShowSummary && <div className="flex -mt-2 justify-end text-sm text-gray-700 px-2">
+                <div className="bg-gray-100 border px-4 py-1 rounded shadow-sm flex gap-8 items-center">
+                    {/* <div>
+                        <span className="font-semibold">Rows:</span> {fields.length}
+                    </div> */}
+                    <div>
+                        <span className="font-semibold">Total Amount:</span>{" "}
+                        {Utils.toDecimalFormat(
+                            fields.reduce((sum, _, i) => {
+                                const val = watch(`${lineItemEntryName}.${i}.amount`);
+                                const decVal = new Decimal(val ?? 0);
+                                return sum.plus(decVal);
+                            }, new Decimal(0)).toNumber()
+                        )}
+                    </div>
+                </div>
+            </div>}
+
         </AnimatePresence>
     );
 
@@ -287,5 +314,6 @@ type VoucherLineItemEntryType = {
     onChangeAmount?: (index: number, value: number) => void;
     title: string;
     toShowInstrNo: boolean;
+    toShowSummary?: boolean;
     tranTypeName: 'Debit' | 'Credit'
 }

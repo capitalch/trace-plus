@@ -12,6 +12,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { RootStateType } from "../../../../app/store/store";
 import { useSelector } from "react-redux";
+import { AllVouchersView } from "./all-vouchers-view";
 
 export function AllVouchers() {
     const instance = DataInstancesMap.allVouchers;
@@ -68,7 +69,7 @@ export function AllVouchers() {
         },
         {
             label: "View",
-            content: <></>
+            content: <AllVouchersView instance={instance} />
         }
     ];
     return (
@@ -79,7 +80,7 @@ export function AllVouchers() {
                         All Vouchers
                     </label>
                     {/* Sticky voucher type selector */}
-                    <div className="sticky top-0 right-6 self-end z-50">
+                    <div className="sticky top-0 right-6 self-end z-30">
                         <VoucherTypeOptions className="absolute right-0 top-2 rounded" />
                     </div>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />

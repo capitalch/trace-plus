@@ -40,7 +40,6 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
 
         <VoucherLineItemEntry
             accountOptions={debitAccountOptions}
-            // allowAddRemove={false}
             allowAddRemove={true}
             dc='D'
             instance={instance}
@@ -50,6 +49,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             onChangeAmount={onChangeDebitAmount}
             title="Debit Entries"
             toShowInstrNo={false}
+            toShowSummary={true}
             tranTypeName="Debit"
         />
     </div>)

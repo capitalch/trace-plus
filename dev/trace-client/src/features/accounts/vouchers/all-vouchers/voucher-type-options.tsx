@@ -9,7 +9,7 @@ export function VoucherTypeOptions({className}: VoucherTypeOptionsType) {
     const selectedType = watch("voucherType");
 
     return (
-        <div className={clsx("flex gap-2 bg-amber-100",className)}>
+        <div className={clsx("flex gap-2 bg-primary-50",className)}>
             {voucherTypes.map((type) => (
                 <label
                     key={type}

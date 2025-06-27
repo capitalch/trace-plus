@@ -8,9 +8,14 @@ entry point: /usr/lib/systemd/systemd
 	- Interchange voucher types
 ## Transactions
 - Vouchers
+	- All vuchers
+		- Payments
+		- Receipts
+		- Contra
+		- Journals
 	- UI
 		- Redux apply for retention
-		- When you change tabs, credit amount is not retained
+																- When you change tabs, credit amount is not retained
 																- Provide GSTIN no with validation
 																- When clear button click, HSN not clear. Totals don't clear
 																- fix top
@@ -57,7 +62,6 @@ entry point: /usr/lib/systemd/systemd
 																- linear-account-picker
 																- voucher-type-select-control
 																- common-crown
-			- payment, contra, receipt, journal voucher
 			- reset-submit control
 																- Implement break forms
 															## Final issues as on 08-06-2025
