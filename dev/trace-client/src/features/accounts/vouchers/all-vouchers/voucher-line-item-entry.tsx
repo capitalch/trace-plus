@@ -74,17 +74,17 @@ export function VoucherLineItemEntry({
                                 accId: null,
                                 amount: 0,
                                 dc,
-                                entryId: null,
+                                id: undefined,
                                 gstRate: 0,
                                 hsn: null,
                                 isIgst: false,
                                 igst: 0,
                                 cgst: 0,
                                 sgst: 0,
-                                tranHeaderId: null,
+                                tranHeaderId: undefined,
                                 instrNo: "",
                                 lineRefNo: "",
-                                lineRemarks: "",
+                                remarks: ""
                             })
                         }
                     >
@@ -126,7 +126,7 @@ export function VoucherLineItemEntry({
                                             setValue(`${lineItemEntryName}.${index}.amount`, 0);
                                         }
                                         setValue(`${lineItemEntryName}.${index}.lineRefNo`, "");
-                                        setValue(`${lineItemEntryName}.${index}.lineRemarks`, "");
+                                        setValue(`${lineItemEntryName}.${index}.remarks`, "");
                                         setValue(`${lineItemEntryName}.${index}.instrNo`, "");
                                         setValue(`${lineItemEntryName}.${index}.gstRate`, 0);
                                         setValue(`${lineItemEntryName}.${index}.hsn`, null);
@@ -214,7 +214,7 @@ export function VoucherLineItemEntry({
                             <FormField label="Line Remarks">
                                 <textarea
                                     rows={3}
-                                    {...register(`${lineItemEntryName}.${index}.lineRemarks`)}
+                                    {...register(`${lineItemEntryName}.${index}.remarks`)}
                                     className={clsx(inputFormFieldStyles, "w-full text-xs mt-1")}
                                 />
                             </FormField>
@@ -230,11 +230,11 @@ export function VoucherLineItemEntry({
                                                 accId: null,
                                                 amount: 0,
                                                 dc: dc,
-                                                entryId: null,
-                                                tranHeaderId: null,
+                                                id: undefined,
+                                                tranHeaderId: undefined,
                                                 instrNo: "",
                                                 lineRefNo: "",
-                                                lineRemarks: "",
+                                                remarks: "",
                                             })
                                         }
                                     >

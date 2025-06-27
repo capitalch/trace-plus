@@ -120,8 +120,6 @@ export function VoucherCommonHeader() {
                     })}
                 />
             </FormField>}
-
-
             <FormActionButtons className="mt-8 ml-auto" />
         </div>
     )

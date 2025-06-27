@@ -14,7 +14,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 
 export function AllVouchersMain() {
-    const { branchId, buCode, dbName, finYearId } = useUtilsInfo();
+    const { branchId,/* buCode, dbName,*/ finYearId } = useUtilsInfo();
     const instance = DataInstancesMap.allVouchers
     const selectedVoucherType = useSelector((state: RootStateType) => state.vouchers.voucherType)
     const methods = useForm<VoucherFormDataType>(
@@ -23,6 +23,7 @@ export function AllVouchersMain() {
             criteriaMode: "all",
             defaultValues:
             {
+                autoRefNo: '',
                 tranDate: format(new Date(), "yyyy-MM-dd"),
                 voucherType: 'Payment',
                 isGst: false,
@@ -30,31 +31,31 @@ export function AllVouchersMain() {
                     accId: null,
                     amount: 0,
                     dc: 'C',
-                    entryId: null,
+                    id: undefined,
                     gstRate: 0,
                     hsn: null,
                     igst: 0,
                     sgst: 0,
                     cgst: 0,
                     instrNo: '',
-                    tranHeaderId: null,
+                    tranHeaderId: undefined,
                     lineRefNo: '',
-                    lineRemarks: ''
+                    remarks: '',
                 }],
                 debitEntries: [{
                     accId: null,
                     amount: 0,
                     dc: 'D',
-                    entryId: null,
+                    id: undefined,
                     gstRate: 0,
                     hsn: null,
                     igst: 0,
                     sgst: 0,
                     cgst: 0,
                     instrNo: '',
-                    tranHeaderId: null,
+                    tranHeaderId: undefined,
                     lineRefNo: '',
-                    lineRemarks: ''
+                    remarks: '',
                 }]
             }
         });
@@ -65,9 +66,9 @@ export function AllVouchersMain() {
                 <AllVouchersCrown className="absolute -top-22.5 right-6" />
 
                 {/* Sticky Header Wrapper */}
-                <div className="sticky top-0 z-50 flex justify-end bg-white border-b px-4 py-2">
+                {/* <div className="absolute -top-14 right-6 z-50 flex justify-end pl-4">
                     <VoucherTypeOptions />
-                </div>
+                </div> */}
                 <VoucherCommonHeader />
                 {getVoucherTypeControl()}
             </form>
@@ -88,14 +89,14 @@ export function AllVouchersMain() {
     async function finalizeAndSubmitVoucher(data: VoucherFormDataType) {
         console.log(data)
         try {
-            const xData: XDataObjectType = getTranHeaderRow();
-            console.log("xData", xData);
-            await Utils.doGenericUpdate({
-                buCode: buCode || "",
-                dbName: dbName || "",
-                tableName: DatabaseTablesMap.TranH,
-                xData: xData,
-            });
+            const xData: XDataObjectType = getTranHData();
+            console.log("xData", JSON.stringify(xData));
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: DatabaseTablesMap.TranH,
+            //     xData: xData,
+            // });
             Utils.showSaveMessage();
 
         } catch (e) {
@@ -103,10 +104,10 @@ export function AllVouchersMain() {
         }
     }
 
-    function getTranHeaderRow(): XDataObjectType {
+    function getTranHData(): XDataObjectType {
         return {
             id: (getValues("id")) || undefined,
-            autoRefNo: getValues("autoRefNo"),
+            autoRefNo: getValues("autoRefNo") || undefined,
             branchId,
             finYearId,
             jData: "{}",
@@ -115,54 +116,66 @@ export function AllVouchersMain() {
             tranDate: getValues("tranDate"),
             tranTypeId: getTranTypeId(),
             userRefNo: getValues("userRefNo"),
-            details: getTranDetailsRows(),
+            details: getTranDDeails(),
         };
     }
 
-    function getTranDetailsRows() {
+    function getTranDDeails() {
         const details: TraceDataObjectType[] = [{
             tableName: DatabaseTablesMap.TranD,
             fkeyName: "tranHeaderId",
-            xData: getTranDetailsData()
+            xData: getTranDData()
         }];
         return (details)
     }
 
-    function getTranDetailsData(): XDataObjectType[] {
+    function getTranDData(): XDataObjectType[] {
         const creditEntries = watch("creditEntries") || [];
         const debitEntries = watch("debitEntries") || [];
         const credits: XDataObjectType[] = creditEntries.map((entry) => ({
-            id: entry.entryId || undefined,
+            id: entry.id || undefined,
             accId: entry.accId || null,
             amount: entry.amount,
             dc: entry.dc,
             tranHeaderId: entry.tranHeaderId || undefined,
-            instrNo: entry.instrNo || undefined,
-            lineRefNo: entry.lineRefNo || undefined,
-            lineRemarks: entry.lineRemarks || undefined,
-            details: getExtGstTranD(entry)
+            instrNo: entry.instrNo || null,
+            lineRefNo: entry.lineRefNo || null,
+            lineRemarks: entry.remarks || null,
+            details: getExtGstTranDDetails(entry),
+            tranheaderId: entry.tranHeaderId || undefined
         }));
         const debits: XDataObjectType[] = debitEntries.map((entry) => ({
-            id: entry.entryId || undefined,
+            id: entry.id || undefined,
+            accId: entry.accId || null,
+            amount: entry.amount,
+            dc: entry.dc,
+            tranHeaderId: entry.tranHeaderId || undefined,
+            instrNo: entry.instrNo || null,
+            lineRefNo: entry.lineRefNo || null,
+            remarks: entry.remarks || null,
+            details: getExtGstTranDDetails(entry),
+            tranheaderId: entry.tranHeaderId || undefined
         }));
         return [...credits, ...debits];
     }
 
-    function getExtGstTranD(entry: VoucherLineItemEntryDataType): TraceDataObjectType[] {
-        if (!getValues("isGst")) return [];
-        return [{
+    function getExtGstTranDDetails(entry: VoucherLineItemEntryDataType): TraceDataObjectType | undefined {
+        if (!(getValues("isGst") && entry.gstRate)) return undefined;
+        return {
             tableName: DatabaseTablesMap.ExtGstTranD,
             fkeyName: "tranDetailId",
             xData: {
-                id: entry.entryId || undefined,
-                gstRate: entry.gstRate || 0,
+                id: entry.gstId || undefined,
+                gstin: getValues("gstin") || null,
+                rate: entry.gstRate || 0,
+                cgst: entry.cgst || 0,
+                sgst: entry.sgst || 0,
+                igst: entry.igst || 0,
+                isInput: entry.dc === 'D' ? true : false,
+                tranDetailId: entry.id || undefined,
                 hsn: entry.hsn || null,
-                isIgst: entry.isIgst || false,
-                igst: entry.igst || null,
-                cgst: entry.cgst || null,
-                sgst: entry.sgst || null
             }
-        }];
+        };
     }
 
     function getTranTypeId() {
@@ -177,35 +190,34 @@ export function AllVouchersMain() {
     }
 }
 
-
-
 export type VoucherFormDataType = //TranHeaderType
     {
-        id?: string
+        id?: number
         autoRefNo: string
         gstin?: string
         isGst: boolean
-        remarks?: string
+        remarks: string | null
         tranDate: string
-        userRefNo?: string
+        userRefNo: string | null
         voucherType: VourcherType
         creditEntries: VoucherLineItemEntryDataType[]
         debitEntries: VoucherLineItemEntryDataType[]
     }
 
 type VoucherLineItemEntryDataType = {
+    id?: number;
     accId: string | null;
     amount: number;
     dc: 'D' | 'C';
-    entryId: number | null;
-    gstRate?: number | null;
+    gstId?: number;
+    gstRate?: number;
     hsn?: number | null;
     isIgst?: boolean;
-    igst?: number | null;
-    sgst?: number | null;
-    cgst?: number | null;
-    instrNo: string;
-    tranHeaderId: number | null;
-    lineRefNo: string;
-    lineRemarks: string;
+    igst?: number;
+    sgst?: number;
+    cgst?: number;
+    instrNo: string | null;
+    lineRefNo: string | null;
+    remarks: string | null;
+    tranHeaderId?: number;
 }

@@ -157,26 +157,3 @@ type GstInLinePanelType = {
     index: number
     lineItemEntryName: 'debitEntries' | 'creditEntries'
 }
-
-{/* <NumericFormat
-    allowNegative={false}
-    decimalScale={0}
-    fixedDecimalScale={true}
-    className={clsx("h-8 text-sm", inputFormFieldStyles, hsnErrorMessage ? 'border-red-400' : '')}
-    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-    onValueChange={(values) =>
-        setValue(
-            `${lineItemEntryName}.${index}.hsn`,
-            values.floatValue ?? 0,
-            { shouldValidate: true, shouldDirty: true }
-        )
-    }
-    value={watch(`${lineItemEntryName}.${index}.hsn`)}
-    {...register(`${lineItemEntryName}.${index}.hsn`, {
-        validate: (value) => {
-            const liveIsGst = watch("isGst");
-            if (liveIsGst && (!value || value === 0)) return Messages.errRequiredShort;
-            return true;
-        },
-    })}
-/> */}
