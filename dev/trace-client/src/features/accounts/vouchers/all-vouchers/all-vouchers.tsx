@@ -4,7 +4,7 @@ import { CompAccountsContainer } from "../../../../controls/components/comp-acco
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { VourcherType } from "../voucher-slice";
 import { AllVouchersMain } from "./all-vouchers-main";
-import { VoucherTypeOptions } from "./voucher-type-options";
+import { VoucherTypeOptions } from "../voucher-controls/voucher-type-options";
 import { FormProvider, useForm } from "react-hook-form";
 import { TraceDataObjectType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
@@ -69,7 +69,7 @@ export function AllVouchers() {
         },
         {
             label: "View",
-            content: <AllVouchersView instance={instance} />
+            content: <AllVouchersView instance={instance} voucherTranTypeId={getTranTypeId} />
         }
     ];
     return (

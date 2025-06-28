@@ -88,6 +88,7 @@ export const SqlIdsMap = {
   getSubledgerAccounts: "get_subledger_accounts",
   getTags: "get_tags",
   getTrialBalance: "get_trial_balance",
+  getVouchers: "get_vouchers",
   insertProduct: "insert_product",
   updateAccountsMaster: "update_accounts_master",
   upsertAutoSubledger: "upsert_auto_subledger",

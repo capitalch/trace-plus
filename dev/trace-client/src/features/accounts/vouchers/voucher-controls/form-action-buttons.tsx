@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import _ from "lodash";
 import { IconReset } from "../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../controls/icons/icon-submit";
-import { VoucherFormDataType } from "./all-vouchers";
+import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 export function FormActionButtons({ className }: FormActionButtonsType) {
     const {

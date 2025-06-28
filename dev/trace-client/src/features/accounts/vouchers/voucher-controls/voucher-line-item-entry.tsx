@@ -12,7 +12,7 @@ import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-fi
 import { IconCross } from "../../../../controls/icons/icon-cross";
 import { GstInLinePanel } from "./gst-inline-panel";
 import { useEffect } from "react";
-import { VoucherFormDataType } from "./all-vouchers";
+import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
 
@@ -50,7 +50,6 @@ export function VoucherLineItemEntry({
 
     useEffect(() => {
         if (amount || amount === 0) {
-            // If amount is provided, set it for the first entry
             setValue(`${lineItemEntryName}.${0}.amount`, amount, { shouldDirty: true });
         }
     }, [amount, lineItemEntryName, setValue])
@@ -100,8 +99,8 @@ export function VoucherLineItemEntry({
                 )}
             </div>
 
-            {/* Line Items */}
-            <div className="flex flex-col gap-1">
+            {/* Line Items key is important*/}
+            <div key={2} className="flex flex-col gap-1">
                 {fields.map((field, index) => {
                     const fieldError = errors?.[lineItemEntryName]?.[index];
                     register(`${lineItemEntryName}.${index}.amount`, {
@@ -111,6 +110,7 @@ export function VoucherLineItemEntry({
                     return (
                         <motion.div
                             key={field.id}
+                            // key= {field.id || `${lineItemEntryName}-${index}`}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
@@ -263,11 +263,8 @@ export function VoucherLineItemEntry({
             </div>
 
             {/* Summary Footer */}
-            {toShowSummary && <div className="flex -mt-2 justify-end text-sm text-gray-700 px-2">
-                <div className="bg-gray-100 border px-4 py-1 rounded shadow-sm flex gap-8 items-center">
-                    {/* <div>
-                        <span className="font-semibold">Rows:</span> {fields.length}
-                    </div> */}
+            {toShowSummary && (
+                <div className="flex items-center gap-2 text-xs text-blue-500 -mt-3 justify-end">
                     <div>
                         <span className="font-semibold">Total Amount:</span>{" "}
                         {Utils.toDecimalFormat(
@@ -278,8 +275,8 @@ export function VoucherLineItemEntry({
                             }, new Decimal(0)).toNumber()
                         )}
                     </div>
-                </div>
-            </div>}
+                </div>)
+            }
 
         </AnimatePresence>
     );

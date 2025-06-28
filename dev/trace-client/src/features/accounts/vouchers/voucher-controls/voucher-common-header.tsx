@@ -7,7 +7,7 @@ import { Messages } from "../../../../utils/messages";
 import { useValidators } from "../../../../utils/validators-hook";
 import { FormActionButtons } from "./form-action-buttons";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { VoucherFormDataType } from "./all-vouchers";
+import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 
 export function VoucherCommonHeader() {

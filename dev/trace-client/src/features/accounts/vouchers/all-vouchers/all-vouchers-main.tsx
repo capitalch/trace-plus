@@ -1,6 +1,6 @@
 import { AllVouchersCrown } from "./all-vouchers-crown";
-import { VoucherCommonHeader } from "./voucher-common-header";
-import { PaymentVoucher } from "./payment-voucher";
+import { VoucherCommonHeader } from "../voucher-controls/voucher-common-header";
+import { PaymentVoucher } from "../voucher-types/payment-voucher";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../../app/store/store";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";

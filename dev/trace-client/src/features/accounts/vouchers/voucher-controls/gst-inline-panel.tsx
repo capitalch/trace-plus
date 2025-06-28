@@ -7,7 +7,7 @@ import { useCallback, useEffect } from "react";
 import { Messages } from "../../../../utils/messages";
 import Decimal from "decimal.js";
 import { Utils } from "../../../../utils/utils";
-import { VoucherFormDataType } from "./all-vouchers";
+import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 export function GstInLinePanel({
     className = '',

@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { voucherTypes } from "../../../../utils/global-types-interfaces-enums";
 import { useFormContext } from "react-hook-form";
-import { VoucherFormDataType } from "./all-vouchers";
+import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 export function VoucherTypeOptions({className}: VoucherTypeOptionsType) {
     

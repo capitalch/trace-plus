@@ -5,52 +5,99 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import clsx from "clsx";
+// import { shallowEqual, useSelector } from "react-redux";
+// import { selectCompSwitchStateFn } from "../../../../controls/redux-components/comp-slice";
+import { RootStateType } from "../../../../app/store/store";
+import { useCallback, useEffect, useState } from "react";
+import { Utils } from "../../../../utils/utils";
+// import { shallowEqual, useSelector } from "react-redux";
+// import { selectCompSwitchStateFn } from "../../../../controls/redux-components/comp-slice";
 // import { StockJournalPdf } from "../../inventory/stock-journal/stock-journal-pdf";
 // import { PDFViewer } from "@react-pdf/renderer";
 // import { format } from "date-fns";
 
-export function AllVouchersView({ className, instance }: AllVouchersViewType) {
-    // const [isDialogOpen, setIsDialogOpen] = useState(false);
+export function AllVouchersView({ className, instance, voucherTranTypeId }: AllVouchersViewType) {
+    // const isAllBranches: boolean =
+    //     useSelector(
+    //         (state: RootStateType) => selectCompSwitchStateFn(state, instance),
+    //         shallowEqual
+    //     ) || false;
+
+    const [rowsData, setRowsData] = useState<RowDataType[]>([]);
+
     const {
         buCode,
         branchId,
-        // context,
-        // currentDateFormat,
         dbName,
         decodedDbParamsObject,
         finYearId
     } = useUtilsInfo();
 
+    const tranTypeId = voucherTranTypeId();
+
+    const loadData = useCallback(async () => {
+        try {
+            const state: RootStateType = Utils.getReduxState();
+            const isAllBranchesState = state.reduxComp.compSwitch[instance];
+            const buCode = state.login.currentBusinessUnit?.buCode;
+            const finYearId = state.login.currentFinYear?.finYearId;
+
+            const rowsData: RowDataType[] = await Utils.doGenericQuery({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                dbParams: decodedDbParamsObject,
+                instance: instance,
+                sqlId: SqlIdsMap.getVouchers,
+                sqlArgs: {
+                    branchId: isAllBranchesState
+                        ? null
+                        : state.login.currentBranch?.branchId,
+                    finYearId: finYearId,
+                    tranTypeId: tranTypeId,
+                },
+            });
+            setRowsData(rowsData);
+        } catch (e: any) {
+            console.log(e);
+        }
+    }, [decodedDbParamsObject, dbName, instance, tranTypeId]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData, finYearId, buCode, branchId]);
+
     return (
-        <div className={clsx("flex flex-col max-w-max", className)}>
+        <div className={clsx("flex flex-col w-full", className)}>
             <CompSyncFusionGridToolbar
-                minWidth="400px"
-                title="Stock Journal View"
+                className="mr-4"
+                minWidth="600px"
+                title="Vouchers View"
                 isPdfExport={true}
                 isExcelExport={true}
                 isCsvExport={true}
-                isLastNoOfRows={true}
                 instance={instance}
             />
 
             <CompSyncFusionGrid
                 aggregates={getAggregates()}
+                allowPaging={true}
+                allowTextWrap={false}
+                pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000, 5000, 10000] }}
                 buCode={buCode}
-                className="mt-4"
+                className="mt-2 mr-6"
                 columns={getColumns()}
-                dbName={dbName}
-                dbParams={decodedDbParamsObject}
-                deleteColumnWidth={40}
-                editColumnWidth={40}
-                height="calc(100vh - 260px)"
+                dataSource={rowsData}
+                hasCheckBoxSelection={true}
+                height="calc(100vh - 368px)"
+                indexColumnWidth={60}
                 instance={instance}
-                minWidth="400px"
-                // onDelete={handleOnDelete}
-                // onEdit={handleOnEdit}
-                // onPreview={handleOnPreview}
-                // previewColumnWidth={40}
-                sqlId={SqlIdsMap.getAllStockJournals}
-                sqlArgs={{ branchId: branchId, finYearId: finYearId }}
+                isSmallerFont={true}
+                loadData={loadData}
+                minWidth="1400px"
+                rowHeight={35}
+                searchFields={["autoRefNo, userRefNo,  remarks, lineRefNo, lineRemarks"]}
+            // queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
+            // onRowDataBound={handleOnRowDataBound}
             />
 
             {/* Custom modal dialog */}
@@ -196,9 +243,50 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         ];
     }
 
+    // async function loadData() {
+    //     try {
+    //         const state: RootStateType = Utils.getReduxState();
+    //         const isAllBranchesState = state.reduxComp.compSwitch[instance];
+    //         const buCode = state.login.currentBusinessUnit?.buCode;
+    //         const finYearId = state.login.currentFinYear?.finYearId;
+
+    //         const rowsData: RowDataType[] = await Utils.doGenericQuery({
+    //             buCode: buCode || "",
+    //             dbName: dbName || "",
+    //             dbParams: decodedDbParamsObject,
+    //             instance: instance,
+    //             sqlId: SqlIdsMap.getVouchers,
+    //             sqlArgs: {
+    //                 branchId: isAllBranchesState
+    //                     ? null
+    //                     : state.login.currentBranch?.branchId,
+    //                 finYearId: finYearId,
+    //                 tranTypeId: tranTypeId,
+    //             },
+    //         });
+    //         setRowsData(rowsData);
+    //         // processRowsData(rowsData)
+    //     } catch (e: any) {
+    //         console.log(e);
+    //     }
+    // }
 }
 
-    type AllVouchersViewType = {
-        className?: string
-        instance: string
-    }
+type AllVouchersViewType = {
+    className?: string
+    instance: string
+    voucherTranTypeId: () => number
+}
+
+type RowDataType = {
+    id?: number;
+    tranDate: Date;
+    autoRefNo: string;
+    userRefNo?: string;
+    credits: number;
+    debits: number;
+    amount: number;
+    remarks?: string;
+    lineRefNo?: string;
+    lineRemarks?: string;
+};
