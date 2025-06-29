@@ -2,11 +2,11 @@ import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
-import { VourcherType } from "../voucher-slice";
+// import { VourcherType } from "../voucher-slice";
 import { AllVouchersMain } from "./all-vouchers-main";
 import { VoucherTypeOptions } from "../voucher-controls/voucher-type-options";
 import { FormProvider, useForm } from "react-hook-form";
-import { TraceDataObjectType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
@@ -14,7 +14,7 @@ import { RootStateType } from "../../../../app/store/store";
 import { useSelector } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
 
-export function AllVouchers() {
+export function AllVouchers() {    
     const instance = DataInstancesMap.allVouchers;
     const { branchId,/* buCode, dbName,*/ finYearId } = useUtilsInfo();
     const selectedVoucherType = useSelector((state: RootStateType) => state.vouchers.voucherType)
@@ -69,7 +69,7 @@ export function AllVouchers() {
         },
         {
             label: "View",
-            content: <AllVouchersView instance={instance} voucherTranTypeId={getTranTypeId} />
+            content: <AllVouchersView instance={instance} />
         }
     ];
     return (
@@ -80,7 +80,7 @@ export function AllVouchers() {
                         All Vouchers
                     </label>
                     {/* Sticky voucher type selector */}
-                    <div className="sticky top-0 right-6 self-end z-30">
+                    <div className="sticky top-0 right-6 self-end z-5">
                         <VoucherTypeOptions className="absolute right-0 top-2 rounded" />
                     </div>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
@@ -117,7 +117,7 @@ export function AllVouchers() {
             posId: 1,
             remarks: getValues("remarks"),
             tranDate: getValues("tranDate"),
-            tranTypeId: getTranTypeId(),
+            tranTypeId: Utils.getTranTypeId(selectedVoucherType),
             userRefNo: getValues("userRefNo"),
             details: getTranDDeails(),
         };
@@ -181,15 +181,15 @@ export function AllVouchers() {
         };
     }
 
-    function getTranTypeId() {
-        const tranTypeIdMap: Record<VourcherType, number> = {
-            Payment: 2,
-            Receipt: 3,
-            Contra: 6,
-            Journal: 1
-        };
-        return tranTypeIdMap[selectedVoucherType]
-    }
+    // function getTranTypeId() {
+    //     const tranTypeIdMap: Record<VourcherType, number> = {
+    //         Payment: 2,
+    //         Receipt: 3,
+    //         Contra: 6,
+    //         Journal: 1
+    //     };
+    //     return tranTypeIdMap[selectedVoucherType]
+    // }
 }
 
 export type VoucherFormDataType = //TranHeaderType

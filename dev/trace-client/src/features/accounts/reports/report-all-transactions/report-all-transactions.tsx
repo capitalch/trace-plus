@@ -14,16 +14,14 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";
-// import { setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 export function ReportAllTransactions() {
     const dispatch: AppDispatchType = useDispatch()
-    const [apiData, setApiData] = useState<any[]>([]) /////
+    const [apiData, setApiData] = useState<any[]>([])
     const instance: string = DataInstancesMap.reportAllTransactions
-    // const selectedLastNoOfRows: any = useSelector((state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows)
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const {
         branchId
@@ -64,7 +62,6 @@ export function ReportAllTransactions() {
                 isPdfExport={false}
                 isExcelExport={false}
                 isCsvExport={true}
-                // isLastNoOfRows={true}
                 instance={instance}
             />
             <CompSyncFusionGrid
@@ -73,7 +70,7 @@ export function ReportAllTransactions() {
                 buCode={buCode}
                 className="mr-6 mt-4"
                 columns={getColumns()}
-                dataSource={apiData} //////
+                dataSource={apiData}
                 dbName={dbName}
                 dbParams={decodedDbParamsObject}
                 deleteColumnWidth={40}
@@ -153,7 +150,7 @@ export function ReportAllTransactions() {
             },
             {
                 field: 'accName',
-                headerText: 'Acc name',
+                headerText: 'Account',
                 width: 150,
                 textAlign: 'Left',
                 type: 'string',

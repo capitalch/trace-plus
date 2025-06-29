@@ -24,6 +24,7 @@ import { CompInstances } from "../controls/redux-components/comp-instances";
 import { treeGridUtils, TreeGridUtilsType } from "./tree-grid-utils";
 import { gridUtils, GridUtilsType } from "./grid-utils";
 import { GlobalContextType } from "../app/global-context";
+import { TranType, TranTypeMap, TranTypeReverseMap } from "./global-types-interfaces-enums";
 
 export const Utils: UtilsType = {
   addUniqueKeysToJson: addUniqueKeysToJson,
@@ -47,6 +48,8 @@ export const Utils: UtilsType = {
   getRunningFinYear: getRunningFinYear,
   getRunningFinYearId: getRunningFinYearId,
   getToken: getToken,
+  getTranTypeId: getTranTypeId,
+  getTranTypeName: getTranTypeName,
   getUnitInfo: getUnitInfo,
   getUserDetails: getUserDetails,
   gridUtils: gridUtils,
@@ -329,6 +332,14 @@ function getRunningFinYearId(): number {
 function getToken() {
   const state: RootStateType = store.getState();
   return state.login.token;
+}
+
+function getTranTypeId(tranType: TranType): number | undefined {
+  return(TranTypeMap[tranType])
+}
+
+function getTranTypeName(tranTypeId: number): TranType | undefined {
+  return(TranTypeReverseMap[tranTypeId])
 }
 
 function getUnitInfo(): UnitInfoType | undefined {
@@ -815,6 +826,8 @@ type UtilsType = {
   getRunningFinYear: () => FinYearType;
   getRunningFinYearId: () => number;
   getToken: () => string | undefined;
+  getTranTypeId: (tranTypeName: TranType) => number | undefined;
+  getTranTypeName: (tranTypeId: number) => TranType | undefined;
   getUnitInfo: () => UnitInfoType | undefined;
   getUserDetails: () => UserDetailsType | undefined;
   getUniqueId: () => number;

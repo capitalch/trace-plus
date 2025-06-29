@@ -12,11 +12,11 @@ import {
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
-import { IconDelete } from "../../icons/icon-delete";
-import { IconPreview } from "../../icons/icon-preview";
-import { Button } from "primereact/button";
-import { IconEdit1 } from "../../icons/icon-edit1";
-import { IconCross } from "../../icons/icon-cross";
+// import { IconDelete } from "../../icons/icon-delete";
+// import { IconPreview } from "../../icons/icon-preview";
+// import { Button } from "primereact/button";
+// import { IconEdit1 } from "../../icons/icon-edit1";
+// import { IconCross } from "../../icons/icon-cross";
 
 export function useCompSyncFusionGrid({
   aggregates,
@@ -31,7 +31,6 @@ export function useCompSyncFusionGrid({
   hasIndexColumn,
   indexColumnWidth,
   instance,
-  // isLoadOnInit,
   loadData,
   onDelete,
   onEdit,
@@ -133,40 +132,82 @@ export function useCompSyncFusionGrid({
     if (onDelete) {
       colDirectives.unshift(
         <ColumnDirective
-          key="D"
-          allowEditing={false}
-          field=""
           headerText="D"
-          template={deleteTemplate}
-          width={deleteColumnWidth || 30}
+          width={deleteColumnWidth || "40"}
+          commands={[
+            {
+              title: 'Delete',
+              type: 'Delete',
+              buttonOption: {
+                iconCss: 'e-icons e-delete',
+                cssClass: 'e-flat e-grid-delete text-red-500',
+              }
+            }
+          ]}
         />
+        // <ColumnDirective
+        //   key="D"
+        //   allowEditing={false}
+        //   field=""
+        //   headerText="D"
+        //   template={deleteTemplate}
+        //   width={deleteColumnWidth || 30}
+        // />
       );
     }
 
     if (onPreview) {
       colDirectives.unshift(
         <ColumnDirective
-          key="P"
-          allowEditing={false}
-          field=""
           headerText="P"
-          template={previewTemplate}
-          width={previewColumnWidth || 30}
+          width={previewColumnWidth || "40"}
+          commands={[
+            {
+              title: 'Preview',
+              type: 'None',
+              buttonOption: {
+                iconCss: 'e-icons e-eye',
+                cssClass: 'e-flat e-grid-preview text-blue-600',
+              }
+            }
+          ]}
         />
+        // <ColumnDirective
+        //   key="P"
+        //   allowEditing={false}
+        //   field=""
+        //   headerText="P"
+        //   template={previewTemplate}
+        //   width={previewColumnWidth || 30}
+        // />
       );
     }
 
     if (onEdit) {
       colDirectives.unshift(
         <ColumnDirective
-          key="E"
-          allowEditing={false}
-          field=""
           headerText="E"
-          template={editTemplate}
-          width={editColumnWidth || "16px"}
-          textAlign="Center"
+          width={editColumnWidth || "40"}
+          commands={[
+            {
+              title: 'Edit',
+              type: 'Edit',
+              buttonOption: {
+                iconCss: 'e-icons e-edit',
+                cssClass: 'e-flat e-grid-edit text-green-600',
+              }
+            }
+          ]}
         />
+        // <ColumnDirective
+        //   key="E"
+        //   allowEditing={false}
+        //   field=""
+        //   headerText="E"
+        //   template={editTemplate}
+        //   width={editColumnWidth || "16px"}
+        //   textAlign="Center"
+        // />
       );
     }
     if (hasIndexColumn) {
@@ -184,13 +225,27 @@ export function useCompSyncFusionGrid({
     if (onRemove) {
       colDirectives.unshift(
         <ColumnDirective
-          key="R"
-          allowEditing={false}
-          field=""
-          headerText=""
-          template={removeTemplate}
-          width={removeButtonWidth || 30}
+          headerText="R"
+          width={removeButtonWidth || "40"}
+          commands={[
+            {
+              title: 'Remove',
+              type: 'None',
+              buttonOption: {
+                iconCss: 'e-icons e-close',
+                cssClass: 'e-flat e-grid-remove text-amber-500',
+              }
+            }
+          ]}
         />
+        // <ColumnDirective
+        //   key="R"
+        //   allowEditing={false}
+        //   field=""
+        //   headerText=""
+        //   template={removeTemplate}
+        //   width={removeButtonWidth || 30}
+        // />
       );
     }
 
@@ -202,69 +257,29 @@ export function useCompSyncFusionGrid({
     return colDirectives;
   }
 
-  function deleteTemplate(props: any) {
-    return (
-      <Button
-        tooltip="Delete"
-        tooltipOptions={{
-          position: "top",
-          mouseTrack: true,
-          mouseTrackTop: 10
-        }}
-        className="w-7 h-7 bg-slate-50 hover:bg-slate-300"
-        onClick={() => {
-          if (onDelete) {
-            onDelete(props.id, props.isUsed);
-          }
-        }}
-      >
-        <IconDelete className="w-5 h-5 text-red-500 ml-1" />
-      </Button>
-    );
-  }
-
-  function previewTemplate(props: any) {
-    return (
-      <Button
-        tooltip="Preview"
-        tooltipOptions={{
-          position: "top",
-          mouseTrack: true,
-          mouseTrackTop: 10
-        }}
-        className="w-7 h-7 bg-slate-50 hover:bg-slate-200"
-        onClick={() => {
-          if (onPreview) {
-            onPreview(props);
-          }
-        }}
-      >
-        <IconPreview className="w-5 h-5 text-blue-600 ml-1" />
-      </Button>
-    );
-  }
-
-  function editTemplate(props: any) {
-    return (
-      // WidgetTooltip not working here
-      <Button
-        tooltip="Edit"
-        tooltipOptions={{
-          position: "top",
-          mouseTrack: true,
-          mouseTrackTop: 10
-        }}
-        // <button
-        className="w-7 h-7 bg-slate-50 hover:bg-slate-200 "
-        onClick={() => {
-          if (onEdit) {
-            onEdit(props);
-          }
-        }}
-      >
-        <IconEdit1 className="w-5 h-5 text-green-600 ml-1" />
-      </Button>
-    );
+  function handleCommandClick(args: any) {
+    const rowData = args.rowData;
+    const buttonClass = args.commandColumn?.buttonOption?.cssClass;
+    if (buttonClass?.includes('e-grid-edit')) {
+      // console.log('Edit action triggered for:', rowData);
+      onEdit?.(rowData);
+      return
+    }
+    if (buttonClass?.includes('e-grid-delete')) {
+      // console.log('Delete action triggered for:', rowData);
+      onDelete?.(rowData);
+      return
+    }
+    if (buttonClass?.includes('e-grid-preview')) {
+      // console.log('Delete action triggered for:', rowData);
+      onPreview?.(rowData);
+      return
+    }
+    if (buttonClass?.includes('e-grid-remove')) {
+      // console.log('Delete action triggered for:', rowData);
+      onRemove?.(rowData);
+      return
+    }
   }
 
   function indexColumnTemplate(props: any) {
@@ -272,40 +287,100 @@ export function useCompSyncFusionGrid({
     return idx;
   }
 
-  function removeTemplate(props: any) {
-    return (
-      <Button
-        className="w-7 h-7 bg-slate-50 hover:bg-slate-200 "
-        onClick={() => {
-          if (onRemove) {
-            onRemove(props);
-          }
-          // if (gridRef.current) {
-          //     const selectedRecords = gridRef.current?.getSelectedRecords();
-          //     if (selectedRecords && selectedRecords.length > 0) {
-          //         gridRef.current?.deleteRecord('id', selectedRecords[0]);
-          //     } else {
-          //         alert('Please select a row to delete');
-          //     }
-
-          // }
-        }}
-      >
-        <IconCross className="w-5 h-5 text-red-500 ml-1" />
-      </Button>
-    );
-  }
-
   // Custom header template function
-    function selectHeaderTemplate() {
-        return <div></div>; // Empty div removes the checkbox, or add custom content if desired
-    }
+  function selectHeaderTemplate() {
+    return <div></div>; // Empty div removes the checkbox, or add custom content if desired
+  }
 
   return {
     getAggrColDirectives,
     getColumnDirectives,
+    handleCommandClick,
     loading,
     loadDataLocal,
     selectedData
   };
 }
+
+// function editTemplate(props: any) {
+//   return (
+//     // WidgetTooltip not working here
+//     <Button
+//       tooltip="Edit"
+//       type="button"
+//       tooltipOptions={{
+//         position: "top",
+//         mouseTrack: true,
+//         mouseTrackTop: 10
+//       }}
+//       // <button
+//       className="w-7 h-7 bg-slate-50 hover:bg-slate-200 "
+//       onClick={() => {
+//         if (onEdit) {
+//           onEdit(props);
+//         }
+//       }}
+//     >
+//       <IconEdit1 className="w-5 h-5 text-green-600 ml-1" />
+//     </Button>
+//   );
+// }
+
+// function deleteTemplate(props: any) {
+//   return (
+//     <Button
+//       tooltip="Delete"
+//       type="button"
+//       tooltipOptions={{
+//         position: "top",
+//         mouseTrack: true,
+//         mouseTrackTop: 10
+//       }}
+//       className="w-7 h-7 bg-slate-50 hover:bg-slate-300"
+//       onClick={() => {
+//         if (onDelete) {
+//           onDelete(props.id, props.isUsed);
+//         }
+//       }}
+//     >
+//       <IconDelete className="w-5 h-5 text-red-500 ml-1" />
+//     </Button>
+//   );
+// }
+
+// function previewTemplate(props: any) {
+//   return (
+//     <Button
+//       tooltip="Preview"
+//       type="button"
+//       tooltipOptions={{
+//         position: "top",
+//         mouseTrack: true,
+//         mouseTrackTop: 10
+//       }}
+//       className="w-7 h-7 bg-slate-50 hover:bg-slate-200"
+//       onClick={() => {
+//         if (onPreview) {
+//           onPreview(props);
+//         }
+//       }}
+//     >
+//       <IconPreview className="w-5 h-5 text-blue-600 ml-1" />
+//     </Button>
+//   );
+// }
+
+// function removeTemplate(props: any) {
+//   return (
+//     <Button
+//       className="w-7 h-7 bg-slate-50 hover:bg-slate-200 "
+//       onClick={() => {
+//         if (onRemove) {
+//           onRemove(props);
+//         }
+//       }}
+//     >
+//       <IconCross className="w-5 h-5 text-red-500 ml-1" />
+//     </Button>
+//   );
+// }

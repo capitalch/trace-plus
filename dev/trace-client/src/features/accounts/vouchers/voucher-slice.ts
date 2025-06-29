@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { VourcherType } from "../../../utils/global-types-interfaces-enums";
 
 const initialState: VoucherInitialStateType = {
     autoRefNo: '',
@@ -79,7 +80,7 @@ export type VoucherInitialStateType = {
     voucherType: VourcherType
 }
 
-export type VourcherType = 'Contra' | 'Journal' | 'Payment' | 'Receipt'
+
 export type EntryItemType = {
     accId: number | null;
     amount: number;

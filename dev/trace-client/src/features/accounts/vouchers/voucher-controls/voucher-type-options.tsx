@@ -3,13 +3,16 @@ import { voucherTypes } from "../../../../utils/global-types-interfaces-enums";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
-export function VoucherTypeOptions({className}: VoucherTypeOptionsType) {
-    
+export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
+
     const { register, watch } = useFormContext<VoucherFormDataType>();
     const selectedType = watch("voucherType");
 
     return (
-        <div className={clsx("flex gap-2 bg-primary-50",className)}>
+        <div className={clsx("flex gap-2  items-center", className)}>
+            <label className="text-red-500 font-semibold text-md w-20">
+                {`${watch('id') ? 'Edit' : 'New'} Entry`}
+            </label>
             {voucherTypes.map((type) => (
                 <label
                     key={type}

@@ -7,15 +7,23 @@ entry point: /usr/lib/systemd/systemd
 - Vouchers
 	- Interchange voucher types
 ## Transactions
+- Application wide fix useEffect warning
 - Vouchers
-	- All vuchers
+	- All vouchers
 		- Payments
 		- Receipts
 		- Contra
 		- Journals
-	- voucher PDF
+	- Preview
+	- Submit
+	- View
+		- Delete
+		- Edit
+		- Preview
+		- Copy
 	- UI
 		- Redux apply for retention
+																- Color coding. Same id same color, otherwise alternating
 																- When you change tabs, credit amount is not retained
 																- Provide GSTIN no with validation
 																- When clear button click, HSN not clear. Totals don't clear
@@ -32,10 +40,6 @@ entry point: /usr/lib/systemd/systemd
 																- AccountPicker UI responsive
 																- calculateGst method
 																- Sum Total debits and populate total credits
-		- Submit
-		- Edit
-		- View
-			- Delete
 																- Provide a datasource property for accountPicker to avoid repetitive load of data
 																- Clear control, below index
 																- Show account balance in accountPicker
@@ -47,7 +51,6 @@ entry point: /usr/lib/systemd/systemd
 																- Final the screen layout
 																- Startup design and architecture
 																- voucher-slice
-	- Design screen
 																- voucher selection buttons
 																- tabs
 		- View tab

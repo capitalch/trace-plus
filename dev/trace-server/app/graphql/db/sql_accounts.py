@@ -979,6 +979,30 @@ class SqlAccounts:
             order by "id"
     """
 
+    get_all_vouchers = """
+        WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int))
+	       -- with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (2::int))
+        select ROW_NUMBER() OVER (ORDER BY "tranDate" DESC, h."id" DESC, d."id" DESC) AS "index",
+            h."id", "tranDate", "autoRefNo", "tags",
+             h."remarks", "userRefNo", "accName", "dc", d."remarks" as "lineRemarks",
+             CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END as "debit",
+             CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END as "credit",
+             "lineRefNo", d."instrNo", "clearDate", "gstin", "rate", "hsn", "cgst", "sgst", "igst", "isInput", "tranTypeId"
+            from "TranH" h 
+                join "TranD" d
+                    on h."id" = d."tranHeaderId"				
+                join "AccM" a
+                    on a."id" = d."accId"
+                left outer join "ExtBankReconTranD" b
+					on d."id" = b."tranDetailsId"
+				left outer join "ExtGstTranD" e
+					on d."id" = e."tranDetailsId"
+		where "tranTypeId" = (table "tranTypeId") 
+            and "finYearId" = (table "finYearId")
+            and "branchId" = (table "branchId")
+            order by "tranDate" DESC, h."id" DESC, d."id" DESC
+    """
+    
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 
@@ -2837,30 +2861,34 @@ class SqlAccounts:
             'profitOrLoss', (SELECT "profitOrLoss" FROM cte3)
         ) AS "jsonResult"
     """
-    
-    get_vouchers = """
-        WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int))
-	       -- with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (2::int))
-        select h."id", "tranDate", "autoRefNo", "tags",
-             h."remarks", "userRefNo", "accName", "dc", d."remarks" as "lineRemarks",
-             CASE WHEN "dc" = 'D' THEN "amount" ELSE 0.00 END as "debit",
-             CASE WHEN "dc" = 'C' THEN "amount" ELSE 0.00 END as "credit",
-             "lineRefNo", d."instrNo", "clearDate", "gstin", "rate", "hsn", "cgst", "sgst", "igst", "isInput", "tranTypeId"
-            from "TranH" h 
-                join "TranD" d
-                    on h."id" = d."tranHeaderId"				
-                join "AccM" a
-                    on a."id" = d."accId"
-                left outer join "ExtBankReconTranD" b
-					on d."id" = b."tranDetailsId"
-				left outer join "ExtGstTranD" e
-					on d."id" = e."tranDetailsId"
-		where "tranTypeId" = (table "tranTypeId") 
-            and "finYearId" = (table "finYearId")
-            and "branchId" = (table "branchId")
-            order by "tranDate" DESC, h."id" DESC, d."id" DESC
-    """
 
+    get_voucher_details_on_id = """
+        WITH "id" as (values (%(id)s::int))
+        --WITH "id" as (values (11083::int))
+        , cte1 as (
+            select "id", "tranDate", "autoRefNo", "tags", 
+                    "remarks" , "userRefNo", "tranTypeId"
+            from "TranH"		
+                where "id" = (table id)),
+                cte2 as (select t."id", "accId", "remarks", "dc", "amount", "tranHeaderId", "lineRefNo", "instrNo",
+                    (select row_to_json(t) from 
+                        (
+                            select *, CASE WHEN "rate" is not null 
+                                THEN true 
+                                ELSE false 
+                                END as "isGst" 
+                            from "ExtGstTranD" where "tranDetailsId" = t."id") t
+                    ) as "gst"
+                from "TranD" t
+                    where "tranHeaderId" =(table id))
+
+                SELECT
+                    json_build_object(
+                        'tranHeader', (SELECT (row_to_json(a)) from cte1 a)
+                        , 'tranDetails', (SELECT json_agg(row_to_json(b)) from cte2 b)
+                    ) as "jsonResult"
+    """
+    
     increment_last_no = """
         WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int))
         --with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (12::int))

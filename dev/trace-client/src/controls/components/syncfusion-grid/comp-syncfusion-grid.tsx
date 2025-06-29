@@ -19,7 +19,9 @@ import {
   RowDataBoundEventArgs,
   Edit,
   VirtualScroll,
-  Page
+  Page,
+  // ColumnDirective,
+  CommandColumn
 } from "@syncfusion/ej2-react-grids";
 import _ from 'lodash'
 import { FC, useContext, useEffect, useRef, } from "react";
@@ -81,6 +83,7 @@ export function CompSyncFusionGrid({
   const {
     getAggrColDirectives,
     getColumnDirectives,
+    handleCommandClick,
     loading,
     loadDataLocal,
     selectedData
@@ -152,6 +155,7 @@ export function CompSyncFusionGrid({
       allowTextWrap={allowTextWrap}
       cellEdit={onCellEdit}
       className={clsx(className, isSmallerFont ? "smaller-font" : "")}
+      commandClick={handleCommandClick}
       created={onCreated}
       dataSource={dataSource || selectedData || []}
       editSettings={editSettings}
@@ -176,7 +180,18 @@ export function CompSyncFusionGrid({
         type: gridDragAndDropSettings?.selectionType || "Single"
       }}
     >
-      <ColumnsDirective>{getColumnDirectives()}</ColumnsDirective>
+      <ColumnsDirective>
+        {/* <ColumnDirective
+          commands={[
+            { type: 'Edit', buttonOption: { iconCss: 'e-icons e-edit', cssClass: 'e-flat' } },
+            { type: 'Delete', buttonOption: { iconCss: 'e-icons e-delete', cssClass: 'e-flat' } }
+          ]}
+          headerText="Actions"
+          width="120"
+        /> */}
+        {getColumnDirectives()}
+      </ColumnsDirective>
+
       {aggregates && (
         <AggregatesDirective>
           <AggregateDirective>
@@ -188,7 +203,7 @@ export function CompSyncFusionGrid({
       )}
       <Inject
         services={[
-          Aggregate,
+          Aggregate, CommandColumn,
           Edit,
           ExcelExport,
           InfiniteScroll,

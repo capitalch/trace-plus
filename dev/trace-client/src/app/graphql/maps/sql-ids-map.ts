@@ -55,6 +55,7 @@ export const SqlIdsMap = {
   getAllBrands: "get_all_brands",
   getAllSchemasInDatabase: "get_all_schemas_in_database",
   getAllTransactions: "get_all_transactions",
+  getAllVouchers: "get_all_vouchers",
   getBankOpBalance: "get_bank_op_balance",
   getBranchTransferDetailsOnTranHeaderId:
     "get_branch_transfer_details_on_tran_header_id",
@@ -88,7 +89,7 @@ export const SqlIdsMap = {
   getSubledgerAccounts: "get_subledger_accounts",
   getTags: "get_tags",
   getTrialBalance: "get_trial_balance",
-  getVouchers: "get_vouchers",
+  getVoucherDetailsOnId: "get_voucher_details_on_id",
   insertProduct: "insert_product",
   updateAccountsMaster: "update_accounts_master",
   upsertAutoSubledger: "upsert_auto_subledger",
