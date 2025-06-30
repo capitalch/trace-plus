@@ -145,7 +145,7 @@ export function AllVouchers() {
             lineRefNo: entry.lineRefNo || null,
             lineRemarks: entry.remarks || null,
             details: getExtGstTranDDetails(entry),
-            tranheaderId: entry.tranHeaderId || undefined
+            // tranheaderId: entry.tranHeaderId || undefined
         }));
         const debits: XDataObjectType[] = debitEntries.map((entry) => ({
             id: entry.id || undefined,
@@ -157,7 +157,7 @@ export function AllVouchers() {
             lineRefNo: entry.lineRefNo || null,
             remarks: entry.remarks || null,
             details: getExtGstTranDDetails(entry),
-            tranheaderId: entry.tranHeaderId || undefined
+            // tranheaderId: entry.tranHeaderId || undefined
         }));
         return [...credits, ...debits];
     }
@@ -166,7 +166,7 @@ export function AllVouchers() {
         if (!(getValues("isGst") && entry.gstRate)) return undefined;
         return {
             tableName: DatabaseTablesMap.ExtGstTranD,
-            fkeyName: "tranDetailId",
+            fkeyName: "tranDetailsId",
             xData: {
                 id: entry.gstId || undefined,
                 gstin: getValues("gstin") || null,
@@ -175,7 +175,7 @@ export function AllVouchers() {
                 sgst: entry.sgst || 0,
                 igst: entry.igst || 0,
                 isInput: entry.dc === 'D' ? true : false,
-                tranDetailId: entry.id || undefined,
+                tranDetailsId: entry.id || undefined,
                 hsn: entry.hsn || null,
             }
         };

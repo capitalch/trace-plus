@@ -376,6 +376,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
                 isGst: voucherEditData?.tranDetails?.some((d: VoucherTranDetailsType) => d.gst !== null),
                 gstin: voucherEditData?.tranDetails?.[0]?.gst?.gstin || '',
+                
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
                     accId: d.accId as string | null,
@@ -390,7 +391,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                     cgst: d?.gst?.cgst ?? 0,
                     sgst: d?.gst?.sgst ?? 0,
                     
-
                     instrNo: d.instrNo,
                     lineRefNo: d.lineRefNo,
                     remarks: d.remarks,
@@ -416,7 +416,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                     tranHeaderId: d.tranHeaderId,
                 })),
             })
-            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
         } catch (e: any) {
             console.error(e);
         }
