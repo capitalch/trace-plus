@@ -12,9 +12,9 @@ entry point: /usr/lib/systemd/systemd
 																- gst object in form
 																- GSTIN in gst object
 																- correct form
-	- submit correction
-	- reset revisit
-	- edit revisit
+																- submit correction
+																- reset revisit
+																- edit revisit
 - Vouchers
 	- All vouchers
 		- Payments

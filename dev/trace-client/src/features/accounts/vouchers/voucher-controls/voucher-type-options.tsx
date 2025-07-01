@@ -5,7 +5,7 @@ import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
 
-    const { register, watch } = useFormContext<VoucherFormDataType>();
+    const { register, watch, } = useFormContext<VoucherFormDataType>();    
     const selectedType = watch("voucherType");
 
     return (

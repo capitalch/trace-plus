@@ -372,25 +372,33 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
             const tranHeader = voucherEditData?.tranHeader
             reset({
                 id: tranHeader.id,
-                tranDate: tranHeader.tranDate,                
+                tranDate: tranHeader.tranDate,
                 userRefNo: tranHeader.userRefNo,
                 remarks: tranHeader.remarks,
                 tranTypeId: tranHeader.tranTypeId,
                 autoRefNo: tranHeader.autoRefNo,
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
                 isGst: voucherEditData?.tranDetails?.some((d: VoucherTranDetailsType) => d.gst !== null),
-                // gstin: voucherEditData?.tranDetails?.[0]?.gst?.gstin ,
-                
+
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
                     accId: d.accId as string | null,
-                    remarks: d.remarks,                    
+                    remarks: d.remarks,
                     dc: d.dc,
                     amount: d.amount,
                     tranHeaderId: d.tranHeaderId,
                     lineRefNo: d.lineRefNo,
                     instrNo: d.instrNo,
-
+                    gst: d?.gst?.id ? {
+                        id: d.gst.id,
+                        gstin: d.gst.gstin,
+                        rate: d.gst.rate,
+                        cgst: d.gst.cgst,
+                        sgst: d.gst.sgst,
+                        igst: d.gst.igst,
+                        isIgst: d?.gst?.igst ? true : false,
+                        hsn: d.gst.hsn
+                    } : undefined
                     // gstId: d?.gst?.id,
                     // gstRate: d?.gst?.rate,
                     // hsn: d?.gst?.hsn as number | null | undefined,
@@ -402,13 +410,22 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 debitEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
                     accId: d.accId as string | null,
-                    remarks: d.remarks,                    
+                    remarks: d.remarks,
                     dc: d.dc,
                     amount: d.amount,
                     tranHeaderId: d.tranHeaderId,
                     lineRefNo: d.lineRefNo,
                     instrNo: d.instrNo,
-
+                    gst: d?.gst?.id ? {
+                        id: d.gst.id,
+                        gstin: d.gst.gstin,
+                        rate: d.gst.rate,
+                        cgst: d.gst.cgst,
+                        sgst: d.gst.sgst,
+                        igst: d.gst.igst,
+                        isIgst: d?.gst?.igst ? true : false,
+                        hsn: d.gst.hsn
+                    } : undefined
                     // gstId: d?.gst?.id,
                     // gstRate: d?.gst?.rate,
                     // hsn: d?.gst?.hsn as number | null | undefined,

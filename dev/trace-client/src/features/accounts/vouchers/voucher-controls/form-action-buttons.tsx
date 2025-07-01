@@ -7,27 +7,28 @@ import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 export function FormActionButtons({ className }: FormActionButtonsType) {
     const {
-        reset,
+        // reset,
         formState: {
             errors,
             isDirty,
             isSubmitting,
         }
     } = useFormContext<VoucherFormDataType>();
+    const {xReset} : any = useFormContext();
     return (
         <div className={clsx("flex h-10 gap-4 mr-6", className)}>
             {/* Reset */}
             <button
-                onClick={handleReset}
+                onClick={xReset}
                 type="button"
                 className="px-5 font-medium text-white inline-flex items-center bg-amber-500 hover:bg-amber-800 focus:ring-4 focus:outline-hidden focus:ring-amber-300 rounded-lg text-center dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-800 disabled:bg-amber-200 transition"
             >
                 <IconReset className="text-white w-6 h-6 mr-2" />
                 Reset
             </button>
-            <button type='button' onClick={() => {
+            {/* <button type='button' onClick={() => {
                 console.log(errors)
-            }}>Test</button>
+            }}>Test</button> */}
 
             <button
                 type="submit"
@@ -38,9 +39,9 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
             </button>
         </div>)
 
-    function handleReset() {
-        reset()
-    }
+    // function handleReset() {
+    //     reset()
+    // }
 }
 
 type FormActionButtonsType = {

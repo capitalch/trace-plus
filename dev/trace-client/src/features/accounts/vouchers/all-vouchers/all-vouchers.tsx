@@ -22,10 +22,10 @@ export function AllVouchers() {
         {
             mode: "onTouched",
             criteriaMode: "all",
-            defaultValues: getDefaultVoucherForm()
+            defaultValues: getDefaultVoucherFormValues()
         });
-    const { watch, getValues } = methods;
-
+    const { watch, getValues, reset } = methods;
+    const extendedMethods = {...methods, xReset}
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
@@ -36,9 +36,9 @@ export function AllVouchers() {
             content: <AllVouchersView instance={instance} />
         }
     ];
-    
+
     return (
-        <FormProvider {...methods}>
+        <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className=" relative">
                     <label className="mt-1 text-md font-bold text-primary-500">
@@ -54,8 +54,9 @@ export function AllVouchers() {
         </FormProvider>
     )
 
-    function getDefaultVoucherForm() {
+    function getDefaultVoucherFormValues() {
         return ({
+            id: undefined,
             tranDate: format(new Date(), "yyyy-MM-dd"),
             userRefNo: null,
             remarks: null,
@@ -73,6 +74,7 @@ export function AllVouchers() {
 
     function getDefaultEntry(entryType: 'D' | 'C') {
         return ({
+            id: undefined,
             accId: null,
             remarks: null,
             dc: entryType,
@@ -171,6 +173,10 @@ export function AllVouchers() {
                 hsn: entry?.gst?.hsn || null,
             }
         };
+    }
+
+    function xReset() {
+        reset(getDefaultVoucherFormValues())
     }
 
 }

@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect } from "react"
+import { ChangeEvent, useCallback, useEffect } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
 import { LoginType } from "../../login/login-slice"
@@ -26,7 +26,7 @@ export function BalanceSheet() {
     const liabsInstance: string = DataInstancesMap.liabilities
     const assetsInstance: string = DataInstancesMap.assets
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchBalanceSheet), shallowEqual) || false
-    
+
     const {
         branchId
         , buCode
@@ -48,9 +48,79 @@ export function BalanceSheet() {
         return (ret)
     })
 
+    const loadData = useCallback(async () => {
+        const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss;
+        const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
+            dbName || '',
+            {
+                buCode: loginInfo.currentBusinessUnit?.buCode,
+                dbParams: decodedDbParamsObject,
+                sqlArgs: {
+                    branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
+                    finYearId: loginInfo.currentFinYear?.finYearId,
+                },
+            }
+        );
+
+        try {
+            const res: any = await Utils.queryGraphQL(q, queryName);
+            const jsonResult: any = res?.data?.[queryName]?.[0]?.jsonResult;
+
+            const profitOrLoss = jsonResult?.profitOrLoss;
+            jsonResult[liabsInstance] = jsonResult?.[liabsInstance] || [];
+            jsonResult[assetsInstance] = jsonResult?.[assetsInstance] || [];
+
+            if (profitOrLoss < 0) {
+                jsonResult[assetsInstance].push({
+                    accName: 'Loss for the year',
+                    closing: Math.abs(profitOrLoss),
+                    closing_dc: 'D',
+                    parentId: null
+                });
+            } else {
+                jsonResult[liabsInstance].push({
+                    accName: 'Profit for the year',
+                    closing: Math.abs(profitOrLoss),
+                    closing_dc: 'C',
+                    parentId: null
+                });
+            }
+
+            dispatch(setQueryHelperData({
+                instance: liabsInstance,
+                data: jsonResult?.[liabsInstance],
+            }));
+
+            dispatch(setQueryHelperData({
+                instance: assetsInstance,
+                data: jsonResult?.[assetsInstance],
+            }));
+            console.log(JSON.stringify(jsonResult?.[liabsInstance]))
+            console.log(JSON.stringify(jsonResult?.[assetsInstance]))
+
+            const assetsClosing = customClosingAggregate(jsonResult[assetsInstance], 'closing', 'closing_dc');
+            const liabsClosing = customClosingAggregate(jsonResult[liabsInstance], 'closing', 'closing_dc');
+
+            if (assetsClosing !== liabsClosing) {
+                Utils.showWarningMessage(Messages.messOpeningBalancesMismatch);
+            }
+        } catch (e: any) {
+            console.error(e);
+        }
+    }, [
+        dbName,
+        loginInfo,
+        decodedDbParamsObject,
+        isAllBranches,
+        liabsInstance,
+        assetsInstance,
+        dispatch
+    ]);
+
+
     useEffect(() => {
         loadData()
-    }, [buCode, finYearId, branchId, isAllBranches])
+    }, [buCode, finYearId, branchId, isAllBranches, loadData])
 
     return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
         {/* Header */}
@@ -204,45 +274,45 @@ export function BalanceSheet() {
         gridRefAssets.current.search(event.target.value)
     }
 
-    async function loadData() {
-        const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss
-        const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
-            dbName || '',
-            {
-                buCode: loginInfo.currentBusinessUnit?.buCode,
-                dbParams: decodedDbParamsObject,
-                sqlArgs: {
-                    branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
-                    finYearId: loginInfo.currentFinYear?.finYearId
-                },
-            }
-        )
-        try {
-            const res: any = await Utils.queryGraphQL(q, queryName)
-            const jsonResult: any = res?.data[queryName][0]?.jsonResult
-            const profitOrLoss = jsonResult?.profitOrLoss
-            jsonResult[liabsInstance] = jsonResult?.[liabsInstance] || []
-            jsonResult[assetsInstance] = jsonResult?.[assetsInstance] || []
-            if (profitOrLoss < 0) {
-                jsonResult[assetsInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
-            } else {
-                jsonResult[liabsInstance].push({ accName: 'Profit for the year', closing: Math.abs(profitOrLoss), closing_dc: 'C', parentId: null })
-            }
-            dispatch(setQueryHelperData({
-                instance: liabsInstance,
-                data: jsonResult?.[liabsInstance]
-            }))
-            dispatch(setQueryHelperData({
-                instance: assetsInstance,
-                data: jsonResult?.[assetsInstance]
-            }))
-            const assetsClosing = customClosingAggregate(jsonResult[assetsInstance], 'closing', 'closing_dc')
-            const liabsClosing = customClosingAggregate(jsonResult[liabsInstance], 'closing', 'closing_dc')
-            if (assetsClosing !== liabsClosing) {
-                Utils.showWarningMessage(Messages.messOpeningBalancesMismatch)
-            }
-        } catch (e: any) {
-            console.log(e)
-        }
-    }
+    // async function loadData() {
+    //     const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss
+    //     const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
+    //         dbName || '',
+    //         {
+    //             buCode: loginInfo.currentBusinessUnit?.buCode,
+    //             dbParams: decodedDbParamsObject,
+    //             sqlArgs: {
+    //                 branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
+    //                 finYearId: loginInfo.currentFinYear?.finYearId
+    //             },
+    //         }
+    //     )
+    //     try {
+    //         const res: any = await Utils.queryGraphQL(q, queryName)
+    //         const jsonResult: any = res?.data[queryName][0]?.jsonResult
+    //         const profitOrLoss = jsonResult?.profitOrLoss
+    //         jsonResult[liabsInstance] = jsonResult?.[liabsInstance] || []
+    //         jsonResult[assetsInstance] = jsonResult?.[assetsInstance] || []
+    //         if (profitOrLoss < 0) {
+    //             jsonResult[assetsInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
+    //         } else {
+    //             jsonResult[liabsInstance].push({ accName: 'Profit for the year', closing: Math.abs(profitOrLoss), closing_dc: 'C', parentId: null })
+    //         }
+    //         dispatch(setQueryHelperData({
+    //             instance: liabsInstance,
+    //             data: jsonResult?.[liabsInstance]
+    //         }))
+    //         dispatch(setQueryHelperData({
+    //             instance: assetsInstance,
+    //             data: jsonResult?.[assetsInstance]
+    //         }))
+    //         const assetsClosing = customClosingAggregate(jsonResult[assetsInstance], 'closing', 'closing_dc')
+    //         const liabsClosing = customClosingAggregate(jsonResult[liabsInstance], 'closing', 'closing_dc')
+    //         if (assetsClosing !== liabsClosing) {
+    //             Utils.showWarningMessage(Messages.messOpeningBalancesMismatch)
+    //         }
+    //     } catch (e: any) {
+    //         console.log(e)
+    //     }
+    // }
 }
