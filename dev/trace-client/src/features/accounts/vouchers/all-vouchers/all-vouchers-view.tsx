@@ -14,10 +14,13 @@ import { format } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+// import { useFormContext } from "react-hook-form";
+// import { VoucherFormDataType } from "./all-vouchers";
+// import { VourcherType } from "../../../../utils/global-types-interfaces-enums";
+import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "./all-vouchers";
 import { VourcherType } from "../../../../utils/global-types-interfaces-enums";
-import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 // import { VoucherTranHType } from "../../../../utils/global-types-interfaces-enums";
 // import { shallowEqual, useSelector } from "react-redux";
 // import { selectCompSwitchStateFn } from "../../../../controls/redux-components/comp-slice";
@@ -353,7 +356,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     }
 
     async function handleOnEdit(data: RowDataType) {
-        // console.log(`Edit row with id: ${data.id}`);
+        console.log(`Edit row with id: ${data.id}`);
         try {
             const editData: any = await Utils.doGenericQuery({
                 buCode: buCode || "",
@@ -369,51 +372,50 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
             const tranHeader = voucherEditData?.tranHeader
             reset({
                 id: tranHeader.id,
-                autoRefNo: tranHeader.autoRefNo,
-                tranDate: tranHeader.tranDate,
-                remarks: tranHeader.remarks,
+                tranDate: tranHeader.tranDate,                
                 userRefNo: tranHeader.userRefNo,
+                remarks: tranHeader.remarks,
+                tranTypeId: tranHeader.tranTypeId,
+                autoRefNo: tranHeader.autoRefNo,
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
                 isGst: voucherEditData?.tranDetails?.some((d: VoucherTranDetailsType) => d.gst !== null),
-                gstin: voucherEditData?.tranDetails?.[0]?.gst?.gstin || '',
+                // gstin: voucherEditData?.tranDetails?.[0]?.gst?.gstin ,
                 
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
                     accId: d.accId as string | null,
-                    amount: d.amount,
+                    remarks: d.remarks,                    
                     dc: d.dc,
-
-                    gstId: d?.gst?.id,
-                    gstRate: d?.gst?.rate,
-                    hsn: d?.gst?.hsn as number | null | undefined,
-                    isIgst: d?.gst?.igst ? true : false,
-                    igst: d?.gst?.igst ?? 0,
-                    cgst: d?.gst?.cgst ?? 0,
-                    sgst: d?.gst?.sgst ?? 0,
-                    
-                    instrNo: d.instrNo,
-                    lineRefNo: d.lineRefNo,
-                    remarks: d.remarks,
+                    amount: d.amount,
                     tranHeaderId: d.tranHeaderId,
+                    lineRefNo: d.lineRefNo,
+                    instrNo: d.instrNo,
+
+                    // gstId: d?.gst?.id,
+                    // gstRate: d?.gst?.rate,
+                    // hsn: d?.gst?.hsn as number | null | undefined,
+                    // isIgst: d?.gst?.igst ? true : false,
+                    // igst: d?.gst?.igst ?? 0,
+                    // cgst: d?.gst?.cgst ?? 0,
+                    // sgst: d?.gst?.sgst ?? 0,
                 })),
                 debitEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
                     accId: d.accId as string | null,
-                    amount: d.amount,
+                    remarks: d.remarks,                    
                     dc: d.dc,
-
-                    gstId: d?.gst?.id,
-                    gstRate: d?.gst?.rate,
-                    hsn: d?.gst?.hsn as number | null | undefined,
-                    isIgst: d?.gst?.igst ? true : false,
-                    igst: d?.gst?.igst ?? 0,
-                    cgst: d?.gst?.cgst ?? 0,
-                    sgst: d?.gst?.sgst ?? 0,
-
-                    instrNo: d.instrNo,
-                    lineRefNo: d.lineRefNo,
-                    remarks: d.remarks,
+                    amount: d.amount,
                     tranHeaderId: d.tranHeaderId,
+                    lineRefNo: d.lineRefNo,
+                    instrNo: d.instrNo,
+
+                    // gstId: d?.gst?.id,
+                    // gstRate: d?.gst?.rate,
+                    // hsn: d?.gst?.hsn as number | null | undefined,
+                    // isIgst: d?.gst?.igst ? true : false,
+                    // igst: d?.gst?.igst ?? 0,
+                    // cgst: d?.gst?.cgst ?? 0,
+                    // sgst: d?.gst?.sgst ?? 0,
                 })),
             })
             dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)

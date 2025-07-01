@@ -25,9 +25,9 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
                 <IconReset className="text-white w-6 h-6 mr-2" />
                 Reset
             </button>
-            {/* <button type='button' onClick={() => {
+            <button type='button' onClick={() => {
                 console.log(errors)
-            }}>Test</button> */}
+            }}>Test</button>
 
             <button
                 type="submit"

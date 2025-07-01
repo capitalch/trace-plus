@@ -14,7 +14,7 @@ import { RootStateType } from "../../../../app/store/store";
 import { useSelector } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
 
-export function AllVouchers() {    
+export function AllVouchers() {
     const instance = DataInstancesMap.allVouchers;
     const { branchId,/* buCode, dbName,*/ finYearId } = useUtilsInfo();
     const selectedVoucherType = useSelector((state: RootStateType) => state.vouchers.voucherType)
@@ -22,43 +22,7 @@ export function AllVouchers() {
         {
             mode: "onTouched",
             criteriaMode: "all",
-            defaultValues:
-            {
-                autoRefNo: '',
-                tranDate: format(new Date(), "yyyy-MM-dd"),
-                voucherType: 'Payment',
-                isGst: false,
-                creditEntries: [{
-                    accId: null,
-                    amount: 0,
-                    dc: 'C',
-                    id: undefined,
-                    gstRate: 0,
-                    hsn: null,
-                    igst: 0,
-                    sgst: 0,
-                    cgst: 0,
-                    instrNo: '',
-                    tranHeaderId: undefined,
-                    lineRefNo: '',
-                    remarks: '',
-                }],
-                debitEntries: [{
-                    accId: null,
-                    amount: 0,
-                    dc: 'D',
-                    id: undefined,
-                    gstRate: 0,
-                    hsn: null,
-                    igst: 0,
-                    sgst: 0,
-                    cgst: 0,
-                    instrNo: '',
-                    tranHeaderId: undefined,
-                    lineRefNo: '',
-                    remarks: '',
-                }]
-            }
+            defaultValues: getDefaultVoucherForm()
         });
     const { watch, getValues } = methods;
 
@@ -72,6 +36,7 @@ export function AllVouchers() {
             content: <AllVouchersView instance={instance} />
         }
     ];
+    
     return (
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
@@ -88,6 +53,36 @@ export function AllVouchers() {
             </form>
         </FormProvider>
     )
+
+    function getDefaultVoucherForm() {
+        return ({
+            tranDate: format(new Date(), "yyyy-MM-dd"),
+            userRefNo: null,
+            remarks: null,
+            tranTypeId: 2,
+            finYearId: finYearId,
+            branchId: branchId,
+            posId: 1,
+            autoRefNo: '',
+            voucherType: 'Payment' as VourcherType,
+            isGst: false,
+            creditEntries: [getDefaultEntry('C')],
+            debitEntries: [getDefaultEntry('D')],
+        })
+    }
+
+    function getDefaultEntry(entryType: 'D' | 'C') {
+        return ({
+            accId: null,
+            remarks: null,
+            dc: entryType,
+            amount: 0,
+            tranHeaderId: undefined,
+            lineRefNo: null,
+            instrNo: null,
+            gst: undefined
+        })
+    }
 
     async function finalizeAndSubmitVoucher(data: VoucherFormDataType) {
         console.log(data)
@@ -110,15 +105,14 @@ export function AllVouchers() {
     function getTranHData(): XDataObjectType {
         return {
             id: (getValues("id")) || undefined,
-            autoRefNo: getValues("autoRefNo") || undefined,
-            branchId,
-            finYearId,
-            jData: "{}",
-            posId: 1,
-            remarks: getValues("remarks"),
             tranDate: getValues("tranDate"),
-            tranTypeId: Utils.getTranTypeId(selectedVoucherType),
             userRefNo: getValues("userRefNo"),
+            remarks: getValues("remarks"),
+            tranTypeId: Utils.getTranTypeId(selectedVoucherType),
+            finYearId: finYearId,
+            branchId: branchId,
+            posId: 1,
+            autoRefNo: getValues("autoRefNo") || undefined,
             details: getTranDDeails(),
         };
     }
@@ -138,69 +132,64 @@ export function AllVouchers() {
         const credits: XDataObjectType[] = creditEntries.map((entry) => ({
             id: entry.id || undefined,
             accId: entry.accId || null,
-            amount: entry.amount,
+            remarks: entry.remarks || null,
             dc: entry.dc,
+            amount: entry.amount,
             tranHeaderId: entry.tranHeaderId || undefined,
-            instrNo: entry.instrNo || null,
             lineRefNo: entry.lineRefNo || null,
-            lineRemarks: entry.remarks || null,
+            instrNo: entry.instrNo || null,
             details: getExtGstTranDDetails(entry),
-            // tranheaderId: entry.tranHeaderId || undefined
         }));
         const debits: XDataObjectType[] = debitEntries.map((entry) => ({
             id: entry.id || undefined,
             accId: entry.accId || null,
-            amount: entry.amount,
-            dc: entry.dc,
-            tranHeaderId: entry.tranHeaderId || undefined,
-            instrNo: entry.instrNo || null,
-            lineRefNo: entry.lineRefNo || null,
             remarks: entry.remarks || null,
+            dc: entry.dc,
+            amount: entry.amount,
+            tranHeaderId: entry.tranHeaderId || undefined,
+            lineRefNo: entry.lineRefNo || null,
+            instrNo: entry.instrNo || null,
             details: getExtGstTranDDetails(entry),
-            // tranheaderId: entry.tranHeaderId || undefined
         }));
         return [...credits, ...debits];
     }
 
     function getExtGstTranDDetails(entry: VoucherLineItemEntryDataType): TraceDataObjectType | undefined {
-        if (!(getValues("isGst") && entry.gstRate)) return undefined;
+        if (!(getValues("isGst") && entry.gst?.rate)) return undefined;
         return {
             tableName: DatabaseTablesMap.ExtGstTranD,
             fkeyName: "tranDetailsId",
             xData: {
-                id: entry.gstId || undefined,
-                gstin: getValues("gstin") || null,
-                rate: entry.gstRate || 0,
-                cgst: entry.cgst || 0,
-                sgst: entry.sgst || 0,
-                igst: entry.igst || 0,
+                id: entry?.gst?.id || undefined,
+                gstin: entry?.gst?.gstin || null,
+                rate: entry?.gst?.rate || 0,
+                cgst: entry?.gst?.cgst || 0,
+                sgst: entry?.gst?.sgst || 0,
+                igst: entry?.gst?.igst || 0,
                 isInput: entry.dc === 'D' ? true : false,
                 tranDetailsId: entry.id || undefined,
-                hsn: entry.hsn || null,
+                hsn: entry?.gst?.hsn || null,
             }
         };
     }
 
-    // function getTranTypeId() {
-    //     const tranTypeIdMap: Record<VourcherType, number> = {
-    //         Payment: 2,
-    //         Receipt: 3,
-    //         Contra: 6,
-    //         Journal: 1
-    //     };
-    //     return tranTypeIdMap[selectedVoucherType]
-    // }
 }
 
 export type VoucherFormDataType = //TranHeaderType
     {
-        id?: number
-        autoRefNo: string
-        gstin?: string
+        id?: number;
+        tranDate: string;
+        userRefNo?: string | null;
+        remarks?: string | null;
+        tags?: string | null;
+        jData?: object | null;
+        tranTypeId: number;
+        finYearId: number;
+        branchId: number;
+        posId?: number | null;
+        autoRefNo: string;
+
         isGst: boolean
-        remarks: string | null
-        tranDate: string
-        userRefNo: string | null
         voucherType: VourcherType
         creditEntries: VoucherLineItemEntryDataType[]
         debitEntries: VoucherLineItemEntryDataType[]
@@ -209,17 +198,61 @@ export type VoucherFormDataType = //TranHeaderType
 type VoucherLineItemEntryDataType = {
     id?: number;
     accId: string | null;
-    amount: number;
+    remarks?: string | null;
     dc: 'D' | 'C';
-    gstId?: number;
-    gstRate?: number;
-    hsn?: number | null;
-    isIgst?: boolean;
-    igst?: number;
-    sgst?: number;
-    cgst?: number;
-    instrNo: string | null;
-    lineRefNo: string | null;
-    remarks: string | null;
+    amount: number;
     tranHeaderId?: number;
+    lineRefNo?: string | null;
+    instrNo?: string | null;
+    gst?: GstDataType
 }
+
+type GstDataType = {
+    id?: number;
+    gstin?: string | null;
+    rate?: number | null;
+    cgst: number;
+    sgst: number;
+    igst: number;
+    isInput?: boolean;
+    tranDetailsId?: number;
+    hsn?: string | null;
+    isIgst: boolean;
+}
+
+// {
+//     autoRefNo: '',
+//     tranDate: format(new Date(), "yyyy-MM-dd"),
+//     voucherType: 'Payment',
+//     isGst: false,
+//     creditEntries: [{
+//         accId: null,
+//         amount: 0,
+//         dc: 'C',
+//         id: undefined,
+//         gstRate: 0,
+//         hsn: null,
+//         igst: 0,
+//         sgst: 0,
+//         cgst: 0,
+//         instrNo: '',
+//         tranHeaderId: undefined,
+//         lineRefNo: '',
+//         remarks: '',
+//     }],
+//     debitEntries: [{
+//         accId: null,
+//         amount: 0,
+//         dc: 'D',
+//         id: undefined,
+//         gstRate: 0,
+//         hsn: null,
+//         igst: 0,
+//         sgst: 0,
+//         cgst: 0,
+//         instrNo: '',
+//         tranHeaderId: undefined,
+//         lineRefNo: '',
+//         remarks: '',
+//     }]
+// }

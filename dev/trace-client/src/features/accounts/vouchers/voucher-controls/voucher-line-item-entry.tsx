@@ -34,7 +34,7 @@ export function VoucherLineItemEntry({
 }: VoucherLineItemEntryType) {
 
     const {
-        control,
+        control, clearErrors,
         watch,
         register,
         setValue,
@@ -57,14 +57,21 @@ export function VoucherLineItemEntry({
     useEffect(() => {
         if (!isGst) {
             fields.forEach((_, index) => {
-                setValue(`${lineItemEntryName}.${index}.gstRate`, 0, { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.hsn`, null, { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.igst`, 0, { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.cgst`, 0, { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.sgst`, 0, { shouldDirty: true });
+                setValue(`${lineItemEntryName}.${index}.gst.rate`, 0, { shouldDirty: true });
+                setValue(`${lineItemEntryName}.${index}.gst.hsn`, null, { shouldDirty: true });
+                setValue(`${lineItemEntryName}.${index}.gst.igst`, 0, { shouldDirty: true });
+                setValue(`${lineItemEntryName}.${index}.gst.cgst`, 0, { shouldDirty: true });
+                setValue(`${lineItemEntryName}.${index}.gst.sgst`, 0, { shouldDirty: true });
+
+                clearErrors([
+                    `${lineItemEntryName}.${index}.gst.rate`,
+                    `${lineItemEntryName}.${index}.gst.hsn`,
+                    `${lineItemEntryName}.${index}.gst.gstin`,
+                ]);
+
             });
         }
-    }, [isGst, fields.length, lineItemEntryName, setValue, fields]);
+    }, [isGst, fields.length, lineItemEntryName, setValue, fields, clearErrors]);
 
     return (
         <AnimatePresence>
@@ -81,12 +88,14 @@ export function VoucherLineItemEntry({
                                 amount: 0,
                                 dc,
                                 id: undefined,
-                                gstRate: 0,
-                                hsn: null,
-                                isIgst: false,
-                                igst: 0,
-                                cgst: 0,
-                                sgst: 0,
+                                gst: {
+                                    isIgst: false,
+                                    rate: 0,
+                                    hsn: null,
+                                    igst: 0,
+                                    cgst: 0,
+                                    sgst: 0,
+                                },
                                 tranHeaderId: undefined,
                                 instrNo: "",
                                 lineRefNo: "",
@@ -135,12 +144,12 @@ export function VoucherLineItemEntry({
                                         setValue(`${lineItemEntryName}.${index}.lineRefNo`, "");
                                         setValue(`${lineItemEntryName}.${index}.remarks`, "");
                                         setValue(`${lineItemEntryName}.${index}.instrNo`, "");
-                                        setValue(`${lineItemEntryName}.${index}.gstRate`, 0);
-                                        setValue(`${lineItemEntryName}.${index}.hsn`, null);
-                                        setValue(`${lineItemEntryName}.${index}.isIgst`, false);
-                                        setValue(`${lineItemEntryName}.${index}.igst`, 0);
-                                        setValue(`${lineItemEntryName}.${index}.cgst`, 0);
-                                        setValue(`${lineItemEntryName}.${index}.sgst`, 0);
+                                        setValue(`${lineItemEntryName}.${index}.gst.rate`, 0);
+                                        setValue(`${lineItemEntryName}.${index}.gst.hsn`, null);
+                                        setValue(`${lineItemEntryName}.${index}.gst.isIgst`, false);
+                                        setValue(`${lineItemEntryName}.${index}.gst.igst`, 0);
+                                        setValue(`${lineItemEntryName}.${index}.gst.cgst`, 0);
+                                        setValue(`${lineItemEntryName}.${index}.gst.sgst`, 0);
                                     }}>
                                     <IconClear className="w-5 h-5" />
                                 </button>
@@ -291,9 +300,13 @@ export function VoucherLineItemEntry({
                     className={clsx("border p-2 rounded w-full mt-1", inputFormFieldStyles)}
                 />
             </FormField>
-        } else if (isGst) {
-            Ret = <GstInLinePanel index={index} lineItemEntryName={lineItemEntryName} />
-        }
+        } else
+            if (isGst) {
+                Ret = <GstInLinePanel index={index} lineItemEntryName={lineItemEntryName} />
+            } else {
+                // clearError
+
+            }
         return (Ret)
     }
 }

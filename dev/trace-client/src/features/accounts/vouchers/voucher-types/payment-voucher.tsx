@@ -73,11 +73,11 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
         }
     }
 
-    function onChangeDebitAmount(index: number, value: number) {
+    function onChangeDebitAmount() {
         const debitAmounts = watch("debitEntries")?.map(e => e.amount) || [];
         const totalDebitAmount = debitAmounts.reduce((acc, amt) => { return (acc.plus(new Decimal(amt || 0))) }, new Decimal(0));
         setDebitTotal(totalDebitAmount.toNumber())
-        console.log(`Amount changed for index ${index}: ${value}`)
+        // console.log(`Amount changed for index ${index}: ${value}`)
     }
 }
 

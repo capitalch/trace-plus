@@ -10,7 +10,7 @@ import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 
 export function VoucherCommonHeader() {
-    const { checkAllowedDate, isValidGstin } = useValidators();
+    const { checkAllowedDate, /*isValidGstin*/ } = useValidators();
     const { hasGstin } = useUtilsInfo()
     const {
         setValue,
@@ -103,7 +103,7 @@ export function VoucherCommonHeader() {
             )}
 
             {/* GSTIN no */}
-            {watch('isGst') && <FormField label="GSTIN No" error={errors?.gstin?.message}>
+            {/* {watch('isGst') && <FormField label="GSTIN No" error={errors?.gstin?.message}>
                 <input
                     type="text"
                     className={clsx(inputFormFieldStyles, "mt-2 text-xs")}
@@ -119,7 +119,7 @@ export function VoucherCommonHeader() {
                         }
                     })}
                 />
-            </FormField>}
+            </FormField>} */}
             <FormActionButtons className="mt-8 ml-auto" />
         </div>
     )

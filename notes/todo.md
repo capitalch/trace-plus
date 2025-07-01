@@ -7,7 +7,14 @@ entry point: /usr/lib/systemd/systemd
 - Vouchers
 	- Interchange voucher types
 ## Transactions
-- Application wide fix useEffect warning
+- Application wide fix useEffect warning correction
+- Vouchers correction
+																- gst object in form
+																- GSTIN in gst object
+																- correct form
+	- submit correction
+	- reset revisit
+	- edit revisit
 - Vouchers
 	- All vouchers
 		- Payments

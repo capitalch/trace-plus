@@ -22,18 +22,18 @@ export function AllVouchersCrown({ className }: AllVouchersCrownType) {
     );
 
     const gstDebits = debitEntries.reduce((acc, entry) => {
-        if (entry.isIgst) {
-            return acc.plus(new Decimal(entry.igst || 0));
+        if (entry?.gst?.isIgst) {
+            return acc.plus(new Decimal(entry?.gst.igst || 0));
         } else {
-            return acc.plus(new Decimal(entry.cgst || 0)).plus(new Decimal(entry.sgst || 0));
+            return acc.plus(new Decimal(entry?.gst?.cgst || 0)).plus(new Decimal(entry?.gst?.sgst || 0));
         }
     }, new Decimal(0));
 
     const gstCredits = creditEntries.reduce((acc, entry) => {
-        if (entry.isIgst) {
-            return acc.plus(new Decimal(entry.igst || 0));
+        if (entry?.gst?.isIgst) {
+            return acc.plus(new Decimal(entry?.gst?.igst || 0));
         } else {
-            return acc.plus(new Decimal(entry.cgst || 0)).plus(new Decimal(entry.sgst || 0));
+            return acc.plus(new Decimal(entry?.gst?.cgst || 0)).plus(new Decimal(entry?.gst?.sgst || 0));
         }
     }, new Decimal(0));
 
