@@ -18,19 +18,24 @@ import { CompInstances } from "../../../../controls/redux-components/comp-instan
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids"
 import dayjs from "dayjs"
-import ReactSlidingPane from "react-sliding-pane"
-import { PDFViewer } from "@react-pdf/renderer"
-import { GeneralLedgerPdf } from "./general-ledger-pdf"
+// import ReactSlidingPane from "react-sliding-pane"
+// import { PDFViewer } from "@react-pdf/renderer"
+// import { GeneralLedgerPdf } from "./general-ledger-pdf"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
+// import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
 import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
 import { setAccountPickerAccId } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree-slice"
+import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog"
+import { PDFViewer } from "@react-pdf/renderer"
+import { GeneralLedger1Pdf } from "./general-ledger1-pdf"
+import { IconPreview1 } from "../../../../controls/icons/icon-preview1"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
-    const [isPaneOpen, setIsPaneOpen] = useState(false);
+    // const [isPaneOpen, setIsPaneOpen] = useState(false);
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     // Selectors
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance), shallowEqual)
@@ -92,7 +97,7 @@ export function GeneralLedger() {
             gridRef.current.dataSource = meta.current.transactions
         }
         setRefresh({})
-    }, [toShowBalance, toShowReverse, toShowSummaryRow])
+    }, [toShowBalance, toShowReverse, toShowSummaryRow, instance])
 
     return (
         <CompAccountsContainer>
@@ -107,10 +112,14 @@ export function GeneralLedger() {
                     <CompCheckBox label="Daily summary" instance={CompInstances.compCheckBoxSummaryLedger} />
                 </div>
                 <CompSwitch leftLabel="All branches" instance={instance} className="ml-auto" />
-                {/* <button className="bg-slate-200" onClick={() => setIsPaneOpen(true)}>pdf</button> */}
                 <CompSyncFusionGridToolbar
-                    CustomControl={() => <TooltipComponent content='Pdf view'>
-                        <button onClick={() => setIsPaneOpen(true)}><IconFilePdf className="text-red-600 h-6 w-6" /></button>
+                    CustomControl={() => <TooltipComponent content='Pdf view' className="flex items-center">
+                        {/* <button onClick={() => setIsPaneOpen(true)}><IconFilePdf className="text-red-600 h-6 w-6" /></button> */}
+                        <button onClick={async () => {
+                            setIsDialogOpen(true)
+                        }}>
+                            <IconPreview1 className="text-blue-500 h-8 w-8" />
+                        </button>
                     </TooltipComponent>}
                     title=""
                     isLastNoOfRows={false}
@@ -135,19 +144,31 @@ export function GeneralLedger() {
             {/* Separate instance of appLoader is needed otherwise it clashes with global appLoader with instance compAppLoader */}
             {isVisibleAppLoader && <CompAppLoader />}
 
+            {/* General ledger preview */}
+            <CustomModalDialog
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                title="General Ledger"
+                // customControl={<NestingLevelSetupButton />}
+                element={
+                    <PDFViewer style={{ width: "100%", height: "100%" }}>
+                        <GeneralLedger1Pdf ledgerTitle="General Ledger" data={meta.current.transactions} />
+                    </PDFViewer>
+                }
+            />
+
             {/* Sliding Pane */}
-            <ReactSlidingPane
+            {/* <ReactSlidingPane
                 className="bg-gray-300"
                 isOpen={isPaneOpen}
                 title="Ledger View"
                 from="right"
                 width="80%"
                 onRequestClose={() => setIsPaneOpen(false)}>
-                {/* PDF Viewer inside the sliding pane */}
                 <PDFViewer style={{ width: '100%', height: '100%' }}>
                     <GeneralLedgerPdf accName={meta?.current?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} />
                 </PDFViewer>
-            </ReactSlidingPane>
+            </ReactSlidingPane> */}
         </CompAccountsContainer>
     )
 
@@ -180,6 +201,7 @@ export function GeneralLedger() {
         showDailySummary()
         showBalance()
         showReverse()
+        // console.log(JSON.stringify(meta.current.transactions))
     }
 
     function getAggregates(): SyncFusionGridAggregateType[] {

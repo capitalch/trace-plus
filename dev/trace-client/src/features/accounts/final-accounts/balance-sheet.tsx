@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect } from "react"
+import { ChangeEvent, useCallback, useEffect, useState } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
 import { LoginType } from "../../login/login-slice"
@@ -18,6 +18,13 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
 import { useUtilsInfo } from "../../../utils/utils-info-hook"
 import { Messages } from "../../../utils/messages"
+import { CustomModalDialog } from "../../../controls/components/custom-modal-dialog"
+import { PDFViewer } from "@react-pdf/renderer"
+import { BalanceSheetProfitLossPdf } from "./BalanceSheetProfitLossPdf"
+import { format, parseISO } from "date-fns"
+import { IconSettings } from "../../../controls/icons/icon-settings"
+import Swal from "sweetalert2"
+import { IconPreview1 } from "../../../controls/icons/icon-preview1"
 
 export function BalanceSheet() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
@@ -26,6 +33,8 @@ export function BalanceSheet() {
     const liabsInstance: string = DataInstancesMap.liabilities
     const assetsInstance: string = DataInstancesMap.assets
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchBalanceSheet), shallowEqual) || false
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [maxNestLevel, setMaxNestLeval] = useState(3);
 
     const {
         branchId
@@ -36,7 +45,12 @@ export function BalanceSheet() {
         , decFormatter
         , finYearId
         , intFormatter
+        , currentFinYear
+        , branchName
     } = useUtilsInfo()
+
+    const lastDateOfYear = format(parseISO(currentFinYear?.endDate || ''), "do MMMM yyyy")
+    const formattedBranchName = `${isAllBranches ? '' : 'Branch: '} ${isAllBranches ? '' : branchName}`
 
     const liabsData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[liabsInstance]?.data
@@ -95,8 +109,6 @@ export function BalanceSheet() {
                 instance: assetsInstance,
                 data: jsonResult?.[assetsInstance],
             }));
-            console.log(JSON.stringify(jsonResult?.[liabsInstance]))
-            console.log(JSON.stringify(jsonResult?.[assetsInstance]))
 
             const assetsClosing = customClosingAggregate(jsonResult[assetsInstance], 'closing', 'closing_dc');
             const liabsClosing = customClosingAggregate(jsonResult[liabsInstance], 'closing', 'closing_dc');
@@ -116,7 +128,6 @@ export function BalanceSheet() {
         assetsInstance,
         dispatch
     ]);
-
 
     useEffect(() => {
         loadData()
@@ -171,7 +182,6 @@ export function BalanceSheet() {
                     dataSource={assetsData}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
-                    // isLoadOnInit={false}
                     columns={getColumns('A')}
                     height="calc(100vh - 245px)"
                     instance={assetsInstance}
@@ -179,6 +189,26 @@ export function BalanceSheet() {
                 />
             </div>
         </div>
+
+        {/* Balance sheet preview */}
+        <CustomModalDialog
+            isOpen={isDialogOpen}
+            onClose={() => setIsDialogOpen(false)}
+            title="Balance Sheet"
+            customControl={<NestingLevelSetupButton />}
+            element={
+                assetsData && liabsData && maxNestLevel > 0 ? (<PDFViewer style={{ width: "100%", height: "100%" }}>
+                    <BalanceSheetProfitLossPdf
+                        assets={assetsData}
+                        liabilities={liabsData}
+                        maxNestingLevel={maxNestLevel}
+                        lastDateOfYear={lastDateOfYear}
+                        branchName={formattedBranchName}
+                    />
+                </PDFViewer>) : <></>
+            }
+        />
+
     </CompAccountsContainer>)
 
     function assetsClosingColumnTemplate(props: any) {
@@ -190,6 +220,7 @@ export function BalanceSheet() {
     }
 
     function CustomControl() {
+
         return (<div className="flex items-center justify-between">
             <label className="font-medium text-xl text-primary-300">Balance Sheet</label>
 
@@ -197,12 +228,72 @@ export function BalanceSheet() {
             <CompSwitch className="ml-4 mt-1 mr-4" instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
 
             <CompSyncFusionTreeGridSearchBox instance={balanceSheetInstance} handleOnChange={handleOnChangeSearchText} />
+
+            {/* Preview Pdf balance sheet */}
+            <TooltipComponent content='Preview' className="flex ml-4 items-center">
+                <button onClick={async () => {
+                    setIsDialogOpen(true)
+                }}>
+                    <IconPreview1 className="text-blue-500 h-8 w-8" />
+                </button>
+            </TooltipComponent>
+
             {/* Refresh */}
-            <TooltipComponent content='Refresh' className="ml-2">
+            <TooltipComponent content='Refresh' className="">
                 <WidgetButtonRefresh handleRefresh={doRefresh} />
             </TooltipComponent>
 
         </div>)
+    }
+
+    function NestingLevelSetupButton() {
+        const handleDoSettings = async () => {
+            const { value: level } = await Swal.fire({
+                title: "Set Maximum Nesting Level",
+                input: "number",
+                inputLabel: "Enter a value between 1 and 10",
+                inputValue: maxNestLevel,
+                inputAttributes: {
+                    min: "1",
+                    max: "10",
+                    step: "1"
+                },
+                confirmButtonText: "Apply",
+                cancelButtonText: "Cancel",
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    const num = Number(value);
+                    if (!value || isNaN(num)) return "Please enter a valid number";
+                    if (num < 1 || num > 10) return "Value must be between 1 and 10";
+                    return null;
+                },
+                customClass: {
+                    popup: "z-[11000]" // ensures it appears above modal
+                }
+            });
+
+            if (level !== null && level !== "") {
+                const parsed = parseInt(level, 10);
+                setMaxNestLeval(parsed);
+                // Reopen the PDF modal to reflect new nesting
+                setIsDialogOpen(false);
+                setTimeout(() => setIsDialogOpen(true), 100);
+            }
+        };
+
+        return (
+            <TooltipComponent content="Set Nesting Level" position="TopCenter" className="mr-2">
+                <button
+                    onClick={handleDoSettings}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 active:ring-2 ring-blue-300 transition duration-150"
+                >
+                    <IconSettings className="text-blue-500 h-6 w-6" />
+                    <span className="text-sm font-medium text-blue-700 whitespace-nowrap">
+                        Nesting: {maxNestLevel}
+                    </span>
+                </button>
+            </TooltipComponent>
+        );
     }
 
     function liabsClosingColumnTemplate(props: any) {
@@ -273,46 +364,4 @@ export function BalanceSheet() {
         const gridRefAssets: any = context.CompSyncFusionTreeGrid[assetsInstance].gridRef
         gridRefAssets.current.search(event.target.value)
     }
-
-    // async function loadData() {
-    //     const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss
-    //     const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
-    //         dbName || '',
-    //         {
-    //             buCode: loginInfo.currentBusinessUnit?.buCode,
-    //             dbParams: decodedDbParamsObject,
-    //             sqlArgs: {
-    //                 branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
-    //                 finYearId: loginInfo.currentFinYear?.finYearId
-    //             },
-    //         }
-    //     )
-    //     try {
-    //         const res: any = await Utils.queryGraphQL(q, queryName)
-    //         const jsonResult: any = res?.data[queryName][0]?.jsonResult
-    //         const profitOrLoss = jsonResult?.profitOrLoss
-    //         jsonResult[liabsInstance] = jsonResult?.[liabsInstance] || []
-    //         jsonResult[assetsInstance] = jsonResult?.[assetsInstance] || []
-    //         if (profitOrLoss < 0) {
-    //             jsonResult[assetsInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
-    //         } else {
-    //             jsonResult[liabsInstance].push({ accName: 'Profit for the year', closing: Math.abs(profitOrLoss), closing_dc: 'C', parentId: null })
-    //         }
-    //         dispatch(setQueryHelperData({
-    //             instance: liabsInstance,
-    //             data: jsonResult?.[liabsInstance]
-    //         }))
-    //         dispatch(setQueryHelperData({
-    //             instance: assetsInstance,
-    //             data: jsonResult?.[assetsInstance]
-    //         }))
-    //         const assetsClosing = customClosingAggregate(jsonResult[assetsInstance], 'closing', 'closing_dc')
-    //         const liabsClosing = customClosingAggregate(jsonResult[liabsInstance], 'closing', 'closing_dc')
-    //         if (assetsClosing !== liabsClosing) {
-    //             Utils.showWarningMessage(Messages.messOpeningBalancesMismatch)
-    //         }
-    //     } catch (e: any) {
-    //         console.log(e)
-    //     }
-    // }
 }

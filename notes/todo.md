@@ -6,6 +6,14 @@ entry point: /usr/lib/systemd/systemd
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
 	- Interchange voucher types
+- Final accounts
+	- Report on date
+															- Balance Sheet and PL Print
+																- Negative figures are made positive. Correct
+																- Nesting levels configure
+																- Company Name and Date range
+	
+	- Cash book print
 ## Transactions
 - Application wide fix useEffect warning correction
 - Vouchers correction

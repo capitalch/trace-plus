@@ -56,7 +56,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     } = useFormContext<VoucherFormDataType>();
 
     const tranTypeId = Utils.getTranTypeId(selectedVoucherType);
-    // const voucherType = 
 
     const loadData = useCallback(async () => {
         try {

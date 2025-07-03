@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect } from "react"
+import { ChangeEvent, useCallback, useEffect, useState } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map"
 import { LoginType } from "../../login/login-slice"
@@ -18,6 +18,13 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
 import { useUtilsInfo } from "../../../utils/utils-info-hook"
 import { Messages } from "../../../utils/messages"
+import { CustomModalDialog } from "../../../controls/components/custom-modal-dialog"
+import { PDFViewer } from "@react-pdf/renderer"
+import { BalanceSheetProfitLossPdf } from "./BalanceSheetProfitLossPdf"
+import { format, parseISO } from "date-fns"
+import Swal from "sweetalert2"
+import { IconSettings } from "../../../controls/icons/icon-settings"
+import { IconPreview1 } from "../../../controls/icons/icon-preview1"
 
 export function ProfitLoss() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
@@ -26,6 +33,23 @@ export function ProfitLoss() {
     const expensesInstance: string = DataInstancesMap.expenses
     const incomesInstance: string = DataInstancesMap.incomes
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchProfitLoss), shallowEqual) || false
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [maxNestLevel, setMaxNestLeval] = useState(3);
+
+    const {
+        branchId
+        , buCode
+        , context
+        , dbName
+        , decodedDbParamsObject
+        , decFormatter
+        , finYearId
+        , intFormatter
+        , currentFinYear
+        , branchName
+    } = useUtilsInfo()
+    const formattedBranchName = `${isAllBranches ? '' : 'Branch: '} ${isAllBranches ? '' : branchName}`
+    const lastDateOfYear = format(parseISO(currentFinYear?.endDate || ''), "do MMMM yyyy")
 
     const expensesData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[expensesInstance]?.data
@@ -36,27 +60,67 @@ export function ProfitLoss() {
         const ret: any = state.queryHelper[incomesInstance]?.data
         return (ret)
     })
-    const {
-        branchId
-        , buCode
-        , context
-        , dbName
-        , decodedDbParamsObject
-        , decFormatter
-        , finYearId
-        , intFormatter
-    } = useUtilsInfo()
+
+    const loadData = useCallback(async () => {
+        const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss
+        const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
+            dbName || '',
+            {
+                buCode: loginInfo.currentBusinessUnit?.buCode,
+                dbParams: decodedDbParamsObject,
+                sqlArgs: {
+                    branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
+                    finYearId: loginInfo.currentFinYear?.finYearId
+                },
+            }
+        )
+        try {
+            const res: any = await Utils.queryGraphQL(q, queryName)
+            const jsonResult: any = res?.data[queryName][0]?.jsonResult
+            const profitOrLoss = jsonResult?.profitOrLoss
+            jsonResult[expensesInstance] = jsonResult?.expenses || []
+            jsonResult[incomesInstance] = jsonResult?.incomes || []
+            if (profitOrLoss < 0) {
+                jsonResult[incomesInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'C', parentId: null })
+            } else {
+                jsonResult[expensesInstance].push({ accName: 'Profit for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
+            }
+            dispatch(setQueryHelperData({
+                instance: expensesInstance,
+                data: jsonResult?.[expensesInstance]
+            }))
+            dispatch(setQueryHelperData({
+                instance: incomesInstance,
+                data: jsonResult?.[incomesInstance]
+            }))
+            const incomesClosing = customClosingAggregate(jsonResult[incomesInstance], 'closing', 'closing_dc')
+            const expensesClosing = customClosingAggregate(jsonResult[expensesInstance], 'closing', 'closing_dc')
+            if (incomesClosing !== expensesClosing) {
+                Utils.showWarningMessage(Messages.messOpeningBalancesMismatch)
+            }
+        } catch (e: any) {
+            console.log(e)
+        }
+    }, [
+        dbName,
+        loginInfo,
+        decodedDbParamsObject,
+        isAllBranches,
+        expensesInstance,
+        incomesInstance,
+        dispatch
+    ])
 
     useEffect(() => {
         loadData()
-    }, [buCode, finYearId, branchId, isAllBranches])
+    }, [buCode, finYearId, branchId, isAllBranches, loadData])
 
     return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
 
         {/* Two horizontal grids */}
         <div className="flex items-center mt-2 gap-8" >
 
-            {/* Liabilities */}
+            {/* Expenses */}
             <div className="flex flex-col">
                 <CompSyncFusionTreeGridToolbar className='mt-2'
                     isAllBranches={isAllBranches}
@@ -82,7 +146,7 @@ export function ProfitLoss() {
                 />
             </div>
 
-            {/* Assets */}
+            {/* Income */}
             <div className="flex flex-col">
                 <CompSyncFusionTreeGridToolbar className='mt-2'
                     isAllBranches={isAllBranches}
@@ -106,8 +170,27 @@ export function ProfitLoss() {
                     treeColumnIndex={0}
                 />
             </div>
-
         </div>
+
+        {/* Profit and Loss preview */}
+        <CustomModalDialog
+            isOpen={isDialogOpen}
+            onClose={() => setIsDialogOpen(false)}
+            title="Profit and Loss"
+            customControl={<NestingLevelSetupButton />}
+            element={
+                expensesData && incomesData && maxNestLevel > 0 ? (<PDFViewer style={{ width: "100%", height: "100%" }}>
+                    <BalanceSheetProfitLossPdf
+                        income={incomesData}
+                        expenses={expensesData}
+                        maxNestingLevel={maxNestLevel}
+                        showProfitAndLoss={true}
+                        lastDateOfYear={lastDateOfYear}
+                        branchName={formattedBranchName}
+                    />
+                </PDFViewer>) : <></>
+            }
+        />
     </CompAccountsContainer>)
 
     function incomesClosingColumnTemplate(props: any) {
@@ -126,12 +209,69 @@ export function ProfitLoss() {
             <CompSwitch className="ml-4 mt-1 mr-4" instance={CompInstances.compSwitchProfitLoss} leftLabel="All branches" />
 
             <CompSyncFusionTreeGridSearchBox instance={profitLossInstance} handleOnChange={handleOnChangeSearchText} />
-            {/* Refresh */}
-            <TooltipComponent content='Refresh' className="ml-2">
-                <WidgetButtonRefresh handleRefresh={doRefresh} />
+
+            {/* Pdf profit and loss */}
+            <TooltipComponent content='Preview' className="flex ml-4 items-center">
+                <button onClick={() => { setIsDialogOpen(true) }}>
+                    <IconPreview1 className="text-blue-500 h-8 w-8" />
+                </button>
             </TooltipComponent>
 
+            {/* Refresh */}
+            <TooltipComponent content='Refresh' className="">
+                <WidgetButtonRefresh handleRefresh={doRefresh} />
+            </TooltipComponent>
         </div>)
+    }
+
+    function NestingLevelSetupButton() {
+        const handleDoSettings = async () => {
+            const { value: level } = await Swal.fire({
+                title: "Set Maximum Nesting Level",
+                input: "number",
+                inputLabel: "Enter a value between 1 and 10",
+                inputValue: maxNestLevel,
+                inputAttributes: {
+                    min: "1",
+                    max: "10",
+                    step: "1"
+                },
+                confirmButtonText: "Apply",
+                cancelButtonText: "Cancel",
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    const num = Number(value);
+                    if (!value || isNaN(num)) return "Please enter a valid number";
+                    if (num < 1 || num > 10) return "Value must be between 1 and 10";
+                    return null;
+                },
+                customClass: {
+                    popup: "z-[11000]" // ensures it appears above modal
+                }
+            });
+
+            if (level !== null && level !== "") {
+                const parsed = parseInt(level, 10);
+                setMaxNestLeval(parsed);
+                // Reopen the PDF modal to reflect new nesting
+                setIsDialogOpen(false);
+                setTimeout(() => setIsDialogOpen(true), 100);
+            }
+        };
+
+        return (
+            <TooltipComponent content="Set Nesting Level" position="TopCenter" className="mr-2">
+                <button
+                    onClick={handleDoSettings}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 active:ring-2 ring-blue-300 transition duration-150"
+                >
+                    <IconSettings className="text-blue-500 h-6 w-6" />
+                    <span className="text-sm font-medium text-blue-700 whitespace-nowrap">
+                        Nesting: {maxNestLevel}
+                    </span>
+                </button>
+            </TooltipComponent>
+        );
     }
 
     function expensesClosingColumnTemplate(props: any) {
@@ -201,47 +341,5 @@ export function ProfitLoss() {
 
         const gridRefAssets: any = context.CompSyncFusionTreeGrid[incomesInstance].gridRef
         gridRefAssets.current.search(event.target.value)
-    }
-
-    async function loadData() {
-        const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss
-        const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
-            dbName || '',
-            {
-                buCode: loginInfo.currentBusinessUnit?.buCode,
-                dbParams: decodedDbParamsObject,
-                sqlArgs: {
-                    branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
-                    finYearId: loginInfo.currentFinYear?.finYearId
-                },
-            }
-        )
-        try {
-            const res: any = await Utils.queryGraphQL(q, queryName)
-            const jsonResult: any = res?.data[queryName][0]?.jsonResult
-            const profitOrLoss = jsonResult?.profitOrLoss
-            jsonResult[expensesInstance] = jsonResult?.expenses || []
-            jsonResult[incomesInstance] = jsonResult?.incomes || []
-            if (profitOrLoss < 0) {
-                jsonResult[incomesInstance].push({ accName: 'Loss for the year', closing: Math.abs(profitOrLoss), closing_dc: 'C', parentId: null })
-            } else {
-                jsonResult[expensesInstance].push({ accName: 'Profit for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
-            }
-            dispatch(setQueryHelperData({
-                instance: expensesInstance,
-                data: jsonResult?.[expensesInstance]
-            }))
-            dispatch(setQueryHelperData({
-                instance: incomesInstance,
-                data: jsonResult?.[incomesInstance]
-            }))
-            const incomesClosing = customClosingAggregate(jsonResult[incomesInstance], 'closing', 'closing_dc')
-            const expensesClosing = customClosingAggregate(jsonResult[expensesInstance], 'closing', 'closing_dc')
-            if (incomesClosing !== expensesClosing) {
-                Utils.showWarningMessage(Messages.messOpeningBalancesMismatch)
-            }
-        } catch (e: any) {
-            console.log(e)
-        }
     }
 }

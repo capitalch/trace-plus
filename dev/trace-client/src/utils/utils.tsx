@@ -65,6 +65,7 @@ export const Utils: UtilsType = {
   showDeleteConfirmDialog: showDeleteConfirmDialog,
   showErrorMessage: showErrorMessage,
   showFailureAlertMessage: showFailureAlertMessage,
+  // showGetText: showGetText,
   showHideModalDialogA: showHideModalDialogA,
   showHideModalDialogB: showHideModalDialogB,
   showGraphQlErrorMessage: showGraphQlErrorMessage,
@@ -335,11 +336,11 @@ function getToken() {
 }
 
 function getTranTypeId(tranType: TranType): number | undefined {
-  return(TranTypeMap[tranType])
+  return (TranTypeMap[tranType])
 }
 
 function getTranTypeName(tranTypeId: number): TranType | undefined {
-  return(TranTypeReverseMap[tranTypeId])
+  return (TranTypeReverseMap[tranTypeId])
 }
 
 function getUnitInfo(): UnitInfoType | undefined {
@@ -541,6 +542,26 @@ function showErrorMessage(
   });
 }
 
+// async function showGetText() {
+//   // const ipAPI = "//api.ipify.org?format=json";
+//   // const response = await fetch(ipAPI);
+//   // const data = await response.json();
+//   const inputValue = '';
+//   const { value }: { value?: string | undefined } = await Swal.fire({
+//     title: "Enter Nesting Level",
+//     input: "text",
+//     inputLabel: "Nesting level",
+//     inputValue,
+//     showCancelButton: true,
+//     inputValidator: (value) => {
+//       if (!value) {
+//         return "You need to give nesting level";
+//       }
+//     }
+//   });
+//   return (value || '3')
+// }
+
 function showGraphQlErrorMessage(error: GraphQlErrorType) {
   Swal.fire({
     toast: true,
@@ -555,7 +576,8 @@ function showGraphQlErrorMessage(error: GraphQlErrorType) {
     icon: "error",
     iconColor: "white",
     width: "auto",
-    showCloseButton: true
+    showCloseButton: true,
+    
   });
 }
 
@@ -858,6 +880,7 @@ type UtilsType = {
     errorCode?: string,
     errorMessage?: string
   ) => void;
+  // showGetText: () => any;
   showHideModalDialogA: (options: ShowHideModalDialogType) => void;
   showHideModalDialogB: (options: ShowHideModalDialogType) => void;
   showGraphQlErrorMessage: (error: GraphQlErrorType) => void;
