@@ -7,6 +7,12 @@ entry point: /usr/lib/systemd/systemd
 - Vouchers
 	- Interchange voucher types
 - Final accounts
+	- Ledger
+		- double line for column title
+		- title to appear on each page
+		- option to hide info. If hide info then give branch and userRefNo
+		- If branchcode given then show branch name
+		- Name as cash book, bank book or ledger account
 	- Report on date
 															- Balance Sheet and PL Print
 																- Negative figures are made positive. Correct

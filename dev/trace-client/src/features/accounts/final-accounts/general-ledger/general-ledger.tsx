@@ -15,7 +15,7 @@ import { Utils } from "../../../../utils/utils"
 import { CompAppLoader } from "../../../../controls/redux-components/comp-app-loader"
 import { CompCheckBox } from "../../../../controls/redux-components/comp-checkbox"
 import { CompInstances } from "../../../../controls/redux-components/comp-instances"
-import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
+// import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids"
 import dayjs from "dayjs"
 // import ReactSlidingPane from "react-sliding-pane"
@@ -37,7 +37,7 @@ export function GeneralLedger() {
     const instance: string = DataInstancesMap.generalLedger
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     // Selectors
-    const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
+    // const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance), shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
     const toShowBalance: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxBalanceLedger), shallowEqual)
@@ -56,6 +56,7 @@ export function GeneralLedger() {
         branchId
         , buCode
         , context
+        , currentFinYear
         , dbName
         , decodedDbParamsObject
         , decFormatter
@@ -76,7 +77,7 @@ export function GeneralLedger() {
                 gridRef.current.dataSource = []
             }
         }
-    }, [selectedAccountPickerAccId, isAllBranches, currentFinYear.finYearId, branchId])
+    }, [selectedAccountPickerAccId, isAllBranches, currentFinYear?.finYearId, branchId])
 
     useEffect(() => {
         return (() => { //cleanup
@@ -152,7 +153,7 @@ export function GeneralLedger() {
                 // customControl={<NestingLevelSetupButton />}
                 element={
                     <PDFViewer style={{ width: "100%", height: "100%" }}>
-                        <GeneralLedger1Pdf ledgerTitle="General Ledger" data={meta.current.transactions} />
+                        <GeneralLedger1Pdf data={meta.current.transactions} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />
                     </PDFViewer>
                 }
             />
@@ -363,7 +364,7 @@ export function GeneralLedger() {
         const formattedOpBals: any[] = opBals.map((op: any) => ({
             ...op,
             "otherAccounts": "Opening balance:",
-            "tranDate": currentFinYear.startDate
+            "tranDate": currentFinYear?.startDate
         }))
 
         if (jsonResult?.transactions) {
@@ -399,7 +400,7 @@ export function GeneralLedger() {
         const summary: TranType[] = []
         const acc: DecTranType = {
             autoRefNo: 'Summary',
-            tranDate: currentFinYear.startDate,
+            tranDate: currentFinYear?.startDate,
             debit: new Decimal(0),
             credit: new Decimal(0),
             opening: new Decimal(0),

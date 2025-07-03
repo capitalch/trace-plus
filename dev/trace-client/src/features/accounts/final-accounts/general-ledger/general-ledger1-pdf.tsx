@@ -7,8 +7,8 @@ import {
   StyleSheet,
   Font
 } from "@react-pdf/renderer";
-import { format } from "date-fns";
 import Decimal from "decimal.js";
+import { format } from "date-fns";
 
 Font.register({
   family: "Roboto",
@@ -20,109 +20,193 @@ Font.register({
 
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    paddingTop: 30,
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingBottom: 60,
     fontSize: 9,
     fontFamily: "Roboto"
   },
-  header: {
+  reportTitle: {
+    fontSize: 16,
     textAlign: "center",
-    marginBottom: 10
-  },
-  title: {
-    fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 2
+    marginBottom: 6
   },
-  subtitle: {
-    fontSize: 10,
-    color: "#555"
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12
+  },
+  leftHeader: {
+    flexDirection: "column"
+  },
+  rightHeader: {
+    flexDirection: "column",
+    textAlign: "right"
+  },
+  companyName: {
+    fontSize: 14,
+    fontWeight: "bold"
+  },
+  companyAddress: {
+    fontSize: 8,
+    marginTop: 2
+  },
+  companyGstin: {
+    fontSize: 8
   },
   tableHeader: {
     flexDirection: "row",
+    borderTop: "1pt solid #000",
     borderBottom: "1pt solid #000",
-    paddingBottom: 4,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    paddingVertical: 4
   },
-  tableRow: {
+  row: {
     flexDirection: "row",
-    paddingVertical: 2,
-    borderBottom: "0.5pt solid #ddd"
+    borderBottom: "0.5pt solid #ccc",
+    paddingVertical: 2
+  },
+  cell: {
+    paddingRight: 6
+  },
+  cellDate: {
+    width: "10%"
+  },
+  cellRef: {
+    width: "15%"
+  },
+  cellType: {
+    width: "10%"
+  },
+  cellAccount: {
+    width: "20%"
+  },
+  cellInfo: {
+    width: "25%"
+  },
+  cellAmount: {
+    width: "10%",
+    textAlign: "right"
   },
   summaryRow: {
     flexDirection: "row",
-    paddingVertical: 2,
-    borderBottom: "0.5pt solid #bbb",
-    backgroundColor: "#f0f0f0",
-    fontStyle: "italic"
+    paddingTop: 6,
+    borderTop: "1pt solid #000",
+    fontWeight: "bold",
+    marginTop: 6
   },
-  cell: {
-    paddingHorizontal: 2
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 30,
+    right: 30,
+    fontSize: 9,
+    textAlign: 'center',
+    color: '#666'
   },
-  colDate: { width: "12%" },
-  colRef: { width: "16%" },
-  colParticulars: { width: "26%" },
-  colDebit: { width: "12%", textAlign: "right" },
-  colCredit: { width: "12%", textAlign: "right" },
-  colBalance: { width: "12%", textAlign: "right" },
-  colInstr: { width: "10%" }
+  summaryLabel: {
+    width: "60%"
+  },
+  summarySpacer: {
+    width: "5%"
+  }
 });
 
-const formatAmount = (amount: number = 0) =>
-  new Decimal(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const formatAmount = (amount: number) =>
+  new Decimal(amount).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-type LedgerRow = {
-  tranDate: string;
-  autoRefNo?: string;
-  otherAccounts?: string;
-  debit?: number;
-  credit?: number;
-  balance?: number;
-  instrNo?: string;
-};
+export const GeneralLedger1Pdf = ({
+  data,
+  accountName,
+  fromDate,
+  toDate,
+  partyAddress = "",
+  company = {
+    name: "Your Company Name Pvt. Ltd.",
+    address: "123 Business Road, Kolkata, WB 700001",
+    gstin: "GSTIN: 19ABCDE1234F1Z5",
+    email: "contact@yourcompany.com"
+  }
+}: {
+  data: any[];
+  accountName: string;
+  fromDate: string;
+  toDate: string;
+  partyAddress?: string;
+  company?: {
+    name: string;
+    address: string;
+    gstin?: string;
+    email?: string;
+  };
+}) => {
+  const formattedFrom = format(new Date(fromDate), "do MMMM yyyy");
+  const formattedTo = format(new Date(toDate), "do MMMM yyyy");
 
-type Props = {
-  ledgerTitle: string;
-  data: LedgerRow[];
-};
+  const debitTotal = data.reduce((sum, row) => sum + (row.debit || 0), 0);
+  const creditTotal = data.reduce((sum, row) => sum + (row.credit || 0), 0);
 
-export const GeneralLedger1Pdf: React.FC<Props> = ({ ledgerTitle, data }) => {
+  const getInfo = (row: any) => {
+    return [row.branchCode, row.instrNo, row.userRefNo, row.remarks, row.lineRefNo, row.lineRemarks]
+      .filter(Boolean)
+      .join(" | ");
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
-        <View style={styles.header}>
-          <Text style={styles.title}>{ledgerTitle}</Text>
-          <Text style={styles.subtitle}>Ledger Report</Text>
+        <Text style={styles.reportTitle} fixed>Ledger Account</Text>
+
+        <View style={styles.header} fixed>
+          <View style={styles.leftHeader}>
+            <Text style={styles.companyName}>{company.name}</Text>
+            <Text style={styles.companyAddress}>{company.address}</Text>
+            {company.gstin && <Text style={styles.companyGstin}>{company.gstin}</Text>}
+            {company.email && <Text style={styles.companyGstin}>{company.email}</Text>}
+          </View>
+          <View style={styles.rightHeader}>
+            <Text>Account: {accountName}</Text>
+            {partyAddress && <Text>{partyAddress}</Text>}
+            <Text>Period: {formattedFrom} to {formattedTo}</Text>
+          </View>
         </View>
 
-        {/* Table Header */}
-        <View style={styles.tableHeader}>
-          <Text style={[styles.cell, styles.colDate]}>Date</Text>
-          <Text style={[styles.cell, styles.colRef]}>Ref No</Text>
-          <Text style={[styles.cell, styles.colParticulars]}>Particulars</Text>
-          <Text style={[styles.cell, styles.colDebit]}>Debit</Text>
-          <Text style={[styles.cell, styles.colCredit]}>Credit</Text>
-          <Text style={[styles.cell, styles.colBalance]}>Balance</Text>
-          <Text style={[styles.cell, styles.colInstr]}>Instr</Text>
+        <View style={styles.tableHeader} fixed>
+          <Text style={[styles.cell, styles.cellDate]}>Date</Text>
+          <Text style={[styles.cell, styles.cellRef]}>Reference</Text>
+          <Text style={[styles.cell, styles.cellType]}>Type</Text>
+          <Text style={[styles.cell, styles.cellAccount]}>Account</Text>
+          <Text style={[styles.cell, styles.cellInfo]}>Info</Text>
+          <Text style={[styles.cell, styles.cellAmount]}>Debit</Text>
+          <Text style={[styles.cell, styles.cellAmount]}>Credit</Text>
         </View>
 
-        {/* Data Rows */}
-        {data.map((row, idx) => {
-          const isSummary = row.autoRefNo === "Summary";
-          const RowStyle = isSummary ? styles.summaryRow : styles.tableRow;
-          return (
-            <View key={idx} style={RowStyle}>
-              <Text style={[styles.cell, styles.colDate]}>{format(new Date(row.tranDate), "dd-MMM-yy")}</Text>
-              <Text style={[styles.cell, styles.colRef]}>{row.autoRefNo || ""}</Text>
-              <Text style={[styles.cell, styles.colParticulars]}>{row.otherAccounts || ""}</Text>
-              <Text style={[styles.cell, styles.colDebit]}>{row.debit ? formatAmount(row.debit) : ""}</Text>
-              <Text style={[styles.cell, styles.colCredit]}>{row.credit ? formatAmount(row.credit) : ""}</Text>
-              <Text style={[styles.cell, styles.colBalance]}>
-                {row.balance !== undefined ? formatAmount(Math.abs(row.balance)) + (row.balance >= 0 ? " Dr" : " Cr") : ""}
-              </Text>
-              <Text style={[styles.cell, styles.colInstr]}>{row.instrNo || ""}</Text>
-            </View>
-          );
-        })}
+        {data.map((row, idx) => (
+          <View style={styles.row} key={idx} wrap={false}>
+            <Text style={[styles.cell, styles.cellDate]}>{row.tranDate || ""}</Text>
+            <Text style={[styles.cell, styles.cellRef]}>{row.autoRefNo || ""}</Text>
+            <Text style={[styles.cell, styles.cellType]}>{row.tranType || ""}</Text>
+            <Text style={[styles.cell, styles.cellAccount]}>{row.otherAccounts || ""}</Text>
+            <Text style={[styles.cell, styles.cellInfo]}>{getInfo(row)}</Text>
+            <Text style={[styles.cell, styles.cellAmount]}>{row.debit ? formatAmount(row.debit) : ""}</Text>
+            <Text style={[styles.cell, styles.cellAmount]}>{row.credit ? formatAmount(row.credit) : ""}</Text>
+          </View>
+        ))}
+
+        <View style={styles.summaryRow}>
+          <Text style={[styles.cell, styles.summaryLabel]}>Total</Text>
+          <Text style={[styles.cell, styles.summarySpacer]}></Text>
+          <Text style={[styles.cell, styles.cellAmount]}>{formatAmount(debitTotal)}</Text>
+          <Text style={[styles.cell, styles.cellAmount]}>{formatAmount(creditTotal)}</Text>
+        </View>
+
+        <Text
+          style={styles.footer}
+          render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
+          fixed
+        />
       </Page>
     </Document>
   );
