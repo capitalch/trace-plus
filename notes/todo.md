@@ -8,8 +8,8 @@ entry point: /usr/lib/systemd/systemd
 	- Interchange voucher types
 - Final accounts
 	- Ledger
-		- double line for column title
-		- title to appear on each page
+																- double line for column title
+																- title to appear on each page
 		- option to hide info. If hide info then give branch and userRefNo
 		- If branchcode given then show branch name
 		- Name as cash book, bank book or ledger account

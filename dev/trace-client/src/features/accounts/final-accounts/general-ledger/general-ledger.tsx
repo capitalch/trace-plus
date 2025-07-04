@@ -26,13 +26,17 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
 import { setAccountPickerAccId } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree-slice"
 import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog"
-import { PDFViewer } from "@react-pdf/renderer"
+import { pdf, PDFViewer } from "@react-pdf/renderer"
 import { GeneralLedger1Pdf } from "./general-ledger1-pdf"
 import { IconPreview1 } from "../../../../controls/icons/icon-preview1"
+import ReactSlidingPane from "react-sliding-pane"
+// import { GeneralLedgerPdf } from "./general-ledger-pdf"
+import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
+import { GeneralLedgerPdf } from "./general-ledger-pdf"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
-    // const [isPaneOpen, setIsPaneOpen] = useState(false);
+    const [isPaneOpen, setIsPaneOpen] = useState(false);
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -114,10 +118,20 @@ export function GeneralLedger() {
                 </div>
                 <CompSwitch leftLabel="All branches" instance={instance} className="ml-auto" />
                 <CompSyncFusionGridToolbar
-                    CustomControl={() => <TooltipComponent content='Pdf view' className="flex items-center">
-                        {/* <button onClick={() => setIsPaneOpen(true)}><IconFilePdf className="text-red-600 h-6 w-6" /></button> */}
+                    CustomControl={() => <TooltipComponent content='Print Preview' className="flex items-center">
+                        {/* <button onClick={() => setIsPaneOpen(true)}><IconFilePdf className="text-red-600 h-6 w-6" /></button>
                         <button onClick={async () => {
                             setIsDialogOpen(true)
+                        }}>
+                            <IconPreview1 className="text-blue-500 h-8 w-8" />
+                        </button> */}
+                        <button onClick={async () => {
+                            // setIsDialogOpen(true)
+                            // const blob = await pdf(<GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />).toBlob();
+                            let blob: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();
+                            const url = URL.createObjectURL(blob);
+                            window.open(url);
+                            setTimeout(() => { blob = undefined }, 100)
                         }}>
                             <IconPreview1 className="text-blue-500 h-8 w-8" />
                         </button>
@@ -146,20 +160,19 @@ export function GeneralLedger() {
             {isVisibleAppLoader && <CompAppLoader />}
 
             {/* General ledger preview */}
-            <CustomModalDialog
+            {/* <CustomModalDialog
                 isOpen={isDialogOpen}
                 onClose={() => setIsDialogOpen(false)}
                 title="General Ledger"
-                // customControl={<NestingLevelSetupButton />}
                 element={
                     <PDFViewer style={{ width: "100%", height: "100%" }}>
-                        <GeneralLedger1Pdf data={meta.current.transactions} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />
+                        <GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />
                     </PDFViewer>
                 }
-            />
+            /> */}
 
             {/* Sliding Pane */}
-            {/* <ReactSlidingPane
+            <ReactSlidingPane
                 className="bg-gray-300"
                 isOpen={isPaneOpen}
                 title="Ledger View"
@@ -167,9 +180,10 @@ export function GeneralLedger() {
                 width="80%"
                 onRequestClose={() => setIsPaneOpen(false)}>
                 <PDFViewer style={{ width: '100%', height: '100%' }}>
-                    <GeneralLedgerPdf accName={meta?.current?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} />
+                    {/* <GeneralLedgerPdf accName={meta?.current?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} /> */}
+                    <GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />
                 </PDFViewer>
-            </ReactSlidingPane> */}
+            </ReactSlidingPane>
         </CompAccountsContainer>
     )
 
