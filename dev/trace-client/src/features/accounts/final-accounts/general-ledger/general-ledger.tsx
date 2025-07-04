@@ -127,11 +127,15 @@ export function GeneralLedger() {
                         </button> */}
                         <button onClick={async () => {
                             // setIsDialogOpen(true)
-                            // const blob = await pdf(<GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />).toBlob();
-                            let blob: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();
+                            const blob = await pdf(<GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />).toBlob();
+                            // const blob: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();  
                             const url = URL.createObjectURL(blob);
+                            setTimeout(async () => {
+                                URL.revokeObjectURL(url);
+                                // let blob1: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();
+                            }, 5000);
                             window.open(url);
-                            setTimeout(() => { blob = undefined }, 100)
+                            // setTimeout(() => { blob = undefined }, 100)
                         }}>
                             <IconPreview1 className="text-blue-500 h-8 w-8" />
                         </button>
