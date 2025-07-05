@@ -25,14 +25,15 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 // import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
 import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
 import { setAccountPickerAccId } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree-slice"
-import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog"
+// import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog"
 import { pdf, PDFViewer } from "@react-pdf/renderer"
 import { GeneralLedger1Pdf } from "./general-ledger1-pdf"
 import { IconPreview1 } from "../../../../controls/icons/icon-preview1"
 import ReactSlidingPane from "react-sliding-pane"
+import { GeneralLedger2Pdf } from "./general-ledger2-pdf"
 // import { GeneralLedgerPdf } from "./general-ledger-pdf"
-import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
-import { GeneralLedgerPdf } from "./general-ledger-pdf"
+// import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
+// import { GeneralLedgerPdf } from "./general-ledger-pdf"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
@@ -127,13 +128,18 @@ export function GeneralLedger() {
                         </button> */}
                         <button onClick={async () => {
                             // setIsDialogOpen(true)
-                            const blob = await pdf(<GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />).toBlob();
+                            const blob = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+                            const blob1 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+                            const blob2 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+                            const blob3 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+                            const blob4 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+
+
                             // const blob: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();  
                             const url = URL.createObjectURL(blob);
-                            setTimeout(async () => {
-                                URL.revokeObjectURL(url);
-                                // let blob1: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();
-                            }, 5000);
+                            // setTimeout(async () => {
+                            //     URL.revokeObjectURL(url);                                
+                            // }, 5000);
                             window.open(url);
                             // setTimeout(() => { blob = undefined }, 100)
                         }}>
