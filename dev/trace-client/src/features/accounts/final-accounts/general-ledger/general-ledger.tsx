@@ -15,34 +15,20 @@ import { Utils } from "../../../../utils/utils"
 import { CompAppLoader } from "../../../../controls/redux-components/comp-app-loader"
 import { CompCheckBox } from "../../../../controls/redux-components/comp-checkbox"
 import { CompInstances } from "../../../../controls/redux-components/comp-instances"
-// import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids"
 import dayjs from "dayjs"
-// import ReactSlidingPane from "react-sliding-pane"
-// import { PDFViewer } from "@react-pdf/renderer"
-// import { GeneralLedgerPdf } from "./general-ledger-pdf"
-import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-// import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
 import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
 import { setAccountPickerAccId } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree-slice"
-// import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog"
-import { pdf, PDFViewer } from "@react-pdf/renderer"
-import { GeneralLedger1Pdf } from "./general-ledger1-pdf"
-import { IconPreview1 } from "../../../../controls/icons/icon-preview1"
-import ReactSlidingPane from "react-sliding-pane"
-import { GeneralLedger2Pdf } from "./general-ledger2-pdf"
-// import { GeneralLedgerPdf } from "./general-ledger-pdf"
-// import { IconFilePdf } from "../../../../controls/icons/icon-file-pdf"
-// import { GeneralLedgerPdf } from "./general-ledger-pdf"
+// import { PDFViewer } from "@react-pdf/renderer"
+// import { GeneralLedger1Pdf } from "./general-ledger1-pdf"
+// import ReactSlidingPane from "react-sliding-pane"
+import { GeneralLedgerPrintPreviewButton } from "./general-ledger-print-preview-button"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
-    const [isPaneOpen, setIsPaneOpen] = useState(false);
+    // const [isPaneOpen, setIsPaneOpen] = useState(false);
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalLedger
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    // Selectors
-    // const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn, shallowEqual) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance), shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
     const toShowBalance: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxBalanceLedger), shallowEqual)
@@ -51,8 +37,9 @@ export function GeneralLedger() {
     const selectedAccountPickerAccId = useSelector((state: RootStateType) => state.accountPickerTree[instance]?.id, shallowEqual)
 
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
-    const meta = useRef<{ accName: string, transactions: TranType[], transactionsCopy: TranType[] }>({
+    const meta = useRef<{ accName: string, transactions: AccTranType[], transactionsCopy: AccTranType[], accClass: string }>({
         accName: '',
+        accClass: '',
         transactions: [],
         transactionsCopy: []
     })
@@ -119,33 +106,13 @@ export function GeneralLedger() {
                 </div>
                 <CompSwitch leftLabel="All branches" instance={instance} className="ml-auto" />
                 <CompSyncFusionGridToolbar
-                    CustomControl={() => <TooltipComponent content='Print Preview' className="flex items-center">
-                        {/* <button onClick={() => setIsPaneOpen(true)}><IconFilePdf className="text-red-600 h-6 w-6" /></button>
-                        <button onClick={async () => {
-                            setIsDialogOpen(true)
-                        }}>
-                            <IconPreview1 className="text-blue-500 h-8 w-8" />
-                        </button> */}
-                        <button onClick={async () => {
-                            // setIsDialogOpen(true)
-                            const blob = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
-                            const blob1 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
-                            const blob2 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
-                            const blob3 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
-                            const blob4 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
-
-
-                            // const blob: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();  
-                            const url = URL.createObjectURL(blob);
-                            // setTimeout(async () => {
-                            //     URL.revokeObjectURL(url);                                
-                            // }, 5000);
-                            window.open(url);
-                            // setTimeout(() => { blob = undefined }, 100)
-                        }}>
-                            <IconPreview1 className="text-blue-500 h-8 w-8" />
-                        </button>
-                    </TooltipComponent>}
+                    CustomControl={() =>
+                        <GeneralLedgerPrintPreviewButton
+                            accountName={meta.current.accName}
+                            accClass={meta.current.accClass}
+                            data={meta.current.transactions}
+                            instance={instance}
+                        />}
                     title=""
                     isLastNoOfRows={false}
                     instance={instance}
@@ -168,37 +135,11 @@ export function GeneralLedger() {
             />
             {/* Separate instance of appLoader is needed otherwise it clashes with global appLoader with instance compAppLoader */}
             {isVisibleAppLoader && <CompAppLoader />}
-
-            {/* General ledger preview */}
-            {/* <CustomModalDialog
-                isOpen={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
-                title="General Ledger"
-                element={
-                    <PDFViewer style={{ width: "100%", height: "100%" }}>
-                        <GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />
-                    </PDFViewer>
-                }
-            /> */}
-
-            {/* Sliding Pane */}
-            <ReactSlidingPane
-                className="bg-gray-300"
-                isOpen={isPaneOpen}
-                title="Ledger View"
-                from="right"
-                width="80%"
-                onRequestClose={() => setIsPaneOpen(false)}>
-                <PDFViewer style={{ width: '100%', height: '100%' }}>
-                    {/* <GeneralLedgerPdf accName={meta?.current?.accName || ''} isAllBranches={isAllBranches} transactions={meta?.current?.transactionsCopy || []} /> */}
-                    <GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />
-                </PDFViewer>
-            </ReactSlidingPane>
         </CompAccountsContainer>
     )
 
     function calculateClosing() {
-        const ret = meta.current.transactionsCopy.reduce((sum: Decimal, current: TranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))
+        const ret = meta.current.transactionsCopy.reduce((sum: Decimal, current: AccTranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))
         const r = ret.toNumber()
         return (r)
     }
@@ -208,13 +149,13 @@ export function GeneralLedger() {
     }
 
     function calculateCredits() {
-        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: TranType) => (sum.plus(current.credit || 0)), new Decimal(0))
+        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: AccTranType) => (sum.plus(current.credit || 0)), new Decimal(0))
         const r: number = ret.toNumber()
         return (r)
     }
 
     function calculateDebits() {
-        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: TranType) => (sum.plus(current.debit || 0)), new Decimal(0))
+        const ret: Decimal = meta.current.transactionsCopy.reduce((sum: Decimal, current: AccTranType) => (sum.plus(current.debit || 0)), new Decimal(0))
         const r: number = ret.toNumber()
         return (r)
     }
@@ -226,7 +167,6 @@ export function GeneralLedger() {
         showDailySummary()
         showBalance()
         showReverse()
-        // console.log(JSON.stringify(meta.current.transactions))
     }
 
     function getAggregates(): SyncFusionGridAggregateType[] {
@@ -401,15 +341,16 @@ export function GeneralLedger() {
         jsonResult.transactions.forEach((item: any, index: number) => item.index = index + 1)
         meta.current.transactionsCopy = jsonResult.transactions.map((x: any) => ({ ...x }))
         meta.current.accName = jsonResult.accName
+        meta.current.accClass = jsonResult.accClass
         formatData()
         setRefresh({})
     }
 
     function showDailySummary() {
         const toShowSummaryRow: boolean = Utils.getReduxState().reduxComp.compCheckBox[CompInstances.compCheckBoxSummaryLedger] || false
-        let clonedTransactions: TranType[] = meta.current.transactionsCopy.map((x: any) => ({ ...x }))
+        let clonedTransactions: AccTranType[] = meta.current.transactionsCopy.map((x: any) => ({ ...x }))
         if (toShowSummaryRow) {
-            const summaryRows: TranType[] = getSummaryRows()
+            const summaryRows: AccTranType[] = getSummaryRows()
             clonedTransactions = clonedTransactions.concat(summaryRows)
             clonedTransactions = _.sortBy(clonedTransactions, ['tranDate'])
             meta.current.transactions = clonedTransactions
@@ -417,11 +358,11 @@ export function GeneralLedger() {
             meta.current.transactions = clonedTransactions
         }
         // Indexing
-        (meta.current.transactions as TranType[]).forEach((item: TranType, index: number) => item.index = index + 1)
+        (meta.current.transactions as AccTranType[]).forEach((item: AccTranType, index: number) => item.index = index + 1)
     }
 
-    function getSummaryRows(): TranType[] {
-        const summary: TranType[] = []
+    function getSummaryRows(): AccTranType[] {
+        const summary: AccTranType[] = []
         const acc: DecTranType = {
             autoRefNo: 'Summary',
             tranDate: currentFinYear?.startDate,
@@ -431,7 +372,7 @@ export function GeneralLedger() {
             closing: new Decimal(0)
         }
 
-        for (const item of meta.current.transactionsCopy as TranType[]) {
+        for (const item of meta.current.transactionsCopy as AccTranType[]) {
             if (item.tranDate === acc.tranDate) {
                 acc.debit = acc.debit.plus(new Decimal(item.debit))
                 acc.credit = acc.credit.plus(new Decimal(item.credit))
@@ -473,7 +414,7 @@ export function GeneralLedger() {
         if (toShowReverse) {
             meta.current.transactions = _.orderBy(meta.current.transactions, ['index'], ['desc'])
             // Reindex
-            meta.current.transactions.forEach((item: TranType, index: number) => item.index = index + 1)
+            meta.current.transactions.forEach((item: AccTranType, index: number) => item.index = index + 1)
         }
     }
 
@@ -498,7 +439,7 @@ export function GeneralLedger() {
     }
 
     function onRowDataBound(args: RowDataBoundEventArgs) {
-        const rowData: TranType = args.data as any
+        const rowData: AccTranType = args.data as any
         if (rowData.autoRefNo === 'Summary') {
             (args.row as HTMLElement).style.backgroundColor = '#ecf0f2';
             (args.row as HTMLElement).style.fontWeight = 'bold';
@@ -517,7 +458,7 @@ export type DecTranType = {
     autoRefNo?: string
 }
 
-export type TranType = {
+export type AccTranType = {
     branchCode?: string
     index?: number
     opening?: number
@@ -536,3 +477,32 @@ export type TranType = {
     instrNo?: string
     otherAccounts?: string
 }
+
+// setIsDialogOpen(true)
+// const blob = await pdf(<GeneralLedger1Pdf accountName="xxx" data={meta.current.transactions} fromDate="2024-04-01" toDate="2025-03-31"  />).toBlob();
+// const blob1 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+// const blob2 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+// const blob3 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+// const blob4 = await pdf(<GeneralLedger2Pdf ledgerData={meta.current.transactions} accName="xxx"  />).toBlob();
+
+
+// const blob: any = await pdf(<GeneralLedgerPdf accName="xxx" isAllBranches={isAllBranches} transactions={meta.current.transactions} />).toBlob();  
+// const url = URL.createObjectURL(blob);
+// setTimeout(async () => {
+//     URL.revokeObjectURL(url);                                
+// }, 5000);
+// window.open(url);
+// setTimeout(() => { blob = undefined }, 100)
+
+
+{/* General ledger preview */ }
+{/* <CustomModalDialog
+    isOpen={isDialogOpen}
+    onClose={() => setIsDialogOpen(false)}
+    title="General Ledger"
+    element={
+        <PDFViewer style={{ width: "100%", height: "100%" }}>
+            <GeneralLedger1Pdf data={meta.current.transactionsCopy} accountName={'xxx'} fromDate={currentFinYear?.startDate || ''} toDate={currentFinYear?.endDate || ''} />
+        </PDFViewer>
+    }
+/> */}
