@@ -204,12 +204,13 @@ function generateLedgerPdf({
 
             // RIGHT HEADER BLOCK
             const right = [
-                { text: `Account: ${accountName}`, bold: true },
-                { text: `Period: ${formattedFrom} to ${formattedTo}`, bold: true }
+                { text: `Account: ${accountName}`, bold: true, size: 11 },
+                { text: `Period: ${formattedFrom} to ${formattedTo}`, bold: true, size: 9 }
             ];
 
             right.forEach((line, i) => {
                 if (line.text.trim()) {
+                    doc.setFontSize(line.size);
                     doc.setFont('helvetica', line.bold ? 'bold' : 'normal');
                     doc.text(line.text, pageWidth - xMargin, topY + i * 12, { align: 'right' });
                 }
