@@ -165,7 +165,10 @@ const renderAccounts = (
         key={`${acc.accName}-${level}`}
       >
         <Text style={[styles.nameText, getIndentStyle(level)]}>{acc.accName}</Text>
-        <Text style={styles.rightAlign}>{formatAmount(getSign(acc) * acc.closing)}</Text>
+        <Text style={[styles.rightAlign, (level === 0) ? { textDecoration: 'underline' } : { textDecoration: 'none' }]}>
+          {formatAmount(getSign(acc) * acc.closing)}
+        </Text>
+
       </View>
     );
 

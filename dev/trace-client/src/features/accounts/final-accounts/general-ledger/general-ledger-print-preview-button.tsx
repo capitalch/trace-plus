@@ -16,7 +16,8 @@ export function GeneralLedgerPrintPreviewButton({
     accountName,
     accClass,
     data,
-    instance
+    instance,
+    nonSummaryData
 }: PropsType) {
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
     const { branchName, currentDateFormat, currentFinYear } = useUtilsInfo()
@@ -42,7 +43,8 @@ export function GeneralLedgerPrintPreviewButton({
                     fromDate: currentFinYear?.startDate || '',
                     toDate: currentFinYear?.endDate || '',
                     mainTitle,
-                    isHideDetails
+                    isHideDetails,
+                    nonSummaryData
                 })
             }}>
                 <IconPreview1 className="text-blue-500 h-8 w-8" />
@@ -62,25 +64,6 @@ export function GeneralLedgerPrintPreviewButton({
     </div>)
 }
 
-type PropsType = {
-    accountName: string;
-    accClass: string;
-    data: AccTranType[]
-    instance: string
-}
-
-type PdfPropsType = {
-    accountName: string;
-    branchName: string;
-    isAllBranches: boolean;
-    currentDateFormat: string;
-    data: any[];
-    fromDate: string;
-    toDate: string;
-    mainTitle: string;
-    isHideDetails: boolean;
-};
-
 function generateLedgerPdf({
     accountName,
     branchName,
@@ -90,7 +73,8 @@ function generateLedgerPdf({
     fromDate,
     toDate,
     mainTitle,
-    isHideDetails
+    isHideDetails,
+    nonSummaryData
 }: PdfPropsType) {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -114,23 +98,21 @@ function generateLedgerPdf({
         gstin: `GSTIN: ${companyInfo.gstin}`,
         email: `Emai: ${companyInfo.email}`
     }
-    const nonSummaryRows = data.filter(
-        row => !(row.autoRefNo || '').toLowerCase().includes('summary')
-    );
+
     // Use Decimal for summing to avoid floating-point issues
-    const debitTotal = nonSummaryRows.reduce(
+    const debitTotal = nonSummaryData.reduce(
         (sum, row) => sum.plus(new Decimal(row.debit || 0)),
         new Decimal(0)
     );
 
-    const creditTotal = nonSummaryRows.reduce(
+    const creditTotal = nonSummaryData.reduce(
         (sum, row) => sum.plus(new Decimal(row.credit || 0)),
         new Decimal(0)
     );
     const closingBalance = debitTotal.minus(creditTotal);
     const closingLabel = closingBalance.greaterThanOrEqualTo(0) ? 'Dr' : 'Cr';
-    const closingAmount = `${formatAmount(closingBalance.abs())} ${closingLabel}`;
-    const totalRows = nonSummaryRows.length;
+    const closingAmount = `${formatAmount(closingBalance.abs().toNumber())} ${closingLabel}`;
+    const totalRows = nonSummaryData.length;
     const getInfo = (row: any) => {
         let ret = ''
         if (isHideDetails) {
@@ -151,25 +133,25 @@ function generateLedgerPdf({
     autoTable(doc, {
         startY: cursorY,
         head: [[
-            'Date', 'Reference', 'Type', 'Account', 'Info', 'Debit', 'Credit'
+            'Date', 'Reference', 'Type', 'Account', 'Debit', 'Credit', 'Info'
         ]],
-        body: data.map(row => [
+        body: data.map((row: AccTranType) => [
             formattedTranDate(row.tranDate),
             row.autoRefNo || '',
             row.tranType || '',
             row.otherAccounts || '',
-            getInfo(row),
             row.debit ? formatAmount(row.debit) : '',
-            row.credit ? formatAmount(row.credit) : ''
+            row.credit ? formatAmount(row.credit) : '',
+            getInfo(row),
         ]),
         columnStyles: {
-            0: { cellWidth: 55 },  // Date
-            1: { cellWidth: 100 },  // Reference
+            0: { cellWidth: 50 },  // Date
+            1: { cellWidth: 105.28 },  // Reference
             2: { cellWidth: 50 },  // Type
             3: { cellWidth: 110 },  // Account
-            4: { cellWidth: 120 }, // Info
-            5: { cellWidth: 60, halign: 'right' }, // Debit
-            6: { cellWidth: 60, halign: 'right' }  // Credit
+            4: { cellWidth: 60, halign: 'right' }, // Debit
+            5: { cellWidth: 60, halign: 'right' },  // Credit
+            6: { cellWidth: 120, halign: 'left' }, // Info
         },
         headStyles: {
             fillColor: [255, 255, 255],
@@ -268,28 +250,18 @@ function generateLedgerPdf({
             }
 
             // Align headers of Debit/Credit
-            if (section === 'head' && (column.index === 5 || column.index === 6)) {
+            if (section === 'head' && (column.index === 4 || column.index === 5)) {
                 cell.styles.halign = 'right';
             }
         }
-        // didParseCell: function (data) { // to show light gray horizontal lines for rows
-        //     if (data.section === 'body') {
-        //         data.cell.styles.lineWidth = { top: 0, right: 0, bottom: 0.1, left: 0 };
-        //         data.cell.styles.lineColor = [235, 235, 235];
-        //     }
-        //     if (data.section === 'head' && (data.column.index === 5 || data.column.index === 6)) {
-        //         data.cell.styles.halign = 'right'; // Align Debit & Credit headers right
-        //     }
-        // }
     });
 
     // Totals & Closing Line
-    // const totalRows = data.length;
     const finalY = (doc as any).lastAutoTable.finalY || cursorY + 20;
     const lineY = finalY + 20;
     const summaryHeight = 16;
 
-    const summaryText = `Total Rows: ${totalRows}    Total Debits: ${formatAmount(debitTotal)}    Total Credits: ${formatAmount(creditTotal)}    Closing Balance: ${closingAmount}`;
+    const summaryText = `Total Rows: ${totalRows}    Total Debits: ${formatAmount(debitTotal.toNumber())}    Total Credits: ${formatAmount(creditTotal.toNumber())}    Closing Balance: ${closingAmount}`;
 
     doc.setLineWidth(0.75);
     doc.setDrawColor(0);
@@ -315,9 +287,29 @@ function generateLedgerPdf({
         });
     }
 
-    //   doc.save('ledger.pdf');
     // Open in new tab instead of saving
     const blob = doc.output("blob");
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank");
 }
+
+type PropsType = {
+    accountName: string;
+    accClass: string;
+    data: AccTranType[];
+    instance: string;
+    nonSummaryData: AccTranType[];
+}
+
+type PdfPropsType = {
+    accountName: string;
+    branchName: string;
+    isAllBranches: boolean;
+    currentDateFormat: string;
+    data: AccTranType[];
+    fromDate: string;
+    toDate: string;
+    mainTitle: string;
+    isHideDetails: boolean;
+    nonSummaryData: AccTranType[]
+};

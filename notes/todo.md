@@ -7,19 +7,19 @@ entry point: /usr/lib/systemd/systemd
 - Vouchers
 	- Interchange voucher types
 - Final accounts
-	- Ledger
-																- double line for column title
-																- title to appear on each page
-		- option to hide info. If hide info then give branch and userRefNo
-		- If branchcode given then show branch name
-		- Name as cash book, bank book or ledger account
-	- Report on date
+	- General Ledger
+																- Totals strategy
+																- Clean up
+																- CSV download error
+																- Excel download error
+	- Balance Sheet PL
+																- PDF group amount underline
+		- Report on date
 															- Balance Sheet and PL Print
 																- Negative figures are made positive. Correct
 																- Nesting levels configure
 																- Company Name and Date range
-	
-	- Cash book print
+																- Cash book print
 ## Transactions
 - Application wide fix useEffect warning correction
 - Vouchers correction
