@@ -298,6 +298,26 @@ async def generic_update_helper(info, dbName: str, value: str):
         return create_graphql_exception(e)
     return data
 
+async def validate_debit_credit_and_update_helper(info, dbName: str, value: str):
+    data = {}
+    try:
+        valueString = unquote(value)
+        valueDict = json.loads(valueString)
+        # Code to validate debit credit
+        
+        dbParams = valueDict.get("dbParams", None)
+        schema = valueDict.get("buCode", None)
+        sqlObj = json.loads(valueString)
+        data = await exec_sql_object(
+            dbName=dbName, db_params=dbParams, schema=schema, sqlObject=sqlObj
+        )
+
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
 
 async def generic_update_query_helper(info, dbName: str, value: str):
     data = {}

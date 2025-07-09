@@ -1,20 +1,37 @@
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd
+valid gstin: 24AAACC1206D1ZM
 
+## QA for vouchers
+	- new voucher entry
+		- check in db
+			- TranH
+				- new row with all data
+			- TranD
+				- 2 or more new rows with data and newly created tranHeaderId
+			- ExtGstTranDetails
+				- new row with gst details
 ## features
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
 	- Interchange voucher types
+	- Validate debit / credit at server
+	- Preview
+	- No GST for contra type
+	- All types of vouchers implement
+	- filter view on Voucher Type id
+																- In view mode remove title 'New Entry'
+
 - Final accounts
-	- General Ledger
+															- General Ledger
 																- Totals strategy
 																- Clean up
 																- CSV download error
 																- Excel download error
 	- Balance Sheet PL
-																- PDF group amount underline
 		- Report on date
+																- PDF group amount underline
 															- Balance Sheet and PL Print
 																- Negative figures are made positive. Correct
 																- Nesting levels configure

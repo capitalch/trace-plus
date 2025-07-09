@@ -141,6 +141,14 @@ const compSlice = createSlice({
     },
 
     //CompTabs
+    // getActiveTabIndex: (
+    //   state: ReduxCompStateType,
+    //   action: PayloadAction<CompTabPayloadGetActiveTabIndex>
+    // ) => {
+    //   const instance = action.payload.instance;
+    //   return (state.compTabs[instance].activeTabIndex)
+    // },
+
     setActiveTabIndex: (
       state: ReduxCompStateType,
       action: PayloadAction<CompTabPayloadActionType>
@@ -158,6 +166,7 @@ const compSlice = createSlice({
 export const reduxCompReducer = compSlice.reducer;
 export const {
   closeSlidingPane,
+  // getActiveTabIndex,
   openSlidingPane,
   setActiveTabIndex,
   setCompCheckBoxState,
@@ -210,6 +219,10 @@ type CompTabPayloadActionType = {
   id?: number | string;
   instance: string;
 };
+
+// type CompTabPayloadGetActiveTabIndex = {
+//   instance: string
+// }
 
 type CompTabsType = {
   activeTabIndex: number;

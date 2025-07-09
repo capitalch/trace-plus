@@ -577,7 +577,7 @@ function showGraphQlErrorMessage(error: GraphQlErrorType) {
     iconColor: "white",
     width: "auto",
     showCloseButton: true,
-    
+
   });
 }
 
@@ -779,6 +779,7 @@ export type DoGenericUpdateType = {
   dbName?: string;
   tableName?: string;
   xData: Record<string, any>[] | Record<string, any>;
+  deletedIds?: number[]
 };
 
 export type DoGenericUpdateQueryType = {

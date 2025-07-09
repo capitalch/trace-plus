@@ -63,7 +63,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                 instance: instance,
                 sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
                 sqlArgs: {
-                    accClassNames: ['debtor', 'creditor', 'dexp', 'iexp']?.join(',') || null
+                    accClassNames: ['debtor', 'creditor', 'dexp', 'iexp', 'other']?.join(',') || null
                 }
             })
 
@@ -77,7 +77,6 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
         const debitAmounts = watch("debitEntries")?.map(e => e.amount) || [];
         const totalDebitAmount = debitAmounts.reduce((acc, amt) => { return (acc.plus(new Decimal(amt || 0))) }, new Decimal(0));
         setDebitTotal(totalDebitAmount.toNumber())
-        // console.log(`Amount changed for index ${index}: ${value}`)
     }
 }
 

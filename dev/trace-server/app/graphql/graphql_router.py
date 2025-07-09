@@ -22,6 +22,7 @@ from app.graphql.graphql_helper import (
     trial_balance_helper,
     update_client_helper,
     update_user_helper,
+    validate_debit_credit_and_update_helper,
 )
 
 type_defs = load_schema_from_path(".")
@@ -82,6 +83,10 @@ async def create_bu(_, info, value=""):
 @mutation.field("genericUpdate")
 async def generic_update(_, info, dbName="", value=""):
     return await generic_update_helper(info, dbName, value)
+
+@mutation.field("validateDebitCreditAndUpdate")
+async def validate_debit_credit_and_update(_, info, dbName="", value=""):
+    return await validate_debit_credit_and_update_helper(info, dbName, value)
 
 
 @mutation.field("genericUpdateQuery")

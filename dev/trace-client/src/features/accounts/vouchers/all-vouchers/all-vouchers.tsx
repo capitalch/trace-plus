@@ -2,7 +2,6 @@ import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
-// import { VourcherType } from "../voucher-slice";
 import { AllVouchersMain } from "./all-vouchers-main";
 import { VoucherTypeOptions } from "../voucher-controls/voucher-type-options";
 import { FormProvider, useForm } from "react-hook-form";
@@ -10,13 +9,15 @@ import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { RootStateType } from "../../../../app/store/store";
-import { useSelector } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { useDispatch, useSelector } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
+import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 
 export function AllVouchers() {
+    const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.allVouchers;
-    const { branchId,/* buCode, dbName,*/ finYearId } = useUtilsInfo();
+    const { branchId, buCode, dbName, finYearId } = useUtilsInfo();
     const selectedVoucherType = useSelector((state: RootStateType) => state.vouchers.voucherType)
     const methods = useForm<VoucherFormDataType>(
         {
@@ -25,7 +26,7 @@ export function AllVouchers() {
             defaultValues: getDefaultVoucherFormValues()
         });
     const { watch, getValues, reset } = methods;
-    const extendedMethods = {...methods, xReset}
+    const extendedMethods = { ...methods, xReset }
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
@@ -69,6 +70,7 @@ export function AllVouchers() {
             isGst: false,
             creditEntries: [getDefaultEntry('C')],
             debitEntries: [getDefaultEntry('D')],
+            deletedIds: []
         })
     }
 
@@ -90,15 +92,21 @@ export function AllVouchers() {
         console.log(data)
         try {
             const xData: XDataObjectType = getTranHData();
+            const deletedIds = [...xData.deletedIds]
+            xData.deletedIds = undefined
             console.log("xData", JSON.stringify(xData));
-            // await Utils.doGenericUpdate({
-            //     buCode: buCode || "",
-            //     dbName: dbName || "",
-            //     tableName: DatabaseTablesMap.TranH,
-            //     xData: xData,
-            // });
+            await Utils.doGenericUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: DatabaseTablesMap.TranH,
+                xData: xData,
+                deletedIds: deletedIds
+            });
+            if (watch('id')) {
+                dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
+            }
+            xReset()
             Utils.showSaveMessage();
-
         } catch (e) {
             console.error(e);
         }
@@ -115,7 +123,8 @@ export function AllVouchers() {
             branchId: branchId,
             posId: 1,
             autoRefNo: getValues("autoRefNo") || undefined,
-            details: getTranDDeails(),
+            deletedIds: getValues("deletedIds") || undefined,
+            xDetails: getTranDDeails(),
         };
     }
 
@@ -140,7 +149,7 @@ export function AllVouchers() {
             tranHeaderId: entry.tranHeaderId || undefined,
             lineRefNo: entry.lineRefNo || null,
             instrNo: entry.instrNo || null,
-            details: getExtGstTranDDetails(entry),
+            xDetails: getExtGstTranDDetails(entry),
         }));
         const debits: XDataObjectType[] = debitEntries.map((entry) => ({
             id: entry.id || undefined,
@@ -151,7 +160,7 @@ export function AllVouchers() {
             tranHeaderId: entry.tranHeaderId || undefined,
             lineRefNo: entry.lineRefNo || null,
             instrNo: entry.instrNo || null,
-            details: getExtGstTranDDetails(entry),
+            xDetails: getExtGstTranDDetails(entry),
         }));
         return [...credits, ...debits];
     }
@@ -195,10 +204,11 @@ export type VoucherFormDataType = //TranHeaderType
         posId?: number | null;
         autoRefNo: string;
 
-        isGst: boolean
-        voucherType: VourcherType
-        creditEntries: VoucherLineItemEntryDataType[]
-        debitEntries: VoucherLineItemEntryDataType[]
+        isGst: boolean;
+        voucherType: VourcherType;
+        creditEntries: VoucherLineItemEntryDataType[];
+        debitEntries: VoucherLineItemEntryDataType[];
+        deletedIds: number[];
     }
 
 type VoucherLineItemEntryDataType = {
@@ -211,6 +221,7 @@ type VoucherLineItemEntryDataType = {
     lineRefNo?: string | null;
     instrNo?: string | null;
     gst?: GstDataType
+    tranDetailsId?: number;
 }
 
 type GstDataType = {
@@ -221,44 +232,6 @@ type GstDataType = {
     sgst: number;
     igst: number;
     isInput?: boolean;
-    tranDetailsId?: number;
     hsn?: string | null;
     isIgst: boolean;
 }
-
-// {
-//     autoRefNo: '',
-//     tranDate: format(new Date(), "yyyy-MM-dd"),
-//     voucherType: 'Payment',
-//     isGst: false,
-//     creditEntries: [{
-//         accId: null,
-//         amount: 0,
-//         dc: 'C',
-//         id: undefined,
-//         gstRate: 0,
-//         hsn: null,
-//         igst: 0,
-//         sgst: 0,
-//         cgst: 0,
-//         instrNo: '',
-//         tranHeaderId: undefined,
-//         lineRefNo: '',
-//         remarks: '',
-//     }],
-//     debitEntries: [{
-//         accId: null,
-//         amount: 0,
-//         dc: 'D',
-//         id: undefined,
-//         gstRate: 0,
-//         hsn: null,
-//         igst: 0,
-//         sgst: 0,
-//         cgst: 0,
-//         instrNo: '',
-//         tranHeaderId: undefined,
-//         lineRefNo: '',
-//         remarks: '',
-//     }]
-// }

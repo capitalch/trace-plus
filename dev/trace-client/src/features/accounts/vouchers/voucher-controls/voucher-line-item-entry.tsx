@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
+// import { getValue } from "@syncfusion/ej2-base";
 
 export function VoucherLineItemEntry({
     accountOptions,
@@ -34,7 +35,9 @@ export function VoucherLineItemEntry({
 }: VoucherLineItemEntryType) {
 
     const {
-        control, clearErrors,
+        control,
+        clearErrors,
+        getValues,
         watch,
         register,
         setValue,
@@ -119,7 +122,6 @@ export function VoucherLineItemEntry({
                     return (
                         <motion.div
                             key={field.id}
-                            // key= {field.id || `${lineItemEntryName}-${index}`}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
@@ -260,7 +262,16 @@ export function VoucherLineItemEntry({
                                     <button
                                         type="button"
                                         className="absolute top-4 right-2 text-red-500 hover:text-red-700"
-                                        onClick={() => fields.length > 1 && remove(index)}
+                                        onClick={() => {
+                                            if (fields.length > 1) {
+                                                const deletedIds = getValues('deletedIds')
+                                                // console.log(field.id)
+                                                if (field.tranDetailsId) {
+                                                    deletedIds.push(field.tranDetailsId)
+                                                }
+                                                remove(index)
+                                            }
+                                        }}
                                     >
                                         <IconCross className="w-5 h-5" />
                                     </button>
@@ -326,4 +337,5 @@ type VoucherLineItemEntryType = {
     toShowInstrNo: boolean;
     toShowSummary?: boolean;
     tranTypeName: 'Debit' | 'Credit'
+    tranDetailsId?: number
 }

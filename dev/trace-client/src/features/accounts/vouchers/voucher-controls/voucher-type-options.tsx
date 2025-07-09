@@ -2,16 +2,27 @@ import clsx from "clsx";
 import { voucherTypes } from "../../../../utils/global-types-interfaces-enums";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
+import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../../../../app/store/store";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
-
-    const { register, watch, } = useFormContext<VoucherFormDataType>();    
+    const { register, watch, } = useFormContext<VoucherFormDataType>();
     const selectedType = watch("voucherType");
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers].activeTabIndex)
+
+    const getLabel = () => {
+        let label = ''
+        if (activeTabIndex === 0) {
+            label = `${watch('id') ? 'Edit' : 'New'} Entry`
+        }
+        return (label)
+    }
 
     return (
         <div className={clsx("flex gap-2  items-center", className)}>
             <label className="text-red-500 font-semibold text-md w-20">
-                {`${watch('id') ? 'Edit' : 'New'} Entry`}
+                {getLabel()}
             </label>
             {voucherTypes.map((type) => (
                 <label

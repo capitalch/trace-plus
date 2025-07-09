@@ -50,6 +50,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     const {
         // watch,
         // register,
+        // getValues,
         reset,
         // setValue,
         // formState: { errors },
@@ -378,9 +379,10 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 autoRefNo: tranHeader.autoRefNo,
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
                 isGst: voucherEditData?.tranDetails?.some((d: VoucherTranDetailsType) => d.gst !== null),
-
+                deletedIds:[],
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
+                    tranDetailsId:d.id, // The id is replaced by some guid, so storing in tranDetailsId
                     accId: d.accId as string | null,
                     remarks: d.remarks,
                     dc: d.dc,
@@ -398,16 +400,10 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                         isIgst: d?.gst?.igst ? true : false,
                         hsn: d.gst.hsn
                     } : undefined
-                    // gstId: d?.gst?.id,
-                    // gstRate: d?.gst?.rate,
-                    // hsn: d?.gst?.hsn as number | null | undefined,
-                    // isIgst: d?.gst?.igst ? true : false,
-                    // igst: d?.gst?.igst ?? 0,
-                    // cgst: d?.gst?.cgst ?? 0,
-                    // sgst: d?.gst?.sgst ?? 0,
                 })),
                 debitEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
+                    tranDetailsId:d.id, // The id is replaced by some guid, so storing in tranDetailsId
                     accId: d.accId as string | null,
                     remarks: d.remarks,
                     dc: d.dc,
@@ -425,13 +421,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                         isIgst: d?.gst?.igst ? true : false,
                         hsn: d.gst.hsn
                     } : undefined
-                    // gstId: d?.gst?.id,
-                    // gstRate: d?.gst?.rate,
-                    // hsn: d?.gst?.hsn as number | null | undefined,
-                    // isIgst: d?.gst?.igst ? true : false,
-                    // igst: d?.gst?.igst ?? 0,
-                    // cgst: d?.gst?.cgst ?? 0,
-                    // sgst: d?.gst?.sgst ?? 0,
                 })),
             })
             dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
@@ -500,7 +489,8 @@ type VoucherEditDataType = {
 }
 
 type VoucherTranDetailsType = {
-    id?: number
+    id?: number;
+    tranDetailsId?:number;
     accId: number | null;
     amount: number;
     dc: 'D' | 'C';

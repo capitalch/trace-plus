@@ -157,9 +157,11 @@ class SqlAccounts:
     with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "accId" as (values(%(accId)s::int)),
 	--with "branchId" as (values (1::int)), "finYearId" as (values (2024)), "accId" as (values(129::int)),
     cte1 AS (
-        SELECT "accName"
-        FROM "AccM"
-        WHERE "id" = (TABLE "accId")
+        SELECT "accName", "accClass"
+        FROM "AccM" a
+			join "AccClassM" c
+				on c.id = a."classId"
+        WHERE a."id" = (TABLE "accId")
     ),
     cte2 AS (
         SELECT 
@@ -208,6 +210,7 @@ class SqlAccounts:
     )
     SELECT json_build_object(
             'accName', (SELECT "accName" FROM cte1),
+			'accClass', (SELECT "accClass" FROM cte1),
             'opBalance', (SELECT json_agg(a) FROM cte2 a),
             'transactions', (SELECT json_agg(a) FROM cte3 a)
         ) as "jsonResult"
