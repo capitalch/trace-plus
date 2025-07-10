@@ -5,7 +5,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import clsx from "clsx";
 import { AppDispatchType, RootStateType } from "../../../../app/store/store";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
 import { useDispatch } from "react-redux";
@@ -14,11 +14,10 @@ import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "./all-vouchers";
-import { VourcherType } from "../../../../utils/global-types-interfaces-enums";
+import { TranHeaderType, VourcherType } from "../../../../utils/global-types-interfaces-enums";
 import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog";
 import { PDFViewer } from "@react-pdf/renderer";
 import { AllVouchersPDF } from "./all-vouchers-pdf";
-// import { AllVouchersPdf } from "./all-vouchers-pdf";
 
 export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -29,11 +28,25 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         currentDateFormat,
         buCode,
         branchId,
+        branchName,
         dbName,
         decodedDbParamsObject,
         finYearId
     } = useUtilsInfo();
-
+    const meta = useRef<MetaType>({
+        creditEntries: [],
+        debitEntries: [],
+        tranH: {
+            autoRefNo: '',
+            branchId: branchId || 1,
+            finYearId: finYearId || 0,
+            tranTypeId: 2,
+            remarks: '',
+            tranType: '',
+            userRefNo: '',
+            tranDate: '1999-01-01'
+        }
+    })
     const {
         reset,
         watch
@@ -127,49 +140,12 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 title={`${voucherType} Voucher`}
                 element={
                     <PDFViewer style={{ width: "100%", height: "100%" }}>
-                        
                         <AllVouchersPDF
-                            tranH={{
-                                tranDate: '2025-07-09',
-                                autoRefNo: 'H/PAY/2/2025',
-                                userRefNo: 'Test User ref',
-                                remarks: 'common remarks',
-                                tranTypeId: 2
-                            }}
-                            lineItems={[
-                                {
-                                    dc: 'D',
-                                    accName: 'Office expenses',
-                                    amount: 1200,
-                                    remarks: 'Line remarks 223',
-                                    lineRefNo: 'Line ref 2',
-                                    gst: {
-                                        gstin: '24AAACC1206D1ZM',
-                                        rate: 18,
-                                        cgst: 91.53,
-                                        sgst: 91.53,
-                                        igst: 0,
-                                        hsn: '222222'
-                                    }
-                                },
-                                {
-                                    dc: 'C',
-                                    accName: 'bank1',
-                                    instrNo: 'Instr No 1',
-                                    lineRefNo: 'Line ref 1',
-                                    remarks: 'Line remarks 11',
-                                    amount: 1200
-                                }
-                            ]}
-                            company={{
-                                name: 'Capital Investments Pvt Ltd',
-                                address: '12, Ko Chi Minch Sarani, Efteel Towers, PIN: 700067',
-                                gstin: '19AACCC5685L1Z3',
-                                phone: '235516990',
-                                email: 'invest@gmail.com',
-                                website: 'www.capital-investments.com'
-                            }}
-                            branchName="head office"
+                            currentDateFormat={currentDateFormat}
+                            branchName={branchName || ''}
+                            tranH={meta.current.tranH}
+                            creditEntries={meta.current.creditEntries}
+                            debitEntries={meta.current.debitEntries}
                         />
                     </PDFViewer>
                 }
@@ -455,14 +431,56 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
 
     async function handleOnPreview(data: RowDataType) {
         console.log(`Preview row with id: ${data.id}`);
+        const editData: any = await getVoucherDetails(data.id)
+        const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
+        meta.current.tranH = voucherEditData?.tranHeader
+        meta.current.creditEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
+            id: d.id,
+            tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
+            accId: d.accId || null,
+            accName: d.accName,
+            remarks: d.remarks,
+            dc: d.dc,
+            amount: d.amount,
+            tranHeaderId: d.tranHeaderId,
+            lineRefNo: d.lineRefNo,
+            instrNo: d.instrNo,
+            gst: d?.gst?.id ? {
+                id: d.gst.id,
+                gstin: d.gst.gstin,
+                rate: d.gst.rate,
+                cgst: d.gst.cgst,
+                sgst: d.gst.sgst,
+                igst: d.gst.igst,
+                isIgst: d?.gst?.igst ? true : false,
+                hsn: d.gst.hsn,
+                isInput: d.gst.isInput
+            } : undefined
+        }))
+        meta.current.debitEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
+            id: d.id,
+            tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
+            accId: d.accId || null,
+            accName: d.accName,
+            remarks: d.remarks,
+            dc: d.dc,
+            amount: d.amount,
+            tranHeaderId: d.tranHeaderId,
+            lineRefNo: d.lineRefNo,
+            instrNo: d.instrNo,
+            gst: d?.gst?.id ? {
+                id: d.gst.id,
+                gstin: d.gst.gstin,
+                rate: d.gst.rate,
+                cgst: d.gst.cgst,
+                sgst: d.gst.sgst,
+                igst: d.gst.igst,
+                isIgst: d?.gst?.igst ? true : false,
+                hsn: d.gst.hsn,
+                isInput: d.gst.isInput
+            } : undefined
+        }))
         setIsDialogOpen(true)
-        // const editData: any = await getVoucherDetails(data.id)
-        // const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
-        // const tranHeader = voucherEditData?.tranHeader
-        // console.log(JSON.stringify(tranHeader))
-        // console.log(JSON.stringify(voucherEditData?.tranDetails))
-        // Here you can implement the logic to show a preview of the voucher
-        // For example, you can open a modal with the voucher details
     }
 
     function handleOnRowDataBound(args: RowDataBoundEventArgs) {
@@ -514,14 +532,17 @@ type VoucherEditDataType = {
         tags: string | null;
         tranTypeId: number;
         userRefNo: string | null;
+        branchId: number;
+        finYearId: number;
     };
     tranDetails: VoucherTranDetailsType[];
 }
 
-type VoucherTranDetailsType = {
+export type VoucherTranDetailsType = {
     id?: number;
     tranDetailsId?: number;
     accId: number | null;
+    accName?: string;
     amount: number;
     dc: 'D' | 'C';
     instrNo: string | null;
@@ -541,4 +562,10 @@ export type ExtGstTranDType = {
     rate: number;
     isInput: boolean;
     tranDetailsId?: number;
+}
+
+type MetaType = {
+    creditEntries: VoucherTranDetailsType[];
+    debitEntries: VoucherTranDetailsType[];
+    tranH: TranHeaderType;
 }

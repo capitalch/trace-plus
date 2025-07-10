@@ -22,7 +22,8 @@ import { StockJournalJsonResultType } from "./stock-journal-main/stock-journal-m
 import { PDFViewer } from "@react-pdf/renderer";
 import { StockJournalPdf } from "./stock-journal-pdf";
 import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog";
-import { ProductLineItem, TranHeaderType } from "../shared-definitions";
+import { ProductLineItem} from "../shared-definitions";
+import { TranHeaderType } from "../../../../utils/global-types-interfaces-enums";
 
 export function StockJournalView({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();

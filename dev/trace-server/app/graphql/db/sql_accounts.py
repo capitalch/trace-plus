@@ -2867,13 +2867,13 @@ class SqlAccounts:
 
     get_voucher_details_on_id = """
         WITH "id" as (values (%(id)s::int))
-        --WITH "id" as (values (11083::int))
+        --WITH "id" as (values (10576::int))
         , cte1 as (
             select "id", "tranDate", "autoRefNo", "tags", 
                     "remarks" , "userRefNo", "tranTypeId"
             from "TranH"		
                 where "id" = (table id)),
-                cte2 as (select t."id", "accId", "remarks", "dc", "amount", "tranHeaderId", "lineRefNo", "instrNo",
+                cte2 as (select t."id", "accId", a."accName", "remarks", "dc", "amount", "tranHeaderId", "lineRefNo", "instrNo",
                     (select row_to_json(t) from 
                         (
                             select *, CASE WHEN "rate" is not null 
@@ -2883,6 +2883,7 @@ class SqlAccounts:
                             from "ExtGstTranD" where "tranDetailsId" = t."id") t
                     ) as "gst"
                 from "TranD" t
+					join "AccM" a on a.id = t."accId"
                     where "tranHeaderId" =(table id))
 
                 SELECT
