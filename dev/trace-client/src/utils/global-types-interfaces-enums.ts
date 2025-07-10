@@ -49,3 +49,16 @@ export const TranTypeReverseMap: { [key: number]: TranType } = {
   11: 'StockJournal',
   12: 'StockTransfer'
 }
+
+export type TranHeaderType = {
+  autoRefNo: string | null;
+  branchId: number;
+  finYearId: number;
+  id?: number;
+  posId?: number;
+  remarks: string | null;
+  tranDate: string;
+  tranTypeId: number;
+  userRefNo: string | null;
+  [key: string]: any;
+};

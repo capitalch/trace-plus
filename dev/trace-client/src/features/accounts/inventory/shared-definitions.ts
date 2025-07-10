@@ -101,16 +101,3 @@ export type ProductType = {
 };
 
 export type TagType = { id: number | null; tagName: string };
-
-export type TranHeaderType = {
-  autoRefNo: string | null;
-  branchId: number;
-  finYearId: number;
-  id?: number;
-  posId?: number;
-  remarks: string | null;
-  tranDate: string;
-  tranTypeId: number;
-  userRefNo: string | null;
-  [key: string]: any;
-};

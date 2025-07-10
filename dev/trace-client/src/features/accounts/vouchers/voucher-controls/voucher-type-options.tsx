@@ -9,7 +9,7 @@ import { RootStateType } from "../../../../app/store/store";
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
     const { register, watch, } = useFormContext<VoucherFormDataType>();
     const selectedType = watch("voucherType");
-    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers].activeTabIndex)
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
 
     const getLabel = () => {
         let label = ''

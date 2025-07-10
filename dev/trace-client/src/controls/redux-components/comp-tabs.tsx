@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../app/store/store";
 import { setActiveTabIndex } from "./comp-slice";
@@ -22,6 +22,18 @@ export function CompTabs({
   const compTabsInstance = useSelector(
     (state: RootStateType) => state.reduxComp.compTabs[instance]
   );
+
+
+  useEffect(() => {
+    if (compTabsInstance?.activeTabIndex === undefined) {
+      dispatch(
+        setActiveTabIndex({
+          instance: instance,
+          activeTabIndex: 0
+        })
+      )
+    }
+  }, [dispatch, instance, compTabsInstance?.activeTabIndex])
 
   return (
     <div className={className}>
