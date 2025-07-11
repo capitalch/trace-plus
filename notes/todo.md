@@ -17,7 +17,7 @@ valid gstin: 24AAACC1206D1ZM
 - Vouchers
 	- Interchange voucher types effect when new / edit mode
 	- Validate debit / credit at server
-	- Preview
+																- Preview
 	- No GST for contra type
 	- All types of vouchers implement
 																- filter view on Voucher Type id

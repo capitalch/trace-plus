@@ -42,8 +42,8 @@ export function AllVouchersPDF({
                 unitInfo.address2 || "",
                 unitInfo.pin ? " Pin: " + unitInfo.pin : "",
                 unitInfo.email ? " Email: " + unitInfo.email : "",
-                unitInfo.landPhone ? " Ph: " + unitInfo.landPhone : "",
-                unitInfo.mobileNumber ? " Mob: " + unitInfo.mobileNumber : "",
+                // unitInfo.landPhone ? " Ph: " + unitInfo.landPhone : "",
+                // unitInfo.mobileNumber ? " Mob: " + unitInfo.mobileNumber : "",
                 unitInfo.webSite ? " Web: " + unitInfo.webSite : "",
                 unitInfo.state ? " State: " + unitInfo.state : ""
               )
@@ -51,7 +51,7 @@ export function AllVouchersPDF({
           </View>
           <View style={styles.transactionInfo}>
             <Text style={{ fontWeight: "bold", fontSize: 14 }}>{`Voucher type: ${tranH.tranType || ""}`}</Text>
-            <Text style={{ fontWeight: "bold", marginTop: 4 }}>FY: {dateRange}</Text>
+            <Text style={{ fontWeight: "bold", marginTop: 2 }}>FY: {dateRange}</Text>
             <Text style={{ fontWeight: "bold" }}>Date: {format(tranH.tranDate, currentDateFormat)}</Text>
             <Text>Ref No: {tranH.autoRefNo}</Text>
             <Text>User ref: {tranH.userRefNo}</Text>
@@ -73,7 +73,7 @@ export function AllVouchersPDF({
           <View key={`d-${i}`}>
             <View style={styles.tableRow}>
               <Text style={{ width: 20 }}>{i + 1}</Text>
-              <Text style={{ width: 140, fontWeight: 'bold' }}>{entry.accName || ""}</Text>
+              <Text style={{ width: 140 }}>{entry.accName || ""}</Text>
               <Text style={{ width: 70 }}>{entry.instrNo}</Text>
               <Text style={{ width: 70 }}>{entry.lineRefNo}</Text>
               <Text style={{ width: 150 }}>{entry.remarks}</Text>
@@ -90,7 +90,7 @@ export function AllVouchersPDF({
           </View>
         ))}
         <View style={styles.totalRow}>
-          <Text style={{ width: 300 }}>Total Debits</Text>
+          <Text style={{ width: 60, marginLeft: 390 }}>Total Debits</Text>
           <Text style={{ width: 70, textAlign: "right" }}>{debitTotal.toFixed(2)}</Text>
         </View>
 
@@ -108,7 +108,7 @@ export function AllVouchersPDF({
           <View key={`c-${i}`}>
             <View style={styles.tableRow}>
               <Text style={{ width: 20 }}>{i + 1}</Text>
-              <Text style={{ width: 140, fontWeight: 'bold' }}>{entry.accName || ""}</Text>
+              <Text style={{ width: 140 }}>{entry.accName || ""}</Text>
               <Text style={{ width: 70 }}>{entry.instrNo}</Text>
               <Text style={{ width: 70 }}>{entry.lineRefNo}</Text>
               <Text style={{ width: 150 }}>{entry.remarks}</Text>
@@ -125,7 +125,7 @@ export function AllVouchersPDF({
           </View>
         ))}
         <View style={styles.totalRow}>
-          <Text style={{ width: 300 }}>Total Credits</Text>
+          <Text style={{ width: 60, marginLeft: 390 }}>Total Credits</Text>
           <Text style={{ width: 70, textAlign: "right" }}>{creditTotal.toFixed(2)}</Text>
         </View>
 
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingBottom: 10,
-    borderBottom: "1px solid black",
+    paddingBottom: 2,
+    // borderBottom: "1px solid black",
   },
   companyInfo: {
     flexDirection: "column",
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   sectionTitle: {
-    marginTop: 10,
+    marginTop: 2,
     fontSize: 11,
     fontWeight: "bold",
     borderBottom: "1px solid black",
@@ -182,12 +182,13 @@ const styles = StyleSheet.create({
     borderBottom: "1px solid black",
     paddingVertical: 5,
     fontWeight: "bold",
-    marginTop: 5,
+    marginTop: 2,
   },
   tableRow: {
     flexDirection: "row",
     paddingVertical: 2,
     fontSize: 9,
+    marginTop: 2,
   },
   totalRow: {
     flexDirection: "row",
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginLeft: 20,
     color: '#444',
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fafafa',
     padding: 4,
     border: '0.5pt solid #aaa',
     borderRadius: 2,

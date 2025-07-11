@@ -434,6 +434,8 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         const editData: any = await getVoucherDetails(data.id)
         const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
         meta.current.tranH = voucherEditData?.tranHeader
+        const tranTypeId = voucherEditData?.tranHeader.tranTypeId || 2
+        meta.current.tranH.tranType = Utils.getTranTypeName(tranTypeId)
         meta.current.creditEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
             id: d.id,
             tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId

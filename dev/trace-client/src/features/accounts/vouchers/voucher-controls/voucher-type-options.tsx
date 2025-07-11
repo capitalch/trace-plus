@@ -21,7 +21,7 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
 
     return (
         <div className={clsx("flex gap-2  items-center", className)}>
-            <label className="text-red-500 font-semibold text-md w-20">
+            <label className="text-amber-400 font-semibold text-md w-20">
                 {getLabel()}
             </label>
             {voucherTypes.map((type) => (
