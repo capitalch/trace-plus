@@ -11,9 +11,9 @@ import { Messages } from "../../../../../utils/messages";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import _ from "lodash";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
-import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
-import { ProductLineItem, TranHeaderType } from "../../shared-definitions";
+import { ProductLineItem } from "../../shared-definitions";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   const {

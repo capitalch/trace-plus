@@ -34,8 +34,8 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         finYearId
     } = useUtilsInfo();
     const meta = useRef<MetaType>({
-        creditEntries: [],
-        debitEntries: [],
+        // creditEntries: [],
+        // debitEntries: [],
         tranH: {
             autoRefNo: '',
             branchId: branchId || 1,
@@ -45,7 +45,8 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
             tranType: '',
             userRefNo: '',
             tranDate: '1999-01-01'
-        }
+        },
+        tranD: []
     })
     const {
         reset,
@@ -144,8 +145,9 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                             currentDateFormat={currentDateFormat}
                             branchName={branchName || ''}
                             tranH={meta.current.tranH}
-                            creditEntries={meta.current.creditEntries}
-                            debitEntries={meta.current.debitEntries}
+                            tranD={meta.current.tranD}
+                        // creditEntries={meta.current.creditEntries}
+                        // debitEntries={meta.current.debitEntries}
                         />
                     </PDFViewer>
                 }
@@ -436,52 +438,53 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         meta.current.tranH = voucherEditData?.tranHeader
         const tranTypeId = voucherEditData?.tranHeader.tranTypeId || 2
         meta.current.tranH.tranType = Utils.getTranTypeName(tranTypeId)
-        meta.current.creditEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
-            id: d.id,
-            tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
-            accId: d.accId || null,
-            accName: d.accName,
-            remarks: d.remarks,
-            dc: d.dc,
-            amount: d.amount,
-            tranHeaderId: d.tranHeaderId,
-            lineRefNo: d.lineRefNo,
-            instrNo: d.instrNo,
-            gst: d?.gst?.id ? {
-                id: d.gst.id,
-                gstin: d.gst.gstin,
-                rate: d.gst.rate,
-                cgst: d.gst.cgst,
-                sgst: d.gst.sgst,
-                igst: d.gst.igst,
-                isIgst: d?.gst?.igst ? true : false,
-                hsn: d.gst.hsn,
-                isInput: d.gst.isInput
-            } : undefined
-        }))
-        meta.current.debitEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
-            id: d.id,
-            tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
-            accId: d.accId || null,
-            accName: d.accName,
-            remarks: d.remarks,
-            dc: d.dc,
-            amount: d.amount,
-            tranHeaderId: d.tranHeaderId,
-            lineRefNo: d.lineRefNo,
-            instrNo: d.instrNo,
-            gst: d?.gst?.id ? {
-                id: d.gst.id,
-                gstin: d.gst.gstin,
-                rate: d.gst.rate,
-                cgst: d.gst.cgst,
-                sgst: d.gst.sgst,
-                igst: d.gst.igst,
-                isIgst: d?.gst?.igst ? true : false,
-                hsn: d.gst.hsn,
-                isInput: d.gst.isInput
-            } : undefined
-        }))
+        meta.current.tranD = voucherEditData?.tranDetails || []
+        // meta.current.creditEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
+        //     id: d.id,
+        //     tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
+        //     accId: d.accId || null,
+        //     accName: d.accName,
+        //     remarks: d.remarks,
+        //     dc: d.dc,
+        //     amount: d.amount,
+        //     tranHeaderId: d.tranHeaderId,
+        //     lineRefNo: d.lineRefNo,
+        //     instrNo: d.instrNo,
+        //     gst: d?.gst?.id ? {
+        //         id: d.gst.id,
+        //         gstin: d.gst.gstin,
+        //         rate: d.gst.rate,
+        //         cgst: d.gst.cgst,
+        //         sgst: d.gst.sgst,
+        //         igst: d.gst.igst,
+        //         isIgst: d?.gst?.igst ? true : false,
+        //         hsn: d.gst.hsn,
+        //         isInput: d.gst.isInput
+        //     } : undefined
+        // }))
+        // meta.current.debitEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
+        //     id: d.id,
+        //     tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
+        //     accId: d.accId || null,
+        //     accName: d.accName,
+        //     remarks: d.remarks,
+        //     dc: d.dc,
+        //     amount: d.amount,
+        //     tranHeaderId: d.tranHeaderId,
+        //     lineRefNo: d.lineRefNo,
+        //     instrNo: d.instrNo,
+        //     gst: d?.gst?.id ? {
+        //         id: d.gst.id,
+        //         gstin: d.gst.gstin,
+        //         rate: d.gst.rate,
+        //         cgst: d.gst.cgst,
+        //         sgst: d.gst.sgst,
+        //         igst: d.gst.igst,
+        //         isIgst: d?.gst?.igst ? true : false,
+        //         hsn: d.gst.hsn,
+        //         isInput: d.gst.isInput
+        //     } : undefined
+        // }))
         setIsDialogOpen(true)
     }
 
@@ -567,7 +570,8 @@ export type ExtGstTranDType = {
 }
 
 type MetaType = {
-    creditEntries: VoucherTranDetailsType[];
-    debitEntries: VoucherTranDetailsType[];
+    // creditEntries: VoucherTranDetailsType[];
+    // debitEntries: VoucherTranDetailsType[];
     tranH: TranHeaderType;
+    tranD: VoucherTranDetailsType[]
 }

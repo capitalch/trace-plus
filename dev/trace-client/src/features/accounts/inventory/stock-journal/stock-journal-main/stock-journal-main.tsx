@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { format } from "date-fns";
-import { ProductLineItem, TranHeaderType } from "../../shared-definitions";
+import { ProductLineItem } from "../../shared-definitions";
 import { StockJournalHeader } from "./stock-journal-header";
 import { StockJournalTabs } from "./stock-journal-tabs";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import _ from "lodash";
 import { resetTranHeaderIdToEdit } from "../../../accounts-slice";
-import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
 import { StockJournalCrown } from "../stock-journal-crown";
 import Decimal from "decimal.js";

@@ -1,7 +1,7 @@
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { UnitInfoType, Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
-import { TranHeaderType } from "../../../../utils/global-types-interfaces-enums";
+import { TranHeaderType} from "../../../../utils/global-types-interfaces-enums";
 import { format } from "date-fns";
 import { VoucherTranDetailsType } from "./all-vouchers-view";
 
@@ -9,22 +9,22 @@ export type VoucherPdfProps = {
   branchName: string,
   currentDateFormat: string,
   tranH: TranHeaderType;
-  creditEntries: VoucherTranDetailsType[];
-  debitEntries: VoucherTranDetailsType[];
+  tranD: VoucherTranDetailsType[];
 };
 
 export function AllVouchersPDF({
   branchName,
   tranH,
-  currentDateFormat,
-  creditEntries,
-  debitEntries
+  tranD,
+  currentDateFormat
 }: VoucherPdfProps) {
   const unitInfo: UnitInfoType = Utils.getUnitInfo() || {};
   const dateRange: string = Utils.getCurrentFinYearFormattedDateRange();
 
-  const debitTotal = debitEntries.reduce((sum, item) => sum.plus(item.amount || 0), new Decimal(0));
-  const creditTotal = creditEntries.reduce((sum, item) => sum.plus(item.amount || 0), new Decimal(0));
+  const debitTotal = tranD.filter(d => d.dc === 'D')
+    .reduce((sum, item) => sum.plus(item.amount || 0), new Decimal(0));
+  const creditTotal = tranD.filter(d => d.dc === 'C')
+    .reduce((sum, item) => sum.plus(item.amount || 0), new Decimal(0));
 
   return (
     <Document>
@@ -34,23 +34,18 @@ export function AllVouchersPDF({
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{unitInfo.unitName}</Text>
             <Text style={{ marginTop: 4 }}>{
-              "".concat(
-                "Branch: " + branchName,
-                unitInfo.gstin ? " GSTIN: " + unitInfo.gstin : "",
-                unitInfo.address1 ? " Address: " + unitInfo.address1 : "",
-                " ",
-                unitInfo.address2 || "",
-                unitInfo.pin ? " Pin: " + unitInfo.pin : "",
-                unitInfo.email ? " Email: " + unitInfo.email : "",
-                // unitInfo.landPhone ? " Ph: " + unitInfo.landPhone : "",
-                // unitInfo.mobileNumber ? " Mob: " + unitInfo.mobileNumber : "",
-                unitInfo.webSite ? " Web: " + unitInfo.webSite : "",
-                unitInfo.state ? " State: " + unitInfo.state : ""
-              )
+              `Branch: ${branchName}` +
+              (unitInfo.gstin ? ` GSTIN: ${unitInfo.gstin}` : '') +
+              (unitInfo.address1 ? ` Address: ${unitInfo.address1}` : '') +
+              (unitInfo.address2 ? ` ${unitInfo.address2}` : '') +
+              (unitInfo.pin ? ` Pin: ${unitInfo.pin}` : '') +
+              (unitInfo.email ? ` Email: ${unitInfo.email}` : '') +
+              (unitInfo.webSite ? ` Web: ${unitInfo.webSite}` : '') +
+              (unitInfo.state ? ` State: ${unitInfo.state}` : '')
             }</Text>
           </View>
           <View style={styles.transactionInfo}>
-            <Text style={{ fontWeight: "bold", fontSize: 14 }}>{`Voucher type: ${tranH.tranType || ""}`}</Text>
+            <Text style={{ fontWeight: "bold", fontSize: 14 }}>Voucher type: {tranH.tranType || ""}</Text>
             <Text style={{ fontWeight: "bold", marginTop: 2 }}>FY: {dateRange}</Text>
             <Text style={{ fontWeight: "bold" }}>Date: {format(tranH.tranDate, currentDateFormat)}</Text>
             <Text>Ref No: {tranH.autoRefNo}</Text>
@@ -59,25 +54,28 @@ export function AllVouchersPDF({
           </View>
         </View>
 
-        {/* Debit Section */}
-        <Text style={styles.sectionTitle}>Debits</Text>
+        {/* Combined Voucher Table */}
+        <Text style={styles.sectionTitle}>Voucher Entries</Text>
         <View style={styles.tableHeader}>
           <Text style={{ width: 20 }}>#</Text>
           <Text style={{ width: 140 }}>Account</Text>
-          <Text style={{ width: 70 }}>Instr no</Text>
-          <Text style={{ width: 70 }}>Ref no</Text>
-          <Text style={{ width: 150 }}>Remarks</Text>
-          <Text style={{ width: 70, textAlign: "right" }}>Amount</Text>
+          <Text style={{ width: 60 }}>Instr No</Text>
+          <Text style={{ width: 60 }}>Ref No</Text>
+          <Text style={{ width: 140 }}>Remarks</Text>
+          <Text style={{ width: 70, textAlign: 'right' }}>Debit</Text>
+          <Text style={{ width: 70, textAlign: 'right' }}>Credit</Text>
         </View>
-        {debitEntries.map((entry, i) => (
-          <View key={`d-${i}`}>
+
+        {tranD.map((entry, i) => (
+          <View key={i}>
             <View style={styles.tableRow}>
               <Text style={{ width: 20 }}>{i + 1}</Text>
-              <Text style={{ width: 140 }}>{entry.accName || ""}</Text>
-              <Text style={{ width: 70 }}>{entry.instrNo}</Text>
-              <Text style={{ width: 70 }}>{entry.lineRefNo}</Text>
-              <Text style={{ width: 150 }}>{entry.remarks}</Text>
-              <Text style={{ width: 70, textAlign: "right" }}>{new Decimal(entry.amount).toFixed(2)}</Text>
+              <Text style={{ width: 140 }}>{entry.accName}</Text>
+              <Text style={{ width: 60 }}>{entry.instrNo}</Text>
+              <Text style={{ width: 60 }}>{entry.lineRefNo}</Text>
+              <Text style={{ width: 140 }}>{entry.remarks}</Text>
+              <Text style={{ width: 70, textAlign: 'right' }}>{entry.dc === 'D' ? new Decimal(entry.amount).toFixed(2) : ''}</Text>
+              <Text style={{ width: 70, textAlign: 'right' }}>{entry.dc === 'C' ? new Decimal(entry.amount).toFixed(2) : ''}</Text>
             </View>
             {entry.gst && (
               <View style={styles.gstRow}>
@@ -89,47 +87,15 @@ export function AllVouchersPDF({
             )}
           </View>
         ))}
+
+        {/* Totals Row */}
         <View style={styles.totalRow}>
-          <Text style={{ width: 60, marginLeft: 390 }}>Total Debits</Text>
-          <Text style={{ width: 70, textAlign: "right" }}>{debitTotal.toFixed(2)}</Text>
+          <Text style={{ width: 420, textAlign: 'right' }}>Totals:</Text>
+          <Text style={{ width: 70, textAlign: 'right' }}>{debitTotal.toFixed(2)}</Text>
+          <Text style={{ width: 70, textAlign: 'right' }}>{creditTotal.toFixed(2)}</Text>
         </View>
 
-        {/* Credit Section */}
-        <Text style={styles.sectionTitle}>Credits</Text>
-        <View style={styles.tableHeader}>
-          <Text style={{ width: 20 }}>#</Text>
-          <Text style={{ width: 140 }}>Account</Text>
-          <Text style={{ width: 70 }}>Instr no</Text>
-          <Text style={{ width: 70 }}>Ref no</Text>
-          <Text style={{ width: 150 }}>Remarks</Text>
-          <Text style={{ width: 70, textAlign: "right" }}>Amount</Text>
-        </View>
-        {creditEntries.map((entry, i) => (
-          <View key={`c-${i}`}>
-            <View style={styles.tableRow}>
-              <Text style={{ width: 20 }}>{i + 1}</Text>
-              <Text style={{ width: 140 }}>{entry.accName || ""}</Text>
-              <Text style={{ width: 70 }}>{entry.instrNo}</Text>
-              <Text style={{ width: 70 }}>{entry.lineRefNo}</Text>
-              <Text style={{ width: 150 }}>{entry.remarks}</Text>
-              <Text style={{ width: 70, textAlign: "right" }}>{new Decimal(entry.amount).toFixed(2)}</Text>
-            </View>
-            {entry.gst && (
-              <View style={styles.gstRow}>
-                <Text style={{ width: '100%' }}>
-                  GSTIN: {entry.gst.gstin || '-'}, HSN: {entry.gst.hsn || '-'}, Rate: {entry.gst.rate || 0}%
-                  , CGST: {entry.gst.cgst}, SGST: {entry.gst.sgst}, IGST: {entry.gst.igst}
-                </Text>
-              </View>
-            )}
-          </View>
-        ))}
-        <View style={styles.totalRow}>
-          <Text style={{ width: 60, marginLeft: 390 }}>Total Credits</Text>
-          <Text style={{ width: 70, textAlign: "right" }}>{creditTotal.toFixed(2)}</Text>
-        </View>
-
-        {/* Signature */}
+        {/* Signatures */}
         <View style={styles.signatureArea}>
           <View style={styles.signatureBox}><Text>Prepared By</Text></View>
           <View style={styles.signatureBox}><Text>Checked By</Text></View>
@@ -156,7 +122,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingBottom: 2,
-    // borderBottom: "1px solid black",
   },
   companyInfo: {
     flexDirection: "column",
@@ -249,6 +214,7 @@ const styles = StyleSheet.create({
 // export function AllVouchersPDF({
 //   branchName,
 //   tranH,
+//   tranD,
 //   currentDateFormat,
 //   creditEntries,
 //   debitEntries
@@ -275,8 +241,6 @@ const styles = StyleSheet.create({
 //                 unitInfo.address2 || "",
 //                 unitInfo.pin ? " Pin: " + unitInfo.pin : "",
 //                 unitInfo.email ? " Email: " + unitInfo.email : "",
-//                 unitInfo.landPhone ? " Ph: " + unitInfo.landPhone : "",
-//                 unitInfo.mobileNumber ? " Mob: " + unitInfo.mobileNumber : "",
 //                 unitInfo.webSite ? " Web: " + unitInfo.webSite : "",
 //                 unitInfo.state ? " State: " + unitInfo.state : ""
 //               )
@@ -284,7 +248,7 @@ const styles = StyleSheet.create({
 //           </View>
 //           <View style={styles.transactionInfo}>
 //             <Text style={{ fontWeight: "bold", fontSize: 14 }}>{`Voucher type: ${tranH.tranType || ""}`}</Text>
-//             <Text style={{ fontWeight: "bold", marginTop: 4 }}>FY: {dateRange}</Text>
+//             <Text style={{ fontWeight: "bold", marginTop: 2 }}>FY: {dateRange}</Text>
 //             <Text style={{ fontWeight: "bold" }}>Date: {format(tranH.tranDate, currentDateFormat)}</Text>
 //             <Text>Ref No: {tranH.autoRefNo}</Text>
 //             <Text>User ref: {tranH.userRefNo}</Text>
@@ -306,7 +270,7 @@ const styles = StyleSheet.create({
 //           <View key={`d-${i}`}>
 //             <View style={styles.tableRow}>
 //               <Text style={{ width: 20 }}>{i + 1}</Text>
-//               <Text style={{ width: 140, fontWeight: 'bold' }}>{entry.accName || ""}</Text>
+//               <Text style={{ width: 140 }}>{entry.accName || ""}</Text>
 //               <Text style={{ width: 70 }}>{entry.instrNo}</Text>
 //               <Text style={{ width: 70 }}>{entry.lineRefNo}</Text>
 //               <Text style={{ width: 150 }}>{entry.remarks}</Text>
@@ -323,7 +287,7 @@ const styles = StyleSheet.create({
 //           </View>
 //         ))}
 //         <View style={styles.totalRow}>
-//           <Text style={{ width: 300 }}>Total Debits</Text>
+//           <Text style={{ width: 60, marginLeft: 390 }}>Total Debits</Text>
 //           <Text style={{ width: 70, textAlign: "right" }}>{debitTotal.toFixed(2)}</Text>
 //         </View>
 
@@ -341,7 +305,7 @@ const styles = StyleSheet.create({
 //           <View key={`c-${i}`}>
 //             <View style={styles.tableRow}>
 //               <Text style={{ width: 20 }}>{i + 1}</Text>
-//               <Text style={{ width: 140, fontWeight: 'bold' }}>{entry.accName || ""}</Text>
+//               <Text style={{ width: 140 }}>{entry.accName || ""}</Text>
 //               <Text style={{ width: 70 }}>{entry.instrNo}</Text>
 //               <Text style={{ width: 70 }}>{entry.lineRefNo}</Text>
 //               <Text style={{ width: 150 }}>{entry.remarks}</Text>
@@ -358,7 +322,7 @@ const styles = StyleSheet.create({
 //           </View>
 //         ))}
 //         <View style={styles.totalRow}>
-//           <Text style={{ width: 300 }}>Total Credits</Text>
+//           <Text style={{ width: 60, marginLeft: 390 }}>Total Credits</Text>
 //           <Text style={{ width: 70, textAlign: "right" }}>{creditTotal.toFixed(2)}</Text>
 //         </View>
 
@@ -388,8 +352,8 @@ const styles = StyleSheet.create({
 //   header: {
 //     flexDirection: "row",
 //     justifyContent: "space-between",
-//     paddingBottom: 10,
-//     borderBottom: "1px solid black",
+//     paddingBottom: 2,
+//     // borderBottom: "1px solid black",
 //   },
 //   companyInfo: {
 //     flexDirection: "column",
@@ -404,7 +368,7 @@ const styles = StyleSheet.create({
 //     flexDirection: "column",
 //   },
 //   sectionTitle: {
-//     marginTop: 10,
+//     marginTop: 2,
 //     fontSize: 11,
 //     fontWeight: "bold",
 //     borderBottom: "1px solid black",
@@ -415,12 +379,13 @@ const styles = StyleSheet.create({
 //     borderBottom: "1px solid black",
 //     paddingVertical: 5,
 //     fontWeight: "bold",
-//     marginTop: 5,
+//     marginTop: 2,
 //   },
 //   tableRow: {
 //     flexDirection: "row",
 //     paddingVertical: 2,
 //     fontSize: 9,
+//     marginTop: 2,
 //   },
 //   totalRow: {
 //     flexDirection: "row",
@@ -455,5 +420,9 @@ const styles = StyleSheet.create({
 //     marginBottom: 4,
 //     marginLeft: 20,
 //     color: '#444',
+//     backgroundColor: '#fafafa',
+//     padding: 4,
+//     border: '0.5pt solid #aaa',
+//     borderRadius: 2,
 //   },
 // });
