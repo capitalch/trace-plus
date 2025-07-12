@@ -74,6 +74,7 @@ export const Utils: UtilsType = {
   showSuccessAlertMessage: showSuccessAlertMessage,
   showWarningMessage: showWarningMessage,
   toDecimalFormat: toDecimalFormat,
+  toWordsFromAmount: toWordsFromAmount,
   treeGridUtils: treeGridUtils
 };
 
@@ -715,6 +716,50 @@ function toDecimalFormat(s: any) {
   return ret;
 }
 
+function toWordsFromAmount(amount: number): string {
+  if (amount === 0) return 'Zero Rupees Only';
+
+  const ones = [
+    '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+    'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen',
+    'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'
+  ];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+  function numToWords(n: number): string {
+    if (n < 20) return ones[n];
+    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+    if (n < 1000) return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + numToWords(n % 100) : '');
+    return '';
+  }
+
+  function convertToWords(n: number): string {
+    const crore = Math.floor(n / 10000000);
+    const lakh = Math.floor((n % 10000000) / 100000);
+    const thousand = Math.floor((n % 100000) / 1000);
+    const hundred = Math.floor((n % 1000) / 100);
+    const rest = n % 100;
+
+    let words = '';
+    if (crore) words += numToWords(crore) + ' Crore ';
+    if (lakh) words += numToWords(lakh) + ' Lakh ';
+    if (thousand) words += numToWords(thousand) + ' Thousand ';
+    if (hundred) words += ones[hundred] + ' Hundred ';
+    if (rest) words += (words ? 'and ' : '') + numToWords(rest);
+    return words.trim();
+  }
+
+  const integerPart = Math.floor(amount);
+  const decimalPart = Math.round((amount - integerPart) * 100);
+
+  let words = `${convertToWords(integerPart)} Rupees`;
+  if (decimalPart > 0) {
+    words += ` and ${convertToWords(decimalPart)} Paise`;
+  }
+
+  return words + ' Only';
+}
+
 type AlertMessageType = {
   title: string;
   message: string;
@@ -894,5 +939,6 @@ type UtilsType = {
   showSaveMessage: () => void;
   showWarningMessage: (warningMessage: string) => void;
   toDecimalFormat: (s: any) => string;
+  toWordsFromAmount: (amt: number) => string;
   treeGridUtils: TreeGridUtilsType;
 };

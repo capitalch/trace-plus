@@ -13,6 +13,7 @@ class Messages:
     err_db_params_missing_in_ext_database = "Database connection parameters are missing for external database"
     err_client_not_found = "Client was not found"
     err_client_inactive = "Client is not active"
+    err_debit_credit_validation_error = "Total debits do not equal to total credits"
     err_email_not_exists = "Email provided by you does not exist"
     err_email_send_error = "There was error in sending email. Email parameters from client are improper or missing"
     err_email_send_error_server = "There was error in sending email from server"
@@ -74,6 +75,7 @@ class customErrorCodes:
     e1027 = "The database for the client does not exist"
     e1028 = "Database connections parameters are missing for this external database. There was something wrong at the time of new client creation"
     e1029 = "Empty value string when export is requested and export-file endpoint is hit"
+    e1030 = "Debits credits mismatch error"
     
     
     

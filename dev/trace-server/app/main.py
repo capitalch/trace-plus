@@ -39,12 +39,13 @@ app.add_exception_handler(AppHttpException, app_http_exception_handler)
 
 logging.info("Server started")
 
+
 @app.route("/graphql/", methods=["POST"])
 async def graphql(request: Request):
     # Handle token verification over here. It does not work in middleware
     # if valid token then proceed
-        await validate_token(request)  # Comment this line if authentication is off
-        return await GraphQLApp.handle_request(request)
+    await validate_token(request)  # Comment this line if authentication is off
+    return await GraphQLApp.handle_request(request)
 
 
 @app.exception_handler(
@@ -56,13 +57,3 @@ async def custom_404_handler(_, __):
         status_code=404,
         content={"error_code": "e1001", "message": Messages.err_url_not_found},
     )
-
-# Serve React static files
-# app.mount("/assets", StaticFiles(directory="../trace-client/dist/assets"), name="assets")
-
-# @app.get("/{full_path:path}")
-# async def serve_react_app():
-#     index_path = "../trace-client/dist/index.html"
-#     if os.path.exists(index_path):
-#         return FileResponse(index_path)
-#     return {"error": "index.html not found"}
