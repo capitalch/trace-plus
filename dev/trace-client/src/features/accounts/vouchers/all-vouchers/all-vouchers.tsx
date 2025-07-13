@@ -9,24 +9,25 @@ import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatchType, } from "../../../../app/store/store";
+import { useDispatch } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+// import { setValue } from "@syncfusion/ej2-base";
 
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.allVouchers;
     const { branchId, buCode, dbName, finYearId } = useUtilsInfo();
-    const selectedVoucherType = useSelector((state: RootStateType) => state.vouchers.voucherType)
     const methods = useForm<VoucherFormDataType>(
         {
             mode: "onTouched",
             criteriaMode: "all",
             defaultValues: getDefaultVoucherFormValues()
         });
-    const { watch, getValues, reset } = methods;
+    const { watch, getValues, setValue, reset } = methods;
     const extendedMethods = { ...methods, xReset }
+    const voucherType = watch('voucherType')
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
@@ -70,7 +71,8 @@ export function AllVouchers() {
             isGst: false,
             creditEntries: [getDefaultEntry('C')],
             debitEntries: [getDefaultEntry('D')],
-            deletedIds: []
+            deletedIds: [],
+            showGstInHeader: true,
         })
     }
 
@@ -94,8 +96,7 @@ export function AllVouchers() {
             const xData: XDataObjectType = getTranHData();
             const deletedIds = [...xData.deletedIds]
             xData.deletedIds = undefined
-            console.log("xData", JSON.stringify(xData));
-            await Utils.doGenericUpdate({
+            await Utils.doValidateDebitCreditAndUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
                 tableName: DatabaseTablesMap.TranH,
@@ -118,7 +119,7 @@ export function AllVouchers() {
             tranDate: getValues("tranDate"),
             userRefNo: getValues("userRefNo"),
             remarks: getValues("remarks"),
-            tranTypeId: Utils.getTranTypeId(selectedVoucherType),
+            tranTypeId: Utils.getTranTypeId(voucherType),
             finYearId: finYearId,
             branchId: branchId,
             posId: 1,
@@ -185,12 +186,17 @@ export function AllVouchers() {
     }
 
     function xReset() {
+        // retain voucherType
+        const vchrType = watch('voucherType')
         reset(getDefaultVoucherFormValues())
+        if (vchrType) {
+            setValue('voucherType', vchrType)
+        }
     }
 
 }
 
-export type VoucherFormDataType = //TranHeaderType
+export type VoucherFormDataType =
     {
         id?: number;
         tranDate: string;
@@ -209,6 +215,7 @@ export type VoucherFormDataType = //TranHeaderType
         creditEntries: VoucherLineItemEntryDataType[];
         debitEntries: VoucherLineItemEntryDataType[];
         deletedIds: number[];
+        showGstInHeader: boolean;
     }
 
 type VoucherLineItemEntryDataType = {

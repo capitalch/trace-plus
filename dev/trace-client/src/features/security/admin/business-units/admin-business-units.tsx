@@ -66,7 +66,6 @@ export function AdminBusinessUnits() {
                 instance={instance}
                 sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                 sqlId={SqlIdsMap.allBusinessUnits}
-                // onDelete={handleOnDelete}
                 onRemove={handleOnRemove}
                 onEdit={handleOnEdit}
             />

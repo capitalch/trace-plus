@@ -74,7 +74,7 @@ export function ManageTags() {
         ];
     }
 
-    async function handleOnDelete(id: string) {
+    async function handleOnDelete(id: string | number) {
         Utils.showDeleteConfirmDialog(doDelete);
         async function doDelete() {
             try {

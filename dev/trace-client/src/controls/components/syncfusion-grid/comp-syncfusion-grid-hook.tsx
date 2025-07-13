@@ -12,11 +12,6 @@ import {
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store/store";
-// import { IconDelete } from "../../icons/icon-delete";
-// import { IconPreview } from "../../icons/icon-preview";
-// import { Button } from "primereact/button";
-// import { IconEdit1 } from "../../icons/icon-edit1";
-// import { IconCross } from "../../icons/icon-cross";
 
 export function useCompSyncFusionGrid({
   aggregates,
@@ -145,14 +140,6 @@ export function useCompSyncFusionGrid({
             }
           ]}
         />
-        // <ColumnDirective
-        //   key="D"
-        //   allowEditing={false}
-        //   field=""
-        //   headerText="D"
-        //   template={deleteTemplate}
-        //   width={deleteColumnWidth || 30}
-        // />
       );
     }
 
@@ -172,14 +159,6 @@ export function useCompSyncFusionGrid({
             }
           ]}
         />
-        // <ColumnDirective
-        //   key="P"
-        //   allowEditing={false}
-        //   field=""
-        //   headerText="P"
-        //   template={previewTemplate}
-        //   width={previewColumnWidth || 30}
-        // />
       );
     }
 
@@ -199,15 +178,6 @@ export function useCompSyncFusionGrid({
             }
           ]}
         />
-        // <ColumnDirective
-        //   key="E"
-        //   allowEditing={false}
-        //   field=""
-        //   headerText="E"
-        //   template={editTemplate}
-        //   width={editColumnWidth || "16px"}
-        //   textAlign="Center"
-        // />
       );
     }
     if (hasIndexColumn) {
@@ -238,14 +208,6 @@ export function useCompSyncFusionGrid({
             }
           ]}
         />
-        // <ColumnDirective
-        //   key="R"
-        //   allowEditing={false}
-        //   field=""
-        //   headerText=""
-        //   template={removeTemplate}
-        //   width={removeButtonWidth || 30}
-        // />
       );
     }
 
@@ -259,24 +221,21 @@ export function useCompSyncFusionGrid({
 
   function handleCommandClick(args: any) {
     const rowData = args.rowData;
+    const id = args.rowData.id;
     const buttonClass = args.commandColumn?.buttonOption?.cssClass;
     if (buttonClass?.includes('e-grid-edit')) {
-      // console.log('Edit action triggered for:', rowData);
       onEdit?.(rowData);
       return
     }
     if (buttonClass?.includes('e-grid-delete')) {
-      // console.log('Delete action triggered for:', rowData);
-      onDelete?.(rowData);
+      onDelete?.(id);
       return
     }
     if (buttonClass?.includes('e-grid-preview')) {
-      // console.log('Delete action triggered for:', rowData);
       onPreview?.(rowData);
       return
     }
     if (buttonClass?.includes('e-grid-remove')) {
-      // console.log('Delete action triggered for:', rowData);
       onRemove?.(rowData);
       return
     }
@@ -301,86 +260,3 @@ export function useCompSyncFusionGrid({
     selectedData
   };
 }
-
-// function editTemplate(props: any) {
-//   return (
-//     // WidgetTooltip not working here
-//     <Button
-//       tooltip="Edit"
-//       type="button"
-//       tooltipOptions={{
-//         position: "top",
-//         mouseTrack: true,
-//         mouseTrackTop: 10
-//       }}
-//       // <button
-//       className="w-7 h-7 bg-slate-50 hover:bg-slate-200 "
-//       onClick={() => {
-//         if (onEdit) {
-//           onEdit(props);
-//         }
-//       }}
-//     >
-//       <IconEdit1 className="w-5 h-5 text-green-600 ml-1" />
-//     </Button>
-//   );
-// }
-
-// function deleteTemplate(props: any) {
-//   return (
-//     <Button
-//       tooltip="Delete"
-//       type="button"
-//       tooltipOptions={{
-//         position: "top",
-//         mouseTrack: true,
-//         mouseTrackTop: 10
-//       }}
-//       className="w-7 h-7 bg-slate-50 hover:bg-slate-300"
-//       onClick={() => {
-//         if (onDelete) {
-//           onDelete(props.id, props.isUsed);
-//         }
-//       }}
-//     >
-//       <IconDelete className="w-5 h-5 text-red-500 ml-1" />
-//     </Button>
-//   );
-// }
-
-// function previewTemplate(props: any) {
-//   return (
-//     <Button
-//       tooltip="Preview"
-//       type="button"
-//       tooltipOptions={{
-//         position: "top",
-//         mouseTrack: true,
-//         mouseTrackTop: 10
-//       }}
-//       className="w-7 h-7 bg-slate-50 hover:bg-slate-200"
-//       onClick={() => {
-//         if (onPreview) {
-//           onPreview(props);
-//         }
-//       }}
-//     >
-//       <IconPreview className="w-5 h-5 text-blue-600 ml-1" />
-//     </Button>
-//   );
-// }
-
-// function removeTemplate(props: any) {
-//   return (
-//     <Button
-//       className="w-7 h-7 bg-slate-50 hover:bg-slate-200 "
-//       onClick={() => {
-//         if (onRemove) {
-//           onRemove(props);
-//         }
-//       }}
-//     >
-//       <IconCross className="w-5 h-5 text-red-500 ml-1" />
-//     </Button>
-//   );
-// }

@@ -84,10 +84,6 @@ async def create_bu(_, info, value=""):
 async def generic_update(_, info, dbName="", value=""):
     return await generic_update_helper(info, dbName, value)
 
-@mutation.field("validateDebitCreditAndUpdate")
-async def validate_debit_credit_and_update(_, info, dbName="", value=""):
-    return await validate_debit_credit_and_update_helper(info, dbName, value)
-
 
 @mutation.field("genericUpdateQuery")
 async def generic_update_query(_, info, dbName="", value=""):
@@ -108,6 +104,9 @@ async def update_client(_, info, value=""):
 async def update_user(_, info, value=""):
     return await update_user_helper(info, value)
 
+@mutation.field("validateDebitCreditAndUpdate")
+async def validate_debit_credit_and_update(_, info, dbName="", value=""):
+    return await validate_debit_credit_and_update_helper(info, dbName, value)
 
 @query.field("hello")
 async def hello(_, info):

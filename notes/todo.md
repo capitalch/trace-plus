@@ -16,7 +16,7 @@ valid gstin: 24AAACC1206D1ZM
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
 	- Interchange voucher types effect when new / edit mode
-	- Validate debit / credit at server
+																- Validate debit / credit at server
 																- Preview
 	- No GST for contra type
 	- All types of vouchers implement

@@ -18,6 +18,7 @@ import { TranHeaderType, VourcherType } from "../../../../utils/global-types-int
 import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog";
 import { PDFViewer } from "@react-pdf/renderer";
 import { AllVouchersPDF } from "./all-vouchers-pdf";
+import { Messages } from "../../../../utils/messages";
 
 export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -351,9 +352,13 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         }))
     }
 
-    async function handleOnDelete(id: string) {
+    async function handleOnDelete(id: number | string) {
         Utils.showDeleteConfirmDialog(async () => {
             try {
+                if (!id) {
+                    Utils.showAlertMessage("Error", Messages.errDeletingRecord)
+                    return
+                }
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
                     tableName: DatabaseTablesMap.TranH,

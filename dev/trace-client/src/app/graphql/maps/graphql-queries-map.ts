@@ -20,6 +20,7 @@ export const GraphQLQueriesMapNames = {
   trialBalance: 'trialBalance',
   updateClient: 'updateClient',
   updateUser: 'updateUser',
+  validateDebitCreditAndUpdate:'validateDebitCreditAndUpdate',
   hello: 'hello'
 }
 
@@ -39,6 +40,7 @@ export const GraphQLQueriesMap: GraphQLQueriesMapType = {
   trialBalance: trialBalance,
   updateClient: updateClient,
   updateUser: updateUser,
+  validateDebitCreditAndUpdate: validateDebitCreditAndUpdate,
   hello: hello
 }
 
@@ -198,6 +200,18 @@ function updateUser (dbName: string, val: TraceDataObjectType): DocumentNode {
     `
 }
 
+function validateDebitCreditAndUpdate (
+  dbName: string,
+  val: GraphQLUpdateArgsType
+): DocumentNode {
+  const value = encodeObj(val) // dbName below is transferred as operationName
+  return gql`
+        mutation ValidateDebitCreditAndUpdate { 
+            validateDebitCreditAndUpdate(dbName:"${dbName}", value:"${value}")
+        }
+    `
+}
+
 function hello (): DocumentNode {
   return gql`
     query hello
@@ -236,7 +250,7 @@ export type GraphQLUpdateArgsType = {
   dbParams?: { [key: string]: any }
   [key: string]: any
   tableName?: string
-  deletedIds?: string[] | number[]
+  deletedIds?: string[] | number[] | (string | number)[]
   xData?: any
   buCode?: string
 }
@@ -277,5 +291,6 @@ export type GraphQLQueriesMapType = {
   trialBalance: (dbName: string, val: GraphQLQueryArgsType) => DocumentNode
   updateClient: (dbName: string, val: TraceDataObjectType) => DocumentNode
   updateUser: (dbName: string, val: TraceDataObjectType) => DocumentNode
+  validateDebitCreditAndUpdate: (dbName: string, val: GraphQLUpdateArgsType) => DocumentNode
   hello: () => DocumentNode
 }

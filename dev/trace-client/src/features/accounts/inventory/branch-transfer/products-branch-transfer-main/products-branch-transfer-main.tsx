@@ -281,16 +281,3 @@ type BranchTransferInfoType = {
   tranHeaderId: number;
   upcCode: string | null;
 };
-
-// type TranHeaderType = {
-//   autoRefNo: string | null;
-//   branchId: number;
-//   finYearId: number;
-//   id?: number;
-//   posId?: number;
-//   remarks: string | null;
-//   tranDate: string;
-//   tranTypeId: number;
-//   userRefNo: string | null;
-//   [key: string]: any;
-// };

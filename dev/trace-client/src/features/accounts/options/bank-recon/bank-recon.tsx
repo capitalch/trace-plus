@@ -243,7 +243,7 @@ export function BankRecon() {
         return (ret)
     }
 
-    async function handleOnDelete(id: string) {
+    async function handleOnDelete(id: string | number) {
         Utils.showDeleteConfirmDialog(async () => {
             try {
                 await Utils.doGenericDelete({

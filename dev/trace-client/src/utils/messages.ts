@@ -20,6 +20,7 @@ const Messages = {
   errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
   errCurrentAndNewPwdCannotBeSame: 'Current and new passwords cannot be same',
   errCurrentFinYear: 'There was some error in current financial year',
+  errDeletingRecord:'Could not delete the record',
   errEmailExistsForClient: 'This email already exists for the current client',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',

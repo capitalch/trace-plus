@@ -221,7 +221,7 @@ export function ReportAllTransactions() {
         return (Object.keys(transactionTypes).find((key: string) => transactionTypes[key].value === value))
     }
 
-    async function handleOnDelete(id: string) {
+    async function handleOnDelete(id: string | number) {
         const loadData = context.CompSyncFusionGrid[instance].loadData
         Utils.showDeleteConfirmDialog(async () => {
             try {

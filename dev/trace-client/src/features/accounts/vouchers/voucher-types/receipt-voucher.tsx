@@ -33,7 +33,7 @@ export function ReceiptVoucher({ instance }: ReceiptVoucherType) {
             instance={instance}
             isAmountFieldDisabled={true}
             lineItemEntryName="debitEntries"
-            title="Debit Entries"
+            title="Debit Entries ( to Cash / Bank)"
             toShowInstrNo={true}
             tranTypeName="Debit"
         />
@@ -63,7 +63,7 @@ export function ReceiptVoucher({ instance }: ReceiptVoucherType) {
                 instance: instance,
                 sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
                 sqlArgs: {
-                    accClassNames: ['debtor', 'creditor', 'other', 'dexp', 'iexp']?.join(',') || null
+                    accClassNames: ['debtor', 'creditor', 'other', 'dexp', 'iexp', 'loan', 'capital', 'iincome', 'dincome']?.join(',') || null
                 }
             })
 

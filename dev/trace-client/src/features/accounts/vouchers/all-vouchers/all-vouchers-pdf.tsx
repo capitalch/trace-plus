@@ -12,6 +12,9 @@ export type VoucherPdfProps = {
   tranD: VoucherTranDetailsType[];
 };
 
+const formatAmount = (amount: number | string | Decimal) =>
+  new Decimal(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
 export function AllVouchersPDF({
   branchName,
   currentDateFormat,
@@ -82,14 +85,14 @@ export function AllVouchersPDF({
               <Text style={{ width: 60 }}>{entry.instrNo}</Text>
               <Text style={{ width: 60 }}>{entry.lineRefNo}</Text>
               <Text style={{ width: 150 }}>{entry.remarks}</Text>
-              <Text style={{ width: 70, textAlign: "right" }}>{entry.dc === 'D' ? new Decimal(entry.amount).toFixed(2) : ""}</Text>
-              <Text style={{ width: 70, textAlign: "right" }}>{entry.dc === 'C' ? new Decimal(entry.amount).toFixed(2) : ""}</Text>
+              <Text style={{ width: 70, textAlign: "right" }}>{entry.dc === 'D' ? formatAmount(entry.amount) : ""}</Text>
+              <Text style={{ width: 70, textAlign: "right" }}>{entry.dc === 'C' ? formatAmount(entry.amount) : ""}</Text>
             </View>
             {entry.gst && (
               <View style={styles.gstRow}>
                 <Text style={{ width: '100%' }}>
                   GSTIN: {entry.gst.gstin || '-'}, HSN: {entry.gst.hsn || '-'}, Rate: {entry.gst.rate || 0}%
-                  , CGST: {entry.gst.cgst}, SGST: {entry.gst.sgst}, IGST: {entry.gst.igst}
+                  , CGST: {entry.gst.cgst}, SGST: {entry.gst.sgst}, IGST: {entry.gst.igst}, Input GST: {entry.gst.isInput ? 'Yes' : 'No'}
                 </Text>
               </View>
             )}
@@ -99,8 +102,8 @@ export function AllVouchersPDF({
         {/* Totals */}
         <View style={styles.totalRow}>
           <Text style={{ width: 420, textAlign: "right" }}>Total</Text>
-          <Text style={{ width: 70, textAlign: "right" }}>{debitTotal.toFixed(2)}</Text>
-          <Text style={{ width: 70, textAlign: "right" }}>{creditTotal.toFixed(2)}</Text>
+          <Text style={{ width: 70, textAlign: "right" }}>{formatAmount(debitTotal)}</Text>
+          <Text style={{ width: 70, textAlign: "right" }}>{formatAmount(creditTotal)}</Text>
         </View>
 
         {/* Amount in words */}

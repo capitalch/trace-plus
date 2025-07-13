@@ -5,10 +5,12 @@ import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../../app/store/store";
+import { useEffect } from "react";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
-    const { register, watch, } = useFormContext<VoucherFormDataType>();
-    const selectedType = watch("voucherType");
+    const { register, watch, setValue,  } = useFormContext<VoucherFormDataType>();
+    const {xReset}: any = useFormContext()
+    const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
 
     const getLabel = () => {
@@ -18,6 +20,16 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
         }
         return (label)
     }
+
+    useEffect(() => {
+        // const voucherType = watch('voucherType')
+        // xReset()
+        if (voucherType === 'Contra') {
+            setValue('showGstInHeader', false)
+        } else {
+            setValue('showGstInHeader', true)
+        }
+    }, [voucherType, setValue, watch])
 
     return (
         <div className={clsx("flex gap-2  items-center", className)}>
@@ -29,7 +41,7 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
                     key={type}
                     className={clsx(
                         "cursor-pointer px-4 py-1 rounded-md border font-medium text-md",
-                        selectedType === type
+                        voucherType === type
                             ? "bg-green-600 text-white border-blue-700"
                             : "bg-gray-50 text-gray-900 border-gray-300 hover:bg-green-400"
                     )}

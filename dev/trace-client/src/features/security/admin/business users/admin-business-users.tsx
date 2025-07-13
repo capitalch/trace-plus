@@ -108,10 +108,10 @@ export function AdminBusinessUsers() {
         ];
     }
 
-    async function handleOnDelete(id: string) {
+    async function handleOnDelete(id: number | string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
             tableName: DatabaseTablesMap.UserM,
-            deletedIds: [id],
+            deletedIds: [+id],
         });
         Utils.showDeleteConfirmDialog(doDelete);
         async function doDelete() {

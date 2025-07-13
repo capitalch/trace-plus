@@ -18,9 +18,10 @@ import { useEffect, useRef, useState } from "react";
 import ReactSlidingPane from "react-sliding-pane";
 import { PDFViewer } from "@react-pdf/renderer";
 import { ProductsBranchTransferPdf } from "./products-branch-transfer-pdf";
-import { BranchTransferJsonResultType } from "./products-branch-transfer-main/products-branch-transfer-main";
+import { BranchTransferJsonResultType} from "./products-branch-transfer-main/products-branch-transfer-main";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { format } from "date-fns";
+import { Messages } from "../../../../utils/messages";
 
 export function ProductsBranchTransferView({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -205,10 +206,14 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
     ];
   }
 
-  async function handleOnDelete(id: string) {
+  async function handleOnDelete(id: number | string) {
     Utils.showDeleteConfirmDialog(doDelete);
     async function doDelete() {
       try {
+        if (!id) {
+          Utils.showErrorMessage(Messages.errDeletingRecord)
+          return
+        }
         await Utils.doGenericDelete({
           buCode: buCode || "",
           tableName: DatabaseTablesMap.TranH,

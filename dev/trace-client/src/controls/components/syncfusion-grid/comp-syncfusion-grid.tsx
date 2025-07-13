@@ -55,7 +55,6 @@ export function CompSyncFusionGrid({
   hasIndexColumn = false,
   height,
   indexColumnWidth = 40,
-  // isLoadOnInit = false,
   isSmallerFont = false,
   instance,
   loadData,
@@ -100,7 +99,6 @@ export function CompSyncFusionGrid({
     instance,
     hasCheckBoxSelection,
     hasIndexColumn,
-    // isLoadOnInit,
     loadData,
     onDelete,
     onEdit,
@@ -262,16 +260,14 @@ export type CompSyncFusionGridType = {
   gridDragAndDropSettings?: GridDragAndDropSettingsType;
   hasCheckBoxSelection?: boolean;
   hasIndexColumn?: boolean;
-  // hasRemoveButton?: boolean
   height?: string;
   indexColumnWidth?: number;
   instance: string;
-  // isLoadOnInit?: boolean;
   isSmallerFont?: boolean;
   loadData?: () => void;
   minWidth?: string;
   onCellEdit?: (args: any) => void;
-  onDelete?: (id: string, isUsed?: boolean | undefined) => void;
+  onDelete?: (id: string | number, isUsed?: boolean | undefined) => void;
   onEdit?: (args: any) => void;
   onPreview?: (args: any) => void;
   onRemove?: (args: any) => void;

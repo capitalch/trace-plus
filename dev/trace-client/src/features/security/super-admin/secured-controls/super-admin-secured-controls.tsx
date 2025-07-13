@@ -72,7 +72,7 @@ export function SuperAdminSecuredControls() {
         ])
     }
 
-    async function handleOnDelete(id: string) {
+    async function handleOnDelete(id: string | number) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
             tableName: DatabaseTablesMap.SecuredControlM,
             deletedIds: [id]

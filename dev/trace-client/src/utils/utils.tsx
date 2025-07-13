@@ -33,6 +33,7 @@ export const Utils: UtilsType = {
   doGenericQuery: doGenericQuery,
   doGenericUpdate: doGenericUpdate,
   doGenericUpdateQuery: doGenericUpdateQuery,
+  doValidateDebitCreditAndUpdate: doValidateDebitCreditAndUpdate,
   getCompanyName: getCompanyName,
   getCurrentBranch: getCurrentBranch,
   getCurrentDateFormat: getCurrentDateFormat,
@@ -182,6 +183,26 @@ async function doGenericUpdate({
   };
   const q: any = GraphQLQueriesMap.genericUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.genericUpdate;
+  const res: any = await mutateGraphQL(q, queryName);
+  return res;
+}
+
+async function doValidateDebitCreditAndUpdate({
+  buCode,
+  dbName,
+  tableName,
+  xData
+}: DoGenericUpdateType) {
+  const userDetails: UserDetailsType = Utils.getUserDetails() || {};
+  const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
+  const traceDataObject: GraphQLUpdateArgsType = {
+    tableName: tableName,
+    dbParams: decodedDbParamsObject,
+    xData: xData,
+    buCode: buCode
+  };
+  const q: any = GraphQLQueriesMap.validateDebitCreditAndUpdate(dbName || dbAccounts || "", traceDataObject);
+  const queryName: string = GraphQLQueriesMapNames.validateDebitCreditAndUpdate;
   const res: any = await mutateGraphQL(q, queryName);
   return res;
 }
@@ -803,7 +824,7 @@ export type DbNameDbParamsType = {
 export type DoGenericDeleteType = {
   buCode: string;
   tableName: string;
-  deletedIds: string[] | number[];
+  deletedIds: string[] | number[] | (number | string)[];
 };
 
 export type DoGenericQueryType = {
@@ -877,6 +898,7 @@ type UtilsType = {
     dbName,
     dbParams
   }: DoGenericUpdateQueryType) => any;
+  doValidateDebitCreditAndUpdate: ({ buCode, tableName, xData }: DoGenericUpdateType) => any;
   getCompanyName: () => string;
   getCurrentBranch: () => BranchType | undefined;
   getCurrentDateFormat: () => string;

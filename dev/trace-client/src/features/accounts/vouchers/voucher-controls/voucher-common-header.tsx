@@ -18,7 +18,7 @@ export function VoucherCommonHeader() {
         register,
         formState: { errors, /*isSubmitting, isDirty */ }
     } = useFormContext<VoucherFormDataType>();
-
+    const showGstInHeader = watch('showGstInHeader');
     return (
         <div className="flex gap-4 flex-wrap mt-2">
 
@@ -71,7 +71,7 @@ export function VoucherCommonHeader() {
             </FormField>
 
             {/* GST Toggle */}
-            {hasGstin && (
+            {hasGstin && showGstInHeader && (
                 <FormField label="GST Applicable" className="items-center">
                     <div className="flex items-center gap-2 mt-3">
                         <button
@@ -101,25 +101,6 @@ export function VoucherCommonHeader() {
                     </div>
                 </FormField>
             )}
-
-            {/* GSTIN no */}
-            {/* {watch('isGst') && <FormField label="GSTIN No" error={errors?.gstin?.message}>
-                <input
-                    type="text"
-                    className={clsx(inputFormFieldStyles, "mt-2 text-xs")}
-                    placeholder="Enter GSTIN No"
-                    {...register("gstin", {
-                        validate: (value) => {
-                            const liveIsGst = watch("isGst");
-                            if (!liveIsGst) return true; // Skip validation if GST is not applicable
-                            if (!value) return Messages.errRequiredShort;
-                            if (!isValidGstin(value)) {
-                                return (Messages.errInvalidGstin);
-                            }
-                        }
-                    })}
-                />
-            </FormField>} */}
             <FormActionButtons className="mt-8 ml-auto" />
         </div>
     )

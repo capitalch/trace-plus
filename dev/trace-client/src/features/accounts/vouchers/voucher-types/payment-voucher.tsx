@@ -33,7 +33,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             instance={instance}
             isAmountFieldDisabled={true}
             lineItemEntryName="creditEntries"
-            title="Credit Entries"
+            title="Credit Entries ( from Cash / Bank)"
             toShowInstrNo={true}
             tranTypeName="Credit"
         />
@@ -63,7 +63,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
                 instance: instance,
                 sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
                 sqlArgs: {
-                    accClassNames: ['debtor', 'creditor', 'dexp', 'iexp', 'other']?.join(',') || null
+                    accClassNames: ['debtor', 'creditor', 'dexp', 'iexp', 'other', 'purchase', 'loan', 'capital']?.join(',') || null
                 }
             })
 

@@ -15,7 +15,6 @@ import { useEffect } from "react";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
-// import { getValue } from "@syncfusion/ej2-base";
 
 export function VoucherLineItemEntry({
     accountOptions,
@@ -307,7 +306,8 @@ export function VoucherLineItemEntry({
             Ret = <FormField label="Instr No">
                 <input
                     type="text"
-                    {...register(`creditEntries.${index}.instrNo`,)}
+                    // {...register(`creditEntries.${index}.instrNo`,)}
+                    {...register(`${lineItemEntryName}.${index}.instrNo`)}
                     className={clsx("border p-2 rounded w-full mt-1", inputFormFieldStyles)}
                 />
             </FormField>

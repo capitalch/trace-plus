@@ -28,23 +28,14 @@ export function ProductsOpeningBalancesGrid() {
   const {
     branchId,
     buCode,
-    // context,
     currentDateFormat,
     dbName,
     decodedDbParamsObject,
     finYearId
   } = useUtilsInfo();
-  // const selectedData: any = useSelector((state: RootStateType) => {
-  //   const ret: any = state.queryHelper[instance]?.data;
-  //   return ret;
-  // });
 
   useEffect(() => {
-    // This block is necessary. Otherwise branch selection not works correctly
-    // const loadData = context.CompSyncFusionGrid[instance].loadData;
-    // if (loadData) {
     loadData();
-    // }
   }, [branchId, buCode, finYearId]);
 
 
@@ -71,7 +62,6 @@ export function ProductsOpeningBalancesGrid() {
         editColumnWidth={40}
         height="calc(100vh - 260px)"
         instance={instance}
-        // isLoadOnInit={false}
         loadData={loadData}
         minWidth="800px"
         onDelete={handleOnDelete}
@@ -175,14 +165,11 @@ export function ProductsOpeningBalancesGrid() {
         headerText: "Active",
         type: "boolean",
         width: 80,
-        // template: (props: any) => (
-        //   <input aria-label="isActive" type="checkbox" checked={props.isActive} readOnly disabled />
-        // )
       }
     ];
   }
 
-  async function handleOnDelete(id: string) {
+  async function handleOnDelete(id: string | number) {
     Utils.showDeleteConfirmDialog(doDelete);
     async function doDelete() {
       try {
@@ -192,10 +179,7 @@ export function ProductsOpeningBalancesGrid() {
           deletedIds: [id]
         });
         Utils.showSaveMessage();
-        // const loadData = context.CompSyncFusionGrid[instance].loadData;
-        // if (loadData) {
         await loadData();
-        // }
       } catch (e: any) {
         console.log(e);
       }

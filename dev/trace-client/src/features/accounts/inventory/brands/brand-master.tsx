@@ -100,7 +100,7 @@ export function BrandMaster() {
         ]);
     }
 
-    async function handleOnDelete(id: string, isUsed: boolean | undefined) {
+    async function handleOnDelete(id: string | number, isUsed: boolean | undefined) {
         if (isUsed) {
             Utils.showAlertMessage('Warning!!!', Messages.messCannotDeleteSinceUsedInProduct)
             return
