@@ -3,6 +3,7 @@ entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
 ## QA for vouchers
+	- Check: When voucher deleted the gst entry in ext table should also delete
 	- new voucher entry
 		- check in db
 			- TranH

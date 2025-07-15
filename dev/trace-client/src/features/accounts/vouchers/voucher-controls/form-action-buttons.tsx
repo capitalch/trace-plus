@@ -13,12 +13,12 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
             isSubmitting,
         }
     } = useFormContext<VoucherFormDataType>();
-    const { xReset }: any = useFormContext();
+    const { resetAll }: any = useFormContext();
     return (
         <div className={clsx("flex h-10 gap-4 mr-6", className)}>
             {/* Reset */}
             <button
-                onClick={xReset}
+                onClick={resetAll}
                 type="button"
                 className="px-5 font-medium text-white inline-flex items-center bg-amber-500 hover:bg-amber-800 focus:ring-4 focus:outline-hidden focus:ring-amber-300 rounded-lg text-center dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-800 disabled:bg-amber-200 transition"
             >

@@ -8,8 +8,8 @@ import { RootStateType } from "../../../../app/store/store";
 import { useEffect } from "react";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
-    const { register, watch, setValue,  } = useFormContext<VoucherFormDataType>();
-    const {xReset}: any = useFormContext()
+    const {register, watch, setValue,  } = useFormContext<VoucherFormDataType>();
+    const {resetAll}: any = useFormContext()
     const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
 
@@ -22,8 +22,7 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
     }
 
     useEffect(() => {
-        // const voucherType = watch('voucherType')
-        // xReset()
+        resetAll()
         if (voucherType === 'Contra') {
             setValue('showGstInHeader', false)
         } else {

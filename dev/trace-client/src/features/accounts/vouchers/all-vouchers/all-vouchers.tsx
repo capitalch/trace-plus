@@ -26,7 +26,7 @@ export function AllVouchers() {
             defaultValues: getDefaultVoucherFormValues()
         });
     const { watch, getValues, setValue, reset } = methods;
-    const extendedMethods = { ...methods, xReset }
+    const extendedMethods = { ...methods, resetAll }
     const voucherType = watch('voucherType')
     const tabsInfo: CompTabsType = [
         {
@@ -106,7 +106,7 @@ export function AllVouchers() {
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            xReset()
+            resetAll()
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);
@@ -185,7 +185,7 @@ export function AllVouchers() {
         };
     }
 
-    function xReset() {
+    function resetAll() {
         // retain voucherType
         const vchrType = watch('voucherType')
         reset(getDefaultVoucherFormValues())
