@@ -13,7 +13,7 @@ import { GeneralSettingsType, Utils } from "../../../utils/utils";
 import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
 import { changeAccSettings } from "../accounts-slice";
 import Select from "react-select";
-// import { useEffect} from "react";
+import { NumericFormat } from 'react-number-format';
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 export function GeneralSettings() {
@@ -21,7 +21,7 @@ export function GeneralSettings() {
     const instance: string = DataInstancesMap.generalSettings
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const generalSettings: GeneralSettingsType = Utils.getGeneralSettings() || {}
-    
+
     const {
         register,
         handleSubmit,
@@ -34,7 +34,8 @@ export function GeneralSettings() {
         defaultValues: {
             dateFormat: generalSettings?.dateFormat,
             autoLogoutTimeInMins: generalSettings?.autoLogoutTimeInMins || null,
-            auditLockDate: generalSettings?.auditLockDate || null
+            auditLockDate: generalSettings?.auditLockDate || null,
+            defaultGstRate: generalSettings?.defaultGstRate || null,
         },
     });
 
@@ -43,6 +44,7 @@ export function GeneralSettings() {
             setValue('dateFormat', generalSettings?.dateFormat || 'DD/MM/YYYY', { shouldDirty: true })
             setValue('autoLogoutTimeInMins', generalSettings?.autoLogoutTimeInMins || null, { shouldDirty: true })
             setValue('auditLockDate', generalSettings?.auditLockDate || null, { shouldDirty: true })
+            setValue('defaultGstRate', generalSettings?.defaultGstRate || null, { shouldDirty: true });
         }
     }, [generalSettings])
 
@@ -91,6 +93,28 @@ export function GeneralSettings() {
                     value={watch('auditLockDate') || ''}
                 />
             </label>
+
+            {/* Default GST Rate */}
+            <label className="flex flex-col font-medium text-primary-800">
+                <span className="font-bold">Default GST Rate (%)</span>
+                <NumericFormat
+                    allowNegative={false}
+                    allowLeadingZeros={false}
+                    decimalScale={2}
+                    fixedDecimalScale
+                    thousandSeparator
+                    placeholder="e.g. 18.00"
+                    defaultValue={0}
+                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    {...register('defaultGstRate')}
+                    value={watch('defaultGstRate') ?? 0}
+                    onValueChange={(values) => {
+                        setValue('defaultGstRate', values.floatValue ?? 0, { shouldDirty: true });
+                    }}
+                    onFocus={(e) => e.target.select()}
+                />
+            </label>
+
             <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96 mt-4" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
         </form>
     </CompAccountsContainer>)

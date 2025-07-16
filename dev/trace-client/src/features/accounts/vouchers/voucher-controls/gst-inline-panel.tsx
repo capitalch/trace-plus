@@ -9,6 +9,7 @@ import Decimal from "decimal.js";
 import { Utils } from "../../../../utils/utils";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { useValidators } from "../../../../utils/validators-hook";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 
 export function GstInLinePanel({
     className = '',
@@ -17,14 +18,13 @@ export function GstInLinePanel({
 }: GstInLinePanelType) {
     const {
         watch,
-        // clearErrors,
         register,
         setValue,
         formState: { errors },
     } = useFormContext<VoucherFormDataType>();
 
     const { isValidGstin } = useValidators();
-
+    const { defaultGstRate } = useUtilsInfo()
     const isGst = watch(`isGst`)
     const gstRateErrorMessage = errors?.[lineItemEntryName]?.[index]?.gst?.rate?.message
     const hsnErrorMessage = errors?.[lineItemEntryName]?.[index]?.gst?.hsn?.message
@@ -58,14 +58,6 @@ export function GstInLinePanel({
         [isGst, setValue, lineItemEntryName] // dependencies
     );
 
-    // useEffect(() => {
-    //     if (!isGst) {
-    //         clearErrors(`${lineItemEntryName}.${index}.gst.rate`)
-    //         clearErrors(`${lineItemEntryName}.${index}.gst.hsn`)
-    //         clearErrors(`${lineItemEntryName}.${index}.gst.gstin`)
-    //     }
-    // }, [isGst, index, clearErrors, lineItemEntryName])
-
     useEffect(() => {
         calculateGst({
             amount: amount,
@@ -75,11 +67,22 @@ export function GstInLinePanel({
         })
     }, [amount, gstRate, isIgst, index, calculateGst])
 
+    useEffect(() => {
+        const currentRate = watch(`${lineItemEntryName}.${index}.gst.rate`);
+        if (isGst && (!currentRate || currentRate === 0) && defaultGstRate > 0) {
+            setValue(`${lineItemEntryName}.${index}.gst.rate`, defaultGstRate, {
+                shouldDirty: true,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index, lineItemEntryName, isGst, defaultGstRate, setValue]);
+
     return (
         <div className={clsx("flex gap-2 min-w-[130px] bg-gray-50 border p-1 px-2 rounded-sm items-start", className)}>
 
             <div className="flex flex-col">
                 <div className="flex gap-2">
+
                     {/* GST Rate */}
                     <FormField label="GST Rate" className="w-18 text-xs" required error={gstRateErrorMessage} >
                         <NumericFormat

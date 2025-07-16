@@ -16,11 +16,15 @@ valid gstin: 24AAACC1206D1ZM
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
-	- Interchange voucher types effect when new / edit mode
+	- When Gst applicable is false then set gst id in deleted Ids in edit mode
+																- Interchange voucher types effect when new / edit mode
+																- Don't allow change voucher type in edit mode
+																- Set default GST rate
+																- ResetDetails set id = undefined
 																- Validate debit / credit at server
 																- Preview
-	- No GST for contra type
-	- All types of vouchers implement
+																- No GST for contra type
+																- All types of vouchers implement
 																- filter view on Voucher Type id
 	- Copy voucher feature
 																- In view mode remove title 'New Entry'

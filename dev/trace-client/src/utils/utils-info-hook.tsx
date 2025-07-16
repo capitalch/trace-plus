@@ -1,6 +1,6 @@
 import { shallowEqual, useSelector } from "react-redux"
 import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, UserDetailsType } from "../features/login/login-slice"
-import { UnitInfoType, Utils } from "./utils"
+import { GeneralSettingsType, UnitInfoType, Utils } from "./utils"
 import { GlobalContext, GlobalContextType } from "../app/global-context"
 import { useContext } from "react"
 import { GraphQLQueriesMapNames } from "../app/graphql/maps/graphql-queries-map"
@@ -23,7 +23,8 @@ export function useUtilsInfo() {
     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
     const hasGstin: boolean = unitInfo.gstin ? true : false
     const genericUpdateQueryName: string = GraphQLQueriesMapNames.genericUpdate;
-    
+    const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
+    const defaultGstRate = generalSettings.defaultGstRate || 0
     return ({
         branchId
         , branchCode
@@ -39,5 +40,6 @@ export function useUtilsInfo() {
         , genericUpdateQueryName
         , hasGstin
         , intFormatter
+        , defaultGstRate
     })
 }

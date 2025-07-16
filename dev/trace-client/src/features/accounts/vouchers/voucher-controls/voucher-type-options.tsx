@@ -8,10 +8,13 @@ import { RootStateType } from "../../../../app/store/store";
 import { useEffect } from "react";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
-    const {register, watch, setValue,  } = useFormContext<VoucherFormDataType>();
-    const {resetAll}: any = useFormContext()
+    const { register, watch, setValue, } = useFormContext<VoucherFormDataType>();
+    const { resetDetails }: any = useFormContext()
     const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
+
+    // const id = watch('id');
+    // const isEditMode = Boolean(id);
 
     const getLabel = () => {
         let label = ''
@@ -22,13 +25,13 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
     }
 
     useEffect(() => {
-        resetAll()
+        resetDetails()
         if (voucherType === 'Contra') {
             setValue('showGstInHeader', false)
         } else {
             setValue('showGstInHeader', true)
         }
-    }, [voucherType, setValue, watch])
+    }, [voucherType, setValue]) // including resetArray in dependency array causes infinite loop
 
     return (
         <div className={clsx("flex gap-2  items-center", className)}>
@@ -42,12 +45,14 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
                         "cursor-pointer px-4 py-1 rounded-md border font-medium text-md",
                         voucherType === type
                             ? "bg-green-600 text-white border-blue-700"
-                            : "bg-gray-50 text-gray-900 border-gray-300 hover:bg-green-400"
+                            : "bg-gray-50 text-gray-900 border-gray-300 hover:bg-green-400",
+                        // isDisabled() && "opacity-50 cursor-not-allowed"
                     )}
                 >
                     <input
                         type="radio"
                         value={type}
+                        // disabled={isDisabled()}
                         {...register("voucherType")}
                         className="sr-only"
                     />
@@ -56,6 +61,14 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
             ))}
         </div>
     )
+
+    // function isDisabled() {
+    //     let isDisabled = false
+    //     if ((activeTabIndex === 0) && isEditMode) {
+    //         isDisabled = true
+    //     }
+    //     return (isDisabled)
+    // }
 }
 
 type VoucherTypeOptionsType = {

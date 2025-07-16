@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
@@ -32,11 +31,10 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         branchName,
         dbName,
         decodedDbParamsObject,
-        finYearId
+        finYearId,
+        hasGstin
     } = useUtilsInfo();
     const meta = useRef<MetaType>({
-        // creditEntries: [],
-        // debitEntries: [],
         tranH: {
             autoRefNo: '',
             branchId: branchId || 1,
@@ -385,7 +383,9 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 tranTypeId: tranHeader.tranTypeId,
                 autoRefNo: tranHeader.autoRefNo,
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
-                isGst: voucherEditData?.tranDetails?.some((d: VoucherTranDetailsType) => d.gst !== null),
+                // isGst: voucherEditData?.tranDetails?.some((d: VoucherTranDetailsType) => d.gst !== null),
+                isGst: hasGstin,
+                showGstInHeader: voucherType !== 'Contra',
                 deletedIds: [],
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
                     id: d.id,
@@ -444,52 +444,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         const tranTypeId = voucherEditData?.tranHeader.tranTypeId || 2
         meta.current.tranH.tranType = Utils.getTranTypeName(tranTypeId)
         meta.current.tranD = voucherEditData?.tranDetails || []
-        // meta.current.creditEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
-        //     id: d.id,
-        //     tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
-        //     accId: d.accId || null,
-        //     accName: d.accName,
-        //     remarks: d.remarks,
-        //     dc: d.dc,
-        //     amount: d.amount,
-        //     tranHeaderId: d.tranHeaderId,
-        //     lineRefNo: d.lineRefNo,
-        //     instrNo: d.instrNo,
-        //     gst: d?.gst?.id ? {
-        //         id: d.gst.id,
-        //         gstin: d.gst.gstin,
-        //         rate: d.gst.rate,
-        //         cgst: d.gst.cgst,
-        //         sgst: d.gst.sgst,
-        //         igst: d.gst.igst,
-        //         isIgst: d?.gst?.igst ? true : false,
-        //         hsn: d.gst.hsn,
-        //         isInput: d.gst.isInput
-        //     } : undefined
-        // }))
-        // meta.current.debitEntries = voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
-        //     id: d.id,
-        //     tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
-        //     accId: d.accId || null,
-        //     accName: d.accName,
-        //     remarks: d.remarks,
-        //     dc: d.dc,
-        //     amount: d.amount,
-        //     tranHeaderId: d.tranHeaderId,
-        //     lineRefNo: d.lineRefNo,
-        //     instrNo: d.instrNo,
-        //     gst: d?.gst?.id ? {
-        //         id: d.gst.id,
-        //         gstin: d.gst.gstin,
-        //         rate: d.gst.rate,
-        //         cgst: d.gst.cgst,
-        //         sgst: d.gst.sgst,
-        //         igst: d.gst.igst,
-        //         isIgst: d?.gst?.igst ? true : false,
-        //         hsn: d.gst.hsn,
-        //         isInput: d.gst.isInput
-        //     } : undefined
-        // }))
         setIsDialogOpen(true)
     }
 
@@ -575,8 +529,6 @@ export type ExtGstTranDType = {
 }
 
 type MetaType = {
-    // creditEntries: VoucherTranDetailsType[];
-    // debitEntries: VoucherTranDetailsType[];
     tranH: TranHeaderType;
     tranD: VoucherTranDetailsType[]
 }

@@ -66,7 +66,6 @@ export const Utils: UtilsType = {
   showDeleteConfirmDialog: showDeleteConfirmDialog,
   showErrorMessage: showErrorMessage,
   showFailureAlertMessage: showFailureAlertMessage,
-  // showGetText: showGetText,
   showHideModalDialogA: showHideModalDialogA,
   showHideModalDialogB: showHideModalDialogB,
   showGraphQlErrorMessage: showGraphQlErrorMessage,
@@ -790,6 +789,7 @@ export type GeneralSettingsType = {
   dateFormat: string;
   autoLogoutTimeInMins: number | null;
   auditLockDate: string | null;
+  defaultGstRate?: number | null;
 };
 
 type GraphQlErrorType = {

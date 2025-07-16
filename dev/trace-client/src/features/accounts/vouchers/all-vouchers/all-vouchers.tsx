@@ -18,7 +18,7 @@ import { setActiveTabIndex } from "../../../../controls/redux-components/comp-sl
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.allVouchers;
-    const { branchId, buCode, dbName, finYearId } = useUtilsInfo();
+    const { branchId, buCode, dbName, finYearId, hasGstin } = useUtilsInfo();
     const methods = useForm<VoucherFormDataType>(
         {
             mode: "onTouched",
@@ -26,7 +26,7 @@ export function AllVouchers() {
             defaultValues: getDefaultVoucherFormValues()
         });
     const { watch, getValues, setValue, reset } = methods;
-    const extendedMethods = { ...methods, resetAll }
+    const extendedMethods = { ...methods, resetAll, resetDetails }
     const voucherType = watch('voucherType')
     const tabsInfo: CompTabsType = [
         {
@@ -56,6 +56,12 @@ export function AllVouchers() {
         </FormProvider>
     )
 
+    function resetDetails() {
+        setValue("id", undefined)
+        setValue("creditEntries", [getDefaultEntry('C')])
+        setValue("debitEntries", [getDefaultEntry('D')])
+    }
+
     function getDefaultVoucherFormValues() {
         return ({
             id: undefined,
@@ -72,7 +78,7 @@ export function AllVouchers() {
             creditEntries: [getDefaultEntry('C')],
             debitEntries: [getDefaultEntry('D')],
             deletedIds: [],
-            showGstInHeader: true,
+            showGstInHeader: hasGstin,
         })
     }
 
@@ -193,6 +199,10 @@ export function AllVouchers() {
             setValue('voucherType', vchrType)
         }
     }
+
+    // function resetDetails(){
+    //     const vchrType = watch('voucherType')
+    // }
 
 }
 
