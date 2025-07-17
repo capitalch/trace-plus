@@ -13,7 +13,6 @@ import { AppDispatchType, } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
-// import { setValue } from "@syncfusion/ej2-base";
 
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
@@ -56,12 +55,6 @@ export function AllVouchers() {
         </FormProvider>
     )
 
-    function resetDetails() {
-        setValue("id", undefined)
-        setValue("creditEntries", [getDefaultEntry('C')])
-        setValue("debitEntries", [getDefaultEntry('D')])
-    }
-
     function getDefaultVoucherFormValues() {
         return ({
             id: undefined,
@@ -92,7 +85,8 @@ export function AllVouchers() {
             tranHeaderId: undefined,
             lineRefNo: null,
             instrNo: null,
-            gst: undefined
+            gst: undefined,
+            deletedIds: [],
         })
     }
 
@@ -200,10 +194,20 @@ export function AllVouchers() {
         }
     }
 
-    // function resetDetails(){
-    //     const vchrType = watch('voucherType')
-    // }
+    function resetDetails() {
+        setValue("id", undefined)
+        setValue('autoRefNo', '')
+        setValue('isGst', false)
+        setValue('deletedIds', [])
 
+        setValue('creditEntries', [])
+        setValue('debitEntries', [])
+
+        setTimeout(() => {
+            setValue("creditEntries", [getDefaultEntry('C')])
+            setValue("debitEntries", [getDefaultEntry('D')])
+        }, 100)
+    }
 }
 
 export type VoucherFormDataType =
@@ -239,6 +243,7 @@ type VoucherLineItemEntryDataType = {
     instrNo?: string | null;
     gst?: GstDataType
     tranDetailsId?: number;
+    deletedIds: number[];
 }
 
 type GstDataType = {

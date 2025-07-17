@@ -13,9 +13,6 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
     const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
 
-    // const id = watch('id');
-    // const isEditMode = Boolean(id);
-
     const getLabel = () => {
         let label = ''
         if (activeTabIndex === 0) {
@@ -61,14 +58,6 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
             ))}
         </div>
     )
-
-    // function isDisabled() {
-    //     let isDisabled = false
-    //     if ((activeTabIndex === 0) && isEditMode) {
-    //         isDisabled = true
-    //     }
-    //     return (isDisabled)
-    // }
 }
 
 type VoucherTypeOptionsType = {

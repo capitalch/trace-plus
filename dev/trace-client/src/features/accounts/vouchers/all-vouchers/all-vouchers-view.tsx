@@ -125,6 +125,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 isSmallerFont={true}
                 loadData={loadData}
                 minWidth="1400px"
+                onCopy={handleOnCopy}
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
                 onPreview={handleOnPreview}
@@ -145,8 +146,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                             branchName={branchName || ''}
                             tranH={meta.current.tranH}
                             tranD={meta.current.tranD}
-                        // creditEntries={meta.current.creditEntries}
-                        // debitEntries={meta.current.debitEntries}
                         />
                     </PDFViewer>
                 }
@@ -370,6 +369,71 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         })
     }
 
+    async function handleOnCopy(data: RowDataType) {
+        try {
+            const editData: any = await getVoucherDetails(data.id)
+            const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
+            const tranHeader = voucherEditData?.tranHeader
+            reset({
+                id: undefined,
+                // tranDate: tranHeader.tranDate,
+                userRefNo: tranHeader.userRefNo,
+                remarks: tranHeader.remarks,
+                tranTypeId: tranHeader.tranTypeId,
+                // autoRefNo: tranHeader.autoRefNo,
+                voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
+                isGst: hasGstin,
+                showGstInHeader: voucherType !== 'Contra',
+                deletedIds: [],
+                creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
+                    id: undefined, //d.id,
+                    tranDetailsId: undefined, // d.id, // The id is replaced by some guid, so storing in tranDetailsId
+                    accId: d.accId as string | null,
+                    remarks: d.remarks,
+                    dc: d.dc,
+                    amount: d.amount,
+                    tranHeaderId: d.tranHeaderId,
+                    lineRefNo: d.lineRefNo,
+                    instrNo: d.instrNo,
+                    gst: d?.gst?.id ? {
+                        id: undefined, //d.gst.id,
+                        gstin: d.gst.gstin,
+                        rate: d.gst.rate,
+                        cgst: d.gst.cgst,
+                        sgst: d.gst.sgst,
+                        igst: d.gst.igst,
+                        isIgst: d?.gst?.igst ? true : false,
+                        hsn: d.gst.hsn
+                    } : undefined
+                })),
+                debitEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
+                    id: undefined, //d.id,
+                    tranDetailsId: undefined, //d.id, // The id is replaced by some guid, so storing in tranDetailsId
+                    accId: d.accId as string | null,
+                    remarks: d.remarks,
+                    dc: d.dc,
+                    amount: d.amount,
+                    tranHeaderId: d.tranHeaderId,
+                    lineRefNo: d.lineRefNo,
+                    instrNo: d.instrNo,
+                    gst: d?.gst?.id ? {
+                        id: undefined, //d.gst.id,
+                        gstin: d.gst.gstin,
+                        rate: d.gst.rate,
+                        cgst: d.gst.cgst,
+                        sgst: d.gst.sgst,
+                        igst: d.gst.igst,
+                        isIgst: d?.gst?.igst ? true : false,
+                        hsn: d.gst.hsn
+                    } : undefined
+                })),
+            })
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (New tab)
+        } catch (e: any) {
+            console.error(e);
+        }
+    }
+
     async function handleOnEdit(data: RowDataType) {
         try {
             const editData: any = await getVoucherDetails(data.id)
@@ -383,8 +447,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 tranTypeId: tranHeader.tranTypeId,
                 autoRefNo: tranHeader.autoRefNo,
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
-                // isGst: voucherEditData?.tranDetails?.some((d: VoucherTranDetailsType) => d.gst !== null),
-                isGst: hasGstin,
+                isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
                 showGstInHeader: voucherType !== 'Contra',
                 deletedIds: [],
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({

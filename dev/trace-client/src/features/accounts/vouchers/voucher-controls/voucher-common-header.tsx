@@ -94,7 +94,7 @@ export function VoucherCommonHeader() {
                                     ? "bg-red-500 text-white border-red-600"
                                     : "bg-white text-gray-600 border-gray-300"
                             )}
-                            onClick={() => setValue("isGst", false, { shouldDirty: true })}
+                            onClick={handleOnClickNoGst}
                         >
                             No
                         </button>
@@ -104,4 +104,28 @@ export function VoucherCommonHeader() {
             <FormActionButtons className="mt-8 ml-auto" />
         </div>
     )
+
+    function handleOnClickNoGst() {
+        const debitEntries = watch("debitEntries") || [];
+        const creditEntries = watch("creditEntries") || [];
+        debitEntries.forEach((entry, index) => {
+            if (entry?.gst?.id) {
+                const existing = watch(`debitEntries.${index}.deletedIds`) || [];
+                const updated = [...existing, entry.gst.id];
+                setValue(`debitEntries.${index}.deletedIds`, updated, { shouldDirty: true });
+            }
+            setValue(`debitEntries.${index}.gst`, undefined, { shouldDirty: true });
+        });
+
+        creditEntries.forEach((entry, index) => {
+            if (entry?.gst?.id) {
+                const existing = watch(`creditEntries.${index}.deletedIds`) || [];
+                const updated = [...existing, entry.gst.id];
+                setValue(`creditEntries.${index}.deletedIds`, updated, { shouldDirty: true });
+            }
+            setValue(`creditEntries.${index}.gst`, undefined, { shouldDirty: true });
+        });
+
+        setValue("isGst", false, { shouldDirty: true });
+    }
 }

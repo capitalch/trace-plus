@@ -16,7 +16,35 @@ valid gstin: 24AAACC1206D1ZM
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
-	- When Gst applicable is false then set gst id in deleted Ids in edit mode
+	- bugs
+		- contra restrict same cash / bank ac in debit and credit both
+	- Testing
+		- new 
+															- New entry without gst in payment, receipt, contra, journal
+																- check Trial balance
+																- check new entry in TranH and tranD
+			- delete
+				- check trial balance
+				- check DB
+			- New entry with gst in payment, receipt, contra, journal
+				- check Trial balance
+				- check new entry in TranH and tranD
+			- delete
+				- check trial balance
+				- check DB
+		- Edit
+			- entry without gst in payment, receipt, contra, journal
+				- check Trial balance
+				- check edited entries in db
+			- entry without gst in payment, receipt, contra, journal
+				- check Trial balance
+				- check edited entries in db
+			- change with gst to without gst
+				- Check DB
+			- change without gst to with gst
+				- check db
+																- resetDetails not working fine
+																- When Gst applicable is false then set gst id in deleted Ids in edit mode
 																- Interchange voucher types effect when new / edit mode
 																- Don't allow change voucher type in edit mode
 																- Set default GST rate
@@ -26,7 +54,8 @@ valid gstin: 24AAACC1206D1ZM
 																- No GST for contra type
 																- All types of vouchers implement
 																- filter view on Voucher Type id
-	- Copy voucher feature
+																- Copy voucher feature
+																	- Through syncfusion grid
 																- In view mode remove title 'New Entry'
 
 - Final accounts

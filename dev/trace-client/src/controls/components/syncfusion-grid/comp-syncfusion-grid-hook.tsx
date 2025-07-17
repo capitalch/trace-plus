@@ -20,6 +20,7 @@ export function useCompSyncFusionGrid({
   dataSource,
   dbName,
   dbParams,
+  copyColumnWidth,
   deleteColumnWidth,
   editColumnWidth,
   hasCheckBoxSelection,
@@ -27,6 +28,7 @@ export function useCompSyncFusionGrid({
   indexColumnWidth,
   instance,
   loadData,
+  onCopy,
   onDelete,
   onEdit,
   onPreview,
@@ -62,7 +64,6 @@ export function useCompSyncFusionGrid({
     dbName: dbName,
     getQueryArgs: () => args,
     instance: instance,
-    // isExecQueryOnLoad: isLoadOnInit
   });
 
   const selectedData: any = useSelector((state: RootStateType) => {
@@ -123,6 +124,25 @@ export function useCompSyncFusionGrid({
         );
       }
     );
+
+    if (onCopy) {
+      colDirectives.unshift(
+        <ColumnDirective
+          headerText="C"
+          width={copyColumnWidth || "40"}
+          commands={[
+            {
+              title: 'Copy',
+              type: 'None',
+              buttonOption: {
+                content: '📄', // fallback icon using emoji
+                cssClass: 'e-flat e-grid-copy text-green-500',
+              }
+            }
+          ]}
+        />
+      );
+    }
 
     if (onDelete) {
       colDirectives.unshift(
@@ -238,6 +258,10 @@ export function useCompSyncFusionGrid({
     if (buttonClass?.includes('e-grid-remove')) {
       onRemove?.(rowData);
       return
+    }
+    if (buttonClass?.includes('e-grid-copy')) {
+      onCopy?.(rowData);
+      return;
     }
   }
 

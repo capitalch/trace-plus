@@ -24,7 +24,7 @@ export function useUtilsInfo() {
     const hasGstin: boolean = unitInfo.gstin ? true : false
     const genericUpdateQueryName: string = GraphQLQueriesMapNames.genericUpdate;
     const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
-    const defaultGstRate = generalSettings.defaultGstRate || 0
+    const defaultGstRate = generalSettings?.defaultGstRate || 0
     return ({
         branchId
         , branchCode

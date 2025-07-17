@@ -20,7 +20,6 @@ import {
   Edit,
   VirtualScroll,
   Page,
-  // ColumnDirective,
   CommandColumn
 } from "@syncfusion/ej2-react-grids";
 import _ from 'lodash'
@@ -47,6 +46,7 @@ export function CompSyncFusionGrid({
   dbName,
   dbParams,
   dataSource,
+  copyColumnWidth,
   deleteColumnWidth,
   editColumnWidth,
   editSettings,
@@ -60,6 +60,7 @@ export function CompSyncFusionGrid({
   loadData,
   minWidth = "1200px",
   onCellEdit,
+  onCopy = undefined,
   onDelete = undefined,
   onEdit = undefined,
   onPreview = undefined,
@@ -72,11 +73,9 @@ export function CompSyncFusionGrid({
   rowHeight,
   rowSelected,
   searchFields,
-  // setRefresh,
   sqlArgs,
   sqlId
 }: CompSyncFusionGridType) {
-  // const [, setRefresh] = useState({})
   const context: GlobalContextType = useContext(GlobalContext);
   const gridRef: any = useRef({});
   const {
@@ -93,6 +92,7 @@ export function CompSyncFusionGrid({
     dataSource,
     dbName,
     dbParams,
+    copyColumnWidth,
     deleteColumnWidth,
     editColumnWidth,
     indexColumnWidth,
@@ -100,6 +100,7 @@ export function CompSyncFusionGrid({
     hasCheckBoxSelection,
     hasIndexColumn,
     loadData,
+    onCopy,
     onDelete,
     onEdit,
     onPreview,
@@ -249,6 +250,7 @@ export type CompSyncFusionGridType = {
   dataSource?: any;
   dbName?: string;
   dbParams?: { [key: string]: string | undefined };
+  copyColumnWidth?: number;
   deleteColumnWidth?: number;
   editColumnWidth?: number;
   editSettings?: {
@@ -267,6 +269,7 @@ export type CompSyncFusionGridType = {
   loadData?: () => void;
   minWidth?: string;
   onCellEdit?: (args: any) => void;
+  onCopy?: (args: any) => void;
   onDelete?: (id: string | number, isUsed?: boolean | undefined) => void;
   onEdit?: (args: any) => void;
   onPreview?: (args: any) => void;
