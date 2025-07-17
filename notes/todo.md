@@ -18,20 +18,21 @@ valid gstin: 24AAACC1206D1ZM
 - Vouchers
 	- bugs
 		- contra restrict same cash / bank ac in debit and credit both
+		- in Journals submit takes place even if debit credit not same
 	- Testing
 		- new 
 															- New entry without gst in payment, receipt, contra, journal
 																- check Trial balance
 																- check new entry in TranH and tranD
-			- delete
-				- check trial balance
-				- check DB
-			- New entry with gst in payment, receipt, contra, journal
-				- check Trial balance
-				- check new entry in TranH and tranD
-			- delete
-				- check trial balance
-				- check DB
+															- delete
+																- check trial balance
+																- check DB
+															- New entry with gst in payment, receipt, contra, journal
+																- check Trial balance
+																- check new entry in TranH and tranD and gst table
+															- delete
+																- check trial balance
+																- check DB
 		- Edit
 			- entry without gst in payment, receipt, contra, journal
 				- check Trial balance

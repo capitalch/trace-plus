@@ -93,6 +93,7 @@ export function AllVouchers() {
     async function finalizeAndSubmitVoucher(data: VoucherFormDataType) {
         console.log(data)
         try {
+            // check client side debit credit validation
             const xData: XDataObjectType = getTranHData();
             const deletedIds = [...xData.deletedIds]
             xData.deletedIds = undefined
