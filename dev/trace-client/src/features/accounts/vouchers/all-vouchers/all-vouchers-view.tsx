@@ -32,7 +32,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         dbName,
         decodedDbParamsObject,
         finYearId,
-        hasGstin
+        // hasGstin
     } = useUtilsInfo();
     const meta = useRef<MetaType>({
         tranH: {
@@ -382,7 +382,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 tranTypeId: tranHeader.tranTypeId,
                 // autoRefNo: tranHeader.autoRefNo,
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
-                isGst: hasGstin,
+                isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
                 showGstInHeader: voucherType !== 'Contra',
                 deletedIds: [],
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
