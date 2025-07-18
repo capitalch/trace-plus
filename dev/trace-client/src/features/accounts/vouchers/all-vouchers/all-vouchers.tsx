@@ -15,6 +15,7 @@ import { AllVouchersView } from "./all-vouchers-view";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useRef } from "react";
 import { Messages } from "../../../../utils/messages";
+import _ from "lodash";
 
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
@@ -146,19 +147,19 @@ export function AllVouchers() {
     }
 
     function getTranDDeails() {
-        const deletedIds = getValues("deletedIds")  || []
+        const deletedIds = getValues("deletedIds") || []
         const details: TraceDataObjectType[] = [{
             tableName: DatabaseTablesMap.TranD,
             fkeyName: "tranHeaderId",
             xData: getTranDData(),
-            deletedIds:[...deletedIds]
+            deletedIds: [...deletedIds]
         }];
         return (details)
     }
 
     function getTranDData(): XDataObjectType[] {
-        const creditEntries = watch("creditEntries") || [];
-        const debitEntries = watch("debitEntries") || [];
+        const creditEntries = getValues("creditEntries") || [];
+        const debitEntries = getValues("debitEntries") || [];
         const credits: XDataObjectType[] = creditEntries.map((entry) => ({
             id: entry.id || undefined,
             accId: entry.accId || null,
@@ -188,22 +189,54 @@ export function AllVouchers() {
     }
 
     function getExtGstTranDDetails(entry: VoucherLineItemEntryDataType): TraceDataObjectType | undefined {
-        if (!(getValues("isGst") && entry.gst?.rate)) return undefined;
-        return {
+        const hasGstData = getValues("isGst") && entry.gst?.rate;
+        const deletedIds = getDeletedIdsFromDebitAndCreditEntries();
+
+        // If no GST data and no deleted IDs, return undefined
+        if (!hasGstData && _.isEmpty(deletedIds)) return undefined;
+
+        const trace: TraceDataObjectType = {
             tableName: DatabaseTablesMap.ExtGstTranD,
-            fkeyName: "tranDetailsId",
-            xData: {
+        };
+
+        if (hasGstData) {
+            trace.fkeyName = "tranDetailsId";
+            trace.xData = {
                 id: entry?.gst?.id || undefined,
                 gstin: entry?.gst?.gstin || null,
                 rate: entry?.gst?.rate || 0,
                 cgst: entry?.gst?.cgst || 0,
                 sgst: entry?.gst?.sgst || 0,
                 igst: entry?.gst?.igst || 0,
-                isInput: entry.dc === 'D' ? true : false,
-                tranDetailsId: entry.id || undefined,
+                isInput: entry.dc === 'D',
+                // tranDetailsId: entry.id || undefined,
                 hsn: entry?.gst?.hsn || null,
+            };
+        }
+
+        if (!_.isEmpty(deletedIds)) {
+            trace.deletedIds = deletedIds;
+        }
+
+        return trace;
+    }
+
+    function getDeletedIdsFromDebitAndCreditEntries() {
+        const deletedIds: number[] = []
+        const creditEntries = getValues("creditEntries") || [];
+        const debitEntries = getValues("debitEntries") || [];
+        creditEntries.forEach((entry: any) => {
+            if (entry?.deletedIds?.length) {
+                deletedIds.push(...entry.deletedIds);
             }
-        };
+        });
+
+        debitEntries.forEach((entry: any) => {
+            if (entry?.deletedIds?.length) {
+                deletedIds.push(...entry.deletedIds);
+            }
+        });
+        return deletedIds;
     }
 
     function resetAll() {
