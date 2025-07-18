@@ -19,7 +19,9 @@ valid gstin: 24AAACC1206D1ZM
 	- Retention of data for voucher when navigate to other menu item with help of redux
 	- bugs
 		- Error in deletion of gst or toggle gst
-		- Check when tranD row is deleted then ExtGstTranD row is also deleted: Yes cascade
+			- In save method
+				- Promote the deletedIds of debitEntries and creditEntries to getExtGstTranDDetails portion of xData
+															- Check when tranD row is deleted then ExtGstTranD row is also deleted: Yes cascade
 
 															- Delete of tranD rows is not happening
 															- contra restrict same cash / bank ac in debit and credit both
