@@ -270,9 +270,8 @@ export function VoucherLineItemEntry({
                                             onClick={() => {
                                                 if (fields.length > 1) {
                                                     const deletedIds = getValues('deletedIds')
-                                                    // console.log(field.id)
                                                     if (field.tranDetailsId) {
-                                                        deletedIds.push(field.tranDetailsId)
+                                                        deletedIds.push(field.tranDetailsId) // for server side deletion
                                                     }
                                                     remove(index)
                                                 }

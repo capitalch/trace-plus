@@ -170,7 +170,8 @@ async function doGenericUpdate({
   buCode,
   dbName,
   tableName,
-  xData
+  xData,
+  deletedIds
 }: DoGenericUpdateType) {
   const userDetails: UserDetailsType = Utils.getUserDetails() || {};
   const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
@@ -178,7 +179,8 @@ async function doGenericUpdate({
     tableName: tableName,
     dbParams: decodedDbParamsObject,
     xData: xData,
-    buCode: buCode
+    buCode: buCode,
+    deletedIds: deletedIds
   };
   const q: any = GraphQLQueriesMap.genericUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.genericUpdate;
@@ -190,7 +192,8 @@ async function doValidateDebitCreditAndUpdate({
   buCode,
   dbName,
   tableName,
-  xData
+  xData,
+  deletedIds
 }: DoGenericUpdateType) {
   const userDetails: UserDetailsType = Utils.getUserDetails() || {};
   const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
@@ -198,7 +201,8 @@ async function doValidateDebitCreditAndUpdate({
     tableName: tableName,
     dbParams: decodedDbParamsObject,
     xData: xData,
-    buCode: buCode
+    buCode: buCode,
+    deletedIds:deletedIds
   };
   const q: any = GraphQLQueriesMap.validateDebitCreditAndUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.validateDebitCreditAndUpdate;

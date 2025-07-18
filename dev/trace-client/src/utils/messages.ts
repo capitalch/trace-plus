@@ -20,6 +20,7 @@ const Messages = {
   errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
   errCurrentAndNewPwdCannotBeSame: 'Current and new passwords cannot be same',
   errCurrentFinYear: 'There was some error in current financial year',
+  errDebitCreditMismatch:'Total debits do not match total credits or value is 0',
   errDeletingRecord:'Could not delete the record',
   errEmailExistsForClient: 'This email already exists for the current client',
   errExtDbParamsFormatError:
@@ -59,6 +60,7 @@ const Messages = {
   errQtySrNoNotMatch: 'Qty and serial number count do not match',
   errRequired: 'This value is required',
   errRequiredShort: "Required",
+  errSameAccountCannotAppearInDebitAndCredit: 'Same Account cannot appear in both Debit and Credit',
   errSameCurrentUidAndNewUid: 'Current uid and new uid cannot be same',
   errSameCurrentPwdAndNewPwd:
     'Current password and new password cannot be same',

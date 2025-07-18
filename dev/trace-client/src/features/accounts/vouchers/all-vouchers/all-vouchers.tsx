@@ -13,10 +13,16 @@ import { AppDispatchType, } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+import { useRef } from "react";
+import { Messages } from "../../../../utils/messages";
 
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.allVouchers;
+    const meta = useRef<MetaType>({
+        totalDebits: 0,
+        totalCredits: 0
+    })
     const { branchId, buCode, dbName, finYearId, hasGstin } = useUtilsInfo();
     const methods = useForm<VoucherFormDataType>(
         {
@@ -93,16 +99,26 @@ export function AllVouchers() {
     async function finalizeAndSubmitVoucher(data: VoucherFormDataType) {
         console.log(data)
         try {
-            // check client side debit credit validation
             const xData: XDataObjectType = getTranHData();
-            const deletedIds = [...xData.deletedIds]
+            // ✅ Check total debits and credits
+            if ((meta.current.totalCredits !== meta.current.totalDebits) || (meta.current.totalCredits === 0) || (meta.current.totalDebits === 0)) {
+                Utils.showAlertMessage('Error', Messages.errDebitCreditMismatch)
+                return
+            }
+            // ✅ Check for duplicate accId in debit and credit
+            const creditAccIds = new Set(data.creditEntries.map(entry => entry.accId).filter(Boolean));
+            const duplicateAccId = data.debitEntries.find(entry => creditAccIds.has(entry.accId));
+            if (duplicateAccId) {
+                Utils.showAlertMessage("Error", Messages.errSameAccountCannotAppearInDebitAndCredit);
+                return;
+            }
+            // ✅ Proceed with saving
             xData.deletedIds = undefined
             await Utils.doValidateDebitCreditAndUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
                 tableName: DatabaseTablesMap.TranH,
                 xData: xData,
-                deletedIds: deletedIds
             });
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
@@ -125,16 +141,17 @@ export function AllVouchers() {
             branchId: branchId,
             posId: 1,
             autoRefNo: getValues("autoRefNo") || undefined,
-            deletedIds: getValues("deletedIds") || undefined,
             xDetails: getTranDDeails(),
         };
     }
 
     function getTranDDeails() {
+        const deletedIds = getValues("deletedIds")  || []
         const details: TraceDataObjectType[] = [{
             tableName: DatabaseTablesMap.TranD,
             fkeyName: "tranHeaderId",
-            xData: getTranDData()
+            xData: getTranDData(),
+            deletedIds:[...deletedIds]
         }];
         return (details)
     }
@@ -164,6 +181,9 @@ export function AllVouchers() {
             instrNo: entry.instrNo || null,
             xDetails: getExtGstTranDDetails(entry),
         }));
+        // ✅ Calculate totals
+        meta.current.totalDebits = debits.reduce((acc: number, d) => acc + (d.amount || 0), 0);
+        meta.current.totalCredits = credits.reduce((acc: number, c) => acc + (c.amount || 0), 0);
         return [...credits, ...debits];
     }
 
@@ -229,7 +249,7 @@ export type VoucherFormDataType =
         voucherType: VourcherType;
         creditEntries: VoucherLineItemEntryDataType[];
         debitEntries: VoucherLineItemEntryDataType[];
-        deletedIds: number[];
+        deletedIds: number[]; // of TranD table
         showGstInHeader: boolean;
     }
 
@@ -244,7 +264,7 @@ type VoucherLineItemEntryDataType = {
     instrNo?: string | null;
     gst?: GstDataType
     tranDetailsId?: number;
-    deletedIds: number[];
+    deletedIds: number[]; // for ExtGstTranDTable
 }
 
 type GstDataType = {
@@ -257,4 +277,9 @@ type GstDataType = {
     isInput?: boolean;
     hsn?: string | null;
     isIgst: boolean;
+}
+
+type MetaType = {
+    totalDebits: number;
+    totalCredits: number;
 }

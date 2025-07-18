@@ -16,9 +16,14 @@ valid gstin: 24AAACC1206D1ZM
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
+	- Retention of data for voucher when navigate to other menu item with help of redux
 	- bugs
-		- contra restrict same cash / bank ac in debit and credit both
-		- in Journals submit takes place even if debit credit not same
+		- Error in deletion of gst or toggle gst
+		- Check when tranD row is deleted then ExtGstTranD row is also deleted: Yes cascade
+
+															- Delete of tranD rows is not happening
+															- contra restrict same cash / bank ac in debit and credit both
+															- in Journals submit takes place even if debit credit not same
 	- Testing
 		- new 
 															- New entry without gst in payment, receipt, contra, journal
@@ -35,15 +40,18 @@ valid gstin: 24AAACC1206D1ZM
 																- check DB
 		- Edit
 			- entry without gst in payment, receipt, contra, journal
+				- edit
 				- check Trial balance
 				- check edited entries in db
-			- entry without gst in payment, receipt, contra, journal
+			- entry with gst
 				- check Trial balance
 				- check edited entries in db
 			- change with gst to without gst
 				- Check DB
 			- change without gst to with gst
 				- check db
+		- Navigate
+			- edit mode chane buttons and check
 																- resetDetails not working fine
 																- When Gst applicable is false then set gst id in deleted Ids in edit mode
 																- Interchange voucher types effect when new / edit mode
