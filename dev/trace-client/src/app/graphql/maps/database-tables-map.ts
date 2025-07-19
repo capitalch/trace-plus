@@ -27,3 +27,10 @@ export const DatabaseTablesMap = {
   TranD: "TranD",
   ExtBusinessContactsAccM: "ExtBusinessContactsAccM",
 };
+
+const AccClassM = {
+  name:"AccClassM"
+}
+export const AllTables = {
+  AccClassM
+}

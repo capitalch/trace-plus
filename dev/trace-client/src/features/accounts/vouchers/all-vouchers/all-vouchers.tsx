@@ -13,7 +13,7 @@ import { AppDispatchType, } from "../../../../app/store/store";
 import { useDispatch } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Messages } from "../../../../utils/messages";
 import _ from "lodash";
 
@@ -44,6 +44,13 @@ export function AllVouchers() {
             content: <AllVouchersView instance={instance} />
         }
     ];
+
+    useEffect(()=>{
+        console.log('all vouchers')
+        return(()=>{
+            console.log('Exiting all vouchers')
+        })
+    },[])
 
     return (
         <FormProvider {...extendedMethods}>
@@ -121,6 +128,7 @@ export function AllVouchers() {
                 tableName: DatabaseTablesMap.TranH,
                 xData: xData,
             });
+            
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
@@ -166,7 +174,7 @@ export function AllVouchers() {
             remarks: entry.remarks || null,
             dc: entry.dc,
             amount: entry.amount,
-            tranHeaderId: entry.tranHeaderId || undefined,
+            // tranHeaderId: entry.tranHeaderId || undefined,
             lineRefNo: entry.lineRefNo || null,
             instrNo: entry.instrNo || null,
             xDetails: getExtGstTranDDetails(entry),
@@ -177,7 +185,7 @@ export function AllVouchers() {
             remarks: entry.remarks || null,
             dc: entry.dc,
             amount: entry.amount,
-            tranHeaderId: entry.tranHeaderId || undefined,
+            // tranHeaderId: entry.tranHeaderId || undefined,
             lineRefNo: entry.lineRefNo || null,
             instrNo: entry.instrNo || null,
             xDetails: getExtGstTranDDetails(entry),

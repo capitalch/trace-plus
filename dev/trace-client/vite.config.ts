@@ -8,8 +8,15 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    // sourcemap: true // Enable source maps for production builds
-    // sourcemap: process.env.NODE_ENV !== 'production'
-  },
+    minify: 'terser', // Use Terser instead of default esbuild
+    terserOptions: {
+      compress: true,
+      mangle: true, // <-- this enables variable/function name mangling
+      format: {
+        comments: false, // remove comments
+      }
+    },
+    sourcemap: false // disable source map generation
+  }
   // base: './', // Set base path for assets
 })

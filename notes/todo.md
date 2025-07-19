@@ -2,6 +2,8 @@
 entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
+## security
+	- Change databaseTablesMap to tables schema type variables
 ## QA for vouchers
 	- Check: When voucher deleted the gst entry in ext table should also delete
 	- new voucher entry
@@ -16,10 +18,11 @@ valid gstin: 24AAACC1206D1ZM
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
+	- print multi vouchers together
 	- Retention of data for voucher when navigate to other menu item with help of redux
 	- bugs
-		- copy voucher make the gst Yes: resolved
-		- check copy voucher feature
+													- copy voucher make the gst Yes: resolved
+													- check copy voucher feature
 													- Error in deletion of gst or toggle gst
 														- In save method
 															- Promote the deletedIds of debitEntries and creditEntries to getExtGstTranDDetails portion of xData
@@ -29,7 +32,7 @@ valid gstin: 24AAACC1206D1ZM
 															- contra restrict same cash / bank ac in debit and credit both
 															- in Journals submit takes place even if debit credit not same
 	- Testing
-		- new 
+														- new 
 															- New entry without gst in payment, receipt, contra, journal
 																- check Trial balance
 																- check new entry in TranH and tranD
@@ -42,20 +45,20 @@ valid gstin: 24AAACC1206D1ZM
 															- delete
 																- check trial balance
 																- check DB
-		- Edit
-			- entry without gst in payment, receipt, contra, journal
-				- edit
-				- check Trial balance
-				- check edited entries in db
-			- entry with gst
-				- check Trial balance
-				- check edited entries in db
-			- change with gst to without gst
-				- Check DB
-			- change without gst to with gst
-				- check db
-		- Navigate
-			- edit mode chane buttons and check
+															- Edit
+																- entry without gst in payment, receipt, contra, journal
+																	- edit
+																	- check Trial balance
+																	- check edited entries in db
+																- entry with gst
+																	- check Trial balance
+																	- check edited entries in db
+																- change with gst to without gst
+																	- Check DB
+																- change without gst to with gst
+																	- check db
+															- Navigate
+																- edit mode chane buttons and check
 																- resetDetails not working fine
 																- When Gst applicable is false then set gst id in deleted Ids in edit mode
 																- Interchange voucher types effect when new / edit mode

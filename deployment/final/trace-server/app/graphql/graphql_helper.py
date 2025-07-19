@@ -23,6 +23,7 @@ from app.core.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_e
 from app.config import Config
 from app.graphql.handlers.create_bu import create_bu
 from app.graphql.handlers.import_secured_controls import import_secured_controls
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -298,27 +299,6 @@ async def generic_update_helper(info, dbName: str, value: str):
         return create_graphql_exception(e)
     return data
 
-async def validate_debit_credit_and_update_helper(info, dbName: str, value: str):
-    data = {}
-    try:
-        valueString = unquote(value)
-        valueDict = json.loads(valueString)
-        # Code to validate debit credit
-        
-        dbParams = valueDict.get("dbParams", None)
-        schema = valueDict.get("buCode", None)
-        sqlObj = json.loads(valueString)
-        data = await exec_sql_object(
-            dbName=dbName, db_params=dbParams, schema=schema, sqlObject=sqlObj
-        )
-
-    except Exception as e:
-        # Need to return error as data. Raise error does not work with GraphQL
-        # At client check data for error attribut and take action accordingly
-        return create_graphql_exception(e)
-    return data
-
-
 async def generic_update_query_helper(info, dbName: str, value: str):
     data = {}
     try:
@@ -480,7 +460,48 @@ async def update_user_helper(info, value: str):
         return create_graphql_exception(e)
     return data
 
+async def validate_debit_credit_and_update_helper(info, dbName: str, value: str):
+    data = {}
+    try:
+        valueString = unquote(value)
+        valueDict = json.loads(valueString)
+        # Code to validate debit credit
+        isDebitsEqualCredits = validate_each_tran_entry(valueDict)
+        if(not isDebitsEqualCredits):
+            raise AppHttpException(
+            message="Error",
+            detail=Messages.err_debit_credit_validation_error,
+            error_code="e1030",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+        dbParams = valueDict.get("dbParams", None)
+        schema = valueDict.get("buCode", None)
+        sqlObj = json.loads(valueString)
+        data = await exec_sql_object(
+            dbName=dbName, db_params=dbParams, schema=schema, sqlObject=sqlObj
+        )
 
+    except Exception as e:
+        # Need to return error as data. Raise error does not work with GraphQL
+        # At client check data for error attribut and take action accordingly
+        return create_graphql_exception(e)
+    return data
+
+def validate_each_tran_entry(data: dict) -> bool:
+    try:
+        x_details = data["xData"]["xDetails"]
+        for detail_group in x_details:
+            entries = detail_group.get("xData", [])
+            debit_total = sum(Decimal(str(x.get("amount", 0))) for x in entries if x.get("dc") == "D")
+            credit_total = sum(Decimal(str(x.get("amount", 0))) for x in entries if x.get("dc") == "C")
+
+            if debit_total != credit_total:
+                print(f"Mismatch found: Debit={debit_total}, Credit={credit_total}")
+                return False
+        return True
+    except (KeyError, IndexError, TypeError) as e:
+        print(f"Validation error: {e}")
+        return False
 # Local helper for helper methods
 
 

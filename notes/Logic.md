@@ -1,3 +1,92 @@
+# Intended logic for security
+✅ 1. Use HTTPS Only
+Always serve both frontend and backend over HTTPS to prevent token theft over the network.
+
+Enforce HTTPS with HSTS headers.
+
+✅ 2. Short-Lived Access Tokens + Refresh Tokens
+Use short-lived access tokens (e.g., 5–15 minutes).
+
+Keep a refresh token (longer-lived) in HTTP-only secure cookies.
+
+This limits the damage if an access token is stolen.
+
+✅ 3. Bind Token to Client Fingerprint (Optional)
+Attach some client fingerprinting data when issuing the token, such as:
+
+User-Agent string
+
+IP address (if not on mobile networks)
+
+Device ID (if using PWA or native wrappers)
+Then, validate these on each request (within reason — IP changes on mobile).
+
+But note: this is not foolproof and can cause issues with NAT/shared IPs.
+
+✅ 4. Token Rotation
+Rotate access tokens every few minutes.
+
+Detect if a token is reused (e.g., after it's been rotated), and revoke the session.
+
+✅ 5. Add a Custom App Signature Header
+To identify your client app (i.e. detect Postman/curl), do the following:
+
+When building your app, include a unique App-Secret string in the code (obfuscate it).
+
+On each request, the client sends a custom header like:
+
+http
+Copy
+Edit
+X-App-Signature: abc123xyz
+The server validates this secret.
+
+🔒 This is not unbreakable, but raises the bar. Don’t hardcode obvious secrets.
+
+✅ 6. Content Security Policy (CSP) + CORS
+CSP prevents your frontend from being injected with malicious code.
+
+CORS should allow only your frontend origin(s), not *.
+
+✅ 7. Request Rate Limiting / Throttling
+Add request throttling on the server per token or IP.
+
+Prevents brute-force abuse of leaked tokens.
+
+✅ 8. Audit Logs + Anomaly Detection
+Track:
+
+Which IP used which token
+
+Unexpected request patterns (e.g., batch updates from curl)
+
+Set up alerts for high-risk behavior.
+
+✅ 9. Don't Trust Client-Provided Table/Field Names
+⚠️ You mentioned:
+"I use JSON to update data which contains table name, field names..."
+
+This is risky. Don’t allow the client to dynamically control:
+
+table names
+
+field names
+
+SQL fragments
+
+Instead, use internal mapping from validated field names to SQL operations.
+
+✅ 10. Consider GraphQL Persisted Queries (Advanced)
+To prevent arbitrary queries/mutations from being sent:
+
+Only allow pre-approved persisted queries (hash-based).
+
+Postman/curl can't forge these easily without access to your frontend build.
+
+✅ 11. Use CSRF Protection for Sensitive Endpoints
+Even if you're using access tokens, for cookie-based auth, CSRF tokens are needed.
+
+
 # logic for initialization
 - account-options-info: container for bu, finYear, branch
     - sets current bu in redux
