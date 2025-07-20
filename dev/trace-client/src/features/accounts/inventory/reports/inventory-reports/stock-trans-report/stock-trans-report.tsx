@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { shallowEqual, useSelector } from "react-redux";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
-import { RootStateType } from "../../../../../../app/store/store";
+import { RootStateType } from "../../../../../../app/store";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";

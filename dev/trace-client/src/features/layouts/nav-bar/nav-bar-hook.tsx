@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
-import { AppDispatchType } from "../../../app/store/store"
+import { AppDispatchType } from "../../../app/store"
 import { UserTypesEnum } from "../../../utils/global-types-interfaces-enums"
 import { SuperAdminMenuButton } from "./super-admin-menu-button"
 import { AccountsMenuButton } from "./accounts-menu-button"

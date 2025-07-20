@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useForm } from "react-hook-form";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";

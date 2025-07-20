@@ -21,9 +21,11 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
     const totalCredits = creditEntries.reduce((sum: number, entry: any) => sum + (entry.amount || 0), 0);
     const isBalanced = totalDebits === totalCredits;
 
+    // console.log('bal:',isBalanced)
+    // console.log('dirty:', isDirty)
     return (
         <div className={clsx("flex h-10 gap-4 mr-6", className)}>
-
+            {/* <button type="button" onClick={handleOnTest}>Test</button> */}
             {/* Reset */}
             <button
                 onClick={resetAll}
@@ -42,6 +44,10 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
                 {isSubmitting ? "Submitting..." : "Submit"}
             </button>
         </div>)
+
+        // function handleOnTest(){
+        //     alert(`isDirty:${isDirty} isBalanced:${isBalanced}`)
+        // }
 }
 
 type FormActionButtonsType = {

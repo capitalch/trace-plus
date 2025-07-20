@@ -2,7 +2,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { allFinYearsBranchesSelectorFn, BranchType, FinYearType, LoginType, setCurrentBranch, setCurrentFinYear } from "../../../login/login-slice"
 import { useEffect } from "react"
 import { Utils } from "../../../../utils/utils"
-import { AppDispatchType } from "../../../../app/store/store"
+import { AppDispatchType } from "../../../../app/store"
 import { FinYearsOptions } from "./fin-years-options"
 import { BranchesOptions } from "./branches-options"
 import _ from 'lodash'

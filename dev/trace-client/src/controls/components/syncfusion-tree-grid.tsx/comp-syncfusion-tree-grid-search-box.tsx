@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../app/store";
 import { ChangeEvent, useContext, useEffect, useMemo } from "react";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { setSearchString } from '../../../app/graphql/query-helper-slice';

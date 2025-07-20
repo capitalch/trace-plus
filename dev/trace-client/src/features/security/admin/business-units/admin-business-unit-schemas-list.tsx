@@ -11,7 +11,7 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { BusinessUnitType, LoginType, setUserBusinessUnits } from "../../../login/login-slice"
-import { AppDispatchType } from "../../../../app/store/store"
+import { AppDispatchType } from "../../../../app/store"
 import { useDispatch } from "react-redux"
 
 export function AdminBusinessUnitSchemasLisr() {

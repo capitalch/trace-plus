@@ -5,7 +5,7 @@ import { IconPlusCircle } from "../../../../controls/icons/icon-plus-circle";
 import { allFinYearsSelectorFn, currentDateFormatSelectorFn, currentFinYearSelectorFn, FinYearType, setCurrentFinYear } from "../../../login/login-slice";
 import { Utils } from "../../../../utils/utils";
 import { FinYearsListModal } from "./fin-years-list-modal";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { Messages } from "../../../../utils/messages";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../../../app/store";
 import { setPurchaseReportIsPaneOpen } from "../../../../accounts-slice";
 import SlidingPane from "react-sliding-pane";
 import { PurchaseReportFilterContol } from "./purchase-report-filter-control";

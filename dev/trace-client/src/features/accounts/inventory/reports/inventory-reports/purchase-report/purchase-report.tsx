@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { shallowEqual, useSelector } from "react-redux";
-import { RootStateType } from "../../../../../../app/store/store";
+import { RootStateType } from "../../../../../../app/store";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";

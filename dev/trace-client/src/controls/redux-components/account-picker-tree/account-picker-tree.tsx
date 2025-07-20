@@ -1,6 +1,6 @@
 import { DdtSelectEventArgs, DropDownTreeComponent, FieldsModel } from "@syncfusion/ej2-react-dropdowns";
 import { useEffect, useRef, useState } from "react";
-import { AppDispatchType, RootStateType } from "../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../app/store";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";

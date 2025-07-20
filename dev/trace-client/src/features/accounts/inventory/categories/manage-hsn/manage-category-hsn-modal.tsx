@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map"
 import { useSelector } from "react-redux"
-import { RootStateType } from "../../../../../app/store/store"
+import { RootStateType } from "../../../../../app/store"
 import { compAppLoaderVisibilityFn } from "../../../../../controls/redux-components/comp-slice"
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook"
 import _ from "lodash"

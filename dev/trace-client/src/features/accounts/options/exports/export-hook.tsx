@@ -7,7 +7,7 @@ import { encodeObj } from "../../../../app/graphql/maps/graphql-queries-map";
 import dayjs from "dayjs";
 import { Messages } from "../../../../utils/messages";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { selectCompSwitchStateFn, showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 

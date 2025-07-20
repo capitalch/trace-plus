@@ -12,7 +12,7 @@ import { Messages } from "../../../../utils/messages";
 import { AdminNewRoleButton } from "./admin-new-role-button";
 import { AdminNewEditRole } from "./admin-new-edit-role";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 

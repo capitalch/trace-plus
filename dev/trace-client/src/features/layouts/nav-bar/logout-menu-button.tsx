@@ -2,7 +2,7 @@ import clsx from "clsx";
 import ClickAwayListener from "react-click-away-listener"
 import { useDispatch, useSelector } from "react-redux";
 import { setShowNavBarDropDown, showNavBarDropDownFn } from "../layouts-slice";
-import { AppDispatchType, RootStateType, } from "../../../app/store/store";
+import { AppDispatchType, RootStateType, } from "../../../app/store";
 import { doLogout, LoginType, UserDetailsType } from "../../login/login-slice";
 import { ChangeUid } from "./change-uid";
 import { ChangePassword } from "./change-password";

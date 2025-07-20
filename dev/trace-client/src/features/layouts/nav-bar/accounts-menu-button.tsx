@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setMenuItem } from "../layouts-slice"
-import { AppDispatchType } from "../../../app/store/store"
+import { AppDispatchType } from "../../../app/store"
 import { useNavigate } from "react-router-dom"
 
 

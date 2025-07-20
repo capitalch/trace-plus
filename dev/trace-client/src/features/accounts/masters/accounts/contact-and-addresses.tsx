@@ -12,7 +12,7 @@ import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import _ from "lodash";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
 
 export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {

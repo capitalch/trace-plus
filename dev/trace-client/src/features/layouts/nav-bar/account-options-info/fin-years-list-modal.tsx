@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import dayjs from 'dayjs'
 import { ListBoxComponent } from '@syncfusion/ej2-react-dropdowns';
 import { allFinYearsSelectorFn, currentDateFormatSelectorFn, currentFinYearSelectorFn, FinYearType, setCurrentFinYear } from '../../../login/login-slice';
-import { AppDispatchType } from '../../../../app/store/store';
+import { AppDispatchType } from '../../../../app/store';
 import { Utils } from '../../../../utils/utils';
 import { TraceDataObjectType } from '../../../../utils/global-types-interfaces-enums';
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from '../../../../app/graphql/maps/graphql-queries-map';

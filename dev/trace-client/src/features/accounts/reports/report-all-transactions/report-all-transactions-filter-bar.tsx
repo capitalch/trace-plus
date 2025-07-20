@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
-import { AppDispatchType, RootStateType } from "../../../../app/store/store"
+import { AppDispatchType, RootStateType } from "../../../../app/store"
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
 import { SlidingPaneEnum } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { AllTransactionsFilterType } from "../../accounts-slice"

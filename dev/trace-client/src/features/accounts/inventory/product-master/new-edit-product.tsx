@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useValidators } from "../../../../utils/validators-hook";

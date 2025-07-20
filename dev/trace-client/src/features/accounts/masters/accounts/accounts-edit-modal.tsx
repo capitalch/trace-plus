@@ -13,7 +13,7 @@ import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
 import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../app/store/store";
+import { RootStateType } from "../../../../app/store";
 import { useState } from "react";
 
 export function AccountsEditModal({

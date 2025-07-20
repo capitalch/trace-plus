@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import clsx from "clsx";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";

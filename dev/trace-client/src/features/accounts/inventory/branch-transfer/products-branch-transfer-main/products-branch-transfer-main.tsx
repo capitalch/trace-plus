@@ -4,7 +4,7 @@ import { ProductsBranchTransferHeader } from "./products-branch-transfer-header"
 import { ProductsBranchTransferLineItems } from "./products-branch-transfer-line-items";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { Utils } from "../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";

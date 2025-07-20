@@ -3,7 +3,7 @@ import _ from "lodash"
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { useSelector } from "react-redux"
-import { RootStateType } from "../../../../app/store/store"
+import { RootStateType } from "../../../../app/store"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 

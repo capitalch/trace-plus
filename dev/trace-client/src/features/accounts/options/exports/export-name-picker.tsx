@@ -1,4 +1,4 @@
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setExportName } from "../../accounts-slice";
 

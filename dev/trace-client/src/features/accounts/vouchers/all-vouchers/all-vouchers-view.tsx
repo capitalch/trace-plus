@@ -3,7 +3,7 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import clsx from "clsx";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
@@ -492,7 +492,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                         hsn: d.gst.hsn
                     } : undefined
                 })),
-            })
+            },)
             dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
         } catch (e: any) {
             console.error(e);

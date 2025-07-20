@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../app/store/store";
+import { RootStateType } from "../../../../app/store";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { useExport } from "./export-hook";
 import { ExportFileType, ExportNameType } from "./all-exports";

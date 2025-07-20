@@ -5,7 +5,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
   AppDispatchType,
   RootStateType
-} from "../../../../../../app/store/store";
+} from "../../../../../../app/store";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";

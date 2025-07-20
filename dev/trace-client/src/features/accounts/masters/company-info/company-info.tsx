@@ -13,7 +13,7 @@ import _ from "lodash";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { changeAccSettings } from "../../accounts-slice";
 import Select from "react-select";
 import useDeepCompareEffect from "use-deep-compare-effect";

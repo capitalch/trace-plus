@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
-import { RootStateType } from "../../../../app/store/store"
+import { RootStateType } from "../../../../app/store"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook"
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"

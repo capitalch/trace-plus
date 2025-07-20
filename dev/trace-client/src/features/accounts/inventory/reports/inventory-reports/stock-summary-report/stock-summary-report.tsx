@@ -1,5 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType, } from "../../../../../../app/store/store";
+import { AppDispatchType, RootStateType, } from "../../../../../../app/store";
 import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";

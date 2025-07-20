@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";

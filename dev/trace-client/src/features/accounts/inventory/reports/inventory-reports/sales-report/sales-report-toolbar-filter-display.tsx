@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../../../app/store/store";
+import { RootStateType } from "../../../../../../app/store";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { format } from "date-fns";
 

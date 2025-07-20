@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,

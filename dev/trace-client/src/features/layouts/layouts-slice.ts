@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { RootStateType } from '../../app/store/store'
+import { RootStateType } from '../../app/store'
 
 const initialState: InitialStateType = {
   sideBar: {

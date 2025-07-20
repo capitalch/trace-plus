@@ -9,16 +9,18 @@ import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { AppDispatchType, } from "../../../../app/store/store";
-import { useDispatch } from "react-redux";
+import { AppDispatchType, RootStateType, } from "../../../../app/store";
+import { useDispatch, useSelector } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useEffect, useRef } from "react";
 import { Messages } from "../../../../utils/messages";
 import _ from "lodash";
+import { clearVoucherFormData, saveVoucherFormData } from "../voucher-slice";
 
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
+    const savedFormData = useSelector((state: RootStateType) => state.vouchers.savedFormData);
     const instance = DataInstancesMap.allVouchers;
     const meta = useRef<MetaType>({
         totalDebits: 0,
@@ -29,7 +31,7 @@ export function AllVouchers() {
         {
             mode: "onTouched",
             criteriaMode: "all",
-            defaultValues: getDefaultVoucherFormValues()
+            defaultValues: savedFormData ?? getDefaultVoucherFormValues()
         });
     const { watch, getValues, setValue, reset } = methods;
     const extendedMethods = { ...methods, resetAll, resetDetails }
@@ -45,12 +47,19 @@ export function AllVouchers() {
         }
     ];
 
-    useEffect(()=>{
-        console.log('all vouchers')
-        return(()=>{
-            console.log('Exiting all vouchers')
+    useEffect(() => {
+        if (savedFormData) {
+            methods.reset(_.cloneDeep(savedFormData),);
+            setValue('toggle', !savedFormData.toggle, { shouldDirty: true }) // making forcefully dirty
+        }
+    }, [savedFormData, methods, setValue]);
+
+    useEffect(() => {
+        return (() => {
+            const data = getValues()
+            dispatch(saveVoucherFormData(data));
         })
-    },[])
+    }, [dispatch, getValues])
 
     return (
         <FormProvider {...extendedMethods}>
@@ -63,21 +72,27 @@ export function AllVouchers() {
                     <div className="sticky top-0 right-6 self-end z-5">
                         <VoucherTypeOptions className="absolute right-0 top-2 rounded" />
                     </div>
+                    {/* <button type="button" onClick={handleOnTest}>Test</button> */}
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
                 </CompAccountsContainer>
             </form>
         </FormProvider>
     )
 
-    function getDefaultVoucherFormValues() {
+    // function handleOnTest() {
+    //     const data = getValues()
+    //     console.log(data)
+    // }
+
+    function getDefaultVoucherFormValues(): VoucherFormDataType {
         return ({
             id: undefined,
             tranDate: format(new Date(), "yyyy-MM-dd"),
             userRefNo: null,
             remarks: null,
             tranTypeId: 2,
-            finYearId: finYearId,
-            branchId: branchId,
+            finYearId: finYearId || 0,
+            branchId: branchId || 1,
             posId: 1,
             autoRefNo: '',
             voucherType: 'Payment' as VourcherType,
@@ -86,6 +101,7 @@ export function AllVouchers() {
             debitEntries: [getDefaultEntry('D')],
             deletedIds: [],
             showGstInHeader: hasGstin,
+            toggle: true,
         })
     }
 
@@ -105,7 +121,7 @@ export function AllVouchers() {
     }
 
     async function finalizeAndSubmitVoucher(data: VoucherFormDataType) {
-        console.log(data)
+        // console.log(data)
         try {
             const xData: XDataObjectType = getTranHData();
             // ✅ Check total debits and credits
@@ -128,7 +144,7 @@ export function AllVouchers() {
                 tableName: DatabaseTablesMap.TranH,
                 xData: xData,
             });
-            
+
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
@@ -254,6 +270,7 @@ export function AllVouchers() {
         if (vchrType) {
             setValue('voucherType', vchrType)
         }
+        dispatch(clearVoucherFormData());
     }
 
     function resetDetails() {
@@ -261,14 +278,12 @@ export function AllVouchers() {
         setValue('autoRefNo', '')
         setValue('isGst', false)
         setValue('deletedIds', [])
-
-        setValue('creditEntries', [])
-        setValue('debitEntries', [])
-
-        setTimeout(() => {
-            setValue("creditEntries", [getDefaultEntry('C')])
-            setValue("debitEntries", [getDefaultEntry('D')])
-        }, 100)
+        setValue("creditEntries", [getDefaultEntry('C')])
+        setValue("debitEntries", [getDefaultEntry('D')])
+        // setTimeout(() => {
+        //     setValue("creditEntries", [getDefaultEntry('C')])
+        //     setValue("debitEntries", [getDefaultEntry('D')])
+        // }, 0)
     }
 }
 
@@ -292,6 +307,7 @@ export type VoucherFormDataType =
         debitEntries: VoucherLineItemEntryDataType[];
         deletedIds: number[]; // of TranD table
         showGstInHeader: boolean;
+        toggle: boolean; // For making the form forcefully dirty
     }
 
 type VoucherLineItemEntryDataType = {

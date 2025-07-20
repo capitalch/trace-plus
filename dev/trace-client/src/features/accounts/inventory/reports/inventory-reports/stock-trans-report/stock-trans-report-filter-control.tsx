@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../../../app/store";
 import { useEffect, useRef, useState } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { DdtSelectEventArgs, DropDownTreeComponent, FieldsModel } from "@syncfusion/ej2-react-dropdowns";

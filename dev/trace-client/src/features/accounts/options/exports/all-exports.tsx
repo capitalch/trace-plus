@@ -5,7 +5,7 @@ import { CompInstances } from "../../../../controls/redux-components/comp-instan
 import { CompSwitch } from "../../../../controls/redux-components/comp-switch";
 import { ExportFileTypeDropDownButton } from "./export-file-type-drop-down-button";
 import { ExportNamePicker } from "./export-name-picker";
-import { RootStateType } from "../../../../app/store/store";
+import { RootStateType } from "../../../../app/store";
 import { useEffect, useState } from "react";
 
 export function AllExports() {

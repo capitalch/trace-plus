@@ -1,6 +1,6 @@
 import { FC, useContext } from "react"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
-import { RootStateType } from "../../../app/store/store"
+import { RootStateType } from "../../../app/store"
 import { TreeGridPdfExportProperties } from "@syncfusion/ej2-react-treegrid"
 import { WidgetTooltip } from "../../widgets/widget-tooltip"
 import { IconFilePdf } from "../../icons/icon-file-pdf"

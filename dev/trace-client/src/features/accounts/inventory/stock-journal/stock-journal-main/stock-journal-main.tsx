@@ -4,7 +4,7 @@ import { ProductLineItem } from "../../shared-definitions";
 import { StockJournalHeader } from "./stock-journal-header";
 import { StockJournalTabs } from "./stock-journal-tabs";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { useEffect } from "react";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { Utils } from "../../../../../utils/utils";

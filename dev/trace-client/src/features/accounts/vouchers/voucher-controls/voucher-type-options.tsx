@@ -4,7 +4,7 @@ import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
 import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../app/store/store";
+import { RootStateType } from "../../../../app/store";
 import { useEffect } from "react";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
@@ -28,7 +28,7 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
         } else {
             setValue('showGstInHeader', true)
         }
-    }, [voucherType, setValue]) // including resetArray in dependency array causes infinite loop
+    }, [voucherType, setValue])
 
     return (
         <div className={clsx("flex gap-2  items-center", className)}>

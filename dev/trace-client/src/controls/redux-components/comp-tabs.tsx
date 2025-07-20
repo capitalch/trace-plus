@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../app/store";
 import { setActiveTabIndex } from "./comp-slice";
 import { IconError1 } from "../icons/icon-error1";
 

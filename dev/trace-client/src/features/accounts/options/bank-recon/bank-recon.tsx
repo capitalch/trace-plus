@@ -1,6 +1,6 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
-import { AppDispatchType, RootStateType } from "../../../../app/store/store"
+import { AppDispatchType, RootStateType } from "../../../../app/store"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"

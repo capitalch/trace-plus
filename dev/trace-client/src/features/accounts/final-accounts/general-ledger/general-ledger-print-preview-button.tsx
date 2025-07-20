@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { UnitInfoType, Utils } from "../../../../utils/utils";
 import { shallowEqual, useSelector } from "react-redux";
-import { RootStateType } from "../../../../app/store/store";
+import { RootStateType } from "../../../../app/store";
 import { selectCompSwitchStateFn } from "../../../../controls/redux-components/comp-slice";
 import { useState } from "react";
 

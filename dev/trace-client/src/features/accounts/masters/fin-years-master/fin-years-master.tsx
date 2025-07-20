@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";

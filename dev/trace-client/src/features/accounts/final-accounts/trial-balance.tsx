@@ -9,7 +9,7 @@ import { CompSwitch } from "../../../controls/redux-components/comp-switch";
 import { CompInstances } from "../../../controls/redux-components/comp-instances";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { shallowEqual, useSelector } from 'react-redux';
-import { RootStateType } from '../../../app/store/store';
+import { RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn } from '../../../controls/redux-components/comp-slice';
 import { Utils } from '../../../utils/utils';
 

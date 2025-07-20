@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../../../app/store";
 import { useEffect, useRef, useState } from "react";
 import { useInventoryReportsShared } from "../inventory-reports-shared-hook";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";

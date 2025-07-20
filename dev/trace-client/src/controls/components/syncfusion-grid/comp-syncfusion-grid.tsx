@@ -27,7 +27,7 @@ import { FC, useContext, useEffect, useRef, } from "react";
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator";
 import { useCompSyncFusionGrid } from "./comp-syncfusion-grid-hook";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
-import { RootStateType } from "../../../app/store/store";
+import { RootStateType } from "../../../app/store";
 import { Utils } from "../../../utils/utils";
 import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
 import { useSelector } from "react-redux";

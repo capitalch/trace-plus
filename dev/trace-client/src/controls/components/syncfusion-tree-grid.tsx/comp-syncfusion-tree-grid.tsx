@@ -6,7 +6,7 @@ import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDir
 import { GraphQLQueriesMapNames, GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 import { shallowEqual, useSelector } from "react-redux"
-import { RootStateType } from "../../../app/store/store"
+import { RootStateType } from "../../../app/store"
 import { selectCompSwitchStateFn } from "../../redux-components/comp-slice"
 import { Utils } from "../../../utils/utils"
 

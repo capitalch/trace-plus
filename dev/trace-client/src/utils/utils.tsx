@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 // import _ from "lodash";
-import { RootStateType, store } from "../app/store/store";
+import { RootStateType, store } from "../app/store";
 import { Messages } from "./messages";
 import { ReactElement } from "react";
 import { ibukiEmit } from "./ibuki";

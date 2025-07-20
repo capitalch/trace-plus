@@ -3,7 +3,7 @@ import { GlobalContext, GlobalContextType } from "../../../app/global-context";
 import { IconSearch } from "../../icons/icon-search";
 import _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../app/store";
 import { setSearchString } from "../../../app/graphql/query-helper-slice";
 
 export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSearchBoxType) {

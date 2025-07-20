@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   AppDispatchType,
   RootStateType
-} from "../../../../../../app/store/store";
+} from "../../../../../../app/store";
 import SlidingPane from "react-sliding-pane";
 import clsx from "clsx";
 import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";

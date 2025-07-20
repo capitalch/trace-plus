@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
-import { AppDispatchType } from "../../../app/store/store"
+import { AppDispatchType } from "../../../app/store"
 import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../master-menu-data"
 import { useNavigate } from "react-router-dom"
 import { IconCheveronUp } from "../../../controls/icons/icon-cheveron-up"

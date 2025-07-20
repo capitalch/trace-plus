@@ -6,7 +6,7 @@ import { SqlIdsMap } from '../../../app/graphql/maps/sql-ids-map';
 import clsx from 'clsx';
 import { IconRefresh } from '../../icons/icon-refresh';
 import { shallowEqual, useSelector } from 'react-redux';
-import { RootStateType } from '../../../app/store/store';
+import { RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn } from '../comp-slice';
 
 export function AccountPickerFlat({

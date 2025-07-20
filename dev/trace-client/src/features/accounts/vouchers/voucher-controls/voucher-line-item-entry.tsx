@@ -78,7 +78,7 @@ export function VoucherLineItemEntry({
     return (
         <AnimatePresence>
 
-            {/* <div className={clsx('mt-2',(dc === 'D') ? 'bg-amber-50' : 'bg-red-50','rounded-xl')}> */}
+            {/* <div className={clsx('mt-2',(dc === 'D') ? 'bg-amber-50' : 'bg-red-50','rounded-xl')}>  */}
 
                 {/* Section Header */}
                 <div key={1} className="flex justify-between items-center">
@@ -301,7 +301,7 @@ export function VoucherLineItemEntry({
                         </div>
                     </div>)
                 }
-            {/* </div> */}
+            {/* </div>  */}
         </AnimatePresence>
     );
 

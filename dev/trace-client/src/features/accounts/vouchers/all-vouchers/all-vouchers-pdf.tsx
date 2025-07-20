@@ -32,9 +32,9 @@ export function AllVouchersPDF({
 
   const amountInWords = Utils.toWordsFromAmount(debitTotal.toNumber());
 
-  return (
+  return (// half height of A4
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size={{ width: 595.28, height: 420.945 }} style={styles.page}> 
         {/* Header */}
         <View style={styles.header} fixed>
           <View style={styles.companyInfo}>

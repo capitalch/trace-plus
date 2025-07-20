@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
-import { AppDispatchType } from "../../../app/store/store";
+import { AppDispatchType } from "../../../app/store";
 import { useDispatch } from "react-redux";
 import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { Messages } from "../../../utils/messages";

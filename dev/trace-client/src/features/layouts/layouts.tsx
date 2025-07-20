@@ -3,7 +3,7 @@ import { SideBar } from "./side-bar/side-bar"
 import { NavBar } from "./nav-bar/nav-bar"
 import { useEffect } from "react"
 import { useMediaQuery } from "react-responsive"
-import { AppDispatchType } from "../../app/store/store"
+import { AppDispatchType } from "../../app/store"
 import { useDispatch } from "react-redux"
 import { setIsSideBarOpen } from "./layouts-slice"
 

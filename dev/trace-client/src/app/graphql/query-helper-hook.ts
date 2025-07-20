@@ -8,7 +8,7 @@ import _ from 'lodash'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
 import { useEffect } from 'react'
 import { Utils } from '../../utils/utils'
-import { AppDispatchType } from '../store/store'
+import { AppDispatchType } from '../store'
 import { useDispatch } from 'react-redux'
 import { resetQueryHelperData, setQueryHelperData } from './query-helper-slice'
 

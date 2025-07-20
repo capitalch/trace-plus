@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
-import { AppDispatchType } from "../../../app/store/store"
+import { AppDispatchType } from "../../../app/store"
 import { IconCheveronUp } from "../../../controls/icons/icon-cheveron-up"
 import { IconVoucher } from "../../../controls/icons/icon-voucher"
 import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down"

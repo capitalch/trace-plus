@@ -1,5 +1,5 @@
 import { useDispatch, } from "react-redux"
-import { AppDispatchType } from "../../app/store/store"
+import { AppDispatchType } from "../../app/store"
 import { useNavigate } from "react-router-dom"
 import urlJoin from "url-join"
 import axios from "axios"

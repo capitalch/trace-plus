@@ -9,7 +9,7 @@ import { useValidators } from "../../../utils/validators-hook";
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/graphql/maps/graphql-queries-map";
 import { Utils } from "../../../utils/utils";
 import { LoginType, setUid } from "../../login/login-slice";
-import { AppDispatchType } from "../../../app/store/store";
+import { AppDispatchType } from "../../../app/store";
 import { useDispatch } from "react-redux";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants";
 import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";

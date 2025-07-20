@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { NewEditBrandType } from "./new-edit-brand";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 

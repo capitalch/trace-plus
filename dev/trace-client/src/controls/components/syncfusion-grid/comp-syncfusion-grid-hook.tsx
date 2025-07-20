@@ -11,7 +11,7 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
-import { RootStateType } from "../../../app/store/store";
+import { RootStateType } from "../../../app/store";
 
 export function useCompSyncFusionGrid({
   aggregates,

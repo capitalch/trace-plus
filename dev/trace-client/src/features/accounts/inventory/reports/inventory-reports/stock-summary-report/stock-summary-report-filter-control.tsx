@@ -4,7 +4,7 @@ import Select from "react-select";
 import {
   AppDispatchType,
   RootStateType,
-} from "../../../../../../app/store/store";
+} from "../../../../../../app/store";
 import {
   ageOptions,
   BrandType,

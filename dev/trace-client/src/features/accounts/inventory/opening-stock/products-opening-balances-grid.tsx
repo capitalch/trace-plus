@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,

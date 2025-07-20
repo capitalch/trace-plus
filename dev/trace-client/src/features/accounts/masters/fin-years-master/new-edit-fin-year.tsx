@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
-import { AppDispatchType } from "../../../../app/store/store"
+import { AppDispatchType } from "../../../../app/store"
 // import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
 import { useForm } from "react-hook-form"
 import { Utils } from "../../../../utils/utils"

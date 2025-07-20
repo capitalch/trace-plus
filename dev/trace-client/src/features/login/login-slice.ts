@@ -1,5 +1,5 @@
 import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit'
-import { RootStateType } from '../../app/store/store'
+import { RootStateType } from '../../app/store'
 import { String } from 'lodash'
 
 const initialState: LoginType = {

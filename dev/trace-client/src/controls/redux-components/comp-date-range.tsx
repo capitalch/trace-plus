@@ -3,7 +3,7 @@ import { Utils } from '../../utils/utils'
 import { useEffect, useState } from 'react'
 import { currentFinYearSelectorFn, FinYearType } from '../../features/login/login-slice'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
-import { AppDispatchType, RootStateType } from '../../app/store/store'
+import { AppDispatchType, RootStateType } from '../../app/store'
 import { setCompDateRangeEndDate, setCompDateRangeStartDate, setCompDateRangeStartDateEndDate } from './comp-slice'
 import clsx from 'clsx'
 

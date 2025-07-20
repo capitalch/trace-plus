@@ -7,7 +7,7 @@ import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
 import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { selectBank, SelectedBankType, } from "../../accounts-slice";
 import { Utils } from "../../../../utils/utils";
 

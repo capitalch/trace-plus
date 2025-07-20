@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
 import { startOfMonth, endOfMonth, endOfToday, format, subDays, subMonths } from "date-fns";

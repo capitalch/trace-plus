@@ -1,35 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { VourcherType } from "../../../utils/global-types-interfaces-enums";
+import { VoucherFormDataType } from "./all-vouchers/all-vouchers";
 
 const initialState: VoucherInitialStateType = {
-    autoRefNo: '',
-    creditEntries: [{
-        accId: null,
-        amount: 0,
-        dc: 'C',
-        detailsId: null,
-        instrNo: '',
-        tranHeaderId: null,
-        lineRefNo: '',
-        lineRemarks: ''
-    }],
-    debitEntries: [{
-        accId: null,
-        amount: 0,
-        dc: 'D',
-        detailsId: null,
-        instrNo: '',
-        tranHeaderId: null,
-        lineRefNo: '',
-        lineRemarks: ''
-    }],
-    remarks: '',
-    totalCredits: 0,
-    totalDebits: 0,
-    tranDate: Date(),
-    tranHeaderId: null,
-    userRefNo: '',
-    voucherType: 'Payment'
+    savedFormData: null
 }
 
 const voucherSlice = createSlice({
@@ -37,57 +10,20 @@ const voucherSlice = createSlice({
     initialState: initialState,
 
     reducers: {
-        setVoucherTotalCredits: (
-            state: VoucherInitialStateType,
-            action: PayloadAction<number>
-        ) => {
-            state.totalCredits = action.payload;
+        saveVoucherFormData(state, action: PayloadAction<VoucherFormDataType>) {
+            state.savedFormData = action.payload;
         },
-
-        setVoucherTotalDebits: (
-            state: VoucherInitialStateType,
-            action: PayloadAction<number>
-        ) => {
-            state.totalDebits = action.payload;
-        },
-
-        setVoucherType: (
-            state: VoucherInitialStateType,
-            action: PayloadAction<VourcherType>
-        ) => {
-            state.voucherType = action.payload;
-        },
+        clearVoucherFormData(state) {
+            state.savedFormData = null;
+        }
     }
 })
 
 export const voucherReducer = voucherSlice.reducer;
 export const {
-    setVoucherTotalCredits,
-    setVoucherTotalDebits,
-    setVoucherType
+    saveVoucherFormData, clearVoucherFormData
 } = voucherSlice.actions
 
 export type VoucherInitialStateType = {
-    autoRefNo: string;
-    creditEntries: EntryItemType[]
-    debitEntries: EntryItemType[]
-    remarks: string;
-    totalCredits: number;
-    totalDebits: number;
-    tranDate: string;
-    tranHeaderId: number | null;
-    userRefNo: string;
-    voucherType: VourcherType
-}
-
-
-export type EntryItemType = {
-    accId: number | null;
-    amount: number;
-    dc: 'D' | 'C';
-    detailsId: number | null;
-    instrNo: string;
-    tranHeaderId: number | null;
-    lineRefNo: string;
-    lineRemarks: string;
+    savedFormData: VoucherFormDataType | null;
 }

@@ -19,8 +19,14 @@ valid gstin: 24AAACC1206D1ZM
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
 	- print multi vouchers together
-	- Retention of data for voucher when navigate to other menu item with help of redux
-	- bugs
+		- Select vouchers and track their ID
+		- Print preview multi vouchers button
+		- Sql to input multi ids and output array of objects
+		- pdf multi voucher
+														- Retention of data for voucher when navigate to other menu item with help of redux
+													- bugs
+														- Edit voucher, then select journals from menu then come back and save, there is error in no of entries.
+															- Id for credit becomes missing hence a new extra entry is done
 													- copy voucher make the gst Yes: resolved
 													- check copy voucher feature
 													- Error in deletion of gst or toggle gst

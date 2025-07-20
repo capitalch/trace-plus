@@ -16,7 +16,7 @@ import { Messages } from "../../../../utils/messages";
 import { AdminNewBusinessUserButton } from "./admin-new-business-user-button";
 import { AdminNewEditBusinessUser } from "./admin-new-edit-business-user";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
-import { AppDispatchType } from "../../../../app/store/store";
+import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
 import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
 

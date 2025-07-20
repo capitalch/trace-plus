@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { RootStateType } from "../../../../../../app/store/store";
+import { RootStateType } from "../../../../../../app/store";
 
 export function StockTransReportToolbarFilterDisplay() {
     const selectedFilters = useSelector(

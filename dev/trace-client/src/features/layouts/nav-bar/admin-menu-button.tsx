@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { MenuItemType, menuItemSelectorFn, setMenuItem } from "../layouts-slice"
 import { useDispatch, useSelector } from "react-redux"
-import { AppDispatchType } from "../../../app/store/store"
+import { AppDispatchType } from "../../../app/store"
 import { useNavigate } from "react-router-dom"
 
 export function AdminMenuButton() {

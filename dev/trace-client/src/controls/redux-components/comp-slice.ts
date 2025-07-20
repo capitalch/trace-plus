@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootStateType } from "../../app/store/store";
+import { RootStateType } from "../../app/store";
 
 const initialState: ReduxCompStateType = {
   compAppLoader: {},

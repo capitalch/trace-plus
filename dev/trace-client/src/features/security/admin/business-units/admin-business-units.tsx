@@ -11,7 +11,7 @@ import { Utils } from "../../../../utils/utils";
 // import { Messages } from "../../../../utils/messages";
 import { AdminNewBusinessUnitButton } from "./admin-new-business-unit-button";
 import { AdminNewEditBusinessUnit } from "./admin-new-edit-business-unit";
-import { AppDispatchType, RootStateType } from "../../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 // import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 // import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";

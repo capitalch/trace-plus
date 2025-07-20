@@ -2,7 +2,7 @@ import { FC, ReactElement, useContext } from "react";
 import { CompSyncFusionGridSearchBox } from "./comp-syncfusion-grid-search-box";
 import { WidgetButtonRefresh } from "../../widgets/widget-button-refresh";
 import { GlobalContext, GlobalContextType } from "../../../app/global-context";
-import { AppDispatchType, RootStateType } from "../../../app/store/store";
+import { AppDispatchType, RootStateType } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setLastNoOfRows } from "../../../app/graphql/query-helper-slice";
 import { IconFilePdf } from "../../icons/icon-file-pdf";
