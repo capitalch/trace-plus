@@ -6,9 +6,11 @@ import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-ma
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../../app/store";
 import { useEffect } from "react";
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { IconPreview1 } from "../../../../controls/icons/icon-preview1";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
-    const { register, watch, setValue, } = useFormContext<VoucherFormDataType>();
+    const { register, watch, setValue } = useFormContext<VoucherFormDataType>();
     const { resetDetails }: any = useFormContext()
     const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
@@ -16,9 +18,25 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
     const getLabel = () => {
         let label = ''
         if (activeTabIndex === 0) {
-            label = `${watch('id') ? 'Edit' : 'New'} Entry`
+            const id = watch('id');
+            label = `${id ? 'Edit' : 'New'} Entry`;
         }
         return (label)
+    }
+
+    const getPrintPreview = () => {
+        let Ret = <></>
+        if (activeTabIndex === 0) {
+            const id = watch('id');
+            if (id) {
+                Ret = <TooltipComponent content='Print Preview' className="flex">
+                    <button >
+                        <IconPreview1 className="text-blue-500 h-8 w-8" />
+                    </button>
+                </TooltipComponent>
+            }
+            return (Ret)
+        }
     }
 
     useEffect(() => {
@@ -28,13 +46,14 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
         } else {
             setValue('showGstInHeader', true)
         }
-    }, [voucherType, setValue])
+    }, [voucherType, setValue, /*resetDetails*/])
 
     return (
-        <div className={clsx("flex gap-2  items-center", className)}>
+        <div className={clsx("flex gap-2 items-center", className)}>
             <label className="text-amber-400 font-semibold text-md w-20">
                 {getLabel()}
             </label>
+            {getPrintPreview()}
             {voucherTypes.map((type) => (
                 <label
                     key={type}

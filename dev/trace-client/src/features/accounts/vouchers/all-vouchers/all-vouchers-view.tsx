@@ -32,7 +32,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         dbName,
         decodedDbParamsObject,
         finYearId,
-        // hasGstin
     } = useUtilsInfo();
     const meta = useRef<MetaType>({
         tranH: {
@@ -200,6 +199,13 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 width: 90,
                 textAlign: 'Left',
                 type: 'number',
+                visible: false
+            },
+            {
+                field: "autoRefNo",
+                headerText: "Ref No",
+                type: "string",
+                width: 140
             },
             {
                 field: "tranDate",
@@ -209,12 +215,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 // Otherwise PDF export error
                 valueAccessor: (field: string, data: any) =>
                     format(data?.[field], currentDateFormat)
-            },
-            {
-                field: "autoRefNo",
-                headerText: "Ref No",
-                type: "string",
-                width: 140
             },
             {
                 field: 'accName',
@@ -500,7 +500,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     }
 
     async function handleOnPreview(data: RowDataType) {
-        console.log(`Preview row with id: ${data.id}`);
+        // console.log(`Preview row with id: ${data.id}`);
         const editData: any = await getVoucherDetails(data.id)
         const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
         meta.current.tranH = voucherEditData?.tranHeader

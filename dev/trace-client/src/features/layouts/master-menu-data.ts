@@ -27,26 +27,26 @@ export const MasterMenuData: MenuDataType = {
           label: "All Vouchers",
           path: "/all-vouchers",
         },
-        {
-          id: "11",
-          label: "Journals",
-          path: "/blogs",
-        },
-        {
-          id: "12",
-          label: "Payments",
-          path: "/blogs",
-        },
-        {
-          id: "13",
-          label: "Receipts",
-          path: "/blogs",
-        },
-        {
-          id: "14",
-          label: "Contra",
-          path: "/blogs",
-        },
+        // {
+        //   id: "11",
+        //   label: "Journals",
+        //   path: "/blogs",
+        // },
+        // {
+        //   id: "12",
+        //   label: "Payments",
+        //   path: "/blogs",
+        // },
+        // {
+        //   id: "13",
+        //   label: "Receipts",
+        //   path: "/blogs",
+        // },
+        // {
+        //   id: "14",
+        //   label: "Contra",
+        //   path: "/blogs",
+        // },
       ],
     },
     {

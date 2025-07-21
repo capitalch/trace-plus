@@ -4,25 +4,26 @@ valid gstin: 24AAACC1206D1ZM
 
 ## security
 	- Change databaseTablesMap to tables schema type variables
-## QA for vouchers
-	- Check: When voucher deleted the gst entry in ext table should also delete
-	- new voucher entry
-		- check in db
-			- TranH
-				- new row with all data
-			- TranD
-				- 2 or more new rows with data and newly created tranHeaderId
-			- ExtGstTranDetails
-				- new row with gst details
+										## QA for vouchers
+											- Check: When voucher deleted the gst entry in ext table should also delete
+											- new voucher entry
+												- check in db
+													- TranH
+														- new row with all data
+													- TranD
+														- 2 or more new rows with data and newly created tranHeaderId
+													- ExtGstTranDetails
+														- new row with gst details
 ## features
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
-	- print multi vouchers together
-		- Select vouchers and track their ID
-		- Print preview multi vouchers button
-		- Sql to input multi ids and output array of objects
-		- pdf multi voucher
+	- Print voucher in edit wondow
+													- print multi vouchers together: later on
+														- Select vouchers and track their ID
+														- Print preview multi vouchers button
+														- Sql to input multi ids and output array of objects
+														- pdf multi voucher
 														- Retention of data for voucher when navigate to other menu item with help of redux
 													- bugs
 														- Edit voucher, then select journals from menu then come back and save, there is error in no of entries.
