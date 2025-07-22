@@ -11,14 +11,14 @@ import { NumericFormat } from "react-number-format";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import _ from "lodash";
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
 import { useEffect } from "react";
 import { Utils } from "../../../../utils/utils";
 import { resetQueryHelperData, setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { ProductOpeningBalanceEditType, reSetProductOpeningBalanceEdit, setProductOpeningBalanceEdit } from "../../accounts-slice";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 import { format, isBefore, parseISO } from "date-fns";
 
 export function ProductsOpeningBalancesWorkBench() {

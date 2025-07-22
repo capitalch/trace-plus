@@ -1,4 +1,4 @@
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 

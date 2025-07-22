@@ -1,10 +1,10 @@
 import { ListBoxChangeEventArgs, ListBoxComponent } from "@syncfusion/ej2-react-dropdowns";
 import { useRef } from "react";
 import _ from 'lodash'
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../app/store";

@@ -6,13 +6,13 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import _ from 'lodash'
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 
 export function AdminLinkSecuredControlWithRoleModal({ roleId, instance }: AdminLinkSecuredControlWithRoleModalType) {
     const context: GlobalContextType = useContext(GlobalContext);

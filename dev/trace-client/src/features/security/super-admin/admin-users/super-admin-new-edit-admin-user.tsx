@@ -8,13 +8,13 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { useContext, useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 
 export function SuperAdminNewEditAdminUser({
     clientId,

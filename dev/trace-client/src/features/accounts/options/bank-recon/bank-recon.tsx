@@ -1,5 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { AppDispatchType, RootStateType } from "../../../../app/store"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
@@ -7,7 +7,7 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { Utils } from "../../../../utils/utils"
 // import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { bankReconSelectedBankFn, selectBank, SelectedBankType } from "../../accounts-slice"
 import { Messages } from "../../../../utils/messages"
 import { BankReconCustomControls } from "./bank-recon-custom-controls"
@@ -17,7 +17,7 @@ import { CompAppLoader } from "../../../../controls/redux-components/comp-app-lo
 
 import Decimal from "decimal.js"
 import _ from "lodash"
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
 import { format } from "date-fns"
 
 export function BankRecon() {

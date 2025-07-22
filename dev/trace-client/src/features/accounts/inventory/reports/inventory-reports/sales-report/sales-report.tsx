@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import {
@@ -17,7 +17,7 @@ import {
 } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { format } from "date-fns";
 import { Utils } from "../../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
 import {
   QueryCellInfoEventArgs,
   RowDataBoundEventArgs

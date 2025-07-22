@@ -1,17 +1,17 @@
 import { useContext } from "react"
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context"
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { CompContentContainer } from "../../../../controls/components/comp-content-container"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { Utils } from "../../../../utils/utils"
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
 import { SuperAdminNewSecuredControlButtons } from "./super-admin-new-secured-control-buttons"
 import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
 
 export function SuperAdminSecuredControls() {
     const context: GlobalContextType = useContext(GlobalContext)

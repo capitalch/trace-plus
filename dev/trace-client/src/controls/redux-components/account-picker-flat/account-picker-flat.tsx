@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Select from 'react-select'
 import { Utils } from '../../../utils/utils';
 import { useUtilsInfo } from '../../../utils/utils-info-hook';
-import { SqlIdsMap } from '../../../app/graphql/maps/sql-ids-map';
+import { SqlIdsMap } from '../../../app/maps/sql-ids-map';
 import clsx from 'clsx';
 import { IconRefresh } from '../../icons/icon-refresh';
 import { shallowEqual, useSelector } from 'react-redux';

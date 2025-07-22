@@ -2,7 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { VoucherFormDataType } from "./all-vouchers/all-vouchers";
 
 const initialState: VoucherInitialStateType = {
-    savedFormData: null
+    savedFormData: null,
+    voucherIdToPreview: null,
+    isPreviewOpen: false,
 }
 
 const voucherSlice = createSlice({
@@ -15,15 +17,29 @@ const voucherSlice = createSlice({
         },
         clearVoucherFormData(state) {
             state.savedFormData = null;
-        }
+        },
+        triggerVoucherPreview(state, action: PayloadAction<number>) {
+            state.voucherIdToPreview = action.payload;
+            state.isPreviewOpen = true;
+        },
+        closeVoucherPreview(state) {
+            state.voucherIdToPreview = null;
+            state.isPreviewOpen = false;
+        },
     }
 })
 
 export const voucherReducer = voucherSlice.reducer;
 export const {
-    saveVoucherFormData, clearVoucherFormData
+    saveVoucherFormData
+    , clearVoucherFormData
+    , triggerVoucherPreview
+    , closeVoucherPreview,
 } = voucherSlice.actions
 
 export type VoucherInitialStateType = {
     savedFormData: VoucherFormDataType | null;
+
+    voucherIdToPreview: number | null;
+    isPreviewOpen: boolean;
 }

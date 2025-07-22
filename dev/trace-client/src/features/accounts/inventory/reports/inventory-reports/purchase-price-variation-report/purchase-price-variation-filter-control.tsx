@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { Utils } from "../../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
 import Select from "react-select";
 import _ from "lodash";
 import {

@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
-import { DataInstancesMap } from "../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../app/maps/data-instances-map";
 import { AppDispatchType } from "../../../app/store";
 import { useDispatch } from "react-redux";
 import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
@@ -10,7 +10,7 @@ import { WidgetFormErrorMessage } from "../../../controls/widgets/widget-form-er
 import { WidgetButtonSubmitFullWidth } from "../../../controls/widgets/widget-button-submit-full-width";
 import _ from "lodash";
 import { GeneralSettingsType, Utils } from "../../../utils/utils";
-import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../app/maps/sql-ids-map";
 import { changeAccSettings } from "../accounts-slice";
 import Select from "react-select";
 import { NumericFormat } from 'react-number-format';

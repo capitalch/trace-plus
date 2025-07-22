@@ -1,17 +1,17 @@
 import { useContext } from "react";
 import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { IconControls } from "../../../../controls/icons/icon-controls";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconLink } from "../../../../controls/icons/icon-link";
@@ -19,7 +19,7 @@ import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { AdminLinkSecuredControlWithRoleModal } from "./admin-link-secured-control-with-role-modal";
 import { IconAutoLink } from "../../../../controls/icons/icon-auto-link";
 import { AdminAutoLinkSecuredControlsFromBuiltinRolesModal } from "./admin-auto-link-secured-controls-from-builtin-roles-modal";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 
 export function AdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.adminSecuredControls

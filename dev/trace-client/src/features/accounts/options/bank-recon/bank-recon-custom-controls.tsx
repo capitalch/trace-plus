@@ -7,7 +7,7 @@ import { Utils } from "../../../../utils/utils"
 import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
 import { SelectBankModal } from "./select-bank-modal"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
-import { GraphQLQueriesMap, GraphQLUpdateArgsType } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMap, GraphQLUpdateArgsType } from "../../../../app/maps/graphql-queries-map"
 import { Messages } from "../../../../utils/messages"
 import { IconCancel } from "../../../../controls/icons/icon-cancel"
 import _ from "lodash"
@@ -15,7 +15,7 @@ import { BankReconType } from "./bank-recon"
 import Decimal from "decimal.js"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { BankReconOpBalance } from "./bank-recon-op-balance"
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
 
 export function BankReconCustomControls({ instance, meta }: BankReconCustomControlType) {
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)

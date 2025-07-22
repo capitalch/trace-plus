@@ -18,7 +18,7 @@ import {
   GraphQLQueriesMap,
   GraphQLQueriesMapNames,
   GraphQLUpdateArgsType
-} from "../app/graphql/maps/graphql-queries-map";
+} from "../app/maps/graphql-queries-map";
 import { showCompAppLoader } from "../controls/redux-components/comp-slice";
 import { CompInstances } from "../controls/redux-components/comp-instances";
 import { treeGridUtils, TreeGridUtilsType } from "./tree-grid-utils";

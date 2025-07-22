@@ -2,7 +2,6 @@ import { FC, useContext } from "react"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { RootStateType } from "../../../app/store"
 import { TreeGridPdfExportProperties } from "@syncfusion/ej2-react-treegrid"
-import { WidgetTooltip } from "../../widgets/widget-tooltip"
 import { IconFilePdf } from "../../icons/icon-file-pdf"
 import { IconFileExcel } from "../../icons/icon-file-excel"
 import { IconFileCsv } from "../../icons/icon-file-csv"
@@ -11,6 +10,7 @@ import { Utils } from "../../../utils/utils"
 import { CompSyncFusionTreeGridSearchBox } from "./comp-syncfusion-tree-grid-search-box"
 import clsx from "clsx"
 import { CompSwitch } from "../../redux-components/comp-switch"
+import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 
 export function CompSyncFusionTreeGridToolbar({
     className
@@ -59,34 +59,34 @@ export function CompSyncFusionTreeGridToolbar({
             {CustomControl && <CustomControl />}
 
             {/* Pdf export  */}
-            {isPdfExport && <WidgetTooltip title="Pdf export">
+            {isPdfExport && <TooltipComponent content="Pdf export">
                 <button type="button" title="Pdf export" className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.pdfExport(pdfExportProperties)
                 }}>
                     <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
                 </button>
-            </WidgetTooltip>}
+            </TooltipComponent>}
 
             {/* Excel export */}
-            {isExcelExport && <WidgetTooltip title="Excel export">
+            {isExcelExport && <TooltipComponent content="Excel export">
                 <button type="button" title="Excel export" className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.excelExport()
                 }}>
                     <IconFileExcel className="m-auto h-6 w-6 text-green-600" />
                 </button>
-            </WidgetTooltip>}
+            </TooltipComponent>}
 
             {/* csv export */}
-            {isCsvExport && <WidgetTooltip title="Csv export">
+            {isCsvExport && <TooltipComponent content="Csv export">
                 <button type="button" title="Csv export" className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.csvExport()
                 }}>
                     <IconFileCsv className="m-auto h-6 w-6 text-blue-600" />
                 </button>
-            </WidgetTooltip>}
+            </TooltipComponent>}
 
             {/* Expand / Collapse switch */}
             {/* <WidgetTreeGridSwitch
@@ -102,7 +102,7 @@ export function CompSyncFusionTreeGridToolbar({
             {isSearch && <CompSyncFusionTreeGridSearchBox instance={instance} />}
 
             {/* Refresh */}
-            {isRefresh && <WidgetTooltip title="Refresh">
+            {isRefresh && <TooltipComponent content="Refresh">
                 <WidgetButtonRefresh handleRefresh={async () => {
                     const loadData: any = context.
                         CompSyncFusionTreeGrid[instance].loadData
@@ -116,7 +116,7 @@ export function CompSyncFusionTreeGridToolbar({
                         gridRef.current.search(searchString)
                     }
                 }} />
-            </WidgetTooltip>}
+            </TooltipComponent>}
         </div>
     </div >)
 }

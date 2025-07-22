@@ -6,13 +6,13 @@ import { WidgetFormHelperText } from "../../../controls/widgets/widget-form-help
 import { WidgetButtonSubmitFullWidth } from "../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../utils/validators-hook";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/maps/graphql-queries-map";
 import { Utils } from "../../../utils/utils";
 import { LoginType, setUid } from "../../login/login-slice";
 import { AppDispatchType } from "../../../app/store";
 import { useDispatch } from "react-redux";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../app/global-constants";
-import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../app/maps/sql-ids-map";
 
 export function ChangeUid() {
     const { checkNoSpaceOrSpecialChar } = useValidators();

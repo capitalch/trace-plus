@@ -1,9 +1,9 @@
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import _ from 'lodash'
 import Decimal from 'decimal.js'
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { CompSwitch } from "../../../../controls/redux-components/comp-switch"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
 import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, setCompCheckBoxState } from "../../../../controls/redux-components/comp-slice"

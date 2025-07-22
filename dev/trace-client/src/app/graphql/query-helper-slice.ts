@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { DataInstancesMap } from "./maps/data-instances-map";
+import { DataInstancesMap } from "../maps/data-instances-map";
 
 const initialState: InitialStateType = {
   [DataInstancesMap.superAdminDashBoard]: undefined,

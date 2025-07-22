@@ -1,20 +1,20 @@
 import { useDispatch } from "react-redux";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { AppDispatchType } from "../../../../app/store";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 import { changeAccSettings } from "../../accounts-slice";
 import { NewEditFinYear } from "./new-edit-fin-year";
 import { NewFinYearButton } from "./new-fin-year-button";
 import { useEffect } from "react";
 
-export function FinYearsMaster() {
-    const instance = DataInstancesMap.finYearsMaster; // Grid instance for Business Units
+export function FinYearMaster() {
+    const instance = DataInstancesMap.finYearMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const dateFormat: string = Utils.getCurrentDateFormat()
@@ -103,7 +103,7 @@ export function FinYearsMaster() {
             try {
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.FinYearsM,
+                    tableName: DatabaseTablesMap.FinYearM,
                     deletedIds: [id],
                 })
                 Utils.showSaveMessage()

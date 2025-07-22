@@ -7,7 +7,7 @@ import { Utils } from "../../../../../utils/utils";
 import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
 import _ from "lodash";
 import { ProductLineItem, ProductType } from "../../shared-definitions";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 
 export function useStockJournalLineItems(
     name: "inputLineItems" | "outputLineItems",

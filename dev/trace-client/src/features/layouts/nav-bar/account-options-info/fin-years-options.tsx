@@ -8,9 +8,9 @@ import { FinYearsListModal } from "./fin-years-list-modal";
 import { AppDispatchType } from "../../../../app/store";
 import { Messages } from "../../../../utils/messages";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 
 export function FinYearsOptions() {
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn)

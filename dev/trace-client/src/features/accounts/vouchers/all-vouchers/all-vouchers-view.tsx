@@ -1,51 +1,34 @@
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import clsx from "clsx";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
 import { useDispatch } from "react-redux";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "./all-vouchers";
-import { TranHeaderType, VourcherType } from "../../../../utils/global-types-interfaces-enums";
-import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog";
-import { PDFViewer } from "@react-pdf/renderer";
-import { AllVouchersPDF } from "./all-vouchers-pdf";
+import { VourcherType } from "../../../../utils/global-types-interfaces-enums";
 import { Messages } from "../../../../utils/messages";
+import { triggerVoucherPreview } from "../voucher-slice";
 
 export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     const dispatch: AppDispatchType = useDispatch()
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [rowsData, setRowsData] = useState<RowDataType[]>([]);
 
     const {
         currentDateFormat,
         buCode,
         branchId,
-        branchName,
         dbName,
         decodedDbParamsObject,
         finYearId,
     } = useUtilsInfo();
-    const meta = useRef<MetaType>({
-        tranH: {
-            autoRefNo: '',
-            branchId: branchId || 1,
-            finYearId: finYearId || 0,
-            tranTypeId: 2,
-            remarks: '',
-            tranType: '',
-            userRefNo: '',
-            tranDate: '1999-01-01'
-        },
-        tranD: []
-    })
     const {
         reset,
         watch
@@ -132,22 +115,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 previewColumnWidth={40}
                 rowHeight={35}
                 searchFields={['id', 'autoRefNo', 'accName', 'userRefNo', 'remarks', 'lineRefNo', 'lineRemarks', 'instrNo', 'tags', 'gstin', 'hsn']}
-            />
-            {/* Custom modal dialog */}
-            <CustomModalDialog
-                isOpen={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
-                title={`${voucherType} Voucher`}
-                element={
-                    <PDFViewer style={{ width: "100%", height: "100%" }}>
-                        <AllVouchersPDF
-                            currentDateFormat={currentDateFormat}
-                            branchName={branchName || ''}
-                            tranH={meta.current.tranH}
-                            tranD={meta.current.tranD}
-                        />
-                    </PDFViewer>
-                }
             />
         </div>
     );
@@ -500,14 +467,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     }
 
     async function handleOnPreview(data: RowDataType) {
-        // console.log(`Preview row with id: ${data.id}`);
-        const editData: any = await getVoucherDetails(data.id)
-        const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
-        meta.current.tranH = voucherEditData?.tranHeader
-        const tranTypeId = voucherEditData?.tranHeader.tranTypeId || 2
-        meta.current.tranH.tranType = Utils.getTranTypeName(tranTypeId)
-        meta.current.tranD = voucherEditData?.tranDetails || []
-        setIsDialogOpen(true)
+        dispatch(triggerVoucherPreview(data.id!));
     }
 
     function handleOnRowDataBound(args: RowDataBoundEventArgs) {
@@ -526,7 +486,7 @@ type AllVouchersViewType = {
     instance: string
 }
 
-type RowDataType = {
+export type RowDataType = {
     id?: number;
     index: number;
     tranDate: string;
@@ -550,7 +510,7 @@ type RowDataType = {
     bColor?: boolean;
 };
 
-type VoucherEditDataType = {
+export type VoucherEditDataType = {
     tranHeader: {
         id?: number;
         autoRefNo: string;
@@ -589,9 +549,4 @@ export type ExtGstTranDType = {
     rate: number;
     isInput: boolean;
     tranDetailsId?: number;
-}
-
-type MetaType = {
-    tranH: TranHeaderType;
-    tranD: VoucherTranDetailsType[]
 }

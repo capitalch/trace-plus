@@ -18,7 +18,7 @@ valid gstin: 24AAACC1206D1ZM
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 - Vouchers
-	- Print voucher in edit wondow
+	- Print voucher in edit window
 													- print multi vouchers together: later on
 														- Select vouchers and track their ID
 														- Print preview multi vouchers button

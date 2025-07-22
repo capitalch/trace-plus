@@ -26,7 +26,7 @@ import { AccountsMaster } from "../../features/accounts/masters/accounts/account
 import { CompanyInfo } from "../../features/accounts/masters/company-info/company-info";
 import { GeneralSettings } from "../../features/accounts/masters/general-settings";
 import { BranchMaster } from "../../features/accounts/masters/branch-master/branch-master";
-import { FinYearsMaster } from "../../features/accounts/masters/fin-years-master/fin-years-master";
+import { FinYearMaster } from "../../features/accounts/masters/fin-year-master/fin-year-master";
 import { AccountsOpeningBalance } from "../../features/accounts/masters/opening-balance/accounts-opening-balance";
 import { CommonUtilities } from "../../features/accounts/options/common-utilities/common-utilities";
 import { AllExports } from "../../features/accounts/options/exports/all-exports";
@@ -86,7 +86,7 @@ export const appRouter = createBrowserRouter(
         { path: "company-info", element: <CompanyInfo /> },
         { path: "general-settings", element: <GeneralSettings /> },
         { path: "branch-master", element: <BranchMaster /> },
-        { path: "fin-year-master", element: <FinYearsMaster /> },
+        { path: "fin-year-master", element: <FinYearMaster /> },
         { path: "opening-balance", element: <AccountsOpeningBalance /> },
         { path: "common-utilities", element: <CommonUtilities /> },
         { path: "all-exports", element: <AllExports /> },

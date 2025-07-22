@@ -1,8 +1,8 @@
-import { DataInstancesMap } from "../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../utils/utils-info-hook";
 import { CompSyncFusionGridToolbar } from "./syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "./syncfusion-grid/comp-syncfusion-grid";
-import { SqlIdsMap } from "../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../app/maps/sql-ids-map";
 import _ from "lodash";
 import Decimal from "decimal.js";
 import { Utils } from "../../utils/utils";

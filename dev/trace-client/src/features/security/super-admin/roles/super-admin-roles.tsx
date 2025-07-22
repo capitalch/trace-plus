@@ -4,15 +4,15 @@ import { CompContentContainer } from "../../../../controls/components/comp-conte
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 // import { GlobalContext } from "../../../../App";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { SuperAdminNewRoleButton } from "./super-admin-new-role-button";
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditRole } from "./super-admin-new-edit-role";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 
 export function SuperAdminRoles() {
     const context: GlobalContextType = useContext(GlobalContext)

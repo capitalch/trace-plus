@@ -8,7 +8,7 @@ import {
   ProductInfoType,
   ProductSelectFromGrid
 } from "../../../../../controls/components/product-select-from-grid";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import _ from "lodash";
 import { ProductType } from "../../shared-definitions";
 

@@ -1,17 +1,17 @@
 import { useSelector } from "react-redux"
 import { bankReconSelectedBankFn, SelectedBankType } from "../../accounts-slice"
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { RootStateType } from "../../../../app/store"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook"
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator"
 import { NumericFormat } from "react-number-format"
 import { FocusEvent, useEffect, useState } from "react"
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns"
 import { IconSubmit } from "../../../../controls/icons/icon-submit"
 import { Utils } from "../../../../utils/utils"
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
 
 export function BankReconOpBalance() {
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)

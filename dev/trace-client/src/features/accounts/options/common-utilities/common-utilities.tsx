@@ -1,5 +1,5 @@
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { IconTransfer } from "../../../../controls/icons/icon-transfer";
 import { Messages } from "../../../../utils/messages";

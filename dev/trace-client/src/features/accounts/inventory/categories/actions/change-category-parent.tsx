@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
-import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map"
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../../app/graphql/maps/graphql-queries-map"
+import { DataInstancesMap } from "../../../../../app/maps/data-instances-map"
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../../app/maps/graphql-queries-map"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompSyncFusionTreeGridToolbar } from "../../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width"
 import { Messages } from "../../../../../utils/messages"
 import { Utils } from "../../../../../utils/utils"
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook"
-import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map"
+import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map"
 
 export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
     const instance = DataInstancesMap.changeCategoryParent

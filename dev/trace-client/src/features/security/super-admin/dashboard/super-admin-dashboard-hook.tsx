@@ -1,10 +1,10 @@
-import { GraphQLQueryArgsType, } from "../../../../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueryArgsType, } from "../../../../app/maps/graphql-queries-map"
 import _ from "lodash"
 import { useQueryHelper } from "../../../../app/graphql/query-helper-hook"
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { useSelector } from "react-redux"
 import { RootStateType } from "../../../../app/store"
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 
 export function useSuperAdminDashBoard() {

@@ -7,7 +7,7 @@ import SlidingPane from "react-sliding-pane";
 import clsx from "clsx";
 import { setPurchasePriceVariationIsPaneOpen } from "../../../../accounts-slice";
 import { PurchasePriceVariationFilterControl } from "./purchase-price-variation-filter-control";
-import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
 
 export function PurchasePriceVariationToolbarFilterDisplay() {
   const dispatch: AppDispatchType = useDispatch();

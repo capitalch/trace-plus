@@ -1,6 +1,6 @@
-import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
-import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
+import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { Utils } from "../../../../../utils/utils";

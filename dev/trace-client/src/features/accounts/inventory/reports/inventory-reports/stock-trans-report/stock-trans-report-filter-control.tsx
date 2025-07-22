@@ -7,7 +7,7 @@ import { BrandType, CategoryNodeType, TagType } from "../../../shared-definition
 import { setStockTransReportFilters, StockTransReportInitialStateType } from "./stock-trans-report-slice";
 import _ from 'lodash'
 import { Utils } from "../../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
 import Select from 'react-select'
 import { NumericFormat } from "react-number-format";
 

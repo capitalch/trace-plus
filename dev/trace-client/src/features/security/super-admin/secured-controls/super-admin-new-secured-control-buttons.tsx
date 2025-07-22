@@ -1,5 +1,5 @@
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { Utils } from "../../../../utils/utils"
 import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
 import jsonData from './secured-controls.json'

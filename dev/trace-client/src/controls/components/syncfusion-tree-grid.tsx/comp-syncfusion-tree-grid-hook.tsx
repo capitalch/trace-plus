@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueryArgsType } from "../../../app/maps/graphql-queries-map";
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { CompSyncfusionTreeGridType, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "./comp-syncfusion-tree-grid";
 import { RootStateType } from "../../../app/store";

@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { GraphQLQueryArgsType } from "../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueryArgsType } from "../../../app/maps/graphql-queries-map";
 import {
   CompSyncFusionGridType,
   SyncFusionGridAggregateType,

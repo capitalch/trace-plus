@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { AllVouchersMain } from "./all-vouchers-main";
@@ -8,7 +8,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 import { AppDispatchType, RootStateType, } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";

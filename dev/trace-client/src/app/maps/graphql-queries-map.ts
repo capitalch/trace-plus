@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 import _ from 'lodash'
-import { TraceDataObjectType } from '../../../utils/global-types-interfaces-enums'
-import { GLOBAL_SECURITY_DATABASE_NAME } from '../../global-constants'
+import { TraceDataObjectType } from '../../utils/global-types-interfaces-enums'
+import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
 import { DocumentNode } from 'graphql'
 
 export const GraphQLQueriesMapNames = {

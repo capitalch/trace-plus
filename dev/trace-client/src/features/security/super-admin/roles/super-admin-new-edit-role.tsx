@@ -5,19 +5,18 @@ import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form
 import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
-import { WidgetTooltip } from "../../../../controls/widgets/widget-tooltip";
 import { useContext, useEffect } from "react";
 import { useValidators } from "../../../../utils/validators-hook";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Utils } from "../../../../utils/utils";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
-// import { GlobalContext } from "../../../../App";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 
 export function SuperAdminNewEditRole({
     descr,
@@ -75,9 +74,9 @@ export function SuperAdminNewEditRole({
                         {(errors.roleName)
                             ? <WidgetFormErrorMessage errorMessage={errors.roleName.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <WidgetTooltip title={Messages.messRoleName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
+                        <TooltipComponent content={Messages.messRoleName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
                             <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
-                        </WidgetTooltip>
+                        </TooltipComponent>
                     </span>
                 </label>
 

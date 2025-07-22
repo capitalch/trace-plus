@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import {
   CompSyncFusionGrid,
@@ -8,14 +8,14 @@ import {
 } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import Decimal from "decimal.js";
 import {
   ProductOpeningBalanceEditType,
   setProductOpeningBalanceEdit
 } from "../../accounts-slice";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 import { ProductsStockTransfer } from "./products-stock-transfer-button";
 import { useEffect, useState } from "react";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";

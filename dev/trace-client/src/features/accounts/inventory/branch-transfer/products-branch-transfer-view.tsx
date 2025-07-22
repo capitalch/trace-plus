@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { AppDispatchType } from "../../../../app/store";
 import {
   CompSyncFusionGrid,
@@ -216,7 +216,7 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         }
         await Utils.doGenericDelete({
           buCode: buCode || "",
-          tableName: DatabaseTablesMap.TranH,
+          tableName: AllTables.TranH.name, // DatabaseTablesMap.TranH,
           deletedIds: [id]
         });
         Utils.showSaveMessage();

@@ -1,4 +1,4 @@
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import {
   CompTabs,

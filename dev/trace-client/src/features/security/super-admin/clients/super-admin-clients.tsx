@@ -1,5 +1,5 @@
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompContentContainer } from "../../../../controls/components/comp-content-container";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
@@ -7,12 +7,12 @@ import { SuperAdminNewClientButtons } from "./super-admin-new-client-buttons";
 import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditClient } from "./super-admin-new-edit-client";
 import { SuperAdminNewEditClientExtDatabase } from "./super-admin-new-edit-client-ext-database";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 
 export function SuperAdminClients() {
     const context: GlobalContextType = useContext(GlobalContext)

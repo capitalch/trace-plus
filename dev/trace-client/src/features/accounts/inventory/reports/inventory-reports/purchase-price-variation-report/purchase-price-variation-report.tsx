@@ -4,11 +4,11 @@ import {
   SyncFusionGridAggregateType,
   SyncFusionGridColumnType
 } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
-import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { BackToDashboardLink } from "../../back-to-dashboard-link";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";

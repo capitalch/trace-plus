@@ -8,7 +8,7 @@ import { ageOptions, BrandType, CategoryNodeType, dateRangeOptions, DateRangeTyp
 import { SalesReportPayloadActionType, setSalesReportFilters } from "./sales-report-slice";
 import _ from 'lodash'
 import { Utils } from "../../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
 import { format } from "date-fns";
 import Select from 'react-select'
 import { NumericFormat } from "react-number-format";

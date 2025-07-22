@@ -8,12 +8,12 @@ import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { useEffect } from "react";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { Utils } from "../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import _ from "lodash";
 import { resetTranHeaderIdToEdit } from "../../../accounts-slice";
 import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
-import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
 import { StockJournalCrown } from "../stock-journal-crown";
 import Decimal from "decimal.js";
 

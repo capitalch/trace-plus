@@ -3,7 +3,7 @@ import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { ExportFileType, ExportNameType, RequestDataType } from "./all-exports";
 import urlJoin from "url-join";
-import { encodeObj } from "../../../../app/graphql/maps/graphql-queries-map";
+import { encodeObj } from "../../../../app/maps/graphql-queries-map";
 import dayjs from "dayjs";
 import { Messages } from "../../../../utils/messages";
 import { useDispatch, useSelector } from "react-redux";

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppDispatchType, RootStateType } from "../../../app/store";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
-import { SqlIdsMap } from "../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../app/maps/sql-ids-map";
 import { Utils } from "../../../utils/utils";
 import { setAccountPickerAccId } from "./account-picker-tree-slice";
 import clsx from "clsx";

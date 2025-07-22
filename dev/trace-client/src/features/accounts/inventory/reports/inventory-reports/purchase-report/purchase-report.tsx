@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { shallowEqual, useSelector } from "react-redux";
 import { RootStateType } from "../../../../../../app/store";
@@ -10,7 +10,7 @@ import { BackToDashboardLink } from "../../back-to-dashboard-link";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { format } from "date-fns";
 import { Utils } from "../../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchaseReportToolbarFilterDisplay } from "./purchase-report-toolbar-filter-display";
 

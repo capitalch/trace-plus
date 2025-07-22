@@ -1,11 +1,11 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType, } from "../../../../../../app/store";
-import { DataInstancesMap } from "../../../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
 import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
 import { CompSyncFusionGridToolbar } from "../../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";
 import { BackToDashboardLink } from "../../back-to-dashboard-link";

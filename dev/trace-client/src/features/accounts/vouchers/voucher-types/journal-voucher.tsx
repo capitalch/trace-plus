@@ -3,7 +3,7 @@ import { AccountOptionType } from "../../../../controls/redux-components/account
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { VoucherLineItemEntry } from "../voucher-controls/voucher-line-item-entry";
 import { Utils } from "../../../../utils/utils";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 
 export function JournalVoucher({ instance }: JournalVoucherType) {
     const [debitAccountOptions, setDebitAccountOptions] = useState<AccountOptionType[]>([])

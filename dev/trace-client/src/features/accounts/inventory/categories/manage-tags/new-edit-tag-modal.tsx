@@ -6,15 +6,15 @@ import { Messages } from "../../../../../utils/messages";
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width";
 import { Utils } from "../../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
 import { useValidators } from "../../../../../utils/validators-hook";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { WidgetFormHelperText } from "../../../../../controls/widgets/widget-form-helper-text";
 import { useEffect } from "react";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../../utils/ibuki";
 import { IbukiMessages } from "../../../../../utils/ibukiMessages";
 import _ from "lodash";
-import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 
 export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
     const { checkNoSpecialChar } = useValidators()

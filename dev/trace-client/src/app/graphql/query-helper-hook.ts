@@ -3,7 +3,7 @@ import {
   GraphQLQueriesMap,
   GraphQLQueriesMapNames,
   GraphQLQueryArgsType
-} from './maps/graphql-queries-map'
+} from '../maps/graphql-queries-map'
 import _ from 'lodash'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
 import { useEffect } from 'react'

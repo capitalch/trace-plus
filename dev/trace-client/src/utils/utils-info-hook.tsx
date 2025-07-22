@@ -3,7 +3,7 @@ import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessU
 import { GeneralSettingsType, UnitInfoType, Utils } from "./utils"
 import { GlobalContext, GlobalContextType } from "../app/global-context"
 import { useContext } from "react"
-import { GraphQLQueriesMapNames } from "../app/graphql/maps/graphql-queries-map"
+import { GraphQLQueriesMapNames } from "../app/maps/graphql-queries-map"
 
 export function useUtilsInfo() {
     const context: GlobalContextType = useContext(GlobalContext)

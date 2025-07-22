@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux"
-import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map"
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map"
+import { DataInstancesMap } from "../../../../../app/maps/data-instances-map"
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map"
 import { useQueryHelper } from "../../../../../app/graphql/query-helper-hook"
 import { WidgetLoadingIndicator } from "../../../../../controls/widgets/widget-loading-indicator"
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook"
@@ -10,7 +10,7 @@ import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/wid
 import { useEffect, useRef, useState } from "react"
 import _ from "lodash"
 import { Utils } from "../../../../../utils/utils"
-import { DatabaseTablesMap } from "../../../../../app/graphql/maps/database-tables-map"
+import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map"
 
 export function AssociateTagModal({ catId, id }: { catId: number, id: number | undefined }) {
     const [, setRefresh] = useState({})

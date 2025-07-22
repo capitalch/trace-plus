@@ -3,13 +3,13 @@ import { IconLink } from "../../../../controls/icons/icon-link";
 import _ from 'lodash'
 import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { Utils } from "../../../../utils/utils";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { GlobalContext, GlobalContextType } from '../../../../app/global-context';
 import { useContext } from 'react';
 import { AdminLinkUserWithBuModal } from './admin-link-user-with-bu-modal';
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from '../../../../app/graphql/maps/graphql-queries-map';
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from '../../../../app/maps/graphql-queries-map';
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants';
 import { TraceDataObjectType } from '../../../../utils/global-types-interfaces-enums';
 import { Messages } from '../../../../utils/messages';
@@ -17,9 +17,8 @@ import { CompSyncFusionTreeGridToolbar } from '../../../../controls/components/s
 import { CompSyncFusionGridToolbar } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar';
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid';
 import { AdminNewBusinessUserButton } from '../business users/admin-new-business-user-button';
-import { WidgetTooltip } from '../../../../controls/widgets/widget-tooltip';
 import { AdminNewBusinessUnitButton } from '../business-units/admin-new-business-unit-button';
-import { DatabaseTablesMap } from '../../../../app/graphql/maps/database-tables-map';
+import { DatabaseTablesMap } from '../../../../app/maps/database-tables-map';
 
 export function AdminLinkUsersWithBu() {
     const businessUsersInstance = DataInstancesMap.adminBusinessUsers
@@ -36,7 +35,7 @@ export function AdminLinkUsersWithBu() {
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
                         className='mt-4'
-                        CustomControl={() => <WidgetTooltip title='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 h-8 px-2 mb-2 text-xs' /></WidgetTooltip>}
+                        CustomControl={() => <TooltipComponent content='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 h-8 px-2 mb-2 text-xs' /></TooltipComponent>}
                         minWidth='300px'
                         title=''
                         isLastNoOfRows={false}
@@ -67,13 +66,13 @@ export function AdminLinkUsersWithBu() {
                 <div className='flex flex-col w-max'>
                     <CompSyncFusionTreeGridToolbar className='mt-4'
                         CustomControl={() =>
-                            <WidgetTooltip title='New business unit' >
+                            <TooltipComponent content='New business unit' >
                                 <AdminNewBusinessUnitButton
                                     dataInstance={linksInstance}
                                     className='w-10 h-8 px-2 mb-2 text-xs'
                                     isTreeGrid={true}
                                 />
-                            </WidgetTooltip>}
+                            </TooltipComponent>}
                         instance={linksInstance}
                         title=''
                     />

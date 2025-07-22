@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { DataInstancesMap } from "../../../../../app/graphql/maps/data-instances-map";
-import { SqlIdsMap } from "../../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,

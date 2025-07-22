@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map"
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { AccountOptionType } from "../../../../controls/redux-components/account-picker-flat/account-picker-flat"
 import { Utils } from "../../../../utils/utils"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"

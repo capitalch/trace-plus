@@ -1,7 +1,7 @@
 import { AllVouchersCrown } from "./all-vouchers-crown";
 import { VoucherCommonHeader } from "../voucher-controls/voucher-common-header";
 import { PaymentVoucher } from "../voucher-types/payment-voucher";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { ReceiptVoucher } from "../voucher-types/receipt-voucher";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "./all-vouchers";

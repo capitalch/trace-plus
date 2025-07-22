@@ -4,15 +4,15 @@ import { Messages } from "../../../../utils/messages";
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message";
-import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/graphql/maps/graphql-queries-map";
+import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 
 export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType) {
     const context: GlobalContextType = useContext(GlobalContext);

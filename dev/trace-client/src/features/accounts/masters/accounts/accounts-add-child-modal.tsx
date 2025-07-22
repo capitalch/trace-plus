@@ -8,11 +8,11 @@ import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget
 import { ReactElement, useEffect } from "react";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-helper-text";
 import _ from "lodash";
 

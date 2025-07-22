@@ -1,6 +1,6 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map";
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
@@ -10,7 +10,7 @@ import { ReportAllTransactionsFilterBar } from "./report-all-transactions-filter
 import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";

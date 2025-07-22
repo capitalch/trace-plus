@@ -1,4 +1,4 @@
-import { SqlIdsMap } from "../../../../app/graphql/maps/sql-ids-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import {
   CompSyncFusionGrid,
   SyncFusionGridAggregateType,
@@ -8,7 +8,7 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useRef, useState } from "react";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map";
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
 import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";

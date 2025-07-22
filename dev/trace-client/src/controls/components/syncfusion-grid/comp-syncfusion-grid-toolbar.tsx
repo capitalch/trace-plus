@@ -6,12 +6,12 @@ import { AppDispatchType, RootStateType } from "../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setLastNoOfRows } from "../../../app/graphql/query-helper-slice";
 import { IconFilePdf } from "../../icons/icon-file-pdf";
-import { WidgetTooltip } from "../../widgets/widget-tooltip";
 import { IconFileExcel } from "../../icons/icon-file-excel";
 import { IconFileCsv } from "../../icons/icon-file-csv";
 import { Utils } from "../../../utils/utils";
 import { PdfExportProperties } from "@syncfusion/ej2-react-grids";
 import clsx from "clsx";
+import {TooltipComponent } from "@syncfusion/ej2-react-popups";
 
 export function CompSyncFusionGridToolbar({
   className,
@@ -98,7 +98,7 @@ export function CompSyncFusionGridToolbar({
 
         {/* Pdf export  */}
         {isPdfExport && (
-          <WidgetTooltip title="Pdf export">
+          <TooltipComponent content="Pdf export">
             <button
               type="button"
               aria-label="Pdf export"
@@ -111,12 +111,12 @@ export function CompSyncFusionGridToolbar({
             >
               <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
             </button>
-          </WidgetTooltip>
+          </TooltipComponent>
         )}
 
         {/* Excel export */}
         {isExcelExport && (
-          <WidgetTooltip title="Excel export">
+          <TooltipComponent content="Excel export">
             <button
               type="button"
               aria-label="Excel export"
@@ -132,12 +132,12 @@ export function CompSyncFusionGridToolbar({
             >
               <IconFileExcel className="m-auto h-6 w-6 text-green-600" />
             </button>
-          </WidgetTooltip>
+          </TooltipComponent>
         )}
 
         {/* csv export */}
         {isCsvExport && (
-          <WidgetTooltip title="Csv export">
+          <TooltipComponent content="Csv export">
             <button
               type="button"
               aria-label="Csv export"
@@ -150,7 +150,7 @@ export function CompSyncFusionGridToolbar({
             >
               <IconFileCsv className="m-auto h-6 w-6 text-blue-600" />
             </button>
-          </WidgetTooltip>
+          </TooltipComponent>
         )}
 
         {/* Search */}
@@ -158,7 +158,7 @@ export function CompSyncFusionGridToolbar({
 
         {/* Refresh */}
         {isRefresh && (
-          <WidgetTooltip title="Refresh">
+          <TooltipComponent content='Refresh'>
             <WidgetButtonRefresh
               handleRefresh={async () => {
                 const loadData: any =
@@ -178,7 +178,7 @@ export function CompSyncFusionGridToolbar({
                 }
               }}
             />
-          </WidgetTooltip>
+          </TooltipComponent>
         )}
       </div>
     </div>

@@ -1,22 +1,22 @@
 import { useDispatch } from "react-redux"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { AppDispatchType } from "../../../../app/store"
-// import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+// import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { useForm } from "react-hook-form"
 import { Utils } from "../../../../utils/utils"
 import { Messages } from "../../../../utils/messages"
-import { DatabaseTablesMap } from "../../../../app/graphql/maps/database-tables-map"
+import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
 import { changeAccSettings } from "../../accounts-slice"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
 import _ from "lodash"
-import { DataInstancesMap } from "../../../../app/graphql/maps/data-instances-map"
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 
 export function NewEditFinYear({ id, startDate, endDate, isIdInsert }: NewEditFinYearType) {
 
     const dispatch: AppDispatchType = useDispatch()
-    const instance: string = DataInstancesMap.finYearsMaster
+    const instance: string = DataInstancesMap.finYearMaster
     const { buCode, context } = useUtilsInfo()
 
     const {
@@ -90,7 +90,7 @@ export function NewEditFinYear({ id, startDate, endDate, isIdInsert }: NewEditFi
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.FinYearsM,
+                tableName: DatabaseTablesMap.FinYearM,
                 xData: {
                     id: data.id,
                     startDate: data.startDate,
