@@ -12,7 +12,7 @@ import { Utils } from "../../../../utils/utils";
 import { SuperAdminNewEditRole } from "./super-admin-new-edit-role";
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { Messages } from "../../../../utils/messages";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function SuperAdminRoles() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -68,7 +68,7 @@ export function SuperAdminRoles() {
 
     async function handleOnDelete(id: string | number) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: DatabaseTablesMap.RoleM,
+            tableName: AllTables.RoleM.name,
             deletedIds: [id]
         })
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called

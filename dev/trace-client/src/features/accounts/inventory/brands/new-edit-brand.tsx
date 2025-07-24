@@ -10,7 +10,7 @@ import { Messages } from "../../../../utils/messages";
 import { changeAccSettings } from "../../accounts-slice";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import _ from "lodash";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 
@@ -39,7 +39,7 @@ export function NewEditBrand({ props }: { props: NewEditBrandType }) {
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.BrandM,
+                tableName: AllTables.BrandM.name,
                 xData: {
                     id: data.id,
                     brandName: data.brandName,

@@ -15,7 +15,7 @@ import { WidgetFormHelperText } from "../../../../controls/widgets/widget-form-h
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 
 export function SuperAdminNewEditClientExtDatabase({
@@ -384,7 +384,7 @@ export function SuperAdminNewEditClientExtDatabase({
             ipAddress: data?.ipAddress || ''
         }
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.ClientM // When id is present then considered as update
+            tableName: AllTables.ClientM.name // When id is present then considered as update
             , xData: {
                 id: data?.id
                 , clientCode: data?.clientCode

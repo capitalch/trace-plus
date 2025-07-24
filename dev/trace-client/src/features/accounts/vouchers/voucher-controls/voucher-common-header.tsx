@@ -10,13 +10,13 @@ import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 
 export function VoucherCommonHeader() {
-    const { checkAllowedDate, /*isValidGstin*/ } = useValidators();
+    const { checkAllowedDate } = useValidators();
     const { hasGstin } = useUtilsInfo()
     const {
         setValue,
         watch,
         register,
-        formState: { errors, /*isSubmitting, isDirty */ }
+        formState: { errors }
     } = useFormContext<VoucherFormDataType>();
     const showGstInHeader = watch('showGstInHeader');
     return (

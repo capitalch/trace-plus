@@ -7,7 +7,7 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { changeAccSettings } from "../../accounts-slice";
 import { NewEditFinYear } from "./new-edit-fin-year";
 import { NewFinYearButton } from "./new-fin-year-button";
@@ -103,7 +103,7 @@ export function FinYearMaster() {
             try {
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.FinYearM,
+                    tableName: AllTables.FinYearM.name,
                     deletedIds: [id],
                 })
                 Utils.showSaveMessage()

@@ -15,7 +15,7 @@ import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibu
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 
 export function SuperAdminNewEditSecuredControl({
@@ -141,7 +141,7 @@ export function SuperAdminNewEditSecuredControl({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.SecuredControlM,
+            tableName: AllTables.SecuredControlM.name,
             xData: {
                 ...data,
             }

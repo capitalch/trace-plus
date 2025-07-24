@@ -11,7 +11,7 @@ import { FocusEvent, useEffect, useState } from "react"
 import { DropDownListComponent } from "@syncfusion/ej2-react-dropdowns"
 import { IconSubmit } from "../../../../controls/icons/icon-submit"
 import { Utils } from "../../../../utils/utils"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables} from "../../../../app/maps/database-tables-map"
 
 export function BankReconOpBalance() {
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn)
@@ -95,7 +95,7 @@ export function BankReconOpBalance() {
             }
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.BankOpBal,
+                tableName: AllTables.BankOpBal.name,
                 xData: xData
             })
             const loadData: any = context.CompSyncFusionGrid[DataInstancesMap.bankRecon].loadData

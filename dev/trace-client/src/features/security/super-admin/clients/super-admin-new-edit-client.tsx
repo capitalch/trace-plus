@@ -15,7 +15,7 @@ import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibu
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context"
 import { IbukiMessages } from "../../../../utils/ibukiMessages"
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 
 export function SuperAdminNewEditClient({
@@ -149,7 +149,7 @@ export function SuperAdminNewEditClient({
     async function onSubmit(data: FormDataType) {
         const dbName1: string = data.dbName || `${data.clientCode}_accounts` // If dbname is already there, it does not change
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.ClientM
+            tableName: AllTables.ClientM.name
             , xData: {
                 ...data
                 , dbName: dbName1

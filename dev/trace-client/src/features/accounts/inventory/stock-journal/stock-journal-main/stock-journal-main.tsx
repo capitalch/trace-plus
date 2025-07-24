@@ -13,7 +13,7 @@ import { Messages } from "../../../../../utils/messages";
 import _ from "lodash";
 import { resetTranHeaderIdToEdit } from "../../../accounts-slice";
 import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { StockJournalCrown } from "../stock-journal-crown";
 import Decimal from "decimal.js";
 
@@ -96,7 +96,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
       const xData: XDataObjectType = getTranHeaderRow();
       await Utils.doGenericUpdate({
         buCode: buCode || "",
-        tableName: DatabaseTablesMap.TranH,
+        tableName: AllTables.TranH.name,
         xData,
       });
       Utils.showSaveMessage();
@@ -127,7 +127,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
     const xDataOutputItems = mapLineItems(methods.getValues("outputLineItems"), "D");
 
     return {
-      tableName: DatabaseTablesMap.StockJournal,
+      tableName:AllTables.StockJournal.name,
       fkeyName: "tranHeaderId",
       deletedIds: context.DataInstances?.[instance]?.deletedIds || [],
       xData: xDataSourceItems.concat(xDataOutputItems),

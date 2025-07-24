@@ -10,6 +10,7 @@ export const DataInstancesMap = {
   adminSecuredControls: "admin-secured-controls",
   adminSecuredControlsLinkRoles: "admin-ecured-controls-link-roles",
   allBanks: "all-banks",
+  allPurchases: "all-purchases",
   allTags: "all-tags",
   allVouchers:'all-vouchers',
   assets: "assets",

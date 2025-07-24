@@ -8,7 +8,7 @@ import { Utils } from "../../../../utils/utils";
 import { Messages } from "../../../../utils/messages";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
 import _ from "lodash";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { NumericFormat } from "react-number-format";
@@ -420,7 +420,7 @@ export function NewEditProduct({ props }: any) {
                 //update
                 await Utils.doGenericUpdate({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.ProductM,
+                    tableName: AllTables.ProductM.name,
                     xData: data
                 });
             } else {

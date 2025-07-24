@@ -15,7 +15,7 @@ import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibu
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 
 export function AdminNewEditRole({
@@ -101,7 +101,7 @@ export function AdminNewEditRole({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.RoleM,
+            tableName: AllTables.RoleM.name,
             xData: {
                 ...data,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0

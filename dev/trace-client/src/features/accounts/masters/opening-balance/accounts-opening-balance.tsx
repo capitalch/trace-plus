@@ -9,7 +9,7 @@ import { Utils } from "../../../../utils/utils"
 import _ from "lodash"
 import { Messages } from "../../../../utils/messages"
 import Decimal from "decimal.js"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables} from "../../../../app/maps/database-tables-map"
 import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-save-button"
 import { NumericEditTemplate } from "../../../../controls/components/numeric-edit-template"
 import { NumberFormatValues } from "react-number-format"
@@ -233,7 +233,7 @@ export function AccountsOpeningBalance() {
             try {
                 await Utils.doGenericUpdate({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.AccOpBal,
+                    tableName: AllTables.AccOpBal.name,
                     xData: formattedData
                 })
                 Utils.showSaveMessage()

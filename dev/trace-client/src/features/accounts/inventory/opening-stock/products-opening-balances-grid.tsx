@@ -15,7 +15,7 @@ import {
   setProductOpeningBalanceEdit
 } from "../../accounts-slice";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables} from "../../../../app/maps/database-tables-map";
 import { ProductsStockTransfer } from "./products-stock-transfer-button";
 import { useEffect, useState } from "react";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
@@ -175,7 +175,7 @@ export function ProductsOpeningBalancesGrid() {
       try {
         await Utils.doGenericDelete({
           buCode: buCode || "",
-          tableName: DatabaseTablesMap.ProductOpBal,
+          tableName: AllTables.ProductOpBal.name,
           deletedIds: [id]
         });
         Utils.showSaveMessage();

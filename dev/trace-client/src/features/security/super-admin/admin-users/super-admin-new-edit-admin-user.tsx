@@ -14,7 +14,7 @@ import { Utils } from "../../../../utils/utils";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function SuperAdminNewEditAdminUser({
     clientId,
@@ -174,7 +174,7 @@ export function SuperAdminNewEditAdminUser({
             return
         }
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.UserM,
+            tableName: AllTables.UserM.name,
             xData: {
                 ...data,
             }

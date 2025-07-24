@@ -17,14 +17,13 @@ import { CompAppLoader } from "../../../../controls/redux-components/comp-app-lo
 
 import Decimal from "decimal.js"
 import _ from "lodash"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 import { format } from "date-fns"
 
 export function BankRecon() {
     const [, setRefresh] = useState({})
     const instance = DataInstancesMap.bankRecon
     const dispatch: AppDispatchType = useDispatch()
-    // const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn, shallowEqual)
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
@@ -248,7 +247,7 @@ export function BankRecon() {
             try {
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.TranH,
+                    tableName: AllTables.TranH.name,
                     deletedIds: [id]
                 })
                 loadData()

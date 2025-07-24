@@ -18,7 +18,7 @@ import { CompSyncFusionGridToolbar } from '../../../../controls/components/syncf
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from '../../../../controls/components/syncfusion-grid/comp-syncfusion-grid';
 import { AdminNewBusinessUserButton } from '../business users/admin-new-business-user-button';
 import { AdminNewBusinessUnitButton } from '../business-units/admin-new-business-unit-button';
-import { DatabaseTablesMap } from '../../../../app/maps/database-tables-map';
+import { AllTables } from '../../../../app/maps/database-tables-map';
 
 export function AdminLinkUsersWithBu() {
     const businessUsersInstance = DataInstancesMap.adminBusinessUsers
@@ -158,7 +158,7 @@ export function AdminLinkUsersWithBu() {
                     buId: buId
                 }))
             const traceDataObject: TraceDataObjectType = {
-                tableName: DatabaseTablesMap.UserBuX,
+                tableName: AllTables.UserBuX.name,
                 xData
             };
 
@@ -297,7 +297,7 @@ export function AdminLinkUsersWithBu() {
             , Messages.messSureUnlinkUserBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: DatabaseTablesMap.UserBuX,
+                    tableName: AllTables.UserBuX.name,
                     deletedIds: [props.id],
                 };
                 try {
@@ -319,7 +319,7 @@ export function AdminLinkUsersWithBu() {
             , Messages.messSureOnUnLinkBusinessUsersBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: DatabaseTablesMap.UserBuX,
+                    tableName: AllTables.UserBuX.name,
                     deletedIds: getAllIds(),
                 };
                 try {

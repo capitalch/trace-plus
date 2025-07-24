@@ -8,7 +8,7 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { Messages } from "../../../../utils/messages";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function BranchOptionsListModal() {
     const allBranches: BranchType[] = useSelector(allBranchesSelectorFn) || []
@@ -66,7 +66,7 @@ export function BranchOptionsListModal() {
     async function saveLastUsedBranchId(branchId: number) {
         const userId: number | undefined = Utils.getCurrentLoginInfo().userDetails?.id;
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.UserM,
+            tableName: AllTables.UserM.name,
             xData: {
                 id: userId,
                 lastUsedBranchId: branchId

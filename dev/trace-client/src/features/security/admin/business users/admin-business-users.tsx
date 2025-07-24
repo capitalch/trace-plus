@@ -18,7 +18,7 @@ import { AdminNewEditBusinessUser } from "./admin-new-edit-business-user";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function AdminBusinessUsers() {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -110,7 +110,7 @@ export function AdminBusinessUsers() {
 
     async function handleOnDelete(id: number | string) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: DatabaseTablesMap.UserM,
+            tableName: AllTables.UserM.name,
             deletedIds: [+id],
         });
         Utils.showDeleteConfirmDialog(doDelete);

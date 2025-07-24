@@ -4,7 +4,7 @@ valid gstin: 24AAACC1206D1ZM
 
 ## security
 	- Change databaseTablesMap to tables schema type variables
-										## QA for vouchers
+										- QA for vouchers
 											- Check: When voucher deleted the gst entry in ext table should also delete
 											- new voucher entry
 												- check in db
@@ -15,10 +15,25 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+- Purchase
+	- Startup
+	- Purchase main
+		- Container
+		- UI
+			- Header
+			- Items
+			- Search product
+			- GST
+			- Preview
+		- Submit
+	- Purchase view
+		- Delete
+		- Edit
+		- Preview
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
-- Vouchers
-	- Print voucher in edit window
+												- Vouchers
+													- Print voucher in edit window
 													- print multi vouchers together: later on
 														- Select vouchers and track their ID
 														- Print preview multi vouchers button

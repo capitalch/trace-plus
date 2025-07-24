@@ -8,7 +8,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { AppDispatchType, RootStateType, } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
@@ -72,17 +72,11 @@ export function AllVouchers() {
                     <div className="sticky top-0 right-6 self-end z-5">
                         <VoucherTypeOptions className="absolute right-0 top-2 rounded" />
                     </div>
-                    {/* <button type="button" onClick={handleOnTest}>Test</button> */}
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
                 </CompAccountsContainer>
             </form>
         </FormProvider>
     )
-
-    // function handleOnTest() {
-    //     const data = getValues()
-    //     console.log(data)
-    // }
 
     function getDefaultVoucherFormValues(): VoucherFormDataType {
         return ({
@@ -141,7 +135,7 @@ export function AllVouchers() {
             await Utils.doValidateDebitCreditAndUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
-                tableName: DatabaseTablesMap.TranH,
+                tableName: AllTables.TranH.name,
                 xData: xData,
             });
 
@@ -173,7 +167,7 @@ export function AllVouchers() {
     function getTranDDeails() {
         const deletedIds = getValues("deletedIds") || []
         const details: TraceDataObjectType[] = [{
-            tableName: DatabaseTablesMap.TranD,
+            tableName: AllTables.TranD.name,
             fkeyName: "tranHeaderId",
             xData: getTranDData(),
             deletedIds: [...deletedIds]
@@ -190,7 +184,6 @@ export function AllVouchers() {
             remarks: entry.remarks || null,
             dc: entry.dc,
             amount: entry.amount,
-            // tranHeaderId: entry.tranHeaderId || undefined,
             lineRefNo: entry.lineRefNo || null,
             instrNo: entry.instrNo || null,
             xDetails: getExtGstTranDDetails(entry),
@@ -201,7 +194,6 @@ export function AllVouchers() {
             remarks: entry.remarks || null,
             dc: entry.dc,
             amount: entry.amount,
-            // tranHeaderId: entry.tranHeaderId || undefined,
             lineRefNo: entry.lineRefNo || null,
             instrNo: entry.instrNo || null,
             xDetails: getExtGstTranDDetails(entry),
@@ -220,7 +212,7 @@ export function AllVouchers() {
         if (!hasGstData && _.isEmpty(deletedIds)) return undefined;
 
         const trace: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.ExtGstTranD,
+            tableName: AllTables.ExtGstTranD.name,
         };
 
         if (hasGstData) {
@@ -233,7 +225,6 @@ export function AllVouchers() {
                 sgst: entry?.gst?.sgst || 0,
                 igst: entry?.gst?.igst || 0,
                 isInput: entry.dc === 'D',
-                // tranDetailsId: entry.id || undefined,
                 hsn: entry?.gst?.hsn || null,
             };
         }

@@ -7,7 +7,7 @@ import { useValidators } from "../../../../utils/validators-hook";
 import { ReactElement, useEffect } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
@@ -163,7 +163,7 @@ export function AccountsAddGroupModal() {
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.AccM,
+                tableName: AllTables.AccM.name,
                 xData: xData
             })
             const loadData = context.CompSyncFusionTreeGrid[DataInstancesMap.accountsMaster].loadData

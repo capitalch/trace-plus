@@ -18,7 +18,7 @@ import { useEffect } from "react";
 import { Utils } from "../../../../utils/utils";
 import { resetQueryHelperData, setQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { ProductOpeningBalanceEditType, reSetProductOpeningBalanceEdit, setProductOpeningBalanceEdit } from "../../accounts-slice";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { format, isBefore, parseISO } from "date-fns";
 
 export function ProductsOpeningBalancesWorkBench() {
@@ -322,7 +322,7 @@ export function ProductsOpeningBalancesWorkBench() {
             if(id){
                 await Utils.doGenericUpdate({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.ProductOpBal,
+                    tableName: AllTables.ProductOpBal.name,
                     xData: xData
                 });
             } else {

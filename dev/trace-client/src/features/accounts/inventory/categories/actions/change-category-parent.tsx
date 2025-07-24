@@ -7,7 +7,7 @@ import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/wid
 import { Messages } from "../../../../../utils/messages"
 import { Utils } from "../../../../../utils/utils"
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook"
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../../app/maps/database-tables-map"
 
 export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
     const instance = DataInstancesMap.changeCategoryParent
@@ -20,11 +20,11 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
     } = useUtilsInfo()
 
     useEffect(() => {
-            const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
-            if (loadData) {
-                loadData()
-            }
-        }, [buCode])
+        const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
+        if (loadData) {
+            loadData()
+        }
+    }, [buCode])
 
     return (<div className="flex flex-col w-full">
         <CompSyncFusionTreeGridToolbar
@@ -38,7 +38,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
             isPdfExport={false}
             isExcelExport={false}
         />
-        <CompSyncfusionTreeGrid 
+        <CompSyncfusionTreeGrid
             addUniqueKeyToJson={true}
             aggregates={getAggregates()}
             buCode={buCode}
@@ -79,7 +79,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
             }
         ])
     }
-    
+
     function getColumns(): SyncFusionTreeGridColumnType[] {
         return ([
             {
@@ -112,7 +112,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
-                tableName: DatabaseTablesMap.CategoryM,
+                tableName: AllTables.CategoryM.name,
                 xData: { id: catId, parentId: parentId || null },
             });
             Utils.showSaveMessage();

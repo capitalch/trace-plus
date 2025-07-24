@@ -9,7 +9,7 @@ import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
 import { useDispatch } from "react-redux";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "./all-vouchers";
@@ -325,7 +325,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 }
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.TranH,
+                    tableName: AllTables.TranH.name,
                     deletedIds: [id]
                 })
                 Utils.showSaveMessage();

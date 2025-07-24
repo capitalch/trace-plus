@@ -6,7 +6,7 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width";
 import { Utils } from "../../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { useEffect } from "react";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../../utils/ibuki";
@@ -107,7 +107,7 @@ export function EditCategoryModal({ catName, descr, hasChildRecords, id, isLeaf,
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
-                tableName: DatabaseTablesMap.CategoryM,
+                tableName:AllTables.CategoryM.name,
                 xData: {
                     catName: data.catName,
                     descr: data.descr,

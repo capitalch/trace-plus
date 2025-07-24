@@ -6,7 +6,7 @@ import { Messages } from "../../../../../utils/messages";
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width";
 import { Utils } from "../../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { useValidators } from "../../../../../utils/validators-hook";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { WidgetFormHelperText } from "../../../../../controls/widgets/widget-form-helper-text";
@@ -101,7 +101,7 @@ export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
-                tableName: DatabaseTablesMap.TagsM,
+                tableName: AllTables.TagsM.name,
                 xData: { id: data.id, tagName: data.tagName },
             });
             Utils.showSaveMessage();

@@ -9,15 +9,17 @@
 																		- Reports: Completed on 28-02-2025
 																		- Inventory: Targetted at 31-03-2025, Completed on 22-05-2025
 																		- Deployment: May 2025
+																		- Vouchers: 23rd July 2025
 
-- June 2025
-	- Vouchers				: 31-06-2025
 - July 2025
 	- sales / purchases		: 30-07-2025
 - Bug fixes etc.
 	- QA and release		: 30-08-2025
 
 ## History
+# 23-07-2025
+	- Completed vouchers
+	- Started Purchase
 # 31-05-2025
 	- Complted deployment
 	- Started documentation

@@ -216,7 +216,7 @@ export function ProductsBranchTransferView({ instance }: { instance: string }) {
         }
         await Utils.doGenericDelete({
           buCode: buCode || "",
-          tableName: AllTables.TranH.name, // DatabaseTablesMap.TranH,
+          tableName: AllTables.TranH.name,
           deletedIds: [id]
         });
         Utils.showSaveMessage();

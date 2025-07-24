@@ -14,7 +14,7 @@ import { Utils } from "../../../../utils/utils";
 import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibuki";
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 
 export function AdminNewEditBusinessUnit({
@@ -131,7 +131,7 @@ export function AdminNewEditBusinessUnit({
 
     async function onSubmit(data: FormDataType) {
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.BuM,
+            tableName: AllTables.BuM.name,
             xData: {
                 ...data,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId

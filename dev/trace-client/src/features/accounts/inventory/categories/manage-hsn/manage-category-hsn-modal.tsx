@@ -11,7 +11,7 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map"
 import { CompAppLoader } from "../../../../../controls/redux-components/comp-app-loader"
 import { Utils } from "../../../../../utils/utils"
 import { Messages } from "../../../../../utils/messages"
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../../app/maps/database-tables-map"
 import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { IconSubmit } from "../../../../../controls/icons/icon-submit"
 
@@ -143,7 +143,7 @@ export function ManageCategoryHsn() {
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.CategoryM,
+                tableName: AllTables.CategoryM.name,
                 xData: changedValues
             })
             const loadData = context.CompSyncFusionGrid[instance].loadData

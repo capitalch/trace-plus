@@ -12,7 +12,7 @@ import { IconCross } from "../../../../controls/icons/icon-cross"
 import { IconTag } from "../../../../controls/icons/icon-tag"
 import { IconChangeArrow } from "../../../../controls/icons/icon-change-arrow"
 import { ProductCategoriesToolbarButtons } from "./product-categories-toolbar-buttons"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 import { AddRootCategoryModal } from "./actions/add-root-category-modal"
 import { AddChildCategoryModal } from "./actions/add-child-category-modal"
 import { EditCategoryModal } from "./actions/edit-category-modal"
@@ -157,7 +157,7 @@ export function ProductCategories() {
                     await Utils.doGenericDelete({
                         buCode: buCode || '',
                         deletedIds: [props.id],
-                        tableName: DatabaseTablesMap.CategoryM
+                        tableName: AllTables.CategoryM.name
                     })
                     Utils.showSaveMessage()
                     Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)

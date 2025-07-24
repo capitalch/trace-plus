@@ -1,11 +1,10 @@
 import { useDispatch } from "react-redux"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { AppDispatchType } from "../../../../app/store"
-// import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { useForm } from "react-hook-form"
 import { Utils } from "../../../../utils/utils"
 import { Messages } from "../../../../utils/messages"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 import { changeAccSettings } from "../../accounts-slice"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
@@ -90,7 +89,7 @@ export function NewEditFinYear({ id, startDate, endDate, isIdInsert }: NewEditFi
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.FinYearM,
+                tableName: AllTables.FinYearM.name,
                 xData: {
                     id: data.id,
                     startDate: data.startDate,

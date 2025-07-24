@@ -14,7 +14,7 @@ import { AdminNewEditRole } from "./admin-new-edit-role";
 import { resetQueryHelperData } from "../../../../app/graphql/query-helper-slice";
 import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function AdminRoles() {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -73,7 +73,7 @@ export function AdminRoles() {
 
     async function handleOnDelete(id: string | number) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: DatabaseTablesMap.RoleM,
+            tableName: AllTables.RoleM.name,
             deletedIds: [+id],
         });
         Utils.showDeleteConfirmDialog(doDelete);

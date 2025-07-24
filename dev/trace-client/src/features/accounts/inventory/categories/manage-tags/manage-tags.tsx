@@ -1,5 +1,5 @@
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
@@ -27,7 +27,7 @@ export function ManageTags() {
             />
 
             <CompSyncFusionGrid
-            aggregates={getAggregates()}
+                aggregates={getAggregates()}
                 buCode={buCode}
                 className="mr-6 mt-4"
                 columns={getColumns()}
@@ -46,15 +46,15 @@ export function ManageTags() {
     );
 
     function getAggregates(): SyncFusionGridAggregateType[] {
-            return ([
-                {
-                    columnName: 'tagName',
-                    field: 'tagName',
-                    type: 'Count',
-                    footerTemplate: (props: any) => `Count: ${props['tagName - count']}`,
-                }
-            ])
-        }
+        return ([
+            {
+                columnName: 'tagName',
+                field: 'tagName',
+                type: 'Count',
+                footerTemplate: (props: any) => `Count: ${props['tagName - count']}`,
+            }
+        ])
+    }
 
     function getColumns(): SyncFusionGridColumnType[] {
         return [
@@ -80,7 +80,7 @@ export function ManageTags() {
             try {
                 await Utils.doGenericDelete({
                     buCode: buCode || "",
-                    tableName: DatabaseTablesMap.TagsM,
+                    tableName: AllTables.TagsM.name,
                     deletedIds: [id],
                 });
                 Utils.showSaveMessage();
@@ -89,7 +89,7 @@ export function ManageTags() {
                     await loadData();
                 }
                 const loadData1 = context.CompSyncFusionTreeGrid[DataInstancesMap.productCategories].loadData
-                if(loadData1){
+                if (loadData1) {
                     await loadData1();
                 }
             } catch (e: any) {

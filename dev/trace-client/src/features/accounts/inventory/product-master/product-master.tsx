@@ -7,7 +7,7 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { NewProductButton } from "./new-product-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
@@ -108,7 +108,7 @@ export function ProductMaster() {
             try {
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.ProductM,
+                    tableName: AllTables.ProductM.name,
                     deletedIds: [id]
                 });
                 Utils.showSaveMessage();

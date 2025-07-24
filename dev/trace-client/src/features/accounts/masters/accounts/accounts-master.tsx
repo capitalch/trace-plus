@@ -16,7 +16,7 @@ import { IconPlus } from "../../../../controls/icons/icon-plus"
 import { AccountsAddGroupModal } from "./accounts-add-group-modal"
 import { IconEdit1 } from "../../../../controls/icons/icon-edit1"
 import { IconCross } from "../../../../controls/icons/icon-cross"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 import { AccountsAddChildModal } from "./accounts-add-child-modal"
 import { AccountsEditModal } from "./accounts-edit-modal"
 
@@ -136,7 +136,7 @@ export function AccountsMaster() {
                     await Utils.doGenericDelete({
                         buCode: buCode || '',
                         deletedIds: [props.id],
-                        tableName: DatabaseTablesMap.AccM
+                        tableName:AllTables.AccM.name
                     })
                     Utils.showSaveMessage()
                     Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)

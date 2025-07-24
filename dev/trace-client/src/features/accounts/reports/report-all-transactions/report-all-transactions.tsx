@@ -10,7 +10,7 @@ import { ReportAllTransactionsFilterBar } from "./report-all-transactions-filter
 import { AllTransactionsFilterType, setAllTransactionFilter } from "../../accounts-slice";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";
@@ -227,7 +227,7 @@ export function ReportAllTransactions() {
             try {
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.TranH,
+                    tableName: AllTables.TranH.name,
                     deletedIds: [id]
                 })
                 if (loadData) {
@@ -264,22 +264,18 @@ export function ReportAllTransactions() {
                 instance: instance,
                 sqlArgs: {
                     dateFormat: currentDateFormat,
-                    endDate: endDate, //selectedAllTransactionsFilter.endDate || currentFinYear.endDate,
+                    endDate: endDate,
                     finYearId: finYearId,
                     branchId: branchId,
-                    startDate: startDate , //selectedAllTransactionsFilter.startDate || currentFinYear.startDate,
-                    tranTypeId: tranTypeId, //transactionTypes[selectedAllTransactionsFilter.transactionType]?.value || null,
-                    // noOfRows: selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null,
+                    startDate: startDate , 
+                    tranTypeId: tranTypeId, 
                     noOfRows: null,
-                    dateType: dateType //selectedAllTransactionsFilter.dateType // entryDate or transactionDate
+                    dateType: dateType
                 },
                 sqlId: SqlIdsMap.getAllTransactions
             })
             setApiData(res || []) // Set the data to state
-            // dispatch(setQueryHelperData({
-            //     instance: instance,
-            //     data: res
-            // }))
+    
         } catch (e: any) {
             console.log(e)
         } finally {

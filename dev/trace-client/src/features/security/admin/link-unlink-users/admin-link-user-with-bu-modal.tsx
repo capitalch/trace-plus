@@ -12,7 +12,7 @@ import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModalType) {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -79,7 +79,7 @@ export function AdminLinkUserWithBuModal({ buId, instance }: LinkUserWithBuModal
         }
 
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.UserBuX,
+            tableName: AllTables.UserBuX.name,
             xData: {
                 ...data,
                 buId: buId

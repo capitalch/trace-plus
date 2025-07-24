@@ -19,7 +19,7 @@ import { IconUnlink } from "../../../../controls/icons/icon-unlink";
 import { AdminLinkSecuredControlWithRoleModal } from "./admin-link-secured-control-with-role-modal";
 import { IconAutoLink } from "../../../../controls/icons/icon-auto-link";
 import { AdminAutoLinkSecuredControlsFromBuiltinRolesModal } from "./admin-auto-link-secured-controls-from-builtin-roles-modal";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function AdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.adminSecuredControls
@@ -168,7 +168,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     roleId: roleId
                 }))
             const traceDataObject: TraceDataObjectType = {
-                tableName: DatabaseTablesMap.RoleSecuredControlX,
+                tableName: AllTables.RoleSecuredControlX.name,
                 xData
             };
 
@@ -310,7 +310,7 @@ export function AdminLinkSecuredControlsWithRoles() {
             , Messages.messSureOnUnLinkSecuredControlBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: DatabaseTablesMap.RoleSecuredControlX,
+                    tableName: AllTables.RoleSecuredControlX.name,
                     deletedIds: [props.id],
                 };
                 try {
@@ -332,7 +332,7 @@ export function AdminLinkSecuredControlsWithRoles() {
             , Messages.messSureOnUnLinkAllSecuredControlsBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: DatabaseTablesMap.RoleSecuredControlX,
+                    tableName: AllTables.RoleSecuredControlX.name,
                     deletedIds: getAllIds(),
                 };
                 try {

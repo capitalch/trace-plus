@@ -12,7 +12,7 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import _ from "lodash";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
+import { AllTables} from "../../../../../app/maps/database-tables-map";
 import { ProductLineItem } from "../../shared-definitions";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
@@ -113,7 +113,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     try {
       await Utils.doGenericUpdate({
         buCode: buCode || "",
-        tableName: DatabaseTablesMap.TranH,
+        tableName: AllTables.TranH.name,
         xData: xData
       });
       Utils.showSaveMessage();
@@ -143,7 +143,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
 
     function getXDetails() {
       return {
-        tableName: DatabaseTablesMap.BranchTransfer,
+        tableName: AllTables.BranchTransfer.name,
         fkeyName: "tranHeaderId",
         deletedIds: context.DataInstances?.[instance]?.deletedIds || [],
         xData: data.productLineItems.map((item: ProductLineItem) => {

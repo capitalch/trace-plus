@@ -7,14 +7,14 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { NewEditBrandType } from "./new-edit-brand";
 import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewBrandButton } from "./new-brand-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { Messages } from "../../../../utils/messages";
-import { useEffect} from "react";
+import { useEffect } from "react";
 
 export function BrandMaster() {
     const instance = DataInstancesMap.brandMaster;
@@ -110,7 +110,7 @@ export function BrandMaster() {
             try {
                 await Utils.doGenericDelete({
                     buCode: buCode || '',
-                    tableName: DatabaseTablesMap.BrandM,
+                    tableName: AllTables.BrandM.name,
                     deletedIds: [id],
                 });
                 Utils.showSaveMessage();

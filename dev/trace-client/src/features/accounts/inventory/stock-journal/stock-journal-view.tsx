@@ -8,7 +8,7 @@ import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncf
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useRef, useState } from "react";
 import { Utils } from "../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
@@ -22,7 +22,7 @@ import { StockJournalJsonResultType } from "./stock-journal-main/stock-journal-m
 import { PDFViewer } from "@react-pdf/renderer";
 import { StockJournalPdf } from "./stock-journal-pdf";
 import { CustomModalDialog } from "../../../../controls/components/custom-modal-dialog";
-import { ProductLineItem} from "../shared-definitions";
+import { ProductLineItem } from "../shared-definitions";
 import { TranHeaderType } from "../../../../utils/global-types-interfaces-enums";
 
 export function StockJournalView({ instance }: { instance: string }) {
@@ -229,7 +229,7 @@ export function StockJournalView({ instance }: { instance: string }) {
       try {
         await Utils.doGenericDelete({
           buCode: buCode || "",
-          tableName: DatabaseTablesMap.TranH,
+          tableName: AllTables.TranH.name,
           deletedIds: [id]
         });
         Utils.showSaveMessage();

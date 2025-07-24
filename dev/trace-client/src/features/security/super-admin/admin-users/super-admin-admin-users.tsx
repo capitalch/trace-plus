@@ -11,7 +11,7 @@ import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/
 import { Messages } from "../../../../utils/messages"
 import { SuperAdminNewAdminUserButton } from "./super-admin-new-admin-user-button"
 import { SuperAdminNewEditAdminUser } from "./super-admin-new-edit-admin-user"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 
 export function SuperAdminAdminUsers() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -100,7 +100,7 @@ export function SuperAdminAdminUsers() {
 
     async function handleOnDelete(id: string | number) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: DatabaseTablesMap.UserM,
+            tableName: AllTables.UserM.name,
             deletedIds: [id]
         })
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called

@@ -13,7 +13,7 @@ import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables} from "../../../../app/maps/database-tables-map";
 
 export function AdminNewEditBusinessUser({
     roleId,
@@ -185,7 +185,7 @@ export function AdminNewEditBusinessUser({
             return;
         }
         const traceDataObject: TraceDataObjectType = {
-            tableName: DatabaseTablesMap.UserM,
+            tableName: AllTables.UserM.name,
             xData: {
                 ...data,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId

@@ -10,7 +10,7 @@ import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/wid
 import { useEffect, useRef, useState } from "react"
 import _ from "lodash"
 import { Utils } from "../../../../../utils/utils"
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map"
+import { AllTables} from "../../../../../app/maps/database-tables-map"
 
 export function AssociateTagModal({ catId, id }: { catId: number, id: number | undefined }) {
     const [, setRefresh] = useState({})
@@ -81,7 +81,7 @@ export function AssociateTagModal({ catId, id }: { catId: number, id: number | u
                     id: catId,
                     tagId: meta.current.selectedTagId || null
                 },
-                tableName: DatabaseTablesMap.CategoryM
+                tableName: AllTables.CategoryM.name
             })
             const loadData = context.CompSyncFusionTreeGrid[DataInstancesMap.productCategories].loadData
             if (loadData) {

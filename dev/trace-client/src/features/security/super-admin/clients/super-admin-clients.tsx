@@ -12,7 +12,7 @@ import { Messages } from "../../../../utils/messages";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function SuperAdminClients() {
     const context: GlobalContextType = useContext(GlobalContext)
@@ -74,7 +74,7 @@ export function SuperAdminClients() {
 
     async function handleOnDelete(id: string | number) {
         const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, {
-            tableName: DatabaseTablesMap.ClientM,
+            tableName: AllTables.ClientM.name,
             deletedIds: [id]
         })
         Utils.showDeleteConfirmDialog(doDelete) // If confirm for deletion then doDelete method is called

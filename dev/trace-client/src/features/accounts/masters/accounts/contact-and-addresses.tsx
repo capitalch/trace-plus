@@ -10,7 +10,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import _ from "lodash";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice";
 import { AppDispatchType } from "../../../../app/store";
 import { useDispatch } from "react-redux";
@@ -25,7 +25,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
             loadData()
         }
     }, [])
-    
+
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const {
         checkEmail
@@ -370,7 +370,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                 try {
                     await Utils.doGenericDelete({
                         buCode: buCode || '',
-                        tableName: DatabaseTablesMap.ExtBusinessContactsAccM,
+                        tableName: AllTables.ExtBusinessContactsAccM.name,
                         deletedIds: [getValues().id]
                     })
                     await closePane()
@@ -425,7 +425,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.ExtBusinessContactsAccM,
+                tableName: AllTables.ExtBusinessContactsAccM.name,
                 xData: xData
             })
             await closePane()
@@ -456,16 +456,6 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                 state: address.state || '',
                 country: address.country || '',
             })));
-            // addresses.forEach((address: AddressType, index: number) => {
-            // Use `replace` from useFieldArray
-
-            // setValue(`addresses.${index}.address1`, address.address1)
-            // setValue(`addresses.${index}.address2`, address.address2 || '')
-            // setValue(`addresses.${index}.pin`, address.pin)
-            // setValue(`addresses.${index}.city`, address.city)
-            // setValue(`addresses.${index}.state`, address.state)
-            // setValue(`addresses.${index}.country`, address.country || '')
-            // })
         }
     }
 }

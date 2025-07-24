@@ -17,7 +17,7 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { IconControls } from "../../../../controls/icons/icon-controls";
 import { SuperAdminLinkSecuredControlWithRoleModal } from "./super-admin-link-secured-control-with-role-modal";
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 
 export function SuperAdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.securedControls
@@ -170,7 +170,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     roleId: roleId
                 }))
             const traceDataObject: TraceDataObjectType = {
-                tableName: DatabaseTablesMap.RoleSecuredControlX,
+                tableName: AllTables.RoleSecuredControlX.name,
                 xData
             };
 
@@ -292,7 +292,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
             , Messages.messSureOnUnLinkSecuredControlBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: DatabaseTablesMap.RoleSecuredControlX,
+                    tableName: AllTables.RoleSecuredControlX.name,
                     deletedIds: [props.id],
                 };
                 try {
@@ -314,7 +314,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
             , Messages.messSureOnUnLinkAllSecuredControlsBody
             , async () => {
                 const traceDataObject: TraceDataObjectType = {
-                    tableName: DatabaseTablesMap.RoleSecuredControlX,
+                    tableName: AllTables.RoleSecuredControlX.name,
                     deletedIds: getAllIds(),
                 };
                 try {

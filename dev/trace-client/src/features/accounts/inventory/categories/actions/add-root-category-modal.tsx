@@ -11,7 +11,7 @@ import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-f
 import { WidgetButtonSubmitFullWidth } from "../../../../../controls/widgets/widget-button-submit-full-width";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../../utils/utils";
-import { DatabaseTablesMap } from "../../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { WidgetFormHelperText } from "../../../../../controls/widgets/widget-form-helper-text";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
@@ -95,7 +95,7 @@ export function AddRootCategoryModal() {
         try {
             await Utils.doGenericUpdate({
                 buCode: buCode || '',
-                tableName: DatabaseTablesMap.CategoryM,
+                tableName: AllTables.CategoryM.name,
                 xData: xData
             })
             const loadData = context.CompSyncFusionTreeGrid[DataInstancesMap.productCategories].loadData

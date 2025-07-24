@@ -6,7 +6,7 @@ import { ListBoxComponent } from "@syncfusion/ej2-react-dropdowns"
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { IconLink } from "../../../../controls/icons/icon-link"
 import Swal from "sweetalert2"
-import { DatabaseTablesMap } from "../../../../app/maps/database-tables-map"
+import { AllTables } from "../../../../app/maps/database-tables-map"
 import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-enums"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
@@ -62,7 +62,7 @@ export function AdminBusinessUnitSchemasLisr() {
     async function onSave(text: string) {
         try {
             const traceDataObject: TraceDataObjectType = {
-                tableName: DatabaseTablesMap.BuM,
+                tableName: AllTables.BuM.name,
                 xData: {
                     buCode: selectedBuCode,
                     buName: text,
