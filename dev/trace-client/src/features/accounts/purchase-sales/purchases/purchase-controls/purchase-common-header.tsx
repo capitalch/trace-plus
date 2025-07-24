@@ -49,7 +49,7 @@ export function PurchaseCommonHeader() {
                 />
             </FormField>
 
-            {/* User ref no / Invoice */}
+            {/* User ref no / Invoice no*/}
             <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
                 <input
                     type="text"

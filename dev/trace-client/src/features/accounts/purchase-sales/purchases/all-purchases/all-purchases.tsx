@@ -62,7 +62,12 @@ export function AllPurchases() {
             deletedIds: [],
             debitAccId: null,
             creditAccId: null,
-            gstin: null
+            gstin: null,
+            totalInvoiceAmount: 0,
+            totalQty: 0,
+            totalCgst: 0,
+            totalSgst: 0,
+            totalIgst: 0
         });
     }
 
@@ -88,4 +93,9 @@ export type PurchaseFormDataType = {
     debitAccId: string | null;
     creditAccId: string | null;
     gstin?: string | null; // for purchase invoice
+    totalInvoiceAmount:number;
+    totalQty:number;
+    totalCgst: number;
+    totalSgst: number;
+    totalIgst: number;
 }

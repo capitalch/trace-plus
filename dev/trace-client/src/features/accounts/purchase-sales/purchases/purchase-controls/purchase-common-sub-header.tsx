@@ -1,15 +1,17 @@
 import { useFormContext } from "react-hook-form";
 import { AccountPickerFlat } from "../../../../../controls/redux-components/account-picker-flat/account-picker-flat";
 import { FormField } from "../../../../../controls/widgets/form-field";
-// import { VoucherFormDataType } from "../../../vouchers/all-vouchers/all-vouchers";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { Messages } from "../../../../../utils/messages";
 import { PurchaseFormDataType } from "../all-purchases/all-purchases";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
 import clsx from "clsx";
+import { useValidators } from "../../../../../utils/validators-hook";
+import { PurchaseTotalsPanel } from "./purchase-totals-panel";
 
-export function PurchaseCommonSubHeader() {
+export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderType) {
     const instance = DataInstancesMap.allPurchases;
+    const { isValidGstin } = useValidators();
     const {
         setValue,
         watch,
@@ -18,7 +20,7 @@ export function PurchaseCommonSubHeader() {
     } = useFormContext<PurchaseFormDataType>();
 
     return (
-        <div className="flex gap-2 flex-wrap items-center">
+        <div className={clsx(className, "flex gap-2 flex-wrap items-start")}>
 
             {/* Debit Account */}
             <FormField
@@ -78,22 +80,41 @@ export function PurchaseCommonSubHeader() {
             <FormField
                 label="Gstin No"
                 error={errors?.gstin?.message}
-                className="mt-1"
+                className="mt-0.5"
             >
                 <input
                     type="text"
                     {...register('gstin', {
-                        pattern: {
-                            value: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/,
-                            message: "Invalid GSTIN format"
-                        }
+                        validate: validateGstin,
                     })}
-                    value={watch('gstin') || undefined}
-                    onChange={(e) => setValue('gstin', e.target.value, { shouldDirty: true })}
-                    className={clsx(inputFormFieldStyles,'')}
+                    // value={watch('gstin') || undefined}
+                    // onChange={(e) => setValue('gstin', e.target.value, { shouldDirty: true })}
+                    className={clsx(inputFormFieldStyles, '')}
                     placeholder="Enter GSTIN No"
                 />
             </FormField>
+
+            <PurchaseTotalsPanel className="ml-auto -mt-2"/>
         </div>
     );
+
+    function validateGstin(): string | undefined {
+        const gstin = watch('gstin');
+        const isGstInvoice = watch('isGstInvoice');
+
+        if (!isGstInvoice) return;
+
+        if (!gstin) {
+            return Messages.errRequired;
+        }
+
+        if (!isValidGstin(gstin)) {
+            return Messages.errInvalidGstin;
+        }
+
+        return;
+    }
+}
+type PurchaseCommonSubHeaderType = {
+    className?: string;
 }
