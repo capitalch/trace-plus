@@ -16,12 +16,22 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Purchase
-	- Startup
+														- Startup
 	- Purchase main
 		- Container
+		- Query Sql
 		- UI
 			- Header
 			- Items
+				- Product code | Upc
+					- Clear
+					- Search
+				- Details
+					- More width, readonly, populate
+				- HSN Gst rate together
+				- Qty narrower
+				- Subtotal, cgst, sgst, igst together
+				- Remarks, Serials
 			- Search product
 			- GST
 			- Preview

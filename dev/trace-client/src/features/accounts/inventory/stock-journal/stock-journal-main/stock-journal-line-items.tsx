@@ -61,10 +61,10 @@ export function StockJournalLineItems({
           <tr className="bg-gray-100 text-primary-500 text-sm font-medium text-left">
             <th className="p-2 w-10 ">#</th>
             <th className="p-2 w-32">
-              UPC / Product Code <WidgetAstrix />
+              UPC | Product Code <WidgetAstrix />
             </th>
             <th className="p-2 w-xs">
-              Product Details <WidgetAstrix />
+              Details <WidgetAstrix />
             </th>
             <th className="p-2 w-36">Line Ref No</th>
             <th className="p-2">Line Remarks</th>

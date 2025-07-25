@@ -21,15 +21,15 @@ export function AllPurchases() {
     const { /*watch, getValues, setValue,*/ reset } = methods;
     const extendedMethods = { ...methods, resetAll }
     const tabsInfo: CompTabsType = [
-            {
-                label: "New / Edit",
-                content: <AllPurchasesMain />
-            },
-            {
-                label: "View",
-                content: <AllPurchasesView instance={instance} />
-            }
-        ];
+        {
+            label: "New / Edit",
+            content: <AllPurchasesMain />
+        },
+        {
+            label: "View",
+            content: <AllPurchasesView instance={instance} />
+        }
+    ];
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
@@ -67,8 +67,31 @@ export function AllPurchases() {
             totalQty: 0,
             totalCgst: 0,
             totalSgst: 0,
-            totalIgst: 0
+            totalIgst: 0,
+            purchaseLineItems: getDefaultPurchaseLineItems()
         });
+    }
+
+    function getDefaultPurchaseLineItems(): PurchaseLineItemType[] {
+        return [{
+            id: undefined,
+            productCode: "",
+            productDetails: "",
+            hsn: "",
+            qty: 0,
+            gstRate: 0,
+            price: 0,
+            discount: 0,
+            priceGst: 0,
+            subTotal: 0,
+            cgst: 0,
+            sgst: 0,
+            igst: 0,
+            lineRemarks: null,
+            serialNumbers: null,
+            amount: 0,
+            productId: null,
+        }];
     }
 
     function resetAll() {
@@ -87,15 +110,42 @@ export type PurchaseFormDataType = {
     finYearId: number;
     branchId: number;
     autoRefNo?: string;
+    purchaseLineItems: PurchaseLineItemType[];
 
+    tranHeaderId?: number;
     isGstInvoice: boolean;
     deletedIds: number[]; // of TranD table
     debitAccId: string | null;
     creditAccId: string | null;
+    lineRemarks?: string | null;
     gstin?: string | null; // for purchase invoice
-    totalInvoiceAmount:number;
-    totalQty:number;
+    totalInvoiceAmount: number;
+
+    totalQty: number;
     totalCgst: number;
     totalSgst: number;
     totalIgst: number;
+}
+
+type PurchaseLineItemType = {
+    id?: number;
+    productId: number | null;
+    tranDetailsID?: number;
+    productCode: string;
+    upcCode?: string | null;
+    productDetails: string;
+    hsn: string;
+    qty: number;
+    gstRate: number;
+    price: number;
+    amount: number;
+    // jData: { [key: string]: string }
+    discount: number;
+    priceGst: number;
+    subTotal: number;
+    cgst: number;
+    sgst: number;
+    igst: number;
+    lineRemarks?: string | null;
+    serialNumbers?: string | null;
 }
