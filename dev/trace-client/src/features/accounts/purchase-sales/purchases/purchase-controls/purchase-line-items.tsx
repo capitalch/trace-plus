@@ -13,6 +13,7 @@ import { IconCross } from "../../../../../controls/icons/icon-cross";
 import { IconClear } from "../../../../../controls/icons/icon-clear";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
+import { Utils } from "../../../../../utils/utils";
 
 export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
   // const [, setRefresh] = useState({});
@@ -70,19 +71,13 @@ export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
             <th className="p-2 w-56">Details <WidgetAstrix /></th>
             <th className="p-2">Remarks</th>
             <th className="p-2 w-30">HSN | Gst %</th>
-            <th className="p-2 text-right w-24">Qty <WidgetAstrix /></th>
+            <th className="p-2 text-right w-28">Qty <WidgetAstrix /></th>
             <th className="p-2 text-right w-36">Price</th>
             <th className="p-2 text-right w-32">Discount</th>
-            {/* <th className="p-2 text-right">GST%</th> */}
-            {/* <th className="p-2 text-right">SubTotal</th> */}
-            <th className="p-2 text-right">Misc</th>
-            {/* <th className="p-2 text-right">CGST</th>
-            <th className="p-2 text-right">SGST</th>
-            <th className="p-2 text-right">IGST</th> */}
-            
             <th className="p-2">Serials</th>
-            <th className="p-2 text-center">Add</th>
-            <th className="p-2 text-center">Del</th>
+            <th className="p-2 text-right w-28">Misc</th>
+            <th className="p-2 text-center w-42">Add | Del</th>
+            {/* <th className="p-2 text-center">Del</th> */}
           </tr>
         </thead>
 
@@ -152,7 +147,7 @@ export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
                 <td className="p-2 font-semibold align-top">
                   <textarea
                     tabIndex={-1}
-                    rows={5}
+                    rows={4}
                     {...register(`${name}.${index}.productDetails`, {
                       required: Messages.errRequired
                     })}
@@ -167,7 +162,7 @@ export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
                 {/* Remarks */}
                 <td className="p-2 align-top">
                   <textarea
-                    rows={5}
+                    rows={4}
                     {...register(`${name}.${index}.lineRemarks`)}
                     className={clsx(
                       "w-full text-xs",
@@ -176,9 +171,10 @@ export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
                     value={watch(`${name}.${index}.lineRemarks`) ?? ""}
                   />
                 </td>
+
                 {/* Hsn | Gst Rate */}
                 <td className="p-2 align-top">
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-semibold"><input
                       {...register(`${name}.${index}.hsn`)}
                       placeholder="HSN"
@@ -200,7 +196,6 @@ export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
                         })
                       }
                     /></label>
-
                   </div>
                 </td>
 
@@ -261,26 +256,6 @@ export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
                   />
                 </td>
 
-                {/* Misc */}
-                <td className="p-2 text-right">
-                  <NumericFormat
-                    {...register(`${name}.${index}.gstRate`)}
-                    value={gstRate.toNumber()}
-                    onValueChange={({ floatValue }) =>
-                      setValue(`${name}.${index}.gstRate`, floatValue ?? 0, {
-                        shouldDirty: true,
-                      })
-                    }
-                    decimalScale={2}
-                    className="w-full text-right"
-                  />
-                </td>
-
-                {/* <td className="p-2 text-right">{subTotal.toFixed(2)}</td>
-                <td className="p-2 text-right">{halfGst.toFixed(2)}</td>
-                <td className="p-2 text-right">{halfGst.toFixed(2)}</td>
-                <td className="p-2 text-right">{gstValue.toFixed(2)}</td> */}
-
                 {/* Serials */}
                 <td className="p-2 align-top">
                   <textarea
@@ -299,25 +274,82 @@ export function PurchaseLineItems({ name, title }: PurchaseLineItemsProps) {
                   />
                 </td>
 
-                <td className="p-2 text-center">
-                  <button
-                    type="button"
-                    className="text-green-600"
-                    onClick={() => handleAddRow(index)}
-                  >
-                    <IconPlus className="w-6 h-6" />
-                  </button>
+                {/* Misc */}
+                <td className="p-2 text-right align-top">
+
+                  {/* Tax Breakdown */}
+                  <div className="flex flex-col gap-1 text-right text-xs text-gray-700 bg-gray-100 p-2 rounded">
+                    <div className="flex justify-between">
+                      <span className="font-medium">SUBT:</span>
+                      <span className="min-w-[60px] text-right">{Utils.toDecimalFormat(watch(`${name}.${index}.subTotal`))}</span>
+                    </div>
+                    {/* CGST / SGST / IGST values */}
+                    <div className="flex justify-between">
+                      <span className="font-medium">CGST:</span>
+                      <span className="min-w-[60px] text-right">{Utils.toDecimalFormat(watch(`${name}.${index}.cgst`))}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">SGST:</span>
+                      <span className="min-w-[60px] text-right">{Utils.toDecimalFormat(watch(`${name}.${index}.sgst`))}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">IGST:</span>
+                      <span className="min-w-[60px] text-right">{Utils.toDecimalFormat(watch(`${name}.${index}.igst`))}</span>
+                    </div>
+                  </div>
+                  {/* <NumericFormat
+                    {...register(`${name}.${index}.gstRate`)}
+                    value={gstRate.toNumber()}
+                    onValueChange={({ floatValue }) =>
+                      setValue(`${name}.${index}.gstRate`, floatValue ?? 0, {
+                        shouldDirty: true,
+                      })
+                    }
+                    decimalScale={2}
+                    className="w-full text-right"
+                  /> */}
                 </td>
 
-                <td className="p-2 text-center">
-                  <button
-                    type="button"
-                    className="text-red-500"
-                    onClick={() => remove(index)}
-                  >
-                    <IconCross className="w-6 h-6" />
-                  </button>
+                {/* <td className="p-2 text-right">{subTotal.toFixed(2)}</td>
+                <td className="p-2 text-right">{halfGst.toFixed(2)}</td>
+                <td className="p-2 text-right">{halfGst.toFixed(2)}</td>
+                <td className="p-2 text-right">{gstValue.toFixed(2)}</td> */}
+
+                <td className="p-2  align-top flex flex-col">
+                  <NumericFormat
+                    {...register(`${name}.${index}.amount`)}
+                    fixedDecimalScale
+                    thousandSeparator
+                    decimalScale={2}
+                    disabled
+                    readOnly
+                    className={clsx("w-full text-center font-bold border-0 bg-gray-100 text-gray-900", inputFormFieldStyles)}
+                  />
+                  <div className="flex items-center justify-center gap-8 mt-6">
+                    <button
+                      type="button"
+                      className="text-red-500"
+                      onClick={() => remove(index)}
+                    >
+                      <IconCross className="w-7 h-7" />
+                    </button>
+                    <button
+                      type="button"
+                      className="text-green-600"
+                      onClick={() => handleAddRow(index)}
+                    >
+                      <IconPlus className="w-6 h-6" />
+                    </button>
+                  </div>
+
+
+
+
                 </td>
+
+                {/* <td className="p-2 text-center">
+
+                </td> */}
               </tr>
             );
           })}

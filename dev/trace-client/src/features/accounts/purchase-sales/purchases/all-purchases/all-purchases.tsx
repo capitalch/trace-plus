@@ -52,45 +52,51 @@ export function AllPurchases() {
     function getDefaultPurchaseFormValues(): PurchaseFormDataType {
         return ({
             id: undefined,
+            autoRefNo: "",
             tranDate: new Date().toISOString().split('T')[0],
             userRefNo: null,
             remarks: null,
-            finYearId: finYearId || 0,
-            branchId: branchId || 1,
-            autoRefNo: "",
             isGstInvoice: hasGstin,
-            deletedIds: [],
+            isIgst: false,
+
             debitAccId: null,
             creditAccId: null,
             gstin: null,
+
+            purchaseLineItems: getDefaultPurchaseLineItems(),
+
             totalInvoiceAmount: 0,
             totalQty: 0,
             totalCgst: 0,
             totalSgst: 0,
             totalIgst: 0,
-            purchaseLineItems: getDefaultPurchaseLineItems()
+
+            branchId: branchId || 1,
+            deletedIds: [],
+            finYearId: finYearId || 0,
         });
     }
 
     function getDefaultPurchaseLineItems(): PurchaseLineItemType[] {
         return [{
             id: undefined,
+            productId: null,
             productCode: "",
             productDetails: "",
+            lineRemarks: null,
             hsn: "",
-            qty: 0,
             gstRate: 0,
+            qty: 0,
             price: 0,
             discount: 0,
+            serialNumbers: null,
             priceGst: 0,
             subTotal: 0,
             cgst: 0,
             sgst: 0,
             igst: 0,
-            lineRemarks: null,
-            serialNumbers: null,
             amount: 0,
-            productId: null,
+            
         }];
     }
 
@@ -104,27 +110,31 @@ export function AllPurchases() {
 
 export type PurchaseFormDataType = {
     id?: number;
+    autoRefNo?: string;
     tranDate: string;
     userRefNo?: string | null;
     remarks?: string | null;
-    finYearId: number;
-    branchId: number;
-    autoRefNo?: string;
-    purchaseLineItems: PurchaseLineItemType[];
-
-    tranHeaderId?: number;
     isGstInvoice: boolean;
-    deletedIds: number[]; // of TranD table
+    isIgst: boolean;
+
     debitAccId: string | null;
     creditAccId: string | null;
-    lineRemarks?: string | null;
     gstin?: string | null; // for purchase invoice
-    totalInvoiceAmount: number;
 
+    purchaseLineItems: PurchaseLineItemType[];
+
+    totalInvoiceAmount: number;
     totalQty: number;
     totalCgst: number;
     totalSgst: number;
     totalIgst: number;
+
+    branchId: number;
+    deletedIds: number[]; // of TranD table
+    finYearId: number;
+    
+    tranHeaderId?: number;
+    lineRemarks?: string | null;
 }
 
 type PurchaseLineItemType = {
