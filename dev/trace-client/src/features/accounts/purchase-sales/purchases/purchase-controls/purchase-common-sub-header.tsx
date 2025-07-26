@@ -20,7 +20,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
     } = useFormContext<PurchaseFormDataType>();
 
     return (
-        <div className={clsx(className, "flex gap-2 flex-wrap items-start")}>
+        <div className={clsx(className, "flex gap-6 flex-wrap items-start")}>
 
             {/* Debit Account */}
             <FormField
@@ -89,7 +89,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     })}
                     // value={watch('gstin') || undefined}
                     // onChange={(e) => setValue('gstin', e.target.value, { shouldDirty: true })}
-                    className={clsx(inputFormFieldStyles, '')}
+                    className={clsx(inputFormFieldStyles, 'mt-0.5')}
                     placeholder="Enter GSTIN No"
                 />
             </FormField>

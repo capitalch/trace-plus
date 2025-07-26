@@ -19,13 +19,13 @@ export function PurchaseCommonHeader() {
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll }: any = useFormContext();
     return (
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-6 flex-wrap">
 
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-52 ">
                 <input
                     type="text"
-                    className={clsx("mt-1 bg-gray-200 rounded-lg")}
+                    className={clsx("bg-gray-200 rounded mt-1")}
                     readOnly
                     disabled
                     title="Auto reference number"
@@ -38,7 +38,6 @@ export function PurchaseCommonHeader() {
                 <input
                     type="date"
                     className={clsx(
-                        "text-right rounded-lg h-10",
                         inputFormFieldStyles,
                         errors?.tranDate && "border-red-500 bg-red-100"
                     )}
