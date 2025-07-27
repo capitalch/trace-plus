@@ -80,7 +80,7 @@ export function GstInLinePanel({
     return (
         <div className={clsx("flex gap-2 min-w-[130px] bg-gray-50 border p-1 px-2 rounded-sm items-start", className)}>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-1">
                 <div className="flex gap-2">
 
                     {/* GST Rate */}

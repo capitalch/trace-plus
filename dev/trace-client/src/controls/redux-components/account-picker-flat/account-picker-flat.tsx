@@ -54,8 +54,8 @@ export function AccountPickerFlat({
 
     return (
         <div className='relative'>
-            <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-5.5 left-1/2 -translate-x-1/2 '><IconRefresh className='w-5 h-5' /></button>
-            <span className='absolute -top-6 right-1'>
+            <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-5 left-1/2 -translate-x-1/2 '><IconRefresh className='w-5 h-5' /></button>
+            <span className='absolute -top-5.5 right-1'>
                 <label className='font-medium text-blue-400'>{decFormatter.format(Math.abs(accountBalance))}</label>
                 {showAccountBalance && <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>}
             </span>

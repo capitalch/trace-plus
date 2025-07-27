@@ -39,7 +39,7 @@ export function VoucherCommonHeader() {
                 <input
                     type="date"
                     className={clsx(
-                        "text-right rounded-lg",
+                        "text-right rounded-lg mt-1",
                         inputFormFieldStyles,
                         errors?.tranDate && "border-red-500 bg-red-100"
                     )}

@@ -93,6 +93,16 @@ function useValidators() {
     return error;
   }
 
+  function checkHsn(input: string | undefined) {
+    let error = undefined;
+    if (input) {
+      if (!isValidHsn(input)) {
+        error = Messages.errInvalidHsn;
+      }
+    }
+    return error;
+  }
+
   function checkLandPhone(input: string | undefined) {
     let error = undefined;
     if (input) {
@@ -281,8 +291,9 @@ function useValidators() {
     checkAtLeast8Chars,
     checkEmail,
     checkGstin,
-    checkIpAddress,
+    checkHsn,
     checkGstStateCode,
+    checkIpAddress,
     checkLandPhone,
     checkLandPhones,
     checkMobileNo,
@@ -295,6 +306,7 @@ function useValidators() {
     checkUrl,
     checkUserNameOrEmail,
     isValidGstin,
+    isValidHsn,
     isValidEmail,
     shouldBePositive,
     shouldNotBeZero,
@@ -312,5 +324,14 @@ function useValidators() {
     );
     return ret;
   }
+
+  function isValidHsn(input: string) {
+    const ret = input.match(
+      /^\d+$/
+    ) && input.length >= 4 && input.length <= 8;
+    return ret;
+  }
+
+
 }
 export { useValidators };

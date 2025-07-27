@@ -13,7 +13,6 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
 
     return (<div className="">
         <CompSyncFusionGridToolbar
-            // className='mt-2 mr-6'
             minWidth="500px"
             title='All Active Products'
             isPdfExport={false}
@@ -30,7 +29,6 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
             dbParams={decodedDbParamsObject}
             height='calc(100vh - 280px)'
             instance={instance}
-            // isLoadOnInit={false}
             minWidth="800px"
             rowSelected={onRowSelected}
             sqlId={SqlIdsMap.getAllProductsInfoForProductSelect}
@@ -115,9 +113,6 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
 
     function productTemplate(props: ProductInfoType) {
         return (''.concat(props.brandName, ' ', props.catName, ' ', props.label))
-        // return (<div>
-        //     {`${props.brandName} ${props.catName} ${props.label}`}
-        // </div>)
     }
 }
 

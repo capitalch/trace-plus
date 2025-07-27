@@ -1005,7 +1005,7 @@ class SqlAccounts:
             and "branchId" = (table "branchId")
             order by "tranDate" DESC, h."id" DESC, d."id" DESC
     """
-    
+
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 
@@ -1416,6 +1416,16 @@ class SqlAccounts:
     get_fin_years = """
         select "id", "startDate", "endDate"
                 from "FinYearM" order by "id" DESC
+    """
+
+    get_gstin = """
+        WITH "accId" AS (VALUES (%(accId)s::int))
+            --with "accId" as (values (108))
+            select "gstin"
+                from "AccM" a
+                    join "ExtBusinessContactsAccM" b
+                        on a."id" = b."accId"
+                where a."id" = (table "accId")
     """
 
     get_last_no = """
@@ -2165,7 +2175,7 @@ class SqlAccounts:
             )
                 SELECT * FROM cte_final where age >= (table days)
     """
-    
+
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"
@@ -2892,7 +2902,7 @@ class SqlAccounts:
                         , 'tranDetails', (SELECT json_agg(row_to_json(b)) from cte2 b)
                     ) as "jsonResult"
     """
-    
+
     increment_last_no = """
         WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int))
         --with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (12::int))

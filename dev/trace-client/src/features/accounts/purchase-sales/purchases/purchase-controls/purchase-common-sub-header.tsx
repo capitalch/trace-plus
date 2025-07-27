@@ -8,16 +8,21 @@ import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form
 import clsx from "clsx";
 import { useValidators } from "../../../../../utils/validators-hook";
 import { PurchaseTotalsPanel } from "./purchase-totals-panel";
+import { Utils } from "../../../../../utils/utils";
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 
 export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderType) {
     const instance = DataInstancesMap.allPurchases;
     const { isValidGstin } = useValidators();
+    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const {
         setValue,
         watch,
         register,
         formState: { errors }
     } = useFormContext<PurchaseFormDataType>();
+    const isGstInvoice = watch("isGstInvoice");
 
     return (
         <div className={clsx(className, "flex gap-6 flex-wrap items-start")}>
@@ -45,7 +50,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     }
                     showAccountBalance
                     value={watch('debitAccId')}
-                    className="w-full"
+                    className="w-full mt-1"
                 />
             </FormField>
 
@@ -64,39 +69,71 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                         required: Messages.errRequired,
                     })}
                     // loadData={loadData}
-                    onChange={(val) =>
+                    onChange={(val) => {
                         setValue('creditAccId', val, {
                             shouldValidate: true,
                             shouldDirty: true,
                         })
-                    }
+                        getSetGstin(val)
+                    }}
                     showAccountBalance
                     value={watch('creditAccId')}
-                    className="w-full"
+                    className="w-full mt-1"
                 />
             </FormField>
 
-            {/* GSTIN No */}
+            {/* GSTIN No + isIgst Checkbox */}
             <FormField
                 label="Gstin No"
                 error={errors?.gstin?.message}
                 className="mt-0.5"
+                required={isGstInvoice}
             >
-                <input
-                    type="text"
-                    {...register('gstin', {
-                        validate: validateGstin,
-                    })}
-                    // value={watch('gstin') || undefined}
-                    // onChange={(e) => setValue('gstin', e.target.value, { shouldDirty: true })}
-                    className={clsx(inputFormFieldStyles, 'mt-0.5')}
-                    placeholder="Enter GSTIN No"
-                />
+                <div className="flex items-center gap-3">
+                    <input
+                        type="text"
+                        {...register('gstin', {
+                            validate: validateGstin,
+                        })}
+                        className={clsx(inputFormFieldStyles, 'mt-0.5 w-40')}
+                        placeholder="Enter GSTIN No"
+                    />
+
+                    {/* isIgst Checkbox */}
+                    <label className="flex items-center gap-2 text-xs mt-[2px] cursor-pointer font-medium">
+                        <input
+                            type="checkbox"
+                            {...register('isIgst')}
+                            className="checkbox checkbox-xs cursor-pointer"
+                        />
+                        IGST
+                    </label>
+                </div>
             </FormField>
 
-            <PurchaseTotalsPanel className="ml-auto -mt-2"/>
+            <PurchaseTotalsPanel className="ml-auto -mt-2" />
         </div>
     );
+
+    async function getSetGstin(accId: string | null) {
+        if (!accId) {
+            setValue('gstin', null, { shouldDirty: true });
+            return;
+        }
+        try {
+            const result = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                sqlId: SqlIdsMap.getGstin,
+                sqlArgs: { accId: accId },
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject
+            });
+            const gstin =result?.[0]?.gstin || null;
+            setValue('gstin', gstin, { shouldDirty: true });
+        } catch (error) {
+            console.error("Error fetching GSTIN:", error);
+        }
+    }
 
     function validateGstin(): string | undefined {
         const gstin = watch('gstin');

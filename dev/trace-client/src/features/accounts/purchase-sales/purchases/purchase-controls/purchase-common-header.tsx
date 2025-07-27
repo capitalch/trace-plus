@@ -38,7 +38,7 @@ export function PurchaseCommonHeader() {
                 <input
                     type="date"
                     className={clsx(
-                        inputFormFieldStyles,
+                        inputFormFieldStyles,'mt-1',
                         errors?.tranDate && "border-red-500 bg-red-100"
                     )}
                     {...register("tranDate", {
@@ -52,7 +52,7 @@ export function PurchaseCommonHeader() {
             <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
                 <input
                     type="text"
-                    className={clsx(inputFormFieldStyles)}
+                    className={clsx(inputFormFieldStyles,'mt-1')}
                     placeholder="Enter invoice no"
                     {...register("userRefNo", {
                         required: Messages.errRequired})}

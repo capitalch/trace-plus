@@ -70,6 +70,7 @@ export const SqlIdsMap = {
   getCurrentOrders: "get_current_orders",
   getExtBusinessContactsAccM: "get_extBusinessContactsAccM",
   getFinYears: "get_fin_years",
+  getGstin: "get_gstin",
   getLeafCategories: "get_leaf_categories",
   getLeafCategoriesWithParent: "get_leaf_categories_with_parent",
   getLeafSubledgerAccountsOnClass:"get_leaf_subledger_accounts_on_class",

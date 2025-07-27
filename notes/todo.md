@@ -17,26 +17,29 @@ valid gstin: 24AAACC1206D1ZM
 ## features
 - Purchase
 														- Startup
-	- Purchase main
-		- Container
-		- Query Sql
-		- UI
-			- Header
-			- Items
-				- Product code | Upc
-					- Clear
-					- Search
-				- Details
-					- More width, readonly, populate
-				- HSN Gst rate together
-				- Qty narrower
-				- Subtotal, cgst, sgst, igst together
-				- Remarks, Serials
-			- Search product
-			- GST
-			- Preview
+	- Purchase main		
+		- Populate Gst field with default gst rate or product's Gst in db
+														- Populate GSTIN with suppliers GSTIN
+		- Serial no validation
+		- All calculations
+			- Compute amount, gst, priceGst on change of gstRate, qty, price,discount
+			- Compute on change of price the priceGst
+		- Search product and populate		
+		- Summary count, qty, gst, amount
+		- Provision of extra surcharge on Gst
+		- Final amounts validation
+		- Redux
 		- Submit
+		- Make hook
+														- Reset all
+														- current row distinction
+														- Clear line item
+														- Cannot delete last single row
+													- validations all
+														- If GST invoice then astrix in GStin no, hsn and gst %
+														- isIgst
 	- Purchase view
+		- Query Sql
 		- Delete
 		- Edit
 		- Preview

@@ -19,7 +19,7 @@ export function AllPurchases() {
             defaultValues: getDefaultPurchaseFormValues()
         });
     const { /*watch, getValues, setValue,*/ reset } = methods;
-    const extendedMethods = { ...methods, resetAll }
+    const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem }
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
@@ -63,7 +63,7 @@ export function AllPurchases() {
             creditAccId: null,
             gstin: null,
 
-            purchaseLineItems: getDefaultPurchaseLineItems(),
+            purchaseLineItems: [getDefaultPurchaseLineItem()],
 
             totalInvoiceAmount: 0,
             totalQty: 0,
@@ -77,8 +77,8 @@ export function AllPurchases() {
         });
     }
 
-    function getDefaultPurchaseLineItems(): PurchaseLineItemType[] {
-        return [{
+    function getDefaultPurchaseLineItem(): PurchaseLineItemType {
+        return {
             id: undefined,
             productId: null,
             productCode: "",
@@ -86,25 +86,42 @@ export function AllPurchases() {
             lineRemarks: null,
             hsn: "",
             gstRate: 0,
-            qty: 0,
+            qty: 1,
             price: 0,
             discount: 0,
             serialNumbers: null,
             priceGst: 0,
-            subTotal: 0,
             cgst: 0,
             sgst: 0,
             igst: 0,
-            amount: 0,
-            
-        }];
+        };
     }
 
+    // function getDefaultPurchaseLineItems(): PurchaseLineItemType[] {
+    //     return [{
+    //         id: undefined,
+    //         productId: null,
+    //         productCode: "",
+    //         productDetails: "",
+    //         lineRemarks: null,
+    //         hsn: "",
+    //         gstRate: 0,
+    //         qty: 0,
+    //         price: 0,
+    //         discount: 0,
+    //         serialNumbers: null,
+    //         priceGst: 0,
+    //         // subTotal: 0,
+    //         cgst: 0,
+    //         sgst: 0,
+    //         igst: 0,
+    //         // amount: 0,
+            
+    //     }];
+    // }
+
     function resetAll() {
-        // retain voucherType
-        // const vchrType = watch('voucherType')
         reset(getDefaultPurchaseFormValues())
-        // dispatch(clearVoucherFormData());
     }
 }
 
@@ -148,11 +165,11 @@ type PurchaseLineItemType = {
     qty: number;
     gstRate: number;
     price: number;
-    amount: number;
+    // amount: number;
     // jData: { [key: string]: string }
     discount: number;
     priceGst: number;
-    subTotal: number;
+    // subTotal: number;
     cgst: number;
     sgst: number;
     igst: number;
