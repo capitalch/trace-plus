@@ -94,6 +94,8 @@ export function AllPurchases() {
             cgst: 0,
             sgst: 0,
             igst: 0,
+            subTotal: 0,
+            amount: 0
         });
     }
 
@@ -142,11 +144,11 @@ type PurchaseLineItemType = {
     qty: number;
     gstRate: number;
     price: number;
-    // amount: number;
+    amount: number;
     // jData: { [key: string]: string }
     discount: number;
     priceGst: number;
-    // subTotal: number;
+    subTotal: number;
     cgst: number;
     sgst: number;
     igst: number;

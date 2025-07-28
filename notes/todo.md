@@ -30,7 +30,7 @@ valid gstin: 24AAACC1206D1ZM
 		- Redux
 		- Submit
 		- print preview
-		- Zero gst rate should be allowed
+														- Zero gst rate should be allowed
 														- Populate Gst field with default gst rate or product's Gst in db
 														- Populate GSTIN with suppliers GSTIN
 														- Search product and populate

@@ -8,14 +8,16 @@ import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form
 import { Messages } from "../../../../../utils/messages";
 import { IconReset } from "../../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../../controls/icons/icon-submit";
+// import { getVal } from "@syncfusion/ej2-react-inputs";
 
 export function PurchaseCommonHeader() {
     const { checkAllowedDate } = useValidators();
-    const {
+    const {        
         setValue,
         watch,
         register,
-        formState: { errors, isSubmitting, isDirty }
+        getValues,
+        formState: { errors, isSubmitting, isDirty, }
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll }: any = useFormContext();
     return (
@@ -38,7 +40,7 @@ export function PurchaseCommonHeader() {
                 <input
                     type="date"
                     className={clsx(
-                        inputFormFieldStyles,'mt-1',
+                        inputFormFieldStyles, 'mt-1',
                         errors?.tranDate && "border-red-500 bg-red-100"
                     )}
                     {...register("tranDate", {
@@ -52,10 +54,11 @@ export function PurchaseCommonHeader() {
             <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
                 <input
                     type="text"
-                    className={clsx(inputFormFieldStyles,'mt-1')}
+                    className={clsx(inputFormFieldStyles, 'mt-1')}
                     placeholder="Enter invoice no"
                     {...register("userRefNo", {
-                        required: Messages.errRequired})}
+                        required: Messages.errRequired
+                    })}
                 />
             </FormField>
 
@@ -101,6 +104,16 @@ export function PurchaseCommonHeader() {
 
             {/* Reset submit */}
             <div className="flex gap-3 ml-auto mt-6 h-10">
+                {/* Test */}
+                <button
+                    type="button" onClick={() => {
+                        const formData = getValues();
+                        console.log("Form Data:", formData);
+                        console.log(errors)                        
+                    }}
+                >
+                    Test
+                </button>
                 {/* Reset */}
                 <button
                     onClick={resetAll}

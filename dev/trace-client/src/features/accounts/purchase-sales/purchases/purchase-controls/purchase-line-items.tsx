@@ -29,10 +29,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         control,
         register,
         setValue,
-        // trigger,
         watch,
-        // setError,
-        // clearErrors,
         formState: { errors },
     } = useFormContext<PurchaseFormDataType>();
     const { getDefaultPurchaseLineItem }: any = useFormContext()
@@ -40,39 +37,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500'
     const lineItems = watch("purchaseLineItems") || [];
-    const summary = lineItems.reduce(
-        (acc, item) => {
-            const qty = new Decimal(item.qty || 0);
-            const price = new Decimal(item.price || 0);
-            const discount = new Decimal(item.discount || 0);
-            const gstRate = new Decimal(item.gstRate || 0);
-
-            const base = price.minus(discount);
-            const gstAmount = base.times(gstRate).div(100);
-            const priceGst = base.plus(gstAmount);
-            const subTotal = qty.times(priceGst);
-            const cgst = gstAmount.div(2).times(qty);
-            const sgst = gstAmount.div(2).times(qty);
-            const igst = new Decimal(0);
-
-            acc.count += 1;
-            acc.qty = acc.qty.plus(qty);
-            acc.subTotal = acc.subTotal.plus(subTotal);
-            acc.cgst = acc.cgst.plus(cgst);
-            acc.sgst = acc.sgst.plus(sgst);
-            acc.igst = acc.igst.plus(igst);
-
-            return acc;
-        },
-        {
-            count: 0,
-            qty: new Decimal(0),
-            subTotal: new Decimal(0),
-            cgst: new Decimal(0),
-            sgst: new Decimal(0),
-            igst: new Decimal(0),
-        }
-    );
 
     const getDefaultLineItem = useCallback(() => {
         const lineItem = getDefaultPurchaseLineItem();
@@ -96,7 +60,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     };
 
     const onChangeProductCode = useMemo(
-        // For debounce
         () =>
             _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
                 populateProductOnProductCode(e.target.value, index);
@@ -111,29 +74,17 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         if (lineItems.length === 0) {
             append(getDefaultLineItem());
         }
-    }, [lineItems.length, append]);
+    }, [lineItems.length, append, getDefaultLineItem]);
 
     return (
         <div className="flex flex-col -mt-4">
             <label className="font-medium">{title || "Line Items"}</label>
 
             {/* Summary */}
-            {getSummary()}
+            {getSummaryMarkup()}
 
             {fields.map((_, index) => {
-                const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
-                const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
-                const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
-                const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
-                // const gRate = watch(`purchaseLineItems.${index}.gstRate`)
-                const base = price.minus(discount);
-                const gstAmount = base.times(gstRate).div(100);
-                const priceGst = base.plus(gstAmount);
-                const subTotal = qty.times(priceGst);
-                const cgst = gstAmount.div(2);
-                const sgst = gstAmount.div(2);
-                const igst = new Decimal(0);
-                const amount = new Decimal(0);
+                computeLineItemValues(index)
                 return (
                     <div
                         key={index}
@@ -261,16 +212,19 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         <div className="flex flex-col text-xs w-20">
                             <label className="font-semibold">Qty</label>
                             <NumericFormat
+                                allowNegative={false}
+                                decimalScale={2}
+                                defaultValue={0}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                 thousandSeparator
-                                decimalScale={2}
                                 fixedDecimalScale
                                 className={clsx("text-right h-8 mt-1",
                                     inputFormFieldStyles, errors.purchaseLineItems?.[index]?.qty ? errorClass : '')}
                                 {...register(`purchaseLineItems.${index}.qty`, {
-                                    required: Messages.errRequired
+                                    validate: (value) =>
+                                        value !== undefined && value !== null && !isNaN(value) && value > 0 ? true : Messages.errQtyCannotBeZero,
                                 })}
-                                value={qty.toNumber()}
+                                value={watch(`purchaseLineItems.${index}.qty`) || 0}
                                 onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.qty`, floatValue ?? 0, { shouldDirty: true })}
                             />
                         </div>
@@ -279,13 +233,19 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         <div className="flex flex-col text-xs w-30">
                             <label className="font-semibold">Price</label>
                             <NumericFormat
-                                value={price.toNumber()}
+                                value={watch(`purchaseLineItems.${index}.price`)}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                 thousandSeparator
                                 decimalScale={2}
                                 fixedDecimalScale
+                                onChange={() => {
+                                    setPriceGst(index)
+                                }}
                                 className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })}
+                                onValueChange={({ floatValue }) => {
+                                    setValue(`purchaseLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
+                                    // setPriceGst(index)
+                                }}
                             />
                         </div>
 
@@ -293,7 +253,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         <div className="flex flex-col text-xs w-24">
                             <label className="font-semibold">Discount</label>
                             <NumericFormat
-                                value={discount.toNumber()}
+                                value={watch(`purchaseLineItems.${index}.discount`)}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                 thousandSeparator
                                 decimalScale={2}
@@ -307,13 +267,18 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         <div className="flex flex-col text-xs w-30">
                             <label className="font-semibold">Price Gst</label>
                             <NumericFormat
-                                value={priceGst.toNumber()}
+                                value={watch(`purchaseLineItems.${index}.priceGst`)}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                 thousandSeparator
                                 decimalScale={2}
                                 fixedDecimalScale
                                 className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })}
+                                onChange={() => {
+                                    setPrice(index)
+                                }}
+                                onValueChange={({ floatValue }) => {
+                                    setValue(`purchaseLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })
+                                }}
                             />
                         </div>
 
@@ -332,19 +297,19 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             <div className="flex flex-col gap-1">
                                 <div className="flex justify-between">
                                     <span>SubT:</span>
-                                    <span className="text-right bg-gray-50 w-16">{subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right bg-gray-50 w-16">{watch(`purchaseLineItems.${index}.subTotal`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>CGST:</span>
-                                    <span className="text-right w-16 bg-gray-50">{cgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.cgst`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>SGST:</span>
-                                    <span className="text-right w-16 bg-gray-50">{sgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.sgst`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>IGST:</span>
-                                    <span className="text-right w-16 bg-gray-50">{igst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.igst`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                             </div>
                         </div>
@@ -352,13 +317,12 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         {/* Actions */}
                         <div className="flex flex-col w-32 ml-auto">
                             <NumericFormat
-                                value={amount.toNumber()}
+                                value={watch(`purchaseLineItems.${index}.amount`)}
                                 fixedDecimalScale
                                 thousandSeparator
                                 decimalScale={2}
                                 disabled
                                 readOnly
-                                // onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.amount`, floatValue ?? 0, { shouldDirty: true })}
                                 className={clsx("font-bold border-0 bg-gray-100 text-gray-900 text-right text-sm", inputFormFieldStyles)}
                             />
                             <div className="flex items-center justify-center gap-8 mt-6 ml-auto">
@@ -395,15 +359,68 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             })}
 
             {/* Summary */}
-            {getSummary()}
+            {getSummaryMarkup()}
         </div>
     );
 
+    function computeLineItemValues(index: number) {
+        // const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
+        // const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
+        // const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
+        // const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+        // const base = price.minus(discount);
+        // const gstAmount = base.times(gstRate).div(100);
+        // const priceGst = base.plus(gstAmount);
+        // const subTotal = qty.times(priceGst);
+        // const cgst = gstAmount.div(2);
+        // const sgst = gstAmount.div(2);
+        // const igst = new Decimal(0);
+        // const amount = new Decimal(0);
+    }
+
     function getSummary() {
+        const summary = lineItems.reduce(
+            (acc, item) => {
+                const qty = new Decimal(item.qty || 0);
+                const price = new Decimal(item.price || 0);
+                const discount = new Decimal(item.discount || 0);
+                const gstRate = new Decimal(item.gstRate || 0);
+
+                const base = price.minus(discount);
+                const gstAmount = base.times(gstRate).div(100);
+                const priceGst = base.plus(gstAmount);
+                const subTotal = qty.times(priceGst);
+                const cgst = gstAmount.div(2).times(qty);
+                const sgst = gstAmount.div(2).times(qty);
+                const igst = new Decimal(0);
+
+                acc.count += 1;
+                acc.qty = acc.qty.plus(qty);
+                acc.subTotal = acc.subTotal.plus(subTotal);
+                acc.cgst = acc.cgst.plus(cgst);
+                acc.sgst = acc.sgst.plus(sgst);
+                acc.igst = acc.igst.plus(igst);
+
+                return acc;
+            },
+            {
+                count: 0,
+                qty: new Decimal(0),
+                subTotal: new Decimal(0),
+                cgst: new Decimal(0),
+                sgst: new Decimal(0),
+                igst: new Decimal(0),
+            }
+        );
+        return (summary)
+    }
+
+    function getSummaryMarkup() {
+        const summary = getSummary()
         return (<div className="flex justify-between items-center flex-wrap gap-4 mt-2 text-sm font-medium bg-gray-50 p-2 rounded border border-gray-200 w-full">
 
             {/* Clear All Button */}
-            {/* <div> */}
+
             <button
                 type="button"
                 onClick={handleClearAll}
@@ -412,7 +429,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 <IconClear1 />
                 Clear All Rows
             </button>
-            {/* </div> */}
 
             <div className="text-right min-w-[100px] flex gap-1">
                 <span className="text-gray-500">Items:</span>
@@ -466,22 +482,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             element: <ProductSelectFromGrid onSelect={(product) => setLineItem(product, index)} />,
             title: "Select a product"
         });
-
-        // function onProductSelect(product: ProductInfoType) {
-        //     setValue(`purchaseLineItems.${index}.productCode`, product.productCode);
-        //     setValue(`purchaseLineItems.${index}.productId`, product.id, {
-        //         shouldValidate: true,
-        //         shouldDirty: true
-        //     });
-        //     setValue(
-        //         `purchaseLineItems.${index}.productDetails`,
-        //         `${product.brandName} ${product.catName} ${product.label} ${product.info ?? ""}`
-        //     );
-        //     setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice);
-        //     setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode);
-        //     setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate);
-        //     setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
-        // }
     }
 
     async function populateProductOnProductCode(productCode: string, index: number) {
@@ -516,6 +516,33 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
     }
+
+    function setPrice(index: number) {
+        const priceGst = new Decimal(watch(`purchaseLineItems.${index}.priceGst`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+
+        const divisor = gstRate.dividedBy(100).plus(1);
+        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
+
+        setValue(`purchaseLineItems.${index}.price`, price.toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }
+
+    function setPriceGst(index: number) {
+        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+
+        const multiplier = gstRate.dividedBy(100).plus(1);
+        const priceGst = multiplier.times(price);
+
+        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }
+
 
 }
 
