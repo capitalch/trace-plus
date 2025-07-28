@@ -17,20 +17,23 @@ valid gstin: 24AAACC1206D1ZM
 ## features
 - Purchase
 														- Startup
-	- Purchase main		
-		- Populate Gst field with default gst rate or product's Gst in db
-														- Populate GSTIN with suppliers GSTIN
+	- Purchase main									
 		- Serial no validation
 		- All calculations
 			- Compute amount, gst, priceGst on change of gstRate, qty, price,discount
 			- Compute on change of price the priceGst
-		- Search product and populate		
+				
 		- Summary count, qty, gst, amount
 		- Provision of extra surcharge on Gst
 		- Final amounts validation
+		- Igst recalculate
 		- Redux
 		- Submit
-		- Make hook
+		- print preview
+		- Zero gst rate should be allowed
+														- Populate Gst field with default gst rate or product's Gst in db
+														- Populate GSTIN with suppliers GSTIN
+														- Search product and populate
 														- Reset all
 														- current row distinction
 														- Clear line item

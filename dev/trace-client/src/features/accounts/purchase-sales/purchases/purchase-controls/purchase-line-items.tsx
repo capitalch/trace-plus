@@ -13,9 +13,9 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../../../utils/validators-hook";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PurchaseFormDataType } from "../all-purchases/all-purchases";
-import { ProductType } from "../../../inventory/shared-definitions";
+// import { ProductType } from "../../../inventory/shared-definitions";
 import { Utils } from "../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
@@ -24,21 +24,65 @@ import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const { isValidHsn } = useValidators();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const { buCode, dbName, decodedDbParamsObject, defaultGstRate } = useUtilsInfo();
     const {
         control,
         register,
         setValue,
+        // trigger,
         watch,
+        // setError,
+        // clearErrors,
         formState: { errors },
     } = useFormContext<PurchaseFormDataType>();
     const { getDefaultPurchaseLineItem }: any = useFormContext()
-    const { fields, remove, insert } = useFieldArray({ control, name: 'purchaseLineItems' });
+    const { fields, remove, insert, append } = useFieldArray({ control, name: 'purchaseLineItems' });
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500'
+    const lineItems = watch("purchaseLineItems") || [];
+    const summary = lineItems.reduce(
+        (acc, item) => {
+            const qty = new Decimal(item.qty || 0);
+            const price = new Decimal(item.price || 0);
+            const discount = new Decimal(item.discount || 0);
+            const gstRate = new Decimal(item.gstRate || 0);
+
+            const base = price.minus(discount);
+            const gstAmount = base.times(gstRate).div(100);
+            const priceGst = base.plus(gstAmount);
+            const subTotal = qty.times(priceGst);
+            const cgst = gstAmount.div(2).times(qty);
+            const sgst = gstAmount.div(2).times(qty);
+            const igst = new Decimal(0);
+
+            acc.count += 1;
+            acc.qty = acc.qty.plus(qty);
+            acc.subTotal = acc.subTotal.plus(subTotal);
+            acc.cgst = acc.cgst.plus(cgst);
+            acc.sgst = acc.sgst.plus(sgst);
+            acc.igst = acc.igst.plus(igst);
+
+            return acc;
+        },
+        {
+            count: 0,
+            qty: new Decimal(0),
+            subTotal: new Decimal(0),
+            cgst: new Decimal(0),
+            sgst: new Decimal(0),
+            igst: new Decimal(0),
+        }
+    );
+
+    const getDefaultLineItem = useCallback(() => {
+        const lineItem = getDefaultPurchaseLineItem();
+        lineItem.gstRate = defaultGstRate || 0;
+        return lineItem;
+    }, [defaultGstRate, getDefaultPurchaseLineItem]);
+
     const handleAddRow = (index: number) => {
         insert(index + 1,
-            getDefaultPurchaseLineItem(),
+            getDefaultLineItem(),
             { shouldFocus: true }
         );
         setTimeout(() => setCurrentRowIndex(index + 1), 0);
@@ -48,6 +92,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         for (let i = fields.length - 1; i >= 1; i--) {
             remove(i);
         }
+        setTimeout(() => setCurrentRowIndex(0), 0);
     };
 
     const onChangeProductCode = useMemo(
@@ -57,13 +102,24 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 populateProductOnProductCode(e.target.value, index);
             }, 2000), []
     );
+
     useEffect(() => {
         return () => onChangeProductCode.cancel();
     }, [onChangeProductCode]);
 
+    useEffect(() => {
+        if (lineItems.length === 0) {
+            append(getDefaultLineItem());
+        }
+    }, [lineItems.length, append]);
+
     return (
-        <div className="flex flex-col gap-2 -mt-4">
-            <label className="font-medium mb-2">{title || "Line Items"}</label>
+        <div className="flex flex-col -mt-4">
+            <label className="font-medium">{title || "Line Items"}</label>
+
+            {/* Summary */}
+            {getSummary()}
+
             {fields.map((_, index) => {
                 const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
                 const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
@@ -83,7 +139,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         key={index}
                         className={
                             clsx(
-                                "flex flex-wrap items-start border border-gray-200 rounded-md p-3 gap-3 cursor-pointer",
+                                "flex flex-wrap items-start border border-gray-200 rounded-md p-2 gap-2 cursor-pointer mt-2",
                                 currentRowIndex === index ? "bg-green-50 border-2 border-teal-600" : "bg-white"
                             )}
                         onClick={() => setCurrentRowIndex(index)}
@@ -125,7 +181,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 className="text-sm text-blue-600 flex items-center mt-2 "
                                 onClick={() => handleProductSearch(index)}
                             >
-                                <IconSearch className="mr-1 h-6 w-6" />
+                                <IconSearch className="mr-1 h-5 w-5" />
                                 Search
                             </button>
                             {/* UPC Code Display */}
@@ -133,7 +189,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 tabIndex={-1}
                                 className="text-xs mt-1 text-teal-500 "
                             >
-                                {watch(`purchaseLineItems.${index}.upcCode`) || "------------"}
+                                {watch(`purchaseLineItems.${index}.upcCode`) || "-----------------------"}
                             </span>
                         </div>
 
@@ -183,9 +239,11 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
+                                    defaultValue={0}
                                     {...register(`purchaseLineItems.${index}.gstRate`, {
-                                        validate: (val) => {
-                                            if (isGstInvoice && (val === undefined || val === null)) {
+                                        validate: () => {
+                                            const val = watch(`purchaseLineItems.${index}.gstRate`)
+                                            if (isGstInvoice && (val === undefined || val === null || isNaN(val))) {
                                                 return Messages.errRequired;
                                             }
                                             return true;
@@ -194,7 +252,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     value={watch(`purchaseLineItems.${index}.gstRate`)}
                                     className={clsx("text-right h-8 mt-1",
                                         inputFormFieldStyles, errors.purchaseLineItems?.[index]?.gstRate ? errorClass : '')}
-                                    onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true })}
+                                    onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })}
                                 />
                             </div>
                         </div>
@@ -203,12 +261,16 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         <div className="flex flex-col text-xs w-20">
                             <label className="font-semibold">Qty</label>
                             <NumericFormat
-                                value={qty.toNumber()}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                 thousandSeparator
                                 decimalScale={2}
                                 fixedDecimalScale
-                                className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                className={clsx("text-right h-8 mt-1",
+                                    inputFormFieldStyles, errors.purchaseLineItems?.[index]?.qty ? errorClass : '')}
+                                {...register(`purchaseLineItems.${index}.qty`, {
+                                    required: Messages.errRequired
+                                })}
+                                value={qty.toNumber()}
                                 onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.qty`, floatValue ?? 0, { shouldDirty: true })}
                             />
                         </div>
@@ -265,30 +327,30 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                         </div>
 
                         {/* Totals */}
-                        <div className="flex flex-col text-[12px] w-26 rounded">
+                        <div className="flex flex-col text-[11px] w-24 rounded">
                             <div className="font-semibold text-xs">Totals</div>
                             <div className="flex flex-col gap-1">
                                 <div className="flex justify-between">
                                     <span>SubT:</span>
-                                    <span className="text-right w-16">{subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right bg-gray-50 w-16">{subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>CGST:</span>
-                                    <span className="text-right w-16">{cgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right w-16 bg-gray-50">{cgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>SGST:</span>
-                                    <span className="text-right w-16">{sgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right w-16 bg-gray-50">{sgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>IGST:</span>
-                                    <span className="text-right w-16">{igst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    <span className="text-right w-16 bg-gray-50">{igst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex flex-col w-40 ml-auto">
+                        <div className="flex flex-col w-32 ml-auto">
                             <NumericFormat
                                 value={amount.toNumber()}
                                 fixedDecimalScale
@@ -297,7 +359,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 disabled
                                 readOnly
                                 // onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.amount`, floatValue ?? 0, { shouldDirty: true })}
-                                className={clsx("font-bold border-0 bg-gray-100 text-gray-900 text-right", inputFormFieldStyles)}
+                                className={clsx("font-bold border-0 bg-gray-100 text-gray-900 text-right text-sm", inputFormFieldStyles)}
                             />
                             <div className="flex items-center justify-center gap-8 mt-6 ml-auto">
                                 <button
@@ -306,7 +368,13 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     onClick={() => {
                                         if (fields.length > 1) {
                                             remove(index)
-                                            setTimeout(() => setCurrentRowIndex(index), 0);
+                                            setTimeout(() => {
+                                                if (index === 0) {
+                                                    setCurrentRowIndex(0);
+                                                } else {
+                                                    setCurrentRowIndex(index - 1);
+                                                }
+                                            }, 0);
                                         }
                                     }}
                                     disabled={fields.length === 1}
@@ -325,18 +393,53 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                     </div>
                 );
             })}
-            <div className="flex justify-end mt-4">
-                <button
-                    type="button"
-                    onClick={handleClearAll}
-                    className="px-3 py-1 bg-amber-500 text-white rounded flex items-center gap-2 hover:bg-amber-700"
-                >
-                    <IconClear1 />
-                    Clear All Rows
-                </button>
-            </div>
+
+            {/* Summary */}
+            {getSummary()}
         </div>
     );
+
+    function getSummary() {
+        return (<div className="flex justify-between items-center flex-wrap gap-4 mt-2 text-sm font-medium bg-gray-50 p-2 rounded border border-gray-200 w-full">
+
+            {/* Clear All Button */}
+            {/* <div> */}
+            <button
+                type="button"
+                onClick={handleClearAll}
+                className="px-3 py-1 bg-amber-100 text-gray-500 rounded flex items-center gap-2 hover:bg-amber-200"
+            >
+                <IconClear1 />
+                Clear All Rows
+            </button>
+            {/* </div> */}
+
+            <div className="text-right min-w-[100px] flex gap-1">
+                <span className="text-gray-500">Items:</span>
+                {summary.count}
+            </div>
+            <div className="text-right min-w-[120px] flex gap-1">
+                <span className="text-gray-500">Qty:</span>
+                {summary.qty.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </div>
+            <div className="text-right min-w-[150px] flex gap-1">
+                <span className="text-gray-500">SubTotal:</span>
+                {summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </div>
+            <div className="text-right min-w-[120px] flex gap-1">
+                <span className="text-gray-500">CGST:</span>
+                {summary.cgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </div>
+            <div className="text-right min-w-[120px] flex gap-1">
+                <span className="text-gray-500">SGST:</span>
+                {summary.sgst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </div>
+            <div className="text-right min-w-[120px] flex gap-1">
+                <span className="text-gray-500">IGST:</span>
+                {summary.igst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </div>
+        </div>)
+    }
 
     function handleClearLineItem(index: number) {
         setValue(`purchaseLineItems.${index}.productId`, null, { shouldDirty: true });
@@ -360,26 +463,25 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         Utils.showHideModalDialogA({
             isOpen: true,
             size: "lg",
-            element: <ProductSelectFromGrid onSelect={onProductSelect} />,
+            element: <ProductSelectFromGrid onSelect={(product) => setLineItem(product, index)} />,
             title: "Select a product"
         });
 
-        function onProductSelect(args: ProductInfoType) {
-            // clearErrors(`${name}.${index}.productCode`);
-            setValue(`purchaseLineItems.${index}.productCode`, args.productCode);
-            setValue(`purchaseLineItems.${index}.productId`, args.id, {
-                shouldValidate: true,
-                shouldDirty: true
-            });
-            setValue(
-                `purchaseLineItems.${index}.productDetails`,
-                `${args.brandName} ${args.catName} ${args.label} ${args.info ?? ""}`
-            );
-            setValue(`purchaseLineItems.${index}.price`, args.lastPurchasePrice);
-            setValue(`purchaseLineItems.${index}.upcCode`, args.upcCode);
-            setValue(`purchaseLineItems.${index}.gstRate`, args.gstRate);
-            setValue(`purchaseLineItems.${index}.hsn`, args.hsn ? args.hsn.toString() : '', { shouldDirty: true });
-        }
+        // function onProductSelect(product: ProductInfoType) {
+        //     setValue(`purchaseLineItems.${index}.productCode`, product.productCode);
+        //     setValue(`purchaseLineItems.${index}.productId`, product.id, {
+        //         shouldValidate: true,
+        //         shouldDirty: true
+        //     });
+        //     setValue(
+        //         `purchaseLineItems.${index}.productDetails`,
+        //         `${product.brandName} ${product.catName} ${product.label} ${product.info ?? ""}`
+        //     );
+        //     setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice);
+        //     setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode);
+        //     setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate);
+        //     setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
+        // }
     }
 
     async function populateProductOnProductCode(productCode: string, index: number) {
@@ -387,7 +489,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             handleClearLineItem(index);
             return;
         }
-        const products: ProductType[] = await Utils.doGenericQuery({
+        const products: ProductInfoType[] = await Utils.doGenericQuery({
             buCode: buCode || "",
             dbName: dbName || "",
             dbParams: decodedDbParamsObject,
@@ -402,14 +504,19 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             return;
         }
         // Set fetched values
-        setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label} ${product.info ?? ""
-            }`, { shouldDirty: true });
+        setLineItem(product, index);
+    }
+
+    function setLineItem(product: ProductInfoType, index: number) {
+        setValue(`purchaseLineItems.${index}.productId`, product.id, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label} ${product.info ?? ""}`, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice);
+        setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
     }
+
 }
 
 type PurchaseLineItemsProps = {

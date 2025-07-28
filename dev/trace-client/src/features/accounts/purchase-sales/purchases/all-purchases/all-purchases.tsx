@@ -63,7 +63,7 @@ export function AllPurchases() {
             creditAccId: null,
             gstin: null,
 
-            purchaseLineItems: [getDefaultPurchaseLineItem()],
+            purchaseLineItems: [], //new Array(getDefaultPurchaseLineItem()),
 
             totalInvoiceAmount: 0,
             totalQty: 0,
@@ -78,7 +78,7 @@ export function AllPurchases() {
     }
 
     function getDefaultPurchaseLineItem(): PurchaseLineItemType {
-        return {
+        return ({
             id: undefined,
             productId: null,
             productCode: "",
@@ -94,31 +94,8 @@ export function AllPurchases() {
             cgst: 0,
             sgst: 0,
             igst: 0,
-        };
+        });
     }
-
-    // function getDefaultPurchaseLineItems(): PurchaseLineItemType[] {
-    //     return [{
-    //         id: undefined,
-    //         productId: null,
-    //         productCode: "",
-    //         productDetails: "",
-    //         lineRemarks: null,
-    //         hsn: "",
-    //         gstRate: 0,
-    //         qty: 0,
-    //         price: 0,
-    //         discount: 0,
-    //         serialNumbers: null,
-    //         priceGst: 0,
-    //         // subTotal: 0,
-    //         cgst: 0,
-    //         sgst: 0,
-    //         igst: 0,
-    //         // amount: 0,
-            
-    //     }];
-    // }
 
     function resetAll() {
         reset(getDefaultPurchaseFormValues())
@@ -149,7 +126,7 @@ export type PurchaseFormDataType = {
     branchId: number;
     deletedIds: number[]; // of TranD table
     finYearId: number;
-    
+
     tranHeaderId?: number;
     lineRemarks?: string | null;
 }
