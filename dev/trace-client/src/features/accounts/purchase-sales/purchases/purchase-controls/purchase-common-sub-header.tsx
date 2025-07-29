@@ -35,7 +35,6 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                 className=""
             >
                 <AccountPickerFlat
-                    // accountOptions={accountOptions}
                     accClassNames={['purchase']}
                     instance={`${instance}-debit-account`}
                     {...register('debitAccId', {
@@ -103,7 +102,11 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     <label className="flex items-center gap-2 text-xs mt-[2px] cursor-pointer font-medium">
                         <input
                             type="checkbox"
-                            {...register('isIgst')}
+                            {...register('isIgst'
+                                // , {
+                                //     onChange: (e) => setValue(`isIgst`, e.target.checked, { shouldDirty: true })
+                                // }
+                            )}
                             className="checkbox checkbox-xs cursor-pointer"
                         />
                         IGST
@@ -128,7 +131,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                 dbName: dbName || '',
                 dbParams: decodedDbParamsObject
             });
-            const gstin =result?.[0]?.gstin || null;
+            const gstin = result?.[0]?.gstin || null;
             setValue('gstin', gstin, { shouldDirty: true });
         } catch (error) {
             console.error("Error fetching GSTIN:", error);

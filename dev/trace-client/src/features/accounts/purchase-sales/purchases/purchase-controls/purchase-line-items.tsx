@@ -15,7 +15,6 @@ import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../../../utils/validators-hook";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PurchaseFormDataType } from "../all-purchases/all-purchases";
-// import { ProductType } from "../../../inventory/shared-definitions";
 import { Utils } from "../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
@@ -37,6 +36,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500'
     const lineItems = watch("purchaseLineItems") || [];
+    const isIgst = watch('isIgst')
 
     const getDefaultLineItem = useCallback(() => {
         const lineItem = getDefaultPurchaseLineItem();
@@ -53,7 +53,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     };
 
     const handleClearAll = () => {
-        for (let i = fields.length - 1; i >= 1; i--) {
+        for (let i = fields.length - 1; i >= 0; i--) {
             remove(i);
         }
         setTimeout(() => setCurrentRowIndex(0), 0);
@@ -76,6 +76,13 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         }
     }, [lineItems.length, append, getDefaultLineItem]);
 
+    useEffect(() => {
+        fields.forEach((_, index) => {
+            computeLineItemValues(index)
+        })
+    }, [fields, isIgst])
+
+
     return (
         <div className="flex flex-col -mt-4">
             <label className="font-medium">{title || "Line Items"}</label>
@@ -84,7 +91,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             {getSummaryMarkup()}
 
             {fields.map((_, index) => {
-                computeLineItemValues(index)
+                // computeLineItemValues(index)
                 return (
                     <div
                         key={index}
@@ -203,7 +210,10 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     value={watch(`purchaseLineItems.${index}.gstRate`)}
                                     className={clsx("text-right h-8 mt-1",
                                         inputFormFieldStyles, errors.purchaseLineItems?.[index]?.gstRate ? errorClass : '')}
-                                    onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })}
+                                    onValueChange={({ floatValue }) => {
+                                        setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
+                                        computeLineItemValues(index)
+                                    }}
                                 />
                             </div>
                         </div>
@@ -225,7 +235,10 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                         value !== undefined && value !== null && !isNaN(value) && value > 0 ? true : Messages.errQtyCannotBeZero,
                                 })}
                                 value={watch(`purchaseLineItems.${index}.qty`) || 0}
-                                onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.qty`, floatValue ?? 0, { shouldDirty: true })}
+                                onValueChange={({ floatValue }) => {
+                                    setValue(`purchaseLineItems.${index}.qty`, floatValue ?? 0, { shouldDirty: true })
+                                    computeLineItemValues(index)
+                                }}
                             />
                         </div>
 
@@ -244,7 +257,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
                                 onValueChange={({ floatValue }) => {
                                     setValue(`purchaseLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
-                                    // setPriceGst(index)
+                                    computeLineItemValues(index)
                                 }}
                             />
                         </div>
@@ -259,7 +272,10 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 decimalScale={2}
                                 fixedDecimalScale
                                 className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                onValueChange={({ floatValue }) => setValue(`purchaseLineItems.${index}.discount`, floatValue ?? 0, { shouldDirty: true })}
+                                onValueChange={({ floatValue }) => {
+                                    setValue(`purchaseLineItems.${index}.discount`, floatValue ?? 0, { shouldDirty: true })
+                                    computeLineItemValues(index)
+                                }}
                             />
                         </div>
 
@@ -364,18 +380,32 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     );
 
     function computeLineItemValues(index: number) {
-        // const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
-        // const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
-        // const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
-        // const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
-        // const base = price.minus(discount);
-        // const gstAmount = base.times(gstRate).div(100);
-        // const priceGst = base.plus(gstAmount);
-        // const subTotal = qty.times(priceGst);
-        // const cgst = gstAmount.div(2);
-        // const sgst = gstAmount.div(2);
-        // const igst = new Decimal(0);
-        // const amount = new Decimal(0);
+        const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
+        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
+        const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+       
+        const base = price.minus(discount);
+        const subTotal = qty.times(base);
+        const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
+        const multi = multiplier.toNumber()
+        const amount = base.times(multiplier)
+        const gst = base.times(gstRate.dividedBy(new Decimal(100)))
+        const sgst = gst.dividedBy(new Decimal(2).toNumber())
+        if (isIgst) {
+            setValue(`purchaseLineItems.${index}.cgst`, 0)
+            setValue(`purchaseLineItems.${index}.sgst`, 0)
+            setValue(`purchaseLineItems.${index}.igst`, gst.toNumber())
+        } else {
+            setValue(`purchaseLineItems.${index}.cgst`, gst.dividedBy(2).toNumber())
+            setValue(`purchaseLineItems.${index}.sgst`, gst.dividedBy(2).toNumber())
+            setValue(`purchaseLineItems.${index}.igst`, 0)
+        }
+
+        setValue(`purchaseLineItems.${index}.subTotal`, subTotal.toDecimalPlaces(2).toNumber())
+        setValue(`purchaseLineItems.${index}.amount`, amount.toNumber())
+        setPriceGst(index)
+
     }
 
     function getSummary() {

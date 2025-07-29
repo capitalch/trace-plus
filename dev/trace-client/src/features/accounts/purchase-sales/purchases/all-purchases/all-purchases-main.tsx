@@ -3,10 +3,6 @@ import { PurchaseCommonSubHeader } from "../purchase-controls/purchase-common-su
 import { PurchaseLineItems } from "../purchase-controls/purchase-line-items";
 
 export function AllPurchasesMain() {
-  // const instance = DataInstancesMap.allPurchases;
-  // const {
-  //   watch,
-  // } = useFormContext<PurchaseFormDataType>();
 
   return (
     <div className="flex flex-col gap-2">
