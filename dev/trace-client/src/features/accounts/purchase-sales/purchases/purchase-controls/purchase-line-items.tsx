@@ -384,14 +384,14 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
         const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
         const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
-       
+
         const base = price.minus(discount);
         const subTotal = qty.times(base);
         const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
-        const multi = multiplier.toNumber()
-        const amount = base.times(multiplier)
-        const gst = base.times(gstRate.dividedBy(new Decimal(100)))
-        const sgst = gst.dividedBy(new Decimal(2).toNumber())
+        // const multi = multiplier.toNumber()
+        const amount = subTotal.times(multiplier)
+        const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
+        // const sgst = gst.dividedBy(new Decimal(2).toNumber())
         if (isIgst) {
             setValue(`purchaseLineItems.${index}.cgst`, 0)
             setValue(`purchaseLineItems.${index}.sgst`, 0)
@@ -402,7 +402,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             setValue(`purchaseLineItems.${index}.igst`, 0)
         }
 
-        setValue(`purchaseLineItems.${index}.subTotal`, subTotal.toDecimalPlaces(2).toNumber())
+        setValue(`purchaseLineItems.${index}.subTotal`, subTotal.toNumber())
         setValue(`purchaseLineItems.${index}.amount`, amount.toNumber())
         setPriceGst(index)
 
@@ -411,26 +411,24 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     function getSummary() {
         const summary = lineItems.reduce(
             (acc, item) => {
-                const qty = new Decimal(item.qty || 0);
-                const price = new Decimal(item.price || 0);
-                const discount = new Decimal(item.discount || 0);
-                const gstRate = new Decimal(item.gstRate || 0);
-
-                const base = price.minus(discount);
-                const gstAmount = base.times(gstRate).div(100);
-                const priceGst = base.plus(gstAmount);
-                const subTotal = qty.times(priceGst);
-                const cgst = gstAmount.div(2).times(qty);
-                const sgst = gstAmount.div(2).times(qty);
-                const igst = new Decimal(0);
+                // const qty = new Decimal(item.qty || 0);
+                // const price = new Decimal(item.price || 0);
+                // const discount = new Decimal(item.discount || 0);
+                // const gstRate = new Decimal(item.gstRate || 0);
+                // const base = price.minus(discount);
+                // const subTotal = qty.times(base);
+                // const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
+                // const cgst = gst.div(2);
+                // const sgst = gst.div(2);
+                // const igst = new Decimal(0);
 
                 acc.count += 1;
-                acc.qty = acc.qty.plus(qty);
-                acc.subTotal = acc.subTotal.plus(subTotal);
-                acc.cgst = acc.cgst.plus(cgst);
-                acc.sgst = acc.sgst.plus(sgst);
-                acc.igst = acc.igst.plus(igst);
-
+                acc.qty = acc.qty.plus(new Decimal(item.qty));
+                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal));
+                acc.cgst = acc.cgst.plus(new Decimal(item.cgst));
+                acc.sgst = acc.sgst.plus(new Decimal(item.sgst));
+                acc.igst = acc.igst.plus(new Decimal(item.igst));
+                acc.amount = acc.amount.plus(new Decimal(item.amount));
                 return acc;
             },
             {
@@ -440,6 +438,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 cgst: new Decimal(0),
                 sgst: new Decimal(0),
                 igst: new Decimal(0),
+                amount: new Decimal(0)
             }
         );
         return (summary)
@@ -483,6 +482,10 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             <div className="text-right min-w-[120px] flex gap-1">
                 <span className="text-gray-500">IGST:</span>
                 {summary.igst.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </div>
+            <div className="text-right min-w-[120px] flex gap-1">
+                <span className="text-gray-500">Amount:</span>
+                {summary.amount.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
         </div>)
     }

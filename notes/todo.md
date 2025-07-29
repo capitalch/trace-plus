@@ -20,6 +20,9 @@ valid gstin: 24AAACC1206D1ZM
 	- Purchase main									
 		- Serial no validation
 		- All calculations
+			- Bugs
+				- Change qty does not change amount
+				- 
 			- Compute amount, gst, priceGst on change of gstRate, qty, price,discount
 			- Compute on change of price the priceGst
 				
