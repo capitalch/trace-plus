@@ -17,19 +17,20 @@ valid gstin: 24AAACC1206D1ZM
 ## features
 - Purchase
 														- Startup
-	- Purchase main									
-		- Serial no validation
-		- All calculations
-			- Bugs
-				- Change qty does not change amount
-				- 
-			- Compute amount, gst, priceGst on change of gstRate, qty, price,discount
-			- Compute on change of price the priceGst
+	- Purchase main
+														- Animate
+														- Product code 1162: no price update. But when done through search, it works.									
+														- Serial no validation
+												- All calculations
+													- Bugs
+														- Change qty does not change amount
+														- Compute amount, gst, priceGst on change of gstRate, qty, price,discount
+														- Compute on change of price the priceGst
 				
-		- Summary count, qty, gst, amount
+														- Summary count, qty, gst, amount
 		- Provision of extra surcharge on Gst
 		- Final amounts validation
-		- Igst recalculate
+														- Igst recalculate
 		- Redux
 		- Submit
 		- print preview

@@ -1635,9 +1635,9 @@ class SqlAccounts:
 
     get_product_on_product_code_upc = """
         with "productCodeOrUpc" as (values(%(productCodeOrUpc)s))
-        --with "productCodeOrUpc" as (values('1063'))
+        --with "productCodeOrUpc" as (values('1162'))
         select p."id" "productId",
-			coalesce(o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
+			coalesce(s."price", o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
 			c."catName",
 			b."brandName",
 			coalesce(p."hsn", c."hsn", 0) hsn,
@@ -1647,6 +1647,12 @@ class SqlAccounts:
 			p."upcCode",
 			coalesce(p."gstRate", 0) "gstRate"
             from "ProductM" p
+                left join "SalePurchaseDetails" s
+                    on p."id" = s."productId"
+                left join "TranD" d
+                    on d."id" = s."tranDetailsId"
+                left join "TranH" h
+                    on h."id" = d."tranHeaderId"
                 left join "ProductOpBal" o
                     on p."id" = o."productId"
                 left join "CategoryM" c
@@ -1654,7 +1660,8 @@ class SqlAccounts:
                 left join "BrandM" b
                     on b."id" = p."brandId"
             where ((p."productCode" = (table "productCodeOrUpc") or (p."upcCode" = (table "productCodeOrUpc")))) and p."isActive"
-            order by p."id" limit 1
+			and h."tranDate" <= CURRENT_DATE
+            order by h."tranDate" DESC limit 1
     """
 
     get_products_opening_balances = """
