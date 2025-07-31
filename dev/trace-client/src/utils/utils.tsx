@@ -55,6 +55,7 @@ export const Utils: UtilsType = {
   getUserDetails: getUserDetails,
   gridUtils: gridUtils,
   getUniqueId: getUniqueId,
+  isAlmostEqual: isAlmostEqual,
   isNotNullOrUndefined: isNotNullOrUndefined,
   isNumeric: isNumeric,
   loadDataInTreeGridWithSavedScrollPos: loadDataInTreeGridWithSavedScrollPos,
@@ -202,7 +203,7 @@ async function doValidateDebitCreditAndUpdate({
     dbParams: decodedDbParamsObject,
     xData: xData,
     buCode: buCode,
-    deletedIds:deletedIds
+    deletedIds: deletedIds
   };
   const q: any = GraphQLQueriesMap.validateDebitCreditAndUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.validateDebitCreditAndUpdate;
@@ -383,6 +384,12 @@ function getUserDetails(): UserDetailsType | undefined {
 
 function getUniqueId() {
   return (uniqueId++)
+}
+
+function isAlmostEqual(a: number, b: number, tolerancePercent: number = 0.5, toleranceAbsolute: number = 0.99): boolean {
+  const tolerance = Math.max(toleranceAbsolute, b * tolerancePercent / 100)
+  const ret: boolean = Math.abs(a - b) <= tolerance
+  return (ret)
 }
 
 function isNotNullOrUndefined<T>(value: T | null | undefined): boolean {
@@ -926,6 +933,7 @@ type UtilsType = {
   getUserDetails: () => UserDetailsType | undefined;
   getUniqueId: () => number;
   gridUtils: GridUtilsType;
+  isAlmostEqual: (a: number, b: number, tolerancePercent: number, toleranceAbsolute: number) => boolean
   isNotNullOrUndefined: (value: any) => boolean;
   isNumeric: (value: any) => boolean;
   loadDataInTreeGridWithSavedScrollPos: (
