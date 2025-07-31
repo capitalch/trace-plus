@@ -5,10 +5,11 @@ import { PurchaseFormDataType } from "../all-purchases/all-purchases";
 import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import Decimal from "decimal.js";
 import { Utils } from "../../../../../utils/utils";
+import { useEffect } from "react";
 // import { useEffect } from "react";
 
 export function PurchaseTotalsPanel({ className }: { className?: string }) {
-  const { setValue, watch, register, trigger, control, formState: { errors } } = useFormContext<PurchaseFormDataType>();
+  const { setValue, watch, register, control, formState: { errors } } = useFormContext<PurchaseFormDataType>();
 
   const lineItems = watch("purchaseLineItems") || [];
   const totalInvoiceAmount = watch("totalInvoiceAmount");
@@ -44,14 +45,14 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
     setValue("totalIgst", 0);
   };
 
-  // useEffect(() => {
-  //   if (isIgst) {
-  //     setValue("totalCgst", 0, { shouldValidate: true });
-  //     setValue("totalSgst", 0, { shouldValidate: true });
-  //   } else {
-  //     setValue("totalIgst", 0, { shouldValidate: true });
-  //   }
-  // }, [isIgst, setValue]);
+  useEffect(() => {
+    if (isIgst) {
+      setValue("totalCgst", 0, { shouldValidate: true });
+      setValue("totalSgst", 0, { shouldValidate: true });
+    } else {
+      setValue("totalIgst", 0, { shouldValidate: true });
+    }
+  }, [isIgst, setValue]);
 
   return (
     <div className={clsx(className, "grid grid-cols-2 gap-x-4 text-[12px]")}>
@@ -60,27 +61,30 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
         <div>
           <label className="text-gray-600 text-xs block">Invoice amount <WidgetAstrix /></label>
           {/* Invoice amount */}
-          <NumericFormat
-            thousandSeparator
-            decimalScale={2}
-            fixedDecimalScale
-            allowNegative={false}
-            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-            value={totalInvoiceAmount}
-            className={clsx(inputClass, errors?.totalInvoiceAmount && errorClass, 'mt-0.5')}
-            {...register("totalInvoiceAmount", {
+          <Controller
+            name='totalInvoiceAmount'
+            control={control}
+            rules={{
               validate: (value) => {
                 return Utils.isAlmostEqual(value, calcTotal.amount.toNumber(), .15, .99) //Decimal(value).equals(calcTotal.amount)
                   ? true
                   : `Mismatch: should be ${calcTotal.amount.toFixed(2)}`;
-              },
-            })}
-            onValueChange={({ value }) =>
-              setValue("totalInvoiceAmount", parseFloat(value || "0"), {
-                shouldDirty: true,
-                shouldValidate: true
-              })
-            }
+              }
+            }}
+            render={({ field }) => (
+              <NumericFormat
+                thousandSeparator
+                decimalScale={2}
+                fixedDecimalScale
+                allowNegative={false}
+                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                value={totalInvoiceAmount}
+                className={clsx(inputClass, errors?.totalInvoiceAmount && errorClass, 'mt-0.5')}
+                onValueChange={({ floatValue }) =>
+                 field.onChange(floatValue ?? 0)
+                }
+              />
+            )}
           />
         </div>
 
@@ -126,6 +130,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
 
       {/* Right Column */}
       <div className="flex flex-col gap-1">
+        {/* cgst */}
         <div>
           <label className="text-gray-600 text-xs block">Cgst {!isIgst && <WidgetAstrix />}</label>
           <Controller
@@ -133,7 +138,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
             control={control}
             rules={{
               validate: (value) =>
-                isValidCgst(value || 0)
+                isValidCgst(value || 0) && isValidCgstSgstIgst()
                   ? true
                   : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`
             }}
@@ -148,6 +153,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                 onValueChange={({ floatValue }) => {
                   field.onChange(floatValue ?? 0);
+                  setValue('totalSgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
                 }}
                 className={clsx(
                   inputClass,
@@ -157,122 +163,104 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
               />
             )}
           />
-          {/* cgst */}
-          {/* <NumericFormat
-            value={watch('totalCgst') || 0}
-            decimalScale={2}
-            thousandSeparator
-            fixedDecimalScale
-            allowNegative={false}
-            defaultValue={0.00}
-            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-            className={clsx(inputClass, errors?.totalCgst && errorClass, 'mt-0.5')}
-            {...register("totalCgst", {
-              validate: (value) => {
-                return isValidCgst(value) //&& isValidCgstSgstIgst()
-                  ? true
-                  : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`;
-              },
-              valueAsNumber: true
-            })}
-            onValueChange={({ floatValue }) => {
-              setValue("totalCgst", floatValue ?? 0, {
-                shouldDirty: true,
-                shouldValidate: true
-              });
-              trigger("totalCgst");
-            }}
-          /> */}
         </div>
 
         <div>
           <label className="text-gray-600 text-xs block">Sgst {!isIgst && <WidgetAstrix />}</label>
           {/* sgst */}
-          <NumericFormat
-            value={totalSgst}
-            decimalScale={2}
-            thousandSeparator
-            fixedDecimalScale
-            allowNegative={false}
-            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-            className={clsx(inputClass, errors?.totalSgst && errorClass, 'mt-0.5')}
-            {...register("totalCgst", {
-              validate: () => {
-                // const val = parseFloat(value);
-                return isValidSgst() //&& isValidCgstSgstIgst()
+          <Controller
+            name="totalSgst"
+            control={control}
+            rules={{
+              validate: (value) =>
+                isValidSgst(value || 0)
                   ? true
-                  : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`;
-              },
-            })}
-            onValueChange={(v) =>
-              setValue("totalSgst", parseFloat(v.value || "0"), {
-                shouldDirty: true,
-                shouldValidate: true
-              })
-            }
+                  : `Mismatch: should be ${calcTotal.sgst.toFixed(2)}`
+            }}
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                value={field.value ?? 0}
+                decimalScale={2}
+                thousandSeparator
+                fixedDecimalScale
+                allowNegative={false}
+                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                onValueChange={({ floatValue }) => {
+                  field.onChange(floatValue ?? 0);
+                  setValue('totalCgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
+                }}
+                className={clsx(
+                  inputClass,
+                  errors?.totalSgst && errorClass,
+                  "mt-0.5"
+                )}
+              />
+            )}
           />
         </div>
 
         <div>
           <label className="text-gray-600 text-xs block">Igst {isIgst && <WidgetAstrix />}</label>
           {/* igst */}
-          <NumericFormat
-            value={totalIgst}
-            decimalScale={2}
-            fixedDecimalScale
-            allowNegative={false}
-            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-            className={clsx(inputClass, errors?.totalIgst && errorClass, 'mt-0.5')}
-            {...register("totalCgst", {
-              validate: () => {
-                // const val = parseFloat(value);
-                return isValidIgst() //&& isValidCgstSgstIgst()
+          <Controller
+            name="totalIgst"
+            control={control}
+            rules={{
+              validate: (value) =>
+                isValidIgst(value || 0)
                   ? true
-                  : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`;
-              },
-            })}
-            onValueChange={(v) =>
-              setValue("totalIgst", parseFloat(v.value || "0"), {
-                shouldDirty: true,
-                shouldValidate: true
-              })
-            }
+                  : `Mismatch: should be ${calcTotal.igst.toFixed(2)}`
+            }}
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                value={field.value ?? 0}
+                decimalScale={2}
+                thousandSeparator
+                fixedDecimalScale
+                allowNegative={false}
+                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                onValueChange={({ floatValue }) => {
+                  field.onChange(floatValue ?? 0);
+                  setValue('totalCgst', 0, { shouldDirty: true, shouldValidate: true })
+                  setValue('totalSgst', 0, { shouldDirty: true, shouldValidate: true })
+                }}
+                className={clsx(
+                  inputClass,
+                  errors?.totalIgst && errorClass,
+                  "mt-0.5"
+                )}
+              />
+            )}
           />
         </div>
       </div>
     </div>
   );
 
-  function isValidCgst(cgst: number) {
-    // let ret = true
-    const c = calcTotal.cgst.toNumber()
-    if (!Utils.isAlmostEqual(cgst, c, .01, .99)) {
+  function isValidCgst(val: number) {
+    if (!Utils.isAlmostEqual(val, calcTotal.cgst.toNumber(), .01, .99)) {
       return false
     }
     return true
   }
 
-  function isValidSgst() {
-    // let ret = true
-    if (!Utils.isAlmostEqual(totalSgst, calcTotal.sgst.toNumber(), .01, .99)) {
+  function isValidSgst(val: number) {
+    if (!Utils.isAlmostEqual(val, calcTotal.sgst.toNumber(), .01, .99)) {
       return false
     }
     return true
   }
 
-  function isValidIgst() {
-    // let ret = true
-    if (!Utils.isAlmostEqual(totalIgst, calcTotal.igst.toNumber(), .01, .99)) {
+  function isValidIgst(val: number) {
+    if (!Utils.isAlmostEqual(val, calcTotal.igst.toNumber(), .01, .99)) {
       return false
     }
     return true
   }
 
   function isValidCgstSgstIgst() {
-    // let ret = true
-    if (totalCgst !== totalSgst) {
-      return false
-    }
     if ((totalCgst !== 0) && (totalIgst !== 0)) {
       return false
     }
@@ -283,21 +271,6 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
     }
     if ((isGstInvoice) && (totalCgst !== 0) && (totalSgst !== 0) && (totalIgst !== 0)) {
       return false
-    }
-    if (isIgst) {
-      if ((totalCgst !== 0) || (totalSgst !== 0)) {
-        return false
-      }
-      if (totalIgst === 0) {
-        return false
-      }
-    } else {
-      if ((totalCgst === 0) || (totalSgst === 0)) {
-        return false
-      }
-      if (totalIgst !== 0) {
-        return false
-      }
     }
     return true
   }
