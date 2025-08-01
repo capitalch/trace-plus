@@ -22,7 +22,6 @@ import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { AnimatePresence, motion } from "framer-motion";
 import { ControlledNumericInput } from "../../../../../controls/components/controlled-numeric-input";
-// import { AnimatePresence, motion } from "framer-motion";
 
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const { isValidHsn } = useValidators();
@@ -213,7 +212,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                         onValueChange={(floatValue) => {
                                             setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
                                             computeLineItemValues(index)
-                                            trigger()
                                         }}
                                         validate={(value) => {
                                             if (isGstInvoice && (value === undefined || value === null || isNaN(value))) {
@@ -222,29 +220,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                             return true;
                                         }}
                                     />
-                                    {/* <NumericFormat
-                                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                        thousandSeparator
-                                        decimalScale={2}
-                                        fixedDecimalScale
-                                        defaultValue={0}
-                                        {...register(`purchaseLineItems.${index}.gstRate`, {
-                                            validate: () => {
-                                                const val = watch(`purchaseLineItems.${index}.gstRate`)
-                                                if (isGstInvoice && (val === undefined || val === null || isNaN(val))) {
-                                                    return Messages.errRequired;
-                                                }
-                                                return true;
-                                            },
-                                        })}
-                                        value={watch(`purchaseLineItems.${index}.gstRate`)}
-                                        className={clsx("text-right h-8 mt-1",
-                                            inputFormFieldStyles, errors.purchaseLineItems?.[index]?.gstRate ? errorClass : '')}
-                                        onValueChange={({ floatValue }) => {
-                                            setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
-                                            computeLineItemValues(index)
-                                        }}
-                                    /> */}
                                 </div>
                             </div>
 
@@ -262,46 +237,12 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                             shouldTouch: true
                                         })
                                         computeLineItemValues(index)
-                                        trigger()
                                     }}
                                     validate={(value) => {
                                         const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
                                         return (ret)
                                     }}
                                 />
-                                {/* <Controller
-                                    name={`purchaseLineItems.${index}.qty`}
-                                    control={control}
-                                    rules={{
-                                        validate: (value) => {
-                                            const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
-                                            return (ret)
-                                        },
-                                    }}
-                                    render={({ field }) => (
-                                        <NumericFormat
-                                            {...field}
-                                            thousandSeparator
-                                            decimalScale={2}
-                                            fixedDecimalScale
-                                            allowNegative={false}
-                                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                            value={field.value ?? 0} // use controlled value from RHF
-                                            className={clsx("text-right h-8 mt-1",
-                                                inputFormFieldStyles, errors.purchaseLineItems?.[index]?.qty ? errorClass : '')}
-                                            onValueChange={({ floatValue }) => {
-                                                setValue(`purchaseLineItems.${index}.qty`, floatValue || 0, {
-                                                    shouldDirty: true,
-                                                    shouldValidate: true,
-                                                    shouldTouch: true
-                                                })
-                                                field.onChange(floatValue ?? 0)
-                                                computeLineItemValues(index)
-                                                trigger()
-                                            }}
-                                        />
-                                    )}
-                                /> */}
                             </div>
 
                             {/* Price */}
@@ -320,7 +261,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     onValueChange={({ floatValue }) => {
                                         setValue(`purchaseLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
                                         computeLineItemValues(index)
-                                        trigger()
                                     }}
                                 />
                             </div>
@@ -338,7 +278,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     onValueChange={({ floatValue }) => {
                                         setValue(`purchaseLineItems.${index}.discount`, floatValue ?? 0, { shouldDirty: true })
                                         computeLineItemValues(index)
-                                        trigger()
                                     }}
                                 />
                             </div>
@@ -477,6 +416,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setValue(`purchaseLineItems.${index}.subTotal`, subTotal.toNumber())
         setValue(`purchaseLineItems.${index}.amount`, amount.toNumber())
         setPriceGst(index)
+        trigger()
     }
 
     function getSnError(index: number) {
@@ -513,6 +453,9 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 amount: new Decimal(0)
             }
         );
+        // setTimeout(() => { // This works better to trigger all validations
+        //     trigger()
+        // }, 0);
         return (summary)
     }
 
@@ -607,7 +550,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         }
         // Set fetched values
         setLineItem(product, index);
-        trigger()
     }
 
     function setLineItem(product: ProductInfoType, index: number) {
@@ -618,6 +560,9 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
+        setTimeout(() => {
+            trigger()
+        }, 0);
     }
 
     function setPrice(index: number) {
@@ -645,8 +590,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             shouldValidate: true
         });
     }
-
-
 }
 
 type PurchaseLineItemsProps = {

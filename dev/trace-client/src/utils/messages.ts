@@ -15,6 +15,7 @@ const Messages = {
   errCatNameExists: 'Category name altready exists',
   errCatBrandLabelExists:
     'This category, brand and product label already exists',
+  errCgstValidationError:'Cgst validation error',
   errClientCodeExists: 'Client code altready exists',
   errClientNameExists: 'Client name already exists',
   errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
@@ -33,6 +34,7 @@ const Messages = {
   errForbiddenChar1: 'Forbidden char is present. Allowed ()_-+*',
   errGstRateTooHigh: 'Gst rate is too high',
   errHsnTooHigh: 'HSN code is too high',
+  errIgstValidationError:'Igst validation error',
   errIncrementedFinYearNotExists:
     'Incremented financial year does not exist. Please create a new financial year in the accounts',
   errInputMustBeUrl: 'Input must be a valid URL',
@@ -65,6 +67,7 @@ const Messages = {
   errSameCurrentPwdAndNewPwd:
     'Current password and new password cannot be same',
   errSelectExportType: 'You must select an export type',
+  errSgstValidationError:'Sgst validation error',
   errSuperAdminRoleNameExists: 'Super admin role name alrady exists',
   errSuperAdminControlNameExists: 'Super admin control name already exists',
   errTagNameExists: 'Tag name altready exists',

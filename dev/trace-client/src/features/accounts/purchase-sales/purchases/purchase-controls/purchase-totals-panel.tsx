@@ -7,6 +7,7 @@ import Decimal from "decimal.js";
 import { Utils } from "../../../../../utils/utils";
 import { useEffect } from "react";
 import { ControlledNumericInput } from "../../../../../controls/components/controlled-numeric-input";
+// import { Messages } from "../../../../../utils/messages";
 
 export function PurchaseTotalsPanel({ className }: { className?: string }) {
   const { setValue, watch, formState: { errors } } = useFormContext<PurchaseFormDataType>();
@@ -120,36 +121,6 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
                 ? true
                 : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`}
           />
-          {/* <Controller
-            name="totalCgst"
-            control={control}
-            rules={{
-              validate: (value) =>
-                isValidCgst(value || 0) && isValidCgstSgstIgst()
-                  ? true
-                  : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`
-            }}
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                value={field.value ?? 0}
-                decimalScale={2}
-                thousandSeparator
-                fixedDecimalScale
-                allowNegative={false}
-                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                onValueChange={({ floatValue }) => {
-                  field.onChange(floatValue ?? 0);
-                  setValue('totalSgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
-                }}
-                className={clsx(
-                  inputClass,
-                  errors?.totalCgst && errorClass,
-                  "mt-0.5"
-                )}
-              />
-            )}
-          /> */}
         </div>
 
         <div>
@@ -166,36 +137,6 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
                 ? true
                 : `Mismatch: should be ${calcTotal.sgst.toFixed(2)}`}
           />
-          {/* <Controller
-            name="totalSgst"
-            control={control}
-            rules={{
-              validate: (value) =>
-                isValidSgst(value || 0)
-                  ? true
-                  : `Mismatch: should be ${calcTotal.sgst.toFixed(2)}`
-            }}
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                value={field.value ?? 0}
-                decimalScale={2}
-                thousandSeparator
-                fixedDecimalScale
-                allowNegative={false}
-                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                onValueChange={({ floatValue }) => {
-                  field.onChange(floatValue ?? 0);
-                  setValue('totalCgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
-                }}
-                className={clsx(
-                  inputClass,
-                  errors?.totalSgst && errorClass,
-                  "mt-0.5"
-                )}
-              />
-            )}
-          /> */}
         </div>
 
         <div>
@@ -212,59 +153,28 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
                 ? true
                 : `Mismatch: should be ${calcTotal.igst.toFixed(2)}`}
           />
-          {/* <Controller
-            name="totalIgst"
-            control={control}
-            rules={{
-              validate: (value) =>
-                isValidIgst(value || 0)
-                  ? true
-                  : `Mismatch: should be ${calcTotal.igst.toFixed(2)}`
-            }}
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                value={field.value ?? 0}
-                decimalScale={2}
-                thousandSeparator
-                fixedDecimalScale
-                allowNegative={false}
-                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                onValueChange={({ floatValue }) => {
-                  field.onChange(floatValue ?? 0);
-                  setValue('totalCgst', 0, { shouldDirty: true, shouldValidate: true })
-                  setValue('totalSgst', 0, { shouldDirty: true, shouldValidate: true })
-                }}
-                className={clsx(
-                  inputClass,
-                  errors?.totalIgst && errorClass,
-                  "mt-0.5"
-                )}
-              />
-            )}
-          /> */}
         </div>
       </div>
     </div>
   );
 
   function isValidCgst(val: number) {
-    if (!Utils.isAlmostEqual(val, calcTotal.cgst.toNumber(), .01, .99)) {
-      return false
+    if ((!Utils.isAlmostEqual(val, calcTotal.cgst.toNumber(), .01, .99)) && (!isIgst)) {
+      return (false)
     }
     return true
   }
 
   function isValidSgst(val: number) {
-    if (!Utils.isAlmostEqual(val, calcTotal.sgst.toNumber(), .01, .99)) {
-      return false
+    if ((!Utils.isAlmostEqual(val, calcTotal.sgst.toNumber(), .01, .99)) && (!isIgst)) {
+      return (false)
     }
     return true
   }
 
   function isValidIgst(val: number) {
-    if (!Utils.isAlmostEqual(val, calcTotal.igst.toNumber(), .01, .99)) {
-      return false
+    if ((!Utils.isAlmostEqual(val, calcTotal.igst.toNumber(), .01, .99)) && isIgst) {
+      return (false)
     }
     return true
   }
@@ -363,4 +273,98 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
                 shouldValidate: true
               });
             }}
+          /> */}
+
+{/* <Controller
+            name="totalCgst"
+            control={control}
+            rules={{
+              validate: (value) =>
+                isValidCgst(value || 0) && isValidCgstSgstIgst()
+                  ? true
+                  : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`
+            }}
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                value={field.value ?? 0}
+                decimalScale={2}
+                thousandSeparator
+                fixedDecimalScale
+                allowNegative={false}
+                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                onValueChange={({ floatValue }) => {
+                  field.onChange(floatValue ?? 0);
+                  setValue('totalSgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
+                }}
+                className={clsx(
+                  inputClass,
+                  errors?.totalCgst && errorClass,
+                  "mt-0.5"
+                )}
+              />
+            )}
+          /> */}
+
+{/* <Controller
+            name="totalSgst"
+            control={control}
+            rules={{
+              validate: (value) =>
+                isValidSgst(value || 0)
+                  ? true
+                  : `Mismatch: should be ${calcTotal.sgst.toFixed(2)}`
+            }}
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                value={field.value ?? 0}
+                decimalScale={2}
+                thousandSeparator
+                fixedDecimalScale
+                allowNegative={false}
+                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                onValueChange={({ floatValue }) => {
+                  field.onChange(floatValue ?? 0);
+                  setValue('totalCgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
+                }}
+                className={clsx(
+                  inputClass,
+                  errors?.totalSgst && errorClass,
+                  "mt-0.5"
+                )}
+              />
+            )}
+          /> */}
+
+{/* <Controller
+            name="totalIgst"
+            control={control}
+            rules={{
+              validate: (value) =>
+                isValidIgst(value || 0)
+                  ? true
+                  : `Mismatch: should be ${calcTotal.igst.toFixed(2)}`
+            }}
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                value={field.value ?? 0}
+                decimalScale={2}
+                thousandSeparator
+                fixedDecimalScale
+                allowNegative={false}
+                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                onValueChange={({ floatValue }) => {
+                  field.onChange(floatValue ?? 0);
+                  setValue('totalCgst', 0, { shouldDirty: true, shouldValidate: true })
+                  setValue('totalSgst', 0, { shouldDirty: true, shouldValidate: true })
+                }}
+                className={clsx(
+                  inputClass,
+                  errors?.totalIgst && errorClass,
+                  "mt-0.5"
+                )}
+              />
+            )}
           /> */}

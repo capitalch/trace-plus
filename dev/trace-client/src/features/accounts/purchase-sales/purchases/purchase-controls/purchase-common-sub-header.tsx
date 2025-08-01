@@ -103,8 +103,11 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     <label className="flex items-center gap-2 text-xs mt-[2px] cursor-pointer font-medium">
                         <input
                             type="checkbox"
-                            {...register('isIgst')}
-                            onChange={() => trigger()}
+                            {...register('isIgst', {
+                                onChange: () => {
+                                    trigger();
+                                },
+                            })}
                             className="checkbox checkbox-xs cursor-pointer"
                         />
                         IGST
