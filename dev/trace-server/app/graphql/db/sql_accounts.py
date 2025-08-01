@@ -838,6 +838,45 @@ class SqlAccounts:
         FROM cte7
     """
 
+    get_all_purchases = """
+        --with "branchId" as (values (1)), "finYearId" as (values (2025)),"tranTypeId" as (values(5))
+        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tranTypeId" as (values(%(tranTypeId)s))
+        , cte1 as (
+			select "tranHeaderId", string_agg("accName",', ') as "accounts"
+				from "TranD" d
+					join "TranH" h
+						on h."id" = d."tranHeaderId"
+					join "AccM" a
+						on a."id" = d."accId"
+			where dc = CASE (table "tranTypeId") WHEN 5 then 'C' else 'D' END
+			and "finYearId" = (table "finYearId") 
+			and "branchId" = (table "branchId")
+			group by "tranHeaderId"
+		)
+        select ROW_NUMBER() OVER (ORDER BY "tranDate" DESC, h."id" DESC) AS "index"
+		, h."id" as "id", "autoRefNo", "userRefNo", h."remarks", "accounts", d."amount", string_agg("brandName" || ' ' || "label",', ') as "productDetails"
+        , string_agg(s."jData"->>'serialNumbers', ', ') as "serialNumbers", string_agg("productCode", ', ') as "productCodes"
+        , string_agg(s.hsn::text, ', ') as "hsns", SUM(s."qty") as "productQty"
+        , SUM(s."qty" * (s."price" - s."discount")) as "aggr", SUM(s."cgst") as "cgst", SUM(s."sgst") as "sgst", SUM(s."igst") as "igst"
+        ,	"tranDate", string_agg(s."jData"->>'remarks', ', ') as "lineRemarks"
+            from "TranH" h
+                join "TranD" d
+                    on h."id" = d."tranHeaderId"
+                join "SalePurchaseDetails" s
+                    on d."id" = s."tranDetailsId"
+                join "ProductM" p
+                    on p."id" = s."productId"
+                join "BrandM" b
+                    on b."id" = p."brandId"
+				join cte1 
+					on cte1."tranHeaderId" = d."tranHeaderId"
+            where "tranTypeId" = (table "tranTypeId") and
+                "finYearId" = (table "finYearId") and
+                "branchId" = (table "branchId")
+            group by h."id", d."amount" , d."remarks", cte1."accounts"
+            order by "tranDate" DESC
+    """
+
     get_all_schemas_in_database = """
         SELECT nspname
         FROM pg_namespace

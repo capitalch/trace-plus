@@ -27,7 +27,7 @@ export function AllPurchases() {
         },
         {
             label: "View",
-            content: <AllPurchasesView instance={instance} />
+            content: <AllPurchasesView  />
         }
     ];
     return (

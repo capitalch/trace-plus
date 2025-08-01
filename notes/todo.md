@@ -16,8 +16,8 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Purchase
-	- bugs
-		- Gst totals validations
+													- bugs
+														- Gst totals validations
 														- Product code showing red
 														- Show validation error boxes background red in totals panel
 														- Startup
@@ -50,7 +50,9 @@ valid gstin: 24AAACC1206D1ZM
 														- If GST invoice then astrix in GStin no, hsn and gst %
 														- isIgst
 	- Purchase view
-		- Query Sql
+														- Query Sql
+														- Columns
+														- Aggregates
 		- Delete
 		- Edit
 		- Preview

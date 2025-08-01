@@ -10,7 +10,7 @@ import { ControlledNumericInput } from "../../../../../controls/components/contr
 // import { Messages } from "../../../../../utils/messages";
 
 export function PurchaseTotalsPanel({ className }: { className?: string }) {
-  const { setValue, watch, formState: { errors } } = useFormContext<PurchaseFormDataType>();
+  const { setValue, watch, trigger, formState: { errors } } = useFormContext<PurchaseFormDataType>();
 
   const lineItems = watch("purchaseLineItems") || [];
   const totalInvoiceAmount = watch("totalInvoiceAmount");
@@ -115,6 +115,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
             fieldName="totalCgst"
             onValueChange={(floatValue) => {
               setValue('totalSgst', floatValue || 0, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+              trigger(['totalSgst','totalIgst'])
             }}
             validate={(value) =>
               isValidCgst(value || 0) && isValidCgstSgstIgst()
@@ -131,6 +132,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
             fieldName="totalSgst"
             onValueChange={(floatValue) => {
               setValue('totalCgst', floatValue || 0, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+              trigger(['totalCgst','totalIgst'])
             }}
             validate={(value) =>
               isValidSgst(value || 0) && isValidCgstSgstIgst()
@@ -147,6 +149,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
             fieldName="totalIgst"
             onValueChange={(floatValue) => {
               setValue('totalIgst', floatValue || 0, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+              trigger(['totalCgst','totalSgst'])
             }}
             validate={(value) =>
               isValidIgst(value || 0) && isValidCgstSgstIgst()
@@ -194,177 +197,3 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
     return true
   }
 }
-
-{/* <Controller
-      name='totalInvoiceAmount'
-      control={control}
-      defaultValue={0}
-      rules={{
-        validate: (value) => {
-          return Utils.isAlmostEqual(value, calcTotal.amount.toNumber(), .15, .99) //Decimal(value).equals(calcTotal.amount)
-            ? true
-            : `Mismatch: should be ${calcTotal.amount.toFixed(2)}`;
-        }
-      }}
-      render={({ field }) => (
-        <NumericFormat
-          // {...field}
-          thousandSeparator
-          decimalScale={2}
-          fixedDecimalScale
-          allowNegative={false}
-          onBlur={field.onBlur}
-          onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-          value={field.value || 0}
-          // prefix="$"
-          className={clsx(inputClass, errors?.totalInvoiceAmount && errorClass, 'mt-0.5')}
-          onValueChange={({ floatValue }) =>
-            setValue('totalInvoiceAmount', floatValue || 0, { shouldValidate: true })
-          }
-        />
-      )}
-    /> */}
-
-{/* <Controller
-            name='totalQty'
-            control={control}
-            rules={{
-              validate: (value) => {
-                return Decimal(value || 0).equals(calcTotal.qty)
-                  ? true
-                  : `Mismatch: should be ${calcTotal.qty.toFixed(2)}`;
-              }
-            }}
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                thousandSeparator
-                decimalScale={2}
-                fixedDecimalScale
-                allowNegative={false}
-                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                value={field.value || 0}
-                className={clsx(inputClass, errors?.totalQty && errorClass, 'mt-0.5')}
-                onValueChange={({ floatValue }) =>
-                  field.onChange(floatValue ?? 0)
-                }
-              />
-            )}
-          /> */}
-{/* <NumericFormat
-            value={totalQty || 0}
-            decimalScale={2}
-            fixedDecimalScale
-            allowNegative={false}
-            defaultValue={0.00}
-            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-            className={clsx(inputClass, errors?.totalQty && errorClass, "mt-0.5")}
-            {...register("totalQty", {
-              validate: (value) => {
-                return Decimal(value || 0).equals(calcTotal.qty)
-                  ? true
-                  : `Mismatch: should be ${calcTotal.qty.toFixed(2)}`;
-              },
-              valueAsNumber: true
-            })}
-            onValueChange={({ floatValue }) => {
-              setValue("totalQty", floatValue ?? 0, {
-                shouldDirty: true,
-                shouldValidate: true
-              });
-            }}
-          /> */}
-
-{/* <Controller
-            name="totalCgst"
-            control={control}
-            rules={{
-              validate: (value) =>
-                isValidCgst(value || 0) && isValidCgstSgstIgst()
-                  ? true
-                  : `Mismatch: should be ${calcTotal.cgst.toFixed(2)}`
-            }}
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                value={field.value ?? 0}
-                decimalScale={2}
-                thousandSeparator
-                fixedDecimalScale
-                allowNegative={false}
-                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                onValueChange={({ floatValue }) => {
-                  field.onChange(floatValue ?? 0);
-                  setValue('totalSgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
-                }}
-                className={clsx(
-                  inputClass,
-                  errors?.totalCgst && errorClass,
-                  "mt-0.5"
-                )}
-              />
-            )}
-          /> */}
-
-{/* <Controller
-            name="totalSgst"
-            control={control}
-            rules={{
-              validate: (value) =>
-                isValidSgst(value || 0)
-                  ? true
-                  : `Mismatch: should be ${calcTotal.sgst.toFixed(2)}`
-            }}
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                value={field.value ?? 0}
-                decimalScale={2}
-                thousandSeparator
-                fixedDecimalScale
-                allowNegative={false}
-                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                onValueChange={({ floatValue }) => {
-                  field.onChange(floatValue ?? 0);
-                  setValue('totalCgst', floatValue || 0, { shouldDirty: true, shouldValidate: true })
-                }}
-                className={clsx(
-                  inputClass,
-                  errors?.totalSgst && errorClass,
-                  "mt-0.5"
-                )}
-              />
-            )}
-          /> */}
-
-{/* <Controller
-            name="totalIgst"
-            control={control}
-            rules={{
-              validate: (value) =>
-                isValidIgst(value || 0)
-                  ? true
-                  : `Mismatch: should be ${calcTotal.igst.toFixed(2)}`
-            }}
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                value={field.value ?? 0}
-                decimalScale={2}
-                thousandSeparator
-                fixedDecimalScale
-                allowNegative={false}
-                onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                onValueChange={({ floatValue }) => {
-                  field.onChange(floatValue ?? 0);
-                  setValue('totalCgst', 0, { shouldDirty: true, shouldValidate: true })
-                  setValue('totalSgst', 0, { shouldDirty: true, shouldValidate: true })
-                }}
-                className={clsx(
-                  inputClass,
-                  errors?.totalIgst && errorClass,
-                  "mt-0.5"
-                )}
-              />
-            )}
-          /> */}
