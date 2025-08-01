@@ -14,7 +14,7 @@ export function AllPurchases() {
     const { branchId, /*buCode, dbName,*/ finYearId, hasGstin } = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
-            mode: "onTouched",
+            mode: "all",
             criteriaMode: "all",
             defaultValues: getDefaultPurchaseFormValues()
         });

@@ -16,6 +16,10 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Purchase
+	- bugs
+		- Gst totals validations
+														- Product code showing red
+														- Show validation error boxes background red in totals panel
 														- Startup
 	- Purchase main
 														- Animate
@@ -29,7 +33,7 @@ valid gstin: 24AAACC1206D1ZM
 				
 														- Summary count, qty, gst, amount
 		- Provision of extra surcharge on Gst
-		- Final amounts validation
+														- Final amounts validation
 														- Igst recalculate
 		- Redux
 		- Submit

@@ -20,6 +20,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
         setValue,
         watch,
         register,
+        trigger,
         formState: { errors }
     } = useFormContext<PurchaseFormDataType>();
     const isGstInvoice = watch("isGstInvoice");
@@ -49,7 +50,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     }
                     showAccountBalance
                     value={watch('debitAccId')}
-                    className="w-full mt-1"
+                    className="max-w-80 w-full mt-1"
                 />
             </FormField>
 
@@ -77,7 +78,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     }}
                     showAccountBalance
                     value={watch('creditAccId')}
-                    className="w-full mt-1"
+                    className="w-full mt-1 max-w-80"
                 />
             </FormField>
 
@@ -103,6 +104,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                         <input
                             type="checkbox"
                             {...register('isIgst')}
+                            onChange={() => trigger()}
                             className="checkbox checkbox-xs cursor-pointer"
                         />
                         IGST

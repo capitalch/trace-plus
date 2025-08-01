@@ -21,6 +21,7 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { AnimatePresence, motion } from "framer-motion";
+import { ControlledNumericInput } from "../../../../../controls/components/controlled-numeric-input";
 // import { AnimatePresence, motion } from "framer-motion";
 
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
@@ -32,6 +33,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         register,
         setValue,
         watch,
+        trigger,
         formState: { errors },
     } = useFormContext<PurchaseFormDataType>();
     const { getDefaultPurchaseLineItem }: any = useFormContext()
@@ -94,17 +96,8 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 {/* Summary */}
                 {getSummaryMarkup()}
 
-                {fields.map((field, index) => {
-                    //             <motion.div
-                    //     key={field.id}
-                    //     initial={{ opacity: 0, y: 20 }}
-                    //     animate={{ opacity: 1, y: 0 }}
-                    //     exit={{ opacity: 0, y: -20 }}
-                    //     transition={{ duration: 0.2 }}
-                    //     className="border border-gray-200 rounded-md p-2 flex flex-wrap gap-2"
-                    //   >
+                {fields.map((_, index) => {
                     return (
-
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: -10 }}
@@ -213,7 +206,23 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 </div>
                                 <div className="flex flex-col text-xs w-24">
                                     <label className="font-semibold">GST % {isGstInvoice && <WidgetAstrix />}</label>
-                                    <NumericFormat
+                                    <ControlledNumericInput
+                                        className={clsx("text-right h-8 mt-1",
+                                            inputFormFieldStyles, errors.purchaseLineItems?.[index]?.gstRate ? errorClass : '')}
+                                        fieldName={`purchaseLineItems.${index}.gstRate`}
+                                        onValueChange={(floatValue) => {
+                                            setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
+                                            computeLineItemValues(index)
+                                            trigger()
+                                        }}
+                                        validate={(value) => {
+                                            if (isGstInvoice && (value === undefined || value === null || isNaN(value))) {
+                                                return Messages.errRequired;
+                                            }
+                                            return true;
+                                        }}
+                                    />
+                                    {/* <NumericFormat
                                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                         thousandSeparator
                                         decimalScale={2}
@@ -235,32 +244,64 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                             setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
                                             computeLineItemValues(index)
                                         }}
-                                    />
+                                    /> */}
                                 </div>
                             </div>
 
                             {/* Qty */}
                             <div className="flex flex-col text-xs w-20">
                                 <label className="font-semibold">Qty</label>
-                                <NumericFormat
-                                    allowNegative={false}
-                                    decimalScale={2}
-                                    defaultValue={0}
-                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                    thousandSeparator
-                                    fixedDecimalScale
+                                <ControlledNumericInput
                                     className={clsx("text-right h-8 mt-1",
                                         inputFormFieldStyles, errors.purchaseLineItems?.[index]?.qty ? errorClass : '')}
-                                    {...register(`purchaseLineItems.${index}.qty`, {
-                                        validate: (value) =>
-                                            value !== undefined && value !== null && !isNaN(value) && value > 0 ? true : Messages.errQtyCannotBeZero,
-                                    })}
-                                    value={watch(`purchaseLineItems.${index}.qty`) || 0}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`purchaseLineItems.${index}.qty`, floatValue ?? 0, { shouldDirty: true })
+                                    fieldName={`purchaseLineItems.${index}.qty`}
+                                    onValueChange={(floatValue) => {
+                                        setValue(`purchaseLineItems.${index}.qty`, floatValue || 0, {
+                                            shouldDirty: true,
+                                            shouldValidate: true,
+                                            shouldTouch: true
+                                        })
                                         computeLineItemValues(index)
+                                        trigger()
+                                    }}
+                                    validate={(value) => {
+                                        const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
+                                        return (ret)
                                     }}
                                 />
+                                {/* <Controller
+                                    name={`purchaseLineItems.${index}.qty`}
+                                    control={control}
+                                    rules={{
+                                        validate: (value) => {
+                                            const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
+                                            return (ret)
+                                        },
+                                    }}
+                                    render={({ field }) => (
+                                        <NumericFormat
+                                            {...field}
+                                            thousandSeparator
+                                            decimalScale={2}
+                                            fixedDecimalScale
+                                            allowNegative={false}
+                                            onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                            value={field.value ?? 0} // use controlled value from RHF
+                                            className={clsx("text-right h-8 mt-1",
+                                                inputFormFieldStyles, errors.purchaseLineItems?.[index]?.qty ? errorClass : '')}
+                                            onValueChange={({ floatValue }) => {
+                                                setValue(`purchaseLineItems.${index}.qty`, floatValue || 0, {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                    shouldTouch: true
+                                                })
+                                                field.onChange(floatValue ?? 0)
+                                                computeLineItemValues(index)
+                                                trigger()
+                                            }}
+                                        />
+                                    )}
+                                /> */}
                             </div>
 
                             {/* Price */}
@@ -279,6 +320,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     onValueChange={({ floatValue }) => {
                                         setValue(`purchaseLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
                                         computeLineItemValues(index)
+                                        trigger()
                                     }}
                                 />
                             </div>
@@ -296,6 +338,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     onValueChange={({ floatValue }) => {
                                         setValue(`purchaseLineItems.${index}.discount`, floatValue ?? 0, { shouldDirty: true })
                                         computeLineItemValues(index)
+                                        trigger()
                                     }}
                                 />
                             </div>
@@ -338,7 +381,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Totals */}
-                            <div className="flex flex-col text-[11px] w-24 rounded">
+                            <div className="flex flex-col text-xs w-26 rounded">
                                 <div className="font-semibold text-xs">Totals</div>
                                 <div className="flex flex-col gap-1">
                                     <div className="flex justify-between">
@@ -402,12 +445,10 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
                         </motion.div>
                     );
-                    // </motion.div>
                 })}
 
                 {/* Summary */}
                 {getSummaryMarkup()}
-                {/* </AnimatePresence> */}
             </div>
         </AnimatePresence>
     );
@@ -454,7 +495,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         const summary = lineItems.reduce(
             (acc, item) => {
                 acc.count += 1;
-                acc.qty = acc.qty.plus(new Decimal(item.qty));
+                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
                 acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
                 acc.cgst = acc.cgst.plus(new Decimal(item.cgst) || 0);
                 acc.sgst = acc.sgst.plus(new Decimal(item.sgst) || 0);
@@ -534,10 +575,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setValue(`purchaseLineItems.${index}.discount`, 0, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
-        // setValue(`purchaseLineItems.${index}.subTotal`, 0, { shouldDirty: true });
-        // setValue(`purchaseLineItems.${index}.cgst`, 0, { shouldDirty: true });
-        // setValue(`purchaseLineItems.${index}.sgst`, 0, { shouldDirty: true });
-        // setValue(`purchaseLineItems.${index}.igst`, 0, { shouldDirty: true });
     }
 
     function handleProductSearch(index: number) {
@@ -570,11 +607,12 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         }
         // Set fetched values
         setLineItem(product, index);
+        trigger()
     }
 
     function setLineItem(product: ProductInfoType, index: number) {
         setValue(`purchaseLineItems.${index}.productId`, product.id, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
         setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label} ${product.info ?? ""}`, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
