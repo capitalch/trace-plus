@@ -1898,6 +1898,70 @@ class SqlAccounts:
             "salePurchaseDetailsId"
     """
 
+    get_sale_purchase_details_on_id = """
+        --with "id" as (values (10892))
+        with "id" as (values (%(id)s::int))
+        , cte1 as (
+                select "id", "tranDate", "userRefNo", "remarks", "autoRefNo", "jData", "tranTypeId"
+                    from "TranH"
+                        where "id" = (table id)
+            ),
+            cte5 as (
+                select c.* 
+                    from "Contacts" c
+                        join "TranH" h
+                            on c."id" = h."contactsId"
+                        where  h."id" = (table id)
+            ),
+            cte2 as (
+                select d."id", d."accId", "dc", "amount", d."instrNo", d."remarks", "accClass", "accName", "accCode"
+                    from "cte1" c1 join "TranD" d 
+                        on c1."id" = d."tranHeaderId"
+                    join "AccM" m
+                        on m."id" = d."accId"
+                    join "AccClassM" c2
+                        on c2."id" = m."classId"
+            ),
+            cte3 as (
+                select x."id", "gstin", "cgst", "sgst", "igst"
+                    from "cte2" c2 join "ExtGstTranD" x
+                        on c2."id" = x."tranDetailsId"                        
+            ),
+            cte6 as (
+                select e.* from
+                    "AccM" a join "ExtBusinessContactsAccM" e
+                        on a."id" = e."accId"
+                    join cte2 c2
+                        on a."id" = c2."accId" limit 1
+            ),
+            cte4 as (
+                select s."id", "productId", "qty", "price", "priceGst", "discount"
+                    , "cgst", "sgst", "igst", s."amount", s."hsn", s."gstRate"
+                    , "productCode", "upcCode", "catName", "brandName", "info", "label"
+                    , s."jData"->>'serialNumbers' as "serialNumbers"
+                    , s."jData"->>'remarks' as "remarks"
+                    from "cte2" c2 
+                        join "SalePurchaseDetails" s
+                            on c2."id" = s."tranDetailsId"
+                        join "ProductM" p
+                            on p."id" = s."productId"
+                        join "CategoryM" c
+                            on c."id" = p."catId"
+                        join "BrandM" b
+                            on b."id" = p."brandId"
+                    
+            )
+
+            select json_build_object(
+                'tranH', (SELECT row_to_json(a) from cte1 a),
+                'billTo', (SELECT row_to_json(e) from cte5 e),
+                'businessContacts',(SELECT row_to_json(f) from cte6 f),
+                'tranD', (SELECT json_agg(b) from cte2 b),
+                'extGstTranD', (SELECT row_to_json(c) from cte3 c),
+                'salePurchaseDetails', (SELECT json_agg(d) from cte4 d)
+            ) as "jsonResult"
+    """
+
     get_sales_report = """
             --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "productCode" as (VALUES (null::text)), "catId" AS (VALUES (null::int)), "brandId" AS (VALUES (null::int)), "tagId" AS (VALUES (null::int)), "startDate" AS (VALUES ('2024-04-01' :: DATE)), "endDate" AS (VALUES ('2025-03-31' :: DATE)), "days" AS (VALUES (0)),
             with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "productCode" as (VALUES (%(productCode)s::text)), "tagId" as (values(%(tagId)s::int)), "brandId" as (values(%(brandId)s::int)), "catId" as (values(%(catId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date)), "days" as (values (COALESCE(%(days)s,0))),

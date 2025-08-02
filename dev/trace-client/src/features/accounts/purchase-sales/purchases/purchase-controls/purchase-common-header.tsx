@@ -135,8 +135,4 @@ export function PurchaseCommonHeader() {
             </div>
         </div>
     );
-
-    // function handleOnClickNoGstInvoice() {
-
-    // }
 }

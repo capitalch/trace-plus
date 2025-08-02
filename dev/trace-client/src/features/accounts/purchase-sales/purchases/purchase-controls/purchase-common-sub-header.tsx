@@ -133,7 +133,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                 dbParams: decodedDbParamsObject
             });
             const gstin = result?.[0]?.gstin || null;
-            setValue('gstin', gstin, { shouldDirty: true });
+            setValue('gstin', gstin, { shouldDirty: true, shouldValidate: true });
         } catch (error) {
             console.error("Error fetching GSTIN:", error);
         }

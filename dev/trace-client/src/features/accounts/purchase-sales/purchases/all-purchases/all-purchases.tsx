@@ -53,7 +53,7 @@ export function AllPurchases() {
         return ({
             id: undefined,
             autoRefNo: "",
-            tranDate: new Date().toISOString().split('T')[0],
+            tranDate: '', //new Date().toISOString().split('T')[0],
             userRefNo: null,
             remarks: null,
             isGstInvoice: hasGstin,

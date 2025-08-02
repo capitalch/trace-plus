@@ -1,9 +1,6 @@
-import { useDispatch } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { useCallback, useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { useFormContext } from "react-hook-form";
-import { PurchaseFormDataType } from "./all-purchases";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import clsx from "clsx";
@@ -14,11 +11,18 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
+import { PurchaseFormDataType } from "./all-purchases";
+import { ContactsType, ExtBusinessContactsAccMType, SalePurchaseDetailsType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
+import { ExtGstTranDType } from "../../../vouchers/all-vouchers/all-vouchers-view";
+import { ExtBusinessContactsAccM } from "../../../../../utils/tables-schema";
+import { useFormContext } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 
 export function AllPurchasesView({ className }: { className?: string }) {
-  // const dispatch: AppDispatchType = useDispatch()
+  const dispatch: AppDispatchType = useDispatch()
   const instance = DataInstancesMap.allPurchases
-  const [rowsData, setRowsData] = useState<PurchaseViewRowDataType[]>([]);
+  const [rowsData, setRowsData] = useState<any[]>([]);
   const {
     currentDateFormat,
     buCode,
@@ -28,10 +32,10 @@ export function AllPurchasesView({ className }: { className?: string }) {
     finYearId,
   } = useUtilsInfo();
 
-  // const {
-  //     reset,
-  //     watch
-  // } = useFormContext<PurchaseFormDataType>();
+  const {
+      reset,
+      // watch
+  } = useFormContext<PurchaseFormDataType>();
 
   const loadData = useCallback(async () => {
     try {
@@ -40,7 +44,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
       const buCode = state.login.currentBusinessUnit?.buCode;
       const finYearId = state.login.currentFinYear?.finYearId;
 
-      const rowsData: PurchaseViewRowDataType[] = await Utils.doGenericQuery({
+      const rowsData: any[] = await Utils.doGenericQuery({
         buCode: buCode || "",
         dbName: dbName || "",
         dbParams: decodedDbParamsObject,
@@ -57,7 +61,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
       let currentId: number | null | undefined = null;
       let currentColor = false;
 
-      rowsData.forEach((row: PurchaseViewRowDataType) => {
+      rowsData.forEach((row: any) => {
         if (row.id !== currentId) {
           currentId = row.id;
           currentColor = !currentColor; // toggle color when id changes
@@ -314,56 +318,92 @@ export function AllPurchasesView({ className }: { className?: string }) {
     ];
   }
 
-  async function handleOnCopy(data: PurchaseViewRowDataType) {
+  async function getPurchaseDetailsOnId(id: number | undefined) {
+    if (!id) {
+      return
+    }
+    return (await Utils.doGenericQuery({
+      buCode: buCode || "",
+      dbName: dbName || "",
+      dbParams: decodedDbParamsObject,
+      instance: instance,
+      sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
+      sqlArgs: {
+        id: id,
+      },
+    }))
+  }
+
+  async function handleOnCopy(data: PurchaseFormDataType) {
     console.log(data)
   }
 
   async function handleOnDelete(id: number | string) {
-        Utils.showDeleteConfirmDialog(async () => {
-            try {
-                if (!id) {
-                    Utils.showAlertMessage("Error", Messages.errDeletingRecord)
-                    return
-                }
-                await Utils.doGenericDelete({
-                    buCode: buCode || '',
-                    tableName: AllTables.TranH.name,
-                    deletedIds: [id]
-                })
-                Utils.showSaveMessage();
-                loadData(); // Reload data after deletion
-            } catch (e: any) {
-                console.log(e)
-            }
-        })
-    }
-
-    async function handleOnEdit(data: PurchaseViewRowDataType) {
-      console.log(data)
-    }
-
-    async function handleOnPreview(data: PurchaseViewRowDataType) {
-      console.log(data)
-        // dispatch(triggerVoucherPreview(data.id!));
-    }
-
-    function handleOnRowDataBound(args: RowDataBoundEventArgs) {
-        const rowData = args.data as PurchaseViewRowDataType;
-
-        if (args.row) {
-            if (rowData.bColor) {
-                args.row.classList.add("bg-green-50",);
-            }
+    Utils.showDeleteConfirmDialog(async () => {
+      try {
+        if (!id) {
+          Utils.showAlertMessage("Error", Messages.errDeletingRecord)
+          return
         }
+        await Utils.doGenericDelete({
+          buCode: buCode || '',
+          tableName: AllTables.TranH.name,
+          deletedIds: [id]
+        })
+        Utils.showSaveMessage();
+        loadData(); // Reload data after deletion
+      } catch (e: any) {
+        console.log(e)
+      }
+    })
+  }
+
+  async function handleOnEdit(data: any) {
+    const editData: any = await getPurchaseDetailsOnId(data.id)
+    const purchaseEditData: PurchaseEditData = editData?.[0]?.jsonResult
+    const tranH:TranHType = purchaseEditData.tranH
+    const tranD: TranDType[] = purchaseEditData.tranD
+    const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
+    const salePurchaseDetails : SalePurchaseDetailsType[] = purchaseEditData.salePurchaseDetails
+    reset({
+      id: tranH.id,
+      autoRefNo: tranH.autoRefNo,
+      tranDate: tranH.tranDate,
+      userRefNo:tranH.userRefNo,
+      remarks: tranH.remarks,
+      isGstInvoice:Boolean(extGsTranD?.id),
+      debitAccId: tranD.find((item) => item.dc === "D")?.accId.toString(),
+      creditAccId: tranD.find((item) => item.dc === "C")?.accId.toString(),
+      gstin: extGsTranD?.gstin,
+
+      totalCgst: extGsTranD?.cgst,
+      totalSgst: extGsTranD?.sgst,
+      totalIgst: extGsTranD?.igst,
+    })
+    dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
+  }
+
+  async function handleOnPreview(data: PurchaseFormDataType) {
+    console.log(data)
+    // dispatch(triggerVoucherPreview(data.id!));
+  }
+
+  function handleOnRowDataBound(args: RowDataBoundEventArgs) {
+    const rowData: any = args.data;
+
+    if (args.row) {
+      if (rowData.bColor) {
+        args.row.classList.add("bg-green-50",);
+      }
     }
+  }
 }
 
-type PurchaseViewRowDataType = {
-  id?: number;
-  index: number;
-  tranDate: string;
-  autoRefNo: string;
-  accName: string;
-  userRefNo?: string;
-  bColor?: boolean;
+type PurchaseEditData = {
+  tranH: TranHType;
+  tranD: TranDType[];
+  extGstTranD: ExtGstTranDType;
+  salePurchaseDetails: SalePurchaseDetailsType[];
+  billTo:ContactsType | null;
+  businessContacts: ExtBusinessContactsAccMType;
 }

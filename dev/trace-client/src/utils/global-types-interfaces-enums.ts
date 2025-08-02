@@ -62,3 +62,101 @@ export type TranHeaderType = {
   userRefNo: string | null;
   [key: string]: any;
 };
+
+// Table schemas
+export type TranHType = {
+  id?: number;
+  tranDate: string;
+  userRefNo?: string | null;
+  remarks?: string | null;
+  tags?: string | null;
+  jData?: { [key: string]: string | null } | null;
+  tranTypeId: number;
+  finYearId: number;
+  branchId: number;
+  posId?: number | null;
+  autoRefNo: string;
+  timestamp?: string;
+  contactsId?: number | null;
+  checked?: boolean | null;
+}
+
+export type TranDType = {
+  id?: number;
+  accId: number;
+  remarks?: string | null;
+  dc: string;
+  amount: number;
+  tranHeaderId: number;
+  lineRefNo?: string | null;
+  instrNo?: string | null;
+}
+
+export type ExtGstTranDType = {
+  id?: number;
+  gstin?: string | null;
+  rate?: number | null;
+  cgst: number;
+  sgst: number;
+  igst: number;
+  isInput?: boolean;
+  tranDetailsId: number;
+  hsn?: string | null;
+}
+
+export type SalePurchaseDetailsType = {
+  id: number;
+    tranDetailsId: number;
+    productId: number;
+    qty?: number;
+    price?: number;
+    priceGst?: number;
+    discount?: number;
+    cgst?: number;
+    sgst?: number;
+    igst?: number;
+    amount?: number;
+    jData?: { [key: string]: string | null } | null;
+    hsn: number;
+    gstRate?: number;
+}
+
+export type ContactsType = {
+  id?: number;
+    contactName: string;
+    mobileNumber?: string | null;
+    otherMobileNumber?: string | null;
+    landPhone?: string | null;
+    email?: string | null;
+    descr?: string | null;
+    jData?: { [key: string]: string | null } | null;
+    anniversaryDate?: string | null;
+    address1: string;
+    address2?: string | null;
+    country: string;
+    state?: string | null;
+    city?: string | null;
+    gstin?: string | null;
+    pin: string;
+    dateOfBirth?: string | null;
+    stateCode?: number | null;
+}
+
+export type ExtBusinessContactsAccMType = {
+  id?: number;
+    contactName: string;
+    contactCode: string;
+    mobileNumber?: string | null;
+    otherMobileNumber?: string | null;
+    landPhone?: string | null;
+    email?: string | null;
+    otherEmail?: string | null;
+    jAddress: { [key: string]: string | null } | null;
+    descr?: string | null;
+    accId?: number | null;
+    jData?: { [key: string]: string | null } | null;
+    gstin?: string | null;
+    timestamp?: string | null;
+    stateCode?: number | null;
+}
+

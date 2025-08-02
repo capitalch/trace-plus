@@ -53,7 +53,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Query Sql
 														- Columns
 														- Aggregates
-		- Delete
+														- Delete
 		- Edit
 		- Preview
 - Sales
