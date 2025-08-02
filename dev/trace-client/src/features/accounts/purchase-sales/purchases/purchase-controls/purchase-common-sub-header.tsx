@@ -17,14 +17,14 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
     const { isValidGstin } = useValidators();
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const {
-        setValue,
+        setValue, getValues,
         watch,
         register,
         trigger,
         formState: { errors }
     } = useFormContext<PurchaseFormDataType>();
     const isGstInvoice = watch("isGstInvoice");
-
+    const formData = getValues()
     return (
         <div className={clsx(className, "flex gap-6 flex-wrap items-start")}>
 
