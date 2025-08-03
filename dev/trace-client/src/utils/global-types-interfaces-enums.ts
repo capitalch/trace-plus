@@ -104,6 +104,15 @@ export type ExtGstTranDType = {
   hsn?: string | null;
 }
 
+export type SalePurchaseEditDataType = {
+  tranH: TranHType;
+  tranD: TranDType[];
+  extGstTranD: ExtGstTranDType;
+  salePurchaseDetails: SalePurchaseDetailsWithExtraType[];
+  billTo: ContactsType | null;
+  businessContacts: ExtBusinessContactsAccMType;
+}
+
 export type SalePurchaseDetailsType = {
   id: number;
     tranDetailsId: number;
@@ -120,6 +129,19 @@ export type SalePurchaseDetailsType = {
     hsn: number;
     gstRate?: number;
 }
+
+type SalePurchaseDetailsExtraType = {
+  productCode?: string;
+  upcCode?: string;
+  label?: string;
+  info?: string;
+  remarks?: string;
+  serialNumbers?: string;
+  brandName?: string;
+  catName?: string;
+}
+
+export type SalePurchaseDetailsWithExtraType = SalePurchaseDetailsType & SalePurchaseDetailsExtraType
 
 export type ContactsType = {
   id?: number;

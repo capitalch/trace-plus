@@ -12,11 +12,13 @@ import { Messages } from "../../../../../utils/messages";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchaseFormDataType } from "./all-purchases";
-import { ContactsType, ExtBusinessContactsAccMType, SalePurchaseDetailsType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
-import { ExtGstTranDType } from "../../../vouchers/all-vouchers/all-vouchers-view";
+import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
+// import { ExtGstTranDType } from "../../../vouchers/all-vouchers/all-vouchers-view";
 import { useFormContext } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
+import { triggerPurchaseInvoicePreview } from "../purchase=slice";
+import { generatePurchaseInvoicePDF } from "./purchase-invoice-jspdf";
 
 export function AllPurchasesView({ className }: { className?: string }) {
   const dispatch: AppDispatchType = useDispatch()
@@ -335,7 +337,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
 
   async function handleOnCopy(data: PurchaseFormDataType) {
     const editData: any = await getPurchaseDetailsOnId(data.id)
-    const purchaseEditData: PurchaseEditData = editData?.[0]?.jsonResult
+    const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
     const tranH: TranHType = purchaseEditData.tranH
     const tranD: TranDType[] = purchaseEditData.tranD
     const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
@@ -347,7 +349,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
       // tranDate: tranH.tranDate,
       // userRefNo: tranH.userRefNo,
       // remarks: tranH.remarks,
-      tranTypeId:tranH.tranTypeId,
+      tranTypeId: tranH.tranTypeId,
       isGstInvoice: Boolean(extGsTranD?.id),
       debitAccId: tranD.find((item) => item.dc === "D")?.accId,
       creditAccId: tranD.find((item) => item.dc === "C")?.accId,
@@ -404,7 +406,8 @@ export function AllPurchasesView({ className }: { className?: string }) {
 
   async function handleOnEdit(data: any) {
     const editData: any = await getPurchaseDetailsOnId(data.id)
-    const purchaseEditData: PurchaseEditData = editData?.[0]?.jsonResult
+    const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+    // console.log(JSON.stringify(purchaseEditData))
     const tranH: TranHType = purchaseEditData.tranH
     const tranD: TranDType[] = purchaseEditData.tranD
     const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
@@ -416,7 +419,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
       tranDate: tranH.tranDate,
       userRefNo: tranH.userRefNo,
       remarks: tranH.remarks,
-      tranTypeId:tranH.tranTypeId,
+      tranTypeId: tranH.tranTypeId,
       isGstInvoice: Boolean(extGsTranD?.id),
       debitAccId: tranD.find((item) => item.dc === "D")?.accId,
       creditAccId: tranD.find((item) => item.dc === "C")?.accId,
@@ -452,8 +455,10 @@ export function AllPurchasesView({ className }: { className?: string }) {
   }
 
   async function handleOnPreview(data: PurchaseFormDataType) {
-    console.log(data)
-    // dispatch(triggerVoucherPreview(data.id!));
+    // dispatch(triggerPurchaseInvoicePreview(data.id!));
+    const editData: any = await getPurchaseDetailsOnId(data.id)
+    const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+    generatePurchaseInvoicePDF(purchaseEditData)
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
@@ -466,25 +471,4 @@ export function AllPurchasesView({ className }: { className?: string }) {
     }
   }
 }
-
-type PurchaseEditData = {
-  tranH: TranHType;
-  tranD: TranDType[];
-  extGstTranD: ExtGstTranDType;
-  salePurchaseDetails: SalePurchaseDetailsType[];
-  billTo: ContactsType | null;
-  businessContacts: ExtBusinessContactsAccMType;
-}
-type ExtraSalePurchaseDetailsType = {
-  productCode?: string;
-  upcCode?: string;
-  label?: string;
-  info?: string;
-  remarks?: string;
-  serialNumbers?: string;
-  brandName?: string;
-  catName?: string;
-}
-
-type SalePurchaseDetailsWithExtraType = SalePurchaseDetailsType & ExtraSalePurchaseDetailsType
 

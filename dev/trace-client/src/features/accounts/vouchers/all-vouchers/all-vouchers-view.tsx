@@ -13,7 +13,7 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useFormContext } from "react-hook-form";
 import { VoucherFormDataType } from "./all-vouchers";
-import { VourcherType } from "../../../../utils/global-types-interfaces-enums";
+import { ExtGstTranDType, VourcherType } from "../../../../utils/global-types-interfaces-enums";
 import { Messages } from "../../../../utils/messages";
 import { triggerVoucherPreview } from "../voucher-slice";
 
@@ -537,16 +537,4 @@ export type VoucherTranDetailsType = {
     remarks: string | null;
     tranHeaderId?: number;
     gst?: ExtGstTranDType | null;
-}
-
-export type ExtGstTranDType = {
-    id?: number;
-    gstin: string | null
-    hsn: string | null;
-    cgst: number;
-    sgst: number;
-    igst: number;
-    rate: number;
-    isInput: boolean;
-    tranDetailsId?: number;
 }

@@ -9,6 +9,7 @@ import { stockSummaryReportReducer } from "../features/accounts/inventory/report
 import { stockTransReportReducer } from "../features/accounts/inventory/reports/inventory-reports/stock-trans-report/stock-trans-report-slice";
 import { accountPickerTreeReducer } from "../controls/redux-components/account-picker-tree/account-picker-tree-slice";
 import { voucherReducer } from "../features/accounts/vouchers/voucher-slice";
+import { purchaseReducer } from "../features/accounts/purchase-sales/purchases/purchase=slice";
 
 const rootReducer = combineReducers({
   accounts: accountsReducer,
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
   salesReport: salesReportReducer,
   stockSummaryReport: stockSummaryReportReducer,
   stockTransReport: stockTransReportReducer,
-  vouchers: voucherReducer
+  vouchers: voucherReducer,
+  purchase: purchaseReducer,
 });
 
 const reducerWithReset = (state: any, action: any) => {
@@ -36,19 +38,4 @@ export const store = configureStore({
 
 export type RootStateType = ReturnType<typeof store.getState>;
 export type AppDispatchType = typeof store.dispatch;
-
-
-// export const store = configureStore({
-//   reducer: {
-//     accounts: accountsReducer,
-//     accountPickerTree: accountPickerTreeReducer,
-//     queryHelper: queryHelperReducer,
-//     layouts: layoutsReducer,
-//     login: loginReducer,
-//     reduxComp: reduxCompReducer,
-//     salesReport: salesReportReducer,
-//     stockSummaryReport: stockSummaryReportReducer,
-//     stockTransReport: stockTransReportReducer,
-//   },
-// });
 
