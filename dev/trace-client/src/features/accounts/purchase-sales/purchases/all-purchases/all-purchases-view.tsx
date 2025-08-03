@@ -17,7 +17,7 @@ import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditData
 import { useFormContext } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
-import { triggerPurchaseInvoicePreview } from "../purchase=slice";
+// import { triggerPurchaseInvoicePreview } from "../purchase=slice";
 import { generatePurchaseInvoicePDF } from "./purchase-invoice-jspdf";
 
 export function AllPurchasesView({ className }: { className?: string }) {
@@ -28,6 +28,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
     currentDateFormat,
     buCode,
     branchId,
+    branchName,
     dbName,
     decodedDbParamsObject,
     finYearId,
@@ -458,7 +459,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
     // dispatch(triggerPurchaseInvoicePreview(data.id!));
     const editData: any = await getPurchaseDetailsOnId(data.id)
     const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-    generatePurchaseInvoicePDF(purchaseEditData)
+    generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '')
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
