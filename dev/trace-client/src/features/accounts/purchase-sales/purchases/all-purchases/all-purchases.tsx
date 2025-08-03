@@ -27,7 +27,7 @@ export function AllPurchases() {
         },
         {
             label: "View",
-            content: <AllPurchasesView  />
+            content: <AllPurchasesView />
         }
     ];
     return (
@@ -56,6 +56,7 @@ export function AllPurchases() {
             tranDate: '', //new Date().toISOString().split('T')[0],
             userRefNo: null,
             remarks: null,
+            tranTypeId: 5,
             isGstInvoice: hasGstin,
             isIgst: false,
 
@@ -110,11 +111,12 @@ export type PurchaseFormDataType = {
     tranDate: string;
     userRefNo?: string | null;
     remarks?: string | null;
+    tranTypeId:number;
     isGstInvoice: boolean;
     isIgst: boolean;
 
-    debitAccId: string | null;
-    creditAccId: string | null;
+    debitAccId: string | number | null;
+    creditAccId: string | number | null;
     gstin?: string | null; // for purchase invoice
 
     purchaseLineItems: PurchaseLineItemType[];
@@ -133,7 +135,7 @@ export type PurchaseFormDataType = {
     lineRemarks?: string | null;
 }
 
-type PurchaseLineItemType = {
+export type PurchaseLineItemType = {
     id?: number;
     productId: number | null;
     tranDetailsID?: number;

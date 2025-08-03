@@ -14,7 +14,6 @@ import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchaseFormDataType } from "./all-purchases";
 import { ContactsType, ExtBusinessContactsAccMType, SalePurchaseDetailsType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 import { ExtGstTranDType } from "../../../vouchers/all-vouchers/all-vouchers-view";
-import { ExtBusinessContactsAccM } from "../../../../../utils/tables-schema";
 import { useFormContext } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
@@ -33,8 +32,8 @@ export function AllPurchasesView({ className }: { className?: string }) {
   } = useUtilsInfo();
 
   const {
-      reset,
-      // watch
+    reset,
+    // watch
   } = useFormContext<PurchaseFormDataType>();
 
   const loadData = useCallback(async () => {
@@ -335,7 +334,52 @@ export function AllPurchasesView({ className }: { className?: string }) {
   }
 
   async function handleOnCopy(data: PurchaseFormDataType) {
-    console.log(data)
+    const editData: any = await getPurchaseDetailsOnId(data.id)
+    const purchaseEditData: PurchaseEditData = editData?.[0]?.jsonResult
+    const tranH: TranHType = purchaseEditData.tranH
+    const tranD: TranDType[] = purchaseEditData.tranD
+    const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
+    const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
+
+    reset({
+      id: undefined,
+      // autoRefNo: tranH.autoRefNo,
+      // tranDate: tranH.tranDate,
+      // userRefNo: tranH.userRefNo,
+      // remarks: tranH.remarks,
+      tranTypeId:tranH.tranTypeId,
+      isGstInvoice: Boolean(extGsTranD?.id),
+      debitAccId: tranD.find((item) => item.dc === "D")?.accId,
+      creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+      gstin: extGsTranD?.gstin,
+      isIgst: extGsTranD?.igst ? true : false,
+
+      // totalCgst: extGsTranD?.cgst,
+      // totalSgst: extGsTranD?.sgst,
+      // totalIgst: extGsTranD?.igst,
+      // totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
+      // totalInvoiceAmount: tranD?.[0]?.amount || 0,
+      purchaseLineItems: salePurchaseDetails.map((item) => ({
+        id: undefined,
+        productId: item.productId,
+        productCode: item.productCode,
+        upcCode: item.upcCode || null,
+        productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+        hsn: item.hsn.toString(),
+        qty: 1,
+        gstRate: item.gstRate,
+        price: item.price,
+        discount: item.discount,
+        priceGst: item.priceGst,
+        // cgst: item.cgst,
+        // sgst: item.sgst,
+        // igst: item.igst,
+        lineRemarks: null,
+        serialNumbers: null
+      }))
+
+    })
+    dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
   }
 
   async function handleOnDelete(id: number | string) {
@@ -361,24 +405,48 @@ export function AllPurchasesView({ className }: { className?: string }) {
   async function handleOnEdit(data: any) {
     const editData: any = await getPurchaseDetailsOnId(data.id)
     const purchaseEditData: PurchaseEditData = editData?.[0]?.jsonResult
-    const tranH:TranHType = purchaseEditData.tranH
+    const tranH: TranHType = purchaseEditData.tranH
     const tranD: TranDType[] = purchaseEditData.tranD
     const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
-    const salePurchaseDetails : SalePurchaseDetailsType[] = purchaseEditData.salePurchaseDetails
+    const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
+
     reset({
       id: tranH.id,
       autoRefNo: tranH.autoRefNo,
       tranDate: tranH.tranDate,
-      userRefNo:tranH.userRefNo,
+      userRefNo: tranH.userRefNo,
       remarks: tranH.remarks,
-      isGstInvoice:Boolean(extGsTranD?.id),
-      debitAccId: tranD.find((item) => item.dc === "D")?.accId.toString(),
-      creditAccId: tranD.find((item) => item.dc === "C")?.accId.toString(),
+      tranTypeId:tranH.tranTypeId,
+      isGstInvoice: Boolean(extGsTranD?.id),
+      debitAccId: tranD.find((item) => item.dc === "D")?.accId,
+      creditAccId: tranD.find((item) => item.dc === "C")?.accId,
       gstin: extGsTranD?.gstin,
+      isIgst: extGsTranD?.igst ? true : false,
 
       totalCgst: extGsTranD?.cgst,
       totalSgst: extGsTranD?.sgst,
       totalIgst: extGsTranD?.igst,
+      totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
+      totalInvoiceAmount: tranD?.[0]?.amount || 0,
+      purchaseLineItems: salePurchaseDetails.map((item) => ({
+        id: item.id,
+        productId: item.productId,
+        productCode: item.productCode,
+        upcCode: item.upcCode || null,
+        productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+        hsn: item.hsn.toString(),
+        qty: item.qty,
+        gstRate: item.gstRate,
+        price: item.price,
+        discount: item.discount,
+        priceGst: item.priceGst,
+        // cgst: item.cgst,
+        // sgst: item.sgst,
+        // igst: item.igst,
+        lineRemarks: item.remarks || null,
+        serialNumbers: item.serialNumbers || null
+      }))
+
     })
     dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
   }
@@ -404,6 +472,19 @@ type PurchaseEditData = {
   tranD: TranDType[];
   extGstTranD: ExtGstTranDType;
   salePurchaseDetails: SalePurchaseDetailsType[];
-  billTo:ContactsType | null;
+  billTo: ContactsType | null;
   businessContacts: ExtBusinessContactsAccMType;
 }
+type ExtraSalePurchaseDetailsType = {
+  productCode?: string;
+  upcCode?: string;
+  label?: string;
+  info?: string;
+  remarks?: string;
+  serialNumbers?: string;
+  brandName?: string;
+  catName?: string;
+}
+
+type SalePurchaseDetailsWithExtraType = SalePurchaseDetailsType & ExtraSalePurchaseDetailsType
+

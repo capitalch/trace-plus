@@ -22,6 +22,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Show validation error boxes background red in totals panel
 														- Startup
 	- Purchase main
+		- Unique invoice no 
 														- Animate
 														- Product code 1162: no price update. But when done through search, it works.									
 														- Serial no validation
@@ -37,7 +38,10 @@ valid gstin: 24AAACC1206D1ZM
 														- Igst recalculate
 		- Redux
 		- Submit
+		- deletedIds
 		- print preview
+														- copy
+														- Edit / New label
 														- Zero gst rate should be allowed
 														- Populate Gst field with default gst rate or product's Gst in db
 														- Populate GSTIN with suppliers GSTIN
@@ -54,7 +58,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Columns
 														- Aggregates
 														- Delete
-		- Edit
+														- Edit
 		- Preview
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional

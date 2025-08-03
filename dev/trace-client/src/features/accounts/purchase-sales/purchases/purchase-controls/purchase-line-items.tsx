@@ -325,19 +325,19 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 <div className="flex flex-col gap-1">
                                     <div className="flex justify-between">
                                         <span>SubT:</span>
-                                        <span className="text-right bg-gray-50 w-16">{watch(`purchaseLineItems.${index}.subTotal`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="text-right bg-gray-50 w-16">{watch(`purchaseLineItems.${index}.subTotal`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>CGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.cgst`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.cgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>SGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.sgst`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.sgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>IGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.igst`).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.igst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                 </div>
                             </div>
@@ -437,10 +437,10 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 acc.count += 1;
                 acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
                 acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
-                acc.cgst = acc.cgst.plus(new Decimal(item.cgst) || 0);
-                acc.sgst = acc.sgst.plus(new Decimal(item.sgst) || 0);
-                acc.igst = acc.igst.plus(new Decimal(item.igst) || 0);
-                acc.amount = acc.amount.plus(new Decimal(item.amount) || 0);
+                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
+                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
+                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
+                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
                 return acc;
             },
             {
@@ -555,7 +555,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     function setLineItem(product: ProductInfoType, index: number) {
         setValue(`purchaseLineItems.${index}.productId`, product.id, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
-        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label} ${product.info ?? ""}`, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });

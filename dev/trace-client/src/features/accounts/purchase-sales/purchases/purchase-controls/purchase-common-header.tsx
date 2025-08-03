@@ -8,7 +8,6 @@ import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form
 import { Messages } from "../../../../../utils/messages";
 import { IconReset } from "../../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../../controls/icons/icon-submit";
-// import { getVal } from "@syncfusion/ej2-react-inputs";
 
 export function PurchaseCommonHeader() {
     const { checkAllowedDate } = useValidators();
@@ -21,7 +20,7 @@ export function PurchaseCommonHeader() {
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll }: any = useFormContext();
     return (
-        <div className="flex gap-6 flex-wrap">
+        <div className="flex gap-6 flex-wrap relative">
 
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-52 ">
@@ -133,6 +132,8 @@ export function PurchaseCommonHeader() {
                     <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
                 </button>
             </div>
+            {/* Edi / New label */}
+            <label className="absolute right-0 -top-13 text-amber-500 font-medium text-lg">{watch('id')?'Edit Purchase': 'New Purchase'}</label>
         </div>
     );
 }

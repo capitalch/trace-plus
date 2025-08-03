@@ -17,14 +17,13 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
     const { isValidGstin } = useValidators();
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const {
-        setValue, getValues,
+        setValue,
         watch,
         register,
         trigger,
         formState: { errors }
     } = useFormContext<PurchaseFormDataType>();
     const isGstInvoice = watch("isGstInvoice");
-    const formData = getValues()
     return (
         <div className={clsx(className, "flex gap-6 flex-wrap items-start")}>
 
@@ -49,7 +48,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                         })
                     }
                     showAccountBalance
-                    value={watch('debitAccId')}
+                    value={watch('debitAccId') as string}
                     className="max-w-80 w-full mt-1"
                 />
             </FormField>
@@ -77,7 +76,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                         getSetGstin(val)
                     }}
                     showAccountBalance
-                    value={watch('creditAccId')}
+                    value={watch('creditAccId') as string}
                     className="w-full mt-1 max-w-80"
                 />
             </FormField>
