@@ -13,11 +13,9 @@ import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchaseFormDataType } from "./all-purchases";
 import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
-// import { ExtGstTranDType } from "../../../vouchers/all-vouchers/all-vouchers-view";
 import { useFormContext } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
-// import { triggerPurchaseInvoicePreview } from "../purchase=slice";
 import { generatePurchaseInvoicePDF } from "./purchase-invoice-jspdf";
 
 export function AllPurchasesView({ className }: { className?: string }) {
@@ -36,6 +34,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
 
   const {
     reset,
+    setValue,
     // watch
   } = useFormContext<PurchaseFormDataType>();
 
@@ -339,6 +338,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
   async function handleOnCopy(data: PurchaseFormDataType) {
     const editData: any = await getPurchaseDetailsOnId(data.id)
     const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+    setValue('purchaseEditData', undefined)
     const tranH: TranHType = purchaseEditData.tranH
     const tranD: TranDType[] = purchaseEditData.tranD
     const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
@@ -408,7 +408,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
   async function handleOnEdit(data: any) {
     const editData: any = await getPurchaseDetailsOnId(data.id)
     const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-    // console.log(JSON.stringify(purchaseEditData))
+    setValue('purchaseEditData', purchaseEditData)
     const tranH: TranHType = purchaseEditData.tranH
     const tranD: TranDType[] = purchaseEditData.tranD
     const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD

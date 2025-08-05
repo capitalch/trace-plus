@@ -8,10 +8,20 @@ import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form
 import { Messages } from "../../../../../utils/messages";
 import { IconReset } from "../../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../../controls/icons/icon-submit";
+import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
+import { RootStateType } from "../../../../../app/store";
+import { useSelector } from "react-redux";
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
+// import { SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
+import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 
 export function PurchaseCommonHeader() {
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
+    const { branchName, currentDateFormat } = useUtilsInfo();
     const { checkAllowedDate } = useValidators();
-    const {        
+    const {
         setValue,
         watch,
         register,
@@ -19,6 +29,22 @@ export function PurchaseCommonHeader() {
         formState: { errors, isSubmitting, isDirty, }
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll }: any = useFormContext();
+
+    const getPrintPreview = () => {
+        let Ret = <></>
+        if (activeTabIndex === 0) {
+            const id = watch('id');
+            if (id) {
+                Ret = <TooltipComponent content='Print Preview' className="flex">
+                    <button type='button' onClick={() => handleOnPreview()}>
+                        <IconPreview1 className="text-blue-500 h-8 w-8" />
+                    </button>
+                </TooltipComponent>
+            }
+            return (Ret)
+        }
+    }
+
     return (
         <div className="flex gap-6 flex-wrap relative">
 
@@ -108,7 +134,7 @@ export function PurchaseCommonHeader() {
                     type="button" onClick={() => {
                         const formData = getValues();
                         console.log("Form Data:", formData);
-                        console.log(errors)                        
+                        console.log(errors)
                     }}
                 >
                     Test
@@ -132,8 +158,18 @@ export function PurchaseCommonHeader() {
                     <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
                 </button>
             </div>
+
             {/* Edi / New label */}
-            <label className="absolute right-0 -top-13 text-amber-500 font-medium text-lg">{watch('id')?'Edit Purchase': 'New Purchase'}</label>
+            <div className="flex absolute right-0 -top-13 gap-2">
+                {getPrintPreview()}
+                <label className=" text-amber-500 font-medium text-lg">{watch('id') ? 'Edit Purchase' : 'New Purchase'}</label>
+            </div>
         </div>
     );
+
+    function handleOnPreview() {
+        const purchaseEditData: any = getValues('purchaseEditData') || {}
+        if(_.isEmpty(purchaseEditData)) return
+        generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
+    }
 }

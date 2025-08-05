@@ -55,8 +55,6 @@ export function generatePurchaseInvoicePDF(invoiceData: SalePurchaseEditDataType
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
 
-    // doc.text(`Page 1 of 1`, rightAlignX, 20, { align: 'right' });
-
     currentY += 20;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);

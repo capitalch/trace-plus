@@ -1,64 +1,23 @@
 import { FormProvider, useForm } from "react-hook-form";
-// import { AppDispatchType } from "../../../../app/store";
-// import { useDispatch } from "react-redux";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { CompAccountsContainer } from "../../../../../controls/components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchasesMain } from "../all-purchases/all-purchases-main";
 import { AllPurchasesView } from "../all-purchases/all-purchases-view";
-// import { CustomModalDialog } from "../../../../../controls/components/custom-modal-dialog";
-// import { PDFViewer } from "@react-pdf/renderer";
-// import { useState } from "react";
-// import { useDispatch } from "react-redux";
-// import { AppDispatchType } from "../../../../../app/store";
-// import { closePurchaseInvoicePreview } from "../purchase=slice";
-// import { AllPurchasesPDF } from "./purchase-invoice-pdf";
-// import { SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
-// import { Utils } from "../../../../../utils/utils";
-// import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
-// import { PurchaseInvoicePDF } from "./purchase-invoice-pdf";
+import { SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
 
 export function AllPurchases() {
-    // const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.allPurchases;
-    const { branchId, /*currentDateFormat, buCode, dbName, decodedDbParamsObject,*/ finYearId, hasGstin } = useUtilsInfo();
-    // const isPreviewOpen = useSelector((state: RootStateType) => state.purchase.isPreviewOpen);
-    // const purchaseIdToPreview = useSelector((state: RootStateType) => state.purchase.purchaseIdToPreview);
+    const { branchId, finYearId, hasGstin } = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
             defaultValues: getDefaultPurchaseFormValues()
         });
-    const { /*watch, getValues, setValue,*/ reset } = methods;
+    const { reset } = methods;
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem }
-    // const [previewData, setPreviewData] = useState<SalePurchaseEditDataType | null>(null);
-
-    // const getPurchaseDetailsOnId = useCallback(async (id: number | undefined) => {
-    //     if (!id) {
-    //         return
-    //     }
-    //     const result: any = await Utils.doGenericQuery({
-    //         buCode: buCode || "",
-    //         dbName: dbName || "",
-    //         dbParams: decodedDbParamsObject,
-    //         instance: instance,
-    //         sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
-    //         sqlArgs: {
-    //             id: id,
-    //         },
-    //     });
-
-    //     const data: SalePurchaseEditDataType = result?.[0]?.jsonResult;
-    //     setPreviewData(data);
-    // }, [buCode, dbName, decodedDbParamsObject, setPreviewData, instance]);
-
-    // useEffect(() => {
-    //     if (!purchaseIdToPreview) return
-    //     if (!isPreviewOpen) return;
-    //     getPurchaseDetailsOnId(purchaseIdToPreview)
-    // }, [getPurchaseDetailsOnId, purchaseIdToPreview, isPreviewOpen])
 
     const tabsInfo: CompTabsType = [
         {
@@ -79,26 +38,6 @@ export function AllPurchases() {
                     </label>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
 
-                    {/* Custom modal dialog */}
-                    {/* <CustomModalDialog
-                        isOpen={isPreviewOpen}
-                        onClose={() => {
-                            setPreviewData(null)
-                            dispatch(closePurchaseInvoicePreview())
-                        }}
-                        title={`Purchase Invoice Preview`}
-                        element={
-                            previewData ? (<PDFViewer style={{ width: "100%", height: "100%" }}>
-                                <PurchaseInvoicePDF
-                                    currentDateFormat={currentDateFormat}
-                                    // branchName={branchName || ''}
-                                    previewData={previewData}
-                                // tranH={previewData?.tranH || {}}
-                                // tranD={previewData?.tranD || []}
-                                />
-                            </PDFViewer>) : <></>
-                        }
-                    /> */}
                 </CompAccountsContainer>
             </form>
         </FormProvider>
@@ -114,7 +53,7 @@ export function AllPurchases() {
         return ({
             id: undefined,
             autoRefNo: "",
-            tranDate: '', //new Date().toISOString().split('T')[0],
+            tranDate: '',
             userRefNo: null,
             remarks: null,
             tranTypeId: 5,
@@ -125,7 +64,7 @@ export function AllPurchases() {
             creditAccId: null,
             gstin: null,
 
-            purchaseLineItems: [], //new Array(getDefaultPurchaseLineItem()),
+            purchaseLineItems: [],
 
             totalInvoiceAmount: 0,
             totalQty: 0,
@@ -194,6 +133,8 @@ export type PurchaseFormDataType = {
 
     tranHeaderId?: number;
     lineRemarks?: string | null;
+
+    purchaseEditData?: SalePurchaseEditDataType
 }
 
 export type PurchaseLineItemType = {
