@@ -2,138 +2,203 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { SalePurchaseEditDataType } from '../../../../../utils/global-types-interfaces-enums';
 import { UnitInfoType, Utils } from '../../../../../utils/utils';
+import { format } from 'date-fns';
 
-export function generatePurchaseInvoicePDF(invoiceData: SalePurchaseEditDataType, branchName: string) {
-  const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+export function generatePurchaseInvoicePDF(invoiceData: SalePurchaseEditDataType, branchName: string, currentDateFormat: string) {
+    const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+    const marginLeft = 25;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const rightAlignX = pageWidth - marginLeft;
+    const lineSpacing = 12;
+    const { tranH, businessContacts, salePurchaseDetails, tranD, extGstTranD } = invoiceData;
+    const companyInfo: UnitInfoType = Utils.getUnitInfo() || {};
+    const company = {
+        name: companyInfo.unitName || 'This Company Pvt Ltd',
+        branchName: branchName || '',
+        address: `${companyInfo.address1?.trim() || ''} ${companyInfo.address2?.trim() || ''} Pin: ${companyInfo.pin} State: ${companyInfo.state}`,
+        gstin: `GSTIN: ${companyInfo.gstin || ''} Email: ${companyInfo.email || ''}`,
+    };
+    const addr: any = businessContacts?.jAddress?.[0] || {};
 
-  const marginLeft = 40;
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const rightAlignX = pageWidth - marginLeft;
-  const lineSpacing = 12;
+    const formatNumber = (n: number) => n.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    const computedQty = salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0);
+    const totalSubTotal = salePurchaseDetails.reduce((sum, item) => sum + ((item.price || 0) - (item.discount || 0)) * (item.qty || 0), 0);
+    const computedCGST = salePurchaseDetails.reduce((sum, item) => sum + (item.cgst || 0), 0);
+    const computedSGST = salePurchaseDetails.reduce((sum, item) => sum + (item.sgst || 0), 0);
+    const computedIGST = salePurchaseDetails.reduce((sum, item) => sum + (item.igst || 0), 0);
+    const computedAmount = salePurchaseDetails.reduce((sum, item) => sum + (item.amount || 0), 0);
 
-  const { tranH, businessContacts, salePurchaseDetails } = invoiceData;
-  const companyInfo: UnitInfoType = Utils.getUnitInfo() || {};
-  const company = {
-    name: companyInfo.unitName || 'My Company Pvt Ltd',
-    branchName: branchName || '',
-    address: `${companyInfo.address1?.trim() || ''} ${companyInfo.address2?.trim() || ''}`,
-    gstin: `GSTIN: ${companyInfo.gstin || ''}`,
-    email: `Email: ${companyInfo.email || ''}`
-  };
-  const addr = businessContacts?.jAddress?.[0] || {};
+    const totalQty = computedQty;
+    const totalAmount = tranD?.[0]?.amount ?? 0;
+    const totalCGST = extGstTranD.cgst;
+    const totalSGST = extGstTranD.sgst;
+    const totalIGST = extGstTranD.igst;
 
-  let y = 40;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.text('Supplier Details', marginLeft, y);
-  doc.setFont('helvetica', 'normal');
-  y += lineSpacing;
-  doc.text(`${businessContacts?.contactName || ''}`, marginLeft, y);
-  y += lineSpacing;
-  doc.text(`${addr.address1 || ''}, ${addr.address2 || ''}`, marginLeft, y);
-  y += lineSpacing;
-  doc.text(`${addr.city || ''} - ${addr.pin || ''}, ${addr.state || ''}`, marginLeft, y);
-  y += lineSpacing;
-  doc.text(`Email: ${businessContacts?.email || ''}`, marginLeft, y);
-  y += lineSpacing;
-  doc.text(`Phone: ${businessContacts?.landPhone || ''}`, marginLeft, y);
-  y += lineSpacing;
-  doc.text(`GSTIN: ${businessContacts?.gstin || ''}`, marginLeft, y);
+    let currentY = 30;
+    const addPageIfNeeded = (spaceNeeded: number) => {
+        if (currentY + spaceNeeded > pageHeight - 40) {
+            doc.addPage();
+            currentY = 30;
+        }
+    };
 
-  let invoiceY = 40;
-  doc.setFont('helvetica', 'bold');
-  doc.text('Invoice Info', rightAlignX, invoiceY, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
-  invoiceY += lineSpacing;
-  doc.text(`Invoice No: ${tranH.userRefNo}`, rightAlignX, invoiceY, { align: 'right' });
-  invoiceY += lineSpacing;
-  doc.text(`Auto Ref No: ${tranH.autoRefNo}`, rightAlignX, invoiceY, { align: 'right' });
-  invoiceY += lineSpacing;
-  doc.text(`Date: ${new Date(tranH.tranDate).toLocaleDateString()}`, rightAlignX, invoiceY, { align: 'right' });
+    const drawText = (text: string, x: number, y: number, options = {}) => {
+        addPageIfNeeded(20);
+        doc.text(text, x, y, options);
+        currentY = y;
+    };
 
-  y += 2 * lineSpacing;
-  doc.setFont('helvetica', 'bold');
-  doc.text('My Company Details', marginLeft, y);
-  y += lineSpacing;
-  doc.setFont('helvetica', 'normal');
-  doc.text(company.name, marginLeft, y);
-  y += lineSpacing;
-  doc.text(company.branchName, marginLeft, y);
-  y += lineSpacing;
-  doc.text(company.address, marginLeft, y);
-  y += lineSpacing;
-  doc.text(company.gstin, marginLeft, y);
-  y += lineSpacing;
-  doc.text(company.email, marginLeft, y);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    drawText('Invoice', pageWidth / 2, currentY, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
 
-  const tableStartY = y + 20;
-  const formatNumber = (n: number) => n.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-  const totalQty = salePurchaseDetails.reduce((sum, item) => sum + item.qty, 0);
-  const totalRate = salePurchaseDetails.reduce((sum, item) => sum + item.price, 0);
-  const totalCGST = salePurchaseDetails.reduce((sum, item) => sum + item.cgst, 0);
-  const totalSGST = salePurchaseDetails.reduce((sum, item) => sum + item.sgst, 0);
-  const totalIGST = salePurchaseDetails.reduce((sum, item) => sum + item.igst, 0);
-  const totalAmount = salePurchaseDetails.reduce((sum, item) => sum + item.amount, 0);
+    // doc.text(`Page 1 of 1`, rightAlignX, 20, { align: 'right' });
 
-  autoTable(doc, {
-    startY: tableStartY,
-    head: [[
-      'S.No', 'Product Code', 'Description', 'HSN', 'Qty', 'Rate', 'CGST', 'SGST', 'IGST', 'Amount'
-    ]],
-    body: [
-      ...salePurchaseDetails.map((item, index) => [
-        index + 1,
-        item.productCode,
-        item.label,
-        item.hsn,
-        { content: item.qty.toString(), styles: { halign: 'right' } },
-        { content: formatNumber(item.price), styles: { halign: 'right' } },
-        { content: formatNumber(item.cgst), styles: { halign: 'right' } },
-        { content: formatNumber(item.sgst), styles: { halign: 'right' } },
-        { content: formatNumber(item.igst), styles: { halign: 'right' } },
-        { content: formatNumber(item.amount), styles: { halign: 'right' } }
-      ]),
-      [
-        { content: 'Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: formatNumber(totalQty), styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: formatNumber(totalRate), styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: formatNumber(totalCGST), styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: formatNumber(totalSGST), styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: formatNumber(totalIGST), styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: formatNumber(totalAmount), styles: { halign: 'right', fontStyle: 'bold' } }
-      ]
-    ],
-    styles: { fontSize: 8, textColor: [0, 0, 0] },
-    headStyles: {
-      fillColor: [255, 255, 255],
-      textColor: [0, 0, 0],
-      lineWidth: 0.5,
-      lineColor: [0, 0, 0],
-      halign: 'center'
-    },
-    margin: { left: marginLeft, right: marginLeft },
-    theme: 'grid'
-  });
+    currentY += 20;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    drawText('Supplier Details', marginLeft, currentY);
+    doc.setFont('helvetica', 'normal');
+    currentY += lineSpacing;
+    drawText(`${businessContacts?.contactName || ''}`, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(`${addr.address1 || ''}, ${addr.address2 || ''}`, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(`${addr.city || ''} - ${addr.pin || ''}, ${addr.state || ''}`, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(`Email: ${businessContacts?.email || ''}`, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(`Phone: ${businessContacts?.landPhone || ''}`, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(`GSTIN: ${businessContacts?.gstin || ''}`, marginLeft, currentY);
 
-  const yAfterTable = doc.lastAutoTable?.finalY || tableStartY + 100;
+    let invoiceY = 50;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Invoice Info', rightAlignX, invoiceY, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    invoiceY += lineSpacing;
+    doc.text(`Invoice No: ${tranH.userRefNo}`, rightAlignX, invoiceY, { align: 'right' });
+    invoiceY += lineSpacing;
+    doc.text(`Ref No: ${tranH.autoRefNo}`, rightAlignX, invoiceY, { align: 'right' });
+    invoiceY += lineSpacing;
+    doc.text(`Date: ${format(tranH.tranDate, currentDateFormat)}`, rightAlignX, invoiceY, { align: 'right' });
 
-  // Summary Section (right aligned)
-  const summaryY = yAfterTable + 16;
-  doc.setFont('helvetica', 'bold');
-  doc.text('Summary', rightAlignX, summaryY, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Total Qty: ${formatNumber(totalQty)}`, rightAlignX, summaryY + 14, { align: 'right' });
-  doc.text(`Total Rate: ${formatNumber(totalRate)}`, rightAlignX, summaryY + 28, { align: 'right' });
-  doc.text(`Total CGST: ${formatNumber(totalCGST)}`, rightAlignX, summaryY + 42, { align: 'right' });
-  doc.text(`Total SGST: ${formatNumber(totalSGST)}`, rightAlignX, summaryY + 56, { align: 'right' });
-  doc.text(`Total IGST: ${formatNumber(totalIGST)}`, rightAlignX, summaryY + 70, { align: 'right' });
-  doc.text(`Total Amount: ${formatNumber(totalAmount)}`, rightAlignX, summaryY + 84, { align: 'right' });
+    currentY += 2 * lineSpacing;
+    doc.setFont('helvetica', 'bold');
+    drawText('Customer Details', marginLeft, currentY);
+    currentY += lineSpacing;
+    doc.setFont('helvetica', 'normal');
+    drawText(company.name, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(company.branchName, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(company.address, marginLeft, currentY);
+    currentY += lineSpacing;
+    drawText(company.gstin, marginLeft, currentY);
+    currentY += lineSpacing;
 
-  // Signature Section
-  doc.setFont('helvetica', 'normal');
-  doc.text('Authorized Signatory', rightAlignX, summaryY + 114, { align: 'right' });
+    const tableStartY = currentY + 10;
+    autoTable(doc, {
+        startY: tableStartY,
+        head: [['#', 'Pr Code', 'Description with S/N', 'HSN', 'Qty', 'Rate', 'CGST', 'SGST', 'IGST', 'Amount']],
+        body: [
+            ...salePurchaseDetails.map((item, i) => [
+                `${i + 1}`,
+                item.productCode || '000',
+                item.label + (item.serialNumbers ? '\nS/N: ' + item.serialNumbers : ''),
+                item.hsn,
+                { content: (item.qty || 0).toString(), styles: { halign: 'right' as const } },
+                { content: formatNumber(item.price || 0), styles: { halign: 'right' as const } },
+                { content: formatNumber(item.cgst || 0), styles: { halign: 'right' as const } },
+                { content: formatNumber(item.sgst || 0), styles: { halign: 'right' as const } },
+                { content: formatNumber(item.igst || 0), styles: { halign: 'right' as const } },
+                { content: formatNumber(item.amount || 0), styles: { halign: 'right' as const } }
+            ]),
+            [
+                { content: 'Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: formatNumber(computedQty), styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: '' },
+                { content: formatNumber(computedCGST), styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: formatNumber(computedSGST), styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: formatNumber(computedIGST), styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: formatNumber(computedAmount), styles: { halign: 'right', fontStyle: 'bold' } }
+            ]
+        ],
+        styles: { fontSize: 8 },
+        headStyles: {
+            fillColor: [255, 255, 255],
+            textColor: [0, 0, 0],
+            lineWidth: 0.5,
+            halign: 'center'
+        },
+        margin: { left: marginLeft, right: marginLeft },
+        theme: 'grid',
+        didDrawPage: (data) => {
+            const pageCount = doc.getNumberOfPages();
+            doc.setFontSize(8);
+            doc.text(`Page ${data.pageNumber} of ${pageCount}`, rightAlignX, 20, { align: 'right' });
+        },
+        pageBreak: 'auto'
+    });
 
-  const blob = doc.output('blob');
-  const blobURL = URL.createObjectURL(blob);
-  window.open(blobURL);
+    currentY = doc.lastAutoTable?.finalY || tableStartY + 100;
+    const summaryX = marginLeft;
+    const boxWidth = 220;
+    const rowHeight = 18;
+    const labelX = summaryX + 10;
+    const valueX = summaryX + boxWidth - 10;
+    const summaryRequiredHeight = 6 * rowHeight + 60;
+    if (currentY + summaryRequiredHeight > pageHeight - 40) {
+        doc.addPage();
+        currentY = 30;
+    }
+    const summaryY = currentY + 30;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setLineWidth(0.50);
+    doc.line(summaryX, summaryY - 13, summaryX + boxWidth, summaryY - 13);
+    doc.text('Summary', summaryX + boxWidth / 2, summaryY, { align: 'center' });
+
+    const labels = ['Total Qty', 'Aggregate', 'Total CGST', 'Total SGST', 'Total IGST', 'Total Amount'];
+    const values = [totalQty, totalSubTotal, totalCGST, totalSGST, totalIGST, totalAmount].map(formatNumber);
+
+    labels.forEach((label, i) => {
+        const rowY = summaryY + (i + 1) * rowHeight;
+        doc.line(summaryX, rowY - rowHeight + 4, summaryX + boxWidth, rowY - rowHeight + 4);
+        doc.text(label, labelX, rowY);
+        doc.text(values[i], valueX, rowY, { align: 'right' });
+        doc.line(summaryX + boxWidth / 2, rowY - rowHeight + 4, summaryX + boxWidth / 2, rowY + rowHeight - 6);
+    });
+
+    const totalHeight = labels.length * rowHeight + 10;
+    doc.line(summaryX, summaryY - rowHeight + 4, summaryX, summaryY + totalHeight);
+    doc.line(summaryX + boxWidth, summaryY - rowHeight + 4, summaryX + boxWidth, summaryY + totalHeight);
+    doc.line(summaryX, summaryY + totalHeight, summaryX + boxWidth, summaryY + totalHeight);
+
+    currentY = summaryY + totalHeight;
+    const amountWords = Utils.toWordsFromAmount(totalAmount);
+    doc.setFont('helvetica', 'italic');
+
+    currentY += 20;
+    doc.text(`Amount in Words: ${amountWords}`, summaryX, currentY);
+
+    // Add spacing below amount in words to avoid overlap
+    currentY += 45;
+
+    doc.setFont('helvetica', 'normal');
+    doc.text('Authorized Signatory', rightAlignX, currentY, { align: 'right' });
+
+    // ✅ Add page numbers at the end
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text(`Page ${i} of ${pageCount}`, rightAlignX, 20, { align: 'right' });
+    }
+    const blob = doc.output('blob');
+    const blobURL = URL.createObjectURL(blob);
+    window.open(blobURL);
 }

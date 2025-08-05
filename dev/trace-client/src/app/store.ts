@@ -9,7 +9,7 @@ import { stockSummaryReportReducer } from "../features/accounts/inventory/report
 import { stockTransReportReducer } from "../features/accounts/inventory/reports/inventory-reports/stock-trans-report/stock-trans-report-slice";
 import { accountPickerTreeReducer } from "../controls/redux-components/account-picker-tree/account-picker-tree-slice";
 import { voucherReducer } from "../features/accounts/vouchers/voucher-slice";
-import { purchaseReducer } from "../features/accounts/purchase-sales/purchases/purchase=slice";
+import { purchaseReducer } from "../features/accounts/purchase-sales/purchases/purchase-slice";
 
 const rootReducer = combineReducers({
   accounts: accountsReducer,

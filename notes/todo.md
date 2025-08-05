@@ -40,11 +40,11 @@ valid gstin: 24AAACC1206D1ZM
 		- Submit
 		- deletedIds
 		- print preview
-			- Include sr numbers
-			- Page no
-			- Aggr
-			- Actual total figures in summary
-			- Title as Purchase invoice
+														- Include sr numbers
+														- Page no
+														- Aggr
+														- Actual total figures in summary
+														- Title as Purchase invoice
 														- copy
 														- Edit / New label
 														- Zero gst rate should be allowed

@@ -7,24 +7,24 @@ import { CompAccountsContainer } from "../../../../../controls/components/comp-a
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchasesMain } from "../all-purchases/all-purchases-main";
 import { AllPurchasesView } from "../all-purchases/all-purchases-view";
-import { CustomModalDialog } from "../../../../../controls/components/custom-modal-dialog";
-import { PDFViewer } from "@react-pdf/renderer";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../../app/store";
-import { closePurchaseInvoicePreview } from "../purchase=slice";
+// import { CustomModalDialog } from "../../../../../controls/components/custom-modal-dialog";
+// import { PDFViewer } from "@react-pdf/renderer";
+// import { useState } from "react";
+// import { useDispatch } from "react-redux";
+// import { AppDispatchType } from "../../../../../app/store";
+// import { closePurchaseInvoicePreview } from "../purchase=slice";
 // import { AllPurchasesPDF } from "./purchase-invoice-pdf";
-import { SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
-import { Utils } from "../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
-import { PurchaseInvoicePDF } from "./purchase-invoice-pdf";
+// import { SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
+// import { Utils } from "../../../../../utils/utils";
+// import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
+// import { PurchaseInvoicePDF } from "./purchase-invoice-pdf";
 
 export function AllPurchases() {
-    const dispatch: AppDispatchType = useDispatch()
+    // const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.allPurchases;
-    const { branchId, currentDateFormat, buCode, dbName, decodedDbParamsObject, finYearId, hasGstin } = useUtilsInfo();
-    const isPreviewOpen = useSelector((state: RootStateType) => state.purchase.isPreviewOpen);
-    const purchaseIdToPreview = useSelector((state: RootStateType) => state.purchase.purchaseIdToPreview);
+    const { branchId, /*currentDateFormat, buCode, dbName, decodedDbParamsObject,*/ finYearId, hasGstin } = useUtilsInfo();
+    // const isPreviewOpen = useSelector((state: RootStateType) => state.purchase.isPreviewOpen);
+    // const purchaseIdToPreview = useSelector((state: RootStateType) => state.purchase.purchaseIdToPreview);
     const methods = useForm<PurchaseFormDataType>(
         {
             mode: "all",
@@ -33,32 +33,32 @@ export function AllPurchases() {
         });
     const { /*watch, getValues, setValue,*/ reset } = methods;
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem }
-    const [previewData, setPreviewData] = useState<SalePurchaseEditDataType | null>(null);
+    // const [previewData, setPreviewData] = useState<SalePurchaseEditDataType | null>(null);
 
-    const getPurchaseDetailsOnId = useCallback(async (id: number | undefined) => {
-        if (!id) {
-            return
-        }
-        const result: any = await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            instance: instance,
-            sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
-            sqlArgs: {
-                id: id,
-            },
-        });
+    // const getPurchaseDetailsOnId = useCallback(async (id: number | undefined) => {
+    //     if (!id) {
+    //         return
+    //     }
+    //     const result: any = await Utils.doGenericQuery({
+    //         buCode: buCode || "",
+    //         dbName: dbName || "",
+    //         dbParams: decodedDbParamsObject,
+    //         instance: instance,
+    //         sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
+    //         sqlArgs: {
+    //             id: id,
+    //         },
+    //     });
 
-        const data: SalePurchaseEditDataType = result?.[0]?.jsonResult;
-        setPreviewData(data);
-    }, [buCode, dbName, decodedDbParamsObject, setPreviewData, instance]);
+    //     const data: SalePurchaseEditDataType = result?.[0]?.jsonResult;
+    //     setPreviewData(data);
+    // }, [buCode, dbName, decodedDbParamsObject, setPreviewData, instance]);
 
-    useEffect(() => {
-        if (!purchaseIdToPreview) return
-        if (!isPreviewOpen) return;
-        getPurchaseDetailsOnId(purchaseIdToPreview)
-    }, [getPurchaseDetailsOnId, purchaseIdToPreview, isPreviewOpen])
+    // useEffect(() => {
+    //     if (!purchaseIdToPreview) return
+    //     if (!isPreviewOpen) return;
+    //     getPurchaseDetailsOnId(purchaseIdToPreview)
+    // }, [getPurchaseDetailsOnId, purchaseIdToPreview, isPreviewOpen])
 
     const tabsInfo: CompTabsType = [
         {
@@ -80,7 +80,7 @@ export function AllPurchases() {
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
 
                     {/* Custom modal dialog */}
-                    <CustomModalDialog
+                    {/* <CustomModalDialog
                         isOpen={isPreviewOpen}
                         onClose={() => {
                             setPreviewData(null)
@@ -98,7 +98,7 @@ export function AllPurchases() {
                                 />
                             </PDFViewer>) : <></>
                         }
-                    />
+                    /> */}
                 </CompAccountsContainer>
             </form>
         </FormProvider>

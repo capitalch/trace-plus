@@ -459,7 +459,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
     // dispatch(triggerPurchaseInvoicePreview(data.id!));
     const editData: any = await getPurchaseDetailsOnId(data.id)
     const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-    generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '')
+    generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
