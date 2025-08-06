@@ -115,7 +115,6 @@ export function AllVouchers() {
     }
 
     async function finalizeAndSubmitVoucher(data: VoucherFormDataType) {
-        // console.log(data)
         try {
             const xData: XDataObjectType = getTranHData();
             // ✅ Check total debits and credits
@@ -160,11 +159,11 @@ export function AllVouchers() {
             branchId: branchId,
             posId: 1,
             autoRefNo: getValues("autoRefNo") || undefined,
-            xDetails: getTranDDeails(),
+            xDetails: getTranDDetails(),
         };
     }
 
-    function getTranDDeails() {
+    function getTranDDetails() {
         const deletedIds = getValues("deletedIds") || []
         const details: TraceDataObjectType[] = [{
             tableName: AllTables.TranD.name,

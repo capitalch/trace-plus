@@ -1,22 +1,32 @@
 import { FormProvider, useForm } from "react-hook-form";
+import _ from 'lodash'
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { CompAccountsContainer } from "../../../../../controls/components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchasesMain } from "../all-purchases/all-purchases-main";
 import { AllPurchasesView } from "../all-purchases/all-purchases-view";
-import { SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
+import { SalePurchaseEditDataType, TraceDataObjectType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+import { AppDispatchType, RootStateType } from "../../../../../app/store";
+import { useDispatch, useSelector } from "react-redux";
+import { clearPurchaseFormData, savePurchaseFormData } from "../purchase-slice";
+import { useEffect } from "react";
+import { Utils } from "../../../../../utils/utils";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
+import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 
 export function AllPurchases() {
+    const dispatch: AppDispatchType = useDispatch()
+    const savedFormData = useSelector((state: RootStateType) => state.purchase.savedFormData);
     const instance = DataInstancesMap.allPurchases;
-    const { branchId, finYearId, hasGstin } = useUtilsInfo();
+    const { branchId, finYearId, hasGstin, dbName, buCode } = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
-            defaultValues: getDefaultPurchaseFormValues()
+            defaultValues: _.isEmpty(savedFormData) ? getDefaultPurchaseFormValues() : savedFormData
         });
-    const { reset } = methods;
+    const { getValues, setValue, reset, watch } = methods;
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem }
 
     const tabsInfo: CompTabsType = [
@@ -29,6 +39,21 @@ export function AllPurchases() {
             content: <AllPurchasesView />
         }
     ];
+
+    useEffect(() => {
+        if (savedFormData) {
+            reset(_.cloneDeep(savedFormData),);
+            setValue('toggle', !savedFormData.toggle, { shouldDirty: true }) // making forcefully dirty
+        }
+    }, [savedFormData, reset, setValue]);
+
+    useEffect(() => {
+        return (() => {
+            const data = getValues()
+            dispatch(savePurchaseFormData(data));
+        })
+    }, [dispatch, getValues])
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
@@ -43,10 +68,123 @@ export function AllPurchases() {
         </FormProvider>
     );
 
-    function finalizeAndSubmit(data: PurchaseFormDataType) {
-        // Handle form submission logic here
-        console.log("Form submitted with data:", data);
-        // dispatch actions or API calls as needed
+    async function finalizeAndSubmit(data: PurchaseFormDataType) {
+        console.log(data)
+        try {
+            const xData: XDataObjectType = getTranHData();
+            xData.deletedIds = undefined
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: AllTables.TranH.name,
+            //     xData: xData,
+            // });
+
+            if (watch('id')) {
+                dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
+            }
+            resetAll()
+            Utils.showSaveMessage();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function getTranHData(): XDataObjectType {
+        return {
+            id: (getValues("id")) || undefined,
+            tranDate: getValues("tranDate"),
+            userRefNo: getValues("userRefNo"),
+            remarks: getValues("remarks"),
+            tranTypeId: Utils.getTranTypeId('Purchase'),
+            finYearId: finYearId,
+            branchId: branchId,
+            posId: 1,
+            autoRefNo: getValues("autoRefNo") || undefined,
+            xDetails: getTranDDetails(),
+        };
+    }
+
+    function getTranDDetails() {
+        const deletedIds = getValues("deletedIds") || []
+        // const purchaseDetails =
+        const details: TraceDataObjectType[] = [{
+            tableName: AllTables.TranD.name,
+            fkeyName: "tranHeaderId",
+            xData: getTranDData(),
+            deletedIds: [...deletedIds]
+        }];
+        return (details)
+    }
+
+    function getTranDData(): XDataObjectType[] {
+        const extGstTranDDetails = getExtGstTranDDetails()
+        const salePurchaseDetailsDetails = getSalePurchaseDetailsDetails()
+        const xDetails = []
+        if (!_.isEmpty(extGstTranDDetails)) {
+            xDetails.push(extGstTranDDetails)
+        }
+        if (!_.isEmpty(salePurchaseDetailsDetails)) {
+            xDetails.push(salePurchaseDetailsDetails)
+        }
+        const debit: XDataObjectType = {
+            id: undefined,
+            accId: getValues('debitAccId'),
+            dc: 'D',
+            amount: getValues('totalInvoiceAmount'),
+        }
+        if (!_.isEmpty(xDetails)) {
+            debit.xDetails = xDetails as TraceDataObjectType | TraceDataObjectType[]
+        }
+        const credit: XDataObjectType = {
+            id: undefined,
+            accId: getValues('creditAccId'),
+            dc: 'C',
+            amount: getValues('totalInvoiceAmount'),
+        }
+        return ([debit, credit])
+    }
+
+    function getExtGstTranDDetails(): TraceDataObjectType | undefined {
+        const isGstInvoice = getValues('isGstInvoice')
+        if (!isGstInvoice) return (undefined)
+        return ({
+            tableName: AllTables.ExtGstTranD.name,
+            fkeyName: 'tranDetailsId',
+            xData: {
+                id: undefined,
+                gstin: getValues('gstin'),
+                rate: null,
+                cgst: getValues('totalCgst'),
+                sgst: getValues('totalSgst'),
+                igst: getValues('totalIgst'),
+                isInput: true,
+                hsn: null
+            }
+        })
+    }
+
+    function getSalePurchaseDetailsDetails(): TraceDataObjectType {
+        const purchaseLineItems = getValues('purchaseLineItems')
+        const xData = purchaseLineItems.map((entry) => ({
+            id: undefined,
+            productId: entry.productId,
+            qty: entry.qty,
+            price: entry.price,
+            priceGst: entry.priceGst,
+            discount: entry.discount,
+            cgst: entry.cgst,
+            sgst: entry.sgst,
+            igst: entry.igst,
+            amount: entry.amount,
+            hsn: entry.hsn,
+            gstRate: entry.gstRate
+        }))
+        return ({
+            tableName: AllTables.SalePurchaseDetails.name,
+            fkeyName: 'tranDetailsId',
+            xData: xData
+        })
     }
 
     function getDefaultPurchaseFormValues(): PurchaseFormDataType {
@@ -75,6 +213,7 @@ export function AllPurchases() {
             branchId: branchId || 1,
             deletedIds: [],
             finYearId: finYearId || 0,
+            toggle: true
         });
     }
 
@@ -101,7 +240,8 @@ export function AllPurchases() {
     }
 
     function resetAll() {
-        reset(getDefaultPurchaseFormValues())
+        reset(getDefaultPurchaseFormValues());
+        dispatch(clearPurchaseFormData());
     }
 }
 
@@ -135,6 +275,7 @@ export type PurchaseFormDataType = {
     lineRemarks?: string | null;
 
     purchaseEditData?: SalePurchaseEditDataType
+    toggle: boolean; // For making the form forcefully dirty
 }
 
 export type PurchaseLineItemType = {

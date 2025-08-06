@@ -15,7 +15,7 @@ export type XDataObjectType = {
   id?: number | string;
   isIdInsert?: boolean;
   [key: string]: string | number | boolean | any;
-  details?: TraceDataObjectType[] | TraceDataObjectType;
+  xDetails?: TraceDataObjectType[] | TraceDataObjectType;
 };
 
 export type VourcherType = 'Contra' | 'Journal' | 'Payment' | 'Receipt'

@@ -55,6 +55,9 @@ const ProductOpBal = {
 const ProductM = {
   name: "ProductM"
 }
+const SalePurchaseDetails = {
+  name: 'SalePurchaseDetails'
+}
 const StockJournal = {
   name: "StockJournal"
 }
@@ -89,13 +92,15 @@ export const AllTables = {
   BranchM,
   CategoryM,
   ExtBankReconTranD,
+  ExtBusinessContactsAccM,
   ExtGstTranD,
   FinYearM,
   ProductM,
   ProductOpBal,
+  SalePurchaseDetails,
   StockJournal,
   TagsM,
   TranH,
   TranD,
-  ExtBusinessContactsAccM,
+  
 }

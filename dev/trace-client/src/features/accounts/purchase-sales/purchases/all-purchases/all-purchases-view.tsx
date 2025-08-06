@@ -362,6 +362,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
       // totalIgst: extGsTranD?.igst,
       // totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
       // totalInvoiceAmount: tranD?.[0]?.amount || 0,
+      purchaseEditData: undefined,
       purchaseLineItems: salePurchaseDetails.map((item) => ({
         id: undefined,
         productId: item.productId,
@@ -408,7 +409,6 @@ export function AllPurchasesView({ className }: { className?: string }) {
   async function handleOnEdit(data: any) {
     const editData: any = await getPurchaseDetailsOnId(data.id)
     const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-    setValue('purchaseEditData', purchaseEditData)
     const tranH: TranHType = purchaseEditData.tranH
     const tranD: TranDType[] = purchaseEditData.tranD
     const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
@@ -432,6 +432,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
       totalIgst: extGsTranD?.igst,
       totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
       totalInvoiceAmount: tranD?.[0]?.amount || 0,
+      purchaseEditData: purchaseEditData,
       purchaseLineItems: salePurchaseDetails.map((item) => ({
         id: item.id,
         productId: item.productId,

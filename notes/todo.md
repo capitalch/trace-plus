@@ -36,10 +36,10 @@ valid gstin: 24AAACC1206D1ZM
 		- Provision of extra surcharge on Gst
 														- Final amounts validation
 														- Igst recalculate
-		- Redux
+														- Redux
 		- Submit
 		- deletedIds
-		- print preview
+														- print preview
 														- Include sr numbers
 														- Page no
 														- Aggr
