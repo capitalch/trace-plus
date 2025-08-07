@@ -16,6 +16,7 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Purchase
+	
 													- bugs
 														- Gst totals validations
 														- Product code showing red

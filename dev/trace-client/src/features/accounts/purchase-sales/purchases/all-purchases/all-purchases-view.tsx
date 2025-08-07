@@ -445,9 +445,6 @@ export function AllPurchasesView({ className }: { className?: string }) {
         price: item.price,
         discount: item.discount,
         priceGst: item.priceGst,
-        // cgst: item.cgst,
-        // sgst: item.sgst,
-        // igst: item.igst,
         lineRemarks: item.remarks || null,
         serialNumbers: item.serialNumbers || null
       }))

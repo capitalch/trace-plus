@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { Utils } from "../../../../../utils/utils";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
+import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
 
 export function AllPurchases() {
     const dispatch: AppDispatchType = useDispatch()
@@ -27,6 +28,7 @@ export function AllPurchases() {
             defaultValues: _.isEmpty(savedFormData) ? getDefaultPurchaseFormValues() : savedFormData
         });
     const { getValues, setValue, reset, watch } = methods;
+    const {getTranHData} = useAllPurchasesSubmit(methods)
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem }
 
     const tabsInfo: CompTabsType = [
@@ -72,6 +74,7 @@ export function AllPurchases() {
         console.log(data)
         try {
             const xData: XDataObjectType = getTranHData();
+            console.log(JSON.stringify(xData))
             xData.deletedIds = undefined
             // await Utils.doGenericUpdate({
             //     buCode: buCode || "",
@@ -88,103 +91,6 @@ export function AllPurchases() {
         } catch (e) {
             console.error(e);
         }
-    }
-
-    function getTranHData(): XDataObjectType {
-        return {
-            id: (getValues("id")) || undefined,
-            tranDate: getValues("tranDate"),
-            userRefNo: getValues("userRefNo"),
-            remarks: getValues("remarks"),
-            tranTypeId: Utils.getTranTypeId('Purchase'),
-            finYearId: finYearId,
-            branchId: branchId,
-            posId: 1,
-            autoRefNo: getValues("autoRefNo") || undefined,
-            xDetails: getTranDDetails(),
-        };
-    }
-
-    function getTranDDetails() {
-        const deletedIds = getValues("deletedIds") || []
-        // const purchaseDetails =
-        const details: TraceDataObjectType[] = [{
-            tableName: AllTables.TranD.name,
-            fkeyName: "tranHeaderId",
-            xData: getTranDData(),
-            deletedIds: [...deletedIds]
-        }];
-        return (details)
-    }
-
-    function getTranDData(): XDataObjectType[] {
-        const extGstTranDDetails = getExtGstTranDDetails()
-        const salePurchaseDetailsDetails = getSalePurchaseDetailsDetails()
-        const xDetails = []
-        if (!_.isEmpty(extGstTranDDetails)) {
-            xDetails.push(extGstTranDDetails)
-        }
-        if (!_.isEmpty(salePurchaseDetailsDetails)) {
-            xDetails.push(salePurchaseDetailsDetails)
-        }
-        const debit: XDataObjectType = {
-            id: undefined,
-            accId: getValues('debitAccId'),
-            dc: 'D',
-            amount: getValues('totalInvoiceAmount'),
-        }
-        if (!_.isEmpty(xDetails)) {
-            debit.xDetails = xDetails as TraceDataObjectType | TraceDataObjectType[]
-        }
-        const credit: XDataObjectType = {
-            id: undefined,
-            accId: getValues('creditAccId'),
-            dc: 'C',
-            amount: getValues('totalInvoiceAmount'),
-        }
-        return ([debit, credit])
-    }
-
-    function getExtGstTranDDetails(): TraceDataObjectType | undefined {
-        const isGstInvoice = getValues('isGstInvoice')
-        if (!isGstInvoice) return (undefined)
-        return ({
-            tableName: AllTables.ExtGstTranD.name,
-            fkeyName: 'tranDetailsId',
-            xData: {
-                id: undefined,
-                gstin: getValues('gstin'),
-                rate: null,
-                cgst: getValues('totalCgst'),
-                sgst: getValues('totalSgst'),
-                igst: getValues('totalIgst'),
-                isInput: true,
-                hsn: null
-            }
-        })
-    }
-
-    function getSalePurchaseDetailsDetails(): TraceDataObjectType {
-        const purchaseLineItems = getValues('purchaseLineItems')
-        const xData = purchaseLineItems.map((entry) => ({
-            id: undefined,
-            productId: entry.productId,
-            qty: entry.qty,
-            price: entry.price,
-            priceGst: entry.priceGst,
-            discount: entry.discount,
-            cgst: entry.cgst,
-            sgst: entry.sgst,
-            igst: entry.igst,
-            amount: entry.amount,
-            hsn: entry.hsn,
-            gstRate: entry.gstRate
-        }))
-        return ({
-            tableName: AllTables.SalePurchaseDetails.name,
-            fkeyName: 'tranDetailsId',
-            xData: xData
-        })
     }
 
     function getDefaultPurchaseFormValues(): PurchaseFormDataType {
