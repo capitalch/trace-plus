@@ -28,7 +28,6 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
     }
 
     function getTranDDetails(): TraceDataObjectType[] {
-        // const deletedIds = getValues("deletedIds") || [];
         return [{
             tableName: AllTables.TranD.name,
             fkeyName: "tranHeaderId",
@@ -103,11 +102,11 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
             gstRate: entry.gstRate,
             jData: JSON.stringify({ serialNumbers: entry.serialNumbers || '', remarks: entry.lineRemarks })
         }));
-
+        const deletedIds = getValues("deletedIds") || [];
         return {
             tableName: AllTables.SalePurchaseDetails.name,
             fkeyName: 'tranDetailsId',
-            deletedIds: [], // put deleted ids for product line items over here
+            deletedIds: deletedIds,
             xData,
         };
     }

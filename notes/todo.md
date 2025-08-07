@@ -16,6 +16,11 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Purchase
+	- QA: Check at db level
+		- New invoice
+		- Edit invoice
+		- Delete product
+		- Delete and edit together
 	
 													- bugs
 														- Gst totals validations
@@ -23,7 +28,9 @@ valid gstin: 24AAACC1206D1ZM
 														- Show validation error boxes background red in totals panel
 														- Startup
 	- Purchase main
-		- Unique invoice no 
+		- Unique invoice no
+			- create unique constraint at db level
+			- provide server validation at client for userRefNo
 														- Animate
 														- Product code 1162: no price update. But when done through search, it works.									
 														- Serial no validation
@@ -33,13 +40,11 @@ valid gstin: 24AAACC1206D1ZM
 														- Compute amount, gst, priceGst on change of gstRate, qty, price,discount
 														- Compute on change of price the priceGst
 				
-														- Summary count, qty, gst, amount
-		- Provision of extra surcharge on Gst
-														- Final amounts validation
+														- Summary count, qty, gst, amount														- Final amounts validation
 														- Igst recalculate
 														- Redux
 		- Submit
-		- deletedIds
+														- deletedIds
 														- print preview
 														- Include sr numbers
 														- Page no
@@ -59,13 +64,13 @@ valid gstin: 24AAACC1206D1ZM
 													- validations all
 														- If GST invoice then astrix in GStin no, hsn and gst %
 														- isIgst
-	- Purchase view
+													- Purchase view
 														- Query Sql
 														- Columns
 														- Aggregates
 														- Delete
 														- Edit
-		- Preview
+														- Preview
 - Sales
 	- Interchange sale bill type: cash, bill sale, institutional
 												- Vouchers

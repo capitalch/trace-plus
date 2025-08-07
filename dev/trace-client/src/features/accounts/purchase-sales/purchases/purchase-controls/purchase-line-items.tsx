@@ -31,6 +31,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         control,
         register,
         setValue,
+        getValues,
         watch,
         trigger,
         formState: { errors },
@@ -354,10 +355,17 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     className={clsx("font-bold border-0 bg-gray-100 text-gray-900 text-right text-sm", inputFormFieldStyles)}
                                 />
                                 <div className="flex items-center justify-center gap-8 mt-6 ml-auto">
+                                    {/* delete */}
                                     <button
                                         type="button"
                                         className={clsx("text-red-500", fields.length === 1 && "opacity-30 cursor-not-allowed")}
                                         onClick={() => {
+                                            const id = getValues(`purchaseLineItems.${index}.id`)
+                                            if (id) {
+                                                const deletedIds = getValues('deletedIds') || []
+                                                setValue('deletedIds', [...deletedIds, id])
+                                            }
+                                            console.log(id)
                                             if (fields.length > 1) {
                                                 remove(index)
                                                 setTimeout(() => {
@@ -373,6 +381,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     >
                                         <IconCross className="w-7 h-7" />
                                     </button>
+                                    {/* add */}
                                     <button
                                         type="button"
                                         className="text-green-600"

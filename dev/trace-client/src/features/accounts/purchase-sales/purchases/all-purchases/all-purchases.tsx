@@ -6,13 +6,13 @@ import { CompAccountsContainer } from "../../../../../controls/components/comp-a
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchasesMain } from "../all-purchases/all-purchases-main";
 import { AllPurchasesView } from "../all-purchases/all-purchases-view";
-import { SalePurchaseEditDataType, TraceDataObjectType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+import { SalePurchaseEditDataType, /*TraceDataObjectType,*/ XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { clearPurchaseFormData, savePurchaseFormData } from "../purchase-slice";
 import { useEffect } from "react";
 import { Utils } from "../../../../../utils/utils";
-import { AllTables } from "../../../../../app/maps/database-tables-map";
+// import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
 
@@ -20,7 +20,7 @@ export function AllPurchases() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.purchase.savedFormData);
     const instance = DataInstancesMap.allPurchases;
-    const { branchId, finYearId, hasGstin, dbName, buCode } = useUtilsInfo();
+    const { branchId, finYearId, hasGstin, /*dbName, buCode */} = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
             mode: "all",
@@ -75,7 +75,7 @@ export function AllPurchases() {
         try {
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
-            xData.deletedIds = undefined
+            // xData.deletedIds = undefined
             // await Utils.doGenericUpdate({
             //     buCode: buCode || "",
             //     dbName: dbName || "",
@@ -174,10 +174,10 @@ export type PurchaseFormDataType = {
     totalIgst: number;
 
     branchId: number;
-    deletedIds: number[]; // of TranD table
+    deletedIds: number[]; // of PurchaseSaleDetails table
     finYearId: number;
 
-    tranHeaderId?: number;
+    // tranHeaderId?: number;
     lineRemarks?: string | null;
 
     purchaseEditData?: SalePurchaseEditDataType
