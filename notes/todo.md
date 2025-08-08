@@ -16,7 +16,7 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Purchase
-	- QA: Check at db level
+	- QA: Check at db level on submit
 		- New invoice
 		- Edit invoice
 		- Delete product
@@ -28,9 +28,8 @@ valid gstin: 24AAACC1206D1ZM
 														- Show validation error boxes background red in totals panel
 														- Startup
 	- Purchase main
-		- Unique invoice no
-			- create unique constraint at db level
-			- provide server validation at client for userRefNo
+													- Unique invoice no
+														- provide server validation at client for userRefNo
 														- Animate
 														- Product code 1162: no price update. But when done through search, it works.									
 														- Serial no validation
@@ -43,7 +42,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Summary count, qty, gst, amount														- Final amounts validation
 														- Igst recalculate
 														- Redux
-		- Submit
+													- Submit
 														- deletedIds
 														- print preview
 														- Include sr numbers

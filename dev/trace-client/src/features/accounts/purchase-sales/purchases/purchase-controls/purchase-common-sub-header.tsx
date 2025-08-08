@@ -15,14 +15,17 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderType) {
     const instance = DataInstancesMap.allPurchases;
     const { isValidGstin } = useValidators();
-    const { buCode, dbName, decodedDbParamsObject} = useUtilsInfo();
+    const { buCode, dbName, decodedDbParamsObject, /*finYearId*/ } = useUtilsInfo();
     const {
+        // setError,
         setValue,
+        // getValues,
         watch,
         register,
         trigger,
         formState: { errors }
     } = useFormContext<PurchaseFormDataType>();
+    const { checkPurchaseInvoiceExists }: any = useFormContext<PurchaseFormDataType>()
     const isGstInvoice = watch("isGstInvoice");
     return (
         <div className={clsx(className, "flex gap-6 flex-wrap items-start")}>
@@ -74,6 +77,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                             shouldDirty: true,
                         })
                         getSetGstin(val)
+                        checkPurchaseInvoiceExists()
                     }}
                     showAccountBalance
                     value={watch('creditAccId') as string}
@@ -117,6 +121,33 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
             <PurchaseTotalsPanel className="ml-auto -mt-2" />
         </div>
     );
+
+    // async function checkPurchaseInvoiceExists() {
+    //     const invoiceNo = getValues('userRefNo')
+    //     const creditAccId = getValues('creditAccId')
+    //     if ((!invoiceNo) || (!creditAccId)) {
+    //         return (true)
+    //     }
+    //     const res = await Utils.doGenericQuery({
+    //         buCode: buCode || '',
+    //         dbName: dbName || '',
+    //         dbParams: decodedDbParamsObject,
+    //         sqlId: SqlIdsMap.doesPurchaseInvoiceExist,
+    //         sqlArgs: {
+    //             finYearId: finYearId,
+    //             id: getValues('id') || 0,
+    //             tranTypeId: 5,
+    //             accId: creditAccId,
+    //             userRefNo: invoiceNo
+    //         }
+    //     })
+    //     const isExists = Boolean(res[0])
+    //     if (isExists) {
+    //         setError('userRefNo', { type: 'manual', message: Messages.errInvoiceExists });
+    //         return (false);
+    //     }
+    //     return (true);
+    // }
 
     async function getSetGstin(accId: string | null) {
         if (!accId) {

@@ -9,27 +9,29 @@ import { AllPurchasesView } from "../all-purchases/all-purchases-view";
 import { SalePurchaseEditDataType, /*TraceDataObjectType,*/ XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { clearPurchaseFormData, savePurchaseFormData } from "../purchase-slice";
+import { clearPurchaseFormData, savePurchaseFormData, setInvoicExists } from "../purchase-slice";
 import { useEffect } from "react";
 import { Utils } from "../../../../../utils/utils";
 // import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
+import { Messages } from "../../../../../utils/messages";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 
 export function AllPurchases() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.purchase.savedFormData);
     const instance = DataInstancesMap.allPurchases;
-    const { branchId, finYearId, hasGstin, /*dbName, buCode */} = useUtilsInfo();
+    const { branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultPurchaseFormValues() : savedFormData
         });
-    const { getValues, setValue, reset, watch } = methods;
-    const {getTranHData} = useAllPurchasesSubmit(methods)
-    const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem }
+    const { clearErrors, setError, getValues, setValue, reset, watch, setFocus } = methods;
+    const { getTranHData } = useAllPurchasesSubmit(methods)
+    const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, checkPurchaseInvoiceExists }
 
     const tabsInfo: CompTabsType = [
         {
@@ -70,8 +72,45 @@ export function AllPurchases() {
         </FormProvider>
     );
 
-    async function finalizeAndSubmit(data: PurchaseFormDataType) {
-        console.log(data)
+    async function checkPurchaseInvoiceExists() {
+        const invoiceNo = getValues('userRefNo')
+        const creditAccId = getValues('creditAccId')
+        if ((!invoiceNo) || (!creditAccId)) {
+            return (true)
+        }
+        const res = await Utils.doGenericQuery({
+            buCode: buCode || '',
+            dbName: dbName || '',
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.doesPurchaseInvoiceExist,
+            sqlArgs: {
+                finYearId: finYearId,
+                id: getValues('id') || 0,
+                tranTypeId: 5,
+                accId: creditAccId,
+                userRefNo: invoiceNo
+            }
+        })
+        const isExists = Boolean(res[0])
+        if (isExists) {
+            dispatch(setInvoicExists(true))
+            setError('userRefNo', { type: 'manual', message: Messages.errInvoiceExists });
+            return (false);
+        } else {
+            dispatch(setInvoicExists(false))
+            clearErrors('userRefNo')
+        }
+        return (true);
+    }
+
+    async function finalizeAndSubmit() {
+        const isInvoiceValid = await checkPurchaseInvoiceExists();
+        if (!isInvoiceValid) {
+            // Focus the field if needed
+            setFocus("userRefNo");
+            Utils.showAlertMessage('Error', Messages.errInvoiceExists)
+            return;
+        }
         try {
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
@@ -146,8 +185,10 @@ export function AllPurchases() {
     }
 
     function resetAll() {
+        clearErrors()
         reset(getDefaultPurchaseFormValues());
         dispatch(clearPurchaseFormData());
+        dispatch(setInvoicExists(false))
     }
 }
 

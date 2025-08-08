@@ -13,12 +13,14 @@ import { RootStateType } from "../../../../../app/store";
 import { useSelector } from "react-redux";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
-// import { SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
 import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { isValid } from "date-fns";
+import { useMemo } from "react";
 
 export function PurchaseCommonHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
+    const isInvoiceExists = useSelector((state: RootStateType) => state.purchase.isInvoiceExists)
     const { branchName, currentDateFormat } = useUtilsInfo();
     const { checkAllowedDate } = useValidators();
     const {
@@ -28,7 +30,14 @@ export function PurchaseCommonHeader() {
         getValues,
         formState: { errors, isSubmitting, isDirty, }
     } = useFormContext<PurchaseFormDataType>();
-    const { resetAll }: any = useFormContext();
+    const { resetAll, checkPurchaseInvoiceExists }: any = useFormContext();
+
+    const onChangeUserRefNo = useMemo(
+        () =>
+            _.debounce(() => {
+                checkPurchaseInvoiceExists();
+            }, 3000), []
+    );
 
     const getPrintPreview = () => {
         let Ret = <></>
@@ -82,7 +91,15 @@ export function PurchaseCommonHeader() {
                     className={clsx(inputFormFieldStyles, 'mt-1')}
                     placeholder="Enter invoice no"
                     {...register("userRefNo", {
-                        required: Messages.errRequired
+                        required: Messages.errRequired,
+                        onChange: onChangeUserRefNo,
+                        validate: () => {
+                            if (isInvoiceExists) {
+                                return (Messages.errInvoiceExists)
+                            } else {
+                                return (true)
+                            }
+                        }
                     })}
                 />
             </FormField>
@@ -152,7 +169,7 @@ export function PurchaseCommonHeader() {
                 {/* Submit */}
                 <button
                     type="submit"
-                    disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
+                    disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
                     className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200"
                 >
                     <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
@@ -169,7 +186,7 @@ export function PurchaseCommonHeader() {
 
     function handleOnPreview() {
         const purchaseEditData: any = getValues('purchaseEditData') || {}
-        if(_.isEmpty(purchaseEditData)) return
+        if (_.isEmpty(purchaseEditData)) return
         generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
     }
 }

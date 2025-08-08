@@ -3,6 +3,7 @@ import { PurchaseFormDataType } from "./all-purchases/all-purchases";
 
 const initialState: PurchaseInitialStateType = {
     savedFormData: null,
+    isInvoiceExists: false,
 }
 
 const purchaseSlice = createSlice({
@@ -16,6 +17,9 @@ const purchaseSlice = createSlice({
         clearPurchaseFormData(state) {
             state.savedFormData = null;
         },
+        setInvoicExists(state, action: PayloadAction<boolean>) {
+            state.isInvoiceExists = action.payload
+        }
     }
 })
 
@@ -23,8 +27,10 @@ export const purchaseReducer = purchaseSlice.reducer;
 export const {
     savePurchaseFormData
     , clearPurchaseFormData
+    , setInvoicExists
 } = purchaseSlice.actions
 
 export type PurchaseInitialStateType = {
     savedFormData: PurchaseFormDataType | null;
+    isInvoiceExists: boolean;
 }

@@ -50,6 +50,7 @@ const Messages = {
   errInvalidMobileNo: 'Invalid mobile no',
   errInvalidPinCode: 'Invalid pin code',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
+  errInvoiceExists:'Invoice already exists',
   errLastPurDateLessThanStartDate: 'Last purchase date should be less than',
   errMustBePositive: 'Must be a positive number',
   errMustHaveOneDigit: 'Should have a digit',

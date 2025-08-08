@@ -67,6 +67,19 @@ class SqlAccounts:
 				and "id" <> (table "id")))
     """
 
+    does_purchase_invoice_exist = """
+    --with "id" AS (VALUES (3333)), "finYearId" AS (VALUES (2024)), "tranTypeId" AS (VALUES (5)), "accId" AS (VALUES (1111)), "userRefNo" AS (VALUES ('kkk'))
+	with "id" AS (VALUES (%(id)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "tranTypeId" AS (VALUES (%(tranTypeId)s::int)), "accId" AS (VALUES (%(accId)s::int)), "userRefNo" AS (VALUES (%(userRefNo)s::text))
+            select true as "isExists" from "TranH" h 
+                join "TranD" d
+                    on h.id = d."tranHeaderId"
+                where "finYearId" = (table "finYearId")
+                    and "tranTypeId" = (table "tranTypeId")
+                    and "accId" = (table "accId")
+                    and lower(trim(h."userRefNo")) = lower(trim((table "userRefNo")))
+                    and h."id" <> (table "id")
+    """
+
     does_tag_name_exist = """
         with "tagName" as (values (%(tagName)s::text))
             --with "tagName" AS (VALUES ('tag1'::text))

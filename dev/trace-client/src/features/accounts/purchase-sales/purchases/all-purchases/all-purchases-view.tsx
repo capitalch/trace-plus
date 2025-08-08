@@ -17,6 +17,7 @@ import { useFormContext } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { generatePurchaseInvoicePDF } from "./purchase-invoice-jspdf";
+import { setInvoicExists } from "../purchase-slice";
 
 export function AllPurchasesView({ className }: { className?: string }) {
   const dispatch: AppDispatchType = useDispatch()
@@ -384,6 +385,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
 
     })
     dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
+    dispatch(setInvoicExists(false))
   }
 
   async function handleOnDelete(id: number | string) {
@@ -448,8 +450,8 @@ export function AllPurchasesView({ className }: { className?: string }) {
         lineRemarks: item.remarks || null,
         serialNumbers: item.serialNumbers || null
       }))
-
     })
+    dispatch(setInvoicExists(false))
     dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
   }
 
