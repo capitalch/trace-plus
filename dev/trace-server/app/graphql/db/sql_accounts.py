@@ -828,7 +828,8 @@ class SqlAccounts:
             )   
         SELECT   
             "id",   
-            "productCode",   
+            "productCode",
+            "id" as "productId",
             "catName",   
             "brandName",   
             "label",   

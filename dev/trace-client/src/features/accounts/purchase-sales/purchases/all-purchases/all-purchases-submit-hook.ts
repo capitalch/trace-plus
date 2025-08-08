@@ -100,7 +100,7 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
             amount: entry.amount,
             hsn: entry.hsn,
             gstRate: entry.gstRate,
-            jData: JSON.stringify({ serialNumbers: entry.serialNumbers || '', remarks: entry.lineRemarks })
+            jData: getJData(entry) //JSON.stringify({ serialNumbers: entry.serialNumbers || '', remarks: entry.lineRemarks })
         }));
         const deletedIds = getValues("deletedIds") || [];
         return {
@@ -109,6 +109,13 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
             deletedIds: deletedIds,
             xData,
         };
+    }
+
+    function getJData(entry: XDataObjectType) {
+        if (entry.remarks || entry.serialNumbers) {
+            return (JSON.stringify({ serialNumbers: entry.serialNumbers || '', remarks: entry.lineRemarks }))
+        }
+        return (null)
     }
 
     return { getTranHData };

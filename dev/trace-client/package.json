@@ -52,7 +52,7 @@
     "react-select": "^5.10.2",
     "react-sliding-pane": "^7.3.0",
     "rxjs": "^7.8.2",
-    "sweetalert2": "^11.22.2",
+    "sweetalert2": "^11.22.3",
     "url-join": "^5.0.0",
     "use-deep-compare-effect": "^1.8.1"
   },

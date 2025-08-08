@@ -17,6 +17,7 @@ import { setActiveTabIndex } from "../../../../../controls/redux-components/comp
 import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
 import { Messages } from "../../../../../utils/messages";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
 
 export function AllPurchases() {
     const dispatch: AppDispatchType = useDispatch()
@@ -115,12 +116,12 @@ export function AllPurchases() {
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
             // xData.deletedIds = undefined
-            // await Utils.doGenericUpdate({
-            //     buCode: buCode || "",
-            //     dbName: dbName || "",
-            //     tableName: AllTables.TranH.name,
-            //     xData: xData,
-            // });
+            await Utils.doGenericUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: AllTables.TranH.name,
+                xData: xData,
+            });
 
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)

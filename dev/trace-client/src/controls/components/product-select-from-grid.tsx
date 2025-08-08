@@ -133,6 +133,7 @@ export type ProductInfoType = {
     openingPrice: number
     openingPriceGst: number
     productCode: string
+    productId:number // same as id. Used for compability purpose
     sale: number
     saleDiscount: number
     salePrice: number

@@ -268,7 +268,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
 
                             {/* Discount */}
                             <div className="flex flex-col text-xs w-24">
-                                <label className="font-semibold">Discount</label>
+                                <label className="font-semibold">Discount(unit)</label>
                                 <NumericFormat
                                     value={watch(`purchaseLineItems.${index}.discount`)}
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
@@ -462,9 +462,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 amount: new Decimal(0)
             }
         );
-        // setTimeout(() => { // This works better to trigger all validations
-        //     trigger()
-        // }, 0);
         return (summary)
     }
 
@@ -562,7 +559,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     }
 
     function setLineItem(product: ProductInfoType, index: number) {
-        setValue(`purchaseLineItems.${index}.productId`, product.id, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
         setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
@@ -602,10 +599,5 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
 }
 
 type PurchaseLineItemsProps = {
-    // name: 'purchaseLineItems'; // e.g., 'purchaseLineItems'
     title: string;
 };
-
-// type MetaType = {
-//     [key: string]: number;
-// };
