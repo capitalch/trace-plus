@@ -16,6 +16,10 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Purchase
+	- Checkup price - discount in all reports as actual price
+	- Supplier name and its due in summary report of inventory
+	- gst rate warning
+	- validate gst rate less than 28%. Implement max gst rate
 	- QA: Check at db level on submit
 		- New invoice
 		- Edit invoice

@@ -801,6 +801,7 @@ export type GeneralSettingsType = {
   autoLogoutTimeInMins: number | null;
   auditLockDate: string | null;
   defaultGstRate?: number | null;
+  maxGstRate?: number | null;
 };
 
 type GraphQlErrorType = {

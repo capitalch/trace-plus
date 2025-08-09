@@ -36,6 +36,7 @@ export function GeneralSettings() {
             autoLogoutTimeInMins: generalSettings?.autoLogoutTimeInMins || null,
             auditLockDate: generalSettings?.auditLockDate || null,
             defaultGstRate: generalSettings?.defaultGstRate || null,
+            maxGstRate: generalSettings?.maxGstRate || 28,
         },
     });
 
@@ -45,6 +46,7 @@ export function GeneralSettings() {
             setValue('autoLogoutTimeInMins', generalSettings?.autoLogoutTimeInMins || null, { shouldDirty: true })
             setValue('auditLockDate', generalSettings?.auditLockDate || null, { shouldDirty: true })
             setValue('defaultGstRate', generalSettings?.defaultGstRate || null, { shouldDirty: true });
+            setValue('maxGstRate', generalSettings?.maxGstRate || null, { shouldDirty: true });
         }
     }, [generalSettings])
 
@@ -110,6 +112,27 @@ export function GeneralSettings() {
                     value={watch('defaultGstRate') ?? 0}
                     onValueChange={(values) => {
                         setValue('defaultGstRate', values.floatValue ?? 0, { shouldDirty: true });
+                    }}
+                    onFocus={(e) => e.target.select()}
+                />
+            </label>
+
+            {/* Max GST Rate */}
+            <label className="flex flex-col font-medium text-primary-800">
+                <span className="font-bold">Maximum GST Rate (%)</span>
+                <NumericFormat
+                    allowNegative={false}
+                    allowLeadingZeros={false}
+                    decimalScale={2}
+                    fixedDecimalScale
+                    thousandSeparator
+                    placeholder="e.g. 18.00"
+                    defaultValue={0}
+                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    {...register('maxGstRate')}
+                    value={watch('maxGstRate') ?? 0}
+                    onValueChange={(values) => {
+                        setValue('maxGstRate', values.floatValue ?? 0, { shouldDirty: true });
                     }}
                     onFocus={(e) => e.target.select()}
                 />

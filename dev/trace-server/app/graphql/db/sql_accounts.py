@@ -1690,15 +1690,15 @@ class SqlAccounts:
         with "productCodeOrUpc" as (values(%(productCodeOrUpc)s))
         --with "productCodeOrUpc" as (values('1162'))
         select p."id" "productId",
-			coalesce(s."price", o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
+			coalesce(s."price" - s."discount", o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
 			c."catName",
 			b."brandName",
-			coalesce(p."hsn", c."hsn", 0) hsn,
+			coalesce(s."hsn", p."hsn", c."hsn", 0) hsn,
 			p."info",
 			p."label",
 			p."productCode",
 			p."upcCode",
-			coalesce(p."gstRate", 0) "gstRate"
+			coalesce(s."gstRate", p."gstRate", 0) "gstRate"
             from "ProductM" p
                 left join "SalePurchaseDetails" s
                     on p."id" = s."productId"
