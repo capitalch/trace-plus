@@ -34,6 +34,7 @@ export type GlobalContextType = {
   DataInstances: {
     [key: string]: {
       deletedIds: (number | string)[];
+      // deletedIds: number[] | string[];
     };
   };
 };

@@ -142,10 +142,11 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     }
 
     function getXDetails() {
+      // const deletedIds = context.DataInstances?.[instance]?.deletedIds
       return {
         tableName: AllTables.BranchTransfer.name,
         fkeyName: "tranHeaderId",
-        deletedIds: context.DataInstances?.[instance]?.deletedIds || [],
+        deletedIds: (context.DataInstances?.[instance]?.deletedIds || []).map(String),
         xData: data.productLineItems.map((item: ProductLineItem) => {
           const formattedSerialNumbers = item.serialNumbers
             ? item.serialNumbers

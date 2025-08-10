@@ -115,7 +115,6 @@ export function AllPurchases() {
         try {
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
-            // xData.deletedIds = undefined
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",

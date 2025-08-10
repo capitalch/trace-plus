@@ -18,15 +18,17 @@ import { PurchaseFormDataType } from "../all-purchases/all-purchases";
 import { Utils } from "../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
+import { ProductInfoType } from "../../../../../controls/components/product-select-from-grid";
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { AnimatePresence, motion } from "framer-motion";
 import { ControlledNumericInput } from "../../../../../controls/components/controlled-numeric-input";
+import { PurchaseProductSelectFromGrid } from "./purchase-product-select-from-grid";
 
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const { isValidHsn } = useValidators();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { buCode, dbName, decodedDbParamsObject, defaultGstRate } = useUtilsInfo();
+    const { buCode, dbName, decodedDbParamsObject, defaultGstRate, maxGstRate } = useUtilsInfo();
+    console.log(maxGstRate)
     const {
         control,
         register,
@@ -58,8 +60,17 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     };
 
     const handleClearAll = () => {
+        const deletedIds = getValues('deletedIds') || []
         for (let i = fields.length - 1; i >= 0; i--) {
+            const id = getValues(`purchaseLineItems.${i}.id`)
+            if (id) {
+                deletedIds.push(id)
+            }
+            // console.log(id)
             remove(i);
+        }
+        if (!_.isEmpty(deletedIds)) {
+            setValue('deletedIds', [...deletedIds])
         }
         setTimeout(() => setCurrentRowIndex(0), 0);
     };
@@ -215,8 +226,16 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                             computeLineItemValues(index)
                                         }}
                                         validate={(value) => {
-                                            if (isGstInvoice && (value === undefined || value === null || isNaN(value))) {
-                                                return Messages.errRequired;
+                                            if (isGstInvoice) {
+                                                if (value === undefined || value === null || isNaN(value)) {
+                                                    return Messages.errRequired
+                                                }
+                                                if (Utils.isAlmostEqual(0, value, 0.5, 0.2)) {
+                                                    // Utils.showWarningMessage(Messages.errGstRateTooLow)
+                                                }
+                                            }
+                                            if (value > 28) {
+                                                return Messages.errGstRateTooHigh;
                                             }
                                             return true;
                                         }}
@@ -530,7 +549,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         Utils.showHideModalDialogA({
             isOpen: true,
             size: "lg",
-            element: <ProductSelectFromGrid onSelect={(product) => setLineItem(product, index)} />,
+            element: <PurchaseProductSelectFromGrid onSelect={(product) => setLineItem(product, index)} />,
             title: "Select a product"
         });
     }

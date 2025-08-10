@@ -18,13 +18,14 @@ valid gstin: 24AAACC1206D1ZM
 - Purchase
 	- Checkup price - discount in all reports as actual price
 	- Supplier name and its due in summary report of inventory
-	- gst rate warning
-	- validate gst rate less than 28%. Implement max gst rate
-	- QA: Check at db level on submit
-		- New invoice
-		- Edit invoice
-		- Delete product
-		- Delete and edit together
+														- gst rate warning
+														- validate gst rate less than 28%. Implement max gst rate
+													- QA: Check at database level on submit
+														- New invoice
+														- Edit invoice
+														- Delete product
+														- Delete and edit together
+														- check clear all puts id's in deletedIds
 	
 													- bugs
 														- Gst totals validations

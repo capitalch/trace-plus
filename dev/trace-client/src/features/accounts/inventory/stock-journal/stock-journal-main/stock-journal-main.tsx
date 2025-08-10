@@ -129,7 +129,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
     return {
       tableName:AllTables.StockJournal.name,
       fkeyName: "tranHeaderId",
-      deletedIds: context.DataInstances?.[instance]?.deletedIds || [],
+      deletedIds: (context.DataInstances?.[instance]?.deletedIds || []).map(String),
       xData: xDataSourceItems.concat(xDataOutputItems),
     };
   }

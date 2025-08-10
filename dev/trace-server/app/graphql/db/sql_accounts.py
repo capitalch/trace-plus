@@ -1717,6 +1717,47 @@ class SqlAccounts:
             order by h."tranDate" DESC limit 1
     """
 
+    get_products_for_purchase = """
+        WITH last_purchase AS (
+            SELECT DISTINCT ON (s."productId")
+                s."productId",
+                s."price",
+                s."discount",
+                s."hsn",
+                s."gstRate"
+            FROM "SalePurchaseDetails" s
+            JOIN "TranD" d ON d."id" = s."tranDetailsId"
+            JOIN "TranH" h ON h."id" = d."tranHeaderId"
+            WHERE h."tranDate" <= CURRENT_DATE
+            ORDER BY s."productId", h."tranDate" DESC, s."id" DESC
+        ),
+        opening as (
+            SELECT DISTINCT ON (o."productId")
+            o."productId",
+            o."openingPrice"
+            from "ProductOpBal" o
+            ORDER BY o."productId", o."finYearId" DESC
+        )
+        SELECT 
+            p."id" AS "productId",
+            COALESCE(lp."price" - lp."discount", o."openingPrice", p."purPrice", 0) AS "lastPurchasePrice",
+            c."catName",
+            b."brandName",
+            COALESCE(lp."hsn", p."hsn", c."hsn", 0) AS hsn,
+            p."info",
+            p."label",
+            p."productCode",
+            p."upcCode",
+            COALESCE(lp."gstRate", p."gstRate", 0) AS "gstRate"
+        FROM "ProductM" p
+        LEFT JOIN last_purchase lp ON lp."productId" = p."id"
+        LEFT JOIN "opening" o ON p."id" = o."productId"
+        LEFT JOIN "CategoryM" c ON c."id" = p."catId"
+        LEFT JOIN "BrandM" b ON b."id" = p."brandId"
+        WHERE p."isActive"
+        order by p."id"
+    """
+
     get_products_opening_balances = """
         with 
             "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),

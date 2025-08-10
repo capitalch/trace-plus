@@ -81,6 +81,7 @@ export const SqlIdsMap = {
   getProductLabelsOnCatIdBrandId: "get_product_labels_on_catId_brandId",
   getProductOnId: "get_product_on_id",
   getProductOnProductCodeUpc: "get_product_on_product_code_upc",
+  getProductsForPurchase:"get_products_for_purchase",
   getProductsOpeningBalances: "get_products_opening_balances",
   getPurchasePriceVariation: "get_purchase_price_variation",
   getPurchaseReport: "get_purchase_report",

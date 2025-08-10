@@ -74,7 +74,6 @@ async def accounts_opening_balance_helper(info, dbName, value):
                 res) if res is not None else None
         )
         data = opBalance
-        # data.append({"jsonResult": {"accountsOpeningBalance": opBalance}})
     except Exception as e:
         # Need to return error as data. Raise error does not work with GraphQL
         # At client check data for error attribut and take action accordingly

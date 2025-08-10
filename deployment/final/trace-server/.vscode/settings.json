@@ -4,5 +4,6 @@
         "other": true,
         "comments": false,
         "strings": true
-    }
+    },
+    "python-envs.pythonProjects": []
 }

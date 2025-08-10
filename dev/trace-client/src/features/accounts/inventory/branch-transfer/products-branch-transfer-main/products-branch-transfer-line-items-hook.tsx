@@ -163,7 +163,7 @@ export function useProductsBranchTransferLineItems(instance: string) {
     }
     if (id) {
       if (!context.DataInstances?.[instance]) {
-        context.DataInstances[instance] = { deletedIds: [] };
+        context.DataInstances[instance] = { deletedIds: []};
       }
       context.DataInstances[instance].deletedIds.push(id);
     }

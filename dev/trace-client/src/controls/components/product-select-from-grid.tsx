@@ -36,6 +36,7 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
                 branchId: branchId,
                 finYearId: finYearId
             }}
+            searchFields={['product', 'label', 'brandName', 'catName', 'info', 'hsn', 'productCode', 'upcCode']}
         />
     </div>)
 
@@ -133,7 +134,7 @@ export type ProductInfoType = {
     openingPrice: number
     openingPriceGst: number
     productCode: string
-    productId:number // same as id. Used for compability purpose
+    productId: number // same as id. Used for compability purpose
     sale: number
     saleDiscount: number
     salePrice: number

@@ -67,6 +67,19 @@ class SqlAccounts:
 				and "id" <> (table "id")))
     """
 
+    does_purchase_invoice_exist = """
+    --with "id" AS (VALUES (3333)), "finYearId" AS (VALUES (2024)), "tranTypeId" AS (VALUES (5)), "accId" AS (VALUES (1111)), "userRefNo" AS (VALUES ('kkk'))
+	with "id" AS (VALUES (%(id)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "tranTypeId" AS (VALUES (%(tranTypeId)s::int)), "accId" AS (VALUES (%(accId)s::int)), "userRefNo" AS (VALUES (%(userRefNo)s::text))
+            select true as "isExists" from "TranH" h 
+                join "TranD" d
+                    on h.id = d."tranHeaderId"
+                where "finYearId" = (table "finYearId")
+                    and "tranTypeId" = (table "tranTypeId")
+                    and "accId" = (table "accId")
+                    and lower(trim(h."userRefNo")) = lower(trim((table "userRefNo")))
+                    and h."id" <> (table "id")
+    """
+
     does_tag_name_exist = """
         with "tagName" as (values (%(tagName)s::text))
             --with "tagName" AS (VALUES ('tag1'::text))
@@ -815,7 +828,8 @@ class SqlAccounts:
             )   
         SELECT   
             "id",   
-            "productCode",   
+            "productCode",
+            "id" as "productId",
             "catName",   
             "brandName",   
             "label",   
@@ -836,6 +850,45 @@ class SqlAccounts:
             "openingPrice",   
             "openingPriceGst"   
         FROM cte7
+    """
+
+    get_all_purchases = """
+        --with "branchId" as (values (1)), "finYearId" as (values (2025)),"tranTypeId" as (values(5))
+        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tranTypeId" as (values(%(tranTypeId)s))
+        , cte1 as (
+			select "tranHeaderId", string_agg("accName",', ') as "accounts"
+				from "TranD" d
+					join "TranH" h
+						on h."id" = d."tranHeaderId"
+					join "AccM" a
+						on a."id" = d."accId"
+			where dc = CASE (table "tranTypeId") WHEN 5 then 'C' else 'D' END
+			and "finYearId" = (table "finYearId") 
+			and "branchId" = (table "branchId")
+			group by "tranHeaderId"
+		)
+        select ROW_NUMBER() OVER (ORDER BY "tranDate" DESC, h."id" DESC) AS "index"
+		, h."id" as "id", "autoRefNo", "userRefNo", h."remarks", "accounts", d."amount", string_agg("brandName" || ' ' || "label",', ') as "productDetails"
+        , string_agg(s."jData"->>'serialNumbers', ', ') as "serialNumbers", string_agg("productCode", ', ') as "productCodes"
+        , string_agg(s.hsn::text, ', ') as "hsns", SUM(s."qty") as "productQty"
+        , SUM(s."qty" * (s."price" - s."discount")) as "aggr", SUM(s."cgst") as "cgst", SUM(s."sgst") as "sgst", SUM(s."igst") as "igst"
+        ,	"tranDate", string_agg(s."jData"->>'remarks', ', ') as "lineRemarks"
+            from "TranH" h
+                join "TranD" d
+                    on h."id" = d."tranHeaderId"
+                join "SalePurchaseDetails" s
+                    on d."id" = s."tranDetailsId"
+                join "ProductM" p
+                    on p."id" = s."productId"
+                join "BrandM" b
+                    on b."id" = p."brandId"
+				join cte1 
+					on cte1."tranHeaderId" = d."tranHeaderId"
+            where "tranTypeId" = (table "tranTypeId") and
+                "finYearId" = (table "finYearId") and
+                "branchId" = (table "branchId")
+            group by h."id", d."amount" , d."remarks", cte1."accounts"
+            order by "tranDate" DESC
     """
 
     get_all_schemas_in_database = """
@@ -1005,7 +1058,7 @@ class SqlAccounts:
             and "branchId" = (table "branchId")
             order by "tranDate" DESC, h."id" DESC, d."id" DESC
     """
-    
+
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 
@@ -1418,6 +1471,16 @@ class SqlAccounts:
                 from "FinYearM" order by "id" DESC
     """
 
+    get_gstin = """
+        WITH "accId" AS (VALUES (%(accId)s::int))
+            --with "accId" as (values (108))
+            select "gstin"
+                from "AccM" a
+                    join "ExtBusinessContactsAccM" b
+                        on a."id" = b."accId"
+                where a."id" = (table "accId")
+    """
+
     get_last_no = """
     WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int)),
      --with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (12::int)),
@@ -1625,18 +1688,24 @@ class SqlAccounts:
 
     get_product_on_product_code_upc = """
         with "productCodeOrUpc" as (values(%(productCodeOrUpc)s))
-        --with "productCodeOrUpc" as (values('1063'))
+        --with "productCodeOrUpc" as (values('1162'))
         select p."id" "productId",
-			coalesce(o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
+			coalesce(s."price" - s."discount", o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
 			c."catName",
 			b."brandName",
-			coalesce(p."hsn", c."hsn", 0) hsn,
+			coalesce(s."hsn", p."hsn", c."hsn", 0) hsn,
 			p."info",
 			p."label",
 			p."productCode",
 			p."upcCode",
-			coalesce(p."gstRate", 0) "gstRate"
+			coalesce(s."gstRate", p."gstRate", 0) "gstRate"
             from "ProductM" p
+                left join "SalePurchaseDetails" s
+                    on p."id" = s."productId"
+                left join "TranD" d
+                    on d."id" = s."tranDetailsId"
+                left join "TranH" h
+                    on h."id" = d."tranHeaderId"
                 left join "ProductOpBal" o
                     on p."id" = o."productId"
                 left join "CategoryM" c
@@ -1644,7 +1713,49 @@ class SqlAccounts:
                 left join "BrandM" b
                     on b."id" = p."brandId"
             where ((p."productCode" = (table "productCodeOrUpc") or (p."upcCode" = (table "productCodeOrUpc")))) and p."isActive"
-            order by p."id" limit 1
+			and h."tranDate" <= CURRENT_DATE
+            order by h."tranDate" DESC limit 1
+    """
+
+    get_products_for_purchase = """
+        WITH last_purchase AS (
+            SELECT DISTINCT ON (s."productId")
+                s."productId",
+                s."price",
+                s."discount",
+                s."hsn",
+                s."gstRate"
+            FROM "SalePurchaseDetails" s
+            JOIN "TranD" d ON d."id" = s."tranDetailsId"
+            JOIN "TranH" h ON h."id" = d."tranHeaderId"
+            WHERE h."tranDate" <= CURRENT_DATE
+            ORDER BY s."productId", h."tranDate" DESC, s."id" DESC
+        ),
+        opening as (
+            SELECT DISTINCT ON (o."productId")
+            o."productId",
+            o."openingPrice"
+            from "ProductOpBal" o
+            ORDER BY o."productId", o."finYearId" DESC
+        )
+        SELECT 
+            p."id" AS "productId",
+            COALESCE(lp."price" - lp."discount", o."openingPrice", p."purPrice", 0) AS "lastPurchasePrice",
+            c."catName",
+            b."brandName",
+            COALESCE(lp."hsn", p."hsn", c."hsn", 0) AS hsn,
+            p."info",
+            p."label",
+            p."productCode",
+            p."upcCode",
+            COALESCE(lp."gstRate", p."gstRate", 0) AS "gstRate"
+        FROM "ProductM" p
+        LEFT JOIN last_purchase lp ON lp."productId" = p."id"
+        LEFT JOIN "opening" o ON p."id" = o."productId"
+        LEFT JOIN "CategoryM" c ON c."id" = p."catId"
+        LEFT JOIN "BrandM" b ON b."id" = p."brandId"
+        WHERE p."isActive"
+        order by p."id"
     """
 
     get_products_opening_balances = """
@@ -1840,6 +1951,70 @@ class SqlAccounts:
         ORDER BY 
             "tranDate",
             "salePurchaseDetailsId"
+    """
+
+    get_sale_purchase_details_on_id = """
+        --with "id" as (values (10892))
+        with "id" as (values (%(id)s::int))
+        , cte1 as (
+                select "id", "tranDate", "userRefNo", "remarks", "autoRefNo", "jData", "tranTypeId"
+                    from "TranH"
+                        where "id" = (table id)
+            ),
+            cte5 as (
+                select c.* 
+                    from "Contacts" c
+                        join "TranH" h
+                            on c."id" = h."contactsId"
+                        where  h."id" = (table id)
+            ),
+            cte2 as (
+                select d."id", d."accId", "dc", "amount", d."instrNo", d."remarks", "accClass", "accName", "accCode"
+                    from "cte1" c1 join "TranD" d 
+                        on c1."id" = d."tranHeaderId"
+                    join "AccM" m
+                        on m."id" = d."accId"
+                    join "AccClassM" c2
+                        on c2."id" = m."classId"
+            ),
+            cte3 as (
+                select x."id", "gstin", "cgst", "sgst", "igst"
+                    from "cte2" c2 join "ExtGstTranD" x
+                        on c2."id" = x."tranDetailsId"                        
+            ),
+            cte6 as (
+                select e.* from
+                    "AccM" a join "ExtBusinessContactsAccM" e
+                        on a."id" = e."accId"
+                    join cte2 c2
+                        on a."id" = c2."accId" limit 1
+            ),
+            cte4 as (
+                select s."id", "productId", "qty", "price", "priceGst", "discount"
+                    , "cgst", "sgst", "igst", s."amount", s."hsn", s."gstRate"
+                    , "productCode", "upcCode", "catName", "brandName", "info", "label"
+                    , s."jData"->>'serialNumbers' as "serialNumbers"
+                    , s."jData"->>'remarks' as "remarks"
+                    from "cte2" c2 
+                        join "SalePurchaseDetails" s
+                            on c2."id" = s."tranDetailsId"
+                        join "ProductM" p
+                            on p."id" = s."productId"
+                        join "CategoryM" c
+                            on c."id" = p."catId"
+                        join "BrandM" b
+                            on b."id" = p."brandId"
+                    
+            )
+
+            select json_build_object(
+                'tranH', (SELECT row_to_json(a) from cte1 a),
+                'billTo', (SELECT row_to_json(e) from cte5 e),
+                'businessContacts',(SELECT row_to_json(f) from cte6 f),
+                'tranD', (SELECT json_agg(b) from cte2 b),
+                'extGstTranD', (SELECT row_to_json(c) from cte3 c),
+                'salePurchaseDetails', (SELECT json_agg(d) from cte4 d)
+            ) as "jsonResult"
     """
 
     get_sales_report = """
@@ -2165,7 +2340,7 @@ class SqlAccounts:
             )
                 SELECT * FROM cte_final where age >= (table days)
     """
-    
+
     get_settings_fin_years_branches = """
         with cte1 as (
 		select id as "branchId", "branchName", "branchCode"
@@ -2892,7 +3067,7 @@ class SqlAccounts:
                         , 'tranDetails', (SELECT json_agg(row_to_json(b)) from cte2 b)
                     ) as "jsonResult"
     """
-    
+
     increment_last_no = """
         WITH "finYearId" as (values (%(finYearId)s::int)), "branchId" as (values (%(branchId)s::int)), "tranTypeId" as (values (%(tranTypeId)s::int))
         --with "finYearId" as (VALUES (2024::int)), "branchId" as (VALUES (1::int)), "tranTypeId" as (VALUES (12::int))
