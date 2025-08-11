@@ -2538,7 +2538,7 @@ class SqlAccounts:
 				select c0."productId",
 					MAX("tranDate") AS "lastPurchaseDate"
 				FROM cte000 c0 left join cte22 c22 on c0."productId" = c22."productId"
-					where c0."tranTypeId" in(5,11) and "tranDate" <= "lastSaleDate" and dc <> 'C'
+					where c0."tranTypeId" in(5,11) and dc <> 'C'
                 GROUP BY c0."productId"
 			 ),
 			cte2 as (

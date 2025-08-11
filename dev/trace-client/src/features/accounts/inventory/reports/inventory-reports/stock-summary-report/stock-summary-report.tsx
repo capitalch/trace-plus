@@ -128,7 +128,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         height="calc(100vh - 280px)"
         indexColumnWidth={60}
         instance={instance}
-        isSmallerFont={true}
+        // isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"
         onRemove={handleOnRemove}
