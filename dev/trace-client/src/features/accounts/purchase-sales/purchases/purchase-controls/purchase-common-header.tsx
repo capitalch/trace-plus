@@ -147,7 +147,7 @@ export function PurchaseCommonHeader() {
             {/* Reset submit */}
             <div className="flex gap-3 ml-auto mt-6 h-10">
                 {/* Test */}
-                <button
+                {/* <button
                     type="button" onClick={() => {
                         const formData = getValues();
                         console.log("Form Data:", formData);
@@ -155,7 +155,7 @@ export function PurchaseCommonHeader() {
                     }}
                 >
                     Test
-                </button>
+                </button> */}
                 {/* Reset */}
                 <button
                     onClick={resetAll}
@@ -176,7 +176,7 @@ export function PurchaseCommonHeader() {
                 </button>
             </div>
 
-            {/* Edi / New label */}
+            {/* Edit / New label */}
             <div className="flex absolute right-0 -top-13 gap-2">
                 {getPrintPreview()}
                 <label className=" text-amber-500 font-medium text-lg">{watch('id') ? 'Edit Purchase' : 'New Purchase'}</label>

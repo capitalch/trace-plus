@@ -22,8 +22,16 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - purchase return
+	- Check debitAccId and creditAccId
 														- Startup
 	- Purchase return main
+		- Select from grid
+														- view data
+														- select data
+			- populate data
+		- Header
+		- Subheader
+		- Line Items
 	- View
 - Purchase
 														- gst rate warning

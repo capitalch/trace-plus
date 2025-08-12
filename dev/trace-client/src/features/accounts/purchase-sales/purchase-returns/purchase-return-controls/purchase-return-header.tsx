@@ -1,7 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import _ from 'lodash';
 import { useValidators } from "../../../../../utils/validators-hook";
-// import { PurchaseFormDataType } from "../all-purchases/all-purchases";
 import { FormField } from "../../../../../controls/widgets/form-field";
 import clsx from "clsx";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
@@ -13,34 +12,30 @@ import { RootStateType } from "../../../../../app/store";
 import { useSelector } from "react-redux";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
-// import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { isValid } from "date-fns";
-import { useMemo } from "react";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { PurchaseFormDataType } from "../../purchases/all-purchases/all-purchases";
 import { generatePurchaseInvoicePDF } from "../../purchases/all-purchases/purchase-invoice-jspdf";
+import { Utils } from "../../../../../utils/utils";
+import { PurchaseReturnSelectInvoice } from "./purchase-return-select-invoice";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
+import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 
-export function PurchaseReturnCommonHeader() {
+export function PurchaseReturnHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
-    const isInvoiceExists = useSelector((state: RootStateType) => state.purchase.isInvoiceExists)
-    const { branchName, currentDateFormat } = useUtilsInfo();
+    const { branchName, buCode, dbName, decodedDbParamsObject, currentDateFormat } = useUtilsInfo();
     const { checkAllowedDate } = useValidators();
     const {
+        reset,
         setValue,
         watch,
         register,
         getValues,
         formState: { errors, isSubmitting, isDirty, }
     } = useFormContext<PurchaseFormDataType>();
-    const { resetAll, checkPurchaseInvoiceExists }: any = useFormContext();
+    const { resetAll }: any = useFormContext();
 
-    const onChangeUserRefNo = useMemo(
-        () =>
-            _.debounce(() => {
-                checkPurchaseInvoiceExists();
-            }, 3000), []
-    );
 
     const getPrintPreview = () => {
         let Ret = <></>
@@ -58,7 +53,7 @@ export function PurchaseReturnCommonHeader() {
     }
 
     return (
-        <div className="flex gap-6 flex-wrap relative">
+        <div className="flex gap-6 flex-wrap relative bg-red-50 p-2">
 
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-52 ">
@@ -88,34 +83,24 @@ export function PurchaseReturnCommonHeader() {
             </FormField>
 
             {/*  User ref no / Invoice no for Purchase Return*/}
-                <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
-                    <div className="relative"> {/* Use a relative container for positioning */}
-                        <input
-                            type="text"
-                            className={clsx(inputFormFieldStyles, 'mt-1 pr-12')} /* Added padding-right to make space for the button */
-                            placeholder="Enter invoice no"
-                            {...register("userRefNo", {
-                                required: Messages.errRequired,
-                                onChange: onChangeUserRefNo,
-                                validate: () => {
-                                    if (isInvoiceExists) {
-                                        return (Messages.errInvoiceExists)
-                                    } else {
-                                        return (true)
-                                    }
-                                }
-                            })}
-                        />
-                        <TooltipComponent content='Select an invoice' position="RightCenter">
-                            <button
-                                type="button" // Use type="button" to prevent form submission
-                                className="absolute inset-y-0 right-0 px-3 flex items-center mt-1" onClick = {handleSearchInvoice}>
-                                <IconSearch className="w-5 h-5 text-blue-500" />
-                            </button>
-                        </TooltipComponent>
-                    </div>
-                </FormField>
-            
+            <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
+                <div className="relative"> {/* Use a relative container for positioning */}
+                    <input
+                        type="text"
+                        className={clsx(inputFormFieldStyles, 'mt-1 pr-12')} /* Added padding-right to make space for the button */
+                        placeholder="Enter invoice no"
+                        {...register("userRefNo")}
+                    />
+                    <TooltipComponent content='Select an invoice' position="RightCenter">
+                        <button
+                            type="button" // Use type="button" to prevent form submission
+                            className="absolute inset-y-0 right-0 px-3 flex items-center mt-1" onClick={handleSearchInvoice}>
+                            <IconSearch className="w-5 h-5 text-blue-500" />
+                        </button>
+                    </TooltipComponent>
+                </div>
+            </FormField>
+
             {/* Remarks */}
             <FormField className="min-w-60 w-auto" label="Remarks">
                 <textarea
@@ -191,10 +176,22 @@ export function PurchaseReturnCommonHeader() {
             {/* Edi / New label */}
             <div className="flex absolute right-0 -top-13 gap-2">
                 {getPrintPreview()}
-                <label className=" text-amber-500 font-medium text-lg">{watch('id') ? 'Edit Purchase' : 'New Purchase'}</label>
+                <label className=" text-red-500 font-medium text-lg">{watch('id') ? 'Edit Purchase Return' : 'New Purchase Return'}</label>
             </div>
         </div>
     );
+
+    async function getPurchaseDetailsOnId(id: number) {
+        return (await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
+            sqlArgs: {
+                id: id,
+            },
+        }))
+    }
 
     function handleOnPreview() {
         const purchaseEditData: any = getValues('purchaseEditData') || {}
@@ -202,7 +199,49 @@ export function PurchaseReturnCommonHeader() {
         generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
     }
 
-    function handleSearchInvoice(){
-        
+    function handleSearchInvoice() {
+        Utils.showHideModalDialogA({
+            title: "Select Invoice",
+            isOpen: true,
+            element: <PurchaseReturnSelectInvoice onSelect={populateInvoiceOnId} />,
+            size: 'lg',
+        })
+    }
+
+    async function populateInvoiceOnId(id: number) {
+        if (!id) return
+        const editData: any = await getPurchaseDetailsOnId(id);
+        const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+        setValue('purchaseEditData', undefined)
+        const tranH: TranHType = purchaseEditData.tranH
+        const tranD: TranDType[] = purchaseEditData.tranD
+        const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
+        const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
+        reset({
+            id: undefined,
+            tranTypeId: tranH.tranTypeId,
+            remarks:tranH.userRefNo,
+            isGstInvoice: Boolean(extGsTranD?.id),
+            debitAccId: tranD.find((item) => item.dc === "D")?.accId,
+            creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+            gstin: extGsTranD?.gstin,
+            isIgst: extGsTranD?.igst ? true : false,
+            purchaseEditData: undefined,
+            purchaseLineItems: salePurchaseDetails.map((item) => ({
+                id: undefined,
+                productId: item.productId,
+                productCode: item.productCode,
+                upcCode: item.upcCode || null,
+                productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+                hsn: item.hsn.toString(),
+                qty: 1,
+                gstRate: item.gstRate,
+                price: item.price,
+                discount: item.discount,
+                priceGst: item.priceGst,
+                lineRemarks: null,
+                serialNumbers: null
+            }))
+        })
     }
 }

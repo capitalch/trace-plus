@@ -49,6 +49,7 @@ export const DataInstancesMap = {
   productSelect: "product-select",
   productsListReport: "products-list-report",
   profitLoss: "profit-loss",
+  purchaseInvoiceSelect:"purchase-invoice-select",
   purchasePriceVariationReport:"purchase-price-variation-report",
   purchaseProductSelect:"purchase-product-select",
   purchaseReport:"purchase-report",
