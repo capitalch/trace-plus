@@ -41,6 +41,7 @@ import { InventoryReportsDashboard } from "../../features/accounts/inventory/rep
 import { InventoryReportsContainer } from "../../features/accounts/inventory/reports/inventory-reports-container";
 import { AllVouchers } from "../../features/accounts/vouchers/all-vouchers/all-vouchers";
 import { AllPurchases } from "../../features/accounts/purchase-sales/purchases/all-purchases/all-purchases";
+import { AllPurchaseReturns } from "../../features/accounts/purchase-sales/purchase-return/all-purchase-returns/all-purchase-returns";
 
 export const appRouter = createBrowserRouter(
   [
@@ -118,6 +119,10 @@ export const appRouter = createBrowserRouter(
         {
           path: "/all-purchases",
           element: <AllPurchases/>
+        },
+        {
+          path: "/all-purchase-returns",
+          element: <AllPurchaseReturns/>
         }
       ]
     },

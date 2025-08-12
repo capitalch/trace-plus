@@ -10,6 +10,7 @@ import { stockTransReportReducer } from "../features/accounts/inventory/reports/
 import { accountPickerTreeReducer } from "../controls/redux-components/account-picker-tree/account-picker-tree-slice";
 import { voucherReducer } from "../features/accounts/vouchers/voucher-slice";
 import { purchaseReducer } from "../features/accounts/purchase-sales/purchases/purchase-slice";
+import { purchaseReturnReducer } from "../features/accounts/purchase-sales/purchase-returns/purchase-return-slice";
 
 const rootReducer = combineReducers({
   accounts: accountsReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   stockTransReport: stockTransReportReducer,
   vouchers: voucherReducer,
   purchase: purchaseReducer,
+  purchaseReturn: purchaseReturnReducer,
 });
 
 const reducerWithReset = (state: any, action: any) => {

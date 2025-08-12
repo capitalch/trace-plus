@@ -2,6 +2,12 @@
 entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
+## General requirement
+- Checkup price - discount in all reports as actual price
+- Supplier name and its due in summary report of inventory
+- drill down
+- Interchange sale bill type: cash, bill sale, institutional
+
 ## security
 	- Change databaseTablesMap to tables schema type variables
 										- QA for vouchers
@@ -15,9 +21,11 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+- purchase return
+														- Startup
+	- Purchase return main
+	- View
 - Purchase
-	- Checkup price - discount in all reports as actual price
-	- Supplier name and its due in summary report of inventory
 														- gst rate warning
 														- validate gst rate less than 28%. Implement max gst rate
 													- QA: Check at database level on submit
@@ -75,8 +83,6 @@ valid gstin: 24AAACC1206D1ZM
 														- Delete
 														- Edit
 														- Preview
-- Sales
-	- Interchange sale bill type: cash, bill sale, institutional
 												- Vouchers
 													- Print voucher in edit window
 													- print multi vouchers together: later on

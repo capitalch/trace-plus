@@ -6,13 +6,12 @@ import { CompAccountsContainer } from "../../../../../controls/components/comp-a
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchasesMain } from "../all-purchases/all-purchases-main";
 import { AllPurchasesView } from "../all-purchases/all-purchases-view";
-import { SalePurchaseEditDataType, /*TraceDataObjectType,*/ XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+import { SalePurchaseEditDataType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { clearPurchaseFormData, savePurchaseFormData, setInvoicExists } from "../purchase-slice";
 import { useEffect } from "react";
 import { Utils } from "../../../../../utils/utils";
-// import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
 import { Messages } from "../../../../../utils/messages";
@@ -218,7 +217,6 @@ export type PurchaseFormDataType = {
     deletedIds: number[]; // of PurchaseSaleDetails table
     finYearId: number;
 
-    // tranHeaderId?: number;
     lineRemarks?: string | null;
 
     purchaseEditData?: SalePurchaseEditDataType
@@ -237,7 +235,6 @@ export type PurchaseLineItemType = {
     gstRate: number;
     price: number;
     amount: number;
-    // jData: { [key: string]: string }
     discount: number;
     priceGst: number;
     subTotal: number;

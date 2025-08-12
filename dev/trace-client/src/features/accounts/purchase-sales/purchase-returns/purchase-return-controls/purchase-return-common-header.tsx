@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import _ from 'lodash';
 import { useValidators } from "../../../../../utils/validators-hook";
-import { PurchaseFormDataType } from "../all-purchases/all-purchases";
+// import { PurchaseFormDataType } from "../all-purchases/all-purchases";
 import { FormField } from "../../../../../controls/widgets/form-field";
 import clsx from "clsx";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
@@ -13,12 +13,15 @@ import { RootStateType } from "../../../../../app/store";
 import { useSelector } from "react-redux";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
-import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
+// import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { isValid } from "date-fns";
 import { useMemo } from "react";
+import { IconSearch } from "../../../../../controls/icons/icon-search";
+import { PurchaseFormDataType } from "../../purchases/all-purchases/all-purchases";
+import { generatePurchaseInvoicePDF } from "../../purchases/all-purchases/purchase-invoice-jspdf";
 
-export function PurchaseCommonHeader() {
+export function PurchaseReturnCommonHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
     const isInvoiceExists = useSelector((state: RootStateType) => state.purchase.isInvoiceExists)
     const { branchName, currentDateFormat } = useUtilsInfo();
@@ -84,26 +87,35 @@ export function PurchaseCommonHeader() {
                 />
             </FormField>
 
-            {/* User ref no / Invoice no*/}
-            <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
-                <input
-                    type="text"
-                    className={clsx(inputFormFieldStyles, 'mt-1')}
-                    placeholder="Enter invoice no"
-                    {...register("userRefNo", {
-                        required: Messages.errRequired,
-                        onChange: onChangeUserRefNo,
-                        validate: () => {
-                            if (isInvoiceExists) {
-                                return (Messages.errInvoiceExists)
-                            } else {
-                                return (true)
-                            }
-                        }
-                    })}
-                />
-            </FormField>
-
+            {/*  User ref no / Invoice no for Purchase Return*/}
+                <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
+                    <div className="relative"> {/* Use a relative container for positioning */}
+                        <input
+                            type="text"
+                            className={clsx(inputFormFieldStyles, 'mt-1 pr-12')} /* Added padding-right to make space for the button */
+                            placeholder="Enter invoice no"
+                            {...register("userRefNo", {
+                                required: Messages.errRequired,
+                                onChange: onChangeUserRefNo,
+                                validate: () => {
+                                    if (isInvoiceExists) {
+                                        return (Messages.errInvoiceExists)
+                                    } else {
+                                        return (true)
+                                    }
+                                }
+                            })}
+                        />
+                        <TooltipComponent content='Select an invoice' position="RightCenter">
+                            <button
+                                type="button" // Use type="button" to prevent form submission
+                                className="absolute inset-y-0 right-0 px-3 flex items-center mt-1" onClick = {handleSearchInvoice}>
+                                <IconSearch className="w-5 h-5 text-blue-500" />
+                            </button>
+                        </TooltipComponent>
+                    </div>
+                </FormField>
+            
             {/* Remarks */}
             <FormField className="min-w-60 w-auto" label="Remarks">
                 <textarea
@@ -190,4 +202,7 @@ export function PurchaseCommonHeader() {
         generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
     }
 
+    function handleSearchInvoice(){
+        
+    }
 }

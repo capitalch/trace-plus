@@ -17,6 +17,9 @@
 	- QA and release		: 30-08-2025
 
 ## History
+# 12-08-2025
+	- Completed Purchase
+	- Started Purchase returns
 # 23-07-2025
 	- Completed vouchers
 	- Started Purchase
