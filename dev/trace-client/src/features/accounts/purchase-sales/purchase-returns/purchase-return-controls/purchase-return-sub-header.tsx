@@ -10,7 +10,8 @@ import { Utils } from "../../../../../utils/utils";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { PurchaseFormDataType } from "../../purchases/all-purchases/all-purchases";
-import { PurchaseTotalsPanel } from "../../purchases/purchase-controls/purchase-totals-panel";
+// import { PurchaseTotalsPanel } from "../../purchases/purchase-controls/purchase-totals-panel";
+import { PurchaseReturnTotalsPanel } from "./purchase-return-totals-panel";
 
 export function PurchaseReturnSubHeader({ className }: PurchaseCommonSubHeaderType) {
     const instance = DataInstancesMap.allPurchases;
@@ -23,62 +24,60 @@ export function PurchaseReturnSubHeader({ className }: PurchaseCommonSubHeaderTy
         trigger,
         formState: { errors }
     } = useFormContext<PurchaseFormDataType>();
-    const { checkPurchaseInvoiceExists }: any = useFormContext<PurchaseFormDataType>()
+    // const { checkPurchaseInvoiceExists }: any = useFormContext<PurchaseFormDataType>()
     const isGstInvoice = watch("isGstInvoice");
     return (
-        <div className={clsx(className, "flex gap-6 flex-wrap items-start bg-red-50 p-2")}>
-
-            {/* Debit Account */}
-            <FormField
-                label='Purchase Account'
-                required
-                error={errors?.debitAccId?.message}
-                className=""
-            >
-                <AccountPickerFlat
-                    accClassNames={['purchase']}
-                    instance={`${instance}-debit-account`}
-                    {...register('debitAccId', {
-                        required: Messages.errRequired,
-                    })}
-                    // loadData={loadData}
-                    onChange={(val) =>
-                        setValue('debitAccId', val, {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                        })
-                    }
-                    showAccountBalance
-                    value={watch('debitAccId') as string}
-                    className="max-w-80 w-full mt-1"
-                />
-            </FormField>
+        <div className={clsx(className, "flex gap-6 flex-wrap items-start bg-red-50 p-2 mb-4")}>
 
             {/* Credit Account */}
             <FormField
-                label='Credit Account'
+                label='Purchase Account'
                 required
                 error={errors?.creditAccId?.message}
                 className=""
             >
                 <AccountPickerFlat
-                    // accountOptions={accountOptions}
-                    accClassNames={['debtor', 'creditor', 'bank', 'cash', 'card', 'ecash']}
+                    accClassNames={['purchase']}
                     instance={`${instance}-credit-account`}
                     {...register('creditAccId', {
                         required: Messages.errRequired,
                     })}
-                    // loadData={loadData}
-                    onChange={(val) => {
+                    onChange={(val) =>
                         setValue('creditAccId', val, {
                             shouldValidate: true,
                             shouldDirty: true,
                         })
-                        getSetGstin(val)
-                        checkPurchaseInvoiceExists()
-                    }}
+                    }
                     showAccountBalance
                     value={watch('creditAccId') as string}
+                    className="max-w-80 w-full mt-1"
+                />
+            </FormField>
+
+            {/* Debit Account */}
+            <FormField
+                label='Debit Account'
+                required
+                error={errors?.debitAccId?.message}
+                className=""
+            >
+                <AccountPickerFlat
+                    accClassNames={['debtor', 'creditor', 'bank', 'cash', 'card', 'ecash']}
+                    instance={`${instance}-debit-account`}
+                    {...register('debitAccId', {
+                        required: Messages.errRequired,
+                    })}
+                    // loadData={loadData}
+                    onChange={(val) => {
+                        setValue('debitAccId', val, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                        })
+                        getSetGstin(val)
+                        // checkPurchaseInvoiceExists()
+                    }}
+                    showAccountBalance
+                    value={watch('debitAccId') as string}
                     className="w-full mt-1 max-w-80"
                 />
             </FormField>
@@ -116,7 +115,7 @@ export function PurchaseReturnSubHeader({ className }: PurchaseCommonSubHeaderTy
                 </div>
             </FormField>
 
-            <PurchaseTotalsPanel className="ml-auto -mt-2" />
+            <PurchaseReturnTotalsPanel className="ml-auto -mt-2" />
         </div>
     );
 

@@ -8,8 +8,8 @@ import { Messages } from "../../../../../utils/messages";
 import { IconReset } from "../../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../../controls/icons/icon-submit";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
-import { RootStateType } from "../../../../../app/store";
-import { useSelector } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../../../app/store";
+import { useDispatch, useSelector } from "react-redux";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
@@ -21,10 +21,14 @@ import { Utils } from "../../../../../utils/utils";
 import { PurchaseReturnSelectInvoice } from "./purchase-return-select-invoice";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
+import { useEffect } from "react";
+import { doPurchaseReturnTrigger } from "../purchase-return-slice";
 
 export function PurchaseReturnHeader() {
+    const dispatch:AppDispatchType = useDispatch()
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
     const { branchName, buCode, dbName, decodedDbParamsObject, currentDateFormat } = useUtilsInfo();
+    const purchaseReturnToggle = useSelector((state:RootStateType)=>state.purchaseReturn.toggle)
     const { checkAllowedDate } = useValidators();
     const {
         reset,
@@ -32,10 +36,10 @@ export function PurchaseReturnHeader() {
         watch,
         register,
         getValues,
-        formState: { errors, isSubmitting, isDirty, }
+        formState: { errors, isSubmitting, isDirty, },
+        trigger
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll }: any = useFormContext();
-
 
     const getPrintPreview = () => {
         let Ret = <></>
@@ -51,6 +55,10 @@ export function PurchaseReturnHeader() {
             return (Ret)
         }
     }
+    // const totalInvoiceAmount = watch('totalInvoiceAmount')
+    useEffect(() => {
+        setTimeout(() => trigger(), 0) // trigger to redo computation of total amounts. This works
+    }, [purchaseReturnToggle, trigger])
 
     return (
         <div className="flex gap-6 flex-wrap relative bg-red-50 p-2">
@@ -63,7 +71,7 @@ export function PurchaseReturnHeader() {
                     readOnly
                     disabled
                     title="Auto reference number"
-                    value={watch("autoRefNo") ?? undefined}
+                    value={watch("autoRefNo") ?? ''}
                 />
             </FormField>
 
@@ -84,16 +92,15 @@ export function PurchaseReturnHeader() {
 
             {/*  User ref no / Invoice no for Purchase Return*/}
             <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
-                <div className="relative"> {/* Use a relative container for positioning */}
+                <div className="relative">
                     <input
                         type="text"
-                        className={clsx(inputFormFieldStyles, 'mt-1 pr-12')} /* Added padding-right to make space for the button */
-                        placeholder="Enter invoice no"
+                        className={clsx(inputFormFieldStyles, 'mt-1 pr-12')}
                         {...register("userRefNo")}
                     />
                     <TooltipComponent content='Select an invoice' position="RightCenter">
                         <button
-                            type="button" // Use type="button" to prevent form submission
+                            type="button"
                             className="absolute inset-y-0 right-0 px-3 flex items-center mt-1" onClick={handleSearchInvoice}>
                             <IconSearch className="w-5 h-5 text-blue-500" />
                         </button>
@@ -146,9 +153,10 @@ export function PurchaseReturnHeader() {
                 {/* Test */}
                 <button
                     type="button" onClick={() => {
-                        const formData = getValues();
-                        console.log("Form Data:", formData);
-                        console.log(errors)
+                        handleOnTest()
+                        // const formData = getValues();
+                        // console.log("Form Data:", formData);
+                        // console.log(errors)
                     }}
                 >
                     Test
@@ -173,7 +181,7 @@ export function PurchaseReturnHeader() {
                 </button>
             </div>
 
-            {/* Edi / New label */}
+            {/* Edit / New label */}
             <div className="flex absolute right-0 -top-13 gap-2">
                 {getPrintPreview()}
                 <label className=" text-red-500 font-medium text-lg">{watch('id') ? 'Edit Purchase Return' : 'New Purchase Return'}</label>
@@ -191,6 +199,52 @@ export function PurchaseReturnHeader() {
                 id: id,
             },
         }))
+    }
+
+    async function handleOnTest() {
+        // setRefresh({})
+        // const id1 = 10892
+        // const editData: any = await getPurchaseDetailsOnId(id1);
+        // const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+        // setValue('purchaseEditData', undefined)
+        // const tranH: TranHType = purchaseEditData.tranH
+        // const tranD: TranDType[] = purchaseEditData.tranD
+        // const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
+        // const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
+
+        // reset({
+        //     id: undefined,
+        //     tranTypeId: tranH.tranTypeId,
+        //     remarks: tranH.userRefNo,
+        //     isGstInvoice: Boolean(extGsTranD?.id),
+        //     debitAccId: tranD.find((item) => item.dc === "C")?.accId,
+        //     creditAccId: tranD.find((item) => item.dc === "D")?.accId,
+        //     gstin: extGsTranD?.gstin,
+        //     isIgst: extGsTranD?.igst ? true : false,
+        //     purchaseEditData: undefined,
+
+        //     totalCgst: extGsTranD?.cgst,
+        //     totalSgst: extGsTranD?.sgst,
+        //     totalIgst: extGsTranD?.igst,
+        //     totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
+        //     totalInvoiceAmount: tranD?.[0]?.amount || 0,
+
+        //     purchaseLineItems: salePurchaseDetails.map((item) => ({
+        //         id: undefined,
+        //         productId: item.productId,
+        //         productCode: item.productCode,
+        //         upcCode: item.upcCode || null,
+        //         productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+        //         hsn: item.hsn.toString(),
+        //         qty: item.qty,
+        //         gstRate: item.gstRate,
+        //         price: item.price,
+        //         discount: item.discount,
+        //         priceGst: item.priceGst,
+        //         lineRemarks: null,
+        //         serialNumbers: null
+        //     }))
+        // })
     }
 
     function handleOnPreview() {
@@ -217,16 +271,25 @@ export function PurchaseReturnHeader() {
         const tranD: TranDType[] = purchaseEditData.tranD
         const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
         const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
+
         reset({
             id: undefined,
+            userRefNo: tranH.userRefNo,
             tranTypeId: tranH.tranTypeId,
-            remarks:tranH.userRefNo,
+            remarks: tranH.userRefNo,
             isGstInvoice: Boolean(extGsTranD?.id),
-            debitAccId: tranD.find((item) => item.dc === "D")?.accId,
-            creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+            debitAccId: tranD.find((item) => item.dc === "C")?.accId,
+            creditAccId: tranD.find((item) => item.dc === "D")?.accId,
             gstin: extGsTranD?.gstin,
             isIgst: extGsTranD?.igst ? true : false,
-            purchaseEditData: undefined,
+            purchaseEditData: purchaseEditData,
+
+            totalCgst: extGsTranD?.cgst,
+            totalSgst: extGsTranD?.sgst,
+            totalIgst: extGsTranD?.igst,
+            totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
+            totalInvoiceAmount: tranD?.[0]?.amount || 0,
+
             purchaseLineItems: salePurchaseDetails.map((item) => ({
                 id: undefined,
                 productId: item.productId,
@@ -234,14 +297,18 @@ export function PurchaseReturnHeader() {
                 upcCode: item.upcCode || null,
                 productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
                 hsn: item.hsn.toString(),
-                qty: 1,
+                qty: item.qty,
                 gstRate: item.gstRate,
                 price: item.price,
                 discount: item.discount,
                 priceGst: item.priceGst,
-                lineRemarks: null,
-                serialNumbers: null
+                lineRemarks: item.remarks || null,
+                serialNumbers: item.serialNumbers || null
             }))
         })
+        dispatch(doPurchaseReturnTrigger())
+        // setToggle(!toggle)
+        // setTimeout(() => trigger(), 1)
+        // trigger()
     }
 }

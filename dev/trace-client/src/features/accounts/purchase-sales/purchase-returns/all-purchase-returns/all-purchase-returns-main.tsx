@@ -1,4 +1,3 @@
-// import { PurchaseCommonSubHeader } from "../../purchases/purchase-controls/purchase-common-sub-header";
 import { PurchaseLineItems } from "../../purchases/purchase-controls/purchase-line-items";
 import { PurchaseReturnHeader } from "../purchase-return-controls/purchase-return-header";
 import { PurchaseReturnSubHeader } from "../purchase-return-controls/purchase-return-sub-header";

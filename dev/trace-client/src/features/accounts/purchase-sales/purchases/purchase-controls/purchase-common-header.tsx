@@ -65,7 +65,7 @@ export function PurchaseCommonHeader() {
                     readOnly
                     disabled
                     title="Auto reference number"
-                    value={watch("autoRefNo") ?? undefined}
+                    value={watch("autoRefNo") ?? ''}
                 />
             </FormField>
 

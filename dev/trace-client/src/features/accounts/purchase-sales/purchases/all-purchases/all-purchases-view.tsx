@@ -36,7 +36,6 @@ export function AllPurchasesView({ className }: { className?: string }) {
   const {
     reset,
     setValue,
-    // watch
   } = useFormContext<PurchaseFormDataType>();
 
   const loadData = useCallback(async () => {

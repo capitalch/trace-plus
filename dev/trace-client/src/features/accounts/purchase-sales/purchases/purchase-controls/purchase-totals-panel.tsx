@@ -115,7 +115,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
             fieldName="totalCgst"
             onValueChange={(floatValue) => {
               setValue('totalSgst', floatValue || 0, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
-              trigger(['totalSgst','totalIgst'])
+              trigger(['totalSgst', 'totalIgst'])
             }}
             validate={(value) =>
               isValidCgst(value || 0) && isValidCgstSgstIgst()
@@ -132,7 +132,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
             fieldName="totalSgst"
             onValueChange={(floatValue) => {
               setValue('totalCgst', floatValue || 0, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
-              trigger(['totalCgst','totalIgst'])
+              trigger(['totalCgst', 'totalIgst'])
             }}
             validate={(value) =>
               isValidSgst(value || 0) && isValidCgstSgstIgst()
@@ -149,7 +149,7 @@ export function PurchaseTotalsPanel({ className }: { className?: string }) {
             fieldName="totalIgst"
             onValueChange={(floatValue) => {
               setValue('totalIgst', floatValue || 0, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
-              trigger(['totalCgst','totalSgst'])
+              trigger(['totalCgst', 'totalSgst'])
             }}
             validate={(value) =>
               isValidIgst(value || 0) && isValidCgstSgstIgst()

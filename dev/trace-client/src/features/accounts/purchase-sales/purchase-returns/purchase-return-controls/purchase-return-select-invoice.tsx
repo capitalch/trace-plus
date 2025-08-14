@@ -21,7 +21,7 @@ export function PurchaseReturnSelectInvoice({ onSelect }: { onSelect: (id: numbe
         />
         <CompSyncFusionGrid
             aggregates={getAggregates()}
-            allowTextWrap ={false}
+            allowTextWrap={false}
             buCode={buCode}
             className="mt-4"
             columns={getColumns()}
@@ -85,7 +85,7 @@ export function PurchaseReturnSelectInvoice({ onSelect }: { onSelect: (id: numbe
                 headerText: "Ref No",
                 type: "string",
                 width: 140,
-                clipMode:'EllipsisWithTooltip'
+                clipMode: 'EllipsisWithTooltip'
             },
             {
                 field: "userRefNo",
@@ -197,10 +197,11 @@ export function PurchaseReturnSelectInvoice({ onSelect }: { onSelect: (id: numbe
 
     function onRowSelected(args: any) {
         if (onSelect) {
-            onSelect(args?.data?.id)
             Utils.showHideModalDialogA({
                 isOpen: false
             })
+            // setTimeout(() => onSelect(args?.data?.id), 100)
+            onSelect(args?.data?.id)
         }
     }
 }

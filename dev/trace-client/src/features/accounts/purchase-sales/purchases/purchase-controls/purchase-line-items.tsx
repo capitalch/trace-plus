@@ -27,8 +27,9 @@ import { PurchaseProductSelectFromGrid } from "./purchase-product-select-from-gr
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const { isValidHsn } = useValidators();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { buCode, dbName, decodedDbParamsObject, defaultGstRate, maxGstRate } = useUtilsInfo();
-    console.log(maxGstRate)
+    const { buCode, dbName, decodedDbParamsObject, defaultGstRate, /*maxGstRate*/ } = useUtilsInfo();
+    // console.log(maxGstRate)
+    // const [,setRefresh] = useState({})
     const {
         control,
         register,
@@ -522,6 +523,13 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                 <div className="text-right min-w-[120px] flex gap-1">
                     <span className="text-gray-500">IGST:</span>
                     {Utils.toDecimalFormat(summary.igst.toNumber())}
+                </div>
+                <div>
+                    <button onClick={()=>{
+                        // setRefresh({})
+                        trigger()
+                        // computeLineItemValues(0)
+                    }}>Test</button>
                 </div>
             </div>
             <div className="text-right mr-4 flex gap-1">
