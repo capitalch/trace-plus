@@ -55,7 +55,7 @@ export function PurchaseReturnHeader() {
             return (Ret)
         }
     }
-    // const totalInvoiceAmount = watch('totalInvoiceAmount')
+    
     useEffect(() => {
         setTimeout(() => trigger(), 0) // trigger to redo computation of total amounts. This works
     }, [purchaseReturnToggle, trigger])
@@ -307,8 +307,5 @@ export function PurchaseReturnHeader() {
             }))
         })
         dispatch(doPurchaseReturnTrigger())
-        // setToggle(!toggle)
-        // setTimeout(() => trigger(), 1)
-        // trigger()
     }
 }

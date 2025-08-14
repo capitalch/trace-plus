@@ -22,17 +22,30 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - purchase return
-	- Check debitAccId and creditAccId
+														- Check debitAccId and creditAccId
 														- Startup
 	- Purchase return main
-		- Select from grid
+		- QA: Check at database level on submit
+			- New invoice
+			- Edit invoice
+			- Delete product
+			- Delete and edit together
+			- check clear all puts id's in deletedIds
+		- Preview
+		- Submit
+														- Select from grid
 														- view data
 														- select data
-			- populate data
-		- Header
-		- Subheader
-		- Line Items
+														- populate data
+														- Header
+														- Subheader
+														- Line Items
 	- View
+		- Grid data
+		- Edit
+		- Delete
+		- Copy
+		- preview
 - Purchase
 														- gst rate warning
 														- validate gst rate less than 28%. Implement max gst rate
