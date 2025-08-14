@@ -6,7 +6,7 @@ import { ExtGstTranDType, TraceDataObjectType, TranDType, XDataObjectType } from
 import { Utils } from "../../../../../utils/utils";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 
-export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataType>) {
+export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataType>, tranTypeId = Utils.getTranTypeId('Purchase')) {
     const { branchId, finYearId } = useUtilsInfo();
     const { getValues } = methods;
     const purchaseEditData = getValues('purchaseEditData')
@@ -18,7 +18,7 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
             tranDate: getValues("tranDate"),
             userRefNo: getValues("userRefNo"),
             remarks: getValues("remarks"),
-            tranTypeId: Utils.getTranTypeId('Purchase'),
+            tranTypeId: tranTypeId, //Utils.getTranTypeId('Purchase'),
             finYearId,
             branchId,
             posId: 1,

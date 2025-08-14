@@ -10,20 +10,26 @@ import { AllPurchaseReturnsMain } from "../../purchase-returns/all-purchase-retu
 import { AllPurchaseReturnsView } from "../../purchase-returns/all-purchase-returns/all-purchase-returns-view";
 import { clearPurchaseReturnFormData } from "../../purchase-returns/purchase-return-slice";
 import { CompAccountsContainer } from "../../../../../controls/components/comp-accounts-container";
+import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
+import { Utils } from "../../../../../utils/utils";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
+import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
+import { useAllPurchasesSubmit } from "../../purchases/all-purchases/all-purchases-submit-hook";
+// import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
 
 export function AllPurchaseReturns() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.purchaseReturn.savedFormData);
     const instance = DataInstancesMap.allPurchaseReturns;
-    const { branchId, finYearId, hasGstin, /*dbName, buCode, decodedDbParamsObject */ } = useUtilsInfo();
+    const { branchId, finYearId, hasGstin, dbName, buCode, /*decodedDbParamsObject*/ } = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultPurchaseFormValues() : savedFormData
         });
-    const { clearErrors, /*setError, getValues, setValue,*/ reset, /*watch, setFocus*/ } = methods;
-
+    const { clearErrors, /*setError, getValues, setValue,*/ reset, watch, /*setFocus*/ } = methods;
+    const { getTranHData } = useAllPurchasesSubmit(methods, Utils.getTranTypeId('PurchaseReturn'))
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, }
 
     const tabsInfo: CompTabsType = [
@@ -51,7 +57,26 @@ export function AllPurchaseReturns() {
         </FormProvider>
     );
 
-    async function finalizeAndSubmit() { }
+    async function finalizeAndSubmit() {
+        try {
+            const xData: XDataObjectType = getTranHData();
+            console.log(JSON.stringify(xData))
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: AllTables.TranH.name,
+            //     xData: xData,
+            // });
+
+            if (watch('id')) {
+                dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
+            }
+            resetAll()
+            Utils.showSaveMessage();
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     function getDefaultPurchaseFormValues(): PurchaseFormDataType {
         return ({
@@ -60,7 +85,7 @@ export function AllPurchaseReturns() {
             tranDate: '',
             userRefNo: null,
             remarks: null,
-            tranTypeId: 11,
+            tranTypeId: 10,
             isGstInvoice: hasGstin,
             isIgst: false,
 
@@ -109,7 +134,6 @@ export function AllPurchaseReturns() {
         clearErrors()
         reset(getDefaultPurchaseFormValues());
         dispatch(clearPurchaseReturnFormData());
-        // dispatch(setInvoicExists(false))
     }
 
 }

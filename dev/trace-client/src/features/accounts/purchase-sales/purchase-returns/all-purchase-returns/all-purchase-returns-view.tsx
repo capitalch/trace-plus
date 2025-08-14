@@ -16,6 +16,8 @@ import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { Messages } from "../../../../../utils/messages";
 import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
+// import { generatePurchaseInvoicePDF } from "../../purchases/all-purchases/purchase-invoice-jspdf";
+import { generatePurchaseReturnInvoicePDF } from "./purchase-return-invoice-jspdf";
 
 export function AllPurchaseReturnsView({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -25,7 +27,7 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
         currentDateFormat,
         buCode,
         branchId,
-        // branchName,
+        branchName,
         dbName,
         decodedDbParamsObject,
         finYearId,
@@ -54,7 +56,7 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                         ? null
                         : state.login.currentBranch?.branchId,
                     finYearId: finYearId,
-                    tranTypeId: 11,
+                    tranTypeId: 10,
                 },
             });
             let currentId: number | null | undefined = null;
@@ -344,10 +346,6 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
 
         reset({
             id: undefined,
-            // autoRefNo: tranH.autoRefNo,
-            // tranDate: tranH.tranDate,
-            // userRefNo: tranH.userRefNo,
-            // remarks: tranH.remarks,
             tranTypeId: tranH.tranTypeId,
             isGstInvoice: Boolean(extGsTranD?.id),
             debitAccId: tranD.find((item) => item.dc === "D")?.accId,
@@ -355,11 +353,6 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
             gstin: extGsTranD?.gstin,
             isIgst: extGsTranD?.igst ? true : false,
 
-            // totalCgst: extGsTranD?.cgst,
-            // totalSgst: extGsTranD?.sgst,
-            // totalIgst: extGsTranD?.igst,
-            // totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
-            // totalInvoiceAmount: tranD?.[0]?.amount || 0,
             purchaseEditData: undefined,
             purchaseLineItems: salePurchaseDetails.map((item) => ({
                 id: undefined,
@@ -373,19 +366,15 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 price: item.price,
                 discount: item.discount,
                 priceGst: item.priceGst,
-                // cgst: item.cgst,
-                // sgst: item.sgst,
-                // igst: item.igst,
                 lineRemarks: null,
                 serialNumbers: null
             }))
 
         })
         dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
-        //   dispatch(setInvoicExists(false))
     }
 
-async function handleOnDelete(id: number | string) {
+    async function handleOnDelete(id: number | string) {
         Utils.showDeleteConfirmDialog(async () => {
             try {
                 if (!id) {
@@ -453,10 +442,9 @@ async function handleOnDelete(id: number | string) {
     }
 
     async function handleOnPreview(data: PurchaseFormDataType) {
-        // dispatch(triggerPurchaseInvoicePreview(data.id!));
-        // const editData: any = await getPurchaseDetailsOnId(data.id)
-        // const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-        // generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
+        const editData: any = await getPurchaseDetailsOnId(data.id)
+        const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+        generatePurchaseReturnInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
     }
 
     function handleOnRowDataBound(args: RowDataBoundEventArgs) {
@@ -464,7 +452,7 @@ async function handleOnDelete(id: number | string) {
 
         if (args.row) {
             if (rowData.bColor) {
-                args.row.classList.add("bg-green-50",);
+                args.row.classList.add("bg-red-50",);
             }
         }
     }

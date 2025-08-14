@@ -16,17 +16,17 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { isValid } from "date-fns";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { PurchaseFormDataType } from "../../purchases/all-purchases/all-purchases";
-import { generatePurchaseInvoicePDF } from "../../purchases/all-purchases/purchase-invoice-jspdf";
 import { Utils } from "../../../../../utils/utils";
 import { PurchaseReturnSelectInvoice } from "./purchase-return-select-invoice";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 import { useEffect } from "react";
 import { doPurchaseReturnTrigger } from "../purchase-return-slice";
+import { generatePurchaseReturnInvoicePDF } from "../all-purchase-returns/purchase-return-invoice-jspdf";
 
 export function PurchaseReturnHeader() {
     const dispatch:AppDispatchType = useDispatch()
-    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchaseReturns]?.activeTabIndex)
     const { branchName, buCode, dbName, decodedDbParamsObject, currentDateFormat } = useUtilsInfo();
     const purchaseReturnToggle = useSelector((state:RootStateType)=>state.purchaseReturn.toggle)
     const { checkAllowedDate } = useValidators();
@@ -250,7 +250,7 @@ export function PurchaseReturnHeader() {
     function handleOnPreview() {
         const purchaseEditData: any = getValues('purchaseEditData') || {}
         if (_.isEmpty(purchaseEditData)) return
-        generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
+        generatePurchaseReturnInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
     }
 
     function handleSearchInvoice() {

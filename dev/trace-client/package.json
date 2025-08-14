@@ -16,8 +16,8 @@
     "@syncfusion/ej2-base": "^30.2.4",
     "@syncfusion/ej2-pdf-export": "^30.2.4",
     "@syncfusion/ej2-react-buttons": "^30.2.4",
-    "@syncfusion/ej2-react-dropdowns": "^30.2.4",
-    "@syncfusion/ej2-react-grids": "^30.2.4",
+    "@syncfusion/ej2-react-dropdowns": "^30.2.5",
+    "@syncfusion/ej2-react-grids": "^30.2.5",
     "@syncfusion/ej2-react-inputs": "^30.2.4",
     "@syncfusion/ej2-react-popups": "^30.2.4",
     "@syncfusion/ej2-react-splitbuttons": "^30.2.4",
@@ -52,7 +52,7 @@
     "react-select": "^5.10.2",
     "react-sliding-pane": "^7.3.0",
     "rxjs": "^7.8.2",
-    "sweetalert2": "^11.22.3",
+    "sweetalert2": "^11.22.4",
     "url-join": "^5.0.0",
     "use-deep-compare-effect": "^1.8.1"
   },
@@ -60,10 +60,10 @@
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/react": "^19.1.9",
+    "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
-    "@typescript-eslint/eslint-plugin": "^8.39.0",
-    "@typescript-eslint/parser": "^8.39.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
     "@vitejs/plugin-react-swc": "^4.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^8.56.0N",
@@ -76,6 +76,6 @@
     "tailwindcss": "^4.1.11",
     "terser": "^5.43.1",
     "typescript": "^5.9.2",
-    "vite": "^7.1.1"
+    "vite": "^7.1.2"
   }
 }

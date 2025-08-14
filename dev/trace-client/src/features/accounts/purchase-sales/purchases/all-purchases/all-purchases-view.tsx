@@ -455,7 +455,6 @@ export function AllPurchasesView({ className }: { className?: string }) {
   }
 
   async function handleOnPreview(data: PurchaseFormDataType) {
-    // dispatch(triggerPurchaseInvoicePreview(data.id!));
     const editData: any = await getPurchaseDetailsOnId(data.id)
     const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
     generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)

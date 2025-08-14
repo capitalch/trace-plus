@@ -31,7 +31,7 @@ valid gstin: 24AAACC1206D1ZM
 			- Delete product
 			- Delete and edit together
 			- check clear all puts id's in deletedIds
-		- Preview
+														- Preview
 		- Submit
 														- Select from grid
 														- view data
@@ -40,12 +40,12 @@ valid gstin: 24AAACC1206D1ZM
 														- Header
 														- Subheader
 														- Line Items
-	- View
-		- Grid data
-		- Edit
-		- Delete
-		- Copy
-		- preview
+													- View
+														- Grid data
+														- Edit
+														- Delete
+														- Copy
+														- preview
 - Purchase
 														- gst rate warning
 														- validate gst rate less than 28%. Implement max gst rate
