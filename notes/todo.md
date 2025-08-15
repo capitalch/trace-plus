@@ -24,8 +24,17 @@ valid gstin: 24AAACC1206D1ZM
 - Debit notes
 														- Startup
 	- Main
+		- Amount
 		- Submit
+		- Preview
+		- Gst
+			- isIgst
+			- cgst, sgst, igst
 	- View
+		- edit
+		- delete
+		- copy
+		- preview
 	- QA
 												- purchase return
 														- Purchase and return decial point 2 digits round

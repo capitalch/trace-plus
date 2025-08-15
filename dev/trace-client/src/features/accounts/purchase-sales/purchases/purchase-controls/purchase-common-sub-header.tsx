@@ -15,11 +15,9 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderType) {
     const instance = DataInstancesMap.allPurchases;
     const { isValidGstin } = useValidators();
-    const { buCode, dbName, decodedDbParamsObject, /*finYearId*/ } = useUtilsInfo();
+    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const {
-        // setError,
         setValue,
-        // getValues,
         watch,
         register,
         trigger,

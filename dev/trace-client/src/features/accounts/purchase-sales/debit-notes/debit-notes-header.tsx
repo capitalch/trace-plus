@@ -1,62 +1,35 @@
 import { useFormContext } from "react-hook-form";
-import _ from 'lodash';
-import { useValidators } from "../../../../../utils/validators-hook";
-import { PurchaseFormDataType } from "../all-purchases/all-purchases";
-import { FormField } from "../../../../../controls/widgets/form-field";
+import _ from 'lodash'
+// import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { useValidators } from "../../../../utils/validators-hook";
+import { DebitNoteFormDataType } from "./debit-notes";
+import { FormField } from "../../../../controls/widgets/form-field";
 import clsx from "clsx";
-import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
-import { Messages } from "../../../../../utils/messages";
-import { IconReset } from "../../../../../controls/icons/icon-reset";
-import { IconSubmit } from "../../../../../controls/icons/icon-submit";
-import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
-import { RootStateType } from "../../../../../app/store";
-import { useSelector } from "react-redux";
+import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
+import { Messages } from "../../../../utils/messages";
+import { IconReset } from "../../../../controls/icons/icon-reset";
+import { IconSubmit } from "../../../../controls/icons/icon-submit";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
-import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
-import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
-import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-// import { isValid } from "date-fns";
-import { useMemo } from "react";
+import { IconPreview1 } from "../../../../controls/icons/icon-preview1";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+import { RootStateType } from "../../../../app/store";
+import { useSelector } from "react-redux";
 
-export function PurchaseCommonHeader() {
-    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
-    const isInvoiceExists = useSelector((state: RootStateType) => state.purchase.isInvoiceExists)
-    const { branchName, currentDateFormat } = useUtilsInfo();
+export function DebitNotesHeader() {
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
+    // const { branchName, currentDateFormat } = useUtilsInfo();
     const { checkAllowedDate } = useValidators();
     const {
         setValue,
         watch,
         register,
-        getValues,
+        // getValues,
         formState: { errors, isSubmitting, isDirty, isValid }
-    } = useFormContext<PurchaseFormDataType>();
-    const { resetAll, checkPurchaseInvoiceExists }: any = useFormContext();
-
-    const onChangeUserRefNo = useMemo(
-        () =>
-            _.debounce(() => {
-                checkPurchaseInvoiceExists();
-            }, 3000), []
-    );
-
-    const getPrintPreview = () => {
-        let Ret = <></>
-        if (activeTabIndex === 0) {
-            const id = watch('id');
-            if (id) {
-                Ret = <TooltipComponent content='Print Preview' className="flex">
-                    <button type='button' onClick={() => handleOnPreview()}>
-                        <IconPreview1 className="text-blue-500 h-8 w-8" />
-                    </button>
-                </TooltipComponent>
-            }
-            return (Ret)
-        }
-    }
+    } = useFormContext<DebitNoteFormDataType>();
+    const { resetAll }: any = useFormContext<DebitNoteFormDataType>();
 
     return (
         <div className="flex gap-6 flex-wrap relative">
-
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-52 ">
                 <input
@@ -84,23 +57,13 @@ export function PurchaseCommonHeader() {
                 />
             </FormField>
 
-            {/* User ref no / Invoice no*/}
-            <FormField required label="Invoice No" error={errors?.userRefNo?.message}>
+            {/* User ref no */}
+            <FormField label="User Ref No">
                 <input
                     type="text"
                     className={clsx(inputFormFieldStyles, 'mt-1')}
-                    placeholder="Enter invoice no"
-                    {...register("userRefNo", {
-                        required: Messages.errRequired,
-                        onChange: onChangeUserRefNo,
-                        validate: () => {
-                            if (isInvoiceExists) {
-                                return (Messages.errInvoiceExists)
-                            } else {
-                                return (true)
-                            }
-                        }
-                    })}
+                    placeholder="Enter user ref no"
+                    {...register("userRefNo")}
                 />
             </FormField>
 
@@ -114,18 +77,18 @@ export function PurchaseCommonHeader() {
                 />
             </FormField>
 
-            {/* Is GST Invoice */}
-            <FormField label="GST Invoice ?" className="items-center ml-4">
+            {/* Is GST Applicable */}
+            <FormField label="GST Applicable ?" className="items-center ml-4">
                 <div className="flex items-center gap-2 mt-3">
                     <button
                         type="button"
                         className={clsx(
                             "px-4 py-1 text-sm rounded-full border",
-                            watch("isGstInvoice")
+                            watch("isGstApplicable")
                                 ? "bg-green-500 text-white border-green-600"
                                 : "bg-white text-gray-600 border-gray-300"
                         )}
-                        onClick={() => setValue("isGstInvoice", true, { shouldDirty: true })}
+                        onClick={() => setValue("isGstApplicable", true, { shouldDirty: true })}
                     >
                         Yes
                     </button>
@@ -133,11 +96,11 @@ export function PurchaseCommonHeader() {
                         type="button"
                         className={clsx(
                             "px-4 py-1 text-sm rounded-full border",
-                            !watch("isGstInvoice")
+                            !watch("isGstApplicable")
                                 ? "bg-red-500 text-white border-red-600"
                                 : "bg-white text-gray-600 border-gray-300"
                         )}
-                        onClick={() => setValue("isGstInvoice", false, { shouldDirty: true })}
+                        onClick={() => setValue("isGstApplicable", false, { shouldDirty: true })}
                     >
                         No
                     </button>
@@ -170,15 +133,29 @@ export function PurchaseCommonHeader() {
             {/* Edit / New label */}
             <div className="flex absolute right-0 -top-13 gap-2">
                 {getPrintPreview()}
-                <label className=" text-amber-500 font-medium text-lg">{watch('id') ? 'Edit Purchase' : 'New Purchase'}</label>
+                <label className=" text-amber-500 font-medium text-lg">{watch('id') ? 'Edit Debit Note' : 'New Debit Note'}</label>
             </div>
         </div>
-    );
+    )
 
-    function handleOnPreview() {
-        const purchaseEditData: any = getValues('purchaseEditData') || {}
-        if (_.isEmpty(purchaseEditData)) return
-        generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
+    function getPrintPreview() {
+        let Ret = <></>
+        if (activeTabIndex === 0) {
+            const id = watch('id');
+            if (id) {
+                Ret = <TooltipComponent content='Print Preview' className="flex">
+                    <button type='button' onClick={() => handleOnPreview()}>
+                        <IconPreview1 className="text-blue-500 h-8 w-8" />
+                    </button>
+                </TooltipComponent>
+            }
+            return (Ret)
+        }
     }
 
+    function handleOnPreview() {
+        // const purchaseEditData: any = getValues('purchaseEditData') || {}
+        // if (_.isEmpty(purchaseEditData)) return
+        // generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
+    }
 }

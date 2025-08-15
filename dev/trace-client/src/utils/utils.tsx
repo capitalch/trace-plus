@@ -361,7 +361,7 @@ function getToken() {
   return state.login.token;
 }
 
-function getTranTypeId(tranType: TranType): number | undefined {
+function getTranTypeId(tranType: TranType): number{
   return (TranTypeMap[tranType])
 }
 
@@ -928,7 +928,7 @@ type UtilsType = {
   getRunningFinYear: () => FinYearType;
   getRunningFinYearId: () => number;
   getToken: () => string | undefined;
-  getTranTypeId: (tranTypeName: TranType) => number | undefined;
+  getTranTypeId: (tranTypeName: TranType) => number;
   getTranTypeName: (tranTypeId: number) => TranType | undefined;
   getUnitInfo: () => UnitInfoType | undefined;
   getUserDetails: () => UserDetailsType | undefined;

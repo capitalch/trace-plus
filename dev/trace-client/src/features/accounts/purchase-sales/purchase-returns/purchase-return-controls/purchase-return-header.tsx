@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { isValid } from "date-fns";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { PurchaseFormDataType } from "../../purchases/all-purchases/all-purchases";
 import { Utils } from "../../../../../utils/utils";
@@ -21,7 +20,6 @@ import { PurchaseReturnSelectInvoice } from "./purchase-return-select-invoice";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 import { useEffect } from "react";
-// import { doPurchaseReturnTrigger } from "../purchase-return-slice";
 import { generatePurchaseReturnInvoicePDF } from "../all-purchase-returns/purchase-return-invoice-jspdf";
 import { triggerPurchaseReturn } from "../purchase-return-slice";
 
@@ -37,7 +35,7 @@ export function PurchaseReturnHeader() {
         watch,
         register,
         getValues,
-        formState: { errors, isSubmitting, isDirty, },
+        formState: { errors, isSubmitting, isDirty, isValid},
         trigger
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll }: any = useFormContext();
