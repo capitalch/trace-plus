@@ -16,7 +16,6 @@ import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { Messages } from "../../../../../utils/messages";
 import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
-// import { generatePurchaseInvoicePDF } from "../../purchases/all-purchases/purchase-invoice-jspdf";
 import { generatePurchaseReturnInvoicePDF } from "./purchase-return-invoice-jspdf";
 
 export function AllPurchaseReturnsView({ className }: { className?: string }) {
@@ -437,7 +436,6 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 serialNumbers: item.serialNumbers || null
             }))
         })
-        // dispatch(setInvoicExists(false))
         dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
     }
 

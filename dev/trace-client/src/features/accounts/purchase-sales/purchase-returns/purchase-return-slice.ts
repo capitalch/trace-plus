@@ -18,7 +18,7 @@ const purchaseReturnSlice = createSlice({
         clearPurchaseReturnFormData(state) {
             state.savedFormData = null;
         },
-        doPurchaseReturnTrigger(state,){
+        triggerPurchaseReturn(state,){
             state.toggle = !state.toggle
         }
         // setInvoicExists(state, action: PayloadAction<boolean>) {
@@ -31,7 +31,7 @@ export const purchaseReturnReducer = purchaseReturnSlice.reducer;
 export const {
     savePurchaseReturnFormData
     , clearPurchaseReturnFormData
-    , doPurchaseReturnTrigger
+    , triggerPurchaseReturn
     // , setInvoicExists
 } = purchaseReturnSlice.actions
 

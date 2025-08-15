@@ -21,8 +21,9 @@ import { PurchaseReturnSelectInvoice } from "./purchase-return-select-invoice";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 import { useEffect } from "react";
-import { doPurchaseReturnTrigger } from "../purchase-return-slice";
+// import { doPurchaseReturnTrigger } from "../purchase-return-slice";
 import { generatePurchaseReturnInvoicePDF } from "../all-purchase-returns/purchase-return-invoice-jspdf";
+import { triggerPurchaseReturn } from "../purchase-return-slice";
 
 export function PurchaseReturnHeader() {
     const dispatch:AppDispatchType = useDispatch()
@@ -278,11 +279,11 @@ export function PurchaseReturnHeader() {
             tranTypeId: tranH.tranTypeId,
             remarks: tranH.userRefNo,
             isGstInvoice: Boolean(extGsTranD?.id),
-            debitAccId: tranD.find((item) => item.dc === "C")?.accId,
+            debitAccId: tranD.find((item) => item.dc === "C")?.accId, //Mind it, this is opposite
             creditAccId: tranD.find((item) => item.dc === "D")?.accId,
             gstin: extGsTranD?.gstin,
             isIgst: extGsTranD?.igst ? true : false,
-            purchaseEditData: purchaseEditData,
+            purchaseEditData: undefined, // purchaseEditData os used for id later on
 
             totalCgst: extGsTranD?.cgst,
             totalSgst: extGsTranD?.sgst,
@@ -306,6 +307,6 @@ export function PurchaseReturnHeader() {
                 serialNumbers: item.serialNumbers || null
             }))
         })
-        dispatch(doPurchaseReturnTrigger())
+        dispatch(triggerPurchaseReturn())
     }
 }

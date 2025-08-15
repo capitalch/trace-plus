@@ -42,6 +42,8 @@ import { InventoryReportsContainer } from "../../features/accounts/inventory/rep
 import { AllVouchers } from "../../features/accounts/vouchers/all-vouchers/all-vouchers";
 import { AllPurchases } from "../../features/accounts/purchase-sales/purchases/all-purchases/all-purchases";
 import { AllPurchaseReturns } from "../../features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns";
+import { DebitNotes } from "../../features/accounts/purchase-sales/debit-notes/debit-notes";
+import { CreditNotes } from "../../features/accounts/purchase-sales/credit-notes/credit-notes";
 
 export const appRouter = createBrowserRouter(
   [
@@ -114,16 +116,24 @@ export const appRouter = createBrowserRouter(
         },
         {
           path: "/all-vouchers",
-          element: <AllVouchers/>
+          element: <AllVouchers />
         },
         {
           path: "/all-purchases",
-          element: <AllPurchases/>
+          element: <AllPurchases />
         },
         {
           path: "/all-purchase-returns",
-          element: <AllPurchaseReturns/>
-        }
+          element: <AllPurchaseReturns />
+        },
+        {
+          path: '/debit-notes',
+          element: <DebitNotes />
+        },
+        {
+          path: '/credit-notes',
+          element: <CreditNotes />
+        },
       ]
     },
     {

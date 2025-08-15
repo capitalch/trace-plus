@@ -8,27 +8,27 @@ import { PurchaseFormDataType, PurchaseLineItemType } from "../../purchases/all-
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchaseReturnsMain } from "../../purchase-returns/all-purchase-returns/all-purchase-returns-main";
 import { AllPurchaseReturnsView } from "../../purchase-returns/all-purchase-returns/all-purchase-returns-view";
-import { clearPurchaseReturnFormData } from "../../purchase-returns/purchase-return-slice";
+import { clearPurchaseReturnFormData, savePurchaseReturnFormData } from "../../purchase-returns/purchase-return-slice";
 import { CompAccountsContainer } from "../../../../../controls/components/comp-accounts-container";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../../utils/utils";
-import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { useAllPurchasesSubmit } from "../../purchases/all-purchases/all-purchases-submit-hook";
-// import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
+import { useEffect } from "react";
 
 export function AllPurchaseReturns() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.purchaseReturn.savedFormData);
     const instance = DataInstancesMap.allPurchaseReturns;
-    const { branchId, finYearId, hasGstin, dbName, buCode, /*decodedDbParamsObject*/ } = useUtilsInfo();
+    const { branchId, finYearId, hasGstin, dbName, buCode } = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultPurchaseFormValues() : savedFormData
         });
-    const { clearErrors, /*setError, getValues, setValue,*/ reset, watch, /*setFocus*/ } = methods;
+    const { clearErrors, getValues, setValue, reset, watch, } = methods;
     const { getTranHData } = useAllPurchasesSubmit(methods, Utils.getTranTypeId('PurchaseReturn'))
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, }
 
@@ -43,6 +43,20 @@ export function AllPurchaseReturns() {
         }
     ];
 
+    useEffect(() => {
+        if (savedFormData) {
+            reset(_.cloneDeep(savedFormData),);
+            setValue('toggle', !savedFormData.toggle, { shouldDirty: true }) // making forcefully dirty
+        }
+    }, [savedFormData, reset, setValue]);
+
+    useEffect(() => {
+        return (() => {
+            const data = getValues()
+            dispatch(savePurchaseReturnFormData(data));
+        })
+    }, [dispatch, getValues])
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
@@ -51,7 +65,6 @@ export function AllPurchaseReturns() {
                         Purchase Return
                     </label>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
-
                 </CompAccountsContainer>
             </form>
         </FormProvider>
@@ -61,12 +74,12 @@ export function AllPurchaseReturns() {
         try {
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
-            // await Utils.doGenericUpdate({
-            //     buCode: buCode || "",
-            //     dbName: dbName || "",
-            //     tableName: AllTables.TranH.name,
-            //     xData: xData,
-            // });
+            await Utils.doGenericUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: AllTables.TranH.name,
+                xData: xData,
+            });
 
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)

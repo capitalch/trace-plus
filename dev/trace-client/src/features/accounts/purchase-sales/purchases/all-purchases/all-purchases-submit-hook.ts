@@ -10,7 +10,6 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
     const { branchId, finYearId } = useUtilsInfo();
     const { getValues } = methods;
     const purchaseEditData = getValues('purchaseEditData')
-    // const isEditMode = Boolean(getValues('id'))
 
     function getTranHData(): XDataObjectType {
         return {
@@ -32,7 +31,6 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
             tableName: AllTables.TranD.name,
             fkeyName: "tranHeaderId",
             xData: getTranDData(),
-            // deletedIds: [...deletedIds],
         }];
     }
 
@@ -66,7 +64,6 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
     }
 
     function getExtGstTranDDetails(): TraceDataObjectType | undefined {
-        // if (!getValues('isGstInvoice')) return;
         const extGstTranD: ExtGstTranDType | null = purchaseEditData?.extGstTranD || null
         return {
             tableName: AllTables.ExtGstTranD.name,
@@ -77,9 +74,7 @@ export function useAllPurchasesSubmit(methods: UseFormReturn<PurchaseFormDataTyp
                 cgst: getValues('totalCgst'),
                 sgst: getValues('totalSgst'),
                 igst: getValues('totalIgst'),
-                isInput: true,
-                // rate: null,
-                // hsn: null,
+                isInput: (tranTypeId === 5) ? true : false,
             },
         };
     }

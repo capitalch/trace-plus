@@ -78,12 +78,12 @@ export const MasterMenuData: MenuDataType = {
         {
           id: "25",
           label: "Debit notes",
-          path: "/blogs",
+          path: "/debit-notes",
         },
         {
           id: "26",
           label: "Credit notes",
-          path: "/blogs",
+          path: "/credit-notes",
         },
       ],
     },

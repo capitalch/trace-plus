@@ -346,10 +346,6 @@ export function AllPurchasesView({ className }: { className?: string }) {
 
     reset({
       id: undefined,
-      // autoRefNo: tranH.autoRefNo,
-      // tranDate: tranH.tranDate,
-      // userRefNo: tranH.userRefNo,
-      // remarks: tranH.remarks,
       tranTypeId: tranH.tranTypeId,
       isGstInvoice: Boolean(extGsTranD?.id),
       debitAccId: tranD.find((item) => item.dc === "D")?.accId,
@@ -357,11 +353,6 @@ export function AllPurchasesView({ className }: { className?: string }) {
       gstin: extGsTranD?.gstin,
       isIgst: extGsTranD?.igst ? true : false,
 
-      // totalCgst: extGsTranD?.cgst,
-      // totalSgst: extGsTranD?.sgst,
-      // totalIgst: extGsTranD?.igst,
-      // totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
-      // totalInvoiceAmount: tranD?.[0]?.amount || 0,
       purchaseEditData: undefined,
       purchaseLineItems: salePurchaseDetails.map((item) => ({
         id: undefined,
@@ -375,9 +366,6 @@ export function AllPurchasesView({ className }: { className?: string }) {
         price: item.price,
         discount: item.discount,
         priceGst: item.priceGst,
-        // cgst: item.cgst,
-        // sgst: item.sgst,
-        // igst: item.igst,
         lineRemarks: null,
         serialNumbers: null
       }))

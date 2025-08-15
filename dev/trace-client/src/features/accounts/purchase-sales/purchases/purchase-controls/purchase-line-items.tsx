@@ -428,17 +428,18 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
 
         const base = price.minus(discount);
-        const subTotal = qty.times(base);
+        const subTotal = qty.times(base).toDecimalPlaces(2);
         const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
-        const amount = subTotal.times(multiplier)
+        const amount = subTotal.times(multiplier).toDecimalPlaces(2)
         const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
         if (isIgst) {
             setValue(`purchaseLineItems.${index}.cgst`, 0)
             setValue(`purchaseLineItems.${index}.sgst`, 0)
-            setValue(`purchaseLineItems.${index}.igst`, gst.toNumber())
+            setValue(`purchaseLineItems.${index}.igst`, gst.toDecimalPlaces(2).toNumber())
         } else {
-            setValue(`purchaseLineItems.${index}.cgst`, gst.dividedBy(2).toNumber())
-            setValue(`purchaseLineItems.${index}.sgst`, gst.dividedBy(2).toNumber())
+            const halfGst = gst.dividedBy(2).toDecimalPlaces(2);
+            setValue(`purchaseLineItems.${index}.cgst`, halfGst.toNumber())
+            setValue(`purchaseLineItems.${index}.sgst`, halfGst.toNumber())
             setValue(`purchaseLineItems.${index}.igst`, 0)
         }
 
@@ -525,10 +526,8 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                     {Utils.toDecimalFormat(summary.igst.toNumber())}
                 </div>
                 <div>
-                    <button onClick={()=>{
-                        // setRefresh({})
+                    <button onClick={() => {
                         trigger()
-                        // computeLineItemValues(0)
                     }}>Test</button>
                 </div>
             </div>
@@ -605,7 +604,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         const divisor = gstRate.dividedBy(100).plus(1);
         const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
 
-        setValue(`purchaseLineItems.${index}.price`, price.toNumber(), {
+        setValue(`purchaseLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
             shouldDirty: true,
             shouldValidate: true
         });
@@ -618,7 +617,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         const multiplier = gstRate.dividedBy(100).plus(1);
         const priceGst = multiplier.times(price);
 
-        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toNumber(), {
+        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
             shouldDirty: true,
             shouldValidate: true
         });

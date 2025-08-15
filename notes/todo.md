@@ -21,18 +21,25 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
-- purchase return
+- Debit notes
+														- Startup
+	- Main
+		- Submit
+	- View
+	- QA
+												- purchase return
+														- Purchase and return decial point 2 digits round
 														- Check debitAccId and creditAccId
 														- Startup
-	- Purchase return main
-		- QA: Check at database level on submit
-			- New invoice
-			- Edit invoice
-			- Delete product
-			- Delete and edit together
-			- check clear all puts id's in deletedIds
+													- Purchase return main
+														- QA: Check at database level on submit
+														- New invoice
+														- Edit invoice
+														- Delete product
+														- Delete and edit together
+														- check clear all puts id's in deletedIds
 														- Preview
-		- Submit
+														- Submit
 														- Select from grid
 														- view data
 														- select data
@@ -46,7 +53,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Delete
 														- Copy
 														- preview
-- Purchase
+												- Purchase
 														- gst rate warning
 														- validate gst rate less than 28%. Implement max gst rate
 													- QA: Check at database level on submit
@@ -61,7 +68,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Product code showing red
 														- Show validation error boxes background red in totals panel
 														- Startup
-	- Purchase main
+												- Purchase main
 													- Unique invoice no
 														- provide server validation at client for userRefNo
 														- Animate
