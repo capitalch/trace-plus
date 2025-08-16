@@ -7,6 +7,7 @@ import { Messages } from "../../../../utils/messages";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import clsx from "clsx";
 
+
 export function DebitNotesLineItems() {
     const instance = DataInstancesMap.debitNotes;
     const {
@@ -59,7 +60,7 @@ export function DebitNotesLineItems() {
                 </FormField>
 
                 {/* Remarks */}
-                <FormField className="w-xl" label="Line Remarks">
+                <FormField className="" label="Line Remarks">
                     <textarea
                         rows={3}
                         className={clsx(inputFormFieldStyles, "mt-1")}

@@ -40,6 +40,7 @@ const Messages = {
     'Incremented financial year does not exist. Please create a new financial year in the accounts',
   errInputMustBeUrl: 'Input must be a valid URL',
   errInvalidAddress: 'Invalid address format',
+  errInvalidAmount: 'Invalid amount',
   errInvalidClientName: 'Invalid client name',
   errInvalidDate: 'Invalid date',
   errInvalidEmail: 'Invalid email',

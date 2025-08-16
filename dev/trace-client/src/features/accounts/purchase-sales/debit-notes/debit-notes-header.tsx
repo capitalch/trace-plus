@@ -14,20 +14,23 @@ import { IconPreview1 } from "../../../../controls/icons/icon-preview1";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { RootStateType } from "../../../../app/store";
 import { useSelector } from "react-redux";
+// import { JSX } from "react";
+
 
 export function DebitNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
     // const { branchName, currentDateFormat } = useUtilsInfo();
     const { checkAllowedDate } = useValidators();
     const {
-        setValue,
+        // setValue,
         watch,
         register,
         // getValues,
         formState: { errors, isSubmitting, isDirty, isValid }
     } = useFormContext<DebitNoteFormDataType>();
     const { resetAll }: any = useFormContext<DebitNoteFormDataType>();
-
+    // const inputClass = " border-gray-300 focus:outline-none text-right font-semibold text-[16px] w-[10rem] h-7 rounded-md";
+    // const errorClass = 'bg-red-100 border-red-500 border-2'
     return (
         <div className="flex gap-6 flex-wrap relative">
             {/* Auto ref no */}
@@ -68,43 +71,13 @@ export function DebitNotesHeader() {
             </FormField>
 
             {/* Remarks */}
-            <FormField className="min-w-60 w-auto" label="Remarks">
+            <FormField className="w-lg" label="Remarks">
                 <textarea
-                    rows={3}
-                    className={clsx(inputFormFieldStyles, "text-xs mt-1")}
+                    rows={4}
+                    className={clsx(inputFormFieldStyles, "mt-1")}
                     placeholder="Enter remarks"
                     {...register("remarks")}
                 />
-            </FormField>
-
-            {/* Is GST Applicable */}
-            <FormField label="GST Applicable ?" className="items-center ml-4">
-                <div className="flex items-center gap-2 mt-3">
-                    <button
-                        type="button"
-                        className={clsx(
-                            "px-4 py-1 text-sm rounded-full border",
-                            watch("isGstApplicable")
-                                ? "bg-green-500 text-white border-green-600"
-                                : "bg-white text-gray-600 border-gray-300"
-                        )}
-                        onClick={() => setValue("isGstApplicable", true, { shouldDirty: true })}
-                    >
-                        Yes
-                    </button>
-                    <button
-                        type="button"
-                        className={clsx(
-                            "px-4 py-1 text-sm rounded-full border",
-                            !watch("isGstApplicable")
-                                ? "bg-red-500 text-white border-red-600"
-                                : "bg-white text-gray-600 border-gray-300"
-                        )}
-                        onClick={() => setValue("isGstApplicable", false, { shouldDirty: true })}
-                    >
-                        No
-                    </button>
-                </div>
             </FormField>
 
             {/* Reset submit */}
