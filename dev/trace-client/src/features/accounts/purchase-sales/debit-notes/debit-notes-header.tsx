@@ -12,8 +12,6 @@ import { IconPreview1 } from "../../../../controls/icons/icon-preview1";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { RootStateType } from "../../../../app/store";
 import { useSelector } from "react-redux";
-// import { ChangeEvent } from "react";
-
 
 export function DebitNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
@@ -26,7 +24,7 @@ export function DebitNotesHeader() {
         formState: { errors, isSubmitting, isDirty, isValid }
     } = useFormContext<DebitNoteFormDataType>();
     const isGstApplicable = watch('isGstApplicable')
-    const { resetAll }: any = useFormContext<DebitNoteFormDataType>();
+    const { computeGst, resetAll }: any = useFormContext<DebitNoteFormDataType>();
     const errorClass = 'border-red-500 bg-red-50';
     const inputClassLeft = "border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium text-sm w-full rounded-lg px-3 transition-all duration-200";
 
@@ -97,7 +95,10 @@ export function DebitNotesHeader() {
                                 )}
                                 onClick={() => {
                                     setValue("isGstApplicable", true, { shouldDirty: true })
-                                    setTimeout(() => trigger(), 0)
+                                    computeGst()
+                                    setTimeout(() => {
+                                        trigger() // Necessary to trigger validations
+                                    }, 0)
                                 }}
                             >
                                 Yes
@@ -121,12 +122,13 @@ export function DebitNotesHeader() {
                         <input
                             type="checkbox"
                             {...register("isIgst", {
-                                // onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                                //     // console.log(e.target.checked)
-                                //     // trigger();
-                                //     // setValue('isIgst', e.target.checked, { shouldDirty: true, shouldTouch: true, shouldValidate: true })
-                                //     // trigger()
-                                // },
+                                onChange: () => {
+                                    computeGst()
+                                    // console.log(e.target.checked)
+                                    // trigger();
+                                    // setValue('isIgst', e.target.checked, { shouldDirty: true, shouldTouch: true, shouldValidate: true })
+                                    // trigger()
+                                },
                             })}
                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         />

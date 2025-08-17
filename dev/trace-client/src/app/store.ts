@@ -11,6 +11,7 @@ import { accountPickerTreeReducer } from "../controls/redux-components/account-p
 import { voucherReducer } from "../features/accounts/vouchers/voucher-slice";
 import { purchaseReducer } from "../features/accounts/purchase-sales/purchases/purchase-slice";
 import { purchaseReturnReducer } from "../features/accounts/purchase-sales/purchase-returns/purchase-return-slice";
+import { debitNotesReducer } from "../features/accounts/purchase-sales/debit-notes/debit-notes-slice";
 
 const rootReducer = combineReducers({
   accounts: accountsReducer,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   vouchers: voucherReducer,
   purchase: purchaseReducer,
   purchaseReturn: purchaseReturnReducer,
+  debitNotes: debitNotesReducer,
 });
 
 const reducerWithReset = (state: any, action: any) => {

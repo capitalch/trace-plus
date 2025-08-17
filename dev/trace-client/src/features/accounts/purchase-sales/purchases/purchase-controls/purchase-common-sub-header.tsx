@@ -62,13 +62,11 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                 className=""
             >
                 <AccountPickerFlat
-                    // accountOptions={accountOptions}
                     accClassNames={['debtor', 'creditor', 'bank', 'cash', 'card', 'ecash']}
                     instance={`${instance}-credit-account`}
                     {...register('creditAccId', {
                         required: Messages.errRequired,
                     })}
-                    // loadData={loadData}
                     onChange={(val) => {
                         setValue('creditAccId', val, {
                             shouldValidate: true,
@@ -119,33 +117,6 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
             <PurchaseTotalsPanel className="ml-auto -mt-2" />
         </div>
     );
-
-    // async function checkPurchaseInvoiceExists() {
-    //     const invoiceNo = getValues('userRefNo')
-    //     const creditAccId = getValues('creditAccId')
-    //     if ((!invoiceNo) || (!creditAccId)) {
-    //         return (true)
-    //     }
-    //     const res = await Utils.doGenericQuery({
-    //         buCode: buCode || '',
-    //         dbName: dbName || '',
-    //         dbParams: decodedDbParamsObject,
-    //         sqlId: SqlIdsMap.doesPurchaseInvoiceExist,
-    //         sqlArgs: {
-    //             finYearId: finYearId,
-    //             id: getValues('id') || 0,
-    //             tranTypeId: 5,
-    //             accId: creditAccId,
-    //             userRefNo: invoiceNo
-    //         }
-    //     })
-    //     const isExists = Boolean(res[0])
-    //     if (isExists) {
-    //         setError('userRefNo', { type: 'manual', message: Messages.errInvoiceExists });
-    //         return (false);
-    //     }
-    //     return (true);
-    // }
 
     async function getSetGstin(accId: string | null) {
         if (!accId) {

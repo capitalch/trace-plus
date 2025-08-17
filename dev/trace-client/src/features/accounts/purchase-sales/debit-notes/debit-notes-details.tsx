@@ -13,12 +13,14 @@ export function DebitNotesDetails() {
     const { isValidGstin, isValidHsn } = useValidators();
     const { defaultGstRate, maxGstRate } = useUtilsInfo();
     const {
+        // getValues,
         setValue,
         watch,
         register,
         trigger,
         formState: { errors }
     } = useFormContext<DebitNoteFormDataType>();
+    const { computeGst }: any = useFormContext<DebitNoteFormDataType>()
     const errorClass = 'bg-red-100 border-red-500 border-2';
     const isGstApplicable = watch('isGstApplicable')
     const isIgst = watch('isIgst');
@@ -29,7 +31,7 @@ export function DebitNotesDetails() {
 
     useEffect(() => {
         if (!isGstApplicable) {
-            setValue('gstin', null)
+            // setValue('gstin', null)
             setValue('isIgst', false)
             setValue('cgst', 0)
             setValue('sgst', 0)
@@ -60,7 +62,7 @@ export function DebitNotesDetails() {
                     <FormField
                         label="GSTIN No"
                         error={errors?.gstin?.message}
-                        className=""
+                        className="flex-1"
                         required={watch("isGstApplicable")}
                     >
                         <input
@@ -70,10 +72,11 @@ export function DebitNotesDetails() {
                             })}
                             className={clsx(inputClassLeft, errors?.gstin && errorClass)}
                             placeholder="Enter GSTIN no"
+                            autoComplete="off"   // 👈 disables browser suggestions
                         />
                     </FormField>
                     {/* Gst rate(%) */}
-                    <FormField className="flex flex-col" label='' error={errors?.gstRate?.message}>
+                    <FormField className="flex flex-col w-26" label='' error={errors?.gstRate?.message}>
                         <label className="text-gray-600 text-sm font-medium flex items-center gap-1">
                             GST Rate (%) {isGstApplicable && <WidgetAstrix />}
                         </label>
@@ -86,7 +89,8 @@ export function DebitNotesDetails() {
                                     shouldDirty: true,
                                     shouldTouch: true,
                                 });
-                                trigger();
+                                computeGst()
+                                // trigger();
                             }}
                             validate={validateGstRate}
                         />
@@ -108,6 +112,7 @@ export function DebitNotesDetails() {
                     })}
                     className={clsx(inputClassLeft, errors?.hsn && errorClass)}
                     placeholder="Enter HSN"
+                    autoComplete="off"   // 👈 disables browser suggestions
                 />
             </FormField>}
 
@@ -190,6 +195,7 @@ export function DebitNotesDetails() {
                             shouldDirty: true,
                             shouldTouch: true,
                         });
+                        computeGst()
                     }}
                     validate={(val: number) =>
                         val !== null && val !== undefined && !isNaN(val) && val > 0

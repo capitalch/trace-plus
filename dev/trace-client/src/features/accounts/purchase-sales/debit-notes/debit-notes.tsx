@@ -1,6 +1,6 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import _ from 'lodash'
-import { RootStateType } from "../../../../app/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { FormProvider, useForm, } from "react-hook-form";
@@ -9,11 +9,13 @@ import { DebitNotesMain } from "./debit-notes-main";
 import { DebitNotesView } from "./debit-notes-view";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { Utils } from "../../../../utils/utils";
+import { useEffect } from "react";
+import { saveDebitNoteFormData } from "./debit-notes-slice";
 
 
 export function DebitNotes() {
-    // const dispatch: AppDispatchType = useDispatch()
-    const savedFormData = useSelector((state: RootStateType) => state.purchase.savedFormData);
+    const dispatch: AppDispatchType = useDispatch()
+    const savedFormData = useSelector((state: RootStateType) => state.debitNotes.savedFormData);
     const instance = DataInstancesMap.debitNotes;
     const { branchId, finYearId, /*hasGstin, dbName, buCode, decodedDbParamsObject*/ } = useUtilsInfo();
     const methods = useForm<DebitNoteFormDataType>(
@@ -22,10 +24,11 @@ export function DebitNotes() {
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultDebitNoteFormValues() : savedFormData
         });
-    const { clearErrors, reset /*setError, getValues, setValue, reset, watch, setFocus*/ } = methods;
+    const { clearErrors, reset , getValues, setValue , /*setError, reset setFocus*/ } = methods;
     // const { getTranHData } = useAllPurchasesSubmit(methods)
-    const extendedMethods = { ...methods, resetAll, finalizeAndSubmit }
-
+    // const isGstApplicable = watch('isGstApplicable')
+    const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst }
+        
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
@@ -36,6 +39,21 @@ export function DebitNotes() {
             content: <DebitNotesView />
         }
     ];
+
+    useEffect(() => {
+        if (savedFormData) {
+            reset(_.cloneDeep(savedFormData),);
+            setValue('toggle', !savedFormData.toggle, { shouldDirty: true }) // making forcefully dirty
+        }
+    }, [savedFormData, reset, setValue]);
+
+    useEffect(() => {
+        return (() => {
+            const data = getValues()
+            dispatch(saveDebitNoteFormData(data));
+        })
+    }, [dispatch, getValues])
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
@@ -49,6 +67,25 @@ export function DebitNotes() {
             </form>
         </FormProvider>
     );
+
+    function computeGst() {
+        const isGstApplicable = getValues('isGstApplicable')
+        if (!isGstApplicable) return
+        const gstRate = getValues('gstRate')
+        const amount = getValues('amount')
+        const isIgst = getValues('isIgst')
+        const gst = amount * (gstRate / 100) / (1 + gstRate / 100)
+        const gstHalf = gst / 2
+        if (isIgst) {
+            setValue('igst', gst)
+            setValue('cgst', 0)
+            setValue('sgst', 0)
+        } else {
+            setValue('igst', 0)
+            setValue('cgst', gstHalf)
+            setValue('sgst', gstHalf)
+        }
+    }
 
     async function finalizeAndSubmit(data: DebitNoteFormDataType) {
         console.log(data)
@@ -68,14 +105,18 @@ export function DebitNotes() {
             isIgst: false,
 
             debitAccId: null,
+            debitRefNo: null,
+            debitRemarks: null,
             creditAccId: null,
+            creditRefNo: null,
+            creditRemarks: null,
             gstin: null,
 
             gstRate: 0,
             cgst: 0,
             sgst: 0,
             igst: 0,
-            hsn:'',
+            hsn: '',
 
             branchId: branchId || 1,
             deletedIds: [],
@@ -105,19 +146,19 @@ export type DebitNoteFormDataType = {
     isIgst: boolean;
 
     debitAccId: string | number | null;
-    debitRefNo?: string;
-    debitRemarks?: string;
+    debitRefNo?: string | null;
+    debitRemarks?: string | null;
 
     creditAccId: string | number | null;
-    creditRefNo?: string;
-    creditRemarks?: string;
+    creditRefNo?: string | null;
+    creditRemarks?: string | null;
 
     cgst: number;
     sgst: number;
     igst: number;
     gstin?: string | null;
     gstRate: number;
-    hsn:string;
+    hsn: string;
 
     branchId: number;
     deletedIds: number[];

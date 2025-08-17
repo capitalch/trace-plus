@@ -25,21 +25,22 @@ valid gstin: 24AAACC1206D1ZM
 	- Check gst exports
 														- Startup
 	- Main
-		- Gst rate and validation
+														- Gst rate and validation
 														- HSN and validation														
-		- Debtor / creditor change populate gstin
+														- Debtor / creditor change populate gstin
 		- Submit
 		- Preview
-		- redux
+														- redux
 														- Check bindage to fields
 														- responsive debitNotesItems
 														- Amount
-		- Gst
-			- From amount back calculate if not present and isGst
-			- Gst rate validation
+													- Gst
+														- From amount back calculate if not present and isGst
+														- Gst rate validation
 														- conditional validations for gst
 														- Show  astrix when isIgst
 														- Disable gst boxes when not gst and clear them
+														- reset
 	- View
 		- edit
 		- delete
