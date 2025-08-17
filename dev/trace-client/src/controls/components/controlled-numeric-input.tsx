@@ -45,5 +45,5 @@ type ControlledNumericInputType = {
     required?: boolean;
     defaultValue?: number;
     onValueChange?: (floatValue: any) => void
-    validate?: (val: number) => true | string;
+    validate?: (val: number) => boolean | string;
 }

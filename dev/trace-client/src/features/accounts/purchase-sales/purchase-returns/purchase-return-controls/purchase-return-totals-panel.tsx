@@ -67,7 +67,7 @@ export function PurchaseReturnTotalsPanel({ className }: { className?: string })
                             setValue('totalInvoiceAmount', floatValue || 0, { shouldValidate: true, shouldDirty: true, shouldTouch: true })
                         }}
                         validate={(value) => {
-                            const calcValue = calcTotal.amount.toNumber()
+                            // const calcValue = calcTotal.amount.toNumber()
                             return Utils.isAlmostEqual(value, calcTotal.amount.toNumber(), .15, .99) //Decimal(value).equals(calcTotal.amount)
                                 ? true
                                 : `Mismatch: should be ${calcTotal.amount.toFixed(2)}`;

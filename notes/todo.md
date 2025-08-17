@@ -22,14 +22,24 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Debit notes
+	- Check gst exports
 														- Startup
 	- Main
-		- Amount
+		- Gst rate and validation
+														- HSN and validation														
+		- Debtor / creditor change populate gstin
 		- Submit
 		- Preview
+		- redux
+														- Check bindage to fields
+														- responsive debitNotesItems
+														- Amount
 		- Gst
-			- isIgst
-			- cgst, sgst, igst
+			- From amount back calculate if not present and isGst
+			- Gst rate validation
+														- conditional validations for gst
+														- Show  astrix when isIgst
+														- Disable gst boxes when not gst and clear them
 	- View
 		- edit
 		- delete

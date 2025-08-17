@@ -22,9 +22,9 @@ export function DebitNotes() {
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultDebitNoteFormValues() : savedFormData
         });
-    const { clearErrors, /*setError, getValues, setValue, reset, watch, setFocus*/ } = methods;
+    const { clearErrors, reset /*setError, getValues, setValue, reset, watch, setFocus*/ } = methods;
     // const { getTranHData } = useAllPurchasesSubmit(methods)
-    const extendedMethods = { ...methods, resetAll, }
+    const extendedMethods = { ...methods, resetAll, finalizeAndSubmit }
 
     const tabsInfo: CompTabsType = [
         {
@@ -50,8 +50,8 @@ export function DebitNotes() {
         </FormProvider>
     );
 
-    async function finalizeAndSubmit() {
-
+    async function finalizeAndSubmit(data: DebitNoteFormDataType) {
+        console.log(data)
     }
 
     function getDefaultDebitNoteFormValues(): DebitNoteFormDataType {
@@ -70,9 +70,12 @@ export function DebitNotes() {
             debitAccId: null,
             creditAccId: null,
             gstin: null,
-            cgst:0,
-            sgst:0,
-            igst:0,
+
+            gstRate: 0,
+            cgst: 0,
+            sgst: 0,
+            igst: 0,
+            hsn:'',
 
             branchId: branchId || 1,
             deletedIds: [],
@@ -83,7 +86,7 @@ export function DebitNotes() {
 
     function resetAll() {
         clearErrors()
-        // reset(getDefaultPurchaseFormValues());
+        reset(getDefaultDebitNoteFormValues());
         // dispatch(clearPurchaseFormData());
         // dispatch(setInvoicExists(false))
     }
@@ -113,6 +116,8 @@ export type DebitNoteFormDataType = {
     sgst: number;
     igst: number;
     gstin?: string | null;
+    gstRate: number;
+    hsn:string;
 
     branchId: number;
     deletedIds: number[];
