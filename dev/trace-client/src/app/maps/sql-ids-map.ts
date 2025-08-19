@@ -54,18 +54,19 @@ export const SqlIdsMap = {
   getAllBranches: "get_all_branches",
   getAllBranchTransferHeaders: "get_all_branch_transfer_headers",
   getAllBrands: "get_all_brands",
+  getAllDebitCreditNotes:'get_all_debit_credit_notes',
   getAllPurchases: "get_all_purchases",
   getAllSchemasInDatabase: "get_all_schemas_in_database",
   getAllTransactions: "get_all_transactions",
   getAllVouchers: "get_all_vouchers",
-  getBankOpBalance: "get_bank_op_balance",
-  getBranchTransferDetailsOnTranHeaderId:
-    "get_branch_transfer_details_on_tran_header_id",
-  getBrandsOnCatId: "get_brands_on_catId",
   getAllProducts: "get_all_products",
   getAllProductsInfoForProductSelect:
     "get_all_products_info_for_product_select",
   getAllStockJournals: "get_all_stock_journals",
+  getBankOpBalance: "get_bank_op_balance",
+  getBranchTransferDetailsOnTranHeaderId:
+    "get_branch_transfer_details_on_tran_header_id",
+  getBrandsOnCatId: "get_brands_on_catId",
   getBankRecon: "get_bank_recon",
   getBrandsCategoriesTags: "get_brands_categories_tags",
   getBrandsCategoriesUnits: "get_brands_categories_units",

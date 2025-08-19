@@ -10,25 +10,30 @@ import { DebitNotesView } from "./debit-notes-view";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { Utils } from "../../../../utils/utils";
 import { useEffect } from "react";
-import { saveDebitNoteFormData } from "./debit-notes-slice";
+import { clearDebitNoteFormData, saveDebitNoteFormData } from "./debit-notes-slice";
+import { Messages } from "../../../../utils/messages";
+import { DebitCreditNoteEditDataType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { AllTables } from "../../../../app/maps/database-tables-map";
+import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+import { useDebitCreditNotesSubmit } from "./debit-credit-notes-submit-hook";
 
 
 export function DebitNotes() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.debitNotes.savedFormData);
     const instance = DataInstancesMap.debitNotes;
-    const { branchId, finYearId, /*hasGstin, dbName, buCode, decodedDbParamsObject*/ } = useUtilsInfo();
+    const { branchId, finYearId, dbName, buCode } = useUtilsInfo();
     const methods = useForm<DebitNoteFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultDebitNoteFormValues() : savedFormData
         });
-    const { clearErrors, reset , getValues, setValue , /*setError, reset setFocus*/ } = methods;
-    // const { getTranHData } = useAllPurchasesSubmit(methods)
-    // const isGstApplicable = watch('isGstApplicable')
+    const { clearErrors, reset, getValues, setValue, setFocus, watch } = methods;
+    const { getTranHData } = useDebitCreditNotesSubmit(methods)
+    
     const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst }
-        
+
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
@@ -68,14 +73,19 @@ export function DebitNotes() {
         </FormProvider>
     );
 
-    function computeGst() {
+    function getGstArtifacts() {
         const isGstApplicable = getValues('isGstApplicable')
-        if (!isGstApplicable) return
         const gstRate = getValues('gstRate')
         const amount = getValues('amount')
         const isIgst = getValues('isIgst')
         const gst = amount * (gstRate / 100) / (1 + gstRate / 100)
         const gstHalf = gst / 2
+        return { isGstApplicable, isIgst, gst, gstHalf }
+    }
+
+    function computeGst() {
+        const { isGstApplicable, isIgst, gst, gstHalf } = getGstArtifacts()
+        if (!isGstApplicable) return
         if (isIgst) {
             setValue('igst', gst)
             setValue('cgst', 0)
@@ -87,8 +97,30 @@ export function DebitNotes() {
         }
     }
 
-    async function finalizeAndSubmit(data: DebitNoteFormDataType) {
-        console.log(data)
+    async function finalizeAndSubmit() {
+        if(!isValidGst){
+            setFocus("amount");
+            Utils.showAlertMessage('Error', Messages.errInvalidGst)
+            return;
+        }
+        try {
+            const xData: XDataObjectType = getTranHData();
+            console.log(JSON.stringify(xData))
+            await Utils.doGenericUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: AllTables.TranH.name,
+                xData: xData,
+            });
+
+            if (watch('id')) {
+                dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
+            }
+            resetAll()
+            Utils.showSaveMessage();
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     function getDefaultDebitNoteFormValues(): DebitNoteFormDataType {
@@ -125,11 +157,32 @@ export function DebitNotes() {
         })
     }
 
+    function isValidGst() {
+        let ret = true
+        const { isGstApplicable, isIgst, gst, gstHalf } = getGstArtifacts()
+        const igst = getValues('igst')
+        const cgst = getValues('cgst')
+        const sgst = getValues('sgst')
+        if (!isGstApplicable) return (ret)
+        if (isIgst) {
+            if (!Utils.isAlmostEqual(igst, gst, .1, .02)) {
+                ret = false
+            }
+        } else {
+            if (!Utils.isAlmostEqual(cgst, gstHalf, .1, .02)) {
+                ret = false
+            }
+            if (!Utils.isAlmostEqual(sgst, gstHalf, .1, .02)) {
+                ret = false
+            }
+        }
+        return (ret)
+    }
+
     function resetAll() {
         clearErrors()
         reset(getDefaultDebitNoteFormValues());
-        // dispatch(clearPurchaseFormData());
-        // dispatch(setInvoicExists(false))
+        dispatch(clearDebitNoteFormData());
     }
 }
 
@@ -166,4 +219,6 @@ export type DebitNoteFormDataType = {
 
     lineRemarks?: string | null;
     toggle: boolean; // For making the form forcefully dirty
+
+    debitCreditNoteEditData?: DebitCreditNoteEditDataType
 }

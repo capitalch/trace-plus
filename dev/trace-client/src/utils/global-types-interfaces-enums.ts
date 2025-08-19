@@ -182,3 +182,9 @@ export type ExtBusinessContactsAccMType = {
     stateCode?: number | null;
 }
 
+export type DebitCreditNoteEditDataType = {
+  tranH: TranHType;
+  tranD: TranDType[];
+  extGstTranD: ExtGstTranDType;
+}
+

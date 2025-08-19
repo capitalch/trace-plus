@@ -418,6 +418,47 @@ class SqlAccounts:
         ORDER BY "brandName"
     """
 
+    get_all_debit_credit_notes = """
+        --with "branchId" as (values (1)), "finYearId" as (values (2025)),"tranTypeId" as (values(7))
+        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "tranTypeId" as (values(%(tranTypeId)s))
+	            select 
+					ROW_NUMBER() OVER (ORDER BY "tranDate" DESC, h."id" DESC) AS "index",
+					h."id", 
+					h."tranDate", 
+					h."autoRefNo", 
+					h."userRefNo", 
+					h."remarks",
+					MAX(d."amount") "amount",
+	                STRING_AGG(d."lineRefNo", ', ') "lineRefNo",
+					STRING_AGG(d."remarks", ', ' ) "lineRemarks",
+	                MAX(CASE WHEN "dc" = 'D' then "accName" else null END) "debitAccount",
+	                MAX(CASE WHEN "dc" = 'C' then "accName" else null END) "creditAccount",
+					MAX(e."gstin") "gstin",
+					MAX(e."rate") "rate",
+					MAX(e."cgst") "cgst",
+					MAX(e."sgst") "sgst",
+					MAX(e."igst") "igst",
+					BOOL_OR(e."isInput") "input",
+					MAX(e."hsn") "hsn"
+	            from "TranH" h
+					join "TranD" d
+						on h."id" = d."tranHeaderId" 
+					join "AccM" a
+						on a."id" = d."accId"
+					left outer join "ExtGstTranD" e
+						on d."id" = e."tranDetailsId"
+	            where "tranTypeId" = (table "tranTypeId") 
+	                and "finYearId" =(table "finYearId") 
+					and "branchId" = (table "branchId")
+			
+				group by h."id",
+					h."tranDate", 
+					h."autoRefNo", 
+					h."userRefNo", 
+					h."remarks"
+				order by "tranDate" DESC, "id" DESC
+    """
+
     get_all_gst_reports = """
         --with "branchId" as (values(null::int)), "finYearId" as (values(2022)), "startDate" as (values('2022-04-01'::date)), "endDate" as (values('2023-03-31'::date))
 			with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "startDate" as (values(%(startDate)s ::date)), "endDate" as (values(%(endDate)s:: date))

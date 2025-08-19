@@ -44,6 +44,7 @@ const Messages = {
   errInvalidClientName: 'Invalid client name',
   errInvalidDate: 'Invalid date',
   errInvalidEmail: 'Invalid email',
+  errInvalidGst:'Invalid gst values',
   errInvalidGstin: 'Invalid GSTIN no',
   errInvalidGstStateCode: 'Invalid state code',
   errInvalidHsn: 'Invalid HSN',

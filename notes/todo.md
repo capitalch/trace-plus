@@ -3,6 +3,7 @@ entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
 ## General requirement
+- Menu button not expanding when small screen
 - Checkup price - discount in all reports as actual price
 - Supplier name and its due in summary report of inventory
 - drill down
