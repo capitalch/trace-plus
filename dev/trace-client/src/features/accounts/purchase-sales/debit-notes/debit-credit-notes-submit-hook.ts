@@ -6,7 +6,7 @@ import { DebitNoteFormDataType } from "./debit-notes";
 import { ExtGstTranDType, TraceDataObjectType, TranDType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 
-export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDataType>, tranTypeId = Utils.getTranTypeId('DebitNote')){
+export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDataType>, tranTypeId = Utils.getTranTypeId('DebitNote')) {
     const { branchId, finYearId } = useUtilsInfo();
     const { getValues } = methods;
     const debitCreditNoteEditData = getValues('debitCreditNoteEditData')
@@ -36,10 +36,8 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
 
     function getTranDData(): XDataObjectType[] {
         const xDetails: TraceDataObjectType[] = [];
-
-        const extGst = getExtGstTranDDetails();
-        // const lineItems = getSalePurchaseDetailsDetails();
-
+        const isGstApplicable = getValues('isGstApplicable')
+        const extGst = isGstApplicable ? getExtGstTranDDetails() : undefined;
         if (!_.isEmpty(extGst)) xDetails.push(extGst);
 
         const amount = getValues('amount');
@@ -49,15 +47,25 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
             accId: getValues('debitAccId'),
             dc: 'D',
             amount: amount,
-            ...(xDetails.length > 0 && { xDetails }),
+            lineRefNo: getValues('debitRefNo') || null,
+            remarks: getValues('debitRemarks') || null
+            // ...(xDetails.length > 0 && { xDetails }),
         };
+        if (extGst && tranTypeId === Utils.getTranTypeId('CreditNote')) {
+            debit.xDetails = [...xDetails]
+        }
 
         const credit: XDataObjectType = {
             id: tranD.find(item => item.dc === 'C')?.id,
             accId: getValues('creditAccId'),
             dc: 'C',
             amount: amount,
+            lineRefNo: getValues('creditRefNo') || null,
+            remarks: getValues('creditRemarks') || null
         };
+        if (extGst && tranTypeId === Utils.getTranTypeId('DebitNote')) {
+            credit.xDetails = [...xDetails]
+        }
 
         return [debit, credit];
     }
@@ -73,6 +81,8 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
                 cgst: getValues('cgst'),
                 sgst: getValues('sgst'),
                 igst: getValues('igst'),
+                rate: getValues('gstRate'),
+                hsn: getValues('hsn'),
                 isInput: (tranTypeId === Utils.getTranTypeId('DebitNote')) ? false : true,
             },
         };

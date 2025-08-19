@@ -16,6 +16,7 @@ import { DebitCreditNoteEditDataType, XDataObjectType } from "../../../../utils/
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useDebitCreditNotesSubmit } from "./debit-credit-notes-submit-hook";
+import Decimal from "decimal.js";
 
 
 export function DebitNotes() {
@@ -31,7 +32,7 @@ export function DebitNotes() {
         });
     const { clearErrors, reset, getValues, setValue, setFocus, watch } = methods;
     const { getTranHData } = useDebitCreditNotesSubmit(methods)
-    
+
     const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst }
 
     const tabsInfo: CompTabsType = [
@@ -73,16 +74,6 @@ export function DebitNotes() {
         </FormProvider>
     );
 
-    function getGstArtifacts() {
-        const isGstApplicable = getValues('isGstApplicable')
-        const gstRate = getValues('gstRate')
-        const amount = getValues('amount')
-        const isIgst = getValues('isIgst')
-        const gst = amount * (gstRate / 100) / (1 + gstRate / 100)
-        const gstHalf = gst / 2
-        return { isGstApplicable, isIgst, gst, gstHalf }
-    }
-
     function computeGst() {
         const { isGstApplicable, isIgst, gst, gstHalf } = getGstArtifacts()
         if (!isGstApplicable) return
@@ -98,7 +89,7 @@ export function DebitNotes() {
     }
 
     async function finalizeAndSubmit() {
-        if(!isValidGst){
+        if (!isValidGst) {
             setFocus("amount");
             Utils.showAlertMessage('Error', Messages.errInvalidGst)
             return;
@@ -116,7 +107,7 @@ export function DebitNotes() {
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            resetAll()
+            // resetAll()
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);
@@ -157,26 +148,50 @@ export function DebitNotes() {
         })
     }
 
+    function getGstArtifacts() {
+        const isGstApplicable = getValues('isGstApplicable');
+        const gstRate = new Decimal(getValues('gstRate') || 0);
+        const amount = new Decimal(getValues('amount') || 0);
+        const isIgst = getValues('isIgst');
+
+        // gst = amount * (gstRate / 100) / (1 + gstRate / 100)
+        const divisor: Decimal = gstRate.div(100).plus(1);
+        const gst: Decimal = amount.times(gstRate.div(100)).div(divisor);
+
+        // gstHalf = gst / 2
+        const gstHalf: Decimal = gst.div(2);
+
+        return {
+            isGstApplicable,
+            isIgst,
+            gst: gst.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber(),
+            gstHalf: gstHalf.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toDecimalPlaces(2).toNumber()
+        };
+    }
+
     function isValidGst() {
-        let ret = true
+        // let ret = true
         const { isGstApplicable, isIgst, gst, gstHalf } = getGstArtifacts()
         const igst = getValues('igst')
         const cgst = getValues('cgst')
         const sgst = getValues('sgst')
-        if (!isGstApplicable) return (ret)
+        if (!isGstApplicable) return (true)
+        if (igst === 0 && cgst === 0 && sgst === 0) {
+            return (false)
+        }
         if (isIgst) {
             if (!Utils.isAlmostEqual(igst, gst, .1, .02)) {
-                ret = false
+                return (false)
             }
         } else {
             if (!Utils.isAlmostEqual(cgst, gstHalf, .1, .02)) {
-                ret = false
+                return (false)
             }
             if (!Utils.isAlmostEqual(sgst, gstHalf, .1, .02)) {
-                ret = false
+                return (false)
             }
         }
-        return (ret)
+        return (true)
     }
 
     function resetAll() {

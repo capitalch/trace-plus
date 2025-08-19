@@ -30,6 +30,9 @@ valid gstin: 24AAACC1206D1ZM
 														- HSN and validation														
 														- Debtor / creditor change populate gstin
 		- Submit
+														- Insert
+			- Edit
+			- Delete
 		- Preview
 														- redux
 														- Check bindage to fields
@@ -45,7 +48,6 @@ valid gstin: 24AAACC1206D1ZM
 	- View
 		- edit
 		- delete
-		- copy
 		- preview
 	- QA
 												- purchase return

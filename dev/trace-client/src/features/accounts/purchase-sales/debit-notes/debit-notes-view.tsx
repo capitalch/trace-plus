@@ -258,7 +258,7 @@ export function DebitNotesView({ className }: { className?: string }) {
             {
                 field: 'gstin',
                 headerText: 'GSTIN',
-                width: 80,
+                width: 130,
                 textAlign: 'Left',
                 type: 'string',
                 // clipMode: 'EllipsisWithTooltip'
