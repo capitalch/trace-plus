@@ -14,8 +14,9 @@ import clsx from "clsx";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
-import { ExtGstTranDType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
+import { DebitCreditNoteEditDataType, ExtGstTranDType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+import { generateDebitCreditNotePDF } from "./debit-credit-note-jspdf";
 
 export function DebitNotesView({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -25,8 +26,9 @@ export function DebitNotesView({ className }: { className?: string }) {
         currentDateFormat,
         buCode,
         branchId,
-        // branchName,
+        branchName,
         dbName,
+        defaultGstRate,
         decodedDbParamsObject,
         finYearId,
     } = useUtilsInfo();
@@ -296,7 +298,7 @@ export function DebitNotesView({ className }: { className?: string }) {
         ];
     }
 
-    async function getDebitNoteDetailsOnId(id: number | undefined) {
+    async function getDebitCreditNoteDetailsOnId(id: number | undefined) {
         if (!id) {
             return
         }
@@ -305,7 +307,7 @@ export function DebitNotesView({ className }: { className?: string }) {
             dbName: dbName || "",
             dbParams: decodedDbParamsObject,
             instance: instance,
-            sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
+            sqlId: SqlIdsMap.getDebitCreditNoteDetailsOnId,
             sqlArgs: {
                 id: id,
             },
@@ -333,25 +335,42 @@ export function DebitNotesView({ className }: { className?: string }) {
     }
 
     async function handleOnEdit(data: any) {
-        const editData: any = await getDebitNoteDetailsOnId(data.id)
-        const purchaseEditData: any = editData?.[0]?.jsonResult
-        const tranH: TranHType = purchaseEditData.tranH
-        const tranD: TranDType[] = purchaseEditData.tranD
-        const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
-
+        const editData: any = await getDebitCreditNoteDetailsOnId(data.id)
+        const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
+        const tranH: TranHType = dcEditData.tranH
+        const tranD: TranDType[] = dcEditData.tranD
+        const extGsTranD: ExtGstTranDType = dcEditData.extGstTranD
+        const debitRow: TranDType = tranD.find((item) => item.dc === "D") as TranDType
+        const creditRow: TranDType = tranD.find((item) => item.dc === "C") as TranDType
         reset({
+            //TranH
             id: tranH.id,
             autoRefNo: tranH.autoRefNo,
             tranDate: tranH.tranDate,
             userRefNo: tranH.userRefNo,
             remarks: tranH.remarks,
             tranTypeId: tranH.tranTypeId,
-            isGstApplicable: Boolean(extGsTranD?.id),
-            debitAccId: tranD.find((item) => item.dc === "D")?.accId,
-            creditAccId: tranD.find((item) => item.dc === "C")?.accId,
-            gstin: extGsTranD?.gstin,
-            isIgst: extGsTranD?.igst ? true : false,
 
+            //TranD
+            debitAccId: debitRow?.accId,
+            debitRefNo: debitRow?.lineRefNo,
+            debitRemarks: debitRow?.remarks,
+            creditAccId: creditRow?.accId,
+            creditRefNo: creditRow?.lineRefNo,
+            creditRemarks: creditRow?.remarks,
+            amount: creditRow?.amount || 0,
+
+            //ExtGstTranD
+            isGstApplicable: Boolean(extGsTranD?.id),
+            gstin: extGsTranD?.gstin,
+            gstRate: extGsTranD?.rate || defaultGstRate,
+            isIgst: extGsTranD?.igst ? true : false,
+            cgst: extGsTranD?.cgst || 0,
+            sgst: extGsTranD?.sgst || 0,
+            igst: extGsTranD?.igst || 0,
+            hsn: extGsTranD?.hsn || '',
+
+            debitCreditNoteEditData: dcEditData
         })
 
         dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
@@ -359,7 +378,14 @@ export function DebitNotesView({ className }: { className?: string }) {
 
     async function handleOnPreview(data: DebitNoteFormDataType) {
         console.log(data)
-        // const editData: any = await getDebitNoteDetailsOnId(data.id)
+        const editData: any = await getDebitCreditNoteDetailsOnId(data.id)
+        const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
+        generateDebitCreditNotePDF({
+            branchName: branchName || '',
+            currentDateFormat: currentDateFormat,
+            noteData: dcEditData,
+            tranTypeId: 7
+        })
         // const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
         // generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
     }

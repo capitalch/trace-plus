@@ -75,6 +75,7 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
         return {
             tableName: AllTables.ExtGstTranD.name,
             fkeyName: 'tranDetailsId',
+            deletedIds:getValues('deletedIds'), // for ExtGstTranD
             xData: {
                 id: extGstTranD?.id,
                 gstin: getValues('gstin'),

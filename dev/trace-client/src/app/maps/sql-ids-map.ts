@@ -71,6 +71,7 @@ export const SqlIdsMap = {
   getBrandsCategoriesTags: "get_brands_categories_tags",
   getBrandsCategoriesUnits: "get_brands_categories_units",
   getCurrentOrders: "get_current_orders",
+  getDebitCreditNoteDetailsOnId:"get_debit_credit_note_details_on_id",
   getExtBusinessContactsAccM: "get_extBusinessContactsAccM",
   getFinYears: "get_fin_years",
   getGstin: "get_gstin",

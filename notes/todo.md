@@ -22,6 +22,8 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+- Credit notes
+
 - Debit notes
 	- Check gst exports
 														- Startup
@@ -29,11 +31,22 @@ valid gstin: 24AAACC1206D1ZM
 														- Gst rate and validation
 														- HSN and validation														
 														- Debtor / creditor change populate gstin
-		- Submit
-														- Insert
-			- Edit
-			- Delete
+												- Submit
+													- Insert data
+														- Without gst
+														- With Gst
+													- Edit data
+														- without gst
+														- with gst remove and add
+														- Delete
 		- Preview
+														- Pagination problem
+														- Party details: provide info
+														- Common remarks in debit note info
+														- Add Basic, Rate, hsn in table
+														- Single line
+														- Make horizontal summary
+														- Make it half page A4
 														- redux
 														- Check bindage to fields
 														- responsive debitNotesItems
@@ -46,8 +59,8 @@ valid gstin: 24AAACC1206D1ZM
 														- Disable gst boxes when not gst and clear them
 														- reset
 	- View
-		- edit
-		- delete
+														- edit
+														- delete
 		- preview
 	- QA
 												- purchase return

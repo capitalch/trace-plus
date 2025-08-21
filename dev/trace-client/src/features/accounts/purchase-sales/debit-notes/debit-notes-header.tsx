@@ -17,6 +17,7 @@ export function DebitNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
     const { checkAllowedDate } = useValidators();
     const {
+        getValues,
         watch,
         register,
         setValue,
@@ -111,7 +112,16 @@ export function DebitNotesHeader() {
                                         ? "bg-red-500 text-white border-red-600"
                                         : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
                                 )}
-                                onClick={() => setValue("isGstApplicable", false, { shouldDirty: true })}
+                                onClick={() => { // record id of ExtGstTranD in deletedIds
+                                    setValue("isGstApplicable", false, { shouldDirty: true });
+                                    const editData = getValues('debitCreditNoteEditData')
+                                    const id = editData?.extGstTranD?.id
+                                    if (id) {
+                                        const deletedIds = getValues('deletedIds') || []
+                                        setValue('deletedIds', [...deletedIds, id])
+                                        editData.extGstTranD.id = undefined
+                                    }
+                                }}
                             >
                                 No
                             </button>

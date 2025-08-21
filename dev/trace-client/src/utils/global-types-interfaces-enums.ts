@@ -186,5 +186,6 @@ export type DebitCreditNoteEditDataType = {
   tranH: TranHType;
   tranD: TranDType[];
   extGstTranD: ExtGstTranDType;
+  businessContacts?: ExtBusinessContactsAccMType;
 }
 

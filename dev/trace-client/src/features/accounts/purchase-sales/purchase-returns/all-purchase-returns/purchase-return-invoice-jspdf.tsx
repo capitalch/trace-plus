@@ -98,24 +98,11 @@ export function generatePurchaseReturnInvoicePDF(invoiceData: SalePurchaseEditDa
     drawText(`Phone: ${businessContacts?.landPhone || ''}`, marginLeft, currentY);
     currentY += lineSpacing;
     drawText(`GSTIN: ${businessContacts?.gstin || ''}`, marginLeft, currentY);
-    // currentY += 2 * lineSpacing;
-    // doc.setFont('helvetica', 'bold');
-    // drawText('Customer Details', marginLeft, currentY);
-    // currentY += lineSpacing;
-    // doc.setFont('helvetica', 'normal');
-    // drawText(company.name, marginLeft, currentY);
-    // currentY += lineSpacing;
-    // drawText(company.branchName, marginLeft, currentY);
-    // currentY += lineSpacing;
-    // drawText(company.address, marginLeft, currentY);
-    // currentY += lineSpacing;
-    // drawText(company.gstin, marginLeft, currentY);
-    // currentY += lineSpacing;
 
     const tableStartY = currentY + 10;
     autoTable(doc, {
         startY: tableStartY,
-        head: [['#', 'Pr Code', 'Description with S/N', 'HSN', 'Qty', 'Rate', 'CGST', 'SGST', 'IGST', 'Amount']],
+        head: [['#', 'Pr Code', 'Description with S/N', 'HSN', 'Qty', 'Price', 'CGST', 'SGST', 'IGST', 'Amount']],
         body: [
             ...salePurchaseDetails.map((item, i) => [
                 `${i + 1}`,

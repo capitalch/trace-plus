@@ -170,7 +170,6 @@ export function DebitNotes() {
     }
 
     function isValidGst() {
-        // let ret = true
         const { isGstApplicable, isIgst, gst, gstHalf } = getGstArtifacts()
         const igst = getValues('igst')
         const cgst = getValues('cgst')
@@ -229,7 +228,7 @@ export type DebitNoteFormDataType = {
     hsn: string;
 
     branchId: number;
-    deletedIds: number[];
+    deletedIds: number[]; // for ExtGstTranD
     finYearId: number;
 
     lineRemarks?: string | null;

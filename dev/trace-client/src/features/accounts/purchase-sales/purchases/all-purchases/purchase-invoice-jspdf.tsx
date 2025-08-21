@@ -101,7 +101,7 @@ export function generatePurchaseInvoicePDF(invoiceData: SalePurchaseEditDataType
     const tableStartY = currentY + 10;
     autoTable(doc, {
         startY: tableStartY,
-        head: [['#', 'Pr Code', 'Description with S/N', 'HSN', 'Qty', 'Rate', 'CGST', 'SGST', 'IGST', 'Amount']],
+        head: [['#', 'Pr Code', 'Description with S/N', 'HSN', 'Qty', 'Price', 'CGST', 'SGST', 'IGST', 'Amount']],
         body: [
             ...salePurchaseDetails.map((item, i) => [
                 `${i + 1}`,
