@@ -63,6 +63,16 @@ valid gstin: 24AAACC1206D1ZM
 														- delete
 		- preview
 	- QA
+		- normal insert
+		- insert with gst
+		- edit
+		- edit withalready existing gst remove
+		- edit with newly add gst
+		- delete
+	- ReDo
+		- Massive QA with data inspection for
+			- purchase
+			- purchase return
 												- purchase return
 														- Purchase and return decial point 2 digits round
 														- Check debitAccId and creditAccId

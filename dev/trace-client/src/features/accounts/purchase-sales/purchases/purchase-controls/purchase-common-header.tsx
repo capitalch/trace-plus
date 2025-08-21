@@ -15,7 +15,6 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-// import { isValid } from "date-fns";
 import { useMemo } from "react";
 
 export function PurchaseCommonHeader() {

@@ -36,8 +36,7 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
 
     function getTranDData(): XDataObjectType[] {
         const xDetails: TraceDataObjectType[] = [];
-        const isGstApplicable = getValues('isGstApplicable')
-        const extGst = isGstApplicable ? getExtGstTranDDetails() : undefined;
+        const extGst = getExtGstTranDDetails();
         if (!_.isEmpty(extGst)) xDetails.push(extGst);
 
         const amount = getValues('amount');
@@ -49,7 +48,6 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
             amount: amount,
             lineRefNo: getValues('debitRefNo') || null,
             remarks: getValues('debitRemarks') || null
-            // ...(xDetails.length > 0 && { xDetails }),
         };
         if (extGst && tranTypeId === Utils.getTranTypeId('CreditNote')) {
             debit.xDetails = [...xDetails]
@@ -72,11 +70,12 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
 
     function getExtGstTranDDetails(): TraceDataObjectType | undefined {
         const extGstTranD: ExtGstTranDType | null = debitCreditNoteEditData?.extGstTranD || null
+        const isGstApplicable = getValues('isGstApplicable')
         return {
             tableName: AllTables.ExtGstTranD.name,
             fkeyName: 'tranDetailsId',
-            deletedIds:getValues('deletedIds'), // for ExtGstTranD
-            xData: {
+            deletedIds: getValues('deletedIds'), // for ExtGstTranD
+            xData: isGstApplicable ? {
                 id: extGstTranD?.id,
                 gstin: getValues('gstin'),
                 cgst: getValues('cgst'),
@@ -85,7 +84,7 @@ export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDa
                 rate: getValues('gstRate'),
                 hsn: getValues('hsn'),
                 isInput: (tranTypeId === Utils.getTranTypeId('DebitNote')) ? false : true,
-            },
+            } : undefined,
         };
     }
 

@@ -339,7 +339,7 @@ export function DebitNotesView({ className }: { className?: string }) {
         const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
         const tranH: TranHType = dcEditData.tranH
         const tranD: TranDType[] = dcEditData.tranD
-        const extGsTranD: ExtGstTranDType = dcEditData.extGstTranD
+        const extGsTranD: ExtGstTranDType | undefined = dcEditData?.extGstTranD
         const debitRow: TranDType = tranD.find((item) => item.dc === "D") as TranDType
         const creditRow: TranDType = tranD.find((item) => item.dc === "C") as TranDType
         reset({

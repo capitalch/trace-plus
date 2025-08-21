@@ -12,10 +12,15 @@ import { IconPreview1 } from "../../../../controls/icons/icon-preview1";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { RootStateType } from "../../../../app/store";
 import { useSelector } from "react-redux";
+import { DebitCreditNoteEditDataType } from "../../../../utils/global-types-interfaces-enums";
+import { generateDebitCreditNotePDF } from "./debit-credit-note-jspdf";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { Utils } from "../../../../utils/utils";
 
 export function DebitNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
     const { checkAllowedDate } = useValidators();
+    const { branchName, currentDateFormat } = useUtilsInfo()
     const {
         getValues,
         watch,
@@ -119,7 +124,8 @@ export function DebitNotesHeader() {
                                     if (id) {
                                         const deletedIds = getValues('deletedIds') || []
                                         setValue('deletedIds', [...deletedIds, id])
-                                        editData.extGstTranD.id = undefined
+                                        editData.extGstTranD = undefined
+                                        // editData.extGstTranD.id = undefined
                                     }
                                 }}
                             >
@@ -134,10 +140,6 @@ export function DebitNotesHeader() {
                             {...register("isIgst", {
                                 onChange: () => {
                                     computeGst()
-                                    // console.log(e.target.checked)
-                                    // trigger();
-                                    // setValue('isIgst', e.target.checked, { shouldDirty: true, shouldTouch: true, shouldValidate: true })
-                                    // trigger()
                                 },
                             })}
                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
@@ -194,8 +196,13 @@ export function DebitNotesHeader() {
     }
 
     function handleOnPreview() {
-        // const purchaseEditData: any = getValues('purchaseEditData') || {}
-        // if (_.isEmpty(purchaseEditData)) return
-        // generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
+        const noteData: DebitCreditNoteEditDataType | undefined = getValues('debitCreditNoteEditData')
+        if (_.isEmpty(noteData)) return
+        generateDebitCreditNotePDF({
+            branchName: branchName || '1',
+            currentDateFormat: currentDateFormat,
+            noteData:noteData,
+            tranTypeId: Utils.getTranTypeId('DebitNote')
+        })
     }
 }

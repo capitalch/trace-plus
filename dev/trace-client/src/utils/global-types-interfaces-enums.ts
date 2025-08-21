@@ -185,7 +185,7 @@ export type ExtBusinessContactsAccMType = {
 export type DebitCreditNoteEditDataType = {
   tranH: TranHType;
   tranD: TranDType[];
-  extGstTranD: ExtGstTranDType;
+  extGstTranD?: ExtGstTranDType;
   businessContacts?: ExtBusinessContactsAccMType;
 }
 
