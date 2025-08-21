@@ -261,8 +261,11 @@ const drawNoteInfo = (
     const dateText = `Date: ${format(tranH.tranDate, currentDateFormat)}`;
     const autoRefText = `Ref No: ${tranH.autoRefNo}`;
 
+    setFont(context.doc, 'bold');
+    context.doc.text(autoRefText, PDF_CONFIG.PAGE.marginLeft, context.currentY);
+    context.currentY += PDF_CONFIG.SPACING.line;
+    setFont(context.doc, 'normal');
     context.doc.text(dateText, PDF_CONFIG.PAGE.marginLeft, context.currentY);
-    context.doc.text(autoRefText, PDF_CONFIG.PAGE.marginLeft + 90, context.currentY);
     context.currentY += PDF_CONFIG.SPACING.line;
 
     // Second row: User Ref No
@@ -295,15 +298,6 @@ const drawTable = (context: PDFContext, noteData: DebitCreditNoteEditDataType): 
         formatNumber(cgst), formatNumber(sgst), formatNumber(igst),
         formatNumber(amount || 0)
     ]
-    //   const tableBody = tranD?.map((item) => [
-    // String(index + 1),
-    // item.lineRefNo || '',
-    // item.remarks || '',
-    // formatNumber(extGstTranD?.cgst || 0),
-    // formatNumber(extGstTranD?.sgst || 0),
-    // formatNumber(extGstTranD?.igst || 0),
-    // formatNumber(item.amount || 0),
-    //   ]) || [];
 
     autoTable(context.doc, {
         startY: tableStartY,

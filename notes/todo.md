@@ -27,7 +27,7 @@ valid gstin: 24AAACC1206D1ZM
 - Debit notes
 	- Check gst exports
 														- Startup
-	- Main
+											- Main
 														- Gst rate and validation
 														- HSN and validation														
 														- Debtor / creditor change populate gstin
@@ -39,7 +39,7 @@ valid gstin: 24AAACC1206D1ZM
 														- without gst
 														- with gst remove and add
 														- Delete
-		- Preview
+													- Preview
 														- Pagination problem
 														- Party details: provide info
 														- Common remarks in debit note info
@@ -58,17 +58,20 @@ valid gstin: 24AAACC1206D1ZM
 														- Show  astrix when isIgst
 														- Disable gst boxes when not gst and clear them
 														- reset
-	- View
+													- View
 														- edit
 														- delete
-		- preview
-	- QA
-		- normal insert
-		- insert with gst
-		- edit
-		- edit withalready existing gst remove
-		- edit with newly add gst
-		- delete
+														- preview
+													- QA
+														- normal insert
+														- insert with gst
+														- insert with igst
+														- edit
+														- edit with already existing gst remove
+														- edit with newly add gst
+														- remove existing gst then add
+														- normal delete
+														- with gst delete
 	- ReDo
 		- Massive QA with data inspection for
 			- purchase
@@ -99,12 +102,21 @@ valid gstin: 24AAACC1206D1ZM
 														- Delete
 														- Copy
 														- preview
-												- Purchase
+	- Purchase
+		- Bugs			
+			- When invoice with no gst is entered then a blank row is added inExtGstTranD table with 0 values
 														- gst rate warning
 														- validate gst rate less than 28%. Implement max gst rate
-													- QA: Check at database level on submit
+											- QA: Check at database level on submit
 														- New invoice
-														- Edit invoice
+												- Edit invoice
+														- normal
+														- remove gst ( 0 entry row in ExtGstTranD)
+														- add gst
+														- remove then add gst
+														- edit product
+														- add product
+														- remove then add product
 														- Delete product
 														- Delete and edit together
 														- check clear all puts id's in deletedIds

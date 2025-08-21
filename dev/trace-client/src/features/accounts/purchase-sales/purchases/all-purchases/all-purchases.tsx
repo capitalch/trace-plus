@@ -114,12 +114,12 @@ export function AllPurchases() {
         try {
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
-            await Utils.doGenericUpdate({
-                buCode: buCode || "",
-                dbName: dbName || "",
-                tableName: AllTables.TranH.name,
-                xData: xData,
-            });
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: AllTables.TranH.name,
+            //     xData: xData,
+            // });
 
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)

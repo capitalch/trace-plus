@@ -96,7 +96,7 @@ export function DebitNotes() {
         }
         try {
             const xData: XDataObjectType = getTranHData();
-            console.log(JSON.stringify(xData))
+            // console.log(JSON.stringify(xData))
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
@@ -107,7 +107,7 @@ export function DebitNotes() {
             if (watch('id')) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            // resetAll()
+            resetAll()
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);
