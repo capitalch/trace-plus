@@ -18,7 +18,7 @@ import { DebitCreditNoteEditDataType, ExtGstTranDType, TranDType, TranHType } fr
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { generateDebitCreditNotePDF } from "../common/debit-credit-note-jspdf";
 
-export function DebitNotesView({ className }: { className?: string }) {
+export function DebitNotesViewRemove({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.debitNotes
     const [rowsData, setRowsData] = useState<any[]>([]);

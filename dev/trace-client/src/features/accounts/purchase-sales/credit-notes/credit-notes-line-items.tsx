@@ -1,11 +1,9 @@
 import { useFormContext } from "react-hook-form";
 import { FormField } from "../../../../controls/widgets/form-field";
-// import { DebitCredittNoteFormDataType } from "./debit-notes";
 import { AccountPickerFlat } from "../../../../controls/redux-components/account-picker-flat/account-picker-flat";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { Messages } from "../../../../utils/messages";
 import clsx from "clsx";
-// import { DebitNotesDetails } from "./credit-notes-details";
 import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
@@ -13,7 +11,7 @@ import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 import { CreditNotesDetails } from "./credit-notes-details";
 
 export function CreditNotesLineItems() {
-  const instance = DataInstancesMap.debitNotes;
+  const instance = DataInstancesMap.creditNotes;
   const {
     setValue,
     watch,
@@ -28,86 +26,29 @@ export function CreditNotesLineItems() {
     <div
       className="
         grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-12
-        gap-4 sm:gap-6 bg-white p-4 sm:p-6 rounded-lg shadow-sm mt-6
+        gap-4 sm:gap-6 bg-red-50 p-4 sm:p-6 rounded-lg shadow-sm mt-6
       "
     >
-      {/* Debit Account */}
-      <FormField
-        label="Debit (Debtor / Creditor)"
-        required
-        error={errors?.debitAccId?.message}
-        className="col-span-1 sm:col-span-2 md:col-span-3"
-      >
-        <AccountPickerFlat
-          accClassNames={["debtor", "creditor"]}
-          instance={`${instance}-debit-account`}
-          {...register("debitAccId", {
-            required: Messages.errRequired,
-          })}
-          onChange={(val) => {
-            setValue("debitAccId", val, {
-              shouldValidate: true,
-              shouldDirty: true,
-            })
-            getSetGstin(val)
-          }}
-          showAccountBalance
-          value={watch("debitAccId") as string}
-          className="w-full"
-          showRefreshButton={false}
-        />
-      </FormField>
-
-      {/* Line ref no */}
-      <FormField
-        label="Line Ref No"
-        className="col-span-1 sm:col-span-1 md:col-span-2"
-      >
-        <input
-          type="text"
-          className={clsx(inputClassLeft)}
-          placeholder="Enter ref no"
-          {...register("debitRefNo")}
-        />
-      </FormField>
-
-      {/* Remarks */}
-      <FormField
-        className="col-span-1 sm:col-span-2 md:col-span-4"
-        label="Line Remarks"
-      >
-        <textarea
-          rows={3}
-          className={clsx(inputClassLeft, "resize-none")}
-          placeholder="Enter remarks"
-          {...register("debitRemarks")}
-        />
-      </FormField>
-
-      {/* Debit Notes Details (spans more space on large screens) */}
-      <div className="col-span-2 row-span-2 sm:col-span-2 md:col-span-2 lg:col-span-3 max-w-64 ml-auto">
-        <CreditNotesDetails />
-      </div>
-
       {/* Credit Account */}
       <FormField
-        label="Credit (Purchase)"
+        label="Credit (Debtor / Creditor)"
         required
         error={errors?.creditAccId?.message}
         className="col-span-1 sm:col-span-2 md:col-span-3"
       >
         <AccountPickerFlat
-          accClassNames={["purchase"]}
+          accClassNames={["debtor", "creditor"]}
           instance={`${instance}-credit-account`}
           {...register("creditAccId", {
             required: Messages.errRequired,
           })}
-          onChange={(val) =>
+          onChange={(val) => {
             setValue("creditAccId", val, {
               shouldValidate: true,
               shouldDirty: true,
             })
-          }
+            getSetGstin(val)
+          }}
           showAccountBalance
           value={watch("creditAccId") as string}
           className="w-full"
@@ -115,7 +56,7 @@ export function CreditNotesLineItems() {
         />
       </FormField>
 
-      {/* Credit Line Ref No */}
+      {/* Credit Line ref no */}
       <FormField
         label="Line Ref No"
         className="col-span-1 sm:col-span-1 md:col-span-2"
@@ -138,6 +79,63 @@ export function CreditNotesLineItems() {
           className={clsx(inputClassLeft, "resize-none")}
           placeholder="Enter remarks"
           {...register("creditRemarks")}
+        />
+      </FormField>
+
+      {/* Credit Notes Details (spans more space on large screens) */}
+      <div className="col-span-2 row-span-2 sm:col-span-2 md:col-span-2 lg:col-span-3 max-w-64 ml-auto">
+        <CreditNotesDetails />
+      </div>
+
+      {/* Debit Account */}
+      <FormField
+        label="Debit (Sale)"
+        required
+        error={errors?.debitAccId?.message}
+        className="col-span-1 sm:col-span-2 md:col-span-3"
+      >
+        <AccountPickerFlat
+          accClassNames={["sale"]}
+          instance={`${instance}-debit-account`}
+          {...register("debitAccId", {
+            required: Messages.errRequired,
+          })}
+          onChange={(val) =>
+            setValue("debitAccId", val, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
+          showAccountBalance
+          value={watch("debitAccId") as string}
+          className="w-full"
+          showRefreshButton={false}
+        />
+      </FormField>
+
+      {/* Debit Line Ref No */}
+      <FormField
+        label="Line Ref No"
+        className="col-span-1 sm:col-span-1 md:col-span-2"
+      >
+        <input
+          type="text"
+          className={clsx(inputClassLeft)}
+          placeholder="Enter ref no"
+          {...register("debitRefNo")}
+        />
+      </FormField>
+
+      {/* Debit Remarks */}
+      <FormField
+        className="col-span-1 sm:col-span-2 md:col-span-4"
+        label="Line Remarks"
+      >
+        <textarea
+          rows={3}
+          className={clsx(inputClassLeft, "resize-none")}
+          placeholder="Enter remarks"
+          {...register("debitRemarks")}
         />
       </FormField>
     </div>

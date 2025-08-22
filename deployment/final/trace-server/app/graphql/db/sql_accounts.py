@@ -1501,6 +1501,62 @@ class SqlAccounts:
         ORDER BY "brandName", "catName", "label"
         LIMIT (TABLE "noOfRows")
     """
+
+    get_debit_credit_note_details_on_id = """
+        --with "id" as (values (10961)),
+        with "id" as (values (%(id)s::int)),
+        cte1 as (
+			select 
+				h."id", 
+				h."tranDate", 
+				h."userRefNo", 
+				h."remarks", 
+				h."autoRefNo", 
+				h."tranTypeId"
+			from "TranH" h
+				where "id" = (table id)
+            ),
+		cte2 as (
+			select 
+				d."id", 
+				d."accId", 
+				d."dc", 
+				d."amount", 
+				d."remarks",
+                d."lineRefNo"
+				from "cte1" c1 join "TranD" d 
+					on c1."id" = d."tranHeaderId"
+		),
+		cte3 as (
+			select 
+				x."id", 
+				x."gstin", 
+				x."cgst", 
+				x."sgst", 
+				x."igst",
+				x."hsn",
+                x."rate"
+				from "cte2" c2 join "ExtGstTranD" x
+					on c2."id" = x."tranDetailsId"
+				where not(("cgst" = 0) AND ("sgst" = 0) AND ("igst" = 0))
+				LIMIT 1
+		),
+		cte4 as (
+			select e.*,
+				a."accName"
+				from "AccM" a join "ExtBusinessContactsAccM" e
+                	on a."id" = e."accId"
+                    	join cte2 c2
+                        	on a."id" = c2."accId" limit 1
+		)
+		select json_build_object(
+			'tranH', (SELECT row_to_json(a) from cte1 a),
+			'tranD', (SELECT json_agg(b) from cte2 b),
+			'businessContacts',(SELECT row_to_json(c) from cte4 c),
+			'extGstTranD', (SELECT row_to_json(d) from cte3 d)
+		) as "jsonResult"
+    """
+
     get_extBusinessContactsAccM = """
         select * 
             from "ExtBusinessContactsAccM"

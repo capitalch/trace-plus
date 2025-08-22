@@ -1,7 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import _ from 'lodash'
 import { useValidators } from "../../../../utils/validators-hook";
-// import { DebiCredittNoteFormDataType } from "./debit-notes";
 import { FormField } from "../../../../controls/widgets/form-field";
 import clsx from "clsx";
 import { Messages } from "../../../../utils/messages";
@@ -17,10 +16,9 @@ import { generateDebitCreditNotePDF } from "../common/debit-credit-note-jspdf";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
-// import { DebiCredittNoteFormDataType } from "../debit-notes/debit-notes";
 
 export function CreditNotesHeader() {
-    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.creditNotes]?.activeTabIndex)
     const { checkAllowedDate } = useValidators();
     const { branchName, currentDateFormat } = useUtilsInfo()
     const {
@@ -38,7 +36,7 @@ export function CreditNotesHeader() {
 
     return (
         <div className="mb-8 relative">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 xl:grid-cols-12 gap-6 bg-white p-6 rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 xl:grid-cols-12 gap-6 bg-red-50 p-6 rounded-lg shadow-sm">
 
                 {/* Auto ref no */}
                 <FormField label="Auto Ref No" className="col-span-1 lg:col-span-2">
@@ -127,7 +125,6 @@ export function CreditNotesHeader() {
                                         const deletedIds = getValues('deletedIds') || []
                                         setValue('deletedIds', [...deletedIds, id])
                                         editData.extGstTranD = undefined
-                                        // editData.extGstTranD.id = undefined
                                     }
                                 }}
                             >
@@ -172,10 +169,10 @@ export function CreditNotesHeader() {
 
                 {/* Edit / New label */}
                 <div className="flex absolute right-0 -top-12 gap-2">
-                    <button type="submit" >Test</button>
+                    {/* <button type="submit" >Test</button> */}
                     {getPrintPreview()}
                     <label className="text-amber-500 font-medium text-lg">
-                        {watch("id") ? "Edit Debit Note" : "New Debit Note"}
+                        {watch("id") ? "Edit Credit Note" : "New Credit Note"}
                     </label>
                 </div>
             </div>
@@ -204,7 +201,7 @@ export function CreditNotesHeader() {
             branchName: branchName || '1',
             currentDateFormat: currentDateFormat,
             noteData:noteData,
-            tranTypeId: Utils.getTranTypeId('DebitNote')
+            tranTypeId: Utils.getTranTypeId('CreditNote')
         })
     }
 }

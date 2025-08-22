@@ -6,7 +6,6 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { FormProvider, useForm, } from "react-hook-form";
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { DebitNotesMain } from "./debit-notes-main";
-import { DebitNotesView } from "./debit-notes-view";
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { Utils } from "../../../../utils/utils";
 import { useEffect } from "react";
@@ -17,6 +16,7 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { useDebitCreditNotesSubmit } from "../common/debit-credit-notes-submit-hook";
 import Decimal from "decimal.js";
+import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
 
 
 export function DebitNotes() {
@@ -42,7 +42,7 @@ export function DebitNotes() {
         },
         {
             label: "View",
-            content: <DebitNotesView />
+            content: <DebitCreditNotesView tranTypeId={Utils.getTranTypeId('DebitNote')} instance={DataInstancesMap.debitNotes} />
         }
     ];
 
@@ -96,7 +96,7 @@ export function DebitNotes() {
         }
         try {
             const xData: XDataObjectType = getTranHData();
-            // console.log(JSON.stringify(xData))
+            console.log(JSON.stringify(xData))
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",

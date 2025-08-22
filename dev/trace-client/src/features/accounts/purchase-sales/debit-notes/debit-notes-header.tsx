@@ -170,7 +170,7 @@ export function DebitNotesHeader() {
 
                 {/* Edit / New label */}
                 <div className="flex absolute right-0 -top-12 gap-2">
-                    <button type="submit" >Test</button>
+                    {/* <button type="submit" >Test</button> */}
                     {getPrintPreview()}
                     <label className="text-amber-500 font-medium text-lg">
                         {watch("id") ? "Edit Debit Note" : "New Debit Note"}

@@ -22,54 +22,57 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
-- Credit notes
-	- Startup
-	- Main
-		- Gst rate and validation
-		- HSN and validation														
-		- Debtor / creditor change populate gstin
-	- Submit
-		- Insert data
-			- Without gst
-			- With Gst
-		- Edit data
-			- without gst
-			- with gst remove and add
-			- Delete
-		- Preview
-			- Pagination problem
-			- Party details: provide info
-			- Common remarks in debit note info
-			- Add Basic, Rate, hsn in table
-			- Single line
-			- Make horizontal summary
-			- Make it half page A4
-			- redux
-			- Check bindage to fields
-			- responsive debitNotesItems
-			- Amount
-		- Gst
-			- From amount back calculate if not present and isGst
-			- Gst rate validation
-			- conditional validations for gst
-			- Show  astrix when isIgst
-			- Disable gst boxes when not gst and clear them
-			- reset
-	- View
-			- edit
-			- delete
-			- preview
-	- QA
-		- normal insert
-		- insert with gst
-		- insert with igst
-		- edit
-		- edit with already existing gst remove
-		- edit with newly add gst
-		- remove existing gst then add
-		- normal delete
-		- with gst delete
-- Debit notes
+											- Credit notes
+														- Startup
+													- Main
+														- Header
+														- Line Items
+														- Gst rate and validation
+														- HSN and validation														
+														- Debtor / creditor change populate gstin
+												- Submit
+													- Insert data
+														- Without gst
+														- With Gst
+													- Edit data
+														- without gst
+														- with gst remove and add
+														- Delete
+													- Preview
+														- Pagination problem
+														- Party details: provide info
+														- Common remarks in debit note info
+														- Add Basic, Rate, hsn in table
+														- Single line
+														- Make horizontal summary
+														- Make it half page A4
+														- redux
+														- Check bindage to fields
+														- responsive debitNotesItems
+														- Amount
+													- Gst
+														- From amount back calculate if not present and isGst
+														- Gst rate validation
+														- conditional validations for gst
+														- Show  astrix when isIgst
+														- Disable gst boxes when not gst and clear them
+														- reset
+													- View
+														- View data
+														- edit
+														- delete
+														- preview
+													- QA
+														- normal insert
+														- insert with gst
+														- insert with igst
+														- edit
+														- edit with already existing gst remove
+														- edit with newly add gst
+														- remove existing gst then add
+														- normal delete
+														- with gst delete
+											- Debit notes
 														- Check gst exports
 														- Startup
 												- Main

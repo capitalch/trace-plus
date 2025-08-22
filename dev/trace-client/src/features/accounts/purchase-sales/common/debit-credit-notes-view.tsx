@@ -1,10 +1,10 @@
 import { useDispatch } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
-import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+// import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useCallback, useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useFormContext } from "react-hook-form";
-// import { DebiCredittNoteFormDataType } from "./credit-notes";
+// import { DebitCreditNoteFormDataType } from "./debit-notes";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
@@ -16,12 +16,12 @@ import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { DebitCreditNoteEditDataType, ExtGstTranDType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
-import { generateDebitCreditNotePDF } from "../common/debit-credit-note-jspdf";
+import { generateDebitCreditNotePDF } from "./debit-credit-note-jspdf";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 
-export function CreditNotesView({ className }: { className?: string }) {
+export function DebitCreditNotesView({ className, tranTypeId, instance }: { className?: string; tranTypeId: number; instance: string }) {
     const dispatch: AppDispatchType = useDispatch()
-    const instance = DataInstancesMap.debitNotes
+    // const instance = DataInstancesMap.debitNotes
     const [rowsData, setRowsData] = useState<any[]>([]);
     const {
         currentDateFormat,
@@ -36,7 +36,6 @@ export function CreditNotesView({ className }: { className?: string }) {
 
     const {
         reset,
-        // setValue,
     } = useFormContext<DebitCreditNoteFormDataType>();
 
     const loadData = useCallback(async () => {
@@ -57,7 +56,7 @@ export function CreditNotesView({ className }: { className?: string }) {
                         ? null
                         : state.login.currentBranch?.branchId,
                     finYearId: finYearId,
-                    tranTypeId: 7,
+                    tranTypeId: tranTypeId,
                 },
             });
             let currentId: number | null | undefined = null;
@@ -74,7 +73,7 @@ export function CreditNotesView({ className }: { className?: string }) {
         } catch (e: any) {
             console.error(e);
         }
-    }, [decodedDbParamsObject, dbName, instance]);
+    }, [decodedDbParamsObject, dbName, instance, tranTypeId]);
 
     useEffect(() => {
         loadData();
@@ -109,7 +108,6 @@ export function CreditNotesView({ className }: { className?: string }) {
                 isSmallerFont={true}
                 loadData={loadData}
                 minWidth="1400px"
-                // onCopy={handleOnCopy}
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
                 onPreview={handleOnPreview}
@@ -387,8 +385,6 @@ export function CreditNotesView({ className }: { className?: string }) {
             noteData: dcEditData,
             tranTypeId: 7
         })
-        // const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-        // generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
     }
 
     function handleOnRowDataBound(args: RowDataBoundEventArgs) {

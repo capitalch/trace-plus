@@ -1,5 +1,4 @@
 import { useFormContext } from "react-hook-form";
-// import { DebitNoteFormDataType } from "./debit-notes";
 import { FormField } from "../../../../controls/widgets/form-field";
 import clsx from "clsx";
 import { useValidators } from "../../../../utils/validators-hook";
@@ -9,13 +8,11 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { useEffect } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
-// import { DebiCredittNoteFormDataType } from "../debit-notes/debit-notes";
 
 export function CreditNotesDetails() {
     const { isValidGstin, isValidHsn } = useValidators();
     const { defaultGstRate, maxGstRate } = useUtilsInfo();
     const {
-        // getValues,
         setValue,
         watch,
         register,
@@ -33,7 +30,6 @@ export function CreditNotesDetails() {
 
     useEffect(() => {
         if (!isGstApplicable) {
-            // setValue('gstin', null)
             setValue('isIgst', false)
             setValue('cgst', 0)
             setValue('sgst', 0)
@@ -184,7 +180,6 @@ export function CreditNotesDetails() {
             <FormField
                 label="Amount"
                 required
-                // error={errors?.amount?.message}
                 className=""
             >
                 <ControlledNumericInput

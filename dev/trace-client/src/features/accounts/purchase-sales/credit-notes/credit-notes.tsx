@@ -15,23 +15,23 @@ import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import Decimal from "decimal.js";
-import { CreditNotesView } from "./credit-notes-view";
 import { CreditNotesMain } from "./credit-notes-main";
 import { clearCreditNoteFormData, saveCreditNoteFormData } from "./credit-notes-slice";
+import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
 
-export function CreditNotes(){
+export function CreditNotes() {
     const dispatch: AppDispatchType = useDispatch()
-    const savedFormData = useSelector((state: RootStateType) => state.debitNotes.savedFormData);
-    const instance = DataInstancesMap.debitNotes;
+    const savedFormData = useSelector((state: RootStateType) => state.creditNotes.savedFormData);
+    const instance = DataInstancesMap.creditNotes;
     const { branchId, finYearId, dbName, buCode } = useUtilsInfo();
     const methods = useForm<DebitCreditNoteFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
-            defaultValues: _.isEmpty(savedFormData) ? getDefaultDebitNoteFormValues() : savedFormData
+            defaultValues: _.isEmpty(savedFormData) ? getDefaultCreditNoteFormValues() : savedFormData
         });
     const { clearErrors, reset, getValues, setValue, setFocus, watch } = methods;
-    const { getTranHData } = useDebitCreditNotesSubmit(methods)
+    const { getTranHData } = useDebitCreditNotesSubmit(methods, Utils.getTranTypeId('CreditNote'))
 
     const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst }
 
@@ -42,7 +42,7 @@ export function CreditNotes(){
         },
         {
             label: "View",
-            content: <CreditNotesView />
+            content: <DebitCreditNotesView tranTypeId={Utils.getTranTypeId('CreditNote')} instance={DataInstancesMap.creditNotes} />
         }
     ];
 
@@ -65,7 +65,7 @@ export function CreditNotes(){
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
                 <CompAccountsContainer>
                     <label className="mt-1 text-md font-bold text-primary-500">
-                        Debit Notes
+                        Credit Notes
                     </label>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
 
@@ -96,7 +96,7 @@ export function CreditNotes(){
         }
         try {
             const xData: XDataObjectType = getTranHData();
-            // console.log(JSON.stringify(xData))
+            console.log(JSON.stringify(xData))
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
@@ -114,14 +114,14 @@ export function CreditNotes(){
         }
     }
 
-    function getDefaultDebitNoteFormValues(): DebitCreditNoteFormDataType {
+    function getDefaultCreditNoteFormValues(): DebitCreditNoteFormDataType {
         return ({
             id: undefined,
             autoRefNo: "",
             tranDate: '',
             userRefNo: null,
             remarks: null,
-            tranTypeId: Utils.getTranTypeId('DebitNote'),
+            tranTypeId: Utils.getTranTypeId('CreditNote'),
             amount: 0,
 
             isGstApplicable: false,
@@ -195,7 +195,7 @@ export function CreditNotes(){
 
     function resetAll() {
         clearErrors()
-        reset(getDefaultDebitNoteFormValues());
+        reset(getDefaultCreditNoteFormValues());
         dispatch(clearCreditNoteFormData());
     }
 }
