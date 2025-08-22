@@ -1,16 +1,18 @@
 import { useFormContext } from "react-hook-form";
 import { FormField } from "../../../../controls/widgets/form-field";
-import { DebitCreditNoteFormDataType } from "./debit-notes";
+// import { DebitCredittNoteFormDataType } from "./debit-notes";
 import { AccountPickerFlat } from "../../../../controls/redux-components/account-picker-flat/account-picker-flat";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { Messages } from "../../../../utils/messages";
 import clsx from "clsx";
-import { DebitNotesDetails } from "./debit-notes-details";
+// import { DebitNotesDetails } from "./credit-notes-details";
 import { Utils } from "../../../../utils/utils";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
+import { CreditNotesDetails } from "./credit-notes-details";
 
-export function DebitNotesLineItems() {
+export function CreditNotesLineItems() {
   const instance = DataInstancesMap.debitNotes;
   const {
     setValue,
@@ -84,7 +86,7 @@ export function DebitNotesLineItems() {
 
       {/* Debit Notes Details (spans more space on large screens) */}
       <div className="col-span-2 row-span-2 sm:col-span-2 md:col-span-2 lg:col-span-3 max-w-64 ml-auto">
-        <DebitNotesDetails />
+        <CreditNotesDetails />
       </div>
 
       {/* Credit Account */}

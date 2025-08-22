@@ -23,11 +23,56 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Credit notes
-
+	- Startup
+	- Main
+		- Gst rate and validation
+		- HSN and validation														
+		- Debtor / creditor change populate gstin
+	- Submit
+		- Insert data
+			- Without gst
+			- With Gst
+		- Edit data
+			- without gst
+			- with gst remove and add
+			- Delete
+		- Preview
+			- Pagination problem
+			- Party details: provide info
+			- Common remarks in debit note info
+			- Add Basic, Rate, hsn in table
+			- Single line
+			- Make horizontal summary
+			- Make it half page A4
+			- redux
+			- Check bindage to fields
+			- responsive debitNotesItems
+			- Amount
+		- Gst
+			- From amount back calculate if not present and isGst
+			- Gst rate validation
+			- conditional validations for gst
+			- Show  astrix when isIgst
+			- Disable gst boxes when not gst and clear them
+			- reset
+	- View
+			- edit
+			- delete
+			- preview
+	- QA
+		- normal insert
+		- insert with gst
+		- insert with igst
+		- edit
+		- edit with already existing gst remove
+		- edit with newly add gst
+		- remove existing gst then add
+		- normal delete
+		- with gst delete
 - Debit notes
-	- Check gst exports
+														- Check gst exports
 														- Startup
-											- Main
+												- Main
 														- Gst rate and validation
 														- HSN and validation														
 														- Debtor / creditor change populate gstin
@@ -72,10 +117,6 @@ valid gstin: 24AAACC1206D1ZM
 														- remove existing gst then add
 														- normal delete
 														- with gst delete
-	- ReDo
-		- Massive QA with data inspection for
-			- purchase
-			- purchase return
 												- purchase return
 														- Purchase and return decial point 2 digits round
 														- Check debitAccId and creditAccId
@@ -102,9 +143,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Delete
 														- Copy
 														- preview
-	- Purchase
-		- Bugs			
-			- When invoice with no gst is entered then a blank row is added inExtGstTranD table with 0 values
+										- Purchase
 														- gst rate warning
 														- validate gst rate less than 28%. Implement max gst rate
 											- QA: Check at database level on submit

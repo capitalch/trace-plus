@@ -15,7 +15,7 @@ import { Messages } from "../../../../utils/messages";
 import { DebitCreditNoteEditDataType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
-import { useDebitCreditNotesSubmit } from "./debit-credit-notes-submit-hook";
+import { useDebitCreditNotesSubmit } from "../common/debit-credit-notes-submit-hook";
 import Decimal from "decimal.js";
 
 
@@ -24,7 +24,7 @@ export function DebitNotes() {
     const savedFormData = useSelector((state: RootStateType) => state.debitNotes.savedFormData);
     const instance = DataInstancesMap.debitNotes;
     const { branchId, finYearId, dbName, buCode } = useUtilsInfo();
-    const methods = useForm<DebitNoteFormDataType>(
+    const methods = useForm<DebitCreditNoteFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
@@ -114,7 +114,7 @@ export function DebitNotes() {
         }
     }
 
-    function getDefaultDebitNoteFormValues(): DebitNoteFormDataType {
+    function getDefaultDebitNoteFormValues(): DebitCreditNoteFormDataType {
         return ({
             id: undefined,
             autoRefNo: "",
@@ -200,7 +200,7 @@ export function DebitNotes() {
     }
 }
 
-export type DebitNoteFormDataType = {
+export type DebitCreditNoteFormDataType = {
     id?: number;
     autoRefNo?: string;
     tranDate: string;

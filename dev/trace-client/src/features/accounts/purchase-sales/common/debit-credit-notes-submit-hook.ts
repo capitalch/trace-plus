@@ -2,11 +2,11 @@ import { UseFormReturn } from "react-hook-form";
 import _ from 'lodash'
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { DebitNoteFormDataType } from "./debit-notes";
 import { ExtGstTranDType, TraceDataObjectType, TranDType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { AllTables } from "../../../../app/maps/database-tables-map";
+import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 
-export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitNoteFormDataType>, tranTypeId = Utils.getTranTypeId('DebitNote')) {
+export function useDebitCreditNotesSubmit(methods: UseFormReturn<DebitCreditNoteFormDataType>, tranTypeId = Utils.getTranTypeId('DebitNote')) {
     const { branchId, finYearId } = useUtilsInfo();
     const { getValues } = methods;
     const debitCreditNoteEditData = getValues('debitCreditNoteEditData')

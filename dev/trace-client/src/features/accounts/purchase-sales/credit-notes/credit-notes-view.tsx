@@ -4,7 +4,7 @@ import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useCallback, useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useFormContext } from "react-hook-form";
-import { DebitCreditNoteFormDataType } from "./debit-notes";
+// import { DebiCredittNoteFormDataType } from "./credit-notes";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
@@ -17,8 +17,9 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { DebitCreditNoteEditDataType, ExtGstTranDType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
 import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { generateDebitCreditNotePDF } from "../common/debit-credit-note-jspdf";
+import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 
-export function DebitNotesView({ className }: { className?: string }) {
+export function CreditNotesView({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.debitNotes
     const [rowsData, setRowsData] = useState<any[]>([]);

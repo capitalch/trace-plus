@@ -1,4 +1,5 @@
 import { useFormContext } from "react-hook-form";
+// import { DebitNoteFormDataType } from "./debit-notes";
 import { FormField } from "../../../../controls/widgets/form-field";
 import clsx from "clsx";
 import { useValidators } from "../../../../utils/validators-hook";
@@ -7,12 +8,14 @@ import { ControlledNumericInput } from "../../../../controls/components/controll
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { useEffect } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { DebitCreditNoteFormDataType } from "./debit-notes";
+import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
+// import { DebiCredittNoteFormDataType } from "../debit-notes/debit-notes";
 
-export function DebitNotesDetails() {
+export function CreditNotesDetails() {
     const { isValidGstin, isValidHsn } = useValidators();
     const { defaultGstRate, maxGstRate } = useUtilsInfo();
     const {
+        // getValues,
         setValue,
         watch,
         register,

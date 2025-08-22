@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { DebitNoteFormDataType } from "./debit-notes";
+import { DebitCreditNoteFormDataType } from "./debit-notes";
 
 const initialState: DebitNoteInitialStateType = {
     savedFormData: null,
@@ -10,7 +10,7 @@ const debitNotesSlice = createSlice({
     initialState: initialState,
 
     reducers: {
-        saveDebitNoteFormData(state, action: PayloadAction<DebitNoteFormDataType>) {
+        saveDebitNoteFormData(state, action: PayloadAction<DebitCreditNoteFormDataType>) {
             state.savedFormData = action.payload;
         },
         clearDebitNoteFormData(state) {
@@ -26,5 +26,5 @@ export const {
 } = debitNotesSlice.actions
 
 type DebitNoteInitialStateType = {
-    savedFormData: DebitNoteFormDataType | null;
+    savedFormData: DebitCreditNoteFormDataType | null;
 }

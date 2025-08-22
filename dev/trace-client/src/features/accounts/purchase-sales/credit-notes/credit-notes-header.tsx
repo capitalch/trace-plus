@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import _ from 'lodash'
 import { useValidators } from "../../../../utils/validators-hook";
-import { DebitCreditNoteFormDataType } from "./debit-notes";
+// import { DebiCredittNoteFormDataType } from "./debit-notes";
 import { FormField } from "../../../../controls/widgets/form-field";
 import clsx from "clsx";
 import { Messages } from "../../../../utils/messages";
@@ -16,8 +16,10 @@ import { DebitCreditNoteEditDataType } from "../../../../utils/global-types-inte
 import { generateDebitCreditNotePDF } from "../common/debit-credit-note-jspdf";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
+import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
+// import { DebiCredittNoteFormDataType } from "../debit-notes/debit-notes";
 
-export function DebitNotesHeader() {
+export function CreditNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
     const { checkAllowedDate } = useValidators();
     const { branchName, currentDateFormat } = useUtilsInfo()
