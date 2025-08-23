@@ -17,6 +17,9 @@
 	- QA and release		: 30-08-2025
 
 ## History
+# 22-08-2025
+	- Completed Debit notes, Credit notes
+	- Started Sales
 # 15-08-2025
 	- Completed Purchase Return
 	- Started debit notes

@@ -124,6 +124,7 @@ export function SalesReport({ title }: { title?: string }) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="800px"
+        onRemove={handleOnRemove}
         queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
         onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound
       />
@@ -413,6 +414,15 @@ export function SalesReport({ title }: { title?: string }) {
     );
   }
 
+  function handleOnRemove(removedRow: RowDataType) {
+    setRowsData((prev) =>
+      prev.filter((item: RowDataType) => item.id !== removedRow.id)
+    );
+    // const removedIds = removedRows.map(r => r.productId);
+    // const newData = rowsData.filter(r => !removedIds.includes(r.productId));
+    // setRowsData(newData);
+  }
+
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
     const rowData = args.data as RowDataType;
 
@@ -433,7 +443,7 @@ export function SalesReport({ title }: { title?: string }) {
   }
 
   async function loadData() {
-    try { 
+    try {
       const state: RootStateType = Utils.getReduxState();
       const buCode = state.login.currentBusinessUnit?.buCode;
       const finYearId = state.login.currentFinYear?.finYearId;
@@ -498,6 +508,7 @@ export function SalesReport({ title }: { title?: string }) {
 }
 
 type RowDataType = {
+  id: any;
   accounts: string;
   age: number;
   aggrSale: number;

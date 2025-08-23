@@ -12,6 +12,7 @@ export const DataInstancesMap = {
   allBanks: "all-banks",
   allPurchases: "all-purchases",
   allPurchaseReturns:"all-purchase-returns",
+  allSales:"all-sales",
   allTags: "all-tags",
   allVouchers:'all-vouchers',
   assets: "assets",

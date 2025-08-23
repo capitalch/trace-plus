@@ -44,6 +44,7 @@ import { AllPurchases } from "../../features/accounts/purchase-sales/purchases/a
 import { AllPurchaseReturns } from "../../features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns";
 import { DebitNotes } from "../../features/accounts/purchase-sales/debit-notes/debit-notes";
 import { CreditNotes } from "../../features/accounts/purchase-sales/credit-notes/credit-notes";
+import { AllSales } from "../../features/accounts/purchase-sales/sales/all-sales/all-sales";
 
 export const appRouter = createBrowserRouter(
   [
@@ -133,6 +134,10 @@ export const appRouter = createBrowserRouter(
         {
           path: '/credit-notes',
           element: <CreditNotes />
+        },
+        {
+          path: '/all-sales',
+          element: <AllSales />
         },
       ]
     },

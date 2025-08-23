@@ -66,7 +66,6 @@ export function AllPurchases() {
                         Purchase
                     </label>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
-
                 </CompAccountsContainer>
             </form>
         </FormProvider>

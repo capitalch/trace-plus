@@ -8,6 +8,8 @@ valid gstin: 24AAACC1206D1ZM
 - Supplier name and its due in summary report of inventory
 - drill down
 - Interchange sale bill type: cash, bill sale, institutional
+- Provide remove button in sales report
+- Check why age of en-el25 on22-08-2025 sale showing 5702
 
 ## security
 	- Change databaseTablesMap to tables schema type variables
@@ -22,6 +24,20 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+- Sales
+														- Startup
+	- Main
+		- Reset
+		- Preview
+		- Submit
+			- Insert
+			- Edit
+	- View
+		- Sql
+		- Data
+		- Edit
+		- Preview
+		- Delete
 											- Credit notes
 														- Startup
 													- Main
