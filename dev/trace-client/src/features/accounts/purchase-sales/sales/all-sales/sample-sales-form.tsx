@@ -88,7 +88,7 @@ const SalesForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-3">
       <div className="max-w-full mx-auto">
-        {/* Enhanced Header - Changed to light gray */}
+        {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-gray-400 to-gray-500 rounded-xl shadow-lg mb-4 p-4 text-white">
           <div className="flex items-center justify-between">
             <div>
@@ -128,37 +128,6 @@ const SalesForm = () => {
 
         {/* Customer and Invoice Details Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          {/* Customer Section */}
-          <div className="bg-white rounded-xl shadow-md border-l-4 border-blue-400 p-4 hover:shadow-lg transition-shadow duration-200">
-            <div className="flex items-center mb-3">
-              <div className="bg-blue-400 text-white p-2 rounded-lg mr-3">
-                <span className="text-sm font-bold">👤</span>
-              </div>
-              <h2 className="text-lg font-bold text-gray-800">Customer Details</h2>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Customer *</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                  placeholder="Search customer..."
-                />
-                <span className="absolute right-3 top-9 text-gray-400 text-lg">🔍</span>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">GSTIN Number</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                  placeholder="Enter GSTIN"
-                />
-              </div>
-            </div>
-          </div>
-
           {/* Invoice Details Section */}
           <div className="bg-white rounded-xl shadow-md border-l-4 border-indigo-400 p-4 hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center mb-3">
@@ -194,6 +163,88 @@ const SalesForm = () => {
                   className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all duration-200 resize-none"
                   placeholder="Add any special instructions or notes..."
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Customer Section */}
+          <div className="bg-white rounded-xl shadow-md border-l-4 border-blue-400 p-4 hover:shadow-lg transition-shadow duration-200">
+            <div className="flex items-center mb-3">
+              <div className="bg-blue-400 text-white p-2 rounded-lg mr-3">
+                <span className="text-sm font-bold">👤</span>
+              </div>
+              <h2 className="text-lg font-bold text-gray-800">Customer Details</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Input Fields - Left Side */}
+              <div className="space-y-3">
+                <div className="relative">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Customer *</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+                    placeholder="Search customer..."
+                  />
+                  <span className="absolute right-3 top-7 text-gray-400 text-sm">🔍</span>
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">GSTIN Number</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+                    placeholder="Enter GSTIN"
+                  />
+                </div>
+              </div>
+
+              {/* Customer Details Display - Right Side */}
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide">Selected Customer</h3>
+                  <span className="text-xs text-blue-600 font-semibold">📋 Details</span>
+                </div>
+                
+                <div className="space-y-2 text-xs">
+                  <div className="bg-white rounded-md p-2 border border-blue-100">
+                    <div className="font-semibold text-gray-800">ABC Trading Company</div>
+                    <div className="text-gray-600 mt-1">Contact: +91 9876543210</div>
+                    <div className="text-gray-600">Email: abc@trading.com</div>
+                  </div>
+                  
+                  <div className="bg-white rounded-md p-2 border border-blue-100">
+                    <div className="font-semibold text-gray-700">Address:</div>
+                    <div className="text-gray-600 text-xs leading-relaxed">
+                      123 Business District,<br/>
+                      Salt Lake, Kolkata - 700091<br/>
+                      West Bengal, India
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center bg-white rounded-md p-2 border border-blue-100">
+                    <div>
+                      <div className="font-semibold text-gray-700">GSTIN:</div>
+                      <div className="text-gray-600">19ABCDE1234F1Z5</div>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-700">Balance:</div>
+                      <div className="text-green-600 font-semibold">₹15,240.50</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2 mt-3">
+                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold transition-all duration-200">
+                    ✏️ Edit
+                  </button>
+                  <button className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-semibold transition-all duration-200">
+                    📄 History
+                  </button>
+                  <button className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold transition-all duration-200">
+                    🗑️ Clear
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -685,12 +736,11 @@ export default SalesForm;
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-3">
 //       <div className="max-w-full mx-auto">
-//         {/* Enhanced Header */}
-//         <div className="bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl shadow-lg mb-4 p-4 text-white">
+//         {/* Enhanced Header - Changed to light gray */}
+//         <div className="bg-gradient-to-r from-gray-400 to-gray-500 rounded-xl shadow-lg mb-4 p-4 text-white">
 //           <div className="flex items-center justify-between">
 //             <div>
-//               <h1 className="text-2xl font-bold mb-1">Sales Invoice</h1>
-//               <div className="text-blue-50 text-lg font-medium">Capital Chowringhee Pvt Ltd</div>
+//               {/* Sales Invoice title and company name removed */}
 //             </div>
 //             <div className="flex items-center space-x-4">
 //               <div className="bg-white/10 rounded-lg px-3 py-2 backdrop-blur-sm">
@@ -735,24 +785,75 @@ export default SalesForm;
 //               <h2 className="text-lg font-bold text-gray-800">Customer Details</h2>
 //             </div>
             
-//             <div className="space-y-3">
-//               <div className="relative">
-//                 <label className="block text-sm font-semibold text-gray-700 mb-1">Customer *</label>
-//                 <input
-//                   type="text"
-//                   className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-//                   placeholder="Search customer..."
-//                 />
-//                 <span className="absolute right-3 top-9 text-gray-400 text-lg">🔍</span>
+//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+//               {/* Input Fields - Left Side */}
+//               <div className="space-y-3">
+//                 <div className="relative">
+//                   <label className="block text-xs font-semibold text-gray-700 mb-1">Customer *</label>
+//                   <input
+//                     type="text"
+//                     className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+//                     placeholder="Search customer..."
+//                   />
+//                   <span className="absolute right-3 top-7 text-gray-400 text-sm">🔍</span>
+//                 </div>
+                
+//                 <div>
+//                   <label className="block text-xs font-semibold text-gray-700 mb-1">GSTIN Number</label>
+//                   <input
+//                     type="text"
+//                     className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+//                     placeholder="Enter GSTIN"
+//                   />
+//                 </div>
 //               </div>
-              
-//               <div>
-//                 <label className="block text-sm font-semibold text-gray-700 mb-1">GSTIN Number</label>
-//                 <input
-//                   type="text"
-//                   className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-//                   placeholder="Enter GSTIN"
-//                 />
+
+//               {/* Customer Details Display - Right Side */}
+//               <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+//                 <div className="flex items-center justify-between mb-2">
+//                   <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide">Selected Customer</h3>
+//                   <span className="text-xs text-blue-600 font-semibold">📋 Details</span>
+//                 </div>
+                
+//                 <div className="space-y-2 text-xs">
+//                   <div className="bg-white rounded-md p-2 border border-blue-100">
+//                     <div className="font-semibold text-gray-800">ABC Trading Company</div>
+//                     <div className="text-gray-600 mt-1">Contact: +91 9876543210</div>
+//                     <div className="text-gray-600">Email: abc@trading.com</div>
+//                   </div>
+                  
+//                   <div className="bg-white rounded-md p-2 border border-blue-100">
+//                     <div className="font-semibold text-gray-700">Address:</div>
+//                     <div className="text-gray-600 text-xs leading-relaxed">
+//                       123 Business District,<br/>
+//                       Salt Lake, Kolkata - 700091<br/>
+//                       West Bengal, India
+//                     </div>
+//                   </div>
+                  
+//                   <div className="flex justify-between items-center bg-white rounded-md p-2 border border-blue-100">
+//                     <div>
+//                       <div className="font-semibold text-gray-700">GSTIN:</div>
+//                       <div className="text-gray-600">19ABCDE1234F1Z5</div>
+//                     </div>
+//                     <div>
+//                       <div className="font-semibold text-gray-700">Balance:</div>
+//                       <div className="text-green-600 font-semibold">₹15,240.50</div>
+//                     </div>
+//                   </div>
+//                 </div>
+                
+//                 <div className="flex space-x-2 mt-3">
+//                   <button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold transition-all duration-200">
+//                     ✏️ Edit
+//                   </button>
+//                   <button className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-semibold transition-all duration-200">
+//                     📄 History
+//                   </button>
+//                   <button className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold transition-all duration-200">
+//                     🗑️ Clear
+//                   </button>
+//                 </div>
 //               </div>
 //             </div>
 //           </div>
@@ -931,7 +1032,7 @@ export default SalesForm;
 //                         onChange={(e) => updateItem(item.id, 'serialNo', e.target.value)}
 //                         rows="2"
 //                         className="w-32 px-2 py-1 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-xs resize-none transition-all duration-200"
-//                         placeholder="Enter serial numbers...&#10;SN001&#10;SN002"
+//                         placeholder="Enter serial numbers..."
 //                       />
 //                     </td>
 //                     <td className="px-3 py-3 text-sm font-bold text-green-600 bg-green-50">
@@ -1172,7 +1273,7 @@ export default SalesForm;
 //               <textarea
 //                 rows="5"
 //                 className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm resize-none transition-all duration-200"
-//                 placeholder="📍 Enter complete shipping address...&#10;&#10;Name:&#10;Address Line 1:&#10;Address Line 2:&#10;City, State - PIN"
+//                 placeholder="📍 Enter complete shipping address..."
 //               />
               
 //               <div className="flex justify-between">

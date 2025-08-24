@@ -1,3 +1,7 @@
+- Git
+git branch              # List branches
+git checkout -b new     # Create/switch to branch
+git merge branchname    # Merge branch into current
 																									## Bug
 																									- Stock reports problem
 																									- Stock transaction report not working
