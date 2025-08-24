@@ -1,3 +1,6 @@
+- Gemini cli
+	- Gemini CLI commands: /memory, /stats, /tools, /mcp
+	- apikey: AIzaSyAQEPgbJyZnZPFnZmV0vLxEgdVSBwxvv2g
 - Git
 git branch              # List branches
 git checkout -b new     # Create/switch to branch
