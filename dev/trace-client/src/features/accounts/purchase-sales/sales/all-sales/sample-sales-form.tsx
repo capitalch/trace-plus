@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
+import { WidgetAstrix } from '../../../../../controls/widgets/widget-astrix';
 
 const SalesForm = () => {
   const [items, setItems] = useState([
@@ -24,7 +25,7 @@ const SalesForm = () => {
     setItems([...items, newItem]);
   };
 
-  const removeItem = (id) => {
+  const removeItem = (id:any) => {
     if (items.length > 1) {
       setItems(items.filter(item => item.id !== id));
     }
@@ -40,7 +41,7 @@ const SalesForm = () => {
     setPaymentMethods([...paymentMethods, newPayment]);
   };
 
-  const removePaymentMethod = (id) => {
+  const removePaymentMethod = (id:any) => {
     if (paymentMethods.length > 1) {
       setPaymentMethods(paymentMethods.filter(p => p.id !== id));
     }
@@ -132,14 +133,14 @@ const SalesForm = () => {
           <div className="bg-white rounded-xl shadow-md border-l-4 border-indigo-400 p-4 hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center mb-3">
               <div className="bg-indigo-400 text-white p-2 rounded-lg mr-3">
-                <span className="text-sm font-bold">📄</span>
+                <span className="text-sm font-bold">🚃</span>
               </div>
               <h2 className="text-lg font-bold text-gray-800">Invoice Details</h2>
             </div>
             
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Date *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Date <WidgetAstrix /></label>
                 <input
                   type="date"
                   defaultValue="2025-08-23"

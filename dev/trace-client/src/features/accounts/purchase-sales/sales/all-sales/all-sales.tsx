@@ -7,6 +7,7 @@ import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { RootStateType } from "../../../../../app/store";
 import { useSelector } from "react-redux";
 import SalesForm from "./sample-sales-form";
+import SalesForm2 from "./sales-form2";
 
 export function AllSales() {
     const instance = DataInstancesMap.allSales;
@@ -24,11 +25,10 @@ export function AllSales() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer>
-                    <label className="mt-1 text-md font-bold text-primary-500">
-                        Sales
-                    </label>
-                    <SalesForm />
+                <CompAccountsContainer
+                    LeftCustomControl={() => <span className="text-lg font-bold text-gray-500 ml-2">→ Sales</span>}>
+                    {/* <SalesForm /> */}
+                    <SalesForm2 />
                     {/* <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" /> */}
                 </CompAccountsContainer>
             </form>

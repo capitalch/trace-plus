@@ -5,6 +5,11 @@
 git branch              # List branches
 git checkout -b new     # Create/switch to branch
 git merge branchname    # Merge branch into current
+
+- Screen sizes
+sm: 640px and up
+md: 768px and up
+lg: 1024px and up
 																									## Bug
 																									- Stock reports problem
 																									- Stock transaction report not working
