@@ -10,6 +10,7 @@ valid gstin: 24AAACC1206D1ZM
 - Interchange sale bill type: cash, bill sale, institutional
 - Provide remove button in sales report
 - Check why age of en-el25 on22-08-2025 sale showing 5702
+- Change all headers to LeftCustomControl mechanism
 
 ## security
 	- Change databaseTablesMap to tables schema type variables
