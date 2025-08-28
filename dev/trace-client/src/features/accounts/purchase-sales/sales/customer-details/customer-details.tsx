@@ -15,7 +15,6 @@ interface Customer {
     email: string;
     address: string;
     gstin: string;
-    // balance: number;
 }
 
 const CustomerDetails: React.FC = () => {
@@ -215,6 +214,7 @@ const CustomerDetails: React.FC = () => {
             title: `Select from existing customer - "${query}"`,
             isOpen: true,
             element: <CustomerSearch searchString={searchString} />,
+            size:'md'
         })
 
     }
