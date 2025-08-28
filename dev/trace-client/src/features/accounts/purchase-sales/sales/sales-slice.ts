@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SalesFormDataType } from "./all-sales/all-sales";
+import { SalesFormDataType } from "./all-sales";
 
 const initialState: SalesInitialStateType = {
     savedFormData: null,
