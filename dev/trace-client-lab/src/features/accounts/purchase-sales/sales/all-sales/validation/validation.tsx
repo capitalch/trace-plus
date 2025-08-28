@@ -1,50 +1,63 @@
-import React from 'react';
-import { ShieldCheck, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import React, { useState } from 'react';
 
-interface ValidationProps {
-    validateForm: () => string[];
-    showErrors: boolean;
-    setShowErrors: React.Dispatch<React.SetStateAction<boolean>>;
+interface Item {
+    id: number;
+    productCode: string;
+    hsn: string;
+    gst: number;
+    qty: number;
+    price: number;
+    gstPrice: number;
+    discount: number;
+    remarks: string;
+    serialNo: string;
 }
 
-const Validation: React.FC<ValidationProps> = ({ validateForm, showErrors, setShowErrors }) => {
-    const errors = validateForm();
-    const isValid = errors.length === 0;
+const Validation: React.FC = () => {
+    const [showErrors, setShowErrors] = useState(true);
+    const [items] = useState<Item[]>([
+        { id: 1, productCode: '', hsn: '', gst: 0, qty: 1, price: 0, gstPrice: 0, discount: 0, remarks: '', serialNo: '' }
+    ]);
+    const validateForm = () => {
+        const errors = [];
+        if (!document.querySelector('input[placeholder="Search customer..."]')?.value) {
+            errors.push('Customer is required');
+        }
+        items.forEach((item, index) => {
+            if (!item.productCode) errors.push(`Item ${index + 1}: Product code required`);
+            if (!item.hsn) errors.push(`Item ${index + 1}: HSN code required`);
+        });
+        return errors;
+    };
 
     return (
-        <div className={`lg:col-span-3 bg-white rounded-lg shadow-lg border-l-4 ${isValid ? 'border-green-500' : 'border-red-500'} p-6 transition-all duration-300 ease-in-out hover:shadow-xl`}>
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-full ${isValid ? 'bg-green-100' : 'bg-red-100'}`}>
-                        {isValid ? (
-                            <ShieldCheck className="w-6 h-6 text-green-600" />
-                        ) : (
-                            <AlertTriangle className="w-6 h-6 text-red-600" />
-                        )}
+        <div className="lg:col-span-3 bg-white rounded-xl shadow-lg border-l-4 border-red-500 p-4">
+            <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                    <div className="bg-red-500 text-white p-2 rounded-lg mr-2">
+                        <span className="text-sm font-bold">⚠️</span>
                     </div>
-                    <h2 className="text-xl font-bold text-gray-800">Validation Status</h2>
+                    <h2 className="text-lg font-bold text-gray-800">Validation</h2>
                 </div>
                 <button
                     onClick={() => setShowErrors(!showErrors)}
-                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                    className="text-red-500 hover:text-red-700 text-sm"
                 >
-                    {showErrors ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showErrors ? '🙈' : '👁️'}
                 </button>
             </div>
 
             {showErrors && (
-                <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
-                    {isValid ? (
-                        <div className="text-center py-6">
-                            <ShieldCheck className="w-16 h-16 text-green-500 mx-auto" />
-                            <p className="text-lg font-semibold text-green-600 mt-3">All Checks Passed!</p>
-                            <p className="text-sm text-gray-500">The form is valid and ready to submit.</p>
+                <div className="space-y-3 max-h-48 overflow-y-auto">
+                    {validateForm().length === 0 ? (
+                        <div className="text-center py-4">
+                            <span className="text-4xl">✅</span>
+                            <p className="text-sm font-semibold text-green-600 mt-2">All good!</p>
                         </div>
                     ) : (
-                        errors.map((error, index) => (
-                            <div key={index} className="flex items-start bg-red-50 border border-red-200 rounded-lg p-3">
-                                <AlertTriangle className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
-                                <p className="text-sm text-red-700 font-medium">{error}</p>
+                        validateForm().map((error, index) => (
+                            <div key={index} className="bg-red-50 border border-red-200 rounded-lg p-2">
+                                <p className="text-xs text-red-600 font-semibold">🚨 {error}</p>
                             </div>
                         ))
                     )}

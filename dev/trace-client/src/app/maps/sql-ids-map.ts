@@ -70,6 +70,7 @@ export const SqlIdsMap = {
   getBankRecon: "get_bank_recon",
   getBrandsCategoriesTags: "get_brands_categories_tags",
   getBrandsCategoriesUnits: "get_brands_categories_units",
+  getContactsOnRegexp: "get_contacts_on_regexp",
   getCurrentOrders: "get_current_orders",
   getDebitCreditNoteDetailsOnId:"get_debit_credit_note_details_on_id",
   getExtBusinessContactsAccM: "get_extBusinessContactsAccM",

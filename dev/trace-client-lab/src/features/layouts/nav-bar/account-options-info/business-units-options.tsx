@@ -9,8 +9,6 @@ import { Messages } from "../../../../utils/messages"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { UserTypesEnum } from "../../../../utils/global-types-interfaces-enums"
-// import { Navigate } from "react-router-dom"
-// import { setSideBarSelectedChildId } from "../../layouts-slice"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
@@ -52,13 +50,6 @@ export function BusinessUnitsOptions() {
         const userDetails: UserDetailsType = loginInfo.userDetails || {}
         const dbName: string = userDetails.dbName || ''
         const dbParamsObject = userDetails.decodedDbParamsObject
-        // const isExternalDb: boolean = userDetails.isExternalDb || false
-        // const dbParams: string | undefined = userDetails?.dbParams
-        // let dbParamsObject: any
-        // if (isExternalDb && dbParams) {
-        //     dbParamsObject = await Utils.decodeExtDbParams(dbParams)
-        //     dispatch(setDecodedDbParamsObject(dbParamsObject))
-        // }
         // If there is no current business unit then show message and logout
         if (!loginInfo?.currentBusinessUnit?.buCode) {
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.messNoBusinessUnitsDefined })

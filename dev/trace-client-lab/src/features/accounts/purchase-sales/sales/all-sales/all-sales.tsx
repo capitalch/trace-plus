@@ -29,6 +29,7 @@ export function AllSales() {
                 <CompAccountsContainer
                     LeftCustomControl={() => <span className="text-lg font-bold text-gray-500 ml-2">→ Sales</span>}>
                     {/* <SalesForm /> */}
+                    {/* <SalesForm2 /> */}
                     <FinalSalesForm />
                     {/* <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" /> */}
                 </CompAccountsContainer>

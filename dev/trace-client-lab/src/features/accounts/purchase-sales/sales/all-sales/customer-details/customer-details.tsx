@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, User, Edit, History, Trash2 } from 'lucide-react';
 
 interface Customer {
@@ -10,81 +10,86 @@ interface Customer {
     balance: number;
 }
 
-interface CustomerDetailsProps {
-    selectedCustomer: Customer;
-    searchQuery: string;
-    setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-}
+const CustomerDetails: React.FC = () => {
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer>({
+        name: 'ABC Trading Company',
+        contact: '+91 9876543210',
+        email: 'abc@trading.com',
+        address: '123 Business District, Salt Lake, Kolkata - 700091, West Bengal, India',
+        gstin: '19ABCDE1234F1Z5',
+        balance: 115240.50
+    });
 
-const CustomerDetails: React.FC<CustomerDetailsProps> = ({ selectedCustomer, searchQuery, setSearchQuery }) => {
+    const [searchQuery, setSearchQuery] = useState('');
     return (
-        <div className="bg-white rounded-lg shadow-lg border-l-4 border-sky-500 p-6 transition-all duration-300 ease-in-out hover:shadow-xl">
-            <div className="flex items-center space-x-4 mb-6">
-                <div className="p-3 bg-sky-100 rounded-full">
-                    <User className="w-6 h-6 text-sky-600" />
+        <div className="bg-white rounded-lg shadow-sm border-l-4 border-blue-400 p-4 relative">
+            <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
+                    <User className="w-5 h-5 text-green-600" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-800">Customer Details</h2>
+                <h2 className="text-lg font-semibold text-gray-900">Customer Details</h2>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+                <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-600 mb-2">
-                            Search Customer <span className="text-red-500">*</span>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Customer <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-shadow"
-                                placeholder="Name, email, or phone..."
+                                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Search customer..."
                             />
-                            <Search className="absolute right-4 top-3.5 w-5 h-5 text-gray-400" />
+                            <Search className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-600 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             GSTIN Number
                         </label>
                         <input
                             type="text"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-shadow"
-                            placeholder="e.g., 19ABCDE1234F1Z5"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter GSTIN"
                         />
                     </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 min-h-full flex flex-col justify-between">
-                    <div className="space-y-2 text-sm">
-                        <div className="font-bold text-lg text-gray-800">{selectedCustomer.name}</div>
-                        <div className="text-gray-600 flex items-center">
-                            <span className="font-semibold w-20">Contact:</span> {selectedCustomer.contact}
+                <div className="bg-gray-50 rounded-lg p-3 border min-h-full flex flex-col justify-between lg:-mt-13">
+                    <div className="space-y-1.5 text-sm">
+                        <div>
+                            <span className="font-medium text-gray-900">{selectedCustomer.name}</span>
                         </div>
-                        <div className="text-gray-600 flex items-center">
-                            <span className="font-semibold w-20">Email:</span> {selectedCustomer.email}
+                        <div className="text-gray-600">
+                            Contact: {selectedCustomer.contact}
                         </div>
-                        <div className="text-gray-600 flex items-start">
-                            <span className="font-semibold w-20">Address:</span> 
-                            <span className="flex-1">{selectedCustomer.address}</span>
+                        <div className="text-gray-600">
+                            Email: {selectedCustomer.email}
                         </div>
-                        <div className="text-gray-600 flex items-center pt-2 border-t mt-2">
-                            <span className="font-semibold w-20">GSTIN:</span> {selectedCustomer.gstin}
+                        <div className="text-gray-600">
+                            Address: {selectedCustomer.address}
+                        </div>
+                        <div className="text-gray-600 pt-1 border-t">
+                            GSTIN: {selectedCustomer.gstin}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 pt-4 border-t mt-4">
-                        <button className="flex items-center justify-center space-x-2 px-3 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 hover:text-sky-800 transition-all duration-200 text-sm font-semibold">
-                            <Edit size={16} />
+                    <div className="grid grid-cols-3 gap-2 pt-3 border-t mt-3">
+                        <button className="flex items-center justify-center space-x-1 px-2 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm">
+                            <Edit size={14} className="flex-shrink-0" />
                             <span>Edit</span>
                         </button>
-                        <button className="flex items-center justify-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 text-sm font-semibold">
-                            <History size={16} />
+                        <button className="flex items-center justify-center space-x-1 px-2 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm">
+                            <History size={14} className="flex-shrink-0" />
                             <span>History</span>
                         </button>
-                        <button className="flex items-center justify-center space-x-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 hover:text-red-800 transition-all duration-200 text-sm font-semibold">
-                            <Trash2 size={16} />
+                        <button className="flex items-center justify-center space-x-1 px-2 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors text-sm">
+                            <Trash2 size={14} className="flex-shrink-0" />
                             <span>Clear</span>
                         </button>
                     </div>

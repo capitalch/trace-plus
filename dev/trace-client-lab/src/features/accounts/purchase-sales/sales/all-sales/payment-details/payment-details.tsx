@@ -1,5 +1,4 @@
-import React from 'react';
-import { CreditCard, PlusCircle, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface PaymentMethod {
     id: number;
@@ -8,125 +7,145 @@ interface PaymentMethod {
     remarks: string;
 }
 
-interface PaymentDetailsProps {
-    paymentMethods: PaymentMethod[];
-    setPaymentMethods: React.Dispatch<React.SetStateAction<PaymentMethod[]>>;
-    addPaymentMethod: () => void;
-    removePaymentMethod: (id: number) => void;
-    salesType: string;
-    setSalesType: React.Dispatch<React.SetStateAction<string>>;
-}
+const PaymentDetails: React.FC = () => {
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
+        { id: 1, amount: 0, instrNo: '', remarks: '' }
+    ]);
+    const [salesType, setSalesType] = useState('retail');
+    const addPaymentMethod = () => {
+        const newPayment = {
+            id: paymentMethods.length + 1,
+            amount: 0,
+            instrNo: '',
+            remarks: ''
+        };
+        setPaymentMethods([...paymentMethods, newPayment]);
+    };
 
-const PaymentDetails: React.FC<PaymentDetailsProps> = ({
-    paymentMethods,
-    setPaymentMethods,
-    addPaymentMethod,
-    removePaymentMethod,
-    salesType,
-    setSalesType,
-}) => {
+    const removePaymentMethod = (id: any) => {
+        if (paymentMethods.length > 1) {
+            setPaymentMethods(paymentMethods.filter(p => p.id !== id));
+        }
+    };
+
     return (
-        <div className="lg:col-span-6 bg-white rounded-lg shadow-lg border-l-4 border-purple-500 p-6 transition-all duration-300 ease-in-out hover:shadow-xl">
-            <div className="flex items-center space-x-4 mb-6">
-                <div className="p-3 bg-purple-100 rounded-full">
-                    <CreditCard className="w-6 h-6 text-purple-600" />
+        <div className="lg:col-span-6 bg-white rounded-xl shadow-lg border-l-4 border-purple-500 p-4">
+            <div className="flex items-center mb-3">
+                <div className="bg-purple-500 text-white p-2 rounded-lg mr-3">
+                    <span className="text-sm font-bold">💳</span>
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold text-gray-800">Payment Details</h2>
-                    <p className="text-sm text-gray-600">Configure sales and payment methods</p>
+                    <h2 className="text-lg font-bold text-gray-800">Payment Details</h2>
+                    <p className="text-sm text-gray-600">Methods: {paymentMethods.length}</p>
                 </div>
             </div>
 
-            <div className="space-y-6">
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-md font-semibold text-gray-800">Sales Type</h3>
+            <div className="space-y-3">
+                <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex items-center space-x-4 mb-2">
+                        <label className="flex items-center cursor-pointer">
+                            <input
+                                type="radio"
+                                name="salesType"
+                                value="retail"
+                                checked={salesType === 'retail'}
+                                onChange={(e) => setSalesType(e.target.value)}
+                                className="mr-2 text-purple-500"
+                            />
+                            <span className="text-sm font-semibold text-gray-700">🏪 Retail</span>
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                            <input
+                                type="radio"
+                                name="salesType"
+                                value="wholesale"
+                                checked={salesType === 'wholesale'}
+                                onChange={(e) => setSalesType(e.target.value)}
+                                className="mr-2 text-purple-500"
+                            />
+                            <span className="text-sm font-semibold text-gray-700">🏭 Wholesale</span>
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                            <input
+                                type="radio"
+                                name="salesType"
+                                value="institution"
+                                checked={salesType === 'institution'}
+                                onChange={(e) => setSalesType(e.target.value)}
+                                className="mr-2 text-purple-500"
+                            />
+                            <span className="text-sm font-semibold text-gray-700">🏢 Institution</span>
+                        </label>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        {['Retail', 'Wholesale', 'Institution'].map((type) => (
-                            <label key={type} className="flex items-center cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="salesType"
-                                    value={type.toLowerCase()}
-                                    checked={salesType === type.toLowerCase()}
-                                    onChange={(e) => setSalesType(e.target.value)}
-                                    className="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500"
-                                />
-                                <span className="ml-2 text-sm font-medium text-gray-700">{type}</span>
-                            </label>
-                        ))}
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Sales Account</label>
+                            <select className="w-full px-2 py-1 border border-gray-300 rounded-md focus:border-purple-500 focus:ring-1 focus:ring-purple-200 text-sm">
+                                <option>💰 Select sales account</option>
+                                <option>Sales - General</option>
+                                <option>Sales - Export</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Payment Account</label>
+                            <select className="w-full px-2 py-1 border border-gray-300 rounded-md focus:border-purple-500 focus:ring-1 focus:ring-purple-200 text-sm">
+                                <option>🏦 Select payment account</option>
+                                <option>Cash</option>
+                                <option>Bank - SBI</option>
+                                <option>Bank - HDFC</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600 mb-2">Sales Account</label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
-                            <option>Select Sales Account</option>
-                            <option>Sales - General</option>
-                            <option>Sales - Export</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600 mb-2">Payment Account</label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
-                            <option>Select Payment Account</option>
-                            <option>Cash</option>
-                            <option>Bank - SBI</option>
-                            <option>Bank - HDFC</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div className="space-y-4">
+                <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-md font-semibold text-gray-800">Payment Methods</h3>
+                        <h3 className="text-sm font-bold text-gray-800">Payment Methods</h3>
                         <button
                             onClick={addPaymentMethod}
-                            className="flex items-center space-x-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full text-xs font-bold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-xs font-semibold transition-all duration-200"
                         >
-                            <PlusCircle size={16} />
-                            <span>Add Method</span>
+                            ➕ Add
                         </button>
                     </div>
 
-                    {paymentMethods.map((payment) => (
-                        <div key={payment.id} className="bg-purple-50 rounded-lg p-3 border border-purple-200">
-                            <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_auto] gap-3 items-end">
+                    {paymentMethods.map((payment, index) => (
+                        <div key={payment.id} className="bg-purple-50 rounded-lg p-2 border border-purple-200">
+                            <div className="grid grid-cols-4 gap-2">
                                 <div>
-                                    <label className="block text-xs font-semibold text-gray-600 mb-1">Amount</label>
+                                    <label className="block text-xs font-semibold text-gray-700 mb-1">💵 Amount</label>
                                     <input
                                         type="number"
                                         defaultValue="0.00"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
+                                        className="w-full px-2 py-1 border border-gray-300 rounded-md focus:border-purple-500 focus:ring-1 focus:ring-purple-200 text-sm"
                                         step="0.01"
                                         placeholder="0.00"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-gray-600 mb-1">Reference</label>
+                                    <label className="block text-xs font-semibold text-gray-700 mb-1">📄 Reference</label>
                                     <input
                                         type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
+                                        className="w-full px-2 py-1 border border-gray-300 rounded-md focus:border-purple-500 focus:ring-1 focus:ring-purple-200 text-sm"
                                         placeholder="Ref No."
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-gray-600 mb-1">Notes</label>
+                                    <label className="block text-xs font-semibold text-gray-700 mb-1">📝 Notes</label>
                                     <input
                                         type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
-                                        placeholder="Optional notes"
+                                        className="w-full px-2 py-1 border border-gray-300 rounded-md focus:border-purple-500 focus:ring-1 focus:ring-purple-200 text-sm"
+                                        placeholder="Notes"
                                     />
                                 </div>
-                                <div className="flex items-center">
+                                <div className="flex items-end">
                                     {paymentMethods.length > 1 && (
                                         <button
                                             onClick={() => removePaymentMethod(payment.id)}
-                                            className="text-red-500 hover:text-red-700 p-2 rounded-full transition-colors duration-200 hover:bg-red-100"
+                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-full transition-all duration-200"
                                         >
-                                            <Trash2 size={16} />
+                                            <span className="text-sm">🗑️</span>
                                         </button>
                                     )}
                                 </div>

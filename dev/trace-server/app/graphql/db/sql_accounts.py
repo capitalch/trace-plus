@@ -1389,6 +1389,17 @@ class SqlAccounts:
                 'branchTransfers', (SELECT json_agg(b) from cte2 b)
             ) as "jsonResult"
     """
+    
+    get_contacts_on_regexp = """
+        --with "searchString" as (values('9876'))
+        with "searchString" as (VALUES (%(searchString)s::text))
+        select * from "Contacts"
+            where concat("mobileNumber", "otherMobileNumber", "email", "contactName"
+                , "landPhone", "descr", "address1", "address2", "pin", "gstin") ~* (table "searchString")
+        order by "contactName"
+		    limit 100
+    """
+
     get_current_orders = """
         WITH "branchId" AS (VALUES (%(branchId)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "noOfRows"  AS (VALUES (%(noOfRows)s::int)),
         --with "branchId" as (values(1)), "finYearId" as (values (2024)), "noOfRows" as (values (100)),

@@ -21,6 +21,8 @@ const Messages = {
   errCurrentAndNewUidCannotBeSame: 'Current uid and new uid cannot be same',
   errCurrentAndNewPwdCannotBeSame: 'Current and new passwords cannot be same',
   errCurrentFinYear: 'There was some error in current financial year',
+  errCustGstinRequired: 'Customer GSTIN is required',
+  errDateFieldRequired: 'Date field is required',
   errDebitCreditMismatch: 'Total debits do not match total credits or value is 0',
   errDeletingRecord: 'Could not delete the record',
   errEmailExistsForClient: 'This email already exists for the current client',
@@ -102,6 +104,7 @@ const Messages = {
   messDebitsNotEqualsCredits: 'Debits and credits are not equal',
   messEndDateGreaterThanStartDate:
     'End date must be greater than or equal to start date',
+  messEnterSearchString: 'Please enter a search string',
   messExistingLinksDropHere:
     'Existing Bu`s with links (Drop the dragged row here)',
   messExistingRolesWithLinksDropHere:
