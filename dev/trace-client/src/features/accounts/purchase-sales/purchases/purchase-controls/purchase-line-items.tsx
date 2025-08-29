@@ -525,11 +525,11 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                     <span className="text-gray-500">IGST:</span>
                     {Utils.toDecimalFormat(summary.igst.toNumber())}
                 </div>
-                <div>
+                {/* <div>
                     <button onClick={() => {
                         trigger()
                     }}>Test</button>
-                </div>
+                </div> */}
             </div>
             <div className="text-right mr-4 flex gap-1">
                 <span className="text-gray-500">Total Amount:</span>

@@ -10,9 +10,9 @@ export function FormField({ label, children, required, error, className }: {
     className?: string;
 }) {
     return (
-        <div className={clsx("flex flex-col text-primary-500", className)}>
+        <div className={clsx("flex flex-col text-primary-500")}>
             <div className="flex gap-1">
-                <span className="font-semibold text-sm">{label}</span>
+                <span className={clsx("font-semibold text-sm", className)}>{label}</span>
                 {required && <WidgetAstrix />}
             </div>
             {children}
