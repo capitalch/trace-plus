@@ -1,70 +1,104 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Utils } from '../../../../../utils/utils';
 import { useUtilsInfo } from '../../../../../utils/utils-info-hook';
 import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
-// import _, { set } from 'lodash';
 import { ContactsType } from '../../../../../utils/global-types-interfaces-enums';
 import { ListBoxComponent } from '@syncfusion/ej2-react-dropdowns';
+import { ActionCompleteEventArgs, } from '@syncfusion/ej2-dropdowns';
 import './customer-search.css';
+import { IconCross } from '../../../../../controls/icons/icon-cross';
+import { IconCrown } from '../../../../../controls/icons/icon-crown';
+import { IconPerson } from '../../../../../controls/icons/icon-person';
+import { ContactDisplayDataType, SalesFormDataType } from '../all-sales';
+import { UseFormSetValue, UseFormTrigger } from 'react-hook-form';
 
-interface CustomerSearchProps {
+interface ContactSearchProps {
     searchString?: string;
-    // onClose?: () => void;
+    setValue: UseFormSetValue<SalesFormDataType>;
+    trigger: UseFormTrigger<SalesFormDataType>;
+    selectedId: number | null;
 }
 
-const CustomerSearch: React.FC<CustomerSearchProps> = ({ searchString }) => {
-    const [listBoxCustomers, setListBoxCustomers] = useState<ListBoxCustomerType[]>([])
+const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, trigger, selectedId }) => {
+    const [listBoxContacts, setListBoxContacts] = useState<ListBoxContactType[]>([])
     const [filteredCount, setFilteredCount] = useState<number>(0)
     const [totalCount, setTotalCount] = useState<number>(0)
-    const [listBoxRef, setListBoxRef] = useState<any>(null)
     const {
         buCode
         , dbName
         , decodedDbParamsObject
-    } = useUtilsInfo()
+    } = useUtilsInfo();
+    const listRef = React.useRef<ListBoxComponent>(null);
+
+    const loadContacts = useCallback(async () => {
+        if (!searchString || searchString.trim().length === 0) {
+            setListBoxContacts([]);
+            return;
+        }
+
+        try {
+            const result: ContactsType[] = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject || {},
+                sqlId: SqlIdsMap.getContactsOnRegexp,
+                sqlArgs: {
+                    searchString: searchString
+                }
+            });
+            if (!result || result.length === 0) {
+                setListBoxContacts([]);
+                return;
+            }
+            const listBoxData = result.map((contact, index) => ({
+                id: contact?.id || 0,
+                text: `${contact.contactName || ''} ${contact.mobileNumber || ''} ${contact.otherMobileNumber || ''} ${contact.landPhone || ''} ${contact.email || ''} ${contact.address1 || ''} ${contact.address2 || ''} ${contact.city || ''} ${contact.state || ''} ${contact.country || ''} ${contact.gstin || ''}`.toLowerCase(),
+                contactDisplayData: formatContactDisplay(contact, index + 1),
+                data: contact
+            }));
+            setListBoxContacts(listBoxData);
+            setTotalCount(listBoxData.length);
+            setFilteredCount(listBoxData.length);
+        } catch (err) {
+            console.error('Error loading contacts:', err);
+            setListBoxContacts([]);
+            setTotalCount(0);
+            setFilteredCount(0);
+        }
+    }, [searchString, buCode, dbName, decodedDbParamsObject]);
 
     useEffect(() => {
-        loadCustomers();
-    }, [searchString])
+        loadContacts();
+    }, [loadContacts])
+
+    useEffect(() => {
+        // Set selected value after data is loaded
+        if (selectedId && listBoxContacts.length > 0 && listRef.current) {
+            const selectedItem = listBoxContacts.find(item => item.id === selectedId);
+            if (selectedItem) {
+                listRef.current.selectItems([selectedItem.text]);
+            }
+        }
+    }, [selectedId, listBoxContacts])
 
     useEffect(() => {
         // Prevent background scroll when component is mounted
         document.body.style.overflow = 'hidden';
-
         return () => {
             // Restore background scroll when component is unmounted
             document.body.style.overflow = 'unset';
         };
     }, [])
 
-    // Monitor for filter changes
-    useEffect(() => {
-        if (listBoxRef) {
-            const checkFilteredCount = () => {
-                const listBoxElement = document.getElementById('customerListBox');
-                if (listBoxElement) {
-                    const visibleItems = listBoxElement.querySelectorAll('.e-list-item:not([style*="display: none"])');
-                    const currentVisible = visibleItems.length;
-                    if (currentVisible !== filteredCount && currentVisible <= totalCount) {
-                        setFilteredCount(currentVisible);
-                    }
-                }
-            };
-
-            // Check periodically
-            const interval = setInterval(checkFilteredCount, 200);
-            return () => clearInterval(interval);
-        }
-    }, [listBoxRef, totalCount, filteredCount])
-
-    function formatCustomerDisplay(customer: ContactsType, index: number) {
+    function formatContactDisplay(contact: ContactsType, index: number): ContactDisplayDataType {
         return {
             index,
-            name: customer.contactName || 'Unnamed Customer',
-            mobile: [customer.mobileNumber, customer.otherMobileNumber, customer.landPhone].filter(Boolean).join(', '),
-            email: customer.email,
-            address: [customer.address1, customer.address2, customer.city, customer.state, customer.country].filter(Boolean).join(', '),
-            gstin: customer.gstin
+            id: contact.id || 0,
+            name: contact.contactName || 'Unnamed Contact',
+            mobile: [contact.mobileNumber, contact.otherMobileNumber, contact.landPhone].filter(Boolean).join(', '),
+            email: contact.email || '',
+            address: [contact.address1, contact.address2, contact.city, contact.state, contact.country].filter(Boolean).join(', '),
+            gstin: contact.gstin || ''
         };
     }
 
@@ -91,135 +125,132 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ searchString }) => {
     };
 
     return (
-        <>
-            <div style={styles.overlay}>
-                <div style={styles.container}>
-                    <div className="bg-white rounded-lg shadow-md border border-gray-200">
-                        <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50 rounded-t-lg">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    Customer Search Results
-                                </h3>
-                                <button
-                                    onClick={handleOnClose}
-                                    className="p-2 hover:bg-red-100 rounded-full transition-colors duration-200 text-gray-500 hover:text-red-600"
-                                    title="Close"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            {totalCount > 0 && (
-                                <p className="text-sm text-gray-600 mt-1 flex items-center">
-                                    <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                                    Found {totalCount} customer{totalCount !== 1 ? 's' : ''}
-                                    {filteredCount !== totalCount && (
-                                        <span className="text-blue-600 font-medium ml-2">
-                                            ({filteredCount} shown)
-                                        </span>
-                                    )}
+        <div style={styles.overlay}>
+            <div style={styles.container}>
+                <div className="bg-white rounded-lg shadow-md border border-gray-200">
+                    <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50 rounded-t-lg">
+
+                        {/* header */}
+                        <div className="flex items-center justify-between">
+                            {/* Title */}
+                            <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                                <IconCrown className="w-5 h-5 mr-2 text-blue-600" />
+                                Customer Search Results
+                            </h3>
+                            {/* Close button */}
+                            <button
+                                onClick={handleOnClose}
+                                className="p-2 hover:bg-red-100 rounded-full transition-colors duration-200 text-gray-500 hover:text-red-600"
+                                title="Close"
+                            >
+                                <IconCross className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {totalCount > 0 && (
+                            <p className="text-sm text-gray-600 mt-1 flex items-center">
+                                <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                Found {totalCount} customer{totalCount !== 1 ? 's' : ''}
+                                {filteredCount !== totalCount && (
+                                    <span className="text-blue-600 font-medium ml-2">
+                                        ({filteredCount} shown)
+                                    </span>
+                                )}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="p-4">
+                        {listBoxContacts.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+                                <div className="bg-gray-100 rounded-full p-6 mb-4">
+                                    <IconPerson className="w-12 h-12 text-gray-400" />
+                                </div>
+                                <p className="text-lg font-medium text-gray-700 mb-2">No contacts found</p>
+                                <p className="text-sm text-gray-500 text-center max-w-sm">
+                                    {searchString ?
+                                        `No results for "${searchString}". Try adjusting your search terms.` :
+                                        'Start typing to search for contacts.'
+                                    }
                                 </p>
-                            )}
-                        </div>
-                        <div className="p-4">
-                            {listBoxCustomers.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-16 text-gray-500">
-                                    <div className="bg-gray-100 rounded-full p-6 mb-4">
-                                        <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
-                                    </div>
-                                    <p className="text-lg font-medium text-gray-700 mb-2">No customers found</p>
-                                    <p className="text-sm text-gray-500 text-center max-w-sm">
-                                        {searchString ?
-                                            `No results for "${searchString}". Try adjusting your search terms.` :
-                                            'Start typing to search for customers.'
-                                        }
-                                    </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm text-gray-600 mb-3 px-2">
+                                    <span>Select a customer from the list below:</span>
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                        {filteredCount} result{filteredCount !== 1 ? 's' : ''}
+                                    </span>
                                 </div>
-                            ) : (
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between text-sm text-gray-600 mb-3 px-2">
-                                        <span>Select a customer from the list below:</span>
-                                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                                            {filteredCount} result{filteredCount !== 1 ? 's' : ''}
-                                        </span>
-                                    </div>
-                                    <ListBoxComponent
-                                        id="customerListBox"
-                                        dataSource={listBoxCustomers}
-                                        height="400"
-                                        allowFiltering={true}
-                                        change={onCustomerSelect}
-                                        selectionSettings={{ mode: 'Single' }}
-                                        fields={{ text: 'text', value: 'id' }}
-                                        cssClass="custom-listbox"
-                                        filterBarPlaceholder="Search by name, phone, email, address, or GSTIN..."
-                                        filterType="Contains"
-                                        ignoreCase={true}
-                                        created={(scope: any) => {
-                                            setListBoxRef(scope);
-                                        }}
-                                        actionComplete={(args: any) => {
-                                            // This event fires after filtering is complete
-                                            if (args.requestType === 'filtering') {
-                                                setTimeout(() => {
-                                                    const listBoxElement = document.getElementById('customerListBox');
-                                                    if (listBoxElement) {
-                                                        const visibleItems = listBoxElement.querySelectorAll('.e-list-item[style*="display: list-item"], .e-list-item:not([style*="display"])');
-                                                        setFilteredCount(visibleItems.length);
-                                                    }
-                                                }, 50);
-                                            }
-                                        }}
-                                        filtering={(args: any) => {
-                                            // Immediate update on filter start
-                                            if (!args.query || args.query.trim() === '') {
-                                                setFilteredCount(totalCount);
-                                            }
-                                        }}
-                                        itemTemplate={(data: any) => {
-                                            const customerData = data.customerData;
-                                            return (
-                                                <div className="customer-item-container">
-                                                    <div className="customer-item-name">
-                                                        {customerData.index}. {customerData.name}
-                                                    </div>
-                                                    {customerData.mobile && (
-                                                        <div className="customer-item-mobile">
-                                                            📱 {customerData.mobile}
-                                                        </div>
-                                                    )}
-                                                    {customerData.email && (
-                                                        <div className="customer-item-email">
-                                                            ✉️ {customerData.email}
-                                                        </div>
-                                                    )}
-                                                    {customerData.address && (
-                                                        <div className="customer-item-address">
-                                                            🏠 {customerData.address}
-                                                        </div>
-                                                    )}
-                                                    {customerData.gstin && (
-                                                        <div className="customer-item-gstin">
-                                                            🏢 GSTIN: {customerData.gstin}
-                                                        </div>
-                                                    )}
+                                <ListBoxComponent
+                                    actionComplete={(args: ActionCompleteEventArgs) => {
+                                        // This event fires after filtering is complete
+                                        const filtered = (args.result as any)?.length || 0;
+                                        setFilteredCount(filtered);
+
+                                    }}
+                                    allowFiltering={true}
+                                    change={onContactSelect}
+                                    cssClass="custom-listbox"
+                                    dataSource={listBoxContacts}
+                                    fields={{ text: 'text', value: 'id' }}
+                                    filterBarPlaceholder="Search by name, phone, email, address, or GSTIN..."
+                                    filterType="Contains"
+                                    height="400"
+                                    id="contactListBox"
+                                    ignoreCase={true}
+                                    itemTemplate={(data: any) => {
+                                        const contactDisplayData = data.contactDisplayData;
+                                        const isSelected = contactDisplayData?.id === selectedId;
+                                        return (
+                                            <div className={`contact-item-container ${isSelected ? 'selected-contact' : ''}`}
+                                                style={isSelected ? {
+                                                    backgroundColor: '#3b82f6',
+                                                    color: 'white',
+                                                    padding: '14px 18px',
+                                                    margin: '-14px -18px',
+                                                    borderLeft: '6px solid #f59e0b'
+                                                } : {}}>
+                                                <div className="contact-item-name" 
+                                                    style={isSelected ? { color: '#fbbf24', fontWeight: 'bold' } : {}}>
+                                                    {contactDisplayData?.index}. {contactDisplayData?.name}
                                                 </div>
-                                            );
-                                        }}
-                                    />
-                                </div>
-                            )}
-                        </div>
+                                                {contactDisplayData?.mobile && (
+                                                    <div className="contact-item-mobile"
+                                                        style={isSelected ? { color: '#34d399', fontWeight: 'bold' } : {}}>
+                                                        📱 {contactDisplayData.mobile}
+                                                    </div>
+                                                )}
+                                                {contactDisplayData?.email && (
+                                                    <div className="contact-item-email"
+                                                        style={isSelected ? { color: '#e5e7eb' } : {}}>
+                                                        ✉️ {contactDisplayData.email}
+                                                    </div>
+                                                )}
+                                                {contactDisplayData?.address && (
+                                                    <div className="contact-item-address"
+                                                        style={isSelected ? { color: '#e5e7eb' } : {}}>
+                                                        🏠 {contactDisplayData.address}
+                                                    </div>
+                                                )}
+                                                {contactDisplayData?.gstin && (
+                                                    <div className="contact-item-gstin"
+                                                        style={isSelected ? { color: '#c084fc', fontWeight: 'bold' } : {}}>
+                                                        🏢 GSTIN: {contactDisplayData.gstin}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    }}
+                                    ref={listRef}
+                                    selectionSettings={{ mode: 'Single' }}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 
     function handleOnClose() {
@@ -228,62 +259,24 @@ const CustomerSearch: React.FC<CustomerSearchProps> = ({ searchString }) => {
         })
     }
 
-    async function loadCustomers() {
-        if (!searchString || searchString.trim().length === 0) {
-            setListBoxCustomers([]);
-            return;
-        }
 
-        try {
-            const result: ContactsType[] = await Utils.doGenericQuery({
-                buCode: buCode || '',
-                dbName: dbName || '',
-                dbParams: decodedDbParamsObject || {},
-                sqlId: SqlIdsMap.getContactsOnRegexp,
-                sqlArgs: {
-                    searchString: searchString
-                }
-            });
-            if (!result || result.length === 0) {
-                setListBoxCustomers([]);
-                return;
-            }
-            const listBoxData = result.map((customer, index) => ({
-                id: customer.id || 0,
-                text: `${customer.contactName || ''} ${customer.mobileNumber || ''} ${customer.otherMobileNumber || ''} ${customer.landPhone || ''} ${customer.email || ''} ${customer.address1 || ''} ${customer.address2 || ''} ${customer.city || ''} ${customer.state || ''} ${customer.country || ''} ${customer.gstin || ''}`.toLowerCase(),
-                customerData: formatCustomerDisplay(customer, index + 1),
-                data: customer
-            }));
-            setListBoxCustomers(listBoxData);
-            setTotalCount(listBoxData.length);
-            setFilteredCount(listBoxData.length);
-        } catch (err) {
-            console.error('Error loading customers:', err);
-            setListBoxCustomers([]);
-            setTotalCount(0);
-            setFilteredCount(0);
-        }
+    function onContactSelect(args: any) {
+        const contactDisplayData = args?.items?.[0]?.contactDisplayData;
+        const contactData = args?.items?.[0]?.data;
+        if(!contactDisplayData) return;
+        setValue('contactDisplayData', contactDisplayData || null);
+        setValue('contactData', contactData || null);
+        handleOnClose();
+        trigger();
     }
 
-    function onCustomerSelect(args: any) {
-        // if (args.value) {
-        //     const selectedItem = setListBoxCustomers.find(item => item.id === args.value);
-        //     if (selectedItem) {
-        //         selectCustomer(selectedItem.data);
-        //     }
-        // }
-    }
-
-    // function selectCustomer(customer: ContactsType) {
-    //     console.log('Selected customer:', customer);
-    // }
 };
 
-export default CustomerSearch;
+export default ContactSearch;
 
-type ListBoxCustomerType = {
+type ListBoxContactType = {
     id: number;
     text: string;
-    customerData: any;
+    contactDisplayData: ContactDisplayDataType;
     data: ContactsType;
 }

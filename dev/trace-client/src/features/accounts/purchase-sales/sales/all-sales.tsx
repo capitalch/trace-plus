@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
-import _, { has } from 'lodash'
+import _ from 'lodash'
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
-import { SalePurchaseEditDataType, TranDType } from "../../../../utils/global-types-interfaces-enums";
+import { ContactsType, SalePurchaseEditDataType, TranDType } from "../../../../utils/global-types-interfaces-enums";
 // import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 // import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { RootStateType } from "../../../../app/store";
@@ -43,7 +43,7 @@ export function AllSales() {
             hasCustomerGstin: false,
             isGstInvoice: hasGstin,
             isIgst: false,
-            contactsId: null, // customer
+            // contactsId: null, // customer
             creditAccId: '',
             debitAccounts: [],
             deletedIds: [],
@@ -82,8 +82,9 @@ export type SalesFormDataType = {
     hasCustomerGstin: boolean;
     isGstInvoice: boolean;
     isIgst: boolean;
-    contactsId: number | null; // customer
-
+    // contactsId: number | null; // customer
+    contactDisplayData: ContactDisplayDataType | null;
+    contactData: ContactsType | null;
     creditAccId: string | number;
     debitAccounts: TranDType[];
     // debitAccId: string | number | null;
@@ -117,4 +118,14 @@ export type SaleLineItemType = {
     igst: number;
     lineRemarks?: string | null;
     serialNumbers?: string | null;
+}
+
+export type ContactDisplayDataType = {
+    index: number;
+    id: number;
+    name: string;
+    gstin: string;
+    email: string;
+    mobile: string;
+    address: string;
 }

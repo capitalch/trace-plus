@@ -11,7 +11,7 @@ export function FormField({ label, children, required, error, className }: {
 }) {
     return (
         <div className={clsx("flex flex-col text-primary-500", className)}>
-            <div className="flex  gap-1">
+            <div className="flex gap-1">
                 <span className="font-semibold text-sm">{label}</span>
                 {required && <WidgetAstrix />}
             </div>

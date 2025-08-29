@@ -7,31 +7,20 @@ import { SalesFormDataType } from '../all-sales';
 import { useFormContext } from 'react-hook-form';
 import { Messages } from '../../../../../utils/messages';
 import { Utils } from '../../../../../utils/utils';
-import CustomerSearch from './customer-search';
-
-interface Customer {
-    name: string;
-    contact: string;
-    email: string;
-    address: string;
-    gstin: string;
-}
+import ContactSearch from './customer-search';
+import { ContactsType } from '../../../../../utils/global-types-interfaces-enums';
+import CustomerNewEditModal from './customer-new-edit-modal';
+import { set } from 'lodash';
 
 const CustomerDetails: React.FC = () => {
-    const [selectedCustomer, /*setSelectedCustomer*/] = useState<Customer>({
-        name: 'ABC Trading Company',
-        contact: '+91 9876543210',
-        email: 'abc@trading.com',
-        address: '123 Business District, Salt Lake, Kolkata - 700091, West Bengal, India',
-        gstin: '19ABCDE1234F1Z5',
-        // balance: 115240.50
-    });
     const inputFormFieldStyle = 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
     const { isValidGstin } = useValidators();
     const {
         watch,
+        getValues,
         register,
         setValue,
+        trigger,
         formState: { errors, }
     } = useFormContext<SalesFormDataType>();
     const isGstInvoice = watch("isGstInvoice");
@@ -162,31 +151,43 @@ const CustomerDetails: React.FC = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-3 border min-h-full flex flex-col justify-between lg:-mt-13">
-                    <div className="space-y-1.5 text-sm">
+                    <div className="space-y-1.5 text-md">
                         <div>
-                            <span className="font-medium text-gray-900">{selectedCustomer.name}</span>
+                            <span className="font-medium text-gray-900">{watch('contactDisplayData.name')}</span>
                         </div>
                         <div className="text-gray-600">
-                            Contact: {selectedCustomer.contact}
+                            <span className="font-medium">Phone: </span>
+                            {watch('contactDisplayData.mobile')}
                         </div>
-                        <div className="text-gray-600">
-                            Email: {selectedCustomer.email}
+                        <div className="text-gray-600 text-sm">
+                            <span className="font-medium">Email: </span>
+                            <span>{watch('contactDisplayData.email')}</span>
                         </div>
-                        <div className="text-gray-600">
-                            Address: {selectedCustomer.address}
+                        <div className="text-gray-600 text-sm">
+                            <div className="line-clamp-3">
+                                <span className="font-medium">Address: </span>
+                                <span className="break-words">{watch('contactDisplayData.address')}</span>
+                            </div>
                         </div>
                         <div className="text-gray-600 pt-1 border-t">
-                            GSTIN: {selectedCustomer.gstin}
+                            <span className="font-medium">GSTIN: </span>
+                            {watch('contactDisplayData.gstin')}
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 pt-3 border-t mt-3">
-                        <button className="flex items-center justify-center space-x-1 px-2 py-1.5 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm">
-                            <Edit size={14} className="flex-shrink-0" />
+                        {/* New / Edit */}
+                        <button
+                            onClick={handleEditCustomer}
+                            className="flex items-center justify-center space-x-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm">
+                            <Edit size={16} className="flex-shrink-0" />
                             <span>New / Edit</span>
                         </button>
-                        <button className="flex items-center justify-center space-x-1 px-2 py-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors text-sm">
-                            <Trash2 size={14} className="flex-shrink-0" />
+                        {/* Clear */}
+                        <button
+                            onClick={handleClearCustomer}
+                            className="flex items-center justify-center space-x-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition-colors text-sm">
+                            <Trash2 size={16} className="flex-shrink-0" />
                             <span>Clear</span>
                         </button>
                     </div>
@@ -195,6 +196,13 @@ const CustomerDetails: React.FC = () => {
         </div>
     );
 
+    function handleClearCustomer() {
+        setValue('contactDisplayData', null);
+        setValue('contactData', null);
+        setValue('hasCustomerGstin', false);
+        setValue('gstin', null);
+    }
+
     function handleCustomerSearch(query: string) {
         if (!query || query.trim().length === 0) {
             setTimeout(() => {
@@ -202,7 +210,7 @@ const CustomerDetails: React.FC = () => {
             }, 0);
             return;
         }
-        
+
         const searchString = query.toLowerCase()
             .split(/\s+/)  // Split on whitespace only (more predictable)
             .filter(term => term.length > 0)  // Remove empty terms
@@ -211,12 +219,27 @@ const CustomerDetails: React.FC = () => {
 
         Utils.showHideModalDialogA({
             className: 'ml-2',
-            title: `Select from existing customer - "${query}"`,
+            title: `Select from existing contact - "${query}"`,
             isOpen: true,
-            element: <CustomerSearch searchString={searchString} />,
-            size:'md'
+            element: <ContactSearch
+                searchString={searchString}
+                setValue={setValue}
+                trigger={trigger}
+                selectedId={watch('contactDisplayData.id') || null} />,
+            size: 'md'
         })
 
+    }
+
+    function handleEditCustomer() {
+        const contactData: ContactsType | null = getValues('contactData');
+        Utils.showHideModalDialogA({
+            title: `Edit Customer - ${contactData?.contactName || ''}`,
+            isOpen: true,
+            element: <CustomerNewEditModal contactData={contactData} />,
+            size: 'md'
+        });
+        console.log("Edit customer clicked", contactData);
     }
 
     function validateGstin(): string | undefined {

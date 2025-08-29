@@ -17,10 +17,34 @@
 }
 
 .custom-listbox .e-list-item.e-active {
-    background-color: #eff6ff;
-    border-left-color: #2563eb;
-    color: #1d4ed8;
-    font-weight: 500;
+    background-color: #1e40af !important;
+    border-left-color: #f59e0b !important;
+    border-left-width: 6px !important;
+    color: white !important;
+    font-weight: 600;
+}
+
+.custom-listbox .e-list-item.e-active .customer-item-name {
+    color: #fbbf24 !important;
+    font-weight: bold;
+}
+
+.custom-listbox .e-list-item.e-active .customer-item-mobile {
+    color: #34d399 !important;
+    font-weight: bold;
+}
+
+.custom-listbox .e-list-item.e-active .customer-item-email {
+    color: #e5e7eb !important;
+}
+
+.custom-listbox .e-list-item.e-active .customer-item-address {
+    color: #e5e7eb !important;
+}
+
+.custom-listbox .e-list-item.e-active .customer-item-gstin {
+    color: #c084fc !important;
+    font-weight: bold;
 }
 
 .custom-listbox {
@@ -79,36 +103,36 @@
     overflow-y: auto !important;
 }
 
-/* Customer Item Styles */
-.customer-item-container {
+/* Contact Item Styles */
+.contact-item-container {
     line-height: 1.6;
     font-size: 16px;
     font-family: system-ui, -apple-system, sans-serif;
 }
 
-.customer-item-name {
+.contact-item-name {
     font-weight: bold;
     font-size: 17px;
     margin-bottom: 4px;
 }
 
-.customer-item-mobile {
+.contact-item-mobile {
     font-weight: bold;
     color: #059669;
     margin-bottom: 2px;
 }
 
-.customer-item-email {
+.contact-item-email {
     color: #6b7280;
     margin-bottom: 2px;
 }
 
-.customer-item-address {
+.contact-item-address {
     color: #6b7280;
     font-size: 15px;
 }
 
-.customer-item-gstin {
+.contact-item-gstin {
     color: #7c3aed;
     font-size: 14px;
     font-weight: 500;
