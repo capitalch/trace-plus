@@ -10,7 +10,6 @@ import { Utils } from '../../../../../utils/utils';
 import ContactSearch from './customer-search';
 import { ContactsType } from '../../../../../utils/global-types-interfaces-enums';
 import CustomerNewEditModal from './customer-new-edit-modal';
-import { set } from 'lodash';
 
 const CustomerDetails: React.FC = () => {
     const inputFormFieldStyle = 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
@@ -45,10 +44,10 @@ const CustomerDetails: React.FC = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start max-w-3xl">
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
                             Customer
                         </label>
                         <div className="relative">
@@ -237,7 +236,7 @@ const CustomerDetails: React.FC = () => {
             title: `Edit Customer - ${contactData?.contactName || ''}`,
             isOpen: true,
             element: <CustomerNewEditModal contactData={contactData} />,
-            size: 'md'
+            size: 'sm'
         });
         console.log("Edit customer clicked", contactData);
     }
