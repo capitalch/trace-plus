@@ -30,7 +30,7 @@ function Login() {
         required: Messages.errRequired,
         validate: { checkUserNameOrEmail },
         minLength: { value: 4, message: Messages.errAtLeast4Chars },
-        // value: 'capital'
+        value: 'capital'
     })
 
     const registerPassword = register('password', {

@@ -27,6 +27,7 @@ const Messages = {
   errDateOfBirthInFuture: 'Date of birth cannot be in the future',
   errDebitCreditMismatch: 'Total debits do not match total credits or value is 0',
   errDeletingRecord: 'Could not delete the record',
+  errEmailAlreadyExists: 'This email is already registered to another contact',
   errEmailExistsForClient: 'This email already exists for the current client',
   errExtDbParamsFormatError:
     'External database parameters are not in proper format',
@@ -55,6 +56,7 @@ const Messages = {
   errInvalidIpAddress: 'Invalid IP address',
   errInvalidLandPhone: 'Invalid land phone',
   errInvalidMobileNo: 'Invalid mobile no',
+  errMobileAlreadyExists: 'This mobile number is already registered to another contact',
   errInvalidPinCode: 'Invalid pin code',
   errInvalidUserNameOrEmail: 'Invalid user name or email address',
   errInvoiceExists: 'Invoice already exists',

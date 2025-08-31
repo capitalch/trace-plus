@@ -26,17 +26,24 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 - Sales
-	- Customer details
+	- Items and services
+	- Payment details
+	- Validation
+	- Shipping
+											- Customer details
+													- Unique mobile no use
+													- Unique email use
+													- If search zeroes in 1 item, use
 													- Form UI
 														- reduce horizontal space
 														- Form validations
-		- Country, state, city, state code
-		- Submit
-			- insert
-			- edit
-		- Reset
-		- gst treatment
-		- Cust values back to main form
+													- Country, state, city, state code
+												- Submit
+													- insert
+													- edit
+													- Reset
+														- gst treatment
+														- Cust values back to main form
 														- Startup
 	- Main
 		- Reset

@@ -40,6 +40,9 @@ const BranchM = {
 const CategoryM = {
   name: "CategoryM"
 }
+const Contacts = {
+  name: "Contacts"
+}
 const ExtBankReconTranD = {
   name: "ExtBankReconTranD"
 }
@@ -91,6 +94,7 @@ export const AllTables = {
   BranchTransfer,
   BranchM,
   CategoryM,
+  Contacts,
   ExtBankReconTranD,
   ExtBusinessContactsAccM,
   ExtGstTranD,
@@ -102,5 +106,4 @@ export const AllTables = {
   TagsM,
   TranH,
   TranD,
-  
 }

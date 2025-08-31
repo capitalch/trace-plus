@@ -121,7 +121,7 @@ export type SaleLineItemType = {
 }
 
 export type ContactDisplayDataType = {
-    index: number;
+    index?: number;
     id: number;
     name: string;
     gstin: string;

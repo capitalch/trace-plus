@@ -1389,7 +1389,17 @@ class SqlAccounts:
                 'branchTransfers', (SELECT json_agg(b) from cte2 b)
             ) as "jsonResult"
     """
-    
+
+    get_contact_for_email = """
+        select * from "Contacts"
+	        where "email" = %(email)s limit 1
+    """
+
+    get_contact_for_mobile = """
+        select * from "Contacts"
+	        where "mobileNumber" = %(mobileNumber)s limit 1
+    """
+
     get_contacts_on_regexp = """
         --with "searchString" as (values('9876'))
         with "searchString" as (VALUES (%(searchString)s::text))

@@ -3,7 +3,7 @@ import { Search, User, Edit, Trash2, X } from 'lucide-react';
 import { FormField } from '../../../../../controls/widgets/form-field';
 import clsx from 'clsx';
 import { useValidators } from '../../../../../utils/validators-hook';
-import { SalesFormDataType } from '../all-sales';
+import { ContactDisplayDataType, SalesFormDataType } from '../all-sales';
 import { useFormContext } from 'react-hook-form';
 import { Messages } from '../../../../../utils/messages';
 import { Utils } from '../../../../../utils/utils';
@@ -32,6 +32,21 @@ const CustomerDetails: React.FC = () => {
             setValue("gstin", null);
         }
     }, [hasCustomerGstin, isGstInvoice, setValue]);
+
+    const contactData = watch('contactData');
+    useEffect(() => {
+        // Copies contactData to contactDisplayData for display
+        const contactData: ContactsType | null = getValues('contactData');
+        if (contactData) {
+            const displayData = formatContactDisplay(contactData);
+            setValue('contactDisplayData', displayData);
+            if (contactData.gstin) {
+                setValue('hasCustomerGstin', true);
+                setValue('gstin', contactData.gstin);
+            }
+            trigger('contactDisplayData');
+        }
+    }, [contactData, getValues, setValue, trigger]);
 
     return (
         <div className="bg-white rounded-lg shadow-sm border-l-4 border-blue-400 px-6 py-4 relative">
@@ -177,7 +192,7 @@ const CustomerDetails: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2 pt-3 border-t mt-3">
                         {/* New / Edit */}
                         <button
-                            onClick={handleEditCustomer}
+                            onClick={handleNewEditCustomer}
                             className="flex items-center justify-center space-x-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm">
                             <Edit size={16} className="flex-shrink-0" />
                             <span>New / Edit</span>
@@ -194,6 +209,17 @@ const CustomerDetails: React.FC = () => {
             </div>
         </div>
     );
+
+    function formatContactDisplay(contact: ContactsType): ContactDisplayDataType {
+        return {
+            id: contact.id || 0,
+            name: contact.contactName || 'Unnamed Contact',
+            mobile: [contact.mobileNumber, contact.otherMobileNumber, contact.landPhone].filter(Boolean).join(', '),
+            email: contact.email || '',
+            address: [contact.address1, contact.address2, contact.city, contact.state, contact.country].filter(Boolean).join(', '),
+            gstin: contact.gstin || ''
+        };
+    }
 
     function handleClearCustomer() {
         setValue('contactDisplayData', null);
@@ -230,12 +256,12 @@ const CustomerDetails: React.FC = () => {
 
     }
 
-    function handleEditCustomer() {
+    function handleNewEditCustomer() {
         const contactData: ContactsType | null = getValues('contactData');
         Utils.showHideModalDialogA({
             title: `Edit Customer - ${contactData?.contactName || ''}`,
             isOpen: true,
-            element: <CustomerNewEditModal contactData={contactData} />,
+            element: <CustomerNewEditModal contactData={contactData} setParentValue={setValue} triggerParent={trigger} />,
             size: 'sm'
         });
         console.log("Edit customer clicked", contactData);

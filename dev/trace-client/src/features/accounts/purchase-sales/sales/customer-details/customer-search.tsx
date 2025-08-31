@@ -30,6 +30,12 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
     } = useUtilsInfo();
     const listRef = React.useRef<ListBoxComponent>(null);
 
+    function handleOnClose() {
+        Utils.showHideModalDialogA({
+            isOpen: false
+        })
+    }
+
     const loadContacts = useCallback(async () => {
         if (!searchString || searchString.trim().length === 0) {
             setListBoxContacts([]);
@@ -59,27 +65,34 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
             setListBoxContacts(listBoxData);
             setTotalCount(listBoxData.length);
             setFilteredCount(listBoxData.length);
+            
+            // Auto-select if only one result
+            if (result.length === 1) {
+                setValue('contactData', result[0]);
+                handleOnClose();
+                trigger();
+            }
         } catch (err) {
             console.error('Error loading contacts:', err);
             setListBoxContacts([]);
             setTotalCount(0);
             setFilteredCount(0);
         }
-    }, [searchString, buCode, dbName, decodedDbParamsObject]);
+    }, [searchString, buCode, dbName, decodedDbParamsObject, setValue, trigger]);
 
     useEffect(() => {
         loadContacts();
     }, [loadContacts])
 
-    useEffect(() => {
-        // Set selected value after data is loaded
-        if (selectedId && listBoxContacts.length > 0 && listRef.current) {
-            const selectedItem = listBoxContacts.find(item => item.id === selectedId);
-            if (selectedItem) {
-                listRef.current.selectItems([selectedItem.text]);
-            }
-        }
-    }, [selectedId, listBoxContacts])
+    // useEffect(() => {
+    //     // Set selected value after data is loaded
+    //     if (selectedId && listBoxContacts.length > 0 && listRef.current) {
+    //         const selectedItem = listBoxContacts.find(item => item.id === selectedId);
+    //         if (selectedItem) {
+    //             listRef.current.selectItems([selectedItem.text]);
+    //         }
+    //     }
+    // }, [selectedId, listBoxContacts])
 
     useEffect(() => {
         // Prevent background scroll when component is mounted
@@ -253,18 +266,8 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
         </div>
     );
 
-    function handleOnClose() {
-        Utils.showHideModalDialogA({
-            isOpen: false
-        })
-    }
-
-
     function onContactSelect(args: any) {
-        const contactDisplayData = args?.items?.[0]?.contactDisplayData;
         const contactData = args?.items?.[0]?.data;
-        if(!contactDisplayData) return;
-        setValue('contactDisplayData', contactDisplayData || null);
         setValue('contactData', contactData || null);
         handleOnClose();
         trigger();

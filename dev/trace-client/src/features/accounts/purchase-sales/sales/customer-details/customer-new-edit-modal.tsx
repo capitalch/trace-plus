@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
 import { ContactsType } from '../../../../../utils/global-types-interfaces-enums';
 import { FormField } from '../../../../../controls/widgets/form-field';
 import { useValidators } from '../../../../../utils/validators-hook';
@@ -12,9 +12,15 @@ import { Utils } from '../../../../../utils/utils';
 import { IconCross } from '../../../../../controls/icons/icon-cross';
 import axios from 'axios';
 import statesWithCodes from './india-states-with-codes-gst.json';
+import { useUtilsInfo } from '../../../../../utils/utils-info-hook';
+import { AllTables } from '../../../../../app/maps/database-tables-map';
+import { SalesFormDataType } from '../all-sales';
+import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
 
 interface CustomerNewEditModalProps {
     contactData?: ContactsType | null;
+    setParentValue: UseFormSetValue<SalesFormDataType>;
+    triggerParent: UseFormTrigger<SalesFormDataType>;
 }
 
 const getDefaultContactData = (): ContactsType => {
@@ -39,14 +45,67 @@ const getDefaultContactData = (): ContactsType => {
     };
 };
 
-const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData }) => {
+const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData, setParentValue, triggerParent }) => {
     const { isValidGstin, isValidEmail, checkMobileNo } = useValidators();
+    const { dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
 
+    const checkMobileNoForUpdate = async (mobile: string, currentContactId?: number) => {
+        if (!mobile || mobile.length !== 10 || !/^[0-9]{10}$/.test(mobile)) {
+            return undefined;
+        }
+
+        try {
+            const result: ContactsType[] = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getContactForMobile,
+                sqlArgs: { mobileNumber: mobile }
+            });
+
+            if (result && result.length === 1) {
+                const existingContact = result[0];
+                if (existingContact.id !== currentContactId) {
+                    return Messages.errMobileAlreadyExists;
+                }
+            }
+        } catch (error) {
+            console.error('Error checking mobile for duplicate:', error);
+        }
+        return undefined;
+    };
+
+    const checkEmailForUpdate = async (email: string, currentContactId?: number) => {
+        if (!email || !isValidEmail(email)) {
+            return undefined;
+        }
+
+        try {
+            const result: ContactsType[] = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getContactForEmail,
+                sqlArgs: { email: email }
+            });
+
+            if (result && result.length === 1) {
+                const existingContact = result[0];
+                if (existingContact.id !== currentContactId) {
+                    return Messages.errEmailAlreadyExists;
+                }
+            }
+        } catch (error) {
+            console.error('Error checking email for duplicate:', error);
+        }
+        return undefined;
+    };
     const {
         register,
         handleSubmit,
         reset,
         trigger,
+        getValues,
         setValue,
         watch,
         formState: { errors, isSubmitting, isDirty, isValid }
@@ -58,6 +117,10 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
 
     // Watch PIN code changes
     const pinValue = watch('pin');
+    // Watch mobile number changes  
+    const mobileValue = watch('mobileNumber');
+    // Watch email changes
+    const emailValue = watch('email');
 
     // Trigger validation on component mount to highlight errors immediately
     useEffect(() => {
@@ -124,17 +187,95 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
         if (pinValue) {
             lookupPincode(pinValue);
         }
-    }, [pinValue, setValue]);
+    }, [pinValue, setValue, trigger]);
+
+    // Mobile number validation for existing contacts (only for new entries)
+    useEffect(() => {
+        const checkMobileForExistingContact = async (mobile: string) => {
+            // Only check for new entries (not edit mode) and when mobile is valid
+            if (!contactData && mobile && mobile.length === 10 && /^[0-9]{10}$/.test(mobile)) {
+                try {
+                    const result: ContactsType[] = await Utils.doGenericQuery({
+                        buCode: buCode || '',
+                        dbName: dbName || '',
+                        dbParams: decodedDbParamsObject,
+                        sqlId: SqlIdsMap.getContactForMobile,
+                        sqlArgs: {
+                            mobileNumber: mobile
+                        }
+                    });
+
+                    if (result && (result.length === 1)) {
+                        const existingContact = result[0];
+                        // Show message and auto-select the contact
+                        Utils.showSuccessAlertMessage({
+                            title: 'Contact Found!',
+                            message: `Selecting contact: ${existingContact.contactName || 'Unnamed Contact'}`
+                        });
+
+                        // Set the contact data in parent and close modal
+                        setParentValue('contactData', existingContact);
+                        triggerParent();
+                        handleOnClose();
+                    }
+                } catch (error) {
+                    console.error('Error checking mobile for existing contact:', error);
+                }
+            }
+        };
+
+        if (mobileValue) {
+            checkMobileForExistingContact(mobileValue);
+        }
+    }, [mobileValue, contactData, buCode, dbName, setParentValue, triggerParent, decodedDbParamsObject]);
+
+    // Email validation for existing contacts (only for new entries) - with debouncing
+    useEffect(() => {
+        const checkEmailForExistingContact = async (email: string) => {
+            // Only check for new entries (not edit mode) and when email is valid
+            if (!contactData && email && isValidEmail(email)) {
+                try {
+                    const result: ContactsType[] = await Utils.doGenericQuery({
+                        buCode: buCode || '',
+                        dbName: dbName || '',
+                        dbParams: decodedDbParamsObject,
+                        sqlId: SqlIdsMap.getContactForEmail,
+                        sqlArgs: {
+                            email: email
+                        }
+                    });
+
+                    if (result && (result.length === 1)) {
+                        const existingContact = result[0];
+                        // Show message and auto-select the contact
+                        Utils.showSuccessAlertMessage({
+                            title: 'Contact Found!',
+                            message: `This contact already exists. Selecting: ${existingContact.contactName || 'Unnamed Contact'}`
+                        });
+
+                        // Set the contact data in parent and close modal
+                        setParentValue('contactData', existingContact);
+                        triggerParent();
+                        handleOnClose();
+                    }
+                } catch (error) {
+                    console.error('Error checking email for existing contact:', error);
+                }
+            }
+        };
+
+        // Debounce email validation to prevent multiple API calls while typing
+        const timeoutId = setTimeout(() => {
+            if (emailValue) {
+                checkEmailForExistingContact(emailValue);
+            }
+        }, 3000); // Wait 800ms after user stops typing
+
+        return () => clearTimeout(timeoutId);
+    }, [emailValue, contactData, buCode, dbName, setParentValue, triggerParent, decodedDbParamsObject, isValidEmail]);
 
     const errorClass = 'border-red-500 bg-red-50';
     const inputClass = "border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-sm px-2 py-1.5 transition-all duration-200";
-    // const inputClassBase = "border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-sm px-2 py-1.5 transition-all duration-200";
-
-    const handleOnSubmit = (data: ContactsType) => {
-        console.log('Submitting customer data:', data);
-        alert(`Customer ${contactData ? 'updated' : 'created'} successfully!`);
-        handleOnClose();
-    };
 
     const handleOnClose = () => {
         Utils.showHideModalDialogA({ isOpen: false })
@@ -180,7 +321,17 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                         }
                                     }}
                                     {...register('mobileNumber', {
-                                        validate: (value) => !value || !checkMobileNo(value) || Messages.errInvalidMobileNo
+                                        validate: (value) => !value || !checkMobileNo(value) || Messages.errInvalidMobileNo,
+                                        onChange: async (e) => {
+                                            const value = e.target.value;
+                                            if (contactData && value && value.length === 10 && /^[0-9]{10}$/.test(value)) {
+                                                const duplicateError = await checkMobileNoForUpdate(value, contactData.id);
+                                                if (duplicateError) {
+                                                    Utils.showWarningMessage(duplicateError);
+                                                    setValue('mobileNumber', '');
+                                                }
+                                            }
+                                        }
                                     })}
                                 />
                             </FormField>
@@ -261,6 +412,16 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                             if (!value) return true;
                                             if (isValidEmail(value)) return true;
                                             return Messages.errInvalidEmail;
+                                        },
+                                        onChange: async (e) => {
+                                            const value = e.target.value;
+                                            if (contactData && value && isValidEmail(value)) {
+                                                const duplicateError = await checkEmailForUpdate(value, contactData.id);
+                                                if (duplicateError) {
+                                                    Utils.showWarningMessage(duplicateError);
+                                                    setValue('email', '');
+                                                }
+                                            }
                                         }
                                     })}
                                 />
@@ -298,7 +459,17 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                             }
                                         }}
                                         {...register('otherMobileNumber', {
-                                            validate: (value) => !value || !checkMobileNo(value) || Messages.errInvalidMobileNo
+                                            validate: (value) => !value || !checkMobileNo(value) || Messages.errInvalidMobileNo,
+                                            onChange: async (e) => {
+                                                const value = e.target.value;
+                                                if (contactData && value && value.length === 10 && /^[0-9]{10}$/.test(value)) {
+                                                    const duplicateError = await checkMobileNoForUpdate(value, contactData.id);
+                                                    if (duplicateError) {
+                                                        Utils.showErrorMessage(duplicateError);
+                                                        setValue('otherMobileNumber', '');
+                                                    }
+                                                }
+                                            }
                                         })}
                                     />
                                 </FormField>
@@ -464,6 +635,54 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
             </div>
         </div>
     );
+
+    function copyDataToParent(customerId: number) {
+        const formData = getValues();
+        // Copy contact data to parent form
+        setParentValue('contactData', {
+            ...formData,
+            id: customerId
+        });
+    }
+
+    async function handleOnSubmit() {
+        try {
+            const xData: ContactsType = {
+                id: getValues('id') || undefined,
+                contactName: getValues('contactName'),
+                mobileNumber: getValues('mobileNumber') || null,
+                otherMobileNumber: getValues('otherMobileNumber') || null,
+                landPhone: getValues('landPhone') || null,
+                email: getValues('email') || null,
+                descr: getValues('descr') || null,
+                anniversaryDate: getValues('anniversaryDate') || null,
+                address1: getValues('address1'),
+                address2: getValues('address2') || null,
+                country: getValues('country'),
+                state: getValues('state') || null,
+                city: getValues('city') || null,
+                gstin: getValues('gstin') || null,
+                pin: getValues('pin'),
+                dateOfBirth: getValues('dateOfBirth') || null,
+                stateCode: getValues('stateCode') || null,
+            }
+            console.log("Submitting customer data:", xData);
+            const result = await Utils.doGenericUpdate({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                tableName: AllTables.Contacts.name,
+                xData: xData,
+            })
+            const id = result?.data?.genericUpdate;
+            if (id) {
+                copyDataToParent(id)
+                triggerParent();
+                handleOnClose();
+            }
+        } catch (error) {
+            console.error("Error in submitting customer data:", error);
+        }
+    }
 };
 
 export default CustomerNewEditModal;
