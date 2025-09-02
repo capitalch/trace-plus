@@ -16,7 +16,7 @@ export function ProductsStockTransfer({ instance }: { instance: string }) {
       onClick={handleOnClick}
       type="button"
       aria-label="stock transfer"
-      className="mr-6 h-8 px-4 py-1 bg-blue-600 text-white font-medium rounded-lg shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+      className="mr-6 px-4 py-1 h-8 font-medium text-white bg-blue-600 rounded-lg shadow-sm transition duration-150 ease-in-out hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
     >
       Stock transfer to next year
     </button>

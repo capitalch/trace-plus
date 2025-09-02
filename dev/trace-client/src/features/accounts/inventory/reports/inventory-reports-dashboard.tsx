@@ -5,15 +5,15 @@ import { InventoryReportsRouterMap } from "./inventory-reports-map";
 export function InventoryReportsDashboard() {
   return (
     <CompAccountsContainer>
-        <label className="text-lg font-semibold mb-6 text-primary-600 mt-2">
+        <label className="mt-2 mb-6 font-semibold text-lg text-primary-600">
           Inventory Reports
         </label>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 mr-4">
+        <div className="grid mr-4 2xl:grid-cols-5 gap-4 grid-cols-1 md:grid-cols-3 sm:grid-cols-2 xl:grid-cols-4">
           {InventoryReportsRouterMap.map((report) => (
             <Link
               key={report.id}
               to={`/inventory-reports/${report.id}`}
-              className="flex items-center space-x-4 p-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition duration-200 hover:bg-primary-50"
+              className="flex items-center p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition duration-200 hover:bg-primary-50 hover:shadow-md space-x-4"
             >
               <div className="text-primary-500">{report.icon}</div>
               <div className="font-medium text-gray-700">{report.name}</div>

@@ -19,7 +19,7 @@ export function SalesReportToolbarFilterDisplay() {
         endDate: selectedFilters.dateRangeFilterOption.endDate
     }
     return (
-        <div className="flex flex-wrap bg-amber-100 p-1 text-sm rounded-md gap-1 xl:w-[550px] lg:w-[450px] md:w-[350px] sm:w-[200px] w-[200px]">
+        <div className="flex flex-wrap p-1 w-[200px] text-sm bg-amber-100 rounded-md gap-1 lg:w-[450px] md:w-[350px] sm:w-[200px] xl:w-[550px]">
             {getDisplayControl({ label: 'Date Range: ', value: displayFilter.selectedDateRange.label })}
             {getDisplayControl({ label: 'From Date: ', value: format(displayFilter.startDate, currentDateFormat) })}
             {getDisplayControl({ label: 'To Date: ', value: format(displayFilter.endDate, currentDateFormat) })}
@@ -33,7 +33,7 @@ export function SalesReportToolbarFilterDisplay() {
 
     function getDisplayControl(item: { label: string, value: string }) {
         return (
-            <label className="font-medium px-1 text-gray-800  even:bg-slate-100 odd:bg-white">
+            <label className="px-1 font-medium text-gray-800 odd:bg-white even:bg-slate-100">
                 {item.label}
                 <span className="font-normal">{item.value}</span>
             </label>)

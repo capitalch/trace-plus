@@ -61,7 +61,7 @@ export function ManageCategoryHsn() {
             aggregates={getAggregates()}
             buCode={buCode}
             dataSource={meta.current.rows}
-            className="mr-6 mt-4"
+            className="mt-4 mr-6"
             columns={getColumns()}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
@@ -192,7 +192,7 @@ type CategoryHsnType = {
 
 function SubmitButton({ handleOnSubmit }: { handleOnSubmit: () => void }) {
     return (<TooltipComponent content='Save changed HSN values to server' className="text-sm" cssClass="custom-tooltip">
-        <button onClick={handleOnSubmit} type="button" className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
-            <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
+        <button onClick={handleOnSubmit} type="button" className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700">
+            <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit</button>
     </TooltipComponent>)
 }

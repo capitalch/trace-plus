@@ -14,7 +14,7 @@ export function CompGenericSwitch({
                 defaultChecked={defaultChecked}
                 disabled={disabled}
                 onChange={onChange ? (event: ChangeEvent<HTMLInputElement>) => onChange(event, customData) : undefined}
-                className="peer sr-only"
+                className="sr-only peer"
                 aria-label="Toggle switch"
             />
             <div

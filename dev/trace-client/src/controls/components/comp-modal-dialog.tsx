@@ -32,7 +32,7 @@ export function CompModalDialog({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className={clsx("relative mx-4 sm:mx-0", sizeLogic[size])}>
-          <div className="flex flex-col rounded-lg bg-white shadow-lg border border-gray-300 max-h-[95vh] ">
+          <div className="flex flex-col max-h-[95vh] bg-white border border-gray-300 rounded-lg shadow-lg">
             
             {/* Header */}
             <div className={clsx("flex items-center justify-between px-4 py-2 border-b", className)}>
@@ -46,13 +46,13 @@ export function CompModalDialog({
             </div>
 
             {/* Body - Scrollable for large content */}
-            <div className="px-4 py-2 flex-1 ">{body}</div>
+            <div className="flex-1 px-4 py-2">{body}</div>
 
             {/* Footer */}
             {toShowCloseButton && (
               <div className="flex justify-end p-4 border-t">
                 <button
-                  className="border bg-primary-400 px-6 py-2 text-sm font-bold uppercase text-white hover:bg-primary-500"
+                  className="px-6 py-2 text-sm font-bold uppercase text-white bg-primary-400 border hover:bg-primary-500"
                   onClick={onClickClose}
                 >
                   Close

@@ -7,7 +7,7 @@ import {
 } from '../maps/graphql-queries-map'
 import _ from 'lodash'
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../global-constants'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Utils } from '../../utils/utils'
 import { AppDispatchType } from '../store'
 import { useDispatch } from 'react-redux'
@@ -24,10 +24,46 @@ export function useQueryHelper({
   isExecQueryOnLoad = false
 }: QueryHelperType) {
   const dispatch: AppDispatchType = useDispatch()
-  const [getQueryData, { error, loading }] = useLazyQuery(
+
+  const [getQueryData, { error, loading, data: queryResult }] = useLazyQuery(
     graphQlQueryFromMap(dbName, getQueryArgs()),
     { notifyOnNetworkStatusChange: true, fetchPolicy: 'network-only' }
   )
+
+  const loadData = useCallback(() => {
+    getQueryData()
+  }, [getQueryData])
+
+  // Handle the query result when data is available
+  useEffect(() => {
+    if (queryResult) {
+      const queryName = graphQlQueryName
+      const result:any = { data: queryResult }
+      
+      if (result?.data?.[queryName]?.error?.content) {
+        Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
+      }
+      const data = _.isEmpty(result?.data?.[queryName])
+        ? []
+        : result.data[queryName]
+      if (addUniqueKeyToJson) { // Creates persistence of expanded rows by adding unique pkey to each record
+        if (data?.[0]?.jsonResult) {
+          if (dataPath) {
+            Utils.addUniqueKeysToJson(data[0].jsonResult[dataPath])
+          } else {
+            Utils.addUniqueKeysToJson(data[0].jsonResult)
+          }
+        }
+      }
+      // Dispatch the data to the store after a short delay to ensure UI updates correctly
+      setTimeout(() => dispatch(
+        setQueryHelperData({
+          data: data,
+          instance: instance
+        })
+      ), 100)
+    }
+  }, [queryResult, graphQlQueryName, addUniqueKeyToJson, dataPath, dispatch, instance])
 
   useEffect(() => {
     if (isExecQueryOnLoad) {
@@ -37,38 +73,10 @@ export function useQueryHelper({
       // Cleanup data. Otherwise syncfusion grid loads the old data
       dispatch(resetQueryHelperData({ instance: instance }))
     }
-  }, [])
+  }, [dispatch, instance, isExecQueryOnLoad, loadData])
 
   if (error) {
     Utils.showErrorMessage(error)
-  }
-
-  async function loadData() {
-    const queryName = graphQlQueryName
-    const result: any = await getQueryData()
-    if (result?.data?.[queryName]?.error?.content) {
-      Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
-    }
-    const data = _.isEmpty(result?.data?.[queryName])
-      ? []
-      : result.data[queryName]
-    if (addUniqueKeyToJson) { // Creates persistence of expanded rows by adding unique pkey to each record
-      if (data?.[0]?.jsonResult) {
-        if (dataPath) {
-          Utils.addUniqueKeysToJson(data[0].jsonResult[dataPath])
-        } else {
-          Utils.addUniqueKeysToJson(data[0].jsonResult)
-        }
-      }
-    }
-    // Dispatch the data to the store after a short delay to ensure UI updates correctly
-    setTimeout(() => dispatch(
-      setQueryHelperData({
-        data: data,
-        instance: instance
-      })
-    ), 100)
-
   }
   return { loadData, loading }
 }

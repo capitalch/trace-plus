@@ -58,7 +58,7 @@ export function PurchaseReturnTotalsPanel({ className }: { className?: string })
             {/* Left Column */}
             <div className="flex flex-col gap-1">
                 <div>
-                    <label className="text-gray-600 text-xs block">Invoice amount <WidgetAstrix /></label>
+                    <label className="block text-gray-600 text-xs">Invoice amount <WidgetAstrix /></label>
                     {/* Invoice amount */}
                     <ControlledNumericInput
                         className={clsx(inputClass, errors?.totalInvoiceAmount && errorClass, 'mt-0.5')}
@@ -76,7 +76,7 @@ export function PurchaseReturnTotalsPanel({ className }: { className?: string })
                 </div>
 
                 <div>
-                    <label className="text-gray-600 text-xs block">Total qty <WidgetAstrix /></label>
+                    <label className="block text-gray-600 text-xs">Total qty <WidgetAstrix /></label>
                     {/* Qty */}
                     <ControlledNumericInput
                         className={clsx(inputClass, errors?.totalQty && errorClass, 'mt-0.5')}
@@ -97,7 +97,7 @@ export function PurchaseReturnTotalsPanel({ className }: { className?: string })
                         type="button"
                         tabIndex={-1}
                         onClick={clearTotals}
-                        className="text-blue-600 text-[11px] underline"
+                        className="text-[11px] text-blue-600 underline"
                     >
                         CLEAR
                     </button>
@@ -108,7 +108,7 @@ export function PurchaseReturnTotalsPanel({ className }: { className?: string })
             <div className="flex flex-col gap-1">
                 {/* cgst */}
                 <div>
-                    <label className="text-gray-600 text-xs block">Cgst {!isIgst && <WidgetAstrix />}</label>
+                    <label className="block text-gray-600 text-xs">Cgst {!isIgst && <WidgetAstrix />}</label>
                     <ControlledNumericInput
                         className={clsx(inputClass, errors?.totalCgst && errorClass, 'mt-0.5')}
                         fieldName="totalCgst"
@@ -124,7 +124,7 @@ export function PurchaseReturnTotalsPanel({ className }: { className?: string })
                 </div>
 
                 <div>
-                    <label className="text-gray-600 text-xs block">Sgst {!isIgst && <WidgetAstrix />}</label>
+                    <label className="block text-gray-600 text-xs">Sgst {!isIgst && <WidgetAstrix />}</label>
                     {/* sgst */}
                     <ControlledNumericInput
                         className={clsx(inputClass, errors?.totalSgst && errorClass, 'mt-0.5')}
@@ -141,7 +141,7 @@ export function PurchaseReturnTotalsPanel({ className }: { className?: string })
                 </div>
 
                 <div>
-                    <label className="text-gray-600 text-xs block">Igst {isIgst && <WidgetAstrix />}</label>
+                    <label className="block text-gray-600 text-xs">Igst {isIgst && <WidgetAstrix />}</label>
                     {/* igst */}
                     <ControlledNumericInput
                         className={clsx(inputClass, errors?.totalIgst && errorClass, 'mt-0.5')}

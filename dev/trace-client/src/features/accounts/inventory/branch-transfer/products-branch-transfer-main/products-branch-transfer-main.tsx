@@ -79,7 +79,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     <div className="h-[calc(100vh-240px)]">
       <FormProvider {...extendedMethods}>
         <form
-          className="flex flex-col gap-6 mr-6 min-w-[85rem]"
+          className="flex flex-col mr-6 min-w-[85rem] gap-6"
           onSubmit={methods.handleSubmit(onSubmit)}
         >
           <ProductsBranchTransferHeader />

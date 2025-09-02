@@ -92,10 +92,10 @@ export function GeneralLedger() {
         <CompAccountsContainer>
             <div className="flex items-center mt-6 min-w-[1200px]">
                 <div className="flex flex-col w-72">
-                    <label className="text-lg font-medium text-primary-400">General ledger</label>
-                    <label className="text-blue-500 font-medium">{meta?.current?.accName}</label>
+                    <label className="font-medium text-lg text-primary-400">General ledger</label>
+                    <label className="font-medium text-blue-500">{meta?.current?.accName}</label>
                 </div>
-                <div className="flex flex-col items-end flex-wrap mr-8 min-w-[150px]">
+                <div className="flex flex-col flex-wrap items-end mr-8 min-w-[150px]">
                     <CompCheckBox label="Show balance" instance={CompInstances.compCheckBoxBalanceLedger} />
                     <CompCheckBox label="Reverse" instance={CompInstances.compCheckBoxReverseLedger} />
                     <CompCheckBox label="Daily summary" instance={CompInstances.compCheckBoxSummaryLedger} />
@@ -121,7 +121,7 @@ export function GeneralLedger() {
 
             <CompSyncFusionGrid
                 aggregates={getAggregates()}
-                className="mr-6 mt-4"
+                className="mt-4 mr-6"
                 columns={getColumns()}
                 dataSource={meta?.current?.transactions || []}
                 hasIndexColumn={false}

@@ -127,7 +127,7 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 field: "autoRefNo",
                 format: "N0",
                 footerTemplate: (props: any) => (
-                    <span className="text-xs text-right">Cnt: {props.Count}</span>
+                    <span className="text-right text-xs">Cnt: {props.Count}</span>
                 )
             },
             {

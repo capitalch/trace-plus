@@ -140,20 +140,20 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
     return (
         <div style={styles.overlay}>
             <div style={styles.container}>
-                <div className="bg-white rounded-lg shadow-md border border-gray-200">
-                    <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50 rounded-t-lg">
+                <div className="bg-white border border-gray-200 rounded-lg shadow-md">
+                    <div className="p-4 border-b border-gray-100 rounded-t-lg bg-gradient-to-r from-gray-50 to-blue-50">
 
                         {/* header */}
                         <div className="flex items-center justify-between">
                             {/* Title */}
-                            <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                                <IconCrown className="w-5 h-5 mr-2 text-blue-600" />
+                            <h3 className="flex items-center font-semibold text-gray-800 text-lg">
+                                <IconCrown className="mr-2 w-5 h-5 text-blue-600" />
                                 Customer Search Results
                             </h3>
                             {/* Close button */}
                             <button
                                 onClick={handleOnClose}
-                                className="p-2 hover:bg-red-100 rounded-full transition-colors duration-200 text-gray-500 hover:text-red-600"
+                                className="p-2 text-gray-500 rounded-full transition-colors duration-200 hover:bg-red-100 hover:text-red-600"
                                 title="Close"
                             >
                                 <IconCross className="w-5 h-5" />
@@ -161,11 +161,11 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
                         </div>
 
                         {totalCount > 0 && (
-                            <p className="text-sm text-gray-600 mt-1 flex items-center">
-                                <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <p className="flex items-center mt-1 text-gray-600 text-sm">
+                                <span className="inline-block mr-2 w-2 h-2 bg-green-500 rounded-full"></span>
                                 Found {totalCount} customer{totalCount !== 1 ? 's' : ''}
                                 {filteredCount !== totalCount && (
-                                    <span className="text-blue-600 font-medium ml-2">
+                                    <span className="ml-2 font-medium text-blue-600">
                                         ({filteredCount} shown)
                                     </span>
                                 )}
@@ -176,11 +176,11 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
                     <div className="p-4">
                         {listBoxContacts.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-16 text-gray-500">
-                                <div className="bg-gray-100 rounded-full p-6 mb-4">
+                                <div className="mb-4 p-6 bg-gray-100 rounded-full">
                                     <IconPerson className="w-12 h-12 text-gray-400" />
                                 </div>
-                                <p className="text-lg font-medium text-gray-700 mb-2">No contacts found</p>
-                                <p className="text-sm text-gray-500 text-center max-w-sm">
+                                <p className="mb-2 font-medium text-gray-700 text-lg">No contacts found</p>
+                                <p className="max-w-sm text-center text-gray-500 text-sm">
                                     {searchString ?
                                         `No results for "${searchString}". Try adjusting your search terms.` :
                                         'Start typing to search for contacts.'
@@ -189,9 +189,9 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
                             </div>
                         ) : (
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between text-sm text-gray-600 mb-3 px-2">
+                                <div className="flex items-center justify-between mb-3 px-2 text-gray-600 text-sm">
                                     <span>Select a customer from the list below:</span>
-                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                    <span className="px-2 py-1 text-blue-700 text-xs bg-blue-100 rounded">
                                         {filteredCount} result{filteredCount !== 1 ? 's' : ''}
                                     </span>
                                 </div>

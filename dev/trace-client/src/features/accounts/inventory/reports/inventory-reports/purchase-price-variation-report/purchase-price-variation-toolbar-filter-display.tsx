@@ -29,7 +29,7 @@ export function PurchasePriceVariationToolbarFilterDisplay() {
   );
 
   return (
-    <div className="flex items-center gap-6 px-2 py-1 bg-gray-50 rounded-lg border border-gray-200 shadow-sm text-sm text-gray-700">
+    <div className="flex items-center px-2 py-1 text-gray-700 text-sm bg-gray-50 border border-gray-200 rounded-lg shadow-sm gap-6">
       <div className={clsx(selectedCatOption?.id && "text-blue-500 font-bold")}>
         <span className="font-semibold text-primary-600">Category:</span>{" "}
         {selectedCatOption?.catName || "All categories"}
@@ -45,7 +45,7 @@ export function PurchasePriceVariationToolbarFilterDisplay() {
         {selectedTagOption?.tagName || "All tags"}
       </div>
       <button
-        className="h-8 py-1 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
+        className="px-4 py-1 h-8 text-white bg-blue-500 rounded-lg hover:bg-blue-700"
         onClick={() => {
           dispatch(setPurchasePriceVariationIsPaneOpen(true));
         }}

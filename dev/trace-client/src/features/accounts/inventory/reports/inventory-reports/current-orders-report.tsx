@@ -104,7 +104,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         field: "orderValue",
         format: "N2",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-4">{props.Sum}</span>
+          <span className="mr-4 text-xs">{props.Sum}</span>
         )
       }
     ];

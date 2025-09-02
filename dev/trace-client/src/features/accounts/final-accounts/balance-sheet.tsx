@@ -222,19 +222,19 @@ export function BalanceSheet() {
     function CustomControl() {
 
         return (<div className="flex items-center justify-between">
-            <label className="font-medium text-xl text-primary-300">Balance Sheet</label>
+            <label className="font-medium text-primary-300 text-xl">Balance Sheet</label>
 
             {/* All branches */}
-            <CompSwitch className="ml-4 mt-1 mr-4" instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
+            <CompSwitch className="mt-1 mr-4 ml-4" instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
 
             <CompSyncFusionTreeGridSearchBox instance={balanceSheetInstance} handleOnChange={handleOnChangeSearchText} />
 
             {/* Preview Pdf balance sheet */}
-            <TooltipComponent content='Preview' className="flex ml-4 items-center">
+            <TooltipComponent content='Preview' className="flex items-center ml-4">
                 <button onClick={async () => {
                     setIsDialogOpen(true)
                 }}>
-                    <IconPreview1 className="text-blue-500 h-8 w-8" />
+                    <IconPreview1 className="w-8 h-8 text-blue-500" />
                 </button>
             </TooltipComponent>
 
@@ -285,10 +285,10 @@ export function BalanceSheet() {
             <TooltipComponent content="Set Nesting Level" position="TopCenter" className="mr-2">
                 <button
                     onClick={handleDoSettings}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 active:ring-2 ring-blue-300 transition duration-150"
+                    className="flex items-center px-3 py-1.5 bg-blue-50 border border-blue-200 ring-blue-300 rounded transition duration-150 hover:bg-blue-100 active:ring-2 gap-2"
                 >
-                    <IconSettings className="text-blue-500 h-6 w-6" />
-                    <span className="text-sm font-medium text-blue-700 whitespace-nowrap">
+                    <IconSettings className="w-6 h-6 text-blue-500" />
+                    <span className="font-medium text-blue-700 text-sm whitespace-nowrap">
                         Nesting: {maxNestLevel}
                     </span>
                 </button>

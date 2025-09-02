@@ -37,8 +37,8 @@ export function AdminBusinessUnitSchemasLisr() {
                 selectionSettings={{ mode: 'Single' }}
             />
             <button type="button" onClick={handleOnLink} disabled={selectedBuCode ? false : true}
-                className="px-5 py-2 font-medium text-white inline-flex items-center justify-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200">
-                <IconLink className="text-white w-6 h-6 mr-4" />
+                className="inline-flex items-center justify-center px-5 py-2 font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-hidden focus:ring-4 focus:ring-blue-300 disabled:bg-blue-200 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700">
+                <IconLink className="mr-4 w-6 h-6 text-white" />
                 Link
             </button>
         </div>

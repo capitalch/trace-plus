@@ -21,7 +21,7 @@ function Layouts() {
     })
 
     return (<div className="">
-        <div className="flex h-screen w-screen bg-white">
+        <div className="flex w-screen h-screen bg-white">
             <SideBar />
             <div className="flex flex-col w-full">
                 <NavBar />

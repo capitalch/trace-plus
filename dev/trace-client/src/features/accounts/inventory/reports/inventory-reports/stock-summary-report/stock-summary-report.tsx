@@ -71,21 +71,21 @@ export function StockSummaryReport({ title }: { title?: string }) {
             <button
               type="button"
               onClick={handleOnClickFilter}
-              className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-blue-500 rounded hover:bg-blue-700"
             >
               Filter
             </button>
             <button
               type="button"
               onClick={handleOnClickResetFilter}
-              className="bg-amber-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-amber-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-amber-500 rounded hover:bg-amber-700"
             >
               Reset Filter
             </button>
             <button
               type="button"
               onClick={handleOnClickTrim}
-              className="bg-green-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-purple-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-green-500 rounded hover:bg-purple-700"
             >
               Trim
             </button>

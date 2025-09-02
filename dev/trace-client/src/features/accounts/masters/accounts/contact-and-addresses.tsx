@@ -70,11 +70,11 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-auto">
+            className="grid w-auto gap-4 grid-cols-1 sm:grid-cols-2">
             {isAddressExists && <button
                 type="button"
                 onClick={deleteContact}
-                className="text-amber-500 text-sm text-left col-span-2">
+                className="text-amber-500 text-left text-sm col-span-2">
                 Permanently delete this contact along with address
             </button>}
             <label className="flex flex-col font-medium text-primary-800">
@@ -83,7 +83,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. John Doe"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("contactName", {
                         required: Messages.errRequired,
                         validate: {
@@ -100,7 +100,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. johnDoe"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("contactCode", {
                         required: Messages.errRequired,
                         validate: {
@@ -117,7 +117,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. 1234567890"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("mobileNumber", {
                         validate: {
                             validateMobileNo: (value: string) => ((value === '') || checkMobileNo(value)) // allows empty value
@@ -133,7 +133,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. 1234567890"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("otherMobileNumber", {
                         validate: {
                             validateOtherMobileNo: (value: string) => ((value === '') || checkMobileNo(value))
@@ -149,7 +149,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. 1234567890"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("landPhone",)}
                 />
             </label>
@@ -160,7 +160,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. a@c.com"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("email", {
                         validate: {
                             validateEmail: (value: string) => ((value === '') || checkEmail(value)) // allows empty value
@@ -176,7 +176,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. a@c.com"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("otherEmail", {
                         validate: {
                             validateOtherEmail: (value: string) => ((value === '') || checkEmail(value)) // allows empty value
@@ -192,7 +192,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="Description"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("descr",)}
                 />
             </label>
@@ -203,7 +203,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. 22AAAAA0000A1Z5"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("gstin", {
                         validate: {
                             validateGstin: (value: string) => ((value === '') || checkGstin(value)) // allows empty value
@@ -219,7 +219,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                     type="text"
                     placeholder="e.g. 19"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("stateCode", {
                         validate: {
                             validateGstStateCode: (value: string) => ((value === '') || checkGstStateCode(value)) // allows empty value
@@ -230,17 +230,17 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
             </label>
 
             {/* Addresses */}
-            <div className="col-span-2 ">
-                <span className="font-bold text-primary-800">Addresses <span className="text-xs font-medium">[Count: {fields.length}]</span></span>
+            <div className="col-span-2">
+                <span className="font-bold text-primary-800">Addresses <span className="font-medium text-xs">[Count: {fields.length}]</span></span>
                 {fields.map((field, index) => (
-                    <div key={field.id} className="grid grid-cols-2 gap-4 border-2 border-primary-200 p-4 rounded-md">
+                    <div key={field.id} className="grid p-4 border-2 border-primary-200 rounded-md gap-4 grid-cols-2">
                         <label className="flex flex-col font-medium text-primary-800">
                             <span>Address Line 1 <WidgetAstrix /></span>
                             <input
                                 type="text"
                                 placeholder="e.g. 123 Main St"
                                 autoComplete="off"
-                                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                                 {...register(`addresses.${index}.address1`, {
                                     required: Messages.errRequired,
                                     validate: {
@@ -259,7 +259,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                                 type="text"
                                 placeholder="e.g. Suite 100"
                                 autoComplete="off"
-                                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                                 {...register(`addresses.${index}.address2`, {
                                     validate: {
                                         validateAddress2: checkNoSpecialChar
@@ -277,7 +277,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                                 type="text"
                                 placeholder="e.g. 700043"
                                 autoComplete="off"
-                                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                                 {...register(`addresses.${index}.pin`, {
                                     required: Messages.errRequired,
                                     validate: {
@@ -296,7 +296,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                                 type="text"
                                 placeholder="e.g. Kolkata"
                                 autoComplete="off"
-                                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                                 {...register(`addresses.${index}.city`, {
                                     required: Messages.errRequired
                                 })}
@@ -312,7 +312,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                                 type="text"
                                 placeholder="e.g. West Bengal"
                                 autoComplete="off"
-                                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                                 {...register(`addresses.${index}.state`, {
                                     required: Messages.errRequired
                                 })}
@@ -328,7 +328,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                                 type="text"
                                 placeholder="e.g. India"
                                 autoComplete="off"
-                                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                                 {...register(`addresses.${index}.country`)}
                             />
                         </label>
@@ -336,7 +336,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                         <button
                             type="button"
                             onClick={() => remove(index)}
-                            className="text-lime-500 text-sm text-left">
+                            className="text-left text-lime-500 text-sm">
                             Remove this address
                         </button>
                     </div>
@@ -344,7 +344,7 @@ export function ContactAndAddresses({ props }: ContactAndAddressesPropsType) {
                 <button
                     type="button"
                     onClick={() => append({ address1: "", address2: "", pin: "", city: "", state: "", country: "" })}
-                    className="text-blue-500 text-sm ml-2">
+                    className="ml-2 text-blue-500 text-sm">
                     Add new address
                 </button>
             </div>

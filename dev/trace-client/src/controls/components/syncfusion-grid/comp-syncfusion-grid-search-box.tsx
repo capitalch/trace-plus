@@ -23,8 +23,8 @@ export function CompSyncFusionGridSearchBox({ instance }: CompSyncFusionGridSear
     }, [onTextChange])
 
     return (
-        <div className="flex pr-1 rounded-md items-center border-3 border-gray-400 focus:ring-2">
-            <input type="search" placeholder="Search" className="text-md h-9 w-56 border-none focus:ring-0" value={selectedSearchString || ''}
+        <div className="flex items-center pr-1 border-3 border-gray-400 rounded-md focus:ring-2">
+            <input type="search" placeholder="Search" className="w-56 h-9 text-md border-none focus:ring-0" value={selectedSearchString || ''}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     dispatch(setSearchString({ instance: instance, searchString: e.target.value }))
                     onTextChange(e)

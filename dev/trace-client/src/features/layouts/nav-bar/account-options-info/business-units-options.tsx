@@ -34,14 +34,14 @@ export function BusinessUnitsOptions() {
 
     return (
         <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectAccSettingsChanged)}>
-            <button type="button" onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow-sm">
+            <button type="button" onClick={handleOnClickBusinessUnit} className="flex items-center px-2 py-2 w-50 h-8 text-gray-800 bg-gray-200 rounded-full shadow-sm">
 
                 {/* Badge section */}
-                <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
+                <div className="px-1 py-1 font-bold text-white text-xs bg-blue-500 rounded-full">
                     BU
                 </div>
                 {/* Text section */}
-                <span className="ml-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">
+                <span className="ml-1 font-medium text-ellipsis text-sm whitespace-nowrap overflow-hidden">
                     {currentBusinessUnitSelector?.buCode || ''}
                 </span>
             </button>

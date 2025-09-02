@@ -8,11 +8,11 @@ import Validation from "./validation/validation";
 
 export function AllSalesForm() {
     return (
-        <div className="min-h-screen bg-gray-50 m-4 ml-0">
+        <div className="m-4 ml-0 min-h-screen bg-gray-50">
             <StatusBar />
 
             {/* Invoice and customer details */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
+            <div className="grid py-6 gap-6 grid-cols-1 lg:grid-cols-2">
                 <InvoiceDetails />                
                 <CustomerDetails />
             </div>
@@ -21,7 +21,7 @@ export function AllSalesForm() {
             <ItemsAndServices />
 
             {/* Bottom Sections Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-12">
                 <PaymentDetails />
                 <Validation />
                 <Shipping />

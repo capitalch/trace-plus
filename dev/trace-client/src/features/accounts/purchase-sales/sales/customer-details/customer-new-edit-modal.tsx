@@ -286,26 +286,26 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-300 bg-opacity-60" >
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()} >
+        <div className="flex fixed items-center justify-center bg-gray-300 bg-opacity-60 inset-0 z-50" >
+            <div className="mx-4 w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden" onClick={(e) => e.stopPropagation()} >
 
                 {/* Modal Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="font-semibold text-gray-900 text-lg">
                         {contactData ? 'Edit Customer' : 'New Customer'}
                     </h2>
                     <button
                         type="button"
                         onClick={handleOnClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors ml-2 hover:bg-red-300 rounded-full p-1.5">
+                        className="ml-2 p-1.5 text-gray-400 rounded-full transition-colors hover:bg-red-300 hover:text-gray-600">
                         <IconCross className='w-6 h-6' />
                     </button>
                 </div>
 
                 {/* Modal Content */}
-                <div className="px-6 py-4 overflow-y-auto max-h-[75vh] bg-gray-100">
+                <div className="px-6 py-4 max-h-[75vh] bg-gray-100 overflow-y-auto">
                     <form id="customer-form" onSubmit={handleSubmit(handleOnSubmit)} className="space-y-2">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                        <div className="grid gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-2">
 
                             {/* Mobile Number */}
                             <FormField label="Mobile" error={errors?.mobileNumber?.message} className="font-bold">
@@ -376,7 +376,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                 </FormField>
 
                                 {/* Address 1 */}
-                                <div className='w-full ml-4'>
+                                <div className='ml-4 w-full'>
                                     <FormField label="Address 1" required className="font-bold">
                                         <input
                                             type="text"
@@ -427,7 +427,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                 />
                             </FormField>
 
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2'>
+                            <div className='grid gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-2'>
                                 {/* GSTIN */}
                                 <FormField label="GSTIN" error={errors?.gstin?.message} className="font-bold">
                                     <input
@@ -511,7 +511,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                         </div>
 
                         {/* Location fields in single row */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-2">
+                        <div className="grid gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-4">
 
                             {/* Country */}
                             <FormField label="Country" required className="font-bold">
@@ -564,7 +564,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                         </div>
 
                         {/* Date fields and action buttons row */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-2 items-end">
+                        <div className="grid items-end gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-4">
                             {/* Date of Birth */}
                             <FormField label="Date of Birth" error={errors?.dateOfBirth?.message} className="font-bold">
                                 <input
@@ -607,24 +607,24 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                 <button
                                     type="button"
                                     onClick={handleOnClose}
-                                    className="px-4 py-2 text-base font-medium text-slate-700 bg-slate-200 hover:bg-slate-300 rounded-md transition-all duration-200"
+                                    className="px-4 py-2 font-medium text-base text-slate-700 bg-slate-200 rounded-md transition-all duration-200 hover:bg-slate-300"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="button"
                                     onClick={handleReset}
-                                    className="px-4 py-2 text-base font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-md flex items-center transition-all duration-200"
+                                    className="flex items-center px-4 py-2 font-medium text-base text-white bg-amber-500 rounded-md transition-all duration-200 hover:bg-amber-600"
                                 >
-                                    <IconReset className="w-5 h-5 mr-2" />
+                                    <IconReset className="mr-2 w-5 h-5" />
                                     Reset
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || (!isDirty) || (!isValid) || (!_.isEmpty(errors))}
-                                    className="px-4 py-2 text-base font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md flex items-center transition-all duration-200 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                                    className="flex items-center px-4 py-2 font-medium text-base text-white bg-blue-500 rounded-md transition-all duration-200 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed"
                                 >
-                                    <IconSubmit className="w-5 h-5 mr-2" />
+                                    <IconSubmit className="mr-2 w-5 h-5" />
                                     {isSubmitting ? 'Saving...' : 'Submit'}
                                 </button>
                             </div>

@@ -49,7 +49,7 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
             if (id) {
                 Ret = <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={() => handleOnPreview(id)}>
-                        <IconPreview1 className="text-blue-500 h-8 w-8" />
+                        <IconPreview1 className="w-8 h-8 text-blue-500" />
                     </button>
                 </TooltipComponent>
             }
@@ -101,7 +101,7 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
 
     return (
         <div className={clsx("flex gap-2 items-center", className)}>
-            <label className="text-amber-400 font-semibold text-md w-20">
+            <label className="w-20 font-semibold text-amber-400 text-md">
                 {getLabel()}
             </label>
             {getPrintPreview()}

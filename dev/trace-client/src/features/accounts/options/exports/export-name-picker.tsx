@@ -7,12 +7,12 @@ export function ExportNamePicker() {
     const selectedExport = useSelector((state: RootStateType) => state.accounts.exports.exportName)
     return (
         <div>
-            <label className="text-lg font-medium text-primary-500">Select Export Type</label>
+            <label className="font-medium text-lg text-primary-500">Select Export Type</label>
             <div className="flex flex-wrap justify-start gap-4">
                 {exportNameOptions.map((option) => (
                     <label
                         key={option.value}
-                        className="flex items-center gap-2 cursor-pointer py-2">
+                        className="flex items-center py-2 cursor-pointer gap-2">
                         <input
                             type="radio"
                             name="export"

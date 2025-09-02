@@ -61,14 +61,14 @@ export function StockTransReport({ title }: { title?: string; }) {
           <button
             type="button"
             onClick={handleOnClickFilter}
-            className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
+            className="px-2 py-1 font-medium text-sm text-white bg-blue-500 rounded hover:bg-blue-700"
           >
             Filter
           </button>
           <button
             type="button"
             // onClick={handleOnClickResetFilter}
-            className="bg-amber-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-amber-700"
+            className="px-2 py-1 font-medium text-sm text-white bg-amber-500 rounded hover:bg-amber-700"
           >
             Reset Filter
           </button>
@@ -137,7 +137,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         field: "debits",
         format: "N0",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-1">{props.Sum}</span>
+          <span className="mr-1 text-xs">{props.Sum}</span>
         ),
       },
       {
@@ -146,7 +146,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         field: "credits",
         format: "N0",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-1">{props.Sum}</span>
+          <span className="mr-1 text-xs">{props.Sum}</span>
         ),
       },
       {
@@ -155,7 +155,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         field: "balance",
         format: "N0",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-1">{props.Sum}</span>
+          <span className="mr-1 text-xs">{props.Sum}</span>
         ),
       },
       {
@@ -164,7 +164,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         field: "grossProfit",
         format: "N2",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-2">{props.Sum}</span>
+          <span className="mr-2 text-xs">{props.Sum}</span>
         ),
       },
     ]

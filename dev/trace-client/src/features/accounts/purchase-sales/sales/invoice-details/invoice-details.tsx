@@ -17,13 +17,13 @@ const InvoiceDetails: React.FC = () => {
     const inputFormFieldStyle = 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
     
     return (
-        <div className="bg-white rounded-lg shadow-sm border-l-4 border-indigo-400 py-4 px-6">
+        <div className="px-6 py-4 bg-white border-indigo-400 border-l-4 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4" style={{height: '40px'}}>
                 <div className="flex items-center space-x-3">
                     <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
                         <FileText className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-900">Invoice Details</h2>
+                    <h2 className="font-semibold text-gray-900 text-lg">Invoice Details</h2>
                 </div>
 
                 {/* GST Invoice Toggle */}
@@ -44,7 +44,7 @@ const InvoiceDetails: React.FC = () => {
                             )}
                         />
                     </div>
-                    <span className="ml-2 text-sm font-medium text-gray-700">
+                    <span className="ml-2 font-medium text-gray-700 text-sm">
                         GST Invoice
                     </span>
                 </label>
@@ -67,14 +67,14 @@ const InvoiceDetails: React.FC = () => {
                             )}
                         />
                     </div>
-                    <span className="ml-2 text-sm font-medium text-gray-700">
+                    <span className="ml-2 font-medium text-gray-700 text-sm">
                         IGST
                     </span>
                 </label>
 
                 {/* Auto ref no */}
                 <FormField label='' className="w-52">
-                    <label className='text-xs -mb-1 ml-auto'>Invoice No</label>
+                    <label className='ml-auto text-xs -mb-1'>Invoice No</label>
                     <input
                         type="text"
                         className={clsx("bg-gray-200 rounded mt-1")}
@@ -87,7 +87,7 @@ const InvoiceDetails: React.FC = () => {
                 </FormField>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
                 <div className="space-y-6">
                     {/* Tran date */}
                     <FormField label="Date" required>
@@ -116,7 +116,7 @@ const InvoiceDetails: React.FC = () => {
                 </div>
 
                 {/* Remarks */}
-                <FormField className="min-w-60 w-auto" label="Remarks">
+                <FormField className="w-auto min-w-60" label="Remarks">
                     <textarea
                         rows={5}
                         className={clsx(inputFormFieldStyle, "mt-1")}

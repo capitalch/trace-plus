@@ -114,10 +114,10 @@ export function ProductsOpeningBalancesWorkBench() {
         return (<WidgetLoadingIndicator />)
     }
 
-    return (<div className="flex flex-col border-2 border-amber-400 rounded-lg w-full max-w-lg bg-white shadow-md p-4 h-full">
-        <div className="flex justify-between items-center align-middle">
-            <label className="text-lg mb-1 font-medium text-primary-500">Opening Balance</label>
-            <label className="text-sm text-primary-400 font-bold">{id ? 'Edit' : 'New'}</label>
+    return (<div className="flex flex-col p-4 w-full max-w-lg h-full bg-white border-2 border-amber-400 rounded-lg shadow-md">
+        <div className="flex items-center justify-between align-middle">
+            <label className="mb-1 font-medium text-lg text-primary-500">Opening Balance</label>
+            <label className="font-bold text-primary-400 text-sm">{id ? 'Edit' : 'New'}</label>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
 
@@ -170,7 +170,7 @@ export function ProductsOpeningBalancesWorkBench() {
                 />
             </FormField>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid gap-2 grid-cols-2">
 
                 {/* qty */}
                 <FormField label="Qty" required error={errors.qty?.message}>
@@ -226,8 +226,8 @@ export function ProductsOpeningBalancesWorkBench() {
             <WidgetButtonSubmitFullWidth className="mt-2" label="Submit" disabled={(isSubmitting) || (!_.isEmpty(errors)) || !(isDirty)} />
 
         </form>
-        <div className="w-full flex justify-end mt-2">
-            <button onClick={handleResetAll} className="w-36 bg-amber-600 text-gray-100 rounded-md py-1 text-lg hover:bg-amber-800 hover:text-white">Reset</button>
+        <div className="flex justify-end mt-2 w-full">
+            <button onClick={handleResetAll} className="py-1 w-36 text-gray-100 text-lg bg-amber-600 rounded-md hover:bg-amber-800 hover:text-white">Reset</button>
         </div>
     </div>)
 
@@ -385,7 +385,7 @@ function FormField({ label, children, required, error, className }: {
 }) {
     return (
         <label className={clsx("flex flex-col text-primary-500", className)}>
-            <div className="flex items-center gap-1 mb-1.5">
+            <div className="flex items-center mb-1.5 gap-1">
                 <span className="font-medium text-sm">{label}</span>
                 {required && <WidgetAstrix />}
             </div>

@@ -64,13 +64,13 @@ export function AllVouchers() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
-                <CompAccountsContainer className=" relative">
-                    <label className="mt-1 text-md font-bold text-primary-500">
+                <CompAccountsContainer className="relative">
+                    <label className="mt-1 font-bold text-md text-primary-500">
                         All Vouchers
                     </label>
                     {/* Sticky voucher type selector */}
-                    <div className="sticky top-0 right-6 self-end z-5">
-                        <VoucherTypeOptions className="absolute right-0 top-2 rounded" />
+                    <div className="sticky self-end right-6 top-0 z-5">
+                        <VoucherTypeOptions className="absolute rounded right-0 top-2" />
                     </div>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
                 </CompAccountsContainer>

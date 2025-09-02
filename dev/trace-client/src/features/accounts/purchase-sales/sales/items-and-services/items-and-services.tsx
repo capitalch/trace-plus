@@ -1,8 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import clsx from "clsx";
+import _ from "lodash";
+import { NumericFormat } from "react-number-format";
+import { Utils } from "../../../../../utils/utils";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
+import { IconSearch } from "../../../../../controls/icons/icon-search";
+import { IconPlus } from "../../../../../controls/icons/icon-plus";
+import { IconCross } from "../../../../../controls/icons/icon-cross";
+import { IconClear } from "../../../../../controls/icons/icon-clear";
+import { IconClear1 } from "../../../../../controls/icons/icon-clear1";
+import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Item {
     id: number;
+    productId?: number;
     productCode: string;
+    upcCode?: string;
+    productDetails?: string;
     hsn: string;
     gst: number;
     qty: number;
@@ -14,12 +31,16 @@ interface Item {
 }
 
 const ItemsAndServices: React.FC = () => {
+    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
+    const [roundOff, setRoundOff] = useState<number>(0);
+    const [backCalcTarget, setBackCalcTarget] = useState<number>(0);
     const [items, setItems] = useState<Item[]>([
         { id: 1, productCode: '', hsn: '', gst: 0, qty: 1, price: 0, gstPrice: 0, discount: 0, remarks: '', serialNo: '' }
     ]);
-    const addItem = () => {
+    const handleAddRow = (index: number) => {
         const newItem = {
-            id: items.length + 1,
+            id: Date.now(), // Use timestamp for unique id
             productCode: '',
             hsn: '',
             gst: 0,
@@ -30,13 +51,15 @@ const ItemsAndServices: React.FC = () => {
             remarks: '',
             serialNo: ''
         };
-        setItems([...items, newItem]);
+        const newItems = [...items];
+        newItems.splice(index + 1, 0, newItem);
+        setItems(newItems);
+        setTimeout(() => setCurrentRowIndex(index + 1), 0);
     };
 
-    const removeItem = (id: any) => {
-        if (items.length > 1) {
-            setItems(items.filter(item => item.id !== id));
-        }
+    const handleClearAll = () => {
+        setItems([{ id: Date.now(), productCode: '', hsn: '', gst: 0, qty: 1, price: 0, gstPrice: 0, discount: 0, remarks: '', serialNo: '' }]);
+        setTimeout(() => setCurrentRowIndex(0), 0);
     };
 
     const updateItem = (id: number, field: string, value: any) => {
@@ -44,6 +67,78 @@ const ItemsAndServices: React.FC = () => {
             item.id === id ? { ...item, [field]: value } : item
         ));
     };
+
+    const onChangeProductCode = useMemo(
+        () =>
+            _.debounce((value: string, itemId: number) => {
+                populateProductOnProductCode(value, itemId);
+            }, 2000), []
+    );
+
+    useEffect(() => {
+        return () => onChangeProductCode.cancel();
+    }, [onChangeProductCode]);
+
+    async function populateProductOnProductCode(productCode: string, itemId: number) {
+        if (!productCode) {
+            handleClearLineItem(itemId);
+            return;
+        }
+        const products: ProductInfoType[] = await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
+            sqlArgs: {
+                productCodeOrUpc: productCode
+            }
+        });
+        const product = products?.[0];
+        if (_.isEmpty(product)) {
+            handleClearLineItem(itemId);
+            return;
+        }
+        setLineItem(product, itemId);
+    }
+
+    function setLineItem(product: ProductInfoType, itemId: number) {
+        setItems(items.map(item =>
+            item.id === itemId ? {
+                ...item,
+                productId: product.productId,
+                productCode: product.productCode,
+                productDetails: `${product.brandName} ${product.catName} ${product.label}`,
+                hsn: product.hsn ? product.hsn.toString() : '',
+                gst: product.gstRate,
+                price: product.salePrice,
+                upcCode: product.upcCode
+            } : item
+        ));
+    }
+
+    function handleClearLineItem(itemId: number) {
+        setItems(items.map(item =>
+            item.id === itemId ? {
+                ...item,
+                productId: undefined,
+                productCode: '',
+                upcCode: undefined,
+                productDetails: undefined,
+                hsn: '',
+                gst: 0,
+                price: 0
+            } : item
+        ));
+    }
+
+    function handleProductSearch(itemId: number) {
+        Utils.showHideModalDialogA({
+            isOpen: true,
+            size: "lg",
+            element: <ProductSelectFromGrid onSelect={(product) => setLineItem(product, itemId)} />,
+            title: "Select a product"
+        });
+    }
 
     const calculateTotals = () => {
         const subtotal = items.reduce((sum, item) => {
@@ -53,212 +148,424 @@ const ItemsAndServices: React.FC = () => {
         const cgst = subtotal * 0.09;
         const sgst = subtotal * 0.09;
         const igst = 0;
-        const total = subtotal + cgst + sgst + igst;
+        const total = subtotal + cgst + sgst + igst + roundOff;
 
         return {
             subtotal: subtotal.toFixed(2),
             cgst: cgst.toFixed(2),
             sgst: sgst.toFixed(2),
             igst: igst.toFixed(2),
-            total: total.toFixed(2)
+            total: total.toFixed(2),
+            totalBeforeRoundOff: (subtotal + cgst + sgst + igst).toFixed(2)
         };
+    };
+
+    const handleRoundOff = () => {
+        const totals = calculateTotals();
+        const totalBeforeRoundOff = parseFloat(totals.totalBeforeRoundOff);
+        const roundedTotal = Math.round(totalBeforeRoundOff);
+        const roundOffValue = roundedTotal - totalBeforeRoundOff;
+        setRoundOff(roundOffValue);
+    };
+
+    const handleRemoveRoundOff = () => {
+        setRoundOff(0);
+    };
+
+    const handleBackCalc = () => {
+        if (backCalcTarget <= 0) {
+            Utils.showErrorMessage("Please enter a valid target amount");
+            return;
+        }
+
+        const currentTotals = calculateTotals();
+        const currentTotal = parseFloat(currentTotals.totalBeforeRoundOff);
+        
+        if (currentTotal <= 0) {
+            Utils.showErrorMessage("No items to calculate backwards from");
+            return;
+        }
+
+        // Calculate the adjustment factor
+        const adjustmentFactor = (backCalcTarget - roundOff) / currentTotal;
+        
+        // Adjust prices proportionally
+        const updatedItems = items.map(item => {
+            if (item.price > 0) {
+                return {
+                    ...item,
+                    price: parseFloat((item.price * adjustmentFactor).toFixed(2))
+                };
+            }
+            return item;
+        });
+
+        setItems(updatedItems);
+        // Clear the input after successful calculation
+        setBackCalcTarget(0);
     };
 
     const totals = calculateTotals();
 
     return (
-        <div className="bg-white rounded-xl shadow-md border-l-4 border-green-400 mb-4 overflow-hidden">
-            <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 border-b border-green-200">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                        <div className="bg-green-400 text-white p-2 rounded-lg mr-3">
-                            <span className="text-sm font-bold">📦</span>
-                        </div>
-                        <div>
-                            <h2 className="text-lg font-bold text-gray-800">Items & Services</h2>
-                            <p className="text-sm text-gray-600">Add products and services to this invoice</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                        <label className="flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
-                            <input type="checkbox" className="mr-2 text-green-400" />
-                            <span className="text-sm font-semibold text-gray-700">Inter-state (IGST)</span>
-                        </label>
-                        <button
-                            onClick={addItem}
-                            className="bg-green-400 hover:bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105 shadow-lg"
+        <AnimatePresence>
+            <div className="flex flex-col -mt-4">
+                <label className="font-medium">Items & Services</label>
+                
+                {/* Summary */}
+                {getSummaryMarkup()}
+
+                {items.map((item, index) => {
+                    return (
+                        <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                            className={
+                                clsx(
+                                    "flex flex-wrap items-start mt-2 p-2 gap-2 border border-gray-200 rounded-md cursor-pointer",
+                                    currentRowIndex === index ? "bg-green-50 border-2 border-teal-600" : "bg-white"
+                                )}
+                            onClick={() => setCurrentRowIndex(index)}
                         >
-                            ➕ Add Item
-                        </button>
-                    </div>
-                </div>
-            </div>
+                            {/* Index */}
+                            <div className="flex flex-col w-10 text-xs">
+                                <label className="font-semibold">#</label>
+                                <span className="mt-2">{index + 1}</span>
+                                <button
+                                    aria-label="Clear Line Item"
+                                    tabIndex={-1}
+                                    type="button"
+                                    onClick={() => handleClearLineItem(item.id)}
+                                    className="mt-5.5 text-blue-500"
+                                >
+                                    <IconClear className="w-5 h-5" />
+                                </button>
+                            </div>
 
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                    <thead className="bg-gray-100 text-gray-700">
-                        <tr>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">#</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider min-w-[150px]">Product</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">HSN</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">GST%</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">Qty</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">Rate</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">GST Rate</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">Disc%</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">Notes</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">Serial</th>
-                            <th className="px-3 py-3 text-left text-xs font-bold uppercase tracking-wider">Amount</th>
-                            <th className="px-3 py-3 text-center text-xs font-bold uppercase tracking-wider">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {items.map((item, index) => (
-                            <tr key={item.id} className="hover:bg-blue-50 transition-colors duration-150">
-                                <td className="px-3 py-3 text-sm font-semibold text-gray-700 bg-gray-50">{index + 1}</td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="text"
-                                        value={item.productCode}
-                                        onChange={(e) => updateItem(item.id, 'productCode', e.target.value)}
-                                        className="w-full px-2 py-2 border border-gray-300 rounded-md focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-sm transition-all duration-200"
-                                        placeholder="Enter product code"
-                                    />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="text"
+                            {/* Prod Code | UPC */}
+                            <div className="flex flex-col w-28 text-xs">
+                                <label className="font-semibold text-xs">Prod Code | UPC</label>
+                                <input
+                                    value={item.productCode}
+                                    onChange={(e) => {
+                                        updateItem(item.id, 'productCode', e.target.value);
+                                        onChangeProductCode(e.target.value, item.id);
+                                    }}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    className={clsx(inputFormFieldStyles, 'mt-1 h-8')}
+                                />
+                                <button
+                                    tabIndex={-1}
+                                    type="button"
+                                    className="flex items-center mt-1.5 py-1 w-full font-medium text-teal-800 border border-teal-100 rounded-md transition-all duration-200 hover:bg-teal-200 hover:border-teal-400 hover:text-teal-900 group"
+                                    onClick={() => handleProductSearch(item.id)}
+                                    title="Search products"
+                                >
+                                    <IconSearch className="mr-1.5 ml-1 w-4 h-4" />
+                                    <span className='text-[16px]'>Search</span>
+                                </button>
+                                <span className="mt-1 text-teal-500 text-xs">
+                                    {item.upcCode || "-----------------------"}
+                                </span>
+                            </div>
+
+                            {/* Product Details */}
+                            <div className="flex flex-col w-40 text-xs">
+                                <label className="font-semibold">Details</label>
+                                <textarea
+                                    rows={5}
+                                    tabIndex={-1}
+                                    value={item.productDetails || ''}
+                                    readOnly
+                                    className={clsx("mt-1 text-xs bg-gray-100", inputFormFieldStyles)}
+                                />
+                            </div>
+
+                            {/* Remarks */}
+                            <div className="flex flex-col w-36 text-xs">
+                                <label className="font-semibold">Remarks</label>
+                                <textarea
+                                    value={item.remarks}
+                                    onChange={(e) => updateItem(item.id, 'remarks', e.target.value)}
+                                    rows={4}
+                                    className={clsx("mt-1 text-sm", inputFormFieldStyles)}
+                                />
+                            </div>
+
+                            {/* HSN | GST Rate */}
+                            <div className="flex flex-col gap-1.5">
+                                <div className="flex flex-col w-24 text-xs">
+                                    <label className="font-semibold">HSN</label>
+                                    <NumericFormat
                                         value={item.hsn}
-                                        onChange={(e) => updateItem(item.id, 'hsn', e.target.value)}
-                                        className="w-20 px-2 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-sm transition-all duration-200"
-                                        placeholder="HSN"
+                                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                        allowNegative={false}
+                                        decimalScale={0}
+                                        className={clsx(inputFormFieldStyles, 'mt-1 h-8 text-right')}
+                                        onValueChange={({ value }) => {
+                                            updateItem(item.id, 'hsn', value);
+                                        }}
                                     />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="number"
+                                </div>
+                                <div className="flex flex-col w-24 text-xs">
+                                    <label className="font-semibold">GST %</label>
+                                    <NumericFormat
                                         value={item.gst}
-                                        onChange={(e) => updateItem(item.id, 'gst', parseFloat(e.target.value) || 0)}
-                                        className="w-16 px-2 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-sm transition-all duration-200"
-                                        step="0.01"
-                                        placeholder="18"
+                                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                        thousandSeparator={false}
+                                        decimalScale={2}
+                                        fixedDecimalScale
+                                        allowNegative={false}
+                                        isAllowed={(values) => {
+                                            const { floatValue } = values;
+                                            return !floatValue || floatValue <= 28;
+                                        }}
+                                        className={clsx("mt-1 h-8 text-right", inputFormFieldStyles)}
+                                        onValueChange={({ floatValue }) => {
+                                            updateItem(item.id, 'gst', floatValue ?? 0);
+                                        }}
                                     />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="number"
-                                        value={item.qty}
-                                        onChange={(e) => updateItem(item.id, 'qty', parseFloat(e.target.value) || 1)}
-                                        className="w-16 px-2 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-sm transition-all duration-200"
-                                        step="0.01"
-                                        min="0.01"
-                                    />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="number"
-                                        value={item.price}
-                                        onChange={(e) => updateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
-                                        className="w-20 px-2 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-sm transition-all duration-200"
-                                        step="0.01"
-                                        placeholder="0.00"
-                                    />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="number"
-                                        value={item.gstPrice}
-                                        onChange={(e) => updateItem(item.id, 'gstPrice', parseFloat(e.target.value) || 0)}
-                                        className="w-20 px-2 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-sm transition-all duration-200"
-                                        step="0.01"
-                                        placeholder="0.00"
-                                    />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="number"
-                                        value={item.discount}
-                                        onChange={(e) => updateItem(item.id, 'discount', parseFloat(e.target.value) || 0)}
-                                        className="w-16 px-2 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-sm transition-all duration-200"
-                                        step="0.01"
-                                        placeholder="0"
-                                        max="100"
-                                    />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <input
-                                        type="text"
-                                        value={item.remarks}
-                                        onChange={(e) => updateItem(item.id, 'remarks', e.target.value)}
-                                        className="w-24 px-2 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-sm transition-all duration-200"
-                                        placeholder="Notes"
-                                    />
-                                </td>
-                                <td className="px-3 py-3">
-                                    <textarea
-                                        value={item.serialNo}
-                                        onChange={(e) => updateItem(item.id, 'serialNo', e.target.value)}
-                                        rows={2}
-                                        className="w-32 px-2 py-1 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-xs resize-none transition-all duration-200"
-                                        placeholder="Enter serial numbers..."
-                                    />
-                                </td>
-                                <td className="px-3 py-3 text-sm font-bold text-green-600 bg-green-50">
-                                    ₹{((item.qty || 0) * (item.price || 0) * (1 - (item.discount || 0) / 100)).toFixed(2)}
-                                </td>
-                                <td className="px-3 py-3 text-center">
-                                    {items.length > 1 && (
-                                        <button
-                                            onClick={() => removeItem(item.id)}
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-full transition-all duration-200 hover:scale-110"
-                                        >
-                                            <span className="text-lg font-bold">🗑️</span>
-                                        </button>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                                </div>
+                            </div>
 
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-t">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-6 text-sm font-semibold">
-                        <span className="flex items-center">
-                            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                            Items: {items.length}
-                        </span>
-                        <span className="flex items-center">
-                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Total Qty: {items.reduce((sum, item) => sum + (item.qty || 0), 0)}
-                        </span>
+                            {/* Qty */}
+                            <div className="flex flex-col w-20 text-xs">
+                                <label className="font-semibold">Qty</label>
+                                <NumericFormat
+                                    value={item.qty}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    fixedDecimalScale
+                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    onValueChange={({ floatValue }) => {
+                                        const value = floatValue || 0;
+                                        if (value > 0) {
+                                            updateItem(item.id, 'qty', value);
+                                        }
+                                    }}
+                                />
+                            </div>
+
+                            {/* Price */}
+                            <div className="flex flex-col w-30 text-xs">
+                                <label className="font-semibold">Price</label>
+                                <NumericFormat
+                                    value={item.price}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    fixedDecimalScale
+                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    onValueChange={({ floatValue }) => {
+                                        updateItem(item.id, 'price', floatValue ?? 0);
+                                    }}
+                                />
+                            </div>
+
+                            {/* Discount */}
+                            <div className="flex flex-col w-24 text-xs">
+                                <label className="font-semibold">Discount(unit)</label>
+                                <NumericFormat
+                                    value={item.discount}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    fixedDecimalScale
+                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    onValueChange={({ floatValue }) => {
+                                        updateItem(item.id, 'discount', floatValue ?? 0);
+                                    }}
+                                />
+                            </div>
+
+                            {/* Price GST */}
+                            <div className="flex flex-col w-30 text-xs">
+                                <label className="font-semibold">Price GST</label>
+                                <NumericFormat
+                                    value={item.gstPrice}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    fixedDecimalScale
+                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    onValueChange={({ floatValue }) => {
+                                        updateItem(item.id, 'gstPrice', floatValue ?? 0);
+                                    }}
+                                />
+                            </div>
+
+                            {/* Serials */}
+                            <div className="flex flex-col w-40 text-xs">
+                                <label className="font-semibold">Serials</label>
+                                <textarea
+                                    value={item.serialNo}
+                                    onChange={(e) => updateItem(item.id, 'serialNo', e.target.value)}
+                                    rows={4}
+                                    placeholder="Comma-separated serials"
+                                    className={clsx("mt-1 text-sm", inputFormFieldStyles)}
+                                />
+                            </div>
+
+                            {/* Amount and Actions */}
+                            <div className="flex flex-col ml-auto w-32">
+                                <NumericFormat
+                                    value={((item.qty || 0) * (item.price || 0) * (1 - (item.discount || 0) / 100))}
+                                    fixedDecimalScale
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    disabled
+                                    readOnly
+                                    className={clsx("border-0 text-right font-bold text-gray-900 bg-gray-50 ", inputFormFieldStyles)}
+                                />
+                                <div className="flex items-center justify-center mt-4 ml-auto gap-8">
+                                    {/* delete */}
+                                    <button
+                                        type="button"
+                                        className={clsx("text-red-500", items.length === 1 && "cursor-not-allowed opacity-30")}
+                                        onClick={() => {
+                                            if (items.length > 1) {
+                                                const newItems = items.filter(i => i.id !== item.id);
+                                                setItems(newItems);
+                                                setTimeout(() => {
+                                                    if (index === 0) {
+                                                        setCurrentRowIndex(0);
+                                                    } else {
+                                                        setCurrentRowIndex(index - 1);
+                                                    }
+                                                }, 0);
+                                            }
+                                        }}
+                                        disabled={items.length === 1}
+                                    >
+                                        <IconCross className="w-7 h-7" />
+                                    </button>
+                                    {/* add */}
+                                    <button
+                                        type="button"
+                                        className="p-2.5 text-white ring-2 ring-emerald-200 rounded-full shadow-lg transition-all duration-300 hover:from-emerald-600 hover:ring-emerald-300 hover:scale-105 hover:shadow-xl hover:to-teal-700 bg-gradient-to-r from-emerald-500 to-teal-600"
+                                        onClick={() => handleAddRow(index)}
+                                        title="Add new row"
+                                    >
+                                        <IconPlus className="w-6 h-6" />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    );
+                })}
+
+                {/* Summary */}
+                {getSummaryMarkup()}
+            </div>
+        </AnimatePresence>
+    );
+
+    function getSummaryMarkup() {
+        return (
+            <div className="flex flex-wrap items-center mt-2 py-2 w-full font-medium bg-gray-50 border border-gray-200 rounded">
+                {/* Left side - Controls and stats */}
+                <div className="flex flex-wrap items-center flex-1 gap-4">
+                    {/* Clear All Button */}
+                    <button
+                        type="button"
+                        onClick={handleClearAll}
+                        className="flex items-center ml-2 px-4 py-1 text-gray-500 text-sm bg-amber-100 rounded-sm hover:bg-amber-200 gap-1"
+                    >
+                        <IconClear1 className="w-3 h-3" />
+                        Clear
+                    </button>
+
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">Items:</span>
+                        <span>{items.length}</span>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-3 text-sm font-semibold">
-                            <span>CGST: ₹{totals.cgst}</span>
-                            <span>SGST: ₹{totals.sgst}</span>
-                            <span>IGST: ₹{totals.igst}</span>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">Qty:</span>
+                        <span>{Utils.toDecimalFormat(items.reduce((sum, item) => sum + (item.qty || 0), 0))}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">SubT:</span>
+                        <span>{parseFloat(totals.subtotal).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">CGST:</span>
+                        <span>{Utils.toDecimalFormat(parseFloat(totals.cgst))}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">SGST:</span>
+                        <span>{Utils.toDecimalFormat(parseFloat(totals.sgst))}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">IGST:</span>
+                        <span>{Utils.toDecimalFormat(parseFloat(totals.igst))}</span>
+                    </div>
+                    
+                    {/* Round Off Display */}
+                    {roundOff !== 0 && (
+                        <div className="flex text-right text-xs gap-1">
+                            <span className="text-gray-500">RndOff:</span>
+                            <span className={roundOff >= 0 ? "text-green-600" : "text-red-600"}>
+                                {roundOff >= 0 ? '+' : ''}{Utils.toDecimalFormat(roundOff)}
+                            </span>
                         </div>
-                        <div className="flex space-x-2">
-                            <button className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-md text-xs font-semibold transition-all duration-200">
-                                🧹 CLEAR
-                            </button>
-                            <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs font-semibold transition-all duration-200">
-                                📊 ROUND OFF
-                            </button>
-                            <button className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded-md text-xs font-semibold transition-all duration-200">
-                                🔢 BACK CAL
-                            </button>
-                        </div>
-                        <div className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg">
-                            Total: ₹{totals.total}
-                        </div>
+                    )}
+                </div>
+
+                {/* Center - Controls */}
+                <div className="flex items-center gap-1">
+                    {/* Round Off Button */}
+                    <button
+                        type="button"
+                        onClick={handleRoundOff}
+                        className="px-2 py-1 font-semibold text-blue-700 text-sm bg-blue-100 rounded transition-colors hover:bg-blue-200"
+                    >
+                        Round Off
+                    </button>
+                    {roundOff !== 0 && (
+                        <button
+                            type="button"
+                            onClick={handleRemoveRoundOff}
+                            className="px-2 py-1 font-semibold text-gray-700 bg-gray-100 rounded transition-colors hover:bg-gray-200"
+                        >
+                            Remove
+                        </button>
+                    )}
+
+                    {/* Back Calc Section */}
+                    <div className="flex items-center px-2 py-1 bg-white border border-gray-200 rounded gap-1">
+                        <button
+                            type="button"
+                            onClick={handleBackCalc}
+                            className="px-2 py-1 font-semibold text-sm text-white bg-teal-500 rounded transition-colors hover:bg-teal-600"
+                        >
+                            Back Cal
+                        </button>
+                        <NumericFormat
+                            value={backCalcTarget}
+                            thousandSeparator
+                            decimalScale={2}
+                            fixedDecimalScale
+                            placeholder="Amount"
+                            className="px-1 py-0.5 w-30 font-normal text-right text-x border border-gray-300 rounded focus:border-teal-500 focus:outline-none"
+                            onValueChange={({ floatValue }) => {
+                                setBackCalcTarget(floatValue ?? 0);
+                            }}
+                        />
                     </div>
                 </div>
+
+                {/* Right side - Total Amount */}
+                <div className="flex items-center ml-2 px-3 py-1 bg-green-50 border-l-2 border-teal-300 rounded gap-1">
+                    <span className="font-black text-gray-700 text-sm">Total:</span>
+                    <strong className="font-black text-base text-green-700">{Utils.toDecimalFormat(parseFloat(totals.total))}</strong>
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 };
 
 export default ItemsAndServices;

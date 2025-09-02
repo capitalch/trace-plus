@@ -124,7 +124,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             onClick={() => setCurrentRowIndex(index)}
                         >
                             {/* Index */}
-                            <div className="flex flex-col text-xs w-10">
+                            <div className="flex flex-col w-10 text-xs">
                                 <label className="font-semibold">#</label>
                                 <span className="mt-2">{index + 1}</span>
                                 <TooltipComponent content="Clear Line Item" position="TopCenter" className="mt-5.5">
@@ -141,7 +141,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Product Code | UPC */}
-                            <div className="flex flex-col text-xs w-28">
+                            <div className="flex flex-col w-28 text-xs">
                                 <label className="font-semibold">Prod Code | UPC {<WidgetAstrix />}</label>
                                 <input {...register(`purchaseLineItems.${index}.productCode`, {
                                     required: Messages.errRequired,
@@ -157,23 +157,23 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 <button
                                     tabIndex={-1}
                                     type="button"
-                                    className="text-sm text-blue-600 flex items-center mt-2 "
+                                    className="flex items-center mt-2 text-blue-600 text-sm"
                                     onClick={() => handleProductSearch(index)}
                                 >
-                                    <IconSearch className="mr-1 h-5 w-5" />
+                                    <IconSearch className="mr-1 w-5 h-5" />
                                     Search
                                 </button>
                                 {/* UPC Code Display */}
                                 <span
                                     tabIndex={-1}
-                                    className="text-xs mt-1 text-teal-500 "
+                                    className="mt-1 text-teal-500 text-xs"
                                 >
                                     {watch(`purchaseLineItems.${index}.upcCode`) || "-----------------------"}
                                 </span>
                             </div>
 
                             {/* Product Details */}
-                            <div className="flex flex-col text-xs w-40">
+                            <div className="flex flex-col w-40 text-xs">
                                 <label className="font-semibold">Details {<WidgetAstrix />}</label>
                                 <textarea
                                     rows={5}
@@ -187,7 +187,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Remarks */}
-                            <div className="flex flex-col text-xs w-36">
+                            <div className="flex flex-col w-36 text-xs">
                                 <label className="font-semibold">Remarks</label>
                                 <textarea {...register(`purchaseLineItems.${index}.lineRemarks`)}
                                     rows={4}
@@ -196,7 +196,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
 
                             {/* Hsn | Gst Rate */}
                             <div className="flex flex-col gap-1.5">
-                                <div className="flex flex-col text-xs w-24">
+                                <div className="flex flex-col w-24 text-xs">
                                     <label className="font-semibold">HSN {isGstInvoice && <WidgetAstrix />}</label>
                                     <input {...register(`purchaseLineItems.${index}.hsn`, {
                                         // required: isGstInvoice ? Messages.errRequired : undefined,
@@ -216,7 +216,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                         className={clsx(inputFormFieldStyles, 'h-8 mt-1 text-right', errors.purchaseLineItems?.[index]?.hsn ? errorClass : '')} />
                                 </div>
-                                <div className="flex flex-col text-xs w-24">
+                                <div className="flex flex-col w-24 text-xs">
                                     <label className="font-semibold">GST % {isGstInvoice && <WidgetAstrix />}</label>
                                     <ControlledNumericInput
                                         className={clsx("text-right h-8 mt-1",
@@ -245,7 +245,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Qty */}
-                            <div className="flex flex-col text-xs w-20">
+                            <div className="flex flex-col w-20 text-xs">
                                 <label className="font-semibold">Qty</label>
                                 <ControlledNumericInput
                                     className={clsx("text-right h-8 mt-1",
@@ -267,7 +267,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Price */}
-                            <div className="flex flex-col text-xs w-30">
+                            <div className="flex flex-col w-30 text-xs">
                                 <label className="font-semibold">Price</label>
                                 <NumericFormat
                                     value={watch(`purchaseLineItems.${index}.price`)}
@@ -287,7 +287,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Discount */}
-                            <div className="flex flex-col text-xs w-24">
+                            <div className="flex flex-col w-24 text-xs">
                                 <label className="font-semibold">Discount(unit)</label>
                                 <NumericFormat
                                     value={watch(`purchaseLineItems.${index}.discount`)}
@@ -304,7 +304,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Price Gst*/}
-                            <div className="flex flex-col text-xs w-30">
+                            <div className="flex flex-col w-30 text-xs">
                                 <label className="font-semibold">Price Gst</label>
                                 <NumericFormat
                                     value={watch(`purchaseLineItems.${index}.priceGst`)}
@@ -323,7 +323,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Serials */}
-                            <div className="flex flex-col text-xs w-40">
+                            <div className="flex flex-col w-40 text-xs">
                                 <label className="font-semibold">Serials</label>
                                 <textarea
                                     {...register(`purchaseLineItems.${index}.serialNumbers`, {
@@ -341,30 +341,30 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                             </div>
 
                             {/* Totals */}
-                            <div className="flex flex-col text-xs w-26 rounded">
+                            <div className="flex flex-col w-26 text-xs rounded">
                                 <div className="font-semibold text-xs">Totals</div>
                                 <div className="flex flex-col gap-1">
                                     <div className="flex justify-between">
                                         <span>SubT:</span>
-                                        <span className="text-right bg-gray-50 w-16">{watch(`purchaseLineItems.${index}.subTotal`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.subTotal`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>CGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.cgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.cgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>SGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.sgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.sgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>IGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.igst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.igst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Actions */}
-                            <div className="flex flex-col w-32 ml-auto">
+                            <div className="flex flex-col ml-auto w-32">
                                 <NumericFormat
                                     value={watch(`purchaseLineItems.${index}.amount`)}
                                     fixedDecimalScale
@@ -374,7 +374,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     readOnly
                                     className={clsx("font-bold border-0 bg-gray-100 text-gray-900 text-right text-sm", inputFormFieldStyles)}
                                 />
-                                <div className="flex items-center justify-center gap-8 mt-6 ml-auto">
+                                <div className="flex items-center justify-center mt-6 ml-auto gap-8">
                                     {/* delete */}
                                     <button
                                         type="button"
@@ -488,40 +488,40 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
 
     function getSummaryMarkup() {
         const summary = getSummary()
-        return (<div className="flex items-center flex-wrap mt-2 text-sm font-medium bg-gray-50 py-2 rounded border border-gray-200 w-full justify-between">
+        return (<div className="flex flex-wrap items-center justify-between mt-2 py-2 w-full font-medium text-sm bg-gray-50 border border-gray-200 rounded">
 
-            <div className="flex justify-between items-center flex-wrap gap-4 ">
+            <div className="flex flex-wrap items-center justify-between gap-4">
                 {/* Clear All Button */}
                 <button
                     type="button"
                     onClick={handleClearAll}
-                    className="px-3 py-1 bg-amber-100 text-gray-500 rounded flex items-center gap-2 hover:bg-amber-200"
+                    className="flex items-center px-3 py-1 text-gray-500 bg-amber-100 rounded hover:bg-amber-200 gap-2"
                 >
                     <IconClear1 />
                     Clear All Rows
                 </button>
 
-                <div className="text-right min-w-[100px] flex gap-1">
+                <div className="flex min-w-[100px] text-right gap-1">
                     <span className="text-gray-500">Items:</span>
                     {summary.count}
                 </div>
-                <div className="text-right min-w-[120px] flex gap-1">
+                <div className="flex min-w-[120px] text-right gap-1">
                     <span className="text-gray-500">Qty:</span>
                     {Utils.toDecimalFormat(summary.qty.toNumber())}
                 </div>
-                <div className="text-right min-w-[150px] flex gap-1">
+                <div className="flex min-w-[150px] text-right gap-1">
                     <span className="text-gray-500">SubTotal:</span>
                     {summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div className="text-right min-w-[120px] flex gap-1">
+                <div className="flex min-w-[120px] text-right gap-1">
                     <span className="text-gray-500">CGST:</span>
                     {Utils.toDecimalFormat(summary.cgst.toNumber())}
                 </div>
-                <div className="text-right min-w-[120px] flex gap-1">
+                <div className="flex min-w-[120px] text-right gap-1">
                     <span className="text-gray-500">SGST:</span>
                     {Utils.toDecimalFormat(summary.sgst.toNumber())}
                 </div>
-                <div className="text-right min-w-[120px] flex gap-1">
+                <div className="flex min-w-[120px] text-right gap-1">
                     <span className="text-gray-500">IGST:</span>
                     {Utils.toDecimalFormat(summary.igst.toNumber())}
                 </div>
@@ -531,7 +531,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                     }}>Test</button>
                 </div> */}
             </div>
-            <div className="text-right mr-4 flex gap-1">
+            <div className="flex mr-4 text-right gap-1">
                 <span className="text-gray-500">Total Amount:</span>
                 <strong>{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
             </div>

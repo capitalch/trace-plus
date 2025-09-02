@@ -74,21 +74,21 @@ export function AdminNewEditBusinessUnit({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="">
-            <div className="flex flex-col gap-2 min-w-72">
+            <div className="flex flex-col min-w-72 gap-2">
 
                 {/* Business Unit Code */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Business Unit Code <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. BU123" autoComplete="off" disabled={id ? true : false}
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerBuCode}
                     />
                     <span className="flex justify-between">
                         {(errors.buCode)
                             ? <WidgetFormErrorMessage errorMessage={errors.buCode.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <TooltipComponent content={Messages.messBuCode} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
-                            <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
+                        <TooltipComponent content={Messages.messBuCode} className="font-normal text-blue-500! text-sm bg-white border-2 border-gray-200 -top-5!">
+                            <span className="ml-auto text-primary-400 text-xs hover:cursor-pointer">?</span>
                         </TooltipComponent>
                     </span>
                 </label>
@@ -97,15 +97,15 @@ export function AdminNewEditBusinessUnit({
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Business Unit Name <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. Sales Department" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerBuName}
                     />
                     <span className="flex justify-between">
                         {(errors.buName)
                             ? <WidgetFormErrorMessage errorMessage={errors.buName.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <TooltipComponent content={Messages.messBuName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
-                            <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
+                        <TooltipComponent content={Messages.messBuName} className="font-normal text-blue-500! text-sm bg-white border-2 border-gray-200 -top-5!">
+                            <span className="ml-auto text-primary-400 text-xs hover:cursor-pointer">?</span>
                         </TooltipComponent>
                     </span>
                 </label>
@@ -119,7 +119,7 @@ export function AdminNewEditBusinessUnit({
                 </label>
 
                 {/* Save */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors)} />
                 </div>
                 <span>

@@ -61,7 +61,7 @@ export function AllPurchaseReturns() {
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
                 <CompAccountsContainer>
-                    <label className="mt-1 text-md font-bold text-red-500">
+                    <label className="mt-1 font-bold text-md text-red-500">
                         Purchase Return
                     </label>
                     <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />

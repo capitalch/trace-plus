@@ -31,33 +31,33 @@ const Validation: React.FC = () => {
     };
 
     return (
-        <div className="lg:col-span-3 bg-white rounded-xl shadow-lg border-l-4 border-red-500 p-4">
+        <div className="p-4 bg-white border-l-4 border-red-500 rounded-xl shadow-lg lg:col-span-3">
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                    <div className="bg-red-500 text-white p-2 rounded-lg mr-2">
-                        <span className="text-sm font-bold">⚠️</span>
+                    <div className="mr-2 p-2 text-white bg-red-500 rounded-lg">
+                        <span className="font-bold text-sm">⚠️</span>
                     </div>
-                    <h2 className="text-lg font-bold text-gray-800">Validation</h2>
+                    <h2 className="font-bold text-gray-800 text-lg">Validation</h2>
                 </div>
                 <button
                     onClick={() => setShowErrors(!showErrors)}
-                    className="text-red-500 hover:text-red-700 text-sm"
+                    className="text-red-500 text-sm hover:text-red-700"
                 >
                     {showErrors ? '🙈' : '👁️'}
                 </button>
             </div>
 
             {showErrors && (
-                <div className="space-y-3 max-h-48 overflow-y-auto">
+                <div className="max-h-48 overflow-y-auto space-y-3">
                     {validateForm().length === 0 ? (
-                        <div className="text-center py-4">
+                        <div className="py-4 text-center">
                             <span className="text-4xl">✅</span>
-                            <p className="text-sm font-semibold text-green-600 mt-2">All good!</p>
+                            <p className="mt-2 font-semibold text-green-600 text-sm">All good!</p>
                         </div>
                     ) : (
                         validateForm().map((error, index) => (
-                            <div key={index} className="bg-red-50 border border-red-200 rounded-lg p-2">
-                                <p className="text-xs text-red-600 font-semibold">🚨 {error}</p>
+                            <div key={index} className="p-2 bg-red-50 border border-red-200 rounded-lg">
+                                <p className="font-semibold text-red-600 text-xs">🚨 {error}</p>
                             </div>
                         ))
                     )}

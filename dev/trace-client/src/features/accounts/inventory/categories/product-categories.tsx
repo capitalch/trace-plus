@@ -66,10 +66,10 @@ export function ProductCategories() {
     </CompAccountsContainer>)
 
     function actionHeaderTemplate() {
-        return (<div className="flex justify-start items-center h-full">
+        return (<div className="flex items-center justify-start h-full">
             <button onClick={handleActionHeaderOnClick}
-                className="e-btn flex w-full justify-start font-semibold text-blue-500 items-center rounded-md hover:text-blue-700 hover:bg-blue-50 border-none  focus:bg-blue-50 focus:text-blue-500">
-                <IconPlus className="w-4 h-4 mr-2" />
+                className="flex items-center justify-start w-full font-semibold text-blue-500 border-none rounded-md hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-500 e-btn">
+                <IconPlus className="mr-2 w-4 h-4" />
                 ADD ROOT CATEGORY
             </button>
         </div>)
@@ -86,35 +86,35 @@ export function ProductCategories() {
         const isAddChildButtonVisible: boolean = !props.isLeaf
         const isDelButtonVisible = _.isEmpty(props.children) && (!props.isUsed)
 
-        return (<div className="flex items-center h-full justify-start">
+        return (<div className="flex items-center justify-start h-full">
 
             {/* Add child */}
-            {isAddChildButtonVisible && <button onClick={handeleOnClickAddChild} className="flex font-medium justify-center items-center text-xs text-blue-700">
-                <IconPlus className="w-3 h-3 mr-1.5" />
+            {isAddChildButtonVisible && <button onClick={handeleOnClickAddChild} className="flex items-center justify-center font-medium text-blue-700 text-xs">
+                <IconPlus className="mr-1.5 w-3 h-3" />
                 CHILD
             </button>}
 
             {/* Edit self */}
-            {<button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-green-700">
-                <IconEdit1 className="w-3 h-3 mr-1.5" />
+            {<button onClick={handeleOnClickEditSelf} className="flex items-center justify-center ml-4 font-medium text-green-700 text-xs">
+                <IconEdit1 className="mr-1.5 w-3 h-3" />
                 EDIT
             </button>}
 
             {/* Change parent */}
-            {<button onClick={handeleOnClickChangeParent} className="flex font-medium justify-center items-center ml-4 text-xs text-orange-500">
-                <IconChangeArrow className="w-3 h-3 mr-1.5" />
+            {<button onClick={handeleOnClickChangeParent} className="flex items-center justify-center ml-4 font-medium text-orange-500 text-xs">
+                <IconChangeArrow className="mr-1.5 w-3 h-3" />
                 CHANGE PARENT
             </button>}
 
             {/* Tag */}
-            {<button onClick={handleOnClickTag} className="flex font-medium justify-center items-center ml-4 text-xs text-blue-500">
-                <IconTag className="w-3 h-3 mr-1.5" />
+            {<button onClick={handleOnClickTag} className="flex items-center justify-center ml-4 font-medium text-blue-500 text-xs">
+                <IconTag className="mr-1.5 w-3 h-3" />
                 TAG
             </button>}
 
             {/* Delete */}
-            {isDelButtonVisible && <button onClick={handeleOnClickDelete} className="flex font-medium justify-center items-center ml-4 text-xs text-red-700">
-                <IconCross className="w-4 h-4 mr-1" />
+            {isDelButtonVisible && <button onClick={handeleOnClickDelete} className="flex items-center justify-center ml-4 font-medium text-red-700 text-xs">
+                <IconCross className="mr-1 w-4 h-4" />
                 DEL
             </button>}
         </div>)

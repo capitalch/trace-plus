@@ -47,7 +47,7 @@ export function PurchaseReturnHeader() {
             if (id) {
                 Ret = <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={() => handleOnPreview()}>
-                        <IconPreview1 className="text-blue-500 h-8 w-8" />
+                        <IconPreview1 className="w-8 h-8 text-blue-500" />
                     </button>
                 </TooltipComponent>
             }
@@ -60,10 +60,10 @@ export function PurchaseReturnHeader() {
     }, [purchaseReturnToggle, trigger])
 
     return (
-        <div className="flex gap-6 flex-wrap relative bg-red-50 p-2">
+        <div className="flex relative flex-wrap p-2 bg-red-50 gap-6">
 
             {/* Auto ref no */}
-            <FormField label="Auto ref no" className="w-52 ">
+            <FormField label="Auto ref no" className="w-52">
                 <input
                     type="text"
                     className={clsx("bg-gray-200 rounded mt-1")}
@@ -100,7 +100,7 @@ export function PurchaseReturnHeader() {
                     <TooltipComponent content='Select an invoice' position="RightCenter">
                         <button
                             type="button"
-                            className="absolute inset-y-0 right-0 px-3 flex items-center mt-1" onClick={handleSearchInvoice}>
+                            className="flex absolute items-center mt-1 px-3 inset-y-0 right-0" onClick={handleSearchInvoice}>
                             <IconSearch className="w-5 h-5 text-blue-500" />
                         </button>
                     </TooltipComponent>
@@ -108,7 +108,7 @@ export function PurchaseReturnHeader() {
             </FormField>
 
             {/* Remarks */}
-            <FormField className="min-w-60 w-auto" label="Remarks">
+            <FormField className="w-auto min-w-60" label="Remarks">
                 <textarea
                     rows={3}
                     className={clsx(inputFormFieldStyles, "text-xs mt-1")}
@@ -119,7 +119,7 @@ export function PurchaseReturnHeader() {
 
             {/* Is GST Invoice */}
             <FormField label="GST Invoice ?" className="items-center ml-4">
-                <div className="flex items-center gap-2 mt-3">
+                <div className="flex items-center mt-3 gap-2">
                     <button
                         type="button"
                         className={clsx(
@@ -148,7 +148,7 @@ export function PurchaseReturnHeader() {
             </FormField>
 
             {/* Reset submit */}
-            <div className="flex gap-3 ml-auto mt-6 h-10">
+            <div className="flex mt-6 ml-auto h-10 gap-3">
                 {/* Test */}
                 <button
                     type="button" onClick={() => {
@@ -164,9 +164,9 @@ export function PurchaseReturnHeader() {
                 <button
                     onClick={resetAll}
                     type="button"
-                    className="px-5 font-medium text-white inline-flex items-center bg-amber-500 hover:bg-amber-800 focus:ring-4 focus:outline-hidden focus:ring-amber-300 rounded-lg text-center dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-800 disabled:bg-amber-200"
+                    className="inline-flex items-center px-5 font-medium text-center text-white bg-amber-500 rounded-lg hover:bg-amber-800 focus:outline-hidden focus:ring-4 focus:ring-amber-300 disabled:bg-amber-200 dark:bg-amber-600 dark:focus:ring-amber-800 dark:hover:bg-amber-700"
                 >
-                    <IconReset className="text-white w-6 h-6 mr-2" />
+                    <IconReset className="mr-2 w-6 h-6 text-white" />
                     Reset
                 </button>
 
@@ -174,16 +174,16 @@ export function PurchaseReturnHeader() {
                 <button
                     type="submit"
                     disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
-                    className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200"
+                    className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
                 >
-                    <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
+                    <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
                 </button>
             </div>
 
             {/* Edit / New label */}
-            <div className="flex absolute right-0 -top-13 gap-2">
+            <div className="flex absolute -top-13 gap-2 right-0">
                 {getPrintPreview()}
-                <label className=" text-red-500 font-medium text-lg">{watch('id') ? 'Edit Purchase Return' : 'New Purchase Return'}</label>
+                <label className="font-medium text-lg text-red-500">{watch('id') ? 'Edit Purchase Return' : 'New Purchase Return'}</label>
             </div>
         </div>
     );

@@ -5,9 +5,9 @@ import { FC } from "react"
 export function CompAccountsContainer({ children, className, CustomControl, MiddleCustomControl, LeftCustomControl }: CompAccountsContainerType) {
     return (
         <div className={clsx(className, 'flex flex-col ml-8',)}>
-            <div className="mt-4 flex justify-between items-center">
+            <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center">
-                    <label className='text-xl font-semibold text-primary-400'>{Utils.getUnitInfo()?.unitName}</label>
+                    <label className='font-semibold text-primary-400 text-xl'>{Utils.getUnitInfo()?.unitName}</label>
                     {LeftCustomControl && <LeftCustomControl />}
                 </div>
                 {MiddleCustomControl && <MiddleCustomControl />}

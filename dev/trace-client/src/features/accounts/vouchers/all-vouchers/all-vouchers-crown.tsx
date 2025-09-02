@@ -43,22 +43,22 @@ export function AllVouchersCrown({ className }: AllVouchersCrownType) {
 
     return (
         <div className={clsx("flex flex-wrap gap-4 text-sm font-semibold", className)}>
-            <div className="space-x-1 text-indigo-700">
+            <div className="text-indigo-700 space-x-1">
                 <label>GST Debits:</label>
                 <span>{Utils.toDecimalFormat(gstDebits.toFixed(2))}</span>
             </div>
 
-            <div className="space-x-1 text-indigo-700">
+            <div className="text-indigo-700 space-x-1">
                 <label>GST Credits:</label>
                 <span>{Utils.toDecimalFormat(gstCredits.toFixed(2))}</span>
             </div>
 
-            <div className="space-x-1 text-amber-700">
+            <div className="text-amber-700 space-x-1">
                 <label>Debits:</label>
                 <span>{Utils.toDecimalFormat(totalDebits.toFixed(2))}</span>
             </div>
 
-            <div className="space-x-1 text-amber-700">
+            <div className="text-amber-700 space-x-1">
                 <label>Credits:</label>
                 <span>{Utils.toDecimalFormat(totalCredits.toFixed(2))}</span>
             </div>

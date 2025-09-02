@@ -50,16 +50,16 @@ export function AccountPickerTree({
     return (
         <div className={clsx('flex flex-col gap-2 w-96 mr-6 mb-8', className,)}>
             {/* Header */}
-            <div className='h-6 bg-slate-50 flex text-md items-center justify-between'>
+            <div className='flex items-center justify-between h-6 text-md bg-slate-50'>
                 <label className='font-medium text-primary-400'>Accounts</label>
-                <TooltipComponent className='ml-8 mt-2' content='Clear' position='TopCenter'>
+                <TooltipComponent className='mt-2 ml-8' content='Clear' position='TopCenter'>
                     <button onClick={handleClear}>
-                        <IconCross className='text-blue-500 h-5 w-5' />
+                        <IconCross className='w-5 h-5 text-blue-500' />
                     </button>
                 </TooltipComponent>
-                <TooltipComponent className='ml-8 mt-2' content='Refresh' position='TopCenter'>
+                <TooltipComponent className='mt-2 ml-8' content='Refresh' position='TopCenter'>
                     <button onClick={loadAccountOptions}>
-                        <IconRefresh className='text-blue-500 h-5 w-5' />
+                        <IconRefresh className='w-5 h-5 text-blue-500' />
                     </button>
                 </TooltipComponent>
                 {showAccountBalance && <span className='ml-auto'>

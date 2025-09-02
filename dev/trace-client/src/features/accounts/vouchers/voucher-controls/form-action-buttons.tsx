@@ -30,17 +30,17 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
             <button
                 onClick={resetAll}
                 type="button"
-                className="px-5 font-medium text-white inline-flex items-center bg-amber-500 hover:bg-amber-800 focus:ring-4 focus:outline-hidden focus:ring-amber-300 rounded-lg text-center dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-800 disabled:bg-amber-200 transition"
+                className="inline-flex items-center px-5 font-medium text-center text-white bg-amber-500 rounded-lg transition hover:bg-amber-800 focus:outline-hidden focus:ring-4 focus:ring-amber-300 disabled:bg-amber-200 dark:bg-amber-600 dark:focus:ring-amber-800 dark:hover:bg-amber-700"
             >
-                <IconReset className="text-white w-6 h-6 mr-2" />
+                <IconReset className="mr-2 w-6 h-6 text-white" />
                 Reset
             </button>
 
             <button
                 type="submit"
-                className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200 transition"
+                className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg transition hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
                 disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || !isBalanced}
-            ><IconSubmit className="text-white w-6 h-6 mr-2" />
+            ><IconSubmit className="mr-2 w-6 h-6 text-white" />
                 {isSubmitting ? "Submitting..." : "Submit"}
             </button>
         </div>)

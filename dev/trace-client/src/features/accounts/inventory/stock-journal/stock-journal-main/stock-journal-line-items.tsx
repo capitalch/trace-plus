@@ -56,10 +56,10 @@ export function StockJournalLineItems({
   return (
     <div className="flex flex-col">
       <label className="font-medium">{title || "Source"}</label>
-      <table className="border-separate border-spacing-0 border-2 border-gray-100 ">
+      <table className="border-2 border-gray-100 border-separate border-spacing-0">
         <thead>
-          <tr className="bg-gray-100 text-primary-500 text-sm font-medium text-left">
-            <th className="p-2 w-10 ">#</th>
+          <tr className="font-medium text-left text-primary-500 text-sm bg-gray-100">
+            <th className="p-2 w-10">#</th>
             <th className="p-2 w-32">
               UPC | Product Code <WidgetAstrix />
             </th>
@@ -68,12 +68,12 @@ export function StockJournalLineItems({
             </th>
             <th className="p-2 w-36">Line Ref No</th>
             <th className="p-2">Line Remarks</th>
-            <th className="p-2 w-28 text-right pr-4">
+            <th className="p-2 pr-4 w-28 text-right">
               Qty <WidgetAstrix />
             </th>
-            <th className="p-2 w-40 text-right pr-4">Price</th>
+            <th className="p-2 pr-4 w-40 text-right">Price</th>
             <th className="p-2">Serial Numbers</th>
-            <th className="p-2 w-36 text-right pr-4">Amount</th>
+            <th className="p-2 pr-4 w-36 text-right">Amount</th>
             <th className=""></th>
           </tr>
         </thead>
@@ -110,7 +110,7 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* product code */}
-                <td className="p-2 flex flex-col w-40 align-top">
+                <td className="flex flex-col p-2 w-40 align-top">
 
                   <input
                     type="text"
@@ -128,7 +128,7 @@ export function StockJournalLineItems({
                   <button
                     tabIndex={-1}
                     type="button"
-                    className="text-sm text-blue-600 flex items-center mt-2 "
+                    className="flex items-center mt-2 text-blue-600 text-sm"
                     onClick={() => handleProductSearch(index)}
                   >
                     <IconSearch className="mr-1" />
@@ -136,7 +136,7 @@ export function StockJournalLineItems({
                   </button>
                   <span
                     tabIndex={-1}
-                    className="text-xs mt-1 text-teal-500 "
+                    className="mt-1 text-teal-500 text-xs"
                   >
                     {watch(`${name}.${index}.upcCode`) || "------------"}
                   </span>
@@ -237,7 +237,7 @@ export function StockJournalLineItems({
                 </td>
 
                 {/* serial numbers */}
-                <td className="p-2 relative align-top">
+                <td className="relative p-2 align-top">
                   <textarea
                     {...register(`${name}.${index}.serialNumbers`, {
                       validate: () =>
@@ -311,7 +311,7 @@ export function StockJournalLineItems({
                   meta.current[name] = fields.length;
                   setRefresh({});
                 }}
-                className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2 my-2 hover:bg-blue-700"
+                className="flex items-center my-2 px-2 py-2 w-36 text-white bg-blue-500 rounded hover:bg-blue-700 gap-2"
               >
                 <IconPlus />
                 Add Item
@@ -322,7 +322,7 @@ export function StockJournalLineItems({
               <button
                 type="button"
                 onClick={handleClearAllRows}
-                className="px-2 py-2 ml-2 bg-amber-500 text-white rounded w-28 flex items-center gap-2 my-2 hover:bg-amber-700"
+                className="flex items-center my-2 ml-2 px-2 py-2 w-28 text-white bg-amber-500 rounded hover:bg-amber-700 gap-2"
               >
                 <IconClear1 />
                 Clear All

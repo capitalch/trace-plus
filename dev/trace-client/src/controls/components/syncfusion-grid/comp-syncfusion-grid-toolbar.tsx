@@ -71,14 +71,14 @@ export function CompSyncFusionGridToolbar({
       style={{ minWidth: `${minWidth}` }}
     >
       <div className="flex flex-col gap-1">
-        <label className="mt-0 text-lg font-medium text-primary-500 inline-block whitespace-nowrap overflow-hidden text-ellipsis">
+        <label className="inline-block mt-0 font-medium text-ellipsis text-lg text-primary-500 whitespace-nowrap overflow-hidden">
           {title}
         </label>
         {subTitleControl && (
-          <div className="text-sm text-gray-500">{subTitleControl}</div>
+          <div className="text-gray-500 text-sm">{subTitleControl}</div>
         )}
       </div>
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
         {CustomControl && <CustomControl />}
 
         {/* last no of rows */}
@@ -86,7 +86,7 @@ export function CompSyncFusionGridToolbar({
           <select
             value={selectedLastNoOfRows}
             title="select"
-            className="rounded-md h-9 border border-none bg-slate-200 text-sm focus:border-none focus:outline-hidden cursor-pointer"
+            className="h-9 text-sm bg-slate-200 border border-none rounded-md cursor-pointer focus:border-none focus:outline-hidden"
             onChange={handleOnChangeLastNoOfRows}
           >
             <option value="100">Last 100 rows</option>
@@ -102,14 +102,14 @@ export function CompSyncFusionGridToolbar({
             <button
               type="button"
               aria-label="Pdf export"
-              className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400 mt-1.5"
+              className="mt-1.5 w-8 h-8 bg-yellow-300 rounded-md hover:bg-yellow-400"
               onClick={async () => {
                 const gridRef: any = await context.CompSyncFusionGrid[instance]
                   .gridRef;
                 await gridRef.current.pdfExport(pdfExportProperties);
               }}
             >
-              <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
+              <IconFilePdf className="m-auto w-6 h-6 text-red-600" />
             </button>
           </TooltipComponent>
         )}
@@ -120,7 +120,7 @@ export function CompSyncFusionGridToolbar({
             <button
               type="button"
               aria-label="Excel export"
-              className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300 mt-1.5"
+              className="mt-1.5 w-8 h-8 bg-gray-200 rounded-md hover:bg-gray-300"
               onClick={() => {
                 const gridRef: any =
                   context.CompSyncFusionGrid[instance].gridRef;
@@ -130,7 +130,7 @@ export function CompSyncFusionGridToolbar({
                 });
               }}
             >
-              <IconFileExcel className="m-auto h-6 w-6 text-green-600" />
+              <IconFileExcel className="m-auto w-6 h-6 text-green-600" />
             </button>
           </TooltipComponent>
         )}
@@ -141,14 +141,14 @@ export function CompSyncFusionGridToolbar({
             <button
               type="button"
               aria-label="Csv export"
-              className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200 mt-1.5"
+              className="mt-1.5 w-8 h-8 bg-red-100 rounded-md hover:bg-red-200"
               onClick={() => {
                 const gridRef: any =
                   context.CompSyncFusionGrid[instance].gridRef;
                 gridRef.current.csvExport();
               }}
             >
-              <IconFileCsv className="m-auto h-6 w-6 text-blue-600" />
+              <IconFileCsv className="m-auto w-6 h-6 text-blue-600" />
             </button>
           </TooltipComponent>
         )}

@@ -43,7 +43,7 @@ export function AddChildCategoryModal({ id }: { id: number }) {
     }, [])
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-auto min-w-72">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-auto min-w-72 gap-4">
 
             {/* Category Name */}
             <label className="flex flex-col font-medium text-primary-400">
@@ -52,7 +52,7 @@ export function AddChildCategoryModal({ id }: { id: number }) {
                     type="text"
                     placeholder="e.g. Lifestyle Products"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                     {...register('catName', {
                         required: Messages.errRequired,
                         validate: {
@@ -73,7 +73,7 @@ export function AddChildCategoryModal({ id }: { id: number }) {
                     type="text"
                     placeholder="e.g. Lifestyle Products Description"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                     {...register('descr')}
                 />
             </label>
@@ -89,7 +89,7 @@ export function AddChildCategoryModal({ id }: { id: number }) {
             </label>
 
             {/* Submit Button */}
-            <div className="mt-4 flex justify-start">
+            <div className="flex justify-start mt-4">
                 <WidgetButtonSubmitFullWidth label="Save" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
             </div>
 

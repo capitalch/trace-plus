@@ -65,10 +65,10 @@ export function AccountsMaster() {
     </CompAccountsContainer>)
 
     function actionHeaderTemplate() {
-        return (<div className="flex justify-start items-center h-full">
+        return (<div className="flex items-center justify-start h-full">
             <button onClick={handleActionHeaderOnClick}
-                className="e-btn flex w-full justify-start font-semibold text-blue-500 items-center rounded-md hover:text-blue-700 hover:bg-blue-50 border-none  focus:bg-blue-50 focus:text-blue-500">
-                <IconPlus className="w-4 h-4 mr-4" />
+                className="flex items-center justify-start w-full font-semibold text-blue-500 border-none rounded-md hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-500 e-btn">
+                <IconPlus className="mr-4 w-4 h-4" />
                 ADD GROUP
             </button>
         </div>)
@@ -86,23 +86,23 @@ export function AccountsMaster() {
         const isEditButtonVisible: boolean = !props.isPrimary
         const isAddChildButtonVisible: boolean = ['L', 'N'].includes(props.accLeaf)
 
-        return (<div className="flex items-center h-full justify-start">
+        return (<div className="flex items-center justify-start h-full">
 
             {/* Add child */}
-            {isAddChildButtonVisible && <button onClick={handeleOnClickAddChild} className="flex font-medium justify-center items-center text-xs text-blue-700">
-                <IconPlus className="w-3 h-3 mr-1.5" />
+            {isAddChildButtonVisible && <button onClick={handeleOnClickAddChild} className="flex items-center justify-center font-medium text-blue-700 text-xs">
+                <IconPlus className="mr-1.5 w-3 h-3" />
                 CHILD
             </button>}
 
             {/* Edit self */}
-            {isEditButtonVisible && <button onClick={handeleOnClickEditSelf} className="flex font-medium justify-center items-center ml-4 text-xs text-green-700">
-                <IconEdit1 className="w-3 h-3 mr-1.5" />
+            {isEditButtonVisible && <button onClick={handeleOnClickEditSelf} className="flex items-center justify-center ml-4 font-medium text-green-700 text-xs">
+                <IconEdit1 className="mr-1.5 w-3 h-3" />
                 EDIT
             </button>}
 
             {/* Delete */}
-            {isDelButtonVisible && <button onClick={handeleOnClickDelete} className="flex font-medium justify-center items-center ml-4 text-xs text-red-700">
-                <IconCross className="w-4 h-4 mr-1" />
+            {isDelButtonVisible && <button onClick={handeleOnClickDelete} className="flex items-center justify-center ml-4 font-medium text-red-700 text-xs">
+                <IconCross className="mr-1 w-4 h-4" />
                 DEL
             </button>}
         </div>)
@@ -219,13 +219,13 @@ export function AccountsMaster() {
         }
         const comp: ReactElement =
             <button onClick={() =>
-                setIsPaneOpen(props.id || 0, props.isAddressExists)} className="flex h-8 w-20 items-center rounded-full bg-blue-500 pl-1 pr-2 py-2 text-gray-100 shadow-sm">
+                setIsPaneOpen(props.id || 0, props.isAddressExists)} className="flex items-center py-2 pr-2 pl-1 w-20 h-8 text-gray-100 bg-blue-500 rounded-full shadow-sm">
                 {/* Badge section */}
-                {(filled === 'Filled') && <div className="rounded-full bg-blue-800 px-2 py-1 text-xs font-bold text-white">
+                {(filled === 'Filled') && <div className="px-2 py-1 font-bold text-white text-xs bg-blue-800 rounded-full">
                     A
                 </div>}
                 {/* Text section */}
-                <span className="ml-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">
+                <span className="ml-1 font-medium text-ellipsis text-sm whitespace-nowrap overflow-hidden">
                     {filled}
                 </span>
             </button>

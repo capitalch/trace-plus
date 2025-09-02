@@ -19,7 +19,7 @@ export function AccountOptionsInfo() {
     //     // setBusinessUnit()
     // }, [])
 
-    return toShowAccountOptions && (<div className="ml-8 flex items-center bg-gray-500 rounded-full px-2 py-2">
+    return toShowAccountOptions && (<div className="flex items-center ml-8 px-2 py-2 bg-gray-500 rounded-full">
         {/* Business units */}
         <BusinessUnitsOptions />
         {/* Fin years and branches */}

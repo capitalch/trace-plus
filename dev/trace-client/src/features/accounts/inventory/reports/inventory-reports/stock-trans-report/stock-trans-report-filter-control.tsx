@@ -62,22 +62,22 @@ export function StockTransReportFilterControl() {
 
   setCategory();
 
-  return (<div className="p-4 space-y-6 bg-white rounded shadow-sm h-[415px]">
+  return (<div className="p-4 h-[415px] bg-white rounded shadow-sm space-y-6">
 
     {/* Buttons + filter mode toggle */}
 
     {/*  Reset */}
-    <div className="flex justify-between items-center">
+    <div className="flex items-center justify-between">
       <button
         type="button"
         onClick={handleResetFilters}
-        className="px-4 py-2 rounded-md text-white text-sm font-medium bg-amber-600 hover:bg-amber-800 transition"
+        className="px-4 py-2 font-medium text-sm text-white bg-amber-600 rounded-md transition hover:bg-amber-800"
       >
         Reset Filters
       </button>
 
       {/* Filter mode toggle */}
-      <label className="flex items-center space-x-2 text-sm font-medium text-primary-600 cursor-pointer">
+      <label className="flex items-center font-medium text-primary-600 text-sm cursor-pointer space-x-2">
         <input
           type="checkbox"
           checked={pre.filterMode === 'productCode'}
@@ -86,7 +86,7 @@ export function StockTransReportFilterControl() {
             if (!e.target.checked) pre.productCode = '';
             setRefresh({});
           }}
-          className="h-6 w-6 text-blue-600 border-gray-300 rounded cursor-pointer"
+          className="w-6 h-6 text-blue-600 border-gray-300 rounded cursor-pointer"
         />
         <span>Filter by Product Code</span>
       </label>
@@ -96,7 +96,7 @@ export function StockTransReportFilterControl() {
         type="button"
         onClick={handleApplyFilters}
         disabled={isApplyFilterButtonDisabled()}
-        className="px-4 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        className="px-4 py-2 font-medium text-sm text-white bg-blue-500 rounded-md transition hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Apply Filters
       </button>
@@ -106,9 +106,9 @@ export function StockTransReportFilterControl() {
     {pre.filterMode === 'category' && (
       <div className="space-y-4">
         <div>
-          <label className="text-sm font-semibold text-gray-600">Categories</label>
+          <label className="font-semibold text-gray-600 text-sm">Categories</label>
           <DropDownTreeComponent
-            className="h-10 mt-1"
+            className="mt-1 h-10"
             id="dropDowntree"
             ref={catRef}
             showClearButton={false}
@@ -127,7 +127,7 @@ export function StockTransReportFilterControl() {
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <label className="flex flex-col text-sm font-semibold text-gray-600 flex-1 min-w-[200px]">
+          <label className="flex flex-col flex-1 min-w-[200px] font-semibold text-gray-600 text-sm">
             Brands
             <Select
               className="mt-1"
@@ -141,7 +141,7 @@ export function StockTransReportFilterControl() {
             />
           </label>
 
-          <label className="flex flex-col text-sm font-semibold text-gray-600 flex-1 min-w-[200px]">
+          <label className="flex flex-col flex-1 min-w-[200px] font-semibold text-gray-600 text-sm">
             Tags
             <Select
               className="mt-1"
@@ -161,10 +161,10 @@ export function StockTransReportFilterControl() {
     {/* Product Code Input */}
     {pre.filterMode === 'productCode' && (
       <div className="relative w-full max-w-xs">
-        <label className="flex flex-col text-sm font-semibold text-gray-600">
+        <label className="flex flex-col font-semibold text-gray-600 text-sm">
           Product Code
           <NumericFormat
-            className="mt-1 border border-gray-300 h-10 rounded-md bg-white px-2"
+            className="mt-1 px-2 h-10 bg-white border border-gray-300 rounded-md"
             allowNegative={false}
             autoFocus
             decimalScale={0}
@@ -181,7 +181,7 @@ export function StockTransReportFilterControl() {
         {pre.productCode && (
           <button
             type="button"
-            className="absolute right-2 top-8 text-gray-400 hover:text-red-500"
+            className="absolute text-gray-400 hover:text-red-500 right-2 top-8"
             onClick={() => {
               pre.productCode = '';
               setRefresh({});

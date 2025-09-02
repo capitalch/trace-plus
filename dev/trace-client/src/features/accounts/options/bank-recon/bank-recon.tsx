@@ -79,7 +79,7 @@ export function BankRecon() {
             actionBegin={onActionBegin}
             actionComplete={onActionComplete}
             aggregates={getAggregates()}
-            className="mr-6 mt-4"
+            className="mt-4 mr-6"
             hasCheckBoxSelection={true}
             columns={getColumns()}
             dataSource={meta?.current?.rows || []}

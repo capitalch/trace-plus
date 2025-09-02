@@ -30,7 +30,7 @@ export function GeneralLedgerPrintPreviewButton({
     }
     const mainTitle = classLogic[accClass] || 'Ledger Accounts'
 
-    return (<div className="flex items-center flex-col gap-1 border-amber-500 border-2 pb-2 pt-1 px-2 rounded">
+    return (<div className="flex flex-col items-center px-2 pt-1 pb-2 border-2 border-amber-500 rounded gap-1">
 
         <TooltipComponent content='Print Preview'>
             <button onClick={async () => {
@@ -47,11 +47,11 @@ export function GeneralLedgerPrintPreviewButton({
                     nonSummaryData
                 })
             }}>
-                <IconPreview1 className="text-blue-500 h-8 w-8" />
+                <IconPreview1 className="w-8 h-8 text-blue-500" />
             </button>
         </TooltipComponent>
         <TooltipComponent content="Hide Details">
-            <label className="flex items-center gap-1 text-xs mt-1 cursor-pointer">
+            <label className="flex items-center mt-1 text-xs cursor-pointer gap-1">
                 <input
                     className="cursor-pointer"
                     type="checkbox"

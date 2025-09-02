@@ -196,14 +196,14 @@ export const ReportAllTransactionsFilter: React.FC = () => {
     };
 
     return (
-        <div className="bg-violet-400 p-2 rounded w-full max-w-3xl shadow-lg">
+        <div className="p-2 w-full max-w-3xl bg-violet-400 rounded shadow-lg">
 
             {/* Transaction type */}
-            <div className="bg-white p-2 rounded-lg shadow-md">
-                <label className="block text-gray-700 font-medium text-sm">Transaction Type</label>
-                <div className="flex gap-2 mt-1 flex-wrap">
+            <div className="p-2 bg-white rounded-lg shadow-md">
+                <label className="block font-medium text-gray-700 text-sm">Transaction Type</label>
+                <div className="flex flex-wrap mt-1 gap-2">
                     {Object.entries(transactionTypes).map(([key, { name, }]) => (
-                        <label key={key} className="flex items-center gap-1 cursor-pointer">
+                        <label key={key} className="flex items-center cursor-pointer gap-1">
                             <input
                                 type="radio"
                                 name="transactionType"
@@ -229,11 +229,11 @@ export const ReportAllTransactionsFilter: React.FC = () => {
 
             {/* Date type */}
             <div className="mt-2">
-                <div className="bg-white rounded-lg shadow-md mt-2 p-2">
-                    <label className="block text-gray-700 font-medium text-sm">Date Type</label>
-                    <div className="flex gap-2 mt-1">
+                <div className="mt-2 p-2 bg-white rounded-lg shadow-md">
+                    <label className="block font-medium text-gray-700 text-sm">Date Type</label>
+                    <div className="flex mt-1 gap-2">
                         {["transactionDate", "entryDate"].map((type) => (
-                            <label key={type} className="flex items-center gap-1 cursor-pointer">
+                            <label key={type} className="flex items-center cursor-pointer gap-1">
                                 <input
                                     type="radio"
                                     name="dateType"
@@ -259,15 +259,15 @@ export const ReportAllTransactionsFilter: React.FC = () => {
                 </div>
 
                 {/* Date Range */}
-                <div className="bg-white rounded-lg shadow-md mt-2 p-2">
-                    <label className="block text-gray-700 font-medium text-sm">Date Range</label>
+                <div className="mt-2 p-2 bg-white rounded-lg shadow-md">
+                    <label className="block font-medium text-gray-700 text-sm">Date Range</label>
                     <div className="flex mt-1 gap-1">
                         <input
                             type="date"
                             name="startDate"
                             value={selectedAllTransactionsFilter.startDate}
                             onChange={(e) => handleStartDateChange(e.target.value)}
-                            className="flex-grow border border-blue-300 rounded-md max-w-36 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-300"
+                            className="px-2 py-1 max-w-36 text-sm border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-300 flex-grow"
                             style={{ cursor: "pointer" }}
                         />
                         <input
@@ -275,11 +275,11 @@ export const ReportAllTransactionsFilter: React.FC = () => {
                             name="endDate"
                             value={selectedAllTransactionsFilter.endDate}
                             onChange={(e) => handleEndDateChange(e.target.value)}
-                            className="flex-grow border border-blue-300 rounded-md max-w-36 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-300 ml-4"
+                            className="ml-4 px-2 py-1 max-w-36 text-sm border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-300 flex-grow"
                             style={{ cursor: "pointer" }}
                         />
                     </div>
-                    {errorMessage && <p className="text-red-500 text-xs mt-1">{errorMessage}</p>}
+                    {errorMessage && <p className="mt-1 text-red-500 text-xs">{errorMessage}</p>}
                 </div>
 
                 {/* Quick date selection */}
@@ -287,10 +287,10 @@ export const ReportAllTransactionsFilter: React.FC = () => {
                     ? 'pointer-events-none opacity-50'
                     : 'pointer-events-auto opacity-100',
                     'bg-white rounded-lg shadow-md mt-2 p-2')}>
-                    <label className="block text-gray-700 font-medium text-sm">Quick Date Selection</label>
-                    <div className="flex flex-wrap gap-1 mt-1">
+                    <label className="block font-medium text-gray-700 text-sm">Quick Date Selection</label>
+                    <div className="flex flex-wrap mt-1 gap-1">
                         {predefinedDateRanges.map((range) => (
-                            <label key={range.label} className="flex items-center gap-1 cursor-pointer">
+                            <label key={range.label} className="flex items-center cursor-pointer gap-1">
                                 <input
                                     type="radio"
                                     name="quickDate"
@@ -309,11 +309,11 @@ export const ReportAllTransactionsFilter: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="bg-white p-2 rounded-lg shadow-md mt-2">
-                    <label className="block text-gray-700 font-medium text-sm">Quarters</label>
-                    <div className="flex gap-1 mt-1">
+                <div className="mt-2 p-2 bg-white rounded-lg shadow-md">
+                    <label className="block font-medium text-gray-700 text-sm">Quarters</label>
+                    <div className="flex mt-1 gap-1">
                         {quarters.map((quarter) => (
-                            <label key={quarter.label} className="flex items-center gap-1 cursor-pointer">
+                            <label key={quarter.label} className="flex items-center cursor-pointer gap-1">
                                 <input
                                     type="radio"
                                     name="quarter"
@@ -334,10 +334,10 @@ export const ReportAllTransactionsFilter: React.FC = () => {
             </div>
 
             {/* Selected filter */}
-            <div className="bg-white p-2 rounded-lg shadow-md mt-2">
+            <div className="mt-2 p-2 bg-white rounded-lg shadow-md">
                 <div className="flex justify-between">
-                    <span className="text-gray-700 font-medium">Selected Filter:</span>
-                    <button onClick={handleSubmit} className="bg-indigo-600 px-4 rounded-md text-xs text-white font-medium">Submit</button>
+                    <span className="font-medium text-gray-700">Selected Filter:</span>
+                    <button onClick={handleSubmit} className="px-4 font-medium text-white text-xs bg-indigo-600 rounded-md">Submit</button>
                 </div>
                 <div className="mt-1 text-gray-600 text-sm">
                     <strong>Transaction Type:</strong> {selectedAllTransactionsFilter.transactionType}

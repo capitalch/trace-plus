@@ -115,7 +115,7 @@ export function StockJournalView({ instance }: { instance: string }) {
         field: "debits",
         format: "N2",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-2">{props.Sum}</span>
+          <span className="mr-2 text-xs">{props.Sum}</span>
         )
       },
       {
@@ -124,7 +124,7 @@ export function StockJournalView({ instance }: { instance: string }) {
         field: "credits",
         format: "N2",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-2">{props.Sum}</span>
+          <span className="mr-2 text-xs">{props.Sum}</span>
         )
       }
     ];

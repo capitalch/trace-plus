@@ -52,7 +52,7 @@ export function DebitNotesDetails() {
     }, [isIgst, setValue, trigger])
 
     return (
-        <div className="flex flex-col gap-2 rounded">
+        <div className="flex flex-col rounded gap-2">
 
             {/* Gstin No , gst rate*/}
             {isGstApplicable &&
@@ -76,7 +76,7 @@ export function DebitNotesDetails() {
                     </FormField>
                     {/* Gst rate(%) */}
                     <FormField className="flex flex-col w-26" label='' error={errors?.gstRate?.message}>
-                        <label className="text-gray-600 text-sm font-medium flex items-center gap-1">
+                        <label className="flex items-center font-medium text-gray-600 text-sm gap-1">
                             GST Rate (%) {isGstApplicable && <WidgetAstrix />}
                         </label>
                         <ControlledNumericInput
@@ -116,10 +116,10 @@ export function DebitNotesDetails() {
             </FormField>}
 
             {/* Cgst sgst */}
-            {isGstApplicable && (!isIgst) && <div className="flex gap-1.5 items-end">
+            {isGstApplicable && (!isIgst) && <div className="flex items-end gap-1.5">
                 {/* Cgst */}
                 <div className="flex flex-col">
-                    <label className="text-gray-600 text-xs font-medium">
+                    <label className="font-medium text-gray-600 text-xs">
                         CGST {!isIgst && <WidgetAstrix />}
                     </label>
                     <ControlledNumericInput
@@ -138,7 +138,7 @@ export function DebitNotesDetails() {
                 </div>
                 {/* Sgst */}
                 <div className="flex flex-col">
-                    <label className="text-gray-600 text-xs font-medium">
+                    <label className="font-medium text-gray-600 text-xs">
                         SGST {!isIgst && <WidgetAstrix />}
                     </label>
                     <ControlledNumericInput
@@ -159,7 +159,7 @@ export function DebitNotesDetails() {
 
             {/* Igst */}
             {(isIgst && isGstApplicable) && <div className="flex flex-col">
-                <label className="text-gray-600 text-xs font-medium">
+                <label className="font-medium text-gray-600 text-xs">
                     IGST {isIgst ? <WidgetAstrix /> : null}
                 </label>
                 <ControlledNumericInput

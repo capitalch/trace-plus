@@ -41,7 +41,7 @@ export function FinYearMaster() {
         <CompSyncFusionGrid
             aggregates={getAggregates()}
             buCode={buCode}
-            className="mr-6 mt-4"
+            className="mt-4 mr-6"
             columns={getColumns()}
             dbName={dbName}
             dbParams={decodedDbParamsObject}

@@ -20,7 +20,7 @@ export function CustomModalDialog({
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-[999]"
+        className="fixed bg-black bg-opacity-50 inset-0 z-[999]"
         onClick={onClose}
       />
 
@@ -30,16 +30,16 @@ export function CustomModalDialog({
           "fixed inset-0 z-[1000] flex items-center justify-center px-2 sm:px-4"
         )}
       >
-        <div className="w-full h-[90vh] max-w-7xl bg-white rounded-lg shadow-lg flex flex-col overflow-hidden border border-gray-300">
+        <div className="flex flex-col w-full max-w-7xl h-[90vh] bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden">
 
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-gray-100">
-            <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+          <div className="flex items-center justify-between p-4 bg-gray-100 border-b">
+            <h2 className="font-semibold text-gray-800 text-lg">{title}</h2>
 
             <>{customControl}</>
             <button
               type="button"
-              className="text-gray-500 hover:text-red-500 text-xl leading-none"
+              className="text-gray-500 text-xl leading-none hover:text-red-500"
               onClick={onClose}
             >
               &times;

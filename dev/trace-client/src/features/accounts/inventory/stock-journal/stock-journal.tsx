@@ -6,7 +6,7 @@ export function StockJournal() {
   const instance = DataInstancesMap.stockJournal
   return (<CompAccountsContainer>
     <div className="flex justify-between">
-      <label className="mt-1 text-md font-bold text-primary-500">
+      <label className="mt-1 font-bold text-md text-primary-500">
         Stock Journal
       </label>
     </div>

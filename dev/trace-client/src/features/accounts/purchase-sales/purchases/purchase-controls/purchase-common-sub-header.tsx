@@ -50,7 +50,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     }
                     showAccountBalance
                     value={watch('debitAccId') as string}
-                    className="max-w-80 w-full mt-1"
+                    className="mt-1 w-full max-w-80"
                 />
             </FormField>
 
@@ -77,7 +77,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     }}
                     showAccountBalance
                     value={watch('creditAccId') as string}
-                    className="w-full mt-1 max-w-80"
+                    className="mt-1 w-full max-w-80"
                 />
             </FormField>
 
@@ -99,7 +99,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     />
 
                     {/* isIgst Checkbox */}
-                    <label className="flex items-center gap-2 text-xs mt-[2px] cursor-pointer font-medium">
+                    <label className="flex items-center mt-[2px] font-medium text-xs cursor-pointer gap-2">
                         <input
                             type="checkbox"
                             {...register('isIgst', {
@@ -107,7 +107,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                                     trigger();
                                 },
                             })}
-                            className="checkbox checkbox-xs cursor-pointer"
+                            className="cursor-pointer checkbox checkbox-xs"
                         />
                         IGST
                     </label>

@@ -26,7 +26,7 @@ export function AllSales() {
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
                 <CompAccountsContainer
-                    LeftCustomControl={() => <span className="text-lg font-bold text-gray-500 ml-2">→ Sales</span>}>
+                    LeftCustomControl={() => <span className="ml-2 font-bold text-gray-500 text-lg">→ Sales</span>}>
                     <AllSalesForm />
                 </CompAccountsContainer>
             </form>
@@ -34,7 +34,7 @@ export function AllSales() {
     );
 
     async function finalizeAndSubmit() { }
-    function getDefaultSalesFormValues() {
+    function getDefaultSalesFormValues():SalesFormDataType {
         return ({
             tranDate: new Date().toISOString().split('T')[0],
             tranTypeId: 2, // Sales
@@ -43,10 +43,11 @@ export function AllSales() {
             hasCustomerGstin: false,
             isGstInvoice: hasGstin,
             isIgst: false,
-            // contactsId: null, // customer
             creditAccId: '',
             debitAccounts: [],
             deletedIds: [],
+            contactDisplayData: null,
+            contactData: null,
             saleLineItems: [
                 {
                     productId: null,
@@ -82,19 +83,19 @@ export type SalesFormDataType = {
     hasCustomerGstin: boolean;
     isGstInvoice: boolean;
     isIgst: boolean;
-    // contactsId: number | null; // customer
+
     contactDisplayData: ContactDisplayDataType | null;
     contactData: ContactsType | null;
+
     creditAccId: string | number;
     debitAccounts: TranDType[];
-    // debitAccId: string | number | null;
 
     gstin?: string | null;
 
     deletedIds: number[]; // for PurchaseSaleDetails table
     saleLineItems: SaleLineItemType[];
 
-    saleEditData?: SalePurchaseEditDataType
+    saleEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
 }
 

@@ -61,20 +61,20 @@ export function ProductsBranchTransferLineItems({
   return (
     <div className="">
       <label className="font-medium">Products</label>
-      <table className="w-full border-collapse mt-2">
+      <table className="mt-2 w-full border-collapse">
         <thead>
-          <tr className="bg-gray-100 text-primary-500">
-            <th className="p-2 border w-10">#</th>
-            <th className="p-2 border w-32 text-xs font-medium">
+          <tr className="text-primary-500 bg-gray-100">
+            <th className="p-2 w-10 border">#</th>
+            <th className="p-2 w-32 font-medium text-xs border">
               UPC / Product Code
             </th>
-            <th className="p-2 border w-xs">Product Details</th>
-            <th className="p-2 border w-36">Line Ref No</th>
+            <th className="p-2 w-xs border">Product Details</th>
+            <th className="p-2 w-36 border">Line Ref No</th>
             <th className="p-2 border">Line Remarks</th>
-            <th className="p-2 border w-28 text-right">Qty</th>
-            <th className="p-2 border w-40 text-right">Price</th>
+            <th className="p-2 w-28 text-right border">Qty</th>
+            <th className="p-2 w-40 text-right border">Price</th>
             <th className="p-2 border">Serial Numbers</th>
-            <th className="p-2 border w-36 text-right">Amount</th>
+            <th className="p-2 w-36 text-right border">Amount</th>
             <th className="p-2 border"></th>
           </tr>
         </thead>
@@ -91,15 +91,15 @@ export function ProductsBranchTransferLineItems({
                 <td className="p-2 border">{index + 1}</td>
 
                 {/* product code */}
-                <td className="p-2 flex flex-col relative w-40">
+                <td className="flex relative flex-col p-2 w-40">
                   <span
                     tabIndex={-1}
-                    className="text-xs mb-1 text-teal-500 text-center"
+                    className="mb-1 text-center text-teal-500 text-xs"
                   >
                     {watch(`productLineItems.${index}.upcCode`) ||
                       "------------"}
                   </span>
-                  <div className="flex items-center align-middle justify-center">
+                  <div className="flex items-center justify-center align-middle">
                     <input
                       type="text"
                       {...register(`productLineItems.${index}.productCode`, {
@@ -146,7 +146,7 @@ export function ProductsBranchTransferLineItems({
                 </td>
 
                 {/* product details */}
-                <td className="p-2 border font-semibold">
+                <td className="p-2 font-semibold border">
                   <textarea
                     tabIndex={-1}
                     rows={3}
@@ -184,7 +184,7 @@ export function ProductsBranchTransferLineItems({
                 </td>
 
                 {/* qty */}
-                <td className="p-2 border relative">
+                <td className="relative p-2 border">
                   <NumericFormat
                     allowNegative={false}
                     decimalScale={2}
@@ -240,7 +240,7 @@ export function ProductsBranchTransferLineItems({
                 </td>
 
                 {/* serial numbers */}
-                <td className="p-2 border relative">
+                <td className="relative p-2 border">
                   <textarea
                     {...register(`productLineItems.${index}.serialNumbers`, {
                       validate: (input: string | null) =>
@@ -274,7 +274,7 @@ export function ProductsBranchTransferLineItems({
                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                     thousandSeparator={true}
                     value={amount}
-                    className="border p-2 rounded w-full text-right bg-gray-100"
+                    className="p-2 w-full text-right bg-gray-100 border rounded"
                   />
                 </td>
 
@@ -297,7 +297,7 @@ export function ProductsBranchTransferLineItems({
 
         {/* Footer Row */}
         <tfoot>
-          <tr className="bg-gray-200 font-semibold text-primary-500">
+          <tr className="font-semibold text-primary-500 bg-gray-200">
             <td colSpan={2}>
               <button
                 type="button"
@@ -315,18 +315,18 @@ export function ProductsBranchTransferLineItems({
                     upcCode: ""
                   })
                 }
-                className="px-2 py-2 bg-blue-500 text-white rounded w-36 flex items-center gap-2"
+                className="flex items-center px-2 py-2 w-36 text-white bg-blue-500 rounded gap-2"
               >
                 <IconPlus />
                 Add Product
               </button>
             </td>
-            <td className="p-2 border text-right" colSpan={3}>
+            <td className="p-2 text-right border" colSpan={3}>
               Total
             </td>
 
             {/* Total Qty */}
-            <td className="p-2 border text-right">
+            <td className="p-2 text-right border">
               <NumericFormat
                 value={fields.reduce(
                   (sum, _, index) =>
@@ -345,7 +345,7 @@ export function ProductsBranchTransferLineItems({
             <td className="p-2 border"></td>
 
             {/* Total Amount */}
-            <td className="p-2 border text-right">
+            <td className="p-2 text-right border">
               <NumericFormat
                 value={fields
                   .reduce((sum, _, index) => {

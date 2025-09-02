@@ -6,8 +6,8 @@ export function SuperAdminNewClientButtons({dataInstance}:{dataInstance: string}
 
     return (
         <div className="flex flex-wrap gap-2">
-            <button className="bg-primary-400 text-white w-20 min-w-24 h-10 rounded-md hover:bg-primary-600" onClick={handleNewClient}>New client</button>
-            <button className="bg-primary-400 text-white w-20 h-10 rounded-md min-w-64 hover:bg-primary-600" onClick={handleNewClientWithExtDb}>New client with external database</button>
+            <button className="w-20 min-w-24 h-10 text-white rounded-md hover:bg-primary-600 bg-primary-400" onClick={handleNewClient}>New client</button>
+            <button className="w-20 min-w-64 h-10 text-white rounded-md hover:bg-primary-600 bg-primary-400" onClick={handleNewClientWithExtDb}>New client with external database</button>
         </div>
     )
 

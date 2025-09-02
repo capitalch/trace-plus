@@ -26,14 +26,14 @@ export function CompSwitch({
         className
       )}
     >
-      <span className="mr-2 text-md font-medium text-gray-500">
+      <span className="mr-2 font-medium text-gray-500 text-md">
         {evaluateLeftLabel()}
       </span>
       <input
         type="checkbox"
         disabled={isDisabled}
         checked={isChecked || false}
-        className="peer sr-only"
+        className="sr-only peer"
         onChange={handleOnChangeSwitch}
       />
       <div

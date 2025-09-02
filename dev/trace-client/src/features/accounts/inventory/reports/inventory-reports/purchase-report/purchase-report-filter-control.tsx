@@ -23,8 +23,8 @@ export function PurchaseReportFilterContol() {
         <div className="flex flex-col gap-6">
 
             {/* Radio Selector */}
-            <div className="flex items-center gap-6 px-2">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-800 cursor-pointer">
+            <div className="flex items-center px-2 gap-6">
+                <label className="flex items-center font-medium text-gray-800 text-sm cursor-pointer gap-2">
                     <input
                         type="radio"
                         name="rangeMode"
@@ -35,7 +35,7 @@ export function PurchaseReportFilterContol() {
                     />
                     Predefined Date Range
                 </label>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-800 cursor-pointer">
+                <label className="flex items-center font-medium text-gray-800 text-sm cursor-pointer gap-2">
                     <input
                         type="radio"
                         name="rangeMode"
@@ -50,9 +50,9 @@ export function PurchaseReportFilterContol() {
 
             {/* Predefined Date Range Section */}
             {selectedSelectMode === 'predefined' && (
-                <section className="px-4 py-5 border rounded-lg shadow-sm bg-white space-y-4 border-blue-300 ring-2 ring-blue-400">
+                <section className="px-4 py-5 bg-white border border-blue-300 ring-2 ring-blue-400 rounded-lg shadow-sm space-y-4">
 
-                    <label className="text-lg font-semibold text-primary-800">Predefined Date Range</label>
+                    <label className="font-semibold text-lg text-primary-800">Predefined Date Range</label>
 
                     <Select
                         className="mt-2"
@@ -64,7 +64,7 @@ export function PurchaseReportFilterContol() {
                         value={dateRangeOptions.find((option: DateRangeType) => option.value === selectedPredefinedFilterOption.value) || null}
                     />
 
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap text-gray-600 text-sm gap-4">
                         <div>Start date: <span className="font-medium">{selectedPredefinedFilterOption.startDate ? format(selectedPredefinedFilterOption.startDate, currentDateFormat) : 'None'}</span></div>
                         <div>End date: <span className="font-medium">{selectedPredefinedFilterOption.endDate ? format(selectedPredefinedFilterOption.endDate, currentDateFormat) : 'None'}</span></div>
                     </div>
@@ -73,16 +73,16 @@ export function PurchaseReportFilterContol() {
 
             {/* Custom Date Range Section */}
             {selectedSelectMode === 'custom' && (
-                <section className="px-4 py-5 border rounded-lg shadow-sm bg-white space-y-4 border-green-300 ring-2 ring-green-400">
+                <section className="px-4 py-5 bg-white border border-green-300 ring-2 ring-green-400 rounded-lg shadow-sm space-y-4">
 
-                    <label className="text-lg font-semibold text-primary-800">Custom Date Range</label>
+                    <label className="font-semibold text-lg text-primary-800">Custom Date Range</label>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <label className="flex flex-col gap-1 text-sm text-primary-800 font-medium mt-2">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                        <label className="flex flex-col mt-2 font-medium text-primary-800 text-sm gap-1">
                             <span>Start Date</span>
                             <input
                                 type="date"
-                                className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                className="px-3 py-2 text-sm border border-gray-300 rounded-md"
                                 value={selectedCustomFilterOption.startDate}
                                 onChange={(e) => {
                                     handleCustomStartDateChange(e.target.value);
@@ -90,11 +90,11 @@ export function PurchaseReportFilterContol() {
                             />
                         </label>
 
-                        <label className="flex flex-col gap-1 text-sm text-primary-800 font-medium mt-2">
+                        <label className="flex flex-col mt-2 font-medium text-primary-800 text-sm gap-1">
                             <span>End Date</span>
                             <input
                                 type="date"
-                                className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+                                className="px-3 py-2 text-sm border border-gray-300 rounded-md"
                                 value={selectedCustomFilterOption.endDate}
                                 onChange={(e) => {
                                     handleCustomEndDateChange(e.target.value);
@@ -110,7 +110,7 @@ export function PurchaseReportFilterContol() {
                 <button type="button"
                     onClick={handleApplyFilter}
                     disabled={isApplyFilterButtonDisabled()}
-                    className="px-5 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="px-5 py-2 font-medium text-sm text-white bg-blue-500 rounded-md transition hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                     Apply Filter
                 </button>

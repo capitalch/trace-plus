@@ -12,8 +12,8 @@ export function AdminLinkUsersCustomControl({
 
     return (
         <div className="flex items-center">
-            <button onClick={handleNewBu} className="mx-2 rounded-md bg-primary-400 px-2 py-0.5 text-white hover:bg-primary-500">New business unit</button>
-            <button onClick={handleNewBusinessUser} className="mx-2 rounded-md bg-secondary-400 px-2 py-0.5 text-white hover:bg-secondary-500"> New business user</button>
+            <button onClick={handleNewBu} className="mx-2 px-2 py-0.5 text-white rounded-md hover:bg-primary-500 bg-primary-400">New business unit</button>
+            <button onClick={handleNewBusinessUser} className="mx-2 px-2 py-0.5 text-white rounded-md hover:bg-secondary-500 bg-secondary-400"> New business user</button>
         </div>)
 
     function handleNewBu() {

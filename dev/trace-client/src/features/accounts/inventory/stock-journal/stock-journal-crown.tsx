@@ -41,7 +41,7 @@ export function StockJournalCrown({
     )}
   >
     <div className="flex items-center gap-2">
-      <span className="font-medium ">In qty:</span>
+      <span className="font-medium">In qty:</span>
       <span className="font-semibold text-gray-900">{inputQty.toFixed(2)}</span>
     </div>
     <div className="flex items-center gap-2">

@@ -49,20 +49,20 @@ const CustomerDetails: React.FC = () => {
     }, [contactData, getValues, setValue, trigger]);
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border-l-4 border-blue-400 px-6 py-4 relative">
+        <div className="relative px-6 py-4 bg-white border-blue-400 border-l-4 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4" style={{ height: '40px' }}>
                 <div className="flex items-center space-x-3">
                     <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
                         <User className="w-5 h-5 text-green-600" />
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-900">Customer Details</h2>
+                    <h2 className="font-semibold text-gray-900 text-lg">Customer Details</h2>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start max-w-3xl">
+            <div className="grid items-start max-w-3xl gap-4 grid-cols-1 lg:grid-cols-2">
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label className="block mb-1 font-semibold text-gray-700 text-sm">
                             Customer
                         </label>
                         <div className="relative">
@@ -86,7 +86,7 @@ const CustomerDetails: React.FC = () => {
                             {searchQuery && (
                                 <button
                                     type="button"
-                                    className="absolute right-14 top-1.5 p-1.5 text-gray-400 hover:text-gray-600 rounded-full transition-colors duration-200"
+                                    className="absolute p-1.5 text-gray-400 rounded-full transition-colors duration-200 hover:text-gray-600 right-14 top-1.5"
                                     onClick={() => setSearchQuery('')}
                                     title="Clear search"
                                 >
@@ -97,7 +97,7 @@ const CustomerDetails: React.FC = () => {
                             {/* Search button */}
                             <button
                                 type="button"
-                                className="absolute right-2 top-1.5 p-1.5 bg-blue-400 hover:bg-blue-500 text-white rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                className="absolute p-1.5 text-white bg-blue-400 rounded-md transition-colors duration-200 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 right-2 top-1.5"
                                 onClick={() => handleCustomerSearch(searchQuery)}
                                 title="Search customer"
                             >
@@ -164,8 +164,8 @@ const CustomerDetails: React.FC = () => {
 
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-3 border min-h-full flex flex-col justify-between lg:-mt-13">
-                    <div className="space-y-1.5 text-md">
+                <div className="flex flex-col justify-between p-3 min-h-full bg-gray-50 border rounded-lg lg:-mt-13">
+                    <div className="text-md space-y-1.5">
                         <div>
                             <span className="font-medium text-gray-900">{watch('contactDisplayData.name')}</span>
                         </div>
@@ -183,24 +183,24 @@ const CustomerDetails: React.FC = () => {
                                 <span className="break-words">{watch('contactDisplayData.address')}</span>
                             </div>
                         </div>
-                        <div className="text-gray-600 pt-1 border-t">
+                        <div className="pt-1 text-gray-600 border-t">
                             <span className="font-medium">GSTIN: </span>
                             {watch('contactDisplayData.gstin')}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 pt-3 border-t mt-3">
+                    <div className="grid mt-3 pt-3 border-t gap-2 grid-cols-2">
                         {/* New / Edit */}
                         <button
                             onClick={handleNewEditCustomer}
-                            className="flex items-center justify-center space-x-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm">
+                            className="flex items-center justify-center px-3 py-2 text-blue-700 text-sm bg-blue-100 rounded-md transition-colors hover:bg-blue-200 space-x-1">
                             <Edit size={16} className="flex-shrink-0" />
                             <span>New / Edit</span>
                         </button>
                         {/* Clear */}
                         <button
                             onClick={handleClearCustomer}
-                            className="flex items-center justify-center space-x-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition-colors text-sm">
+                            className="flex items-center justify-center px-3 py-2 text-amber-700 text-sm bg-amber-100 rounded-md transition-colors hover:bg-amber-200 space-x-1">
                             <Trash2 size={16} className="flex-shrink-0" />
                             <span>Clear</span>
                         </button>
@@ -264,7 +264,7 @@ const CustomerDetails: React.FC = () => {
             element: <CustomerNewEditModal contactData={contactData} setParentValue={setValue} triggerParent={trigger} />,
             size: 'sm'
         });
-        console.log("Edit customer clicked", contactData);
+        // console.log("Edit customer clicked", contactData);
     }
 
     function validateGstin(): string | undefined {

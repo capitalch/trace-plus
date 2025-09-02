@@ -18,14 +18,14 @@ export function ExportFileTypeDropDownButton({ className }: { className?: string
 
     return (
         <div className={clsx(className, "relative inline-block text-left")}>
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-md w-56">
+            <div className="flex items-center w-56 border border-gray-300 rounded-lg shadow-md overflow-hidden">
                 <button
-                    className="bg-primary-500 text-white px-2 py-2 font-medium rounded-l-lg hover:bg-primary-600 transition w-full"
+                    className="px-2 py-2 w-full font-medium text-white rounded-l-lg transition hover:bg-primary-600 bg-primary-500"
                     onClick={() => doExport(selectedFileType)}>
                     Export as {selectedFileType}
                 </button>
                 <button
-                    className="bg-primary-600 text-white px-3 py-2 rounded-r-lg border-l border-white/20 hover:bg-primary-700 transition"
+                    className="px-3 py-2 text-white border-l border-white/20 rounded-r-lg transition hover:bg-primary-700 bg-primary-600"
                     onClick={() => setIsOpen(!isOpen)}>▼
                 </button>
             </div>
@@ -34,7 +34,7 @@ export function ExportFileTypeDropDownButton({ className }: { className?: string
                     {fileTypes.map((type) => (
                         <button
                             key={type}
-                            className="w-full px-4 py-3 text-left hover:bg-blue-100 transition duration-200"
+                            className="px-4 py-3 w-full text-left transition duration-200 hover:bg-blue-100"
                             onClick={() => handleSelection(type)}>
                             {type}
                         </button>

@@ -60,21 +60,21 @@ export function AdminNewEditRole({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-72">
+            <div className="flex flex-col w-auto min-w-72 gap-2">
 
                 {/* Role name */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Role name <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. Administrator" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerRoleName}
                     />
                     <span className="flex justify-between">
                         {(errors.roleName)
                             ? <WidgetFormErrorMessage errorMessage={errors.roleName.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <TooltipComponent content={Messages.messRoleName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
-                            <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
+                        <TooltipComponent content={Messages.messRoleName} className="font-normal text-blue-500! text-sm bg-white border-2 border-gray-200 -top-5!">
+                            <span className="ml-auto text-primary-400 text-xs hover:cursor-pointer">?</span>
                         </TooltipComponent>
                     </span>
                 </label>
@@ -83,13 +83,13 @@ export function AdminNewEditRole({
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Role description</span>
                     <input type="text" placeholder="e.g. Has all powers to insert, modify and delete" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerDescr}
                     />
                 </label>
 
                 {/* Save */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors)} />
                 </div>
                 <span>

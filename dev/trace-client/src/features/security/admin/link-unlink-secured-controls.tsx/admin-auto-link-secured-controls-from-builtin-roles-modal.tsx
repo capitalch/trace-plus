@@ -31,7 +31,7 @@ export function AdminAutoLinkSecuredControlsFromBuiltinRolesModal({ adminRoleId,
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col w-auto gap-2 min-w-80">
+            <div className="flex flex-col w-auto min-w-80 gap-2">
 
                 {/* Built-in roles*/}
                 <label className="flex flex-col font-medium text-primary-400">
@@ -48,7 +48,7 @@ export function AdminAutoLinkSecuredControlsFromBuiltinRolesModal({ adminRoleId,
                     />
                     {errors.superAdminRoleId && <WidgetFormErrorMessage errorMessage={errors.superAdminRoleId.message} />}
                 </label>
-                <label className="text-md text-lime-600">On saving, the secured controls from selected built-in role will be auto added</label>
+                <label className="text-lime-600 text-md">On saving, the secured controls from selected built-in role will be auto added</label>
 
                 {/* save */}
                 <div className="flex justify-start mt-4">

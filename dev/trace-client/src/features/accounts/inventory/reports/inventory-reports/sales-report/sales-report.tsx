@@ -72,19 +72,19 @@ export function SalesReport({ title }: { title?: string }) {
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         CustomControl={() => (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-wrap items-center gap-2">
             <SalesReportToolbarFilterDisplay />
             <button
               type="button"
               onClick={handleOnClickFilter}
-              className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-blue-500 rounded hover:bg-blue-700"
             >
               Filter
             </button>
             <button
               type="button"
               onClick={handleOnClickResetFilter}
-              className="bg-amber-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-amber-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-amber-500 rounded hover:bg-amber-700"
             >
               Reset Filter
             </button>

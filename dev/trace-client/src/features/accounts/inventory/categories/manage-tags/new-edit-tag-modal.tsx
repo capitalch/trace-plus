@@ -49,7 +49,7 @@ export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 gap-y-4 w-96 mt-2 mb-2">
+            className="grid mt-2 mb-2 w-96 gap-y-4 grid-cols-1">
 
             {/* Tag Name */}
             <label className="flex flex-col font-medium text-primary-800">
@@ -59,7 +59,7 @@ export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
                 <input
                     type="text"
                     placeholder="e.g. Urgent"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register("tagName", {
                         required: Messages.errRequired,
                         validate: {
@@ -78,7 +78,7 @@ export function NewEditTagModal({ id, tagName, instance }: NewEditTagType) {
             {/* Submit */}
             <WidgetButtonSubmitFullWidth
                 label="Submit"
-                className="max-w-96 mt-2"
+                className="mt-2 max-w-96"
                 disabled={isSubmitting || !isDirty || (!_.isEmpty(errors))}
             />
 

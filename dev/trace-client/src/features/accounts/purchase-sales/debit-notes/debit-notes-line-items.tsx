@@ -24,17 +24,14 @@ export function DebitNotesLineItems() {
 
   return (
     <div
-      className="
-        grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-12
-        gap-4 sm:gap-6 bg-white p-4 sm:p-6 rounded-lg shadow-sm mt-6
-      "
+      className="grid mt-6 p-4 bg-white rounded-lg shadow-sm gap-4 grid-cols-1 lg:grid-cols-12 md:grid-cols-6 sm:gap-6 sm:grid-cols-2 sm:p-6"
     >
       {/* Debit Account */}
       <FormField
         label="Debit (Debtor / Creditor)"
         required
         error={errors?.debitAccId?.message}
-        className="col-span-1 sm:col-span-2 md:col-span-3"
+        className="col-span-1 md:col-span-3 sm:col-span-2"
       >
         <AccountPickerFlat
           accClassNames={["debtor", "creditor"]}
@@ -59,7 +56,7 @@ export function DebitNotesLineItems() {
       {/* Line ref no */}
       <FormField
         label="Line Ref No"
-        className="col-span-1 sm:col-span-1 md:col-span-2"
+        className="col-span-1 md:col-span-2 sm:col-span-1"
       >
         <input
           type="text"
@@ -71,7 +68,7 @@ export function DebitNotesLineItems() {
 
       {/* Remarks */}
       <FormField
-        className="col-span-1 sm:col-span-2 md:col-span-4"
+        className="col-span-1 md:col-span-4 sm:col-span-2"
         label="Line Remarks"
       >
         <textarea
@@ -83,7 +80,7 @@ export function DebitNotesLineItems() {
       </FormField>
 
       {/* Debit Notes Details (spans more space on large screens) */}
-      <div className="col-span-2 row-span-2 sm:col-span-2 md:col-span-2 lg:col-span-3 max-w-64 ml-auto">
+      <div className="ml-auto max-w-64 col-span-2 lg:col-span-3 md:col-span-2 row-span-2 sm:col-span-2">
         <DebitNotesDetails />
       </div>
 
@@ -92,7 +89,7 @@ export function DebitNotesLineItems() {
         label="Credit (Purchase)"
         required
         error={errors?.creditAccId?.message}
-        className="col-span-1 sm:col-span-2 md:col-span-3"
+        className="col-span-1 md:col-span-3 sm:col-span-2"
       >
         <AccountPickerFlat
           accClassNames={["purchase"]}
@@ -116,7 +113,7 @@ export function DebitNotesLineItems() {
       {/* Credit Line Ref No */}
       <FormField
         label="Line Ref No"
-        className="col-span-1 sm:col-span-1 md:col-span-2"
+        className="col-span-1 md:col-span-2 sm:col-span-1"
       >
         <input
           type="text"
@@ -128,7 +125,7 @@ export function DebitNotesLineItems() {
 
       {/* Credit Remarks */}
       <FormField
-        className="col-span-1 sm:col-span-2 md:col-span-4"
+        className="col-span-1 md:col-span-4 sm:col-span-2"
         label="Line Remarks"
       >
         <textarea

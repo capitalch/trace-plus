@@ -17,7 +17,7 @@ export function ContraVoucher({ instance }: ContraVoucherType) {
     //     , decodedDbParamsObject
     // } = useUtilsInfo()
 
-    return(<div className="flex flex-col gap-4 mr-6">
+    return(<div className="flex flex-col mr-6 gap-4">
         <VoucherLineItemEntry
             accClassNames={['cash', 'bank', 'ecash', 'card']}
             allowAddRemove={false}

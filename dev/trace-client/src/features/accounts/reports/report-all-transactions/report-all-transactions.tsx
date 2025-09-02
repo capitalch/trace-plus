@@ -68,7 +68,7 @@ export function ReportAllTransactions() {
                 aggregates={getAggregates()}
                 allowPaging={true}
                 buCode={buCode}
-                className="mr-6 mt-4"
+                className="mt-4 mr-6"
                 columns={getColumns()}
                 dataSource={apiData}
                 dbName={dbName}
