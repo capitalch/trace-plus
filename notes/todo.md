@@ -34,6 +34,7 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales
 	- Items and services
+		- labels 13 px as in prod code
 		- Show summary
 		- Show stock after this sale
 		- show profit after price
