@@ -60,29 +60,12 @@ export function AllSales() {
             deletedIds: [],
             contactDisplayData: null,
             contactData: null,
-            salesLineItems: [
-                // {
-                //     productId: null,
-                //     productCode: '',
-                //     productDetails: '',
-                //     hsn: '',
-                //     qty: 1,
-                //     gstRate: 0,
-                //     price: 0,
-                //     amount: 0,
-                //     discount: 0,
-                //     priceGst: 0,
-                //     subTotal: 0,
-                //     cgst: 0,
-                //     sgst: 0,
-                //     igst: 0
-                // }
-            ],
+            salesLineItems: [],
             toggle: false // For making the form forcefully dirty
         })
     }
 
-    function getDefaultSalesLineItem(): SaleLineItemType {
+    function getDefaultSalesLineItem(): SalesLineItemType {
         return {
             id: undefined,
             productId: null,

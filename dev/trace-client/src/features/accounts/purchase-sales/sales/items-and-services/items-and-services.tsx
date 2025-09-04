@@ -36,7 +36,6 @@ const ItemsAndServices: React.FC = () => {
         formState: { errors },
     } = useFormContext<SalesFormDataType>();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const [roundOff, /*setRoundOff*/] = useState<number>(0);
     const [backCalcTarget, setBackCalcTarget] = useState<number>(0);
     const { getDefaultSalesLineItem }: any = useFormContext<SalesFormDataType>()
     const { fields, remove, insert, append } = useFieldArray({ control, name: 'salesLineItems' });
@@ -126,6 +125,7 @@ const ItemsAndServices: React.FC = () => {
         const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
         const discount = new Decimal(watch(`salesLineItems.${index}.discount`) || 0);
         const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+
         const base = price.minus(discount);
         const subTotal = qty.times(base).toDecimalPlaces(2);
         const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
@@ -144,7 +144,8 @@ const ItemsAndServices: React.FC = () => {
 
         setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber())
         setValue(`salesLineItems.${index}.amount`, amount.toNumber())
-        setPriceGst(index)
+        setPrice(index)
+        // setPriceGst(index)
         trigger()
     }, [watch, isIgst, setValue, setPriceGst, trigger]);
 
@@ -264,7 +265,35 @@ const ItemsAndServices: React.FC = () => {
     }
 
     // Render helper methods
+    function getSummary() {
+        const summary = lineItems.reduce(
+            (acc, item) => {
+                acc.count += 1;
+                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
+                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
+                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
+                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
+                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
+                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
+                acc.backCalcAmount = acc.amount;
+                return acc;
+            },
+            {
+                count: 0,
+                qty: new Decimal(0),
+                subTotal: new Decimal(0),
+                cgst: new Decimal(0),
+                sgst: new Decimal(0),
+                igst: new Decimal(0),
+                amount: new Decimal(0),
+                backCalcAmount: new Decimal(0)
+            }
+        );
+        return (summary)
+    }
+
     function getSummaryMarkup() {
+        const summary = getSummary();
         return (
             <div className="flex flex-wrap items-center mt-2 py-2 w-full font-medium bg-gray-50 border border-gray-200 rounded">
                 {/* Left side - Controls and stats */}
@@ -279,40 +308,30 @@ const ItemsAndServices: React.FC = () => {
                         Clear All Rows
                     </button>
 
-                    {/* <div className="flex text-right text-xs gap-1">
+                    <div className="flex text-right text-xs gap-1">
                         <span className="text-gray-500">Items:</span>
-                        <span>{items.length}</span>
+                        <span>{summary.count}</span>
                     </div>
                     <div className="flex text-right text-xs gap-1">
                         <span className="text-gray-500">Qty:</span>
-                        <span>{Utils.toDecimalFormat(items.reduce((sum, item) => sum + (item.qty || 0), 0))}</span>
+                        <span>{Utils.toDecimalFormat(summary.qty.toNumber())}</span>
                     </div>
                     <div className="flex text-right text-xs gap-1">
-                        <span className="text-gray-500">SubT:</span>
-                        <span>{parseFloat(totals.subtotal).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                        <span className="text-gray-500">SubTotal:</span>
+                        <span>{summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex text-right text-xs gap-1">
                         <span className="text-gray-500">CGST:</span>
-                        <span>{Utils.toDecimalFormat(parseFloat(totals.cgst))}</span>
+                        <span>{Utils.toDecimalFormat(summary.cgst.toNumber())}</span>
                     </div>
                     <div className="flex text-right text-xs gap-1">
                         <span className="text-gray-500">SGST:</span>
-                        <span>{Utils.toDecimalFormat(parseFloat(totals.sgst))}</span>
+                        <span>{Utils.toDecimalFormat(summary.sgst.toNumber())}</span>
                     </div>
                     <div className="flex text-right text-xs gap-1">
                         <span className="text-gray-500">IGST:</span>
-                        <span>{Utils.toDecimalFormat(parseFloat(totals.igst))}</span>
-                    </div> */}
-
-                    {/* Round Off Display */}
-                    {roundOff !== 0 && (
-                        <div className="flex text-right text-xs gap-1">
-                            <span className="text-gray-500">RndOff:</span>
-                            <span className={roundOff >= 0 ? "text-green-600" : "text-blue-600"}>
-                                {roundOff >= 0 ? '+' : ''}{Utils.toDecimalFormat(roundOff)}
-                            </span>
-                        </div>
-                    )}
+                        <span>{Utils.toDecimalFormat(summary.igst.toNumber())}</span>
+                    </div>
                 </div>
 
                 {/* Center - Controls */}
@@ -325,15 +344,6 @@ const ItemsAndServices: React.FC = () => {
                     >
                         Round Off
                     </button>
-                    {roundOff !== 0 && (
-                        <button
-                            type="button"
-                            // onClick={handleRemoveRoundOff}
-                            className="px-2 py-1 font-semibold text-gray-700 bg-gray-100 rounded transition-colors hover:bg-gray-200"
-                        >
-                            Remove
-                        </button>
-                    )}
 
                     {/* Back Calc Section */}
                     <div className="flex items-center px-2 py-1 bg-white border border-gray-200 rounded gap-1">
@@ -360,8 +370,8 @@ const ItemsAndServices: React.FC = () => {
 
                 {/* Right side - Total Amount */}
                 <div className="flex items-center ml-2 px-3 py-1 bg-green-50 border-l-2 border-teal-300 rounded gap-1">
-                    <span className="font-black text-gray-700 text-sm">Total:</span>
-                    {/* <strong className="font-black text-base text-green-700">{Utils.toDecimalFormat(parseFloat(totals.total))}</strong> */}
+                    <span className="text-gray-500 text-md">Total:</span>
+                    <strong className="font-black text-lg ">{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
                 </div>
             </div>
         );
@@ -644,7 +654,7 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     disabled
                                     readOnly
-                                    className={clsx("border-0 text-right font-bold text-gray-900 bg-green-50 ", inputFormFieldStyles)}
+                                    className={clsx("border-0 text-right font-black text-gray-900 bg-green-50 ", inputFormFieldStyles)}
                                 />
                                 <div className="flex items-center justify-center mt-4 ml-auto gap-8">
                                     {/* delete */}
