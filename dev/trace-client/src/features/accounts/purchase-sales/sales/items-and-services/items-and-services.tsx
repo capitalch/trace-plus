@@ -408,8 +408,8 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* Prod Code | UPC */}
-                            <div className="flex flex-col w-28 text-xs">
-                                <label className="font-semibold">Prod Code | UPC {<WidgetAstrix />}</label>
+                            <div className="flex flex-col w-28">
+                                <label className="font-semibold text-[13px]">Prod Code | UPC {<WidgetAstrix />}</label>
                                 <input {...register(`salesLineItems.${index}.productCode`, {
                                     required: Messages.errRequired,
                                     onChange(event) {
