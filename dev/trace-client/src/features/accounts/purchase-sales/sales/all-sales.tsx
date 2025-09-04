@@ -159,6 +159,10 @@ export type SalesLineItemType = {
     igst: number;
     lineRemarks?: string | null;
     serialNumbers?: string | null;
+
+    age?: number | null;
+    profit?: number | null;
+    stock?: number | null;
 }
 
 export type ContactDisplayDataType = {

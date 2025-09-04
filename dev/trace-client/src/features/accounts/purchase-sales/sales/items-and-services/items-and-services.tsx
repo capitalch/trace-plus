@@ -388,7 +388,7 @@ const ItemsAndServices: React.FC = () => {
                             className={
                                 clsx(
                                     "flex flex-wrap items-start mt-2 p-2 gap-2 border rounded-md",
-                                    currentRowIndex === index ? "bg-green-100 border-l-4 border-l-teal-600" : "bg-white"
+                                    currentRowIndex === index ? "bg-green-50 border-l-4 border-l-teal-600" : "bg-white"
                                 )}
                             onClick={() => setCurrentRowIndex(index)}
                         >
@@ -440,8 +440,8 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* Product Details */}
-                            <div className="flex flex-col w-40 text-xs">
-                                <label className="font-semibold">Details {<WidgetAstrix />}</label>
+                            <div className="flex flex-col w-40">
+                                <label className="font-semibold text-[13px]">Details {<WidgetAstrix />}</label>
                                 <textarea
                                     rows={4}
                                     tabIndex={-1}
@@ -454,8 +454,8 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* Remarks */}
-                            <div className="flex flex-col w-36 text-xs">
-                                <label className="font-semibold">Remarks</label>
+                            <div className="flex flex-col w-36">
+                                <label className="font-semibold text-[13px]">Remarks</label>
                                 <textarea
                                     {...register(`salesLineItems.${index}.lineRemarks`)}
                                     rows={4}
@@ -464,9 +464,9 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* HSN | GST Rate */}
-                            <div className="flex flex-col gap-1.5">
-                                <div className="flex flex-col w-24 text-xs">
-                                    <label className="font-semibold">HSN {isGstInvoice && <WidgetAstrix />}</label>
+                            <div className="flex flex-col gap-1">
+                                <div className="flex flex-col w-24">
+                                    <label className="font-semibold text-[13px]">HSN {isGstInvoice && <WidgetAstrix />}</label>
                                     <input {...register(`salesLineItems.${index}.hsn`, {
                                         validate: (val) => {
                                             const isRequired = watch("isGstInvoice");
@@ -484,8 +484,10 @@ const ItemsAndServices: React.FC = () => {
                                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                         className={clsx(inputFormFieldStyles, 'h-8 mt-1 text-right', errors.salesLineItems?.[index]?.hsn ? errorClass : '')} />
                                 </div>
-                                <div className="flex flex-col w-24 text-xs">
-                                    <label className="font-semibold">GST % {isGstInvoice && <WidgetAstrix />}</label>
+
+                                {/* gst rate */}
+                                <div className="flex flex-col w-24">
+                                    <label className="font-semibold text-[13px]">GST % {isGstInvoice && <WidgetAstrix />}</label>
                                     <ControlledNumericInput
                                         className={clsx("text-right h-8 mt-1",
                                             inputFormFieldStyles, errors.salesLineItems?.[index]?.gstRate ? errorClass : '')}
@@ -510,30 +512,58 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* Qty */}
-                            <div className="flex flex-col w-20 text-xs">
-                                <label className="font-semibold">Qty</label>
-                                <ControlledNumericInput
-                                    className={clsx("text-right h-8 mt-1",
-                                        inputFormFieldStyles, errors.salesLineItems?.[index]?.qty ? errorClass : '')}
-                                    fieldName={`salesLineItems.${index}.qty`}
-                                    onValueChange={(floatValue) => {
-                                        setValue(`salesLineItems.${index}.qty`, floatValue || 0, {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                            shouldTouch: true
-                                        })
-                                        computeLineItemValues(index)
-                                    }}
-                                    validate={(value) => {
-                                        const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
-                                        return (ret)
-                                    }}
-                                />
+                            <div className="flex flex-col w-20">
+                                <div className='flex flex-col'>
+                                    <label className="font-semibold text-[13px]">Qty</label>
+                                    <ControlledNumericInput
+                                        className={clsx("text-right h-8 mt-1",
+                                            inputFormFieldStyles, errors.salesLineItems?.[index]?.qty ? errorClass : '')}
+                                        fieldName={`salesLineItems.${index}.qty`}
+                                        onValueChange={(floatValue) => {
+                                            setValue(`salesLineItems.${index}.qty`, floatValue || 0, {
+                                                shouldDirty: true,
+                                                shouldValidate: true,
+                                                shouldTouch: true
+                                            })
+                                            computeLineItemValues(index)
+                                        }}
+                                        validate={(value) => {
+                                            const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
+                                            return (ret)
+                                        }}
+                                    />
+                                </div>
+                                <div className="w-48 flex items-center gap-3 text-sm">
+                                    {(() => {
+                                        const age = watch(`salesLineItems.${index}.age`) || 0;
+                                        return (
+                                            <span className={age > 360 ? "text-red-600 font-medium" : "text-gray-600"}>
+                                                Age: {age}d
+                                            </span>
+                                        );
+                                    })()}
+                                    {(() => {
+                                        const stock = watch(`salesLineItems.${index}.stock`) || 0;
+                                        return (
+                                            <span className={stock <= 0 ? "text-red-600 font-medium" : "text-green-600"}>
+                                                Stock: {stock}
+                                            </span>
+                                        );
+                                    })()}
+                                    {(() => {
+                                        const profit = watch(`salesLineItems.${index}.profit`) || 0;
+                                        return (
+                                            <span className={profit < 0 ? "text-red-600 font-medium" : "text-blue-600"}>
+                                                Profit: {profit}
+                                            </span>
+                                        );
+                                    })()}
+                                </div>
                             </div>
 
                             {/* Price */}
-                            <div className="flex flex-col w-30 text-xs">
-                                <label className="font-semibold">Price</label>
+                            <div className="flex flex-col w-30">
+                                <label className="font-semibold text-[13px]">Price</label>
                                 <NumericFormat
                                     value={watch(`salesLineItems.${index}.price`)}
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
@@ -552,8 +582,8 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* Discount */}
-                            <div className="flex flex-col w-24 text-xs">
-                                <label className="font-semibold">Discount(unit)</label>
+                            <div className="flex flex-col w-24">
+                                <label className="font-semibold text-[13px]">Discount(unit)</label>
                                 <NumericFormat
                                     value={watch(`salesLineItems.${index}.discount`)}
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
@@ -569,8 +599,8 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* Price GST */}
-                            <div className="flex flex-col w-30 text-xs">
-                                <label className="font-semibold">Price Gst</label>
+                            <div className="flex flex-col w-30">
+                                <label className="font-semibold text-[13px]">Price Gst</label>
                                 <NumericFormat
                                     value={watch(`salesLineItems.${index}.priceGst`)}
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
@@ -588,8 +618,8 @@ const ItemsAndServices: React.FC = () => {
                             </div>
 
                             {/* Serials */}
-                            <div className="flex flex-col w-40 text-xs">
-                                <label className="font-semibold">Serials</label>
+                            <div className="flex flex-col w-40">
+                                <label className="font-semibold text-[13px]">Serials</label>
                                 <textarea
                                     {...register(`salesLineItems.${index}.serialNumbers`, {
                                         validate: () =>
