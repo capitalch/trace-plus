@@ -1,6 +1,5 @@
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
-// import _ from "lodash";
 import { RootStateType, store } from "../app/store";
 import { Messages } from "./messages";
 import { ReactElement } from "react";
@@ -85,31 +84,47 @@ function addUniqueKeysToJson(data: any) {
   // AI created
   let runningKey = 100000; // Start of child series
 
-  const traverseAndAddKeys = (node: any, parentKey: number) => {
-    // Mutate the node by adding a pkey
-    node.pkey = parentKey;
+  const traverseAndAddKeys = (node: any, parentKey: number): any => {
+    // Create a new object with the pkey if the original is not extensible
+    let workingNode = node;
+    
+    if (!Object.isExtensible(node)) {
+      // Create a new object that includes all properties plus pkey
+      workingNode = { ...node, pkey: parentKey };
+    } else {
+      try {
+        node.pkey = parentKey;
+        workingNode = node;
+      } catch (error) {
+        console.error("Error assigning pkey:", error);
+        // Fallback to creating new object if assignment fails
+        workingNode = { ...node, pkey: parentKey };
+      }
+    }
 
     // Traverse through child nodes if present
-    Object.keys(node).forEach((key) => {
-      if (Array.isArray(node[key])) {
-        // Mutate children by adding unique running keys
-        node[key].forEach((child) => {
-          traverseAndAddKeys(child, runningKey++);
+    Object.keys(workingNode).forEach((key) => {
+      if (Array.isArray(workingNode[key])) {
+        // Process children by adding unique running keys
+        workingNode[key] = workingNode[key].map((child) => {
+          return traverseAndAddKeys(child, runningKey++);
         });
-      } else if (typeof node[key] === "object" && node[key] !== null) {
-        // Mutate nested objects
-        traverseAndAddKeys(node[key], runningKey++);
+      } else if (typeof workingNode[key] === "object" && workingNode[key] !== null && key !== 'pkey') {
+        // Process nested objects
+        workingNode[key] = traverseAndAddKeys(workingNode[key], runningKey++);
       }
     });
+    
+    return workingNode;
   };
 
-  // Mutate the top-level data array
-  data.forEach((item: any, index: number) => {
+  // Process the top-level data array
+  const processedData = data.map((item: any, index: number) => {
     const parentKey = index + 1; // Assign a consistent parent key
-    traverseAndAddKeys(item, parentKey);
+    return traverseAndAddKeys(item, parentKey);
   });
 
-  return data; // Return the mutated data
+  return processedData; // Return the new processed data
 }
 
 async function decodeExtDbParams(encodedDbParams: string) {

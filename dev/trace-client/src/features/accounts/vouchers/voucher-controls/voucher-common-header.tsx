@@ -77,7 +77,7 @@ export function VoucherCommonHeader() {
                         <button
                             type="button"
                             className={clsx(
-                                "px-4 py-1 text-sm rounded-full border",
+                                "px-4 py-1 text-sm rounded-sm border",
                                 watch("isGst")
                                     ? "bg-green-500 text-white border-green-600"
                                     : "bg-white text-gray-600 border-gray-300"
@@ -89,7 +89,7 @@ export function VoucherCommonHeader() {
                         <button
                             type="button"
                             className={clsx(
-                                "px-4 py-1 text-sm rounded-full border",
+                                "px-4 py-1 text-sm rounded-sm border",
                                 !watch("isGst")
                                     ? "bg-red-500 text-white border-red-600"
                                     : "bg-white text-gray-600 border-gray-300"

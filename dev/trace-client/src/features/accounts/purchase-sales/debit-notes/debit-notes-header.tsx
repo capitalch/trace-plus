@@ -32,17 +32,16 @@ export function DebitNotesHeader() {
     const isGstApplicable = watch('isGstApplicable')
     const { computeGst, resetAll }: any = useFormContext<DebitCreditNoteFormDataType>();
     const errorClass = 'border-red-500 bg-red-50';
-    const inputClassLeft = "border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium text-sm w-full rounded-lg px-3 transition-all duration-200";
+    const inputClassLeft = "border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium text-sm w-full rounded-md px-3 transition-all duration-200 mt-1";
 
     return (
         <div className="relative mb-8">
-            <div className="grid p-6 bg-white rounded-lg shadow-sm gap-6 grid-cols-1 lg:grid-cols-8 md:grid-cols-3 sm:grid-cols-2 xl:grid-cols-12">
-
+            <div className="grid p-6 shadow-sm gap-4 grid-cols-1 xl:grid-cols-12 lg:grid-cols-8 md:grid-cols-6 sm:gap-6 sm:grid-cols-2 sm:p-6">
                 {/* Auto ref no */}
-                <FormField label="Auto Ref No" className="col-span-1 lg:col-span-2">
+                <FormField label="Auto Ref No" className="xl:col-span-2 lg:col-span-2">
                     <input
                         type="text"
-                        className={clsx("bg-gray-100 rounded-lg h-10 px-3 text-sm", inputClassLeft)}
+                        className={clsx(inputClassLeft, "bg-gray-200")}
                         readOnly
                         disabled
                         title="Auto reference number"
@@ -55,7 +54,7 @@ export function DebitNotesHeader() {
                     label="Date"
                     required
                     error={errors?.tranDate?.message}
-                    className="col-span-1 lg:col-span-2"
+                    className="xl:col-span-2 lg:col-span-2"
                 >
                     <input
                         type="date"
@@ -68,7 +67,7 @@ export function DebitNotesHeader() {
                 </FormField>
 
                 {/* User ref no */}
-                <FormField label="User Ref No" className="col-span-1 lg:col-span-2">
+                <FormField label="User Ref No" className="xl:col-span-2 lg:col-span-2">
                     <input
                         type="text"
                         className={clsx(inputClassLeft)}
@@ -78,7 +77,7 @@ export function DebitNotesHeader() {
                 </FormField>
 
                 {/* Remarks */}
-                <FormField className="col-span-1 lg:col-span-3 md:col-span-3 sm:col-span-2" label="Remarks">
+                <FormField className="col-span-1 sm:col-span-2 xl:col-span-3 lg:col-span-2" label="Remarks">
                     <textarea
                         rows={3}
                         className={clsx(inputClassLeft, "resize-none")}
@@ -90,7 +89,7 @@ export function DebitNotesHeader() {
                 {/* isGstApplicable */}
                 <div className="flex-col items-center col-span-1">
                     <FormField label="Apply GST?" className="flex flex-col items-start text-sm gap-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 mt-1">
                             <button
                                 type="button"
                                 className={clsx(
@@ -125,7 +124,6 @@ export function DebitNotesHeader() {
                                         const deletedIds = getValues('deletedIds') || []
                                         setValue('deletedIds', [...deletedIds, id])
                                         editData.extGstTranD = undefined
-                                        // editData.extGstTranD.id = undefined
                                     }
                                 }}
                             >
@@ -149,7 +147,7 @@ export function DebitNotesHeader() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center ml-auto col-span-1 gap-3 lg:col-span-2 md:col-span-3 sm:col-span-2">
+                <div className="flex items-center gap-3 col-span-full xl:col-span-2 lg:col-span-full sm:col-span-2 ml-auto ">
                     <button
                         onClick={resetAll}
                         type="button"
@@ -170,7 +168,6 @@ export function DebitNotesHeader() {
 
                 {/* Edit / New label */}
                 <div className="flex absolute -top-12 gap-2 right-0">
-                    {/* <button type="submit" >Test</button> */}
                     {getPrintPreview()}
                     <label className="font-medium text-amber-500 text-lg">
                         {watch("id") ? "Edit Debit Note" : "New Debit Note"}

@@ -43,15 +43,27 @@ export function useQueryHelper({
       if (result?.data?.[queryName]?.error?.content) {
         Utils.showGraphQlErrorMessage(result.data[queryName].error.content)
       }
-      const data = _.isEmpty(result?.data?.[queryName])
+      let data = _.isEmpty(result?.data?.[queryName])
         ? []
         : result.data[queryName]
       if (addUniqueKeyToJson) { // Creates persistence of expanded rows by adding unique pkey to each record
         if (data?.[0]?.jsonResult) {
           if (dataPath) {
-            Utils.addUniqueKeysToJson(data[0].jsonResult[dataPath])
+            const processedData = Utils.addUniqueKeysToJson(data[0].jsonResult[dataPath])
+            data = [{
+              ...data[0],
+              jsonResult: {
+                ...data[0].jsonResult,
+                [dataPath]: processedData
+              }
+            }]
           } else {
+            const processedJsonResult = 
             Utils.addUniqueKeysToJson(data[0].jsonResult)
+            data = [{
+              ...data[0],
+              jsonResult: processedJsonResult
+            }]
           }
         }
       }

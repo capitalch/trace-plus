@@ -25,11 +25,10 @@ import { ControlledNumericInput } from "../../../../../controls/components/contr
 import { PurchaseProductSelectFromGrid } from "./purchase-product-select-from-grid";
 
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
+    // Hooks setup
     const { isValidHsn } = useValidators();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { buCode, dbName, decodedDbParamsObject, defaultGstRate, /*maxGstRate*/ } = useUtilsInfo();
-    // console.log(maxGstRate)
-    // const [,setRefresh] = useState({})
+    const { buCode, dbName, decodedDbParamsObject, defaultGstRate , maxGstRate} = useUtilsInfo();
     const {
         control,
         register,
@@ -46,12 +45,112 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const lineItems = watch("purchaseLineItems") || [];
     const isIgst = watch('isIgst')
 
+    // Helper functions
     const getDefaultLineItem = useCallback(() => {
         const lineItem = getDefaultPurchaseLineItem();
         lineItem.gstRate = defaultGstRate || 0;
         return lineItem;
     }, [defaultGstRate, getDefaultPurchaseLineItem]);
 
+    const onChangeProductCode = useMemo(
+        () =>
+            _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
+                populateProductOnProductCode(e.target.value, index);
+            }, 2000), []
+    );
+
+    function computeLineItemValues(index: number) {
+        const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
+        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
+        const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+
+        const base = price.minus(discount);
+        const subTotal = qty.times(base).toDecimalPlaces(2);
+        const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
+        const amount = subTotal.times(multiplier).toDecimalPlaces(2)
+        const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
+        if (isIgst) {
+            setValue(`purchaseLineItems.${index}.cgst`, 0)
+            setValue(`purchaseLineItems.${index}.sgst`, 0)
+            setValue(`purchaseLineItems.${index}.igst`, gst.toDecimalPlaces(2).toNumber())
+        } else {
+            const halfGst = gst.dividedBy(2).toDecimalPlaces(2);
+            setValue(`purchaseLineItems.${index}.cgst`, halfGst.toNumber())
+            setValue(`purchaseLineItems.${index}.sgst`, halfGst.toNumber())
+            setValue(`purchaseLineItems.${index}.igst`, 0)
+        }
+
+        setValue(`purchaseLineItems.${index}.subTotal`, subTotal.toNumber())
+        setValue(`purchaseLineItems.${index}.amount`, amount.toNumber())
+        setPriceGst(index)
+        trigger()
+    }
+
+    function getSnError(index: number) {
+        const serialNumbers = watch(`purchaseLineItems.${index}.serialNumbers`);
+        const sn = serialNumbers ? serialNumbers.replace(/[,;]$/, "") : "";
+        const snCount = sn ? sn.split(/[,;]/).length : 0;
+        const qty = watch(`purchaseLineItems.${index}.qty`);
+        let snError = undefined;
+        if (snCount !== 0 && snCount !== qty) {
+            snError = Messages.errQtySrNoNotMatch;
+        }
+        return snError;
+    }
+
+    function getSummary() {
+        const summary = lineItems.reduce(
+            (acc, item) => {
+                acc.count += 1;
+                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
+                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
+                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
+                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
+                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
+                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
+                return acc;
+            },
+            {
+                count: 0,
+                qty: new Decimal(0),
+                subTotal: new Decimal(0),
+                cgst: new Decimal(0),
+                sgst: new Decimal(0),
+                igst: new Decimal(0),
+                amount: new Decimal(0)
+            }
+        );
+        return (summary)
+    }
+
+    function setPrice(index: number) {
+        const priceGst = new Decimal(watch(`purchaseLineItems.${index}.priceGst`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+
+        const divisor = gstRate.dividedBy(100).plus(1);
+        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
+
+        setValue(`purchaseLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }
+
+    function setPriceGst(index: number) {
+        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+
+        const multiplier = gstRate.dividedBy(100).plus(1);
+        const priceGst = multiplier.times(price);
+
+        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }
+
+    // Event handlers
     const handleAddRow = (index: number) => {
         insert(index + 1,
             getDefaultLineItem(),
@@ -67,7 +166,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             if (id) {
                 deletedIds.push(id)
             }
-            // console.log(id)
             remove(i);
         }
         if (!_.isEmpty(deletedIds)) {
@@ -76,13 +174,65 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setTimeout(() => setCurrentRowIndex(0), 0);
     };
 
-    const onChangeProductCode = useMemo(
-        () =>
-            _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
-                populateProductOnProductCode(e.target.value, index);
-            }, 2000), []
-    );
+    function handleClearLineItem(index: number) {
+        setValue(`purchaseLineItems.${index}.productId`, null, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productCode`, '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.upcCode`, null, { shouldDirty: true })
+        setValue(`purchaseLineItems.${index}.productDetails`, '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.hsn`, '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.gstRate`, 0, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.qty`, 1, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.price`, 0, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.discount`, 0, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
+    }
 
+    function handleProductSearch(index: number) {
+        Utils.showHideModalDialogA({
+            isOpen: true,
+            size: "lg",
+            element: <PurchaseProductSelectFromGrid onSelect={(product) => setLineItem(product, index)} />,
+            title: "Select a product"
+        });
+    }
+
+    async function populateProductOnProductCode(productCode: string, index: number) {
+        if (!productCode) {
+            handleClearLineItem(index);
+            return;
+        }
+        const products: ProductInfoType[] = await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
+            sqlArgs: {
+                productCodeOrUpc: productCode
+            }
+        });
+        const product = products?.[0];
+        if (_.isEmpty(product)) {
+            handleClearLineItem(index);
+            return;
+        }
+        setLineItem(product, index);
+    }
+
+    function setLineItem(product: ProductInfoType, index: number) {
+        setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
+        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
+        setTimeout(() => {
+            trigger()
+        }, 0);
+    }
+
+    // Effects
     useEffect(() => {
         return () => onChangeProductCode.cancel();
     }, [onChangeProductCode]);
@@ -99,12 +249,60 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         })
     }, [fields, isIgst])
 
+    // Render helpers
+    function getSummaryMarkup() {
+        const summary = getSummary()
+        return (<div className="flex flex-wrap items-center justify-between mt-2 py-2 w-full font-medium text-sm bg-gray-50 border border-gray-200 rounded">
+
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <button
+                    type="button"
+                    onClick={handleClearAll}
+                    className="flex items-center px-3 py-1 text-gray-500 bg-amber-100 rounded hover:bg-amber-200 gap-2"
+                >
+                    <IconClear1 />
+                    Clear All Rows
+                </button>
+
+                <div className="flex min-w-[100px] text-right gap-1">
+                    <span className="text-gray-500">Items:</span>
+                    {summary.count}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">Qty:</span>
+                    {Utils.toDecimalFormat(summary.qty.toNumber())}
+                </div>
+                <div className="flex min-w-[150px] text-right gap-1">
+                    <span className="text-gray-500">SubTotal:</span>
+                    {summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">CGST:</span>
+                    {Utils.toDecimalFormat(summary.cgst.toNumber())}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">SGST:</span>
+                    {Utils.toDecimalFormat(summary.sgst.toNumber())}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">IGST:</span>
+                    {Utils.toDecimalFormat(summary.igst.toNumber())}
+                </div>
+            </div>
+            <div className="flex mr-4 text-right gap-1">
+                <span className="text-gray-500">Total Amount:</span>
+                <strong>{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
+            </div>
+        </div>)
+    }
+
 
     return (
         <AnimatePresence>
             <div className="flex flex-col -mt-4">
                 <label className="font-medium">{title || "Line Items"}</label>
                 {/* <AnimatePresence initial={false}> */}
+
                 {/* Summary */}
                 {getSummaryMarkup()}
 
@@ -199,7 +397,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                 <div className="flex flex-col w-24 text-xs">
                                     <label className="font-semibold">HSN {isGstInvoice && <WidgetAstrix />}</label>
                                     <input {...register(`purchaseLineItems.${index}.hsn`, {
-                                        // required: isGstInvoice ? Messages.errRequired : undefined,
                                         validate: (val) => {
                                             const isRequired = watch("isGstInvoice");
                                             if (isRequired && (!val || val.trim() === "")) {
@@ -231,11 +428,8 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                                 if (value === undefined || value === null || isNaN(value)) {
                                                     return Messages.errRequired
                                                 }
-                                                if (Utils.isAlmostEqual(0, value, 0.5, 0.2)) {
-                                                    // Utils.showWarningMessage(Messages.errGstRateTooLow)
-                                                }
                                             }
-                                            if (value > 28) {
+                                            if (maxGstRate && (value > maxGstRate)) {
                                                 return Messages.errGstRateTooHigh;
                                             }
                                             return true;
@@ -385,7 +579,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                                 const deletedIds = getValues('deletedIds') || []
                                                 setValue('deletedIds', [...deletedIds, id])
                                             }
-                                            console.log(id)
+                                            // console.log(id)
                                             if (fields.length > 1) {
                                                 remove(index)
                                                 setTimeout(() => {
@@ -420,208 +614,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             </div>
         </AnimatePresence>
     );
-
-    function computeLineItemValues(index: number) {
-        const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
-        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
-        const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
-        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
-
-        const base = price.minus(discount);
-        const subTotal = qty.times(base).toDecimalPlaces(2);
-        const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
-        const amount = subTotal.times(multiplier).toDecimalPlaces(2)
-        const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
-        if (isIgst) {
-            setValue(`purchaseLineItems.${index}.cgst`, 0)
-            setValue(`purchaseLineItems.${index}.sgst`, 0)
-            setValue(`purchaseLineItems.${index}.igst`, gst.toDecimalPlaces(2).toNumber())
-        } else {
-            const halfGst = gst.dividedBy(2).toDecimalPlaces(2);
-            setValue(`purchaseLineItems.${index}.cgst`, halfGst.toNumber())
-            setValue(`purchaseLineItems.${index}.sgst`, halfGst.toNumber())
-            setValue(`purchaseLineItems.${index}.igst`, 0)
-        }
-
-        setValue(`purchaseLineItems.${index}.subTotal`, subTotal.toNumber())
-        setValue(`purchaseLineItems.${index}.amount`, amount.toNumber())
-        setPriceGst(index)
-        trigger()
-    }
-
-    function getSnError(index: number) {
-        const serialNumbers = watch(`purchaseLineItems.${index}.serialNumbers`);
-        const sn = serialNumbers ? serialNumbers.replace(/[,;]$/, "") : "";
-        const snCount = sn ? sn.split(/[,;]/).length : 0;
-        const qty = watch(`purchaseLineItems.${index}.qty`);
-        let snError = undefined;
-        if (snCount !== 0 && snCount !== qty) {
-            snError = Messages.errQtySrNoNotMatch;
-        }
-        return snError;
-    }
-
-    function getSummary() {
-        const summary = lineItems.reduce(
-            (acc, item) => {
-                acc.count += 1;
-                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
-                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
-                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
-                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
-                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
-                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
-                return acc;
-            },
-            {
-                count: 0,
-                qty: new Decimal(0),
-                subTotal: new Decimal(0),
-                cgst: new Decimal(0),
-                sgst: new Decimal(0),
-                igst: new Decimal(0),
-                amount: new Decimal(0)
-            }
-        );
-        return (summary)
-    }
-
-    function getSummaryMarkup() {
-        const summary = getSummary()
-        return (<div className="flex flex-wrap items-center justify-between mt-2 py-2 w-full font-medium text-sm bg-gray-50 border border-gray-200 rounded">
-
-            <div className="flex flex-wrap items-center justify-between gap-4">
-                {/* Clear All Button */}
-                <button
-                    type="button"
-                    onClick={handleClearAll}
-                    className="flex items-center px-3 py-1 text-gray-500 bg-amber-100 rounded hover:bg-amber-200 gap-2"
-                >
-                    <IconClear1 />
-                    Clear All Rows
-                </button>
-
-                <div className="flex min-w-[100px] text-right gap-1">
-                    <span className="text-gray-500">Items:</span>
-                    {summary.count}
-                </div>
-                <div className="flex min-w-[120px] text-right gap-1">
-                    <span className="text-gray-500">Qty:</span>
-                    {Utils.toDecimalFormat(summary.qty.toNumber())}
-                </div>
-                <div className="flex min-w-[150px] text-right gap-1">
-                    <span className="text-gray-500">SubTotal:</span>
-                    {summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </div>
-                <div className="flex min-w-[120px] text-right gap-1">
-                    <span className="text-gray-500">CGST:</span>
-                    {Utils.toDecimalFormat(summary.cgst.toNumber())}
-                </div>
-                <div className="flex min-w-[120px] text-right gap-1">
-                    <span className="text-gray-500">SGST:</span>
-                    {Utils.toDecimalFormat(summary.sgst.toNumber())}
-                </div>
-                <div className="flex min-w-[120px] text-right gap-1">
-                    <span className="text-gray-500">IGST:</span>
-                    {Utils.toDecimalFormat(summary.igst.toNumber())}
-                </div>
-                {/* <div>
-                    <button onClick={() => {
-                        trigger()
-                    }}>Test</button>
-                </div> */}
-            </div>
-            <div className="flex mr-4 text-right gap-1">
-                <span className="text-gray-500">Total Amount:</span>
-                <strong>{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
-            </div>
-        </div>)
-    }
-
-    function handleClearLineItem(index: number) {
-        setValue(`purchaseLineItems.${index}.productId`, null, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.productCode`, '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.upcCode`, null, { shouldDirty: true })
-        setValue(`purchaseLineItems.${index}.productDetails`, '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.hsn`, '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.gstRate`, 0, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.qty`, 1, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.price`, 0, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.discount`, 0, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
-    }
-
-    function handleProductSearch(index: number) {
-        Utils.showHideModalDialogA({
-            isOpen: true,
-            size: "lg",
-            element: <PurchaseProductSelectFromGrid onSelect={(product) => setLineItem(product, index)} />,
-            title: "Select a product"
-        });
-    }
-
-    async function populateProductOnProductCode(productCode: string, index: number) {
-        if (!productCode) {
-            handleClearLineItem(index);
-            return;
-        }
-        const products: ProductInfoType[] = await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
-            sqlArgs: {
-                productCodeOrUpc: productCode
-            }
-        });
-        const product = products?.[0];
-        if (_.isEmpty(product)) {
-            handleClearLineItem(index);
-            return;
-        }
-        // Set fetched values
-        setLineItem(product, index);
-    }
-
-    function setLineItem(product: ProductInfoType, index: number) {
-        setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
-        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
-        setTimeout(() => {
-            trigger()
-        }, 0);
-    }
-
-    function setPrice(index: number) {
-        const priceGst = new Decimal(watch(`purchaseLineItems.${index}.priceGst`) || 0);
-        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
-
-        const divisor = gstRate.dividedBy(100).plus(1);
-        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
-
-        setValue(`purchaseLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
-            shouldDirty: true,
-            shouldValidate: true
-        });
-    }
-
-    function setPriceGst(index: number) {
-        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
-        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
-
-        const multiplier = gstRate.dividedBy(100).plus(1);
-        const priceGst = multiplier.times(price);
-
-        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
-            shouldDirty: true,
-            shouldValidate: true
-        });
-    }
 }
 
 type PurchaseLineItemsProps = {

@@ -836,7 +836,7 @@ class SqlAccounts:
                     b."brandName",   
                     p."label",   
                     COALESCE(c6."clos"::numeric(10, 2), 0) AS "clos",   
-                    (COALESCE(c6."lastPurchasePrice", 0) * (1 + p."gstRate" / 100)) AS "lastPurchasePriceGst",  
+                    (ROUND(COALESCE(c6."lastPurchasePrice", 0) * (1 + p."gstRate" / 100),2)) AS "lastPurchasePriceGst",  
                     c6."lastPurchaseDate",  
                     (date_part('day',CURRENT_DATE::timestamp - "lastPurchaseDate"::timestamp)) as "age",  
                     p."catId",   
@@ -854,7 +854,7 @@ class SqlAccounts:
                     p."saleDiscount",  
                     COALESCE(c6."op", 0) AS "op",  
                     COALESCE(c6."openingPrice", 0) AS "openingPrice",   
-                    (COALESCE(c6."openingPrice", 0) * (1 + p."gstRate" / 100)) AS "openingPriceGst"  
+                    (ROUND(COALESCE(c6."openingPrice", 0) * (1 + p."gstRate" / 100),2)) AS "openingPriceGst"  
                 FROM cte6 c6  
                 RIGHT JOIN "ProductM" p ON p."id" = c6."productId"  
                 JOIN "CategoryM" c ON c."id" = p."catId"  
@@ -866,7 +866,7 @@ class SqlAccounts:
                     c."catName",  
                     p."label",   
                     p."info"  
-            )   
+            )
         SELECT   
             "id",   
             "productCode",
@@ -883,7 +883,12 @@ class SqlAccounts:
             "gstRate",   
             "salePrice",   
             "salePriceGst",   
-            "maxRetailPrice",   
+            "maxRetailPrice",
+            ROUND(COALESCE(
+                NULLIF("salePriceGst", 0),
+                NULLIF(("salePrice"- "saleDiscount") * (1 + "gstRate" / 100.0), 0),
+                "maxRetailPrice"
+            ),2) AS "calculatedSalePriceGst",
             "sale",   
             "saleDiscount",   
             "lastPurchasePrice",   
@@ -1816,7 +1821,12 @@ class SqlAccounts:
 			p."label",
 			p."productCode",
 			p."upcCode",
-			coalesce(s."gstRate", p."gstRate", 0) "gstRate"
+			coalesce(s."gstRate", p."gstRate", 0) "gstRate",
+			ROUND(COALESCE(
+                NULLIF("salePriceGst", 0),
+                NULLIF(("salePrice"- "saleDiscount") * (1 + p."gstRate" / 100.0), 0),
+                "maxRetailPrice"
+            ),2) AS "calculatedSalePriceGst"
             from "ProductM" p
                 left join "SalePurchaseDetails" s
                     on p."id" = s."productId"

@@ -37,6 +37,7 @@
     "jspdf-autotable": "^5.0.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.542.0",
+    "npm-check-updates": "^18.0.3",
     "number-to-words": "^1.2.4",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.7",

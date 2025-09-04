@@ -82,6 +82,7 @@ export function ProductSelectFromGrid({ onSelect }: { onSelect: (args: ProductIn
             { field: 'age', headerText: 'Age', type: 'number', format: 'N0', width: 70, textAlign: 'Right', },
             { field: 'maxRetailPrice', headerText: 'MRP', type: 'number', textAlign: 'Right', format: 'N2', width: 100 },
             { field: 'salePriceGst', headerText: 'SP(GST)', type: 'number', textAlign: 'Right', format: 'N2', width: 100 },
+            { field: 'calculatedSalePriceGst', headerText: 'SP Calculaed(GST)', type: 'number', textAlign: 'Right', format: 'N2', width: 150 },
             { field: 'lastPurchasePriceGst', headerText: 'Pur pr(GST)', type: 'number', textAlign: 'Right', format: 'N2', width: 110 },
             { field: 'sale', headerText: 'Sale', type: 'number', textAlign: 'Right', format: 'N0', width: 60 },
             { field: 'gstRate', headerText: 'Gst%', type: 'number', textAlign: 'Right', format: 'N2', width: 70 },

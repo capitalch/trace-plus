@@ -24,7 +24,7 @@ const StatusBar: React.FC = () => {
                 {/* Status Indicators */}
                 <div className="flex flex-wrap gap-6">
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                         <span className="text-md whitespace-nowrap">Debits: ₹{debits.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -32,8 +32,8 @@ const StatusBar: React.FC = () => {
                         <span className="text-md whitespace-nowrap">Credits: ₹{credits.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-md whitespace-nowrap">Diff: ₹{diff.toFixed(2)}</span>
+                        <div className={`w-2 h-2 ${diff !== 0 ? 'bg-red-500' : 'bg-amber-500'} rounded-full flex-shrink-0`}></div>
+                        <span className={`text-md whitespace-nowrap ${diff !== 0 ? 'text-red-600' : ''}`}>Diff: ₹{diff.toFixed(2)}</span>
                     </div>
                 </div>
 

@@ -4,13 +4,17 @@ import { CompAccountsContainer } from "../../../../controls/components/comp-acco
 import { ContactsType, SalePurchaseEditDataType, TranDType } from "../../../../utils/global-types-interfaces-enums";
 // import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 // import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
-import { RootStateType } from "../../../../app/store";
-import { useSelector } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
+import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { Utils } from "../../../../utils/utils";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+import { clearSalesFormData } from "./sales-slice";
 
 export function AllSales() {
-    // const instance = DataInstancesMap.allSales;
+    const dispatch: AppDispatchType = useDispatch()
+    const instance = DataInstancesMap.allSales;
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject*/  hasGstin } = useUtilsInfo();
     const methods = useForm<SalesFormDataType>(
@@ -19,8 +23,8 @@ export function AllSales() {
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
-    // const { clearErrors, setError, getValues, setValue, reset, watch, setFocus } = methods;
-    const extendedMethods = { ...methods, /*resetAll, getDefaultPurchaseLineItem, checkPurchaseInvoiceExists*/ }
+    const { clearErrors, setError, getValues, setValue, reset, watch, setFocus } = methods;
+    const extendedMethods = { ...methods, getDefaultSalesLineItem, resetAll }
 
     return (
         <FormProvider {...extendedMethods}>
@@ -34,40 +38,76 @@ export function AllSales() {
     );
 
     async function finalizeAndSubmit() { }
-    function getDefaultSalesFormValues():SalesFormDataType {
+    function getDefaultSalesFormValues(): SalesFormDataType {
         return ({
+            id: undefined,
+            autoRefNo: undefined,
             tranDate: new Date().toISOString().split('T')[0],
-            tranTypeId: 2, // Sales
+            userRefNo: null,
+            remarks: null,
+            tranTypeId: Utils.getTranTypeId("Sales"),
+            isGstInvoice: hasGstin,
+            isIgst: false,
+
             branchId: 0,
             finYearId: 0,
             hasCustomerGstin: false,
-            isGstInvoice: hasGstin,
-            isIgst: false,
-            creditAccId: '',
+
+            creditAccId: null,
             debitAccounts: [],
+            gstin: null,
+
             deletedIds: [],
             contactDisplayData: null,
             contactData: null,
-            saleLineItems: [
-                {
-                    productId: null,
-                    productCode: '',
-                    productDetails: '',
-                    hsn: '',
-                    qty: 1,
-                    gstRate: 0,
-                    price: 0,
-                    amount: 0,
-                    discount: 0,
-                    priceGst: 0,
-                    subTotal: 0,
-                    cgst: 0,
-                    sgst: 0,
-                    igst: 0
-                }
+            salesLineItems: [
+                // {
+                //     productId: null,
+                //     productCode: '',
+                //     productDetails: '',
+                //     hsn: '',
+                //     qty: 1,
+                //     gstRate: 0,
+                //     price: 0,
+                //     amount: 0,
+                //     discount: 0,
+                //     priceGst: 0,
+                //     subTotal: 0,
+                //     cgst: 0,
+                //     sgst: 0,
+                //     igst: 0
+                // }
             ],
             toggle: false // For making the form forcefully dirty
         })
+    }
+
+    function getDefaultSalesLineItem(): SaleLineItemType {
+        return {
+            id: undefined,
+            productId: null,
+            productCode: '',
+            productDetails: '',
+            lineRemarks: null,
+            hsn: '',
+            qty: 1,
+            gstRate: 0,
+            price: 0,
+            amount: 0,
+            discount: 0,
+            priceGst: 0,
+            serialNumbers: null,
+            subTotal: 0,
+            cgst: 0,
+            sgst: 0,
+            igst: 0
+        };
+    }
+
+    function resetAll() {
+        clearErrors()
+        reset(getDefaultSalesFormValues());
+        dispatch(clearSalesFormData());
     }
 }
 
@@ -87,19 +127,19 @@ export type SalesFormDataType = {
     contactDisplayData: ContactDisplayDataType | null;
     contactData: ContactsType | null;
 
-    creditAccId: string | number;
+    creditAccId: string | number | null;
     debitAccounts: TranDType[];
 
     gstin?: string | null;
 
     deletedIds: number[]; // for PurchaseSaleDetails table
-    saleLineItems: SaleLineItemType[];
+    salesLineItems: SalesLineItemType[];
 
     saleEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
 }
 
-export type SaleLineItemType = {
+export type SalesLineItemType = {
     id?: number;
     productId: number | null;
     tranDetailsID?: number;

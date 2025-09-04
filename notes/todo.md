@@ -25,25 +25,30 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
-- Fix
-	- Debit notes
-	- credit notes
-	- Accounts
-	- Categories
+													- Fix
+														- Debit notes
+														- credit notes
+														- Accounts
+														- Categories
 
 
 - Sales
 	- Items and services
-		- Show validation error color from start
-		- Check clear row
-		- Clear all button
-		- Search
-		- Change code population
-			- prices
-			- HSN
-			- GST Rate
-			- Price GST
-		- Compute
+		- Show summary
+		- Show stock after this sale
+		- show profit after price
+		- Show warning sign if negative stock or loss
+		- show ageing
+													- Show validation error color from start
+													- Check clear row
+													- Clear all button
+													- Search
+												- Change code population
+													- prices
+													- HSN
+													- GST Rate
+													- Price GST
+													- Compute
 		- Round off
 		- Back cal
 		- Inventory reports
@@ -52,7 +57,7 @@ valid gstin: 24AAACC1206D1ZM
 												- Line item UI
 													- Interchange Amount and action
 													- Use cross for bin
-		- UX
+													- UX
 	- Payment details
 	- Validation
 	- Shipping
