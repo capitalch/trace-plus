@@ -50,10 +50,10 @@ export const Utils: UtilsType = {
   getToken: getToken,
   getTranTypeId: getTranTypeId,
   getTranTypeName: getTranTypeName,
+  getUniqueId: getUniqueId,
   getUnitInfo: getUnitInfo,
   getUserDetails: getUserDetails,
   gridUtils: gridUtils,
-  getUniqueId: getUniqueId,
   isAlmostEqual: isAlmostEqual,
   isNotNullOrUndefined: isNotNullOrUndefined,
   isNumeric: isNumeric,
@@ -66,9 +66,9 @@ export const Utils: UtilsType = {
   showDeleteConfirmDialog: showDeleteConfirmDialog,
   showErrorMessage: showErrorMessage,
   showFailureAlertMessage: showFailureAlertMessage,
+  showGraphQlErrorMessage: showGraphQlErrorMessage,
   showHideModalDialogA: showHideModalDialogA,
   showHideModalDialogB: showHideModalDialogB,
-  showGraphQlErrorMessage: showGraphQlErrorMessage,
   showOptionsSelect: showOptionsSelect,
   showSaveMessage: showSaveMessage,
   showSuccessAlertMessage: showSuccessAlertMessage,
@@ -945,9 +945,9 @@ type UtilsType = {
   getToken: () => string | undefined;
   getTranTypeId: (tranTypeName: TranType) => number;
   getTranTypeName: (tranTypeId: number) => TranType | undefined;
+  getUniqueId: () => number;
   getUnitInfo: () => UnitInfoType | undefined;
   getUserDetails: () => UserDetailsType | undefined;
-  getUniqueId: () => number;
   gridUtils: GridUtilsType;
   isAlmostEqual: (a: number, b: number, tolerancePercent: number, toleranceAbsolute: number) => boolean
   isNotNullOrUndefined: (value: any) => boolean;
@@ -966,20 +966,15 @@ type UtilsType = {
   ) => void;
   showCustomMessage: (title: string) => void;
   showDeleteConfirmDialog: (onConfirm: () => void) => void;
-  showFailureAlertMessage: (alertMessage: AlertMessageType) => void;
-  showSuccessAlertMessage: (
-    alertMessage: AlertMessageType,
-    callback?: () => void
-  ) => void;
   showErrorMessage: (
     error?: any,
     errorCode?: string,
     errorMessage?: string
   ) => void;
-  // showGetText: () => any;
+  showFailureAlertMessage: (alertMessage: AlertMessageType) => void;
+  showGraphQlErrorMessage: (error: GraphQlErrorType) => void;
   showHideModalDialogA: (options: ShowHideModalDialogType) => void;
   showHideModalDialogB: (options: ShowHideModalDialogType) => void;
-  showGraphQlErrorMessage: (error: GraphQlErrorType) => void;
   showOptionsSelect: (
     message: string,
     option1: string,
@@ -987,6 +982,10 @@ type UtilsType = {
     action: (result: any) => void
   ) => void;
   showSaveMessage: () => void;
+  showSuccessAlertMessage: (
+    alertMessage: AlertMessageType,
+    callback?: () => void
+  ) => void;
   showWarningMessage: (warningMessage: string) => void;
   toDecimalFormat: (s: any) => string;
   toWordsFromAmount: (amt: number) => string;

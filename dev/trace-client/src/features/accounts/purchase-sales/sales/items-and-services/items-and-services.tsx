@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, ChangeEvent } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, ChangeEvent } from 'react';
 import clsx from "clsx";
 import _ from "lodash";
 import { NumericFormat } from "react-number-format";
@@ -44,340 +44,34 @@ const ItemsAndServices: React.FC = () => {
     const lineItems = watch("salesLineItems") || [];
     const isIgst = watch('isIgst');
 
-    const getDefaultLineItem = useCallback(() => {
-        const lineItem = getDefaultSalesLineItem();
-        lineItem.gstRate = defaultGstRate || 0;
-        return lineItem;
-    }, [defaultGstRate, getDefaultSalesLineItem]);
-
-    const handleClearLineItem = useCallback((index: number) => {
-        setValue(`salesLineItems.${index}.productId`, null, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.productCode`, '', { shouldDirty: true });
-        setValue(`salesLineItems.${index}.upcCode`, null, { shouldDirty: true })
-        setValue(`salesLineItems.${index}.productDetails`, '', { shouldDirty: true });
-        setValue(`salesLineItems.${index}.hsn`, '', { shouldDirty: true });
-        setValue(`salesLineItems.${index}.gstRate`, 0, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.qty`, 1, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.price`, 0, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.discount`, 0, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
-        trigger();
-    }, [setValue, trigger]);
-
-    const setLineItem = useCallback((product: ProductInfoType & { calculatedSalePriceGst: number }, index: number) => {
-        setValue(`salesLineItems.${index}.productId`, product.productId, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
-        setValue(`salesLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
-        setValue(`salesLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.priceGst`, product.calculatedSalePriceGst, { shouldDirty: true });
-        setValue(`salesLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
-        setTimeout(() => {
-            trigger()
-        }, 0);
-    }, [setValue, trigger]);
-
-    const populateProductOnProductCode = useCallback(async (productCode: string, itemId: number) => {
-        if (!productCode) {
-            handleClearLineItem(itemId);
-            return;
-        }
-        const products: (ProductInfoType & { calculatedSalePriceGst: number })[] = await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
-            sqlArgs: {
-                productCodeOrUpc: productCode
-            }
-        });
-        const product = products?.[0];
-        if (_.isEmpty(product)) {
-            handleClearLineItem(itemId);
-            return;
-        }
-        setLineItem(product, itemId);
-    }, [buCode, dbName, decodedDbParamsObject, handleClearLineItem, setLineItem]);
-
-    const onChangeProductCode = useMemo(
-        () =>
-            _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
-                populateProductOnProductCode(e.target.value, index);
-            }, 2000), [populateProductOnProductCode]
+    const debouncedPopulateProduct = useMemo(
+        () => _.debounce((productCode: string, itemId: number) => {
+            populateProductOnProductCode(productCode, itemId);
+        }, 2000),
+        []
     );
 
-    const setPriceGst = useCallback((index: number) => {
-        const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
-        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+    const onChangeProductCode = useCallback((e: ChangeEvent<HTMLInputElement>, index: number) => {
+        debouncedPopulateProduct(e.target.value, index);
+    }, [debouncedPopulateProduct]);
 
-        const multiplier = gstRate.dividedBy(100).plus(1);
-        const priceGst = multiplier.times(price);
-
-        setValue(`salesLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
-            shouldDirty: true,
-            shouldValidate: true
-        });
-    }, [watch, setValue]);
-
-    const computeLineItemValues = useCallback((index: number) => {
-        const qty = new Decimal(watch(`salesLineItems.${index}.qty`) || 0);
-        const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
-        const discount = new Decimal(watch(`salesLineItems.${index}.discount`) || 0);
-        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
-
-        const base = price.minus(discount);
-        const subTotal = qty.times(base).toDecimalPlaces(2);
-        const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
-        const amount = subTotal.times(multiplier).toDecimalPlaces(2)
-        const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
-        if (isIgst) {
-            setValue(`salesLineItems.${index}.cgst`, 0)
-            setValue(`salesLineItems.${index}.sgst`, 0)
-            setValue(`salesLineItems.${index}.igst`, gst.toDecimalPlaces(2).toNumber())
-        } else {
-            const halfGst = gst.dividedBy(2).toDecimalPlaces(2);
-            setValue(`salesLineItems.${index}.cgst`, halfGst.toNumber())
-            setValue(`salesLineItems.${index}.sgst`, halfGst.toNumber())
-            setValue(`salesLineItems.${index}.igst`, 0)
-        }
-
-        setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber())
-        setValue(`salesLineItems.${index}.amount`, amount.toNumber())
-        setPrice(index)
-        // setPriceGst(index)
-        trigger()
-    }, [watch, isIgst, setValue, setPriceGst, trigger]);
-
-    function getSnError(index: number) {
-        const serialNumbers = watch(`salesLineItems.${index}.serialNumbers`);
-        const sn = serialNumbers ? serialNumbers.replace(/[,;]$/, "") : "";
-        const snCount = sn ? sn.split(/[,;]/).length : 0;
-        const qty = watch(`salesLineItems.${index}.qty`);
-        let snError = undefined;
-        if (snCount !== 0 && snCount !== qty) {
-            snError = Messages.errQtySrNoNotMatch;
-        }
-        return snError;
-    }
-
-    function setPrice(index: number) {
-        const priceGst = new Decimal(watch(`salesLineItems.${index}.priceGst`) || 0);
-        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
-
-        const divisor = gstRate.dividedBy(100).plus(1);
-        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
-
-        setValue(`salesLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
-            shouldDirty: true,
-            shouldValidate: true
-        });
-    }
-
+    // UseEffect hooks
     useEffect(() => {
-        return () => onChangeProductCode.cancel();
-    }, [onChangeProductCode]);
+        return () => debouncedPopulateProduct.cancel();
+    }, [debouncedPopulateProduct]);
 
     useEffect(() => {
         if (lineItems.length === 0) {
             append(getDefaultLineItem());
         }
-    }, [lineItems.length, append, getDefaultLineItem]);
+    }, [lineItems.length, append]);
 
     useEffect(() => {
         fields.forEach((_, index) => {
             computeLineItemValues(index)
         })
-    }, [fields, isIgst, computeLineItemValues])
+    }, [fields, isIgst])
 
-    // Event handlers
-    const handleAddRow = (index: number) => {
-        insert(index + 1,
-            getDefaultLineItem(),
-            { shouldFocus: true }
-        );
-        setTimeout(() => setCurrentRowIndex(index + 1), 0);
-    };
-
-    const handleClearAll = () => {
-        const deletedIds = getValues('deletedIds') || []
-        for (let i = fields.length - 1; i >= 0; i--) {
-            const id = getValues(`salesLineItems.${i}.id`)
-            if (id) {
-                deletedIds.push(id)
-            }
-            remove(i);
-        }
-        if (!_.isEmpty(deletedIds)) {
-            setValue('deletedIds', [...deletedIds])
-        }
-        setTimeout(() => setCurrentRowIndex(0), 0);
-    };
-
-    const handleRoundOff = () => {
-        // const totals = calculateTotals();
-        // const totalBeforeRoundOff = parseFloat(totals.totalBeforeRoundOff);
-        // const roundedTotal = Math.round(totalBeforeRoundOff);
-        // const roundOffValue = roundedTotal - totalBeforeRoundOff;
-        // setRoundOff(roundOffValue);
-    };
-
-    const handleBackCalc = () => {
-        // if (backCalcTarget <= 0) {
-        //     Utils.showErrorMessage("Please enter a valid target amount");
-        //     return;
-        // }
-
-        // const currentTotals = calculateTotals();
-        // const currentTotal = parseFloat(currentTotals.totalBeforeRoundOff);
-
-        // if (currentTotal <= 0) {
-        //     Utils.showErrorMessage("No items to calculate backwards from");
-        //     return;
-        // }
-
-        // // Calculate the adjustment factor
-        // const adjustmentFactor = (backCalcTarget - roundOff) / currentTotal;
-
-        // // Adjust prices proportionally
-        // const updatedItems = items.map(item => {
-        //     if (item.price > 0) {
-        //         return {
-        //             ...item,
-        //             price: parseFloat((item.price * adjustmentFactor).toFixed(2))
-        //         };
-        //     }
-        //     return item;
-        // });
-
-        // setItems(updatedItems);
-        // // Clear the input after successful calculation
-        // setBackCalcTarget(0);
-    };
-
-    function handleProductSearch(itemId: number) {
-        Utils.showHideModalDialogA({
-            isOpen: true,
-            size: "lg",
-            element: <ProductSelectFromGrid onSelect={(product: any) => setLineItem(product, itemId)} />,
-            title: "Select a product"
-        });
-    }
-
-    // Render helper methods
-    function getSummary() {
-        const summary = lineItems.reduce(
-            (acc, item) => {
-                acc.count += 1;
-                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
-                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
-                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
-                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
-                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
-                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
-                acc.backCalcAmount = acc.amount;
-                return acc;
-            },
-            {
-                count: 0,
-                qty: new Decimal(0),
-                subTotal: new Decimal(0),
-                cgst: new Decimal(0),
-                sgst: new Decimal(0),
-                igst: new Decimal(0),
-                amount: new Decimal(0),
-                backCalcAmount: new Decimal(0)
-            }
-        );
-        return (summary)
-    }
-
-    function getSummaryMarkup() {
-        const summary = getSummary();
-        return (
-            <div className="flex flex-wrap items-center mt-2 py-2 w-full font-medium bg-gray-50 border border-gray-200 rounded">
-                {/* Left side - Controls and stats */}
-                <div className="flex flex-wrap items-center flex-1 gap-4">
-                    {/* Clear All Button */}
-                    <button
-                        type="button"
-                        onClick={handleClearAll}
-                        className="flex items-center ml-2 px-4 py-1 text-gray-500 text-sm bg-amber-100 rounded-sm hover:bg-amber-200 gap-1"
-                    >
-                        <IconClear1 className="w-3 h-3" />
-                        Clear All Rows
-                    </button>
-
-                    <div className="flex text-right text-xs gap-1">
-                        <span className="text-gray-500">Items:</span>
-                        <span>{summary.count}</span>
-                    </div>
-                    <div className="flex text-right text-xs gap-1">
-                        <span className="text-gray-500">Qty:</span>
-                        <span>{Utils.toDecimalFormat(summary.qty.toNumber())}</span>
-                    </div>
-                    <div className="flex text-right text-xs gap-1">
-                        <span className="text-gray-500">SubTotal:</span>
-                        <span>{summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                    </div>
-                    <div className="flex text-right text-xs gap-1">
-                        <span className="text-gray-500">CGST:</span>
-                        <span>{Utils.toDecimalFormat(summary.cgst.toNumber())}</span>
-                    </div>
-                    <div className="flex text-right text-xs gap-1">
-                        <span className="text-gray-500">SGST:</span>
-                        <span>{Utils.toDecimalFormat(summary.sgst.toNumber())}</span>
-                    </div>
-                    <div className="flex text-right text-xs gap-1">
-                        <span className="text-gray-500">IGST:</span>
-                        <span>{Utils.toDecimalFormat(summary.igst.toNumber())}</span>
-                    </div>
-                </div>
-
-                {/* Center - Controls */}
-                <div className="flex items-center gap-1">
-                    {/* Round Off Button */}
-                    <button
-                        type="button"
-                        onClick={handleRoundOff}
-                        className="px-2 py-1 font-semibold text-blue-700 text-sm bg-blue-100 rounded transition-colors hover:bg-blue-200"
-                    >
-                        Round Off
-                    </button>
-
-                    {/* Back Calc Section */}
-                    <div className="flex items-center px-2 py-1 bg-white border border-gray-200 rounded gap-1">
-                        <button
-                            type="button"
-                            onClick={handleBackCalc}
-                            className="px-2 py-1 font-semibold text-sm text-white bg-teal-500 rounded transition-colors hover:bg-teal-600"
-                        >
-                            Back Cal
-                        </button>
-                        <NumericFormat
-                            value={backCalcTarget}
-                            thousandSeparator
-                            decimalScale={2}
-                            fixedDecimalScale
-                            placeholder="Amount"
-                            className="px-1 py-0.5 w-30 font-normal text-right text-x border border-gray-300 rounded focus:border-teal-500 focus:outline-none"
-                            onValueChange={({ floatValue }) => {
-                                setBackCalcTarget(floatValue ?? 0);
-                            }}
-                        />
-                    </div>
-                </div>
-
-                {/* Right side - Total Amount */}
-                <div className="flex items-center ml-2 px-3 py-1 bg-green-50 border-l-2 border-teal-300 rounded gap-1">
-                    <span className="text-gray-500 text-md">Total:</span>
-                    <strong className="font-black text-lg ">{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
-                </div>
-            </div>
-        );
-    }
-
-    // const totals = calculateTotals();
 
     return (
         <AnimatePresence>
@@ -543,6 +237,7 @@ const ItemsAndServices: React.FC = () => {
                                         }}
                                     />
                                 </div>
+                                {/* Display age stock profit */}
                                 <div className="w-48 flex items-center gap-3 text-sm">
                                     {(() => {
                                         const age = watch(`salesLineItems.${index}.age`) || 0;
@@ -587,6 +282,8 @@ const ItemsAndServices: React.FC = () => {
                                     onValueChange={({ floatValue }) => {
                                         setValue(`salesLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
                                         computeLineItemValues(index)
+
+                                        // setPriceGst(index)
                                     }}
                                 />
                             </div>
@@ -623,6 +320,8 @@ const ItemsAndServices: React.FC = () => {
                                     }}
                                     onValueChange={({ floatValue }) => {
                                         setValue(`salesLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })
+                                        
+                                        // setPrice(index)
                                     }}
                                 />
                             </div>
@@ -703,6 +402,318 @@ const ItemsAndServices: React.FC = () => {
             </div>
         </AnimatePresence>
     );
+
+    // Event handlers
+    function handleAddRow(index: number) {
+        insert(index + 1,
+            getDefaultLineItem(),
+            { shouldFocus: true }
+        );
+        setTimeout(() => setCurrentRowIndex(index + 1), 0);
+    }
+
+    function handleBackCalc() {
+        // if (backCalcTarget <= 0) {
+        //     Utils.showErrorMessage("Please enter a valid target amount");
+        //     return;
+        // }
+
+        // const currentTotals = calculateTotals();
+        // const currentTotal = parseFloat(currentTotals.totalBeforeRoundOff);
+
+        // if (currentTotal <= 0) {
+        //     Utils.showErrorMessage("No items to calculate backwards from");
+        //     return;
+        // }
+
+        // // Calculate the adjustment factor
+        // const adjustmentFactor = (backCalcTarget - roundOff) / currentTotal;
+
+        // // Adjust prices proportionally
+        // const updatedItems = items.map(item => {
+        //     if (item.price > 0) {
+        //         return {
+        //             ...item,
+        //             price: parseFloat((item.price * adjustmentFactor).toFixed(2))
+        //         };
+        //     }
+        //     return item;
+        // });
+
+        // setItems(updatedItems);
+        // // Clear the input after successful calculation
+        // setBackCalcTarget(0);
+    }
+
+    function handleClearAll() {
+        const deletedIds = getValues('deletedIds') || []
+        for (let i = fields.length - 1; i >= 0; i--) {
+            const id = getValues(`salesLineItems.${i}.id`)
+            if (id) {
+                deletedIds.push(id)
+            }
+            remove(i);
+        }
+        if (!_.isEmpty(deletedIds)) {
+            setValue('deletedIds', [...deletedIds])
+        }
+        setTimeout(() => setCurrentRowIndex(0), 0);
+    }
+
+    function handleClearLineItem(index: number) {
+        setValue(`salesLineItems.${index}.productId`, null, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.productCode`, '', { shouldDirty: true });
+        setValue(`salesLineItems.${index}.upcCode`, null, { shouldDirty: true })
+        setValue(`salesLineItems.${index}.productDetails`, '', { shouldDirty: true });
+        setValue(`salesLineItems.${index}.hsn`, '', { shouldDirty: true });
+        setValue(`salesLineItems.${index}.gstRate`, 0, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.qty`, 1, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.price`, 0, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.priceGst`, 0, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.discount`, 0, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
+        trigger();
+    }
+
+    function handleProductSearch(itemId: number) {
+        Utils.showHideModalDialogA({
+            isOpen: true,
+            size: "lg",
+            element: <ProductSelectFromGrid onSelect={(product: any) => setLineItem(product, itemId)} />,
+            title: "Select a product"
+        });
+    }
+
+    function handleRoundOff() {
+        // const totals = calculateTotals();
+        // const totalBeforeRoundOff = parseFloat(totals.totalBeforeRoundOff);
+        // const roundedTotal = Math.round(totalBeforeRoundOff);
+        // const roundOffValue = roundedTotal - totalBeforeRoundOff;
+        // setRoundOff(roundOffValue);
+    }
+
+    // Helper functions
+    function computeLineItemValues(index: number) {
+        const qty = new Decimal(watch(`salesLineItems.${index}.qty`) || 0);
+        const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
+        const discount = new Decimal(watch(`salesLineItems.${index}.discount`) || 0);
+        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+
+        const base = price.minus(discount);
+        const subTotal = qty.times(base).toDecimalPlaces(2);
+        const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
+        const amount = subTotal.times(multiplier).toDecimalPlaces(2)
+        const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
+        if (isIgst) {
+            setValue(`salesLineItems.${index}.cgst`, 0)
+            setValue(`salesLineItems.${index}.sgst`, 0)
+            setValue(`salesLineItems.${index}.igst`, gst.toDecimalPlaces(2).toNumber())
+        } else {
+            const halfGst = gst.dividedBy(2).toDecimalPlaces(2);
+            setValue(`salesLineItems.${index}.cgst`, halfGst.toNumber())
+            setValue(`salesLineItems.${index}.sgst`, halfGst.toNumber())
+            setValue(`salesLineItems.${index}.igst`, 0)
+        }
+
+        setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber())
+        setValue(`salesLineItems.${index}.amount`, amount.toNumber())
+        setPrice(index)
+        // setPriceGst(index)
+        trigger()
+    }
+
+    function getDefaultLineItem() {
+        const lineItem = getDefaultSalesLineItem();
+        lineItem.gstRate = defaultGstRate || 0;
+        return lineItem;
+    }
+
+    function getSnError(index: number) {
+        const serialNumbers = watch(`salesLineItems.${index}.serialNumbers`);
+        const sn = serialNumbers ? serialNumbers.replace(/[,;]$/, "") : "";
+        const snCount = sn ? sn.split(/[,;]/).length : 0;
+        const qty = watch(`salesLineItems.${index}.qty`);
+        let snError = undefined;
+        if (snCount !== 0 && snCount !== qty) {
+            snError = Messages.errQtySrNoNotMatch;
+        }
+        return snError;
+    }
+
+    function getSummary() {
+        const summary = lineItems.reduce(
+            (acc, item) => {
+                acc.count += 1;
+                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
+                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
+                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
+                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
+                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
+                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
+                acc.backCalcAmount = acc.amount;
+                return acc;
+            },
+            {
+                count: 0,
+                qty: new Decimal(0),
+                subTotal: new Decimal(0),
+                cgst: new Decimal(0),
+                sgst: new Decimal(0),
+                igst: new Decimal(0),
+                amount: new Decimal(0),
+                backCalcAmount: new Decimal(0)
+            }
+        );
+        return (summary)
+    }
+
+    function getSummaryMarkup() {
+        const summary = getSummary();
+        return (
+            <div className="flex flex-wrap items-center mt-2 py-2 w-full font-medium bg-gray-50 border border-gray-200 rounded">
+                {/* Left side - Controls and stats */}
+                <div className="flex flex-wrap items-center flex-1 gap-4">
+                    {/* Clear All Button */}
+                    <button
+                        type="button"
+                        onClick={handleClearAll}
+                        className="flex items-center ml-2 px-4 py-1 text-gray-500 text-sm bg-amber-100 rounded-sm hover:bg-amber-200 gap-1"
+                    >
+                        <IconClear1 className="w-3 h-3" />
+                        Clear All Rows
+                    </button>
+
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">Items:</span>
+                        <span>{summary.count}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">Qty:</span>
+                        <span>{Utils.toDecimalFormat(summary.qty.toNumber())}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">SubTotal:</span>
+                        <span>{summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">CGST:</span>
+                        <span>{Utils.toDecimalFormat(summary.cgst.toNumber())}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">SGST:</span>
+                        <span>{Utils.toDecimalFormat(summary.sgst.toNumber())}</span>
+                    </div>
+                    <div className="flex text-right text-xs gap-1">
+                        <span className="text-gray-500">IGST:</span>
+                        <span>{Utils.toDecimalFormat(summary.igst.toNumber())}</span>
+                    </div>
+                </div>
+
+                {/* Center - Controls */}
+                <div className="flex items-center gap-1">
+                    {/* Round Off Button */}
+                    <button
+                        type="button"
+                        onClick={handleRoundOff}
+                        className="px-2 py-1 font-semibold text-blue-700 text-sm bg-blue-100 rounded transition-colors hover:bg-blue-200"
+                    >
+                        Round Off
+                    </button>
+
+                    {/* Back Calc Section */}
+                    <div className="flex items-center px-2 py-1 bg-white border border-gray-200 rounded gap-1">
+                        <button
+                            type="button"
+                            onClick={handleBackCalc}
+                            className="px-2 py-1 font-semibold text-sm text-white bg-teal-500 rounded transition-colors hover:bg-teal-600"
+                        >
+                            Back Cal
+                        </button>
+                        <NumericFormat
+                            value={backCalcTarget}
+                            thousandSeparator
+                            decimalScale={2}
+                            fixedDecimalScale
+                            placeholder="Amount"
+                            className="px-1 py-0.5 w-30 font-normal text-right text-x border border-gray-300 rounded focus:border-teal-500 focus:outline-none"
+                            onValueChange={({ floatValue }) => {
+                                setBackCalcTarget(floatValue ?? 0);
+                            }}
+                        />
+                    </div>
+                </div>
+
+                {/* Right side - Total Amount */}
+                <div className="flex items-center ml-2 px-3 py-1 bg-green-50 border-l-2 border-teal-300 rounded gap-1">
+                    <span className="text-gray-500 text-md">Total:</span>
+                    <strong className="font-black text-lg ">{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
+                </div>
+            </div>
+        );
+    }
+
+    async function populateProductOnProductCode(productCode: string, itemId: number) {
+        if (!productCode) {
+            handleClearLineItem(itemId);
+            return;
+        }
+        const products: (ProductInfoType & { calculatedSalePriceGst: number })[] = await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
+            sqlArgs: {
+                productCodeOrUpc: productCode
+            }
+        });
+        const product = products?.[0];
+        if (_.isEmpty(product)) {
+            handleClearLineItem(itemId);
+            return;
+        }
+        setLineItem(product, itemId);
+    }
+
+    function setLineItem(product: ProductInfoType & { calculatedSalePriceGst: number }, index: number) {
+        setValue(`salesLineItems.${index}.productId`, product.productId, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
+        setValue(`salesLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
+        setValue(`salesLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.priceGst`, product.calculatedSalePriceGst, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
+        setTimeout(() => {
+            computeLineItemValues(index)
+            // trigger()
+        }, 0);
+    }
+
+    function setPrice(index: number) {
+        const priceGst = new Decimal(watch(`salesLineItems.${index}.priceGst`) || 0);
+        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+
+        const divisor = gstRate.dividedBy(100).plus(1);
+        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
+
+        setValue(`salesLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }
+
+    function setPriceGst(index: number) {
+        const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
+        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+
+        const multiplier = gstRate.dividedBy(100).plus(1);
+        const priceGst = multiplier.times(price);
+
+        setValue(`salesLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }
 };
 
 export default ItemsAndServices;
