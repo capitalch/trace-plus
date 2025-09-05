@@ -495,10 +495,17 @@ const ItemsAndServices: React.FC = () => {
 
     // Helper functions
     function computeLineItemValues(index: number) {
-        const qty = new Decimal(watch(`salesLineItems.${index}.qty`) || 0);
-        const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
-        const discount = new Decimal(watch(`salesLineItems.${index}.discount`) || 0);
-        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+        // const qty = new Decimal(watch(`salesLineItems.${index}.qty`) || 0);
+        // const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
+        // const discount = new Decimal(watch(`salesLineItems.${index}.discount`) || 0);
+        // const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+
+        const qty = new Decimal(getValues(`salesLineItems.${index}.qty`) || 0);
+        const priceGst = new Decimal(getValues(`salesLineItems.${index}.priceGst`) || 0);
+        const discount = new Decimal(getValues(`salesLineItems.${index}.discount`) || 0);
+        const gstRate = new Decimal(getValues(`salesLineItems.${index}.gstRate`) || 0);
+
+        const price = priceGst.dividedBy(gstRate.dividedBy(new Decimal(100)).plus(1)).toDecimalPlaces(2);
 
         const base = price.minus(discount);
         const subTotal = qty.times(base).toDecimalPlaces(2);

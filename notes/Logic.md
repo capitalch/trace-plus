@@ -1,3 +1,39 @@
+## sales: Logic for computation
+# onChange fires when data is changed by keyboard
+# onValueChange fires when data value itself changes irrespective of what initiated it
+# onValueChange is fired first then onChange
+# Target is to handle when
+    - search is done and priceGst is set by code: setLineItem
+    - when any of qty, price, discount, priceGst is changed on keyb
+# create following methods
+    - computeLineItemValues
+        - starting from priceGst calculates subtotal, cgst, sgst, igst, amount and sets those values in form
+    - setPrice
+        - calculates price from priceGst and other values
+        - setValue(price)
+    - setPriceGst
+        - calculates priceGst from price and other values
+        - setValue(priceGst)
+# Logic
+    - On Search Executed: basically setLineItem
+        - setValue(priceGst)
+        - setPrice()
+        - computeLineItemValues
+    - onChange price
+        - setPriceGst()
+        - computeLineItemValues()
+    - onChange priceGst
+        - setPrice()
+        - computeLineItemValues()
+    - onChange qty
+        - computeLineItemValues()
+    - onChange rate
+        - setPrice()
+        - computeLineItemValues()
+    - onChange discount
+        - setPriceGst()
+        - computeLineItemValues()
+
 # Intended logic for security
 ✅ 1. Use HTTPS Only
 Always serve both frontend and backend over HTTPS to prevent token theft over the network.
