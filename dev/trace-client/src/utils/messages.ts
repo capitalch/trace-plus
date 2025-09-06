@@ -109,6 +109,7 @@ const Messages = {
   messEndDateGreaterThanStartDate:
     'End date must be greater than or equal to start date',
   messEnterSearchString: 'Please enter a search string',
+  messEnterValidAmount: 'Please enter a valid target amount',
   messExistingLinksDropHere:
     'Existing Bu`s with links (Drop the dragged row here)',
   messExistingRolesWithLinksDropHere:

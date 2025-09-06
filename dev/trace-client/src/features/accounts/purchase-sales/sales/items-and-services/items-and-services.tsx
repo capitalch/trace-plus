@@ -198,6 +198,7 @@ const ItemsAndServices: React.FC = () => {
                                         fieldName={`salesLineItems.${index}.gstRate`}
                                         onValueChange={(floatValue) => {
                                             setValue(`salesLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
+                                            setPrice(index)
                                             computeLineItemValues(index)
                                         }}
                                         validate={(value) => {
@@ -275,16 +276,13 @@ const ItemsAndServices: React.FC = () => {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
-                                    onChange={() => {
+                                    onChange={(e) => {
+                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                        setValue(`salesLineItems.${index}.price`, numericValue, { shouldDirty: true })
                                         setPriceGst(index)
+                                        computeLineItemValues(index)
                                     }}
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`salesLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
-                                        computeLineItemValues(index)
-
-                                        // setPriceGst(index)
-                                    }}
                                 />
                             </div>
 
@@ -298,8 +296,10 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`salesLineItems.${index}.discount`, floatValue ?? 0, { shouldDirty: true })
+                                    onChange={(e) => {
+                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                        setValue(`salesLineItems.${index}.discount`, numericValue, { shouldDirty: true })
+                                        setPriceGst(index)
                                         computeLineItemValues(index)
                                     }}
                                 />
@@ -315,14 +315,15 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onChange={() => {
+                                    onChange={(e) => {
+                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                        setValue(`salesLineItems.${index}.priceGst`, numericValue, { shouldDirty: true })
                                         setPrice(index)
+                                        computeLineItemValues(index)
                                     }}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`salesLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })
-                                        
-                                        // setPrice(index)
-                                    }}
+                                // onValueChange={({ floatValue }) => {
+                                //     setValue(`salesLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })
+                                // }}
                                 />
                             </div>
 
@@ -353,7 +354,7 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     disabled
                                     readOnly
-                                    className={clsx("border-0 text-right font-black text-gray-900 bg-green-50 ", inputFormFieldStyles)}
+                                    className={clsx("border-0 text-right font-black text-gray-900", inputFormFieldStyles)}
                                 />
                                 <div className="flex items-center justify-center mt-4 ml-auto gap-8">
                                     {/* delete */}
@@ -366,7 +367,6 @@ const ItemsAndServices: React.FC = () => {
                                                 const deletedIds = getValues('deletedIds') || []
                                                 setValue('deletedIds', [...deletedIds, id])
                                             }
-                                            // console.log(id)
                                             if (fields.length > 1) {
                                                 remove(index)
                                                 setTimeout(() => {
@@ -413,36 +413,14 @@ const ItemsAndServices: React.FC = () => {
     }
 
     function handleBackCalc() {
-        // if (backCalcTarget <= 0) {
-        //     Utils.showErrorMessage("Please enter a valid target amount");
-        //     return;
-        // }
-
-        // const currentTotals = calculateTotals();
-        // const currentTotal = parseFloat(currentTotals.totalBeforeRoundOff);
-
-        // if (currentTotal <= 0) {
-        //     Utils.showErrorMessage("No items to calculate backwards from");
-        //     return;
-        // }
-
-        // // Calculate the adjustment factor
-        // const adjustmentFactor = (backCalcTarget - roundOff) / currentTotal;
-
-        // // Adjust prices proportionally
-        // const updatedItems = items.map(item => {
-        //     if (item.price > 0) {
-        //         return {
-        //             ...item,
-        //             price: parseFloat((item.price * adjustmentFactor).toFixed(2))
-        //         };
-        //     }
-        //     return item;
-        // });
-
-        // setItems(updatedItems);
-        // // Clear the input after successful calculation
-        // setBackCalcTarget(0);
+        if (backCalcTarget <= 0) {
+            setBackCalcTarget(0)
+            return;
+        }
+        const summary = getSummary()
+        const totalAmount: Decimal = summary.amount
+        const factor: Decimal = new Decimal(backCalcTarget).div(totalAmount)
+        adjustPricesWithFactor(factor)
     }
 
     function handleClearAll() {
@@ -486,47 +464,48 @@ const ItemsAndServices: React.FC = () => {
     }
 
     function handleRoundOff() {
-        // const totals = calculateTotals();
-        // const totalBeforeRoundOff = parseFloat(totals.totalBeforeRoundOff);
-        // const roundedTotal = Math.round(totalBeforeRoundOff);
-        // const roundOffValue = roundedTotal - totalBeforeRoundOff;
-        // setRoundOff(roundOffValue);
+        const summary = getSummary()
+        const totalAmount: Decimal = summary.amount
+        const newTotalAmount: Decimal = totalAmount.round()
+        const factor: Decimal = newTotalAmount.div(totalAmount)
+        adjustPricesWithFactor(factor)
     }
 
     // Helper functions
-    function computeLineItemValues(index: number) {
-        // const qty = new Decimal(watch(`salesLineItems.${index}.qty`) || 0);
-        // const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
-        // const discount = new Decimal(watch(`salesLineItems.${index}.discount`) || 0);
-        // const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+    function adjustPricesWithFactor(factor: Decimal) {
+        fields.forEach((_, index) => {
+            const priceGst: Decimal = new Decimal(getValues(`salesLineItems.${index}.priceGst`) || 0)
+            const newPriceGst = priceGst.times(factor).toDecimalPlaces(2)
+            setValue(`salesLineItems.${index}.priceGst`, newPriceGst.toNumber(), { shouldDirty: true })
+            setPrice(index)
+            computeLineItemValues(index)
+        })
+        setBackCalcTarget(0)
+    }
 
+    function computeLineItemValues(index: number) {
         const qty = new Decimal(getValues(`salesLineItems.${index}.qty`) || 0);
         const priceGst = new Decimal(getValues(`salesLineItems.${index}.priceGst`) || 0);
-        const discount = new Decimal(getValues(`salesLineItems.${index}.discount`) || 0);
         const gstRate = new Decimal(getValues(`salesLineItems.${index}.gstRate`) || 0);
-
         const price = priceGst.dividedBy(gstRate.dividedBy(new Decimal(100)).plus(1)).toDecimalPlaces(2);
+        const subTotal = qty.times(price).toDecimalPlaces(2);
 
-        const base = price.minus(discount);
-        const subTotal = qty.times(base).toDecimalPlaces(2);
-        const multiplier = gstRate.dividedBy(new Decimal(100)).plus(1);
-        const amount = subTotal.times(multiplier).toDecimalPlaces(2)
-        const gst = subTotal.times(gstRate.dividedBy(new Decimal(100)))
+        const amount = qty.times(priceGst).toDecimalPlaces(2);
+        const gst = amount.minus(subTotal).toDecimalPlaces(2);
+
         if (isIgst) {
-            setValue(`salesLineItems.${index}.cgst`, 0)
-            setValue(`salesLineItems.${index}.sgst`, 0)
-            setValue(`salesLineItems.${index}.igst`, gst.toDecimalPlaces(2).toNumber())
+            setValue(`salesLineItems.${index}.cgst`, 0);
+            setValue(`salesLineItems.${index}.sgst`, 0);
+            setValue(`salesLineItems.${index}.igst`, gst.toNumber());
         } else {
             const halfGst = gst.dividedBy(2).toDecimalPlaces(2);
-            setValue(`salesLineItems.${index}.cgst`, halfGst.toNumber())
-            setValue(`salesLineItems.${index}.sgst`, halfGst.toNumber())
-            setValue(`salesLineItems.${index}.igst`, 0)
+            setValue(`salesLineItems.${index}.cgst`, halfGst.toNumber());
+            setValue(`salesLineItems.${index}.sgst`, halfGst.toNumber());
+            setValue(`salesLineItems.${index}.igst`, 0);
         }
 
-        setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber())
-        setValue(`salesLineItems.${index}.amount`, amount.toNumber())
-        setPrice(index)
-        // setPriceGst(index)
+        setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber());
+        setValue(`salesLineItems.${index}.amount`, amount.toNumber());
         trigger()
     }
 
@@ -558,7 +537,6 @@ const ItemsAndServices: React.FC = () => {
                 acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
                 acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
                 acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
-                acc.backCalcAmount = acc.amount;
                 return acc;
             },
             {
@@ -569,7 +547,6 @@ const ItemsAndServices: React.FC = () => {
                 sgst: new Decimal(0),
                 igst: new Decimal(0),
                 amount: new Decimal(0),
-                backCalcAmount: new Decimal(0)
             }
         );
         return (summary)
@@ -591,27 +568,27 @@ const ItemsAndServices: React.FC = () => {
                         Clear All Rows
                     </button>
 
-                    <div className="flex text-right text-xs gap-1">
+                    <div className="flex text-right text-sm gap-1">
                         <span className="text-gray-500">Items:</span>
                         <span>{summary.count}</span>
                     </div>
-                    <div className="flex text-right text-xs gap-1">
+                    <div className="flex text-right text-sm gap-1">
                         <span className="text-gray-500">Qty:</span>
                         <span>{Utils.toDecimalFormat(summary.qty.toNumber())}</span>
                     </div>
-                    <div className="flex text-right text-xs gap-1">
+                    <div className="flex text-right text-sm gap-1">
                         <span className="text-gray-500">SubTotal:</span>
                         <span>{summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="flex text-right text-xs gap-1">
+                    <div className="flex text-right text-sm gap-1">
                         <span className="text-gray-500">CGST:</span>
                         <span>{Utils.toDecimalFormat(summary.cgst.toNumber())}</span>
                     </div>
-                    <div className="flex text-right text-xs gap-1">
+                    <div className="flex text-right text-sm gap-1">
                         <span className="text-gray-500">SGST:</span>
                         <span>{Utils.toDecimalFormat(summary.sgst.toNumber())}</span>
                     </div>
-                    <div className="flex text-right text-xs gap-1">
+                    <div className="flex text-right text-sm gap-1">
                         <span className="text-gray-500">IGST:</span>
                         <span>{Utils.toDecimalFormat(summary.igst.toNumber())}</span>
                     </div>
@@ -644,6 +621,12 @@ const ItemsAndServices: React.FC = () => {
                             fixedDecimalScale
                             placeholder="Amount"
                             className="px-1 py-0.5 w-30 font-normal text-right text-x border border-gray-300 rounded focus:border-teal-500 focus:outline-none"
+                            onFocus={(e) => e.target.select()}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleBackCalc();
+                                }
+                            }}
                             onValueChange={({ floatValue }) => {
                                 setBackCalcTarget(floatValue ?? 0);
                             }}
@@ -691,17 +674,18 @@ const ItemsAndServices: React.FC = () => {
         setValue(`salesLineItems.${index}.priceGst`, product.calculatedSalePriceGst, { shouldDirty: true });
         setValue(`salesLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
         setTimeout(() => {
-            computeLineItemValues(index)
-            // trigger()
+            setPrice(index);
+            computeLineItemValues(index);
         }, 0);
     }
 
     function setPrice(index: number) {
-        const priceGst = new Decimal(watch(`salesLineItems.${index}.priceGst`) || 0);
-        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+        const priceGst = new Decimal(getValues(`salesLineItems.${index}.priceGst`) || 0);
+        const gstRate = new Decimal(getValues(`salesLineItems.${index}.gstRate`) || 0);
+        const discount = new Decimal(getValues(`salesLineItems.${index}.discount`) || 0);
 
         const divisor = gstRate.dividedBy(100).plus(1);
-        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
+        const price = divisor.gt(0) ? priceGst.dividedBy(divisor).add(discount) : new Decimal(0);
 
         setValue(`salesLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
             shouldDirty: true,
@@ -710,11 +694,12 @@ const ItemsAndServices: React.FC = () => {
     }
 
     function setPriceGst(index: number) {
-        const price = new Decimal(watch(`salesLineItems.${index}.price`) || 0);
-        const gstRate = new Decimal(watch(`salesLineItems.${index}.gstRate`) || 0);
+        const price = new Decimal(getValues(`salesLineItems.${index}.price`) || 0);
+        const gstRate = new Decimal(getValues(`salesLineItems.${index}.gstRate`) || 0);
+        const discount = new Decimal(getValues(`salesLineItems.${index}.discount`) || 0);
 
         const multiplier = gstRate.dividedBy(100).plus(1);
-        const priceGst = multiplier.times(price);
+        const priceGst = multiplier.times(price.minus(discount));
 
         setValue(`salesLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
             shouldDirty: true,

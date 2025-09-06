@@ -6,33 +6,33 @@
     - search is done and priceGst is set by code: setLineItem
     - when any of qty, price, discount, priceGst is changed on keyb
 # create following methods
-    - computeLineItemValues
-        - starting from priceGst calculates subtotal, cgst, sgst, igst, amount and sets those values in form
-    - setPrice
-        - calculates price from priceGst and other values
-        - setValue(price)
-    - setPriceGst
-        - calculates priceGst from price and other values
-        - setValue(priceGst)
+                                                            - computeLineItemValues
+                                                                - starting from priceGst calculates subtotal, cgst, sgst, igst, amount and sets those values in form
+                                                            - setPrice
+                                                                - calculates price from priceGst and other values
+                                                                - setValue(price)
+                                                            - setPriceGst
+                                                                - calculates priceGst from price and other values
+                                                                - setValue(priceGst)
 # Logic
-    - On Search Executed: basically setLineItem
-        - setValue(priceGst)
-        - setPrice()
-        - computeLineItemValues
-    - onChange price
-        - setPriceGst()
-        - computeLineItemValues()
-    - onChange priceGst
-        - setPrice()
-        - computeLineItemValues()
-    - onChange qty
-        - computeLineItemValues()
-    - onChange rate
-        - setPrice()
-        - computeLineItemValues()
-    - onChange discount
-        - setPriceGst()
-        - computeLineItemValues()
+                                                            - On Search Executed: basically setLineItem
+                                                                - setValue(priceGst)
+                                                                - setPrice()
+                                                                - computeLineItemValues
+                                                            - onChange price
+                                                                - setPriceGst()
+                                                                - computeLineItemValues()
+                                                                - onChange priceGst
+                                                                    - setPrice()
+                                                                    - computeLineItemValues()
+                                                                - onChange qty
+                                                                    - computeLineItemValues()
+                                                                - onChange rate
+                                                                    - setPrice()
+                                                                    - computeLineItemValues()
+                                                                - onChange discount
+                                                                    - setPriceGst()
+                                                                    - computeLineItemValues()
 
 # Intended logic for security
 ✅ 1. Use HTTPS Only

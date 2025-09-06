@@ -51,8 +51,8 @@ valid gstin: 24AAACC1206D1ZM
 													- GST Rate
 													- Price GST
 													- Compute
-		- Round off
-		- Back cal
+													- Round off
+													- Back cal
 		- Inventory reports
 			- Current orders back
 													- Form type updation
