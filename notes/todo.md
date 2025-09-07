@@ -35,12 +35,12 @@ valid gstin: 24AAACC1206D1ZM
 - Sales
 	- Items and services
 													- labels 13 px as in prod code
-		- Change debounce logic
-		- Show summary
-		- Show stock after this sale
-		- show profit after price
-		- Show warning sign if negative stock or loss
-		- show ageing
+													- Change debounce logic
+													- Show summary
+													- Show stock after this sale
+													- show profit after price
+													- Show warning sign if negative stock or loss
+													- show ageing
 													- Show validation error color from start
 													- Check clear row
 													- Clear all button
@@ -64,7 +64,7 @@ valid gstin: 24AAACC1206D1ZM
 	- Validation
 	- Shipping
 	- Redux persistence
-											- Customer details
+												- Customer details
 													- Unique mobile no use
 													- Unique email use
 													- If search zeroes in 1 item, use

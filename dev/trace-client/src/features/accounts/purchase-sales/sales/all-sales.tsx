@@ -144,8 +144,10 @@ export type SalesLineItemType = {
     serialNumbers?: string | null;
 
     age?: number | null;
-    profit?: number | null;
+    profit?: number | null | string;
     stock?: number | null;
+    // previousStock?: number | null;
+    lastPurchasePrice?: number | null;
 }
 
 export type ContactDisplayDataType = {

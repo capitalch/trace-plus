@@ -69,7 +69,7 @@ const Messages = {
   errNoSpecialChar: 'Cannot have special character',
   errProductNotSelected: 'Product not selected',
   errQtyCannotBeZero: 'Qty cannot be zero',
-  errQtySrNoNotMatch: 'Qty and serial number count do not match',
+  errQtySrNoNotMatch: 'Qty and serial no count mismatch',
   errRequired: 'This value is required',
   errRequiredShort: "Required",
   errSameAccountCannotAppearInDebitAndCredit: 'Same Account cannot appear in both Debit and Credit',

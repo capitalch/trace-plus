@@ -10,7 +10,6 @@ import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { IconPlus } from "../../../../../controls/icons/icon-plus";
 import { IconCross } from "../../../../../controls/icons/icon-cross";
 import { IconClear } from "../../../../../controls/icons/icon-clear";
-import { IconClear1 } from "../../../../../controls/icons/icon-clear1";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
 import { AnimatePresence, motion } from "framer-motion";
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -20,12 +19,18 @@ import { WidgetAstrix } from '../../../../../controls/widgets/widget-astrix';
 import { Messages } from '../../../../../utils/messages';
 import { ControlledNumericInput } from '../../../../../controls/components/controlled-numeric-input';
 import { WidgetFormErrorMessage } from '../../../../../controls/widgets/widget-form-error-message';
+import ItemsAndServicesSummary from './items-and-services-summary';
 import Decimal from 'decimal.js';
 
 const ItemsAndServices: React.FC = () => {
+    // Custom CSS for blink animation
+    const blinkStyle = {
+        animation: 'blink 1.5s infinite'
+    };
+
     // React hooks
     const { isValidHsn } = useValidators();
-    const { buCode, dbName, decodedDbParamsObject, defaultGstRate, maxGstRate } = useUtilsInfo();
+    const { buCode, branchId, currentFinYear, dbName, decodedDbParamsObject, defaultGstRate, maxGstRate } = useUtilsInfo();
     const {
         control,
         register,
@@ -36,7 +41,6 @@ const ItemsAndServices: React.FC = () => {
         formState: { errors },
     } = useFormContext<SalesFormDataType>();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const [backCalcTarget, setBackCalcTarget] = useState<number>(0);
     const { getDefaultSalesLineItem }: any = useFormContext<SalesFormDataType>()
     const { fields, remove, insert, append } = useFieldArray({ control, name: 'salesLineItems' });
     const isGstInvoice = watch("isGstInvoice");
@@ -75,13 +79,26 @@ const ItemsAndServices: React.FC = () => {
 
     return (
         <AnimatePresence>
+            <style>
+                {`
+                    @keyframes blink {
+                        0%, 50% { opacity: 1; }
+                        51%, 100% { opacity: 0.3; }
+                    }
+                `}
+            </style>
             <div className="flex flex-col -mt-4">
                 <label className="font-medium">Items & Services</label>
 
                 {/* Summary */}
-                {getSummaryMarkup()}
+                <ItemsAndServicesSummary />
 
                 {fields.map((item, index) => {
+                    const age: number = watch(`salesLineItems.${index}.age`) || 0;
+                    const stock = watch(`salesLineItems.${index}.stock`) || 0;
+                    const qty = watch(`salesLineItems.${index}.qty`) || 0;
+                    const cost = watch(`salesLineItems.${index}.lastPurchasePrice`) || 0;
+                    const profit = watch(`salesLineItems.${index}.profit`) || 0;
                     return (
                         <motion.div
                             key={item.id}
@@ -216,54 +233,33 @@ const ItemsAndServices: React.FC = () => {
                                 </div>
                             </div>
 
+
                             {/* Qty */}
                             <div className="flex flex-col w-20">
-                                <div className='flex flex-col'>
-                                    <label className="font-semibold text-[13px]">Qty</label>
-                                    <ControlledNumericInput
-                                        className={clsx("text-right h-8 mt-1",
-                                            inputFormFieldStyles, errors.salesLineItems?.[index]?.qty ? errorClass : '')}
-                                        fieldName={`salesLineItems.${index}.qty`}
-                                        onValueChange={(floatValue) => {
-                                            setValue(`salesLineItems.${index}.qty`, floatValue || 0, {
-                                                shouldDirty: true,
-                                                shouldValidate: true,
-                                                shouldTouch: true
-                                            })
-                                            computeLineItemValues(index)
-                                        }}
-                                        validate={(value) => {
-                                            const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
-                                            return (ret)
-                                        }}
-                                    />
-                                </div>
-                                {/* Display age stock profit */}
-                                <div className="w-48 flex items-center gap-3 text-sm">
-                                    {(() => {
-                                        const age = watch(`salesLineItems.${index}.age`) || 0;
-                                        return (
-                                            <span className={age > 360 ? "text-red-600 font-medium" : "text-gray-600"}>
-                                                Age: {age}d
-                                            </span>
-                                        );
-                                    })()}
-                                    {(() => {
-                                        const stock = watch(`salesLineItems.${index}.stock`) || 0;
-                                        return (
-                                            <span className={stock <= 0 ? "text-red-600 font-medium" : "text-green-600"}>
-                                                Stock: {stock}
-                                            </span>
-                                        );
-                                    })()}
-                                    {(() => {
-                                        const profit = watch(`salesLineItems.${index}.profit`) || 0;
-                                        return (
-                                            <span className={profit < 0 ? "text-red-600 font-medium" : "text-blue-600"}>
-                                                Profit: {profit}
-                                            </span>
-                                        );
-                                    })()}
+                                <label className="font-semibold text-[13px]">Qty</label>
+                                <ControlledNumericInput
+                                    className={clsx("text-right h-8 mt-1",
+                                        inputFormFieldStyles, errors.salesLineItems?.[index]?.qty ? errorClass : '')}
+                                    fieldName={`salesLineItems.${index}.qty`}
+                                    onValueChange={(floatValue) => {
+                                        setValue(`salesLineItems.${index}.qty`, floatValue || 0, {
+                                            shouldDirty: true,
+                                            shouldValidate: true,
+                                            shouldTouch: true
+                                        })
+                                        computeLineItemValues(index)
+                                        setStockAndProfit(index);
+                                    }}
+                                    validate={(value) => {
+                                        const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
+                                        return (ret)
+                                    }}
+                                />
+                                {/* Age Display */}
+                                <div className="mt-7 py-1 rounded-md text-sm text-right">
+                                    <span className={age > 360 ? "text-orange-600 font-semibold" : "text-gray-500"}>
+                                        Age: {age}
+                                    </span>
                                 </div>
                             </div>
 
@@ -276,14 +272,27 @@ const ItemsAndServices: React.FC = () => {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
-                                    onChange={(e) => {
-                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-                                        setValue(`salesLineItems.${index}.price`, numericValue, { shouldDirty: true })
+                                    // onChange={(e) => {
+                                    //     const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                    //     setValue(`salesLineItems.${index}.price`, numericValue, { shouldDirty: true })
+                                    //     setPriceGst(index)
+                                    //     computeLineItemValues(index)
+                                    //     setStockAndProfit(index);
+                                    // }}
+                                    onValueChange={({ floatValue }) => {
+                                        setValue(`salesLineItems.${index}.price`, floatValue || 0, { shouldDirty: true })
                                         setPriceGst(index)
                                         computeLineItemValues(index)
+                                        setStockAndProfit(index);
                                     }}
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
                                 />
+                                {/* Cost Display */}
+                                <div className="mt-7 py-1 rounded-md text-sm text-right">
+                                    <span className={age > 360 ? "text-orange-600 font-semibold" : "text-gray-500"}>
+                                        Cost: {cost}
+                                    </span>
+                                </div>
                             </div>
 
                             {/* Discount */}
@@ -296,13 +305,29 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onChange={(e) => {
-                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-                                        setValue(`salesLineItems.${index}.discount`, numericValue, { shouldDirty: true })
+                                    // onChange={(e) => {
+                                    //     const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                    //     setValue(`salesLineItems.${index}.discount`, numericValue, { shouldDirty: true })
+                                    //     setPriceGst(index)
+                                    //     computeLineItemValues(index)
+                                    //     setStockAndProfit(index);
+                                    // }}
+                                    onValueChange={({ floatValue }) => {
+                                        setValue(`salesLineItems.${index}.discount`, floatValue || 0, { shouldDirty: true })
                                         setPriceGst(index)
                                         computeLineItemValues(index)
+                                        setStockAndProfit(index);
                                     }}
                                 />
+                                {/* Stock Display */}
+                                <div className={clsx("mt-7 py-1 rounded-md text-sm text-right")}>
+                                    <span
+                                        className={(stock - 1) < 0 ? "text-amber-800 font-medium" : "text-gray-500"}
+                                        style={(stock - qty) < 0 ? blinkStyle : undefined}
+                                    >
+                                        Stock: {stock - qty}
+                                    </span>
+                                </div>
                             </div>
 
                             {/* Price GST */}
@@ -315,16 +340,30 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onChange={(e) => {
-                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-                                        setValue(`salesLineItems.${index}.priceGst`, numericValue, { shouldDirty: true })
+                                    // onChange={(e) => {
+                                    //     const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                    //     setValue(`salesLineItems.${index}.priceGst`, numericValue, { shouldDirty: true })
+                                    //     setPrice(index)
+                                    //     computeLineItemValues(index)
+                                    //     setStockAndProfit(index);
+                                    // }}
+                                    onValueChange={({ floatValue }) => {
+                                        setValue(`salesLineItems.${index}.priceGst`, floatValue || 0, { shouldDirty: true })
                                         setPrice(index)
                                         computeLineItemValues(index)
+                                        setStockAndProfit(index);
                                     }}
-                                // onValueChange={({ floatValue }) => {
-                                //     setValue(`salesLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })
-                                // }}
                                 />
+
+                                {/* Profit Display */}
+                                <div className={clsx("mt-7 py-1 rounded-md text-sm text-right")}>
+                                    <span
+                                        className={Number(profit) < 0 ? "text-amber-700 font-medium" : "text-gray-500"}
+                                        style={Number(profit) < 0 ? blinkStyle : undefined}
+                                    >
+                                        Prft: {profit}
+                                    </span>
+                                </div>
                             </div>
 
                             {/* Serials */}
@@ -398,7 +437,7 @@ const ItemsAndServices: React.FC = () => {
                 })}
 
                 {/* Summary */}
-                {getSummaryMarkup()}
+                <ItemsAndServicesSummary />
             </div>
         </AnimatePresence>
     );
@@ -412,31 +451,7 @@ const ItemsAndServices: React.FC = () => {
         setTimeout(() => setCurrentRowIndex(index + 1), 0);
     }
 
-    function handleBackCalc() {
-        if (backCalcTarget <= 0) {
-            setBackCalcTarget(0)
-            return;
-        }
-        const summary = getSummary()
-        const totalAmount: Decimal = summary.amount
-        const factor: Decimal = new Decimal(backCalcTarget).div(totalAmount)
-        adjustPricesWithFactor(factor)
-    }
 
-    function handleClearAll() {
-        const deletedIds = getValues('deletedIds') || []
-        for (let i = fields.length - 1; i >= 0; i--) {
-            const id = getValues(`salesLineItems.${i}.id`)
-            if (id) {
-                deletedIds.push(id)
-            }
-            remove(i);
-        }
-        if (!_.isEmpty(deletedIds)) {
-            setValue('deletedIds', [...deletedIds])
-        }
-        setTimeout(() => setCurrentRowIndex(0), 0);
-    }
 
     function handleClearLineItem(index: number) {
         setValue(`salesLineItems.${index}.productId`, null, { shouldDirty: true });
@@ -451,6 +466,11 @@ const ItemsAndServices: React.FC = () => {
         setValue(`salesLineItems.${index}.discount`, 0, { shouldDirty: true });
         setValue(`salesLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
         setValue(`salesLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
+
+        setValue(`salesLineItems.${index}.lastPurchasePrice`, 0, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.age`, 0, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.stock`, 0, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.profit`, 0, { shouldDirty: true });
         trigger();
     }
 
@@ -463,25 +483,8 @@ const ItemsAndServices: React.FC = () => {
         });
     }
 
-    function handleRoundOff() {
-        const summary = getSummary()
-        const totalAmount: Decimal = summary.amount
-        const newTotalAmount: Decimal = totalAmount.round()
-        const factor: Decimal = newTotalAmount.div(totalAmount)
-        adjustPricesWithFactor(factor)
-    }
 
     // Helper functions
-    function adjustPricesWithFactor(factor: Decimal) {
-        fields.forEach((_, index) => {
-            const priceGst: Decimal = new Decimal(getValues(`salesLineItems.${index}.priceGst`) || 0)
-            const newPriceGst = priceGst.times(factor).toDecimalPlaces(2)
-            setValue(`salesLineItems.${index}.priceGst`, newPriceGst.toNumber(), { shouldDirty: true })
-            setPrice(index)
-            computeLineItemValues(index)
-        })
-        setBackCalcTarget(0)
-    }
 
     function computeLineItemValues(index: number) {
         const qty = new Decimal(getValues(`salesLineItems.${index}.qty`) || 0);
@@ -527,121 +530,6 @@ const ItemsAndServices: React.FC = () => {
         return snError;
     }
 
-    function getSummary() {
-        const summary = lineItems.reduce(
-            (acc, item) => {
-                acc.count += 1;
-                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
-                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
-                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
-                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
-                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
-                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
-                return acc;
-            },
-            {
-                count: 0,
-                qty: new Decimal(0),
-                subTotal: new Decimal(0),
-                cgst: new Decimal(0),
-                sgst: new Decimal(0),
-                igst: new Decimal(0),
-                amount: new Decimal(0),
-            }
-        );
-        return (summary)
-    }
-
-    function getSummaryMarkup() {
-        const summary = getSummary();
-        return (
-            <div className="flex flex-wrap items-center mt-2 py-2 w-full font-medium bg-gray-50 border border-gray-200 rounded">
-                {/* Left side - Controls and stats */}
-                <div className="flex flex-wrap items-center flex-1 gap-4">
-                    {/* Clear All Button */}
-                    <button
-                        type="button"
-                        onClick={handleClearAll}
-                        className="flex items-center ml-2 px-4 py-1 text-gray-500 text-sm bg-amber-100 rounded-sm hover:bg-amber-200 gap-1"
-                    >
-                        <IconClear1 className="w-3 h-3" />
-                        Clear All Rows
-                    </button>
-
-                    <div className="flex text-right text-sm gap-1">
-                        <span className="text-gray-500">Items:</span>
-                        <span>{summary.count}</span>
-                    </div>
-                    <div className="flex text-right text-sm gap-1">
-                        <span className="text-gray-500">Qty:</span>
-                        <span>{Utils.toDecimalFormat(summary.qty.toNumber())}</span>
-                    </div>
-                    <div className="flex text-right text-sm gap-1">
-                        <span className="text-gray-500">SubTotal:</span>
-                        <span>{summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                    </div>
-                    <div className="flex text-right text-sm gap-1">
-                        <span className="text-gray-500">CGST:</span>
-                        <span>{Utils.toDecimalFormat(summary.cgst.toNumber())}</span>
-                    </div>
-                    <div className="flex text-right text-sm gap-1">
-                        <span className="text-gray-500">SGST:</span>
-                        <span>{Utils.toDecimalFormat(summary.sgst.toNumber())}</span>
-                    </div>
-                    <div className="flex text-right text-sm gap-1">
-                        <span className="text-gray-500">IGST:</span>
-                        <span>{Utils.toDecimalFormat(summary.igst.toNumber())}</span>
-                    </div>
-                </div>
-
-                {/* Center - Controls */}
-                <div className="flex items-center gap-1">
-                    {/* Round Off Button */}
-                    <button
-                        type="button"
-                        onClick={handleRoundOff}
-                        className="px-2 py-1 font-semibold text-blue-700 text-sm bg-blue-100 rounded transition-colors hover:bg-blue-200"
-                    >
-                        Round Off
-                    </button>
-
-                    {/* Back Calc Section */}
-                    <div className="flex items-center px-2 py-1 bg-white border border-gray-200 rounded gap-1">
-                        <button
-                            type="button"
-                            onClick={handleBackCalc}
-                            className="px-2 py-1 font-semibold text-sm text-white bg-teal-500 rounded transition-colors hover:bg-teal-600"
-                        >
-                            Back Cal
-                        </button>
-                        <NumericFormat
-                            value={backCalcTarget}
-                            thousandSeparator
-                            decimalScale={2}
-                            fixedDecimalScale
-                            placeholder="Amount"
-                            className="px-1 py-0.5 w-30 font-normal text-right text-x border border-gray-300 rounded focus:border-teal-500 focus:outline-none"
-                            onFocus={(e) => e.target.select()}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleBackCalc();
-                                }
-                            }}
-                            onValueChange={({ floatValue }) => {
-                                setBackCalcTarget(floatValue ?? 0);
-                            }}
-                        />
-                    </div>
-                </div>
-
-                {/* Right side - Total Amount */}
-                <div className="flex items-center ml-2 px-3 py-1 bg-green-50 border-l-2 border-teal-300 rounded gap-1">
-                    <span className="text-gray-500 text-md">Total:</span>
-                    <strong className="font-black text-lg ">{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
-                </div>
-            </div>
-        );
-    }
 
     async function populateProductOnProductCode(productCode: string, itemId: number) {
         if (!productCode) {
@@ -654,7 +542,9 @@ const ItemsAndServices: React.FC = () => {
             dbParams: decodedDbParamsObject,
             sqlId: SqlIdsMap.getProductOnProductCodeUpc,
             sqlArgs: {
-                productCodeOrUpc: productCode
+                productCodeOrUpc: productCode,
+                branchId: branchId || 0,
+                finYearId: currentFinYear?.finYearId || 0,
             }
         });
         const product = products?.[0];
@@ -666,6 +556,13 @@ const ItemsAndServices: React.FC = () => {
     }
 
     function setLineItem(product: ProductInfoType & { calculatedSalePriceGst: number }, index: number) {
+        const age = product.age || 0;
+        const lastPurchasePrice = product.lastPurchasePrice || 0;
+        const stock = product.clos || 0;
+
+        setValue(`salesLineItems.${index}.age`, age);
+        setValue(`salesLineItems.${index}.lastPurchasePrice`, lastPurchasePrice);
+
         setValue(`salesLineItems.${index}.productId`, product.productId, { shouldDirty: true });
         setValue(`salesLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
         setValue(`salesLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
@@ -673,9 +570,11 @@ const ItemsAndServices: React.FC = () => {
         setValue(`salesLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
         setValue(`salesLineItems.${index}.priceGst`, product.calculatedSalePriceGst, { shouldDirty: true });
         setValue(`salesLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.stock`, stock, { shouldDirty: true });
         setTimeout(() => {
             setPrice(index);
             computeLineItemValues(index);
+            setStockAndProfit(index);
         }, 0);
     }
 
@@ -706,6 +605,27 @@ const ItemsAndServices: React.FC = () => {
             shouldValidate: true
         });
     }
+
+    function setStockAndProfit(index: number) {
+        const price = new Decimal(getValues(`salesLineItems.${index}.price`) || 0);
+        const qty = new Decimal(getValues(`salesLineItems.${index}.qty`) || 0);
+        const discount = new Decimal(getValues(`salesLineItems.${index}.discount`) || 0);
+        const lastPurchasePrice = new Decimal(getValues(`salesLineItems.${index}.lastPurchasePrice`) || 0);
+        const stock = new Decimal(getValues(`salesLineItems.${index}.stock`) || 0);
+        // const stock = previousStock.minus(qty);
+        const profit = lastPurchasePrice.gt(0) ? qty.times(price.minus(lastPurchasePrice).minus(discount)) : new Decimal(0);
+        // const pric = price.toNumber();
+        // const qt = qty.toNumber();
+        // const disc = discount.toNumber();
+        // const lpp = lastPurchasePrice.toNumber();
+        // const ps = previousStock.toNumber();
+        // const st = stock.toNumber();
+        // const pr = profit.toNumber();
+        // console.log(`setStockAndProfit: index=${index}, price=${pric}, qty=${qt}, discount=${disc}, lastPurchasePrice=${lpp}, previousStock=${ps} => stock=${st}, profit=${pr}`);
+        setValue(`salesLineItems.${index}.stock`, stock.toNumber(), { shouldDirty: true });
+        setValue(`salesLineItems.${index}.profit`, profit.toDecimalPlaces(2).toNumber(), { shouldDirty: true });
+    }
+
 };
 
 export default ItemsAndServices;
