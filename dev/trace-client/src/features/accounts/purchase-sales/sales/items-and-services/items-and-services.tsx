@@ -23,10 +23,6 @@ import ItemsAndServicesSummary from './items-and-services-summary';
 import Decimal from 'decimal.js';
 
 const ItemsAndServices: React.FC = () => {
-    // Custom CSS for blink animation
-    const blinkStyle = {
-        animation: 'blink 1.5s infinite'
-    };
 
     // React hooks
     const { isValidHsn } = useValidators();
@@ -42,7 +38,20 @@ const ItemsAndServices: React.FC = () => {
     } = useFormContext<SalesFormDataType>();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
     const { getDefaultSalesLineItem }: any = useFormContext<SalesFormDataType>()
-    const { fields, remove, insert, append } = useFieldArray({ control, name: 'salesLineItems' });
+    const { fields, remove, insert, append } = useFieldArray({ 
+        control, 
+        name: 'salesLineItems'
+    });
+
+    // Ensure we always have at least one item
+    React.useEffect(() => {
+        // console.log('ItemsAndServices: fields.length =', fields.length, 'getDefaultSalesLineItem =', !!getDefaultSalesLineItem);
+        if (fields.length === 0 && getDefaultSalesLineItem) {
+            console.log('Appending default line item');
+            append(getDefaultLineItem());
+        }
+    }, [fields.length, append, getDefaultSalesLineItem]);
+
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500';
     const lineItems = watch("salesLineItems") || [];
@@ -64,11 +73,6 @@ const ItemsAndServices: React.FC = () => {
         return () => debouncedPopulateProduct.cancel();
     }, [debouncedPopulateProduct]);
 
-    useEffect(() => {
-        if (lineItems.length === 0) {
-            append(getDefaultLineItem());
-        }
-    }, [lineItems.length, append]);
 
     useEffect(() => {
         fields.forEach((_, index) => {
@@ -79,21 +83,13 @@ const ItemsAndServices: React.FC = () => {
 
     return (
         <AnimatePresence>
-            <style>
-                {`
-                    @keyframes blink {
-                        0%, 50% { opacity: 1; }
-                        51%, 100% { opacity: 0.3; }
-                    }
-                `}
-            </style>
-            <div className="flex flex-col -mt-4">
+            <div className="flex flex-col -mt-4" key={1}>
                 <label className="font-medium">Items & Services</label>
 
                 {/* Summary */}
-                <ItemsAndServicesSummary />
+                <ItemsAndServicesSummary remove={remove} />
 
-                {fields.map((item, index) => {
+                {fields.map((_, index) => {
                     const age: number = watch(`salesLineItems.${index}.age`) || 0;
                     const stock = watch(`salesLineItems.${index}.stock`) || 0;
                     const qty = watch(`salesLineItems.${index}.qty`) || 0;
@@ -101,7 +97,7 @@ const ItemsAndServices: React.FC = () => {
                     const profit = watch(`salesLineItems.${index}.profit`) || 0;
                     return (
                         <motion.div
-                            key={item.id}
+                            key={index}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
@@ -256,7 +252,7 @@ const ItemsAndServices: React.FC = () => {
                                     }}
                                 />
                                 {/* Age Display */}
-                                <div className="mt-7 py-1 rounded-md text-sm text-right">
+                                <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
                                     <span className={age > 360 ? "text-orange-600 font-semibold" : "text-gray-500"}>
                                         Age: {age}
                                     </span>
@@ -272,25 +268,25 @@ const ItemsAndServices: React.FC = () => {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
-                                    // onChange={(e) => {
-                                    //     const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-                                    //     setValue(`salesLineItems.${index}.price`, numericValue, { shouldDirty: true })
-                                    //     setPriceGst(index)
-                                    //     computeLineItemValues(index)
-                                    //     setStockAndProfit(index);
-                                    // }}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`salesLineItems.${index}.price`, floatValue || 0, { shouldDirty: true })
+                                    onChange={(e) => {
+                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                        setValue(`salesLineItems.${index}.price`, numericValue, { shouldDirty: true })
                                         setPriceGst(index)
                                         computeLineItemValues(index)
                                         setStockAndProfit(index);
                                     }}
+                                    // onValueChange={({ floatValue }) => {
+                                    //     setValue(`salesLineItems.${index}.price`, floatValue || 0, { shouldDirty: true })
+                                    //     setPriceGst(index)
+                                    //     computeLineItemValues(index)
+                                    //     setStockAndProfit(index);
+                                    // }}
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
                                 />
                                 {/* Cost Display */}
-                                <div className="mt-7 py-1 rounded-md text-sm text-right">
-                                    <span className={age > 360 ? "text-orange-600 font-semibold" : "text-gray-500"}>
-                                        Cost: {cost}
+                                <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
+                                    <span className={"text-gray-500"}>
+                                        Cost: {Utils.toDecimalFormat(cost)}
                                     </span>
                                 </div>
                             </div>
@@ -305,25 +301,26 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    // onChange={(e) => {
-                                    //     const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-                                    //     setValue(`salesLineItems.${index}.discount`, numericValue, { shouldDirty: true })
-                                    //     setPriceGst(index)
-                                    //     computeLineItemValues(index)
-                                    //     setStockAndProfit(index);
-                                    // }}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`salesLineItems.${index}.discount`, floatValue || 0, { shouldDirty: true })
+                                    onChange={(e) => {
+                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                        setValue(`salesLineItems.${index}.discount`, numericValue, { shouldDirty: true })
                                         setPriceGst(index)
                                         computeLineItemValues(index)
                                         setStockAndProfit(index);
                                     }}
+                                    // onValueChange={({ floatValue }) => {
+                                        // setValue(`salesLineItems.${index}.discount`, floatValue || 0, { shouldDirty: true })
+                                        // setPriceGst(index)
+                                        // computeLineItemValues(index)
+                                        // setStockAndProfit(index);
+                                    // }}
                                 />
                                 {/* Stock Display */}
-                                <div className={clsx("mt-7 py-1 rounded-md text-sm text-right")}>
+                                <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
                                     <span
-                                        className={(stock - 1) < 0 ? "text-amber-800 font-medium" : "text-gray-500"}
-                                        style={(stock - qty) < 0 ? blinkStyle : undefined}
+                                        className={clsx(
+                                            (stock - qty) < 0 ? "text-amber-800 font-medium animate-pulse" : "text-gray-500"
+                                        )}
                                     >
                                         Stock: {stock - qty}
                                     </span>
@@ -340,15 +337,16 @@ const ItemsAndServices: React.FC = () => {
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    // onChange={(e) => {
-                                    //     const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-                                    //     setValue(`salesLineItems.${index}.priceGst`, numericValue, { shouldDirty: true })
-                                    //     setPrice(index)
-                                    //     computeLineItemValues(index)
-                                    //     setStockAndProfit(index);
-                                    // }}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`salesLineItems.${index}.priceGst`, floatValue || 0, { shouldDirty: true })
+                                    onChange={(e) => {
+                                        // this code executes only when value is changed by user using keyboard
+                                        const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                        setValue(`salesLineItems.${index}.priceGst`, numericValue, { shouldDirty: true })
+                                        setPrice(index)
+                                        computeLineItemValues(index)
+                                        setStockAndProfit(index);
+                                    }}
+                                    onValueChange={() => {
+                                        // this code is necessary and it executes when priceGst is changed programmatically
                                         setPrice(index)
                                         computeLineItemValues(index)
                                         setStockAndProfit(index);
@@ -356,12 +354,13 @@ const ItemsAndServices: React.FC = () => {
                                 />
 
                                 {/* Profit Display */}
-                                <div className={clsx("mt-7 py-1 rounded-md text-sm text-right")}>
+                                <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
                                     <span
-                                        className={Number(profit) < 0 ? "text-amber-700 font-medium" : "text-gray-500"}
-                                        style={Number(profit) < 0 ? blinkStyle : undefined}
+                                        className={clsx(
+                                            Number(profit) < 0 ? "text-amber-700 font-medium animate-pulse" : "text-gray-500"
+                                        )}
                                     >
-                                        Prft: {profit}
+                                        Prft: {Utils.toDecimalFormat(profit)}
                                     </span>
                                 </div>
                             </div>
@@ -437,7 +436,7 @@ const ItemsAndServices: React.FC = () => {
                 })}
 
                 {/* Summary */}
-                <ItemsAndServicesSummary />
+                <ItemsAndServicesSummary remove={remove} />
             </div>
         </AnimatePresence>
     );
@@ -509,6 +508,7 @@ const ItemsAndServices: React.FC = () => {
 
         setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber());
         setValue(`salesLineItems.${index}.amount`, amount.toNumber());
+        setSummaryValues()
         trigger()
     }
 
@@ -529,7 +529,6 @@ const ItemsAndServices: React.FC = () => {
         }
         return snError;
     }
-
 
     async function populateProductOnProductCode(productCode: string, itemId: number) {
         if (!productCode) {
@@ -575,6 +574,8 @@ const ItemsAndServices: React.FC = () => {
             setPrice(index);
             computeLineItemValues(index);
             setStockAndProfit(index);
+            // setSummaryValues()
+            // trigger()
         }, 0);
     }
 
@@ -625,6 +626,36 @@ const ItemsAndServices: React.FC = () => {
         setValue(`salesLineItems.${index}.stock`, stock.toNumber(), { shouldDirty: true });
         setValue(`salesLineItems.${index}.profit`, profit.toDecimalPlaces(2).toNumber(), { shouldDirty: true });
     }
+
+    function setSummaryValues() {
+            const summary = lineItems.reduce(
+                (acc, item) => {
+                    acc.count += 1;
+                    acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
+                    acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
+                    acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
+                    acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
+                    acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
+                    acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
+                    return acc;
+                },
+                {
+                    count: 0,
+                    qty: new Decimal(0),
+                    subTotal: new Decimal(0),
+                    cgst: new Decimal(0),
+                    sgst: new Decimal(0),
+                    igst: new Decimal(0),
+                    amount: new Decimal(0),
+                }
+            );
+            setValue('totalInvoiceAmount', summary.amount.toDecimalPlaces(2))
+            setValue('totalQty', summary.qty)
+            setValue('totalCgst', summary.cgst.toDecimalPlaces(2))
+            setValue('totalSgst', summary.sgst.toDecimalPlaces(2))
+            setValue('totalIgst', summary.igst.toDecimalPlaces(2))
+            setValue('totalSubTotal', summary.subTotal.toDecimalPlaces(2))
+        }
 
 };
 

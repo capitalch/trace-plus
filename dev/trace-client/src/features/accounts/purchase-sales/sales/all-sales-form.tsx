@@ -1,6 +1,7 @@
 import CustomerDetails from "./customer-details/customer-details";
 import InvoiceDetails from "./invoice-details/invoice-details";
 import ItemsAndServices from "./items-and-services/items-and-services";
+// import ItemsAndServicesSummary from "./items-and-services/items-and-services-summary";
 import PaymentDetails from "./payment-details/payment-details";
 import Shipping from "./shipping/shipping";
 import StatusBar from "./status-bar/status-bar";
@@ -18,6 +19,7 @@ export function AllSalesForm() {
             </div>
 
             {/* Items and services */}
+            {/* <ItemsAndServicesSummary /> */}
             <ItemsAndServices />
 
             {/* Bottom Sections Row */}

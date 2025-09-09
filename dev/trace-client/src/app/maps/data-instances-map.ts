@@ -28,7 +28,7 @@ export const DataInstancesMap = {
   commonUtilsTransferClosingBalance:
     "common-utilities-transfer-closing-balance",
   contactsAndAddresses: "contacts-and-addresses",
-  currentOrdersReport: "curreanmol.viproad@gmail.comnt-orders-report",
+  currentOrdersReport: "current-orders-report",
   creditNotes:"credit-notes",
   debitNotes:"debit-notes",
   expenses: "expenses",

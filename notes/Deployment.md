@@ -1,7 +1,7 @@
 ## Cloudjiffy: Created AlmaLinux from DockerHub (docker image of almaLinux)
 
 # Total process is
-	- Areate AlmaLinux new environment from Docker image
+	- Create AlmaLinux new environment from Docker image
 	- Install and configur NGINX for server and reverse proxy
 	- install python from source
 	- Install TraceServer dependencies

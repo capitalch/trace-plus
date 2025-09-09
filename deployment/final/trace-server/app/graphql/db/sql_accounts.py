@@ -818,7 +818,11 @@ class SqlAccounts:
                 -- Combine last purchase price with latest result set  
                 SELECT   
                     COALESCE(c4."productId", c5."productId") AS "productId",  
-                    COALESCE(c5."lastPurchasePrice", c4."openingPrice") AS "lastPurchasePrice",  
+                    CASE 
+				        WHEN c5."lastPurchasePrice" IS NULL OR c5."lastPurchasePrice" = 0 
+				        THEN c4."openingPrice"
+				        ELSE c5."lastPurchasePrice"
+				    END AS "lastPurchasePrice",   
                     c4."lastPurchaseDate",  
                     (COALESCE(c4."op", 0) + COALESCE(c4."purchase", 0) - COALESCE(c4."purchaseRet", 0) - COALESCE(c4."sale", 0) + COALESCE(c4."saleRet", 0) + COALESCE(c4."stockJournalDebits", 0) - COALESCE(c4."stockJournalCredits", 0)) AS "clos",  
                     COALESCE(c4."sale", 0) AS "sale",  
@@ -836,7 +840,7 @@ class SqlAccounts:
                     b."brandName",   
                     p."label",   
                     COALESCE(c6."clos"::numeric(10, 2), 0) AS "clos",   
-                    (COALESCE(c6."lastPurchasePrice", 0) * (1 + p."gstRate" / 100)) AS "lastPurchasePriceGst",  
+                    (ROUND(COALESCE(c6."lastPurchasePrice", 0) * (1 + p."gstRate" / 100),2)) AS "lastPurchasePriceGst",  
                     c6."lastPurchaseDate",  
                     (date_part('day',CURRENT_DATE::timestamp - "lastPurchaseDate"::timestamp)) as "age",  
                     p."catId",   
@@ -854,7 +858,7 @@ class SqlAccounts:
                     p."saleDiscount",  
                     COALESCE(c6."op", 0) AS "op",  
                     COALESCE(c6."openingPrice", 0) AS "openingPrice",   
-                    (COALESCE(c6."openingPrice", 0) * (1 + p."gstRate" / 100)) AS "openingPriceGst"  
+                    (ROUND(COALESCE(c6."openingPrice", 0) * (1 + p."gstRate" / 100),2)) AS "openingPriceGst"  
                 FROM cte6 c6  
                 RIGHT JOIN "ProductM" p ON p."id" = c6."productId"  
                 JOIN "CategoryM" c ON c."id" = p."catId"  
@@ -866,7 +870,7 @@ class SqlAccounts:
                     c."catName",  
                     p."label",   
                     p."info"  
-            )   
+            )
         SELECT   
             "id",   
             "productCode",
@@ -883,7 +887,12 @@ class SqlAccounts:
             "gstRate",   
             "salePrice",   
             "salePriceGst",   
-            "maxRetailPrice",   
+            "maxRetailPrice",
+            ROUND(COALESCE(
+                NULLIF("salePriceGst", 0),
+                NULLIF(("salePrice"- "saleDiscount") * (1 + "gstRate" / 100.0), 0),
+                "maxRetailPrice"
+            ),2) AS "calculatedSalePriceGst",
             "sale",   
             "saleDiscount",   
             "lastPurchasePrice",   
@@ -1805,34 +1814,113 @@ class SqlAccounts:
     """
 
     get_product_on_product_code_upc = """
-        with "productCodeOrUpc" as (values(%(productCodeOrUpc)s))
-        --with "productCodeOrUpc" as (values('1162'))
-        select p."id" "productId",
-			coalesce(s."price" - s."discount", o."openingPrice", p."purPrice", 0) as "lastPurchasePrice",
-			c."catName",
-			b."brandName",
-			coalesce(s."hsn", p."hsn", c."hsn", 0) hsn,
-			p."info",
-			p."label",
-			p."productCode",
-			p."upcCode",
-			coalesce(s."gstRate", p."gstRate", 0) "gstRate"
-            from "ProductM" p
-                left join "SalePurchaseDetails" s
-                    on p."id" = s."productId"
-                left join "TranD" d
-                    on d."id" = s."tranDetailsId"
-                left join "TranH" h
-                    on h."id" = d."tranHeaderId"
-                left join "ProductOpBal" o
-                    on p."id" = o."productId"
-                left join "CategoryM" c
-                    on c."id" = p."catId"
-                left join "BrandM" b
-                    on b."id" = p."brandId"
-            where ((p."productCode" = (table "productCodeOrUpc") or (p."upcCode" = (table "productCodeOrUpc")))) and p."isActive"
-			and h."tranDate" <= CURRENT_DATE
-            order by h."tranDate" DESC limit 1
+        -- with "productCodeOrUpc" as (values('1162')), "branchId" as (values(1)), "finYearId" as (values (2025)),
+        WITH "productCodeOrUpc" AS (VALUES(%(productCodeOrUpc)s)), "branchId" AS (VALUES(%(branchId)s::int)), "finYearId" AS (VALUES(%(finYearId)s::int)),
+     
+            -- Get all stock movements for the specific product
+            stock_movements AS (
+                SELECT   
+                    s."productId",   
+                    h."tranTypeId",   
+                    s."qty",   
+                    s."price",   
+                    h."tranDate"
+                FROM "TranH" h  
+                JOIN "TranD" d ON h."id" = d."tranHeaderId"  
+                JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+                JOIN "ProductM" p ON p."id" = s."productId"
+                WHERE h."branchId" = (TABLE "branchId")   
+                AND h."finYearId" = (TABLE "finYearId")
+                AND (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
+                
+                UNION ALL  
+                
+                SELECT   
+                    sj."productId",   
+                    h."tranTypeId",   
+                    sj."qty",   
+                    0 AS "price",   
+                    h."tranDate"
+                FROM "TranH" h  
+                JOIN "StockJournal" sj ON h."id" = sj."tranHeaderId"
+                JOIN "ProductM" p ON p."id" = sj."productId"
+                WHERE h."branchId" = (TABLE "branchId")   
+                AND h."finYearId" = (TABLE "finYearId")
+                AND (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
+            ),
+            
+            -- Calculate stock summary
+            stock_calc AS (
+                SELECT   
+                    sm."productId",
+                    -- Stock calculation: opening + purchase - purchaseRet - sale + saleRet + stockJournalDebits - stockJournalCredits
+                    COALESCE(ob."qty", 0) + 
+                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 5 THEN sm."qty" ELSE 0 END), 0) -
+                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 10 THEN sm."qty" ELSE 0 END), 0) -
+                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 4 THEN sm."qty" ELSE 0 END), 0) +
+                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 9 THEN sm."qty" ELSE 0 END), 0) +
+                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 11 THEN sm."qty" ELSE 0 END), 0) AS "clos",
+                    
+                    -- Last purchase price (most recent purchase or stock journal with price > 0)
+                    COALESCE(
+                        (SELECT sm2."price" 
+                        FROM stock_movements sm2 
+                        WHERE sm2."productId" = sm."productId" 
+                            AND sm2."tranTypeId" IN (5, 11) 
+                            AND sm2."price" > 0
+                        ORDER BY sm2."tranDate" DESC 
+                        LIMIT 1),
+                        ob."openingPrice", 
+                        0
+                    ) AS "lastPurchasePrice",
+                    
+                    -- Last purchase date
+                    COALESCE(
+                        (SELECT sm2."tranDate"
+                        FROM stock_movements sm2 
+                        WHERE sm2."productId" = sm."productId" 
+                            AND sm2."tranTypeId" IN (5, 11)
+                        ORDER BY sm2."tranDate" DESC 
+                        LIMIT 1),
+                        ob."lastPurchaseDate"
+                    ) AS "lastPurchaseDate"
+                    
+                FROM stock_movements sm
+                LEFT JOIN "ProductOpBal" ob ON ob."productId" = sm."productId" 
+                AND ob."branchId" = (TABLE "branchId")
+                AND ob."finYearId" = (TABLE "finYearId")
+                GROUP BY sm."productId", ob."qty", ob."openingPrice", ob."lastPurchaseDate"
+            )
+
+        SELECT 
+            p."id" AS "productId",
+            COALESCE(sc."lastPurchasePrice", p."purPrice", 0) AS "lastPurchasePrice",
+            c."catName",
+            b."brandName", 
+            COALESCE(p."hsn", c."hsn", 0) AS hsn,
+            p."info",
+            p."label",
+            p."productCode",
+            p."upcCode",
+            COALESCE(p."gstRate", 0) AS "gstRate",
+            ROUND(COALESCE(
+                NULLIF(p."salePriceGst", 0),
+                NULLIF((p."salePrice" - p."saleDiscount") * (1 + p."gstRate" / 100.0), 0),
+                p."maxRetailPrice"
+            ), 2) AS "calculatedSalePriceGst",
+            COALESCE(sc."clos", 0) AS "clos",
+            CASE 
+                WHEN COALESCE(sc."clos", 0) > 0 AND sc."lastPurchaseDate" IS NOT NULL 
+                THEN DATE_PART('day', CURRENT_DATE::timestamp - sc."lastPurchaseDate"::timestamp)
+                ELSE 0 
+            END AS "age"
+        FROM "ProductM" p
+        LEFT JOIN stock_calc sc ON p."id" = sc."productId"
+        LEFT JOIN "CategoryM" c ON c."id" = p."catId"
+        LEFT JOIN "BrandM" b ON b."id" = p."brandId"
+        WHERE (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
+        AND p."isActive"
+        LIMIT 1
     """
 
     get_products_for_purchase = """

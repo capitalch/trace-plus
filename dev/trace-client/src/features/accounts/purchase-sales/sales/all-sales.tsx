@@ -9,12 +9,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+// import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { clearSalesFormData } from "./sales-slice";
+import Decimal from "decimal.js";
 
 export function AllSales() {
     const dispatch: AppDispatchType = useDispatch()
-    const instance = DataInstancesMap.allSales;
+    // const instance = DataInstancesMap.allSales;
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject*/  hasGstin } = useUtilsInfo();
     const methods = useForm<SalesFormDataType>(
@@ -23,7 +24,7 @@ export function AllSales() {
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
-    const { clearErrors, setError, getValues, setValue, reset, watch, setFocus } = methods;
+    const { clearErrors, /*setError, getValues, setValue,*/ reset, /*watch, setFocus*/ } = methods;
     const extendedMethods = { ...methods, getDefaultSalesLineItem, resetAll }
 
     return (
@@ -56,6 +57,13 @@ export function AllSales() {
             creditAccId: null,
             debitAccounts: [],
             gstin: null,
+
+            totalInvoiceAmount: new Decimal(0),
+            totalQty: new Decimal(0),
+            totalCgst: new Decimal(0),
+            totalSgst: new Decimal(0),
+            totalIgst: new Decimal(0),
+            totalSubTotal: new Decimal(0),
 
             deletedIds: [],
             contactDisplayData: null,
@@ -117,6 +125,13 @@ export type SalesFormDataType = {
 
     deletedIds: number[]; // for PurchaseSaleDetails table
     salesLineItems: SalesLineItemType[];
+
+    totalInvoiceAmount: Decimal;
+    totalQty: Decimal;
+    totalCgst: Decimal;
+    totalSgst: Decimal;
+    totalIgst: Decimal;
+    totalSubTotal: Decimal;
 
     saleEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty

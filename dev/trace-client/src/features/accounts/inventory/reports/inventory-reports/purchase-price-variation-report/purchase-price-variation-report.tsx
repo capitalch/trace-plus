@@ -76,7 +76,6 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         hasIndexColumn={true}
         height="calc(100vh - 245px)"
         instance={instance}
-        // isLoadOnInit={false}
         isSmallerFont={true}
         loadData={loadData}
         minWidth="600px"

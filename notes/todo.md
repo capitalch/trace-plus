@@ -53,8 +53,8 @@ valid gstin: 24AAACC1206D1ZM
 													- Compute
 													- Round off
 													- Back cal
-		- Inventory reports
-			- Current orders back
+												- Inventory reports
+													- Current orders back
 													- Form type updation
 												- Line item UI
 													- Interchange Amount and action
