@@ -1,0 +1,18 @@
+- Instructions to modify shipping.tsx
+    - In this component, show readonly data having following fields
+        - Name, Mobile, Email, Address1, Address2, Country, State, City, pin, other info
+        - typescript type is ShippingInfoType
+        - All data to be shown in nice two columns responsive tabular format
+    - Remove the current textArea
+    - Clear button clears / resets the data in display
+    - Rename Edit button as Edit / New
+        - Clicking this button opens a new modal window by using Utils.showModalDialogA
+        - In modal window show a form using react-hook-form with the above fields
+        - The form should follow the same pattern and logic as in customer-new-edit-modal.tsx component
+        - There should be cancel, reset and OK buttons in the modal window
+            - Cancel will just close the modal
+            - Reset will reset the form
+            - Ok will close the modal and transfer the data back to shipping.tsx, where it will be displayed. This data will be placed in shippingInfo field of main sales form
+    - the whole of shipping data which is displayed in the component should be placed in shippingInfo field of the main sales form
+    - Also when the json data is available in shippingInfo field, it should be properly displayed in the component.
+    - The UI /UX should be nice and in accordance with the main sales form.

@@ -19,14 +19,13 @@ export function AllSalesForm() {
             </div>
 
             {/* Items and services */}
-            {/* <ItemsAndServicesSummary /> */}
             <ItemsAndServices />
 
             {/* Bottom Sections Row */}
             <div className="grid gap-4 grid-cols-1 lg:grid-cols-12">
-                <PaymentDetails />
-                <Validation />
+                <PaymentDetails />                
                 <Shipping />
+                <Validation />
             </div>
         </div>
     );

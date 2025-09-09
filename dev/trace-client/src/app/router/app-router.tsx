@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { Protected } from "../../features/layouts/protected";
 import { Layouts } from "../../features/layouts/layouts";
 import { Blogs } from "../../features/pages/blogs";
-import { Login } from "../../features/login/login-prod";
+import { Login } from "../../features/login/login";
 import { ErrorPage } from "./error-page";
 import { Comp1 } from "../../features/pages/comp1";
 import { SuperAdminDashboard } from "../../features/security/super-admin/dashboard/super-admin-dashboard";

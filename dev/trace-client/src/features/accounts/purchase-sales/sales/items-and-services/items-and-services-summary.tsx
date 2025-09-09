@@ -22,7 +22,7 @@ const ItemsAndServicesSummary: React.FC<ItemsAndServicesSummaryProps> = ({remove
         // getDefaultSalesLineItem
     }: any = useFormContext<SalesFormDataType>();
 
-    // const { remove } = useFieldArray({ control, name: 'salesLineItems' });
+    // const { remove : localRemove } = useFieldArray({ control, name: 'salesLineItems' });
     const lineItems = watch("salesLineItems") || [];
     // setSummaryValues()
     // const summary = getSummary();

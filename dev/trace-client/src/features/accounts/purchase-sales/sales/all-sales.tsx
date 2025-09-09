@@ -69,6 +69,7 @@ export function AllSales() {
             contactDisplayData: null,
             contactData: null,
             salesLineItems: [],
+            shippingInfo: null,
             toggle: false // For making the form forcefully dirty
         })
     }
@@ -132,9 +133,23 @@ export type SalesFormDataType = {
     totalSgst: Decimal;
     totalIgst: Decimal;
     totalSubTotal: Decimal;
+    shippingInfo: ShippingInfoType | null;
 
     saleEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
+}
+
+export type ShippingInfoType = {
+    name: string;
+    mobileNumber?: string | null;
+    email?: string | null;
+    address1: string;
+    address2?: string | null;
+    country: string;
+    state?: string | null;
+    city?: string | null;
+    pin: string;
+    otherInfo?: string| null;
 }
 
 export type SalesLineItemType = {
