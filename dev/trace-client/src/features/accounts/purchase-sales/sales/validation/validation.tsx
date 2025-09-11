@@ -45,8 +45,8 @@ const Validation: React.FC = () => {
     return (
         <div className="p-4 bg-white border-l-4 border-amber-300 rounded-xl shadow-lg lg:col-span-3">
             <div className="flex items-center mb-3">
-                <div className="mr-2 p-2 text-white bg-amber-400 rounded-lg">
-                    <span className="font-bold text-sm">⚠️</span>
+                <div className="mr-2 p-2 bg-amber-400 rounded-lg">
+                    <span className="font-bold text-sm text-orange-500">🐞</span>
                 </div>
                 <h2 className="font-bold text-gray-800 text-lg">Validation</h2>
             </div>

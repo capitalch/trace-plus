@@ -105,7 +105,7 @@ const Shipping: React.FC = () => {
                 </div>
                 <div className="min-w-0 flex-1">
                     <h2 className="font-bold text-gray-800 text-lg truncate">Shipping</h2>
-                    <p className="text-gray-600 text-sm">Delivery address</p>
+                    {/* <p className="text-gray-600 text-sm">Delivery address</p> */}
                 </div>
             </div>
 
