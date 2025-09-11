@@ -118,6 +118,7 @@ const Messages = {
     'The financial year was successfully selected',
   messFinYearSuccessfullyChanged: 'The financial year was successfully changed',
   messFailure: 'Failure',
+  messGstinValidationFailed:'GSTIN validation failed',
   messLinkSecuredControl: 'Link a secured control with this role',
   messMax500Chars: 'Maximum 500 characters',
   messMustBeGESalePriceGst: 'Must be >= sale price with gst',
@@ -141,6 +142,10 @@ const Messages = {
     'Could not send reset link to the email address provided by you',
   messResetLinkSendSuccess: 'Successfully sent the email with the reset link',
   messResultSetEmpty: 'Result set is empty',
+  messRequiredCustomerDetails:'Customer Details are required',
+  messRequiredProductCode:'Product code is required',
+  messRequiredProductDetails:'Product details is required',
+  messRequiredHsn:'HSN code is required or is invalid',
   messSecuredControlsDragFrom: 'Available secured controls (Drag a row)',
   messSecuredControlExists: 'Secured control already exists in the role',
   messSecuredControlName:

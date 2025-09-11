@@ -6,17 +6,6 @@ import ShippingEditModal from './shipping-edit-modal';
 
 const Shipping: React.FC = () => {
     const formContext = useFormContext<SalesFormDataType>();
-    
-    if (!formContext) {
-        console.warn('Shipping: Form context is not available');
-        return (
-            <div className="p-4 bg-white border-l-4 border-cyan-500 rounded-xl shadow-lg lg:col-span-3">
-                <div className="text-center py-4 text-gray-500">
-                    <p className="text-sm">Loading shipping information...</p>
-                </div>
-            </div>
-        );
-    }
 
     const { setValue, watch } = formContext;
     const shippingInfo: ShippingInfoType | null = watch('shippingInfo') ?? null;
@@ -29,7 +18,7 @@ const Shipping: React.FC = () => {
         Utils.showHideModalDialogA({ 
             isOpen: true, 
             title: 'Shipping Information',
-            element: <ShippingEditModal shippingData={shippingInfo} />
+            element: <ShippingEditModal setParentValue={setValue} shippingData={shippingInfo} />
         });
     };
 
@@ -54,34 +43,76 @@ const Shipping: React.FC = () => {
             { label: 'City', value: shippingInfo.city },
             { label: 'PIN', value: shippingInfo.pin },
             { label: 'Other Info', value: shippingInfo.otherInfo }
-        ].filter(item => item.value);
+        ];//.filter(item => item.value);
+
+        const renderValue = (value: string | null | undefined, className = '') => {
+            if (!value) {
+                return <span className={`text-gray-400 text-sm italic ${className}`}>Not provided</span>;
+            }
+            return <span className={`text-gray-800 text-sm ${className}`}>{value}</span>;
+        };
 
         return (
-            <div className="grid gap-2 grid-cols-1 md:grid-cols-2">
-                {displayData.map(({ label, value }, index) => (
-                    <div key={index} className="flex">
-                        <span className="font-medium text-gray-600 text-sm min-w-24 mr-2">{label}:</span>
-                        <span className="text-gray-800 text-sm flex-1">{value}</span>
-                    </div>
-                ))}
+            <div className="grid gap-y-0.5 gap-x-4 grid-cols-[auto_1fr] md:grid-cols-[auto_1fr_auto_1fr] items-start p-2 bg-gray-50 rounded-lg">
+                {/* Name - Full width span */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[0].label}:</span>
+                {renderValue(displayData[0].value, 'font-medium break-words md:col-span-3')}
+                
+                {/* Email - Full width span */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[2].label}:</span>
+                {renderValue(displayData[2].value, 'break-all md:col-span-3')}
+
+                {/* Mobile */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[1].label}:</span>
+                {renderValue(displayData[1].value, 'break-words')}
+                
+                {/* PIN */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[8].label}:</span>
+                {renderValue(displayData[8].value, 'break-words')}
+
+                {/* Country */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[5].label}:</span>
+                {renderValue(displayData[5].value, 'break-words')}
+                
+                {/* State */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[6].label}:</span>
+                {renderValue(displayData[6].value, 'break-words')}
+
+                {/* City - Full width span */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[7].label}:</span>
+                {renderValue(displayData[7].value, 'break-words md:col-span-3')}
+
+                {/* Address 1 - Full width span */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[3].label}:</span>
+                {renderValue(displayData[3].value, 'break-words md:col-span-3')}
+                
+                {/* Address 2 - Full width span */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[4].label}:</span>
+                {renderValue(displayData[4].value, 'break-words md:col-span-3')}
+
+                {/* Other Info - Full width span */}
+                <span className="font-medium text-gray-600 text-sm">{displayData[9].label}:</span>
+                {renderValue(displayData[9].value, 'break-words whitespace-pre-wrap md:col-span-3')}
             </div>
         );
     };
 
     return (
-        <div className="p-4 bg-white border-l-4 border-cyan-500 rounded-xl shadow-lg lg:col-span-3">
+        <div className="p-4 bg-white border-l-4 border-cyan-500 rounded-xl shadow-lg lg:col-span-3 overflow-hidden">
             <div className="flex items-center mb-3">
                 <div className="mr-3 p-2 text-white bg-cyan-500 rounded-lg">
                     <span className="font-bold text-sm">🚚</span>
                 </div>
-                <div>
-                    <h2 className="font-bold text-gray-800 text-lg">Shipping</h2>
+                <div className="min-w-0 flex-1">
+                    <h2 className="font-bold text-gray-800 text-lg truncate">Shipping</h2>
                     <p className="text-gray-600 text-sm">Delivery address</p>
                 </div>
             </div>
 
             <div className="space-y-3">
-                {renderShippingData()}
+                <div className="min-h-0 overflow-y-auto">
+                    {renderShippingData()}
+                </div>
 
                 <div className="flex justify-between">
                     <button 

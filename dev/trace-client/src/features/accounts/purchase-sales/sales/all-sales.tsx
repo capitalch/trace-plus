@@ -17,7 +17,7 @@ export function AllSales() {
     const dispatch: AppDispatchType = useDispatch()
     // const instance = DataInstancesMap.allSales;
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
-    const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject*/  hasGstin } = useUtilsInfo();
+    const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject */  hasGstin, defaultGstRate } = useUtilsInfo();
     const methods = useForm<SalesFormDataType>(
         {
             mode: "all",
@@ -83,7 +83,7 @@ export function AllSales() {
             lineRemarks: null,
             hsn: '',
             qty: 1,
-            gstRate: 0,
+            gstRate: defaultGstRate,
             price: 0,
             amount: 0,
             discount: 0,
@@ -145,7 +145,7 @@ export type ShippingInfoType = {
     email?: string | null;
     address1: string;
     address2?: string | null;
-    country: string;
+    country?: string | null;
     state?: string | null;
     city?: string | null;
     pin: string;

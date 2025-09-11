@@ -308,7 +308,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                         <div className="grid gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-2">
 
                             {/* Mobile Number */}
-                            <FormField label="Mobile" error={errors?.mobileNumber?.message} className="font-bold">
+                            <FormField label="Mobile" error={errors?.mobileNumber?.message} >
                                 <input
                                     type="tel"
                                     className={clsx(inputClass, errors?.mobileNumber && errorClass, "max-w-42")}
@@ -337,7 +337,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </FormField>
 
                             {/* Contact Name */}
-                            <FormField label="Contact Name" required className="font-bold">
+                            <FormField label="Contact Name" required >
                                 <input
                                     type="text"
                                     className={clsx(inputClass, errors?.contactName && errorClass,)}
@@ -352,7 +352,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
 
                             <div className='flex'>
                                 {/* PIN */}
-                                <FormField label="PIN Code" required error={errors?.pin?.message} className="font-bold">
+                                <FormField label="PIN Code" required error={errors?.pin?.message} >
                                     <input
                                         type="tel"
                                         className={clsx(inputClass, errors?.pin && errorClass, "max-w-24")}
@@ -377,7 +377,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
 
                                 {/* Address 1 */}
                                 <div className='ml-4 w-full'>
-                                    <FormField label="Address 1" required className="font-bold">
+                                    <FormField label="Address 1" required >
                                         <input
                                             type="text"
                                             className={clsx(inputClass, errors?.address1 && errorClass,)}
@@ -392,7 +392,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </div>
 
                             {/* Address 2 */}
-                            <FormField label="Address 2" className="font-bold">
+                            <FormField label="Address 2" >
                                 <input
                                     type="text"
                                     className={clsx(inputClass)}
@@ -402,7 +402,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </FormField>
 
                             {/* Email */}
-                            <FormField label="Email" error={errors?.email?.message} className="font-bold">
+                            <FormField label="Email" error={errors?.email?.message} >
                                 <input
                                     type="email"
                                     className={clsx(inputClass, errors?.email && errorClass)}
@@ -429,7 +429,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
 
                             <div className='grid gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-2'>
                                 {/* GSTIN */}
-                                <FormField label="GSTIN" error={errors?.gstin?.message} className="font-bold">
+                                <FormField label="GSTIN" error={errors?.gstin?.message} >
                                     <input
                                         type="text"
                                         className={clsx(inputClass, errors?.gstin && errorClass)}
@@ -446,7 +446,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                 </FormField>
 
                                 {/* Alt Mobile */}
-                                <FormField label="Alt Mobile" error={errors?.otherMobileNumber?.message} className="font-bold">
+                                <FormField label="Alt Mobile" error={errors?.otherMobileNumber?.message} >
                                     <input
                                         type="tel"
                                         className={clsx(inputClass, errors?.otherMobileNumber && errorClass)}
@@ -476,7 +476,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </div>
 
                             {/* Land Phone */}
-                            <FormField label="Landline" error={errors?.landPhone?.message} className="font-bold">
+                            <FormField label="Landline" error={errors?.landPhone?.message} >
                                 <input
                                     type="tel"
                                     className={clsx(inputClass, errors?.landPhone && errorClass, "max-w-42")}
@@ -496,7 +496,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </FormField>
 
                             {/* Description */}
-                            <FormField label="Description" error={errors?.descr?.message} className="font-bold">
+                            <FormField label="Description" error={errors?.descr?.message} >
                                 <textarea
                                     rows={2}
                                     className={clsx(inputClass, errors?.descr && errorClass, "resize-none")}
@@ -514,7 +514,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                         <div className="grid gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-4">
 
                             {/* Country */}
-                            <FormField label="Country" required className="font-bold">
+                            <FormField label="Country" required >
                                 <input
                                     type="text"
                                     className={clsx(inputClass, errors?.country && errorClass)}
@@ -527,7 +527,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </FormField>
 
                             {/* State */}
-                            <FormField label="State" error={errors?.state?.message} className="font-bold">
+                            <FormField label="State" error={errors?.state?.message} >
                                 <input
                                     type="text"
                                     className={clsx(inputClass, errors?.state && errorClass)}
@@ -537,7 +537,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </FormField>
 
                             {/* City */}
-                            <FormField label="City" error={errors?.city?.message} className="font-bold">
+                            <FormField label="City" error={errors?.city?.message} >
                                 <input
                                     type="text"
                                     className={clsx(inputClass, errors?.city && errorClass)}
@@ -547,7 +547,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </FormField>
 
                             {/* State Code */}
-                            <FormField label="State Code" error={errors?.stateCode?.message} className="font-bold">
+                            <FormField label="State Code" error={errors?.stateCode?.message} >
                                 <input
                                     type="number"
                                     className={clsx(inputClass, errors?.stateCode && errorClass)}
@@ -566,7 +566,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                         {/* Date fields and action buttons row */}
                         <div className="grid items-end gap-x-4 gap-y-2 grid-cols-1 md:grid-cols-4">
                             {/* Date of Birth */}
-                            <FormField label="Date of Birth" error={errors?.dateOfBirth?.message} className="font-bold">
+                            <FormField label="Date of Birth" error={errors?.dateOfBirth?.message} >
                                 <input
                                     type="date"
                                     className={clsx(inputClass, errors?.dateOfBirth && errorClass)}
@@ -583,7 +583,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                             </FormField>
 
                             {/* Anniversary Date */}
-                            <FormField label="Anniversary" error={errors?.anniversaryDate?.message} className="font-bold">
+                            <FormField label="Anniversary" error={errors?.anniversaryDate?.message} >
                                 <input
                                     type="date"
                                     className={clsx(inputClass, errors?.anniversaryDate && errorClass)}

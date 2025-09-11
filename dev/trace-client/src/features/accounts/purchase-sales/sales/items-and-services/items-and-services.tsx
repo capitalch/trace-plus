@@ -26,7 +26,7 @@ const ItemsAndServices: React.FC = () => {
 
     // React hooks
     const { isValidHsn } = useValidators();
-    const { buCode, branchId, currentFinYear, dbName, decodedDbParamsObject, defaultGstRate, maxGstRate } = useUtilsInfo();
+    const { buCode, branchId, currentFinYear, dbName, decodedDbParamsObject, maxGstRate } = useUtilsInfo();
     const {
         control,
         register,
@@ -42,15 +42,6 @@ const ItemsAndServices: React.FC = () => {
         control, 
         name: 'salesLineItems'
     });
-
-    // Ensure we always have at least one item
-    React.useEffect(() => {
-        // console.log('ItemsAndServices: fields.length =', fields.length, 'getDefaultSalesLineItem =', !!getDefaultSalesLineItem);
-        if (fields.length === 0 && getDefaultSalesLineItem) {
-            console.log('Appending default line item');
-            append(getDefaultLineItem());
-        }
-    }, [fields.length, append, getDefaultSalesLineItem]);
 
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500';
@@ -79,6 +70,14 @@ const ItemsAndServices: React.FC = () => {
             computeLineItemValues(index)
         })
     }, [fields, isIgst])
+
+    // Ensure we always have at least one item
+    useEffect(() => {
+        if (fields.length === 0 && getDefaultSalesLineItem) {
+            console.log('Appending default line item');
+            append(getDefaultSalesLineItem());
+        }
+    }, [fields.length, append, getDefaultSalesLineItem]);
 
 
     return (
@@ -444,7 +443,7 @@ const ItemsAndServices: React.FC = () => {
     // Event handlers
     function handleAddRow(index: number) {
         insert(index + 1,
-            getDefaultLineItem(),
+            getDefaultSalesLineItem(),
             { shouldFocus: true }
         );
         setTimeout(() => setCurrentRowIndex(index + 1), 0);
@@ -512,11 +511,11 @@ const ItemsAndServices: React.FC = () => {
         trigger()
     }
 
-    function getDefaultLineItem() {
-        const lineItem = getDefaultSalesLineItem();
-        lineItem.gstRate = defaultGstRate || 0;
-        return lineItem;
-    }
+    // function getDefaultLineItem() {
+    //     const lineItem = getDefaultSalesLineItem();
+    //     lineItem.gstRate = defaultGstRate || 0;
+    //     return lineItem;
+    // }
 
     function getSnError(index: number) {
         const serialNumbers = watch(`salesLineItems.${index}.serialNumbers`);

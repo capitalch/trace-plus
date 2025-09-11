@@ -1,66 +1,63 @@
-import React, { useState } from 'react';
-
-interface Item {
-    id: number;
-    productCode: string;
-    hsn: string;
-    gst: number;
-    qty: number;
-    price: number;
-    gstPrice: number;
-    discount: number;
-    remarks: string;
-    serialNo: string;
-}
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import { SalesFormDataType } from '../all-sales';
+import { Messages } from '../../../../../utils/messages';
 
 const Validation: React.FC = () => {
-    const [showErrors, setShowErrors] = useState(true);
-    const [items] = useState<Item[]>([
-        { id: 1, productCode: '', hsn: '', gst: 0, qty: 1, price: 0, gstPrice: 0, discount: 0, remarks: '', serialNo: '' }
-    ]);
-    const validateForm = () => {
-        const errors:any[] = [];
-        // if (!document.querySelector('input[placeholder="Search customer..."]')?.value) {
-        //     errors.push('Customer is required');
-        // }
-        items.forEach((item, index) => {
-            if (!item.productCode) errors.push(`Item ${index + 1}: Product code required`);
-            if (!item.hsn) errors.push(`Item ${index + 1}: HSN code required`);
+    const { formState: { errors }, watch } = useFormContext<SalesFormDataType>();
+    
+    const getFormErrors = () => {
+        const errorMessages: string[] = [];
+        
+        // Convert form errors to readable messages
+        if (errors.contactData) {
+            errorMessages.push(errors.contactData.message || Messages.messRequiredCustomerDetails);
+        }
+        
+        if (errors.gstin) {
+            errorMessages.push(errors.gstin.message || Messages.messGstinValidationFailed);
+        }
+        
+        // Product/Items validation
+        const items = watch('salesLineItems') || [];
+        items.forEach((item: any, index: number) => {
+            if (!item.productCode || item.productCode.trim() === '') {
+                errorMessages.push(`Item ${index + 1}: ${Messages.messRequiredProductCode}`);
+            }
+            if (!item.productDetails || item.productDetails.trim() === '') {
+                errorMessages.push(`Item ${index + 1}: ${Messages.messRequiredProductDetails}`);
+            }
+            if (!item.hsn || item.hsn.trim() === '') {
+                errorMessages.push(`Item ${index + 1}: ${Messages.messRequiredHsn}`);
+            }
         });
-        return errors;
+        
+        // Add other field errors as needed
+        Object.entries(errors).forEach(([field, error]) => {
+            if (error && typeof error === 'object' && 'message' in error && !['contactData', 'gstin', 'shippingInfo'].includes(field)) {
+                errorMessages.push(error.message as string);
+            }
+        });
+        
+        return errorMessages;
     };
 
     return (
-        <div className="p-4 bg-white border-l-4 border-red-500 rounded-xl shadow-lg lg:col-span-3">
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center">
-                    <div className="mr-2 p-2 text-white bg-red-500 rounded-lg">
-                        <span className="font-bold text-sm">⚠️</span>
-                    </div>
-                    <h2 className="font-bold text-gray-800 text-lg">Validation</h2>
+        <div className="p-4 bg-white border-l-4 border-amber-300 rounded-xl shadow-lg lg:col-span-3">
+            <div className="flex items-center mb-3">
+                <div className="mr-2 p-2 text-white bg-amber-400 rounded-lg">
+                    <span className="font-bold text-sm">⚠️</span>
                 </div>
-                <button
-                    onClick={() => setShowErrors(!showErrors)}
-                    className="text-red-500 text-sm hover:text-red-700"
-                >
-                    {showErrors ? '🙈' : '👁️'}
-                </button>
+                <h2 className="font-bold text-gray-800 text-lg">Validation</h2>
             </div>
 
-            {showErrors && (
-                <div className="max-h-48 overflow-y-auto space-y-3">
-                    {validateForm().length === 0 ? (
-                        <div className="py-4 text-center">
-                            <span className="text-4xl">✅</span>
-                            <p className="mt-2 font-semibold text-green-600 text-sm">All good!</p>
+            {getFormErrors().length > 0 && (
+                <div className="max-h-64 overflow-y-auto space-y-3">
+                    {getFormErrors().map((error, index) => (
+                        <div key={index} className="p-2 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="font-semibold text-red-600 text-sm">🚨 {error}</p>
                         </div>
-                    ) : (
-                        validateForm().map((error, index) => (
-                            <div key={index} className="p-2 bg-red-50 border border-red-200 rounded-lg">
-                                <p className="font-semibold text-red-600 text-xs">🚨 {error}</p>
-                            </div>
-                        ))
-                    )}
+                    ))}
                 </div>
             )}
         </div>

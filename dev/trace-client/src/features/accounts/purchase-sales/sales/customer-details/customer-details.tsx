@@ -22,6 +22,11 @@ const CustomerDetails: React.FC = () => {
         trigger,
         formState: { errors, }
     } = useFormContext<SalesFormDataType>();
+
+    // Register contactData field for validation
+    register('contactData', {
+        validate: validateContactData
+    });
     const isGstInvoice = watch("isGstInvoice");
     const hasCustomerGstin = watch("hasCustomerGstin");
     const [searchQuery, setSearchQuery] = useState('');
@@ -46,6 +51,8 @@ const CustomerDetails: React.FC = () => {
             }
             trigger('contactDisplayData');
         }
+        // Trigger validation for contactData whenever it changes
+        trigger('contactData');
     }, [contactData, getValues, setValue, trigger]);
 
     return (
@@ -164,7 +171,10 @@ const CustomerDetails: React.FC = () => {
 
                 </div>
 
-                <div className="flex flex-col justify-between p-3 min-h-full bg-gray-50 border rounded-lg lg:-mt-13">
+                <div className={clsx(
+                    "flex flex-col justify-between p-3 min-h-full bg-gray-50 border rounded-lg lg:-mt-13",
+                    errors?.contactData && "border-red-500 bg-red-100"
+                )}>
                     <div className="text-md space-y-1.5">
                         <div>
                             <span className="font-medium text-gray-900">{watch('contactDisplayData.name')}</span>
@@ -226,6 +236,8 @@ const CustomerDetails: React.FC = () => {
         setValue('contactData', null);
         setValue('hasCustomerGstin', false);
         setValue('gstin', null);
+        // Trigger validation to show error when contact is cleared
+        trigger('contactData');
     }
 
     function handleCustomerSearch(query: string) {
@@ -253,7 +265,6 @@ const CustomerDetails: React.FC = () => {
                 selectedId={watch('contactDisplayData.id') || null} />,
             size: 'md'
         })
-
     }
 
     function handleNewEditCustomer() {
@@ -264,7 +275,14 @@ const CustomerDetails: React.FC = () => {
             element: <CustomerNewEditModal contactData={contactData} setParentValue={setValue} triggerParent={trigger} />,
             size: 'sm'
         });
-        // console.log("Edit customer clicked", contactData);
+    }
+
+    function validateContactData(): string | undefined {
+        const contactData = getValues('contactData');
+        if (!contactData) {
+            return "Customer Details are required";
+        }
+        return;
     }
 
     function validateGstin(): string | undefined {
