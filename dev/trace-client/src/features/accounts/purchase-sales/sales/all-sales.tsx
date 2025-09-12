@@ -2,20 +2,16 @@ import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
 import { ContactsType, SalePurchaseEditDataType, TranDType } from "../../../../utils/global-types-interfaces-enums";
-// import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-// import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-// import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { clearSalesFormData } from "./sales-slice";
 import Decimal from "decimal.js";
 
 export function AllSales() {
     const dispatch: AppDispatchType = useDispatch()
-    // const instance = DataInstancesMap.allSales;
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject */  hasGstin, defaultGstRate } = useUtilsInfo();
     const methods = useForm<SalesFormDataType>(
@@ -25,7 +21,7 @@ export function AllSales() {
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
     const { clearErrors, /*setError, getValues, setValue,*/ reset, /*watch, setFocus*/ } = methods;
-    const extendedMethods = { ...methods, getDefaultSalesLineItem, resetAll }
+    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll }
 
     return (
         <FormProvider {...extendedMethods}>
@@ -96,6 +92,19 @@ export function AllSales() {
         };
     }
 
+    function getDefaultDebitAccount(): TranDType {
+        return ({
+            id: undefined,
+            accId: null,
+            dc: 'D',
+            tranHeaderId: null,
+            amount: 0,
+            instrNo: null,
+            lineRefNo: null,
+            remarks: null
+        })
+    }
+
     function resetAll() {
         clearErrors()
         reset(getDefaultSalesFormValues());
@@ -149,7 +158,7 @@ export type ShippingInfoType = {
     state?: string | null;
     city?: string | null;
     pin: string;
-    otherInfo?: string| null;
+    otherInfo?: string | null;
 }
 
 export type SalesLineItemType = {

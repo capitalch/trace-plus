@@ -75,7 +75,6 @@ const ItemsAndServices: React.FC = () => {
     // Ensure we always have at least one item
     useEffect(() => {
         if (fields.length === 0 && getDefaultSalesLineItem) {
-            console.log('Appending default line item');
             append(getDefaultSalesLineItem());
         }
     }, [fields.length, append, getDefaultSalesLineItem]);

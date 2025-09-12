@@ -17,8 +17,9 @@ export function AccountPickerFlat({
     loadData,
     onChange,
     showAccountBalance = false,
-    showRefreshButton =true,
-    value
+    showRefreshButton = true,
+    value,
+    toSelectFirstOption = false
 }: AccountPickerFlatType) {
     const selectRef: any = useRef<Select>(null);
     const [options, setOptions] = useState<AccountOptionType[]>([])
@@ -53,15 +54,21 @@ export function AccountPickerFlat({
         }
     }, [value])
 
+    useEffect(() => {
+        if (options && toSelectFirstOption && (!value) && options.length > 0) {
+            (selectRef?.current as any)?.selectOption(options[0])
+        }
+    }, [options])
+
     return (
         <div className='relative'>
             {showRefreshButton && <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-5 -translate-x-1/2 left-1/2'><IconRefresh className='w-5 h-5' /></button>}
-            {showAccountBalance &&  <span className='absolute -top-5.5 right-1'>
+            {showAccountBalance && <span className='absolute -top-5.5 right-1'>
                 <label className='font-medium text-blue-400'>{decFormatter.format(Math.abs(accountBalance))}</label>
                 <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>
             </span>}
             <Select
-                className={clsx('w-full', className)}
+                className={clsx('w-full rounded-md', className)}
                 getOptionLabel={(option: AccountOptionType) => option.accName}
                 getOptionValue={(option: AccountOptionType) => option.id}
                 menuPlacement="auto"
@@ -204,6 +211,7 @@ type AccountPickerFlatType = {
     showAccountBalance?: boolean
     showRefreshButton?: boolean
     value?: string | null;
+    toSelectFirstOption?: boolean;
 }
 
 export type AccountOptionType = {

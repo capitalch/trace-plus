@@ -3,26 +3,35 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import { AccountPickerFlat, AccClassName } from '../../../../../controls/redux-components/account-picker-flat/account-picker-flat';
 import { TranDType } from '../../../../../utils/global-types-interfaces-enums';
-import { Banknote } from 'lucide-react';
+import { Banknote, Plus } from 'lucide-react';
+import { FormField } from '../../../../../controls/widgets/form-field';
+import { DataInstancesMap } from '../../../../../app/maps/data-instances-map';
+import { Messages } from '../../../../../utils/messages';
+import clsx from 'clsx';
 
-// interface PaymentMethod {
-//     id: number;
-//     accId: string | null;
-//     amount: number;
-//     instrNo: string;
-//     remarks: string;
-// }
+interface PaymentMethod {
+    id: number;
+    accId: string | null;
+    amount: number;
+    instrNo: string;
+    remarks: string;
+}
 
-type SalesType = 'retail' | 'wholesale' | 'institution';
+type SalesType = 'retail' | 'bill' | 'institution';
 
 const PaymentDetails: React.FC = () => {
+    const instance = DataInstancesMap.allSales;
+    const errorClass = 'bg-red-200 border-2 border-red-500';
     const { control,
         getValues,
+        register,
         setValue,
         trigger,
+        watch,
         formState: { errors }, } = useFormContext<SalesFormDataType>();
-    
-        const { fields, remove, insert, append } = useFieldArray({
+    const { getDefaultDebitAccount }: any = useFormContext<SalesFormDataType>();
+
+    const { fields, remove, insert, append } = useFieldArray({
         control,
         name: 'debitAccounts'
     });
@@ -32,13 +41,14 @@ const PaymentDetails: React.FC = () => {
     ]);
     const [salesType, setSalesType] = useState<SalesType>('retail');
     const [totalAmount, setTotalAmount] = useState(0);
+
     // Initialize form values from existing data
     useEffect(() => {
         const formData = getValues();
         if (formData.debitAccounts && formData.debitAccounts.length > 0) {
             const methods = formData.debitAccounts.map((debit, index) => ({
                 id: index + 1,
-                accId: debit.accId.toString(),
+                accId: debit?.accId?.toString(),
                 amount: debit.amount,
                 instrNo: debit.instrNo || '',
                 remarks: debit.remarks || ''
@@ -46,6 +56,13 @@ const PaymentDetails: React.FC = () => {
             setPaymentMethods(methods);
         }
     }, []);
+
+    // Ensure we always have at least one item
+    useEffect(() => {
+        if (fields.length === 0 && getDefaultDebitAccount) {
+            append(getDefaultDebitAccount());
+        }
+    }, [fields.length, append, getDefaultDebitAccount]);
 
     // Calculate total whenever payment methods change
     useEffect(() => {
@@ -100,7 +117,7 @@ const PaymentDetails: React.FC = () => {
         switch (salesType) {
             case 'retail':
                 return ['cash', 'bank', 'card', 'ecash'];
-            case 'wholesale':
+            case 'bill':
                 return [null];
             case 'institution':
                 return ['debtor', 'creditor'];
@@ -125,12 +142,10 @@ const PaymentDetails: React.FC = () => {
             </div>
 
             <div className="space-y-8">
-                <div className="p- rounded-lg">
+                <div className="rounded-lg">
                     <div className="mb-2">
-                        <div className="flex justify-end mb-1">
-                            <label className="text-gray-700 text-sm">Sales Account</label>
-                        </div>
                         <div className="flex items-center justify-between">
+                            {/* Radio buttons */}
                             <div className="flex items-center space-x-4">
                                 <label className="flex items-center cursor-pointer">
                                     <input
@@ -166,19 +181,32 @@ const PaymentDetails: React.FC = () => {
                                     <span className="font-semibold text-gray-700 text-sm">🏢 Institution</span>
                                 </label>
                             </div>
-                            <div className="w-64">
+                            {/* Sales account */}
+                            <FormField
+                                label='Sale Account'
+                                required
+                                error={errors?.creditAccId?.message}
+                                className='-mt-2'
+                                toShowErrorMessage={false}
+                            >
                                 <AccountPickerFlat
                                     accClassNames={['sale']}
-                                    instance="paymentDetails"
-                                    value={getValues('creditAccId')?.toString() || null}
-                                    onChange={(value) => {
-                                        setValue('creditAccId', value ? parseInt(value) : null);
-                                        trigger('creditAccId');
-                                    }}
+                                    instance={`${instance}-credit-account`}
+                                    {...register('creditAccId', {
+                                        required: Messages.errRequired,
+                                    })}
+                                    onChange={(val) =>
+                                        setValue('creditAccId', val, {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                        })
+                                    }
                                     showRefreshButton={false}
-                                    className="text-sm"
+                                    value={watch('creditAccId') as string}
+                                    className={clsx("mt-1 w-full max-w-80", errors?.creditAccId && errorClass)}
+                                    toSelectFirstOption={true}
                                 />
-                            </div>
+                            </FormField>
                         </div>
                     </div>
                 </div>
@@ -190,7 +218,7 @@ const PaymentDetails: React.FC = () => {
                             {/* Clear */}
                             <button
                                 onClick={clearPaymentMethods}
-                                className="px-3 py-1 font-semibold text-amber-700 text-xs bg-amber-200 rounded-md transition-all duration-200 hover:bg-amber-300"
+                                className="px-3 py-1 font-semibold text-amber-700 text-sm bg-amber-200 rounded-md transition-all duration-200 hover:bg-amber-300"
                                 type="button"
                             >
                                 🗑️ Clear
@@ -198,10 +226,10 @@ const PaymentDetails: React.FC = () => {
                             {/* Add */}
                             <button
                                 onClick={addPaymentMethod}
-                                className="px-3 py-1 font-semibold text-white text-xs bg-violet-500 rounded-md transition-all duration-200 hover:bg-violet-600"
+                                className="px-3 flex items-center gap-x-1.5 py-1 font-semibold text-white text-sm bg-violet-500 rounded-md transition-all duration-200 hover:bg-violet-600"
                                 type="button"
                             >
-                                ➕ Add
+                                <Plus className='w-4.5 h-4.5' /> Add
                             </button>
                         </div>
                     </div>

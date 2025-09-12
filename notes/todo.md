@@ -61,13 +61,19 @@ valid gstin: 24AAACC1206D1ZM
 													- Use cross for bin
 													- UX
 	- Payment details
-		- Default sales account
+		- populate
+			- Retail 		: cash and bank
+			- Bill 			: 1st row :ledger having subledger
+							: Other rows: cash bank
+			- Institution 	: 1st row :debtor, creditor
+							: Other rows: cash bank
+													- Default sales account
 													- Wholesale change to Auto subledger(Bill)
 													- Total amount at top
-		- Sales account dropdown. Defaults to sales
+													- Sales account dropdown. Defaults to sales
 													- Remove Payment Account
 													- Add clear button left to add button
-		- select default payment method
+		
 	- Validation
 	- Shipping
 	- Redux persistence
