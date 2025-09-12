@@ -56,22 +56,27 @@ const CustomerDetails: React.FC = () => {
     }, [contactData, getValues, setValue, trigger]);
 
     return (
-        <div className="relative px-6 py-4 bg-white border-blue-400 border-l-4 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between mb-4" style={{ height: '40px' }}>
+        <div className="relative px-4 py-4 bg-white border-blue-400 border-l-4 rounded-lg shadow-sm">
+            <div className="flex items-center justify-between mb-4" >
                 <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
-                        <User className="w-5 h-5 text-green-600" />
+                    <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                        <User className="w-5 h-5 text-blue-600" />
                     </div>
                     <h2 className="font-semibold text-gray-900 text-lg">Customer Details</h2>
                 </div>
             </div>
 
-            <div className="grid items-start max-w-3xl gap-4 grid-cols-1 lg:grid-cols-2">
-                <div className="space-y-6">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+                {/* Left Column - Customer Fields (vertically stacked) */}
+                <div className="space-y-4">
+                    {/* Customer Search */}
                     <div>
-                        <label className="block mb-1 font-semibold text-gray-700 text-sm">
-                            Customer
-                        </label>
+                        <div className="flex items-center space-x-2 mb-1">
+                            <User className="w-4 h-4 text-blue-600" />
+                            <label className="block font-semibold text-gray-700 text-sm">
+                                Customer
+                            </label>
+                        </div>
                         <div className="relative">
                             <input
                                 type="text"
@@ -113,69 +118,69 @@ const CustomerDetails: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                            <label className={clsx(
-                                "flex items-center",
-                                isGstInvoice ? "cursor-pointer" : "cursor-not-allowed opacity-50"
+                    {/* Customer has GSTIN Toggle */}
+                    <div className="flex items-center space-x-3">
+                        <label className={clsx(
+                            "flex items-center",
+                            isGstInvoice ? "cursor-pointer" : "cursor-not-allowed opacity-50"
+                        )}>
+                            <input
+                                type="checkbox"
+                                className="sr-only"
+                                {...register("hasCustomerGstin")}
+                                disabled={!isGstInvoice}
+                            />
+                            <div className={clsx(
+                                "relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200",
+                                !isGstInvoice
+                                    ? "bg-gray-200"
+                                    : watch("hasCustomerGstin") ? "bg-green-500" : "bg-gray-300"
                             )}>
-                                <input
-                                    type="checkbox"
-                                    className="sr-only"
-                                    {...register("hasCustomerGstin")}
-                                    disabled={!isGstInvoice}
-                                />
-                                <div className={clsx(
-                                    "relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200",
-                                    !isGstInvoice
-                                        ? "bg-gray-200"
-                                        : watch("hasCustomerGstin") ? "bg-green-500" : "bg-gray-300"
-                                )}>
-                                    <span
-                                        className={clsx(
-                                            "inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200",
-                                            isGstInvoice && watch("hasCustomerGstin") ? "translate-x-5" : "translate-x-0.5"
-                                        )}
-                                    />
-                                </div>
-                                <span className={clsx(
-                                    "ml-2 text-sm font-medium",
-                                    isGstInvoice ? "text-gray-700" : "text-gray-400"
-                                )}>
-                                    Customer has GSTIN
-                                </span>
-                            </label>
-                        </div>
-
-                        <FormField
-                            label="Gstin No"
-                            required={isGstInvoice && hasCustomerGstin}
-                        >
-                            <div className="flex items-center gap-3">
-                                <input
-                                    type="text"
-                                    {...register('gstin', {
-                                        validate: validateGstin,
-                                    })}
+                                <span
                                     className={clsx(
-                                        inputFormFieldStyle, 'mt-1',
-                                        (!isGstInvoice || !hasCustomerGstin) && "bg-gray-100 cursor-not-allowed opacity-60",
-                                        errors?.gstin && "border-red-500 bg-red-100"
+                                        "inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200",
+                                        isGstInvoice && watch("hasCustomerGstin") ? "translate-x-5" : "translate-x-0.5"
                                     )}
-                                    placeholder={hasCustomerGstin ? "Enter GSTIN No" : "Customer has no GSTIN"}
-                                    disabled={!isGstInvoice || !hasCustomerGstin}
                                 />
                             </div>
-                        </FormField>
+                            <span className={clsx(
+                                "ml-2 text-sm font-medium",
+                                isGstInvoice ? "text-gray-700" : "text-gray-400"
+                            )}>
+                                Customer has GSTIN
+                            </span>
+                        </label>
                     </div>
 
+                    {/* GSTIN No Field */}
+                    <FormField
+                        label="GSTIN No"
+                        required={isGstInvoice && hasCustomerGstin}
+                    >
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="text"
+                                {...register('gstin', {
+                                    validate: validateGstin,
+                                })}
+                                className={clsx(
+                                    inputFormFieldStyle, 'mt-1',
+                                    (!isGstInvoice || !hasCustomerGstin) && "bg-gray-100 cursor-not-allowed opacity-60",
+                                    errors?.gstin && "border-red-500 bg-red-100"
+                                )}
+                                placeholder={hasCustomerGstin ? "Enter GSTIN No" : "Customer has no GSTIN"}
+                                disabled={!isGstInvoice || !hasCustomerGstin}
+                            />
+                        </div>
+                    </FormField>
                 </div>
 
+                {/* Right Column - Customer Display (spanning full height) */}
                 <div className={clsx(
-                    "flex flex-col justify-between p-3 min-h-full bg-gray-50 border rounded-lg lg:-mt-13",
+                    "flex flex-col justify-between p-3 min-h-full bg-gray-50 border rounded-lg",
                     errors?.contactData && "border-red-500 bg-red-100"
                 )}>
-                    <div className="text-md space-y-1.5">
+                    <div className="text-sm space-y-1">
                         <div>
                             <span className="font-medium text-gray-900">{watch('contactDisplayData.name')}</span>
                         </div>
@@ -183,35 +188,35 @@ const CustomerDetails: React.FC = () => {
                             <span className="font-medium">Phone: </span>
                             {watch('contactDisplayData.mobile')}
                         </div>
-                        <div className="text-gray-600 text-sm">
+                        <div className="text-gray-600">
                             <span className="font-medium">Email: </span>
                             <span>{watch('contactDisplayData.email')}</span>
                         </div>
-                        <div className="text-gray-600 text-sm">
-                            <div className="line-clamp-3">
+                        <div className="text-gray-600">
+                            <div className="line-clamp-2">
                                 <span className="font-medium">Address: </span>
                                 <span className="break-words">{watch('contactDisplayData.address')}</span>
                             </div>
                         </div>
-                        <div className="pt-1 text-gray-600 border-t">
+                        <div className="pt-1 text-gray-600 text-xs border-t">
                             <span className="font-medium">GSTIN: </span>
                             {watch('contactDisplayData.gstin')}
                         </div>
                     </div>
 
-                    <div className="grid mt-3 pt-3 border-t gap-2 grid-cols-2">
+                    <div className="grid mt-2 pt-2 border-t gap-2 grid-cols-2">
                         {/* New / Edit */}
                         <button
                             onClick={handleNewEditCustomer}
-                            className="flex items-center justify-center px-3 py-2 text-blue-700 text-sm bg-blue-100 rounded-md transition-colors hover:bg-blue-200 space-x-1">
-                            <Edit size={16} className="flex-shrink-0" />
+                            className="flex items-center justify-center px-2 py-1 text-blue-700 text-md bg-blue-100 rounded-md transition-colors hover:bg-blue-200 space-x-1">
+                            <Edit size={14} className="flex-shrink-0" />
                             <span>New / Edit</span>
                         </button>
                         {/* Clear */}
                         <button
                             onClick={handleClearCustomer}
-                            className="flex items-center justify-center px-3 py-2 text-amber-700 text-sm bg-amber-100 rounded-md transition-colors hover:bg-amber-200 space-x-1">
-                            <Trash2 size={16} className="flex-shrink-0" />
+                            className="flex items-center justify-center px-2 py-1 text-amber-700 text-md bg-amber-100 rounded-md transition-colors hover:bg-amber-200 space-x-1">
+                            <Trash2 size={14} className="flex-shrink-0" />
                             <span>Clear</span>
                         </button>
                     </div>

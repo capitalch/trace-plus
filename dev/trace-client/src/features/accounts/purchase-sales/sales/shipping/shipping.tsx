@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form';
 import { SalesFormDataType, ShippingInfoType } from '../all-sales';
 import { Utils } from '../../../../../utils/utils';
 import ShippingEditModal from './shipping-edit-modal';
+import { Truck } from 'lucide-react';
 
 const Shipping: React.FC = () => {
     const formContext = useFormContext<SalesFormDataType>();
@@ -43,7 +44,7 @@ const Shipping: React.FC = () => {
             { label: 'City', value: shippingInfo.city },
             { label: 'PIN', value: shippingInfo.pin },
             { label: 'Other Info', value: shippingInfo.otherInfo }
-        ];//.filter(item => item.value);
+        ];
 
         const renderValue = (value: string | null | undefined, className = '') => {
             if (!value) {
@@ -98,14 +99,14 @@ const Shipping: React.FC = () => {
     };
 
     return (
-        <div className="p-4 bg-white border-l-4 border-cyan-500 rounded-xl shadow-lg lg:col-span-3 overflow-hidden">
-            <div className="flex items-center mb-3">
-                <div className="mr-3 p-2 text-white bg-cyan-500 rounded-lg">
-                    <span className="font-bold text-sm">🚚</span>
+        <div className="p-4 bg-white border-l-4 border-cyan-500 rounded-xl shadow-lg lg:col-span-3 overflow-hidden h-full">
+            <div className="flex items-center mb-2">
+                <div className="mr-3 p-2 text-white bg-cyan-100 rounded-lg">
+                    <Truck className='h-5 w-5 text-cyan-600' />
+                    {/* <span className="font-bold text-sm">🚚</span> */}
                 </div>
                 <div className="min-w-0 flex-1">
-                    <h2 className="font-bold text-gray-800 text-lg truncate">Shipping</h2>
-                    {/* <p className="text-gray-600 text-sm">Delivery address</p> */}
+                    <h2 className="font-semibold text-gray-800 text-lg truncate">Shipping</h2>
                 </div>
             </div>
 

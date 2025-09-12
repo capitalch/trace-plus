@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NumericFormat } from "react-number-format";
-import { useFormContext, /*useFieldArray,*/ UseFieldArrayRemove } from 'react-hook-form';
+import { useFormContext, UseFieldArrayRemove } from 'react-hook-form';
 import Decimal from 'decimal.js';
 import _ from "lodash";
 import { Utils } from "../../../../../utils/utils";
@@ -18,14 +18,9 @@ const ItemsAndServicesSummary: React.FC<ItemsAndServicesSummaryProps> = ({remove
         getValues,
         setValue,
         watch,
-        // control,
-        // getDefaultSalesLineItem
     }: any = useFormContext<SalesFormDataType>();
 
-    // const { remove : localRemove } = useFieldArray({ control, name: 'salesLineItems' });
     const lineItems = watch("salesLineItems") || [];
-    // setSummaryValues()
-    // const summary = getSummary();
 
     return (
         <div className="flex flex-wrap items-center mt-2 py-2 w-full font-medium bg-gray-50 border border-gray-200 rounded">

@@ -56,10 +56,10 @@ export function AccountPickerFlat({
     return (
         <div className='relative'>
             {showRefreshButton && <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-5 -translate-x-1/2 left-1/2'><IconRefresh className='w-5 h-5' /></button>}
-            <span className='absolute -top-5.5 right-1'>
+            {showAccountBalance &&  <span className='absolute -top-5.5 right-1'>
                 <label className='font-medium text-blue-400'>{decFormatter.format(Math.abs(accountBalance))}</label>
-                {showAccountBalance && <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>}
-            </span>
+                <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>
+            </span>}
             <Select
                 className={clsx('w-full', className)}
                 getOptionLabel={(option: AccountOptionType) => option.accName}

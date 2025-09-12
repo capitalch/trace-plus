@@ -2,6 +2,7 @@ import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import { Messages } from '../../../../../utils/messages';
+import { CircleCheckBig } from 'lucide-react';
 
 const Validation: React.FC = () => {
     const { formState: { errors }, watch } = useFormContext<SalesFormDataType>();
@@ -43,12 +44,13 @@ const Validation: React.FC = () => {
     };
 
     return (
-        <div className="p-4 bg-white border-l-4 border-amber-300 rounded-xl shadow-lg lg:col-span-3">
-            <div className="flex items-center mb-3">
-                <div className="mr-2 p-2 bg-amber-400 rounded-lg">
-                    <span className="font-bold text-sm text-orange-500">🐞</span>
+        <div className="py-4 pl-4  bg-white border-l-4 border-amber-300 rounded-xl shadow-lg h-full">
+            <div className="flex items-center mb-2">
+                <div className="mr-2 p-2 bg-amber-200 rounded-lg">
+                    <CircleCheckBig className="w-5 h-5 text-amber-700" />
+                    {/* <span className="font-bold text-sm text-orange-500">🐞</span> */}
                 </div>
-                <h2 className="font-bold text-gray-800 text-lg">Validation</h2>
+                <h2 className="font-semibold text-gray-800 text-lg">Validation</h2>
             </div>
 
             {getFormErrors().length > 0 && (

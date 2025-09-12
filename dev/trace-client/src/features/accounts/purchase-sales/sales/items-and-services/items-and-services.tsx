@@ -21,6 +21,7 @@ import { ControlledNumericInput } from '../../../../../controls/components/contr
 import { WidgetFormErrorMessage } from '../../../../../controls/widgets/widget-form-error-message';
 import ItemsAndServicesSummary from './items-and-services-summary';
 import Decimal from 'decimal.js';
+import { ShoppingBag } from 'lucide-react';
 
 const ItemsAndServices: React.FC = () => {
 
@@ -38,8 +39,8 @@ const ItemsAndServices: React.FC = () => {
     } = useFormContext<SalesFormDataType>();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
     const { getDefaultSalesLineItem }: any = useFormContext<SalesFormDataType>()
-    const { fields, remove, insert, append } = useFieldArray({ 
-        control, 
+    const { fields, remove, insert, append } = useFieldArray({
+        control,
         name: 'salesLineItems'
     });
 
@@ -82,9 +83,13 @@ const ItemsAndServices: React.FC = () => {
 
     return (
         <AnimatePresence>
-            <div className="flex flex-col -mt-4" key={1}>
-                <label className="font-medium">Items & Services</label>
-
+            <div className="relative px-4 py-4 bg-white border-lime-200 border-l-4 rounded-lg shadow-sm mb-4" key={1}>
+                <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-lime-100 rounded-lg flex-shrink-0">
+                        <ShoppingBag className="w-5 h-5 text-lime-600" />
+                    </div>
+                    <h2 className="font-semibold text-gray-900 text-lg">Items and Services</h2>
+                </div>
                 {/* Summary */}
                 <ItemsAndServicesSummary remove={remove} />
 
@@ -307,12 +312,12 @@ const ItemsAndServices: React.FC = () => {
                                         computeLineItemValues(index)
                                         setStockAndProfit(index);
                                     }}
-                                    // onValueChange={({ floatValue }) => {
-                                        // setValue(`salesLineItems.${index}.discount`, floatValue || 0, { shouldDirty: true })
-                                        // setPriceGst(index)
-                                        // computeLineItemValues(index)
-                                        // setStockAndProfit(index);
-                                    // }}
+                                // onValueChange={({ floatValue }) => {
+                                // setValue(`salesLineItems.${index}.discount`, floatValue || 0, { shouldDirty: true })
+                                // setPriceGst(index)
+                                // computeLineItemValues(index)
+                                // setStockAndProfit(index);
+                                // }}
                                 />
                                 {/* Stock Display */}
                                 <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
@@ -449,8 +454,6 @@ const ItemsAndServices: React.FC = () => {
         setTimeout(() => setCurrentRowIndex(index + 1), 0);
     }
 
-
-
     function handleClearLineItem(index: number) {
         setValue(`salesLineItems.${index}.productId`, null, { shouldDirty: true });
         setValue(`salesLineItems.${index}.productCode`, '', { shouldDirty: true });
@@ -480,7 +483,6 @@ const ItemsAndServices: React.FC = () => {
             title: "Select a product"
         });
     }
-
 
     // Helper functions
 
@@ -627,34 +629,34 @@ const ItemsAndServices: React.FC = () => {
     }
 
     function setSummaryValues() {
-            const summary = lineItems.reduce(
-                (acc, item) => {
-                    acc.count += 1;
-                    acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
-                    acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
-                    acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
-                    acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
-                    acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
-                    acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
-                    return acc;
-                },
-                {
-                    count: 0,
-                    qty: new Decimal(0),
-                    subTotal: new Decimal(0),
-                    cgst: new Decimal(0),
-                    sgst: new Decimal(0),
-                    igst: new Decimal(0),
-                    amount: new Decimal(0),
-                }
-            );
-            setValue('totalInvoiceAmount', summary.amount.toDecimalPlaces(2))
-            setValue('totalQty', summary.qty)
-            setValue('totalCgst', summary.cgst.toDecimalPlaces(2))
-            setValue('totalSgst', summary.sgst.toDecimalPlaces(2))
-            setValue('totalIgst', summary.igst.toDecimalPlaces(2))
-            setValue('totalSubTotal', summary.subTotal.toDecimalPlaces(2))
-        }
+        const summary = lineItems.reduce(
+            (acc, item) => {
+                acc.count += 1;
+                acc.qty = acc.qty.plus(new Decimal(item.qty || 0));
+                acc.subTotal = acc.subTotal.plus(new Decimal(item.subTotal || 0));
+                acc.cgst = acc.cgst.plus(new Decimal(item.cgst || 0));
+                acc.sgst = acc.sgst.plus(new Decimal(item.sgst || 0));
+                acc.igst = acc.igst.plus(new Decimal(item.igst || 0));
+                acc.amount = acc.amount.plus(new Decimal(item.amount || 0));
+                return acc;
+            },
+            {
+                count: 0,
+                qty: new Decimal(0),
+                subTotal: new Decimal(0),
+                cgst: new Decimal(0),
+                sgst: new Decimal(0),
+                igst: new Decimal(0),
+                amount: new Decimal(0),
+            }
+        );
+        setValue('totalInvoiceAmount', summary.amount.toDecimalPlaces(2))
+        setValue('totalQty', summary.qty)
+        setValue('totalCgst', summary.cgst.toDecimalPlaces(2))
+        setValue('totalSgst', summary.sgst.toDecimalPlaces(2))
+        setValue('totalIgst', summary.igst.toDecimalPlaces(2))
+        setValue('totalSubTotal', summary.subTotal.toDecimalPlaces(2))
+    }
 
 };
 

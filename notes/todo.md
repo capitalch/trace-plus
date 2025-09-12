@@ -61,11 +61,12 @@ valid gstin: 24AAACC1206D1ZM
 													- Use cross for bin
 													- UX
 	- Payment details
-		- Wholesale change to Auto subledger(Bill)
-		- Total amount at top
+		- Default sales account
+													- Wholesale change to Auto subledger(Bill)
+													- Total amount at top
 		- Sales account dropdown. Defaults to sales
-		- Remove Payment Account
-		- Add clear button left to add button
+													- Remove Payment Account
+													- Add clear button left to add button
 		- select default payment method
 	- Validation
 	- Shipping

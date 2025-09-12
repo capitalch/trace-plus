@@ -1,5 +1,5 @@
-import CustomerDetails from "./customer-details/customer-details";
 import InvoiceDetails from "./invoice-details/invoice-details";
+import CustomerDetails from "./customer-details/customer-details";
 import ItemsAndServices from "./items-and-services/items-and-services";
 import PaymentDetails from "./payment-details/payment-details";
 import Shipping from "./shipping/shipping";
@@ -11,20 +11,26 @@ export function AllSalesForm() {
         <div className="m-4 ml-0 min-h-screen bg-gray-50">
             <StatusBar />
 
-            {/* Invoice and customer details */}
+            {/* Invoice and Customer Details - Separate Components */}
             <div className="grid py-6 gap-6 grid-cols-1 lg:grid-cols-2">
-                <InvoiceDetails />                
+                <InvoiceDetails />
                 <CustomerDetails />
             </div>
 
             {/* Items and services */}
             <ItemsAndServices />
 
-            {/* Bottom Sections Row */}
+            {/* Bottom Sections Row - With Validation moved to bottom right */}
             <div className="grid gap-4 grid-cols-1 lg:grid-cols-12">
-                <PaymentDetails />                
-                <Shipping />
-                <Validation />
+                <div className="lg:col-span-7">
+                    <PaymentDetails />
+                </div>
+                <div className="lg:col-span-3">
+                    <Shipping />
+                </div>
+                <div className="lg:col-span-2">
+                    <Validation />
+                </div>
             </div>
         </div>
     );
