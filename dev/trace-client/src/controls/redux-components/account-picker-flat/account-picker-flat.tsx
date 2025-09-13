@@ -19,7 +19,7 @@ export function AccountPickerFlat({
     showAccountBalance = false,
     showRefreshButton = true,
     value,
-    toSelectFirstOption = false
+    toSelectFirstOption = false,
 }: AccountPickerFlatType) {
     const selectRef: any = useRef<Select>(null);
     const [options, setOptions] = useState<AccountOptionType[]>([])
@@ -46,7 +46,7 @@ export function AccountPickerFlat({
         } else {
             loadLocalData()
         }
-    }, [accountOptions])
+    }, [accountOptions, accClassNames])
 
     useEffect(() => {
         if (value === null) {

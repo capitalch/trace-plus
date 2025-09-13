@@ -61,6 +61,7 @@ valid gstin: 24AAACC1206D1ZM
 													- Use cross for bin
 													- UX
 	- Payment details
+		- Accounts with autoSubledger parent, accounts with autoSubLedger leaves with parent
 		- populate
 			- Retail 		: cash and bank
 			- Bill 			: 1st row :ledger having subledger

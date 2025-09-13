@@ -83,7 +83,7 @@ export type TranHType = {
 
 export type TranDType = {
   id?: number;
-  accId: number | null;
+  accId: number | null |string;
   remarks?: string | null;
   dc: string;
   amount: number;

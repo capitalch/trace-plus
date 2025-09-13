@@ -2,20 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import { AccountPickerFlat, AccClassName } from '../../../../../controls/redux-components/account-picker-flat/account-picker-flat';
-import { TranDType } from '../../../../../utils/global-types-interfaces-enums';
 import { Banknote, Plus } from 'lucide-react';
 import { FormField } from '../../../../../controls/widgets/form-field';
 import { DataInstancesMap } from '../../../../../app/maps/data-instances-map';
 import { Messages } from '../../../../../utils/messages';
+import { IconCross } from '../../../../../controls/icons/icon-cross';
 import clsx from 'clsx';
-
-interface PaymentMethod {
-    id: number;
-    accId: string | null;
-    amount: number;
-    instrNo: string;
-    remarks: string;
-}
+import { ControlledNumericInput } from '../../../../../controls/components/controlled-numeric-input';
 
 type SalesType = 'retail' | 'bill' | 'institution';
 
@@ -23,7 +16,6 @@ const PaymentDetails: React.FC = () => {
     const instance = DataInstancesMap.allSales;
     const errorClass = 'bg-red-200 border-2 border-red-500';
     const { control,
-        getValues,
         register,
         setValue,
         trigger,
@@ -31,31 +23,12 @@ const PaymentDetails: React.FC = () => {
         formState: { errors }, } = useFormContext<SalesFormDataType>();
     const { getDefaultDebitAccount }: any = useFormContext<SalesFormDataType>();
 
-    const { fields, remove, insert, append } = useFieldArray({
+    const { fields, remove, append } = useFieldArray({
         control,
         name: 'debitAccounts'
     });
 
-    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
-        { id: 1, accId: null, amount: 0, instrNo: '', remarks: '' }
-    ]);
     const [salesType, setSalesType] = useState<SalesType>('retail');
-    const [totalAmount, setTotalAmount] = useState(0);
-
-    // Initialize form values from existing data
-    useEffect(() => {
-        const formData = getValues();
-        if (formData.debitAccounts && formData.debitAccounts.length > 0) {
-            const methods = formData.debitAccounts.map((debit, index) => ({
-                id: index + 1,
-                accId: debit?.accId?.toString(),
-                amount: debit.amount,
-                instrNo: debit.instrNo || '',
-                remarks: debit.remarks || ''
-            }));
-            setPaymentMethods(methods);
-        }
-    }, []);
 
     // Ensure we always have at least one item
     useEffect(() => {
@@ -64,56 +37,38 @@ const PaymentDetails: React.FC = () => {
         }
     }, [fields.length, append, getDefaultDebitAccount]);
 
-    // Calculate total whenever payment methods change
-    useEffect(() => {
-        const total = paymentMethods.reduce((sum, method) => sum + method.amount, 0);
-        setTotalAmount(total);
-        updateFormDebitAccounts();
-    }, [paymentMethods]);
-
-    const addPaymentMethod = () => {
-        const newPayment = {
-            id: paymentMethods.length + 1,
-            accId: null,
-            amount: 0,
-            instrNo: '',
-            remarks: ''
-        };
-        setPaymentMethods([...paymentMethods, newPayment]);
-    };
-
-    const removePaymentMethod = (id: any) => {
-        if (paymentMethods.length > 1) {
-            setPaymentMethods(paymentMethods.filter(p => p.id !== id));
+    const handleAddPaymentMethod = () => {
+        if (getDefaultDebitAccount) {
+            append(getDefaultDebitAccount());
+            trigger('debitAccounts');
         }
     };
 
-    const clearPaymentMethods = () => {
-        setPaymentMethods([{ id: 1, accId: null, amount: 0, instrNo: '', remarks: '' }]);
+    const handleClearPaymentMethods = () => {
+        // Remove all except first item, then clear the first item
+        for (let i = fields.length - 1; i > 0; i--) {
+            remove(i);
+        }
+        if (fields.length > 0 && getDefaultDebitAccount) {
+            const defaultData = getDefaultDebitAccount();
+            setValue(`debitAccounts.0.accId`, defaultData.accId);
+            setValue(`debitAccounts.0.amount`, defaultData.amount);
+            setValue(`debitAccounts.0.instrNo`, defaultData.instrNo);
+            setValue(`debitAccounts.0.remarks`, defaultData.remarks);
+            trigger('debitAccounts');
+        }
     };
 
-    const updatePaymentMethod = (id: number, field: keyof PaymentMethod, value: any) => {
-        setPaymentMethods(prev => prev.map(method =>
-            method.id === id ? { ...method, [field]: value } : method
-        ));
+    // Calculate total amount from all payment methods
+    const calculateTotalAmount = () => {
+        const debitAccounts = watch('debitAccounts') || [];
+        return debitAccounts.reduce((sum: number, account: any) => sum + (account?.amount || 0), 0);
     };
 
-    const updateFormDebitAccounts = () => {
-        const debitAccounts: TranDType[] = paymentMethods
-            .filter(method => method.accId && method.amount > 0)
-            .map(method => ({
-                accId: parseInt(method.accId!),
-                amount: method.amount,
-                instrNo: method.instrNo || null,
-                remarks: method.remarks || null,
-                dc: 'D',
-                tranHeaderId: 0
-            }));
-        setValue('debitAccounts', debitAccounts);
-        trigger('debitAccounts');
-    };
-
-    const getAccClassNames = (salesType: SalesType): AccClassName[] => {
+    const getAccClassNames = (salesType: SalesType, index: number): AccClassName[] => {
+        if (index !== 0) {
+            return ['cash', 'bank', 'card', 'ecash'];
+        }
         switch (salesType) {
             case 'retail':
                 return ['cash', 'bank', 'card', 'ecash'];
@@ -128,6 +83,7 @@ const PaymentDetails: React.FC = () => {
 
     return (
         <div className="p-4 bg-white border-l-4 border-violet-500 rounded-lg shadow-sm lg:col-span-6 h-full">
+
             {/* Header section */}
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
@@ -137,7 +93,7 @@ const PaymentDetails: React.FC = () => {
                     <h2 className="font-semibold text-gray-800 text-lg">Payment Details</h2>
                 </div>
                 <div className="text-right">
-                    <div className="font-bold text-lg text-gray-800">{totalAmount.toFixed(2)}</div>
+                    <div className="font-bold text-lg text-gray-800">{calculateTotalAmount().toFixed(2)}</div>
                 </div>
             </div>
 
@@ -162,8 +118,8 @@ const PaymentDetails: React.FC = () => {
                                     <input
                                         type="radio"
                                         name="salesType"
-                                        value="wholesale"
-                                        checked={salesType === 'wholesale'}
+                                        value="bill"
+                                        checked={salesType === 'bill'}
                                         onChange={(e) => setSalesType(e.target.value as SalesType)}
                                         className="mr-2 text-violet-500 cursor-pointer"
                                     />
@@ -181,6 +137,7 @@ const PaymentDetails: React.FC = () => {
                                     <span className="font-semibold text-gray-700 text-sm">🏢 Institution</span>
                                 </label>
                             </div>
+
                             {/* Sales account */}
                             <FormField
                                 label='Sale Account'
@@ -211,13 +168,14 @@ const PaymentDetails: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between">
+                {/* Payment methods */}
+                <div className="space-y-1">
+                    <div className="flex items-center justify-between mb-4">
                         <h3 className="font-bold text-gray-800 text-sm">Payment Methods</h3>
                         <div className="flex space-x-2">
                             {/* Clear */}
                             <button
-                                onClick={clearPaymentMethods}
+                                onClick={handleClearPaymentMethods}
                                 className="px-3 py-1 font-semibold text-amber-700 text-sm bg-amber-200 rounded-md transition-all duration-200 hover:bg-amber-300"
                                 type="button"
                             >
@@ -225,7 +183,7 @@ const PaymentDetails: React.FC = () => {
                             </button>
                             {/* Add */}
                             <button
-                                onClick={addPaymentMethod}
+                                onClick={handleAddPaymentMethod}
                                 className="px-3 flex items-center gap-x-1.5 py-1 font-semibold text-white text-sm bg-violet-500 rounded-md transition-all duration-200 hover:bg-violet-600"
                                 type="button"
                             >
@@ -234,75 +192,100 @@ const PaymentDetails: React.FC = () => {
                         </div>
                     </div>
 
-                    {paymentMethods.map((payment) => (
-                        <div key={payment.id} className="p-2 bg-violet-50 border border-violet-200 rounded-lg">
-                            <div className="grid gap-2 grid-col-4 lg:grid-cols-12">
+                    {fields.map((_, index) => (
+                        <div key={index} className="p-2 bg-violet-50 border border-violet-200 rounded-lg">
+                            <div className="grid gap-2 grid-col-4 lg:grid-cols-12 items-baseline">
+
                                 {/* Payment account */}
                                 <div className="col-span-4">
                                     <label className="block mb-1 font-semibold text-gray-700 text-xs">💳 Payment Account</label>
                                     <AccountPickerFlat
-                                        accClassNames={getAccClassNames(salesType)}
-                                        instance={`paymentMethod_${payment.id}`}
-                                        value={payment.accId}
-                                        onChange={(value) => updatePaymentMethod(payment.id, 'accId', value)}
+                                        accClassNames={getAccClassNames(salesType, index)}
+                                        instance={`${instance}-debit-account-${index}`}
+                                        {...register(`debitAccounts.${index}.accId`, {
+                                            required: Messages.errRequired,
+                                        })}
+                                        onChange={(value) =>
+                                            setValue(`debitAccounts.${index}.accId`, value ,{
+                                                shouldValidate: true,
+                                                shouldDirty: true,
+                                            })
+                                        }
                                         showRefreshButton={false}
-                                        className="text-sm"
+                                        value={watch(`debitAccounts.${index}.accId`) as string}
+                                        className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
                                     />
                                 </div>
+
                                 {/* Amount */}
                                 <div className="col-span-2">
                                     <label className="block mb-1 font-semibold text-gray-700 text-xs">💵 Amount</label>
-                                    <input
-                                        type="number"
-                                        value={payment.amount}
-                                        onChange={(e) => updatePaymentMethod(payment.id, 'amount', parseFloat(e.target.value) || 0)}
-                                        className="px-1 py-1 w-full text-sm text-right border border-gray-300 rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200"
-                                        step="0.01"
-                                        placeholder="0.00"
+                                    <ControlledNumericInput
+                                        className={clsx("text-right h-8 w-full text-sm rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200",
+                                            errors?.debitAccounts?.[index]?.amount ? errorClass : '')}
+                                        fieldName={`debitAccounts.${index}.amount`}
+                                        onValueChange={(floatValue) => {
+                                            setValue(`debitAccounts.${index}.amount`, floatValue || 0, {
+                                                shouldDirty: true,
+                                                shouldValidate: true,
+                                                shouldTouch: true
+                                            })
+                                        }}
+                                        validate={(value) => {
+                                            const ret = value > 0 ? true : Messages.errAmountCannotBeZero;
+                                            return (ret)
+                                        }}
                                     />
                                 </div>
+
                                 {/* Instrument */}
                                 <div className="col-span-2">
                                     <label className="block mb-1 font-semibold text-gray-700 text-xs">🎆 Instrument</label>
                                     <input
                                         type="text"
-                                        value={payment.instrNo}
-                                        onChange={(e) => updatePaymentMethod(payment.id, 'instrNo', e.target.value)}
-                                        className="px-2 py-1 w-full text-sm border border-gray-300 rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200"
+                                        {...register(`debitAccounts.${index}.instrNo`)}
+                                        className={clsx("px-2 py-1 w-full h-8 text-sm rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
                                         placeholder="Instrument"
                                     />
                                 </div>
-                                <div className="col-span-4 flex gap-x-2">
-                                    {/* Reference */}
-                                    <div className="col-span-1">
-                                        <label className="block mb-1 font-semibold text-gray-700 text-xs">📄 Ref</label>
+
+                                <div className="col-span-4 flex gap-x-2 ">
+                                    {/* Ref no */}
+                                    <div className="">
+                                        <label className="block mb-1 font-semibold text-gray-700 text-xs">🎇 Ref</label>
                                         <input
                                             type="text"
-                                            value={payment.instrNo}
-                                            onChange={(e) => updatePaymentMethod(payment.id, 'instrNo', e.target.value)}
-                                            className="px-2 py-1 w-full text-sm border border-gray-300 rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200"
-                                            placeholder="Ref No"
+                                            {...register(`debitAccounts.${index}.lineRefNo`)}
+                                            className={clsx("px-2 py-1 w-full h-8 text-sm rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
+                                            placeholder="Reference"
                                         />
                                     </div>
+
                                     {/* Notes */}
-                                    <div className="col-span-2">
+                                    <div className="">
                                         <label className="block mb-1 font-semibold text-gray-700 text-xs">📝 Notes</label>
                                         <textarea
-                                            value={payment.remarks}
-                                            onChange={(e) => updatePaymentMethod(payment.id, 'remarks', e.target.value)}
-                                            className="px-2 py-1 w-full text-sm border border-gray-300 rounded-md resize-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200"
+                                            {...register(`debitAccounts.${index}.remarks`)}
+                                            className={clsx("px-2 py-1 w-full h-8 text-sm rounded-md resize-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
                                             rows={1}
                                             placeholder="Notes"
                                         />
                                     </div>
-                                    <div className="flex items-end justify-center col-span-1">
-                                        {paymentMethods.length > 1 && (
+
+                                    {/* Remove */}
+                                    <div className="flex items-end justify-center">
+                                        {index !== 0 ? (
                                             <button
-                                                onClick={() => removePaymentMethod(payment.id)}
-                                                className="mb-1.5 p-1 text-red-500 rounded-full transition-all duration-200 hover:bg-red-50 hover:text-red-700"
+                                                type="button"
+                                                onClick={() => remove(index)}
+                                                className="mb-2 p-1.5 text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-md transition-all duration-200 hover:from-orange-600 hover:to-amber-600 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                                title="Remove payment method"
+                                                aria-label="Remove payment method"
                                             >
-                                                <span className="text-sm">🗑️</span>
+                                                <IconCross className="w-4 h-4" />
                                             </button>
+                                        ) : (
+                                            <div className="mb-2 p-1.5 w-7 h-7"></div>
                                         )}
                                     </div>
                                 </div>
