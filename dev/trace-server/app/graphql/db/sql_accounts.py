@@ -1708,34 +1708,174 @@ class SqlAccounts:
                 order by "catName"
     """
 
-    get_leaf_subledger_accounts_on_class = """
+    get_leaf_accounts_on_class_without_auto_subledgers = """
+        with "accClassNames" as (values (%(accClassNames)s::text)),
+				--WITH "accClassNames" AS (VALUES ('debtor,creditor'::text)),
+				
+				-- 1️⃣  All ledgers that are marked auto-subledger
+				auto_ledgers AS (
+				    SELECT x."accId"
+				    FROM "ExtMiscAccM" x
+				    WHERE x."isAutoSubledger" = TRUE
+				),
+				
+				-- 2️⃣  Main query excluding both those ledgers and their children
+				cte1 AS (
+				    SELECT
+				        a.id,
+				        a."accName",
+				        a."parentId",
+				        a."accLeaf",
+				        c."accClass",
+				        x."isAutoSubledger"
+				    FROM "AccM" a
+				    JOIN "AccClassM" c ON c.id = a."classId"
+				    LEFT JOIN "ExtMiscAccM" x ON a.id = x."accId"
+				    WHERE a."accLeaf" IN ('Y','S','L')
+				      AND (
+				            (TABLE "accClassNames") IS NULL
+				         OR c."accClass" = ANY(string_to_array((TABLE "accClassNames"), ','))
+				      )
+				      -- 🚫 Exclude rows that are auto-subledgers or whose parent is one
+				      AND a.id       NOT IN (SELECT "accId" FROM auto_ledgers)
+				      AND a."parentId" NOT IN (SELECT "accId" FROM auto_ledgers)
+				)
+				SELECT 
+					c.id,
+					c."accName",
+					c."parentId",
+					c."accLeaf",
+					c."accClass",
+					a."accName" as "accParent"
+				FROM cte1 c
+					join "AccM" a on a.id = c."parentId"
+				where c."accLeaf" in ('Y','S')
+				ORDER BY c."accName";
+    """
+
+    get_auto_subledger_accounts_with_ledgers_and_subledgers = """
+        with "accClassNames" as (values (%(accClassNames)s::text))
+			--WITH "accClassNames" AS (VALUES ('debtor'::text))
+			, cte1 AS (
+			    SELECT
+			        a.id,
+			        a."accName",
+			        a."parentId",
+			        a."accLeaf"
+			    FROM "AccM" a
+			    JOIN "AccClassM" c ON c.id = a."classId"
+			    JOIN "ExtMiscAccM" x ON a.id = x."accId"
+			    WHERE a."accLeaf" = 'L'               -- ledgers having subledger
+			      AND x."isAutoSubledger"
+			      AND (
+			            (table "accClassNames") IS NULL
+			         OR c."accClass" = ANY(string_to_array((table "accClassNames"), ','))
+			      )
+			),
+			ordered AS (
+			    SELECT
+			        m.id,
+			        m."accName",
+			        c."accName" AS "accParent",
+			        m."accLeaf",
+			        m."parentId",
+			        c.id AS root_id,
+			        1 AS child_rank
+			    FROM cte1 c
+			    JOIN "AccM" m ON c.id = m."parentId"
+			
+			    UNION ALL
+			
+			    SELECT
+			        c.id,
+			        c."accName",
+			        a."accName" AS "accParent",
+			        c."accLeaf",
+			        c."parentId",
+			        c.id AS root_id,
+			        0 AS child_rank
+			    FROM cte1 c
+			    JOIN "AccM" a ON a.id = c."parentId"
+			)
+			SELECT
+			    id,
+			    "accName",
+			    "accParent",
+			    "accLeaf",
+			    "parentId",
+			    CASE WHEN "accLeaf" = 'L' THEN TRUE ELSE FALSE END AS "isDisabled"
+			FROM ordered
+			ORDER BY
+			    root_id,        -- group by parent ledger
+			    child_rank,     -- parent first
+			    "accName";
+    """
+
+    get_auto_subledger_accounts_on_class = """
         with "accClassNames" as (values (%(accClassNames)s::text))
         --with "accClassNames" as  (values ('sale,purchase,debtor,cash'::text))
         , cte1 as (
             SELECT 
                 a.id,
                 "accName",
-                "parentId",
-                CASE 
-                WHEN "accLeaf" = 'Y' THEN false
-                WHEN "accLeaf" = 'S' THEN true
-                END as "isSubledger"
+                "parentId"
             FROM "AccM" a
                 join "AccClassM" c on c."id" = a."classId"
-            WHERE "accLeaf" IN ('Y', 'S')
+				join "ExtMiscAccM" x on a."id" = x."accId"
+            WHERE "accLeaf" IN ('L')
+				AND x."isAutoSubledger"
                 AND (
 				((table "accClassNames") is null) OR
 				("accClass" = ANY(string_to_array((table "accClassNames"),',')))
 				)
         )
         select c."id",
-                --c."accName" || ': ' || a."accName" as "accName",
 				c."accName",
 				a."accName" as "accParent",
-                c."isSubledger"
+				false as "isDisabled"
             FROM cte1 c 
                 join "AccM" a on a.id = c."parentId"
             ORDER by c."accName"
+
+    """
+
+    get_leaf_subledger_accounts_on_class = """
+        with "accClassNames" as (values (%(accClassNames)s::text)),
+            --WITH "accClassNames" AS (VALUES ('sale,purchase,debtor,cash'::text)),
+            cte1 AS (
+                SELECT
+                    a.id,
+                    a."accName",
+                    a."parentId",
+                    CASE WHEN a."accLeaf" = 'Y' or a."accLeaf" = 'L' THEN false
+                        WHEN a."accLeaf" = 'S' THEN true
+                    END AS "isSubledger",
+                    a."accLeaf",
+                    Case when a."accLeaf" = 'L' then true else false end as "isDisabled"
+                FROM "AccM" a
+                JOIN "AccClassM" c ON c.id = a."classId"
+                WHERE a."accLeaf" IN ('S','L','Y')
+                AND (
+                    (TABLE "accClassNames") IS NULL
+                    OR c."accClass" = ANY(string_to_array((TABLE "accClassNames"), ','))
+                )
+            )
+            SELECT c.id,
+                c."accName",
+                c."isSubledger",
+                c."accLeaf",
+                p."accName" as "accParent",
+                c."isDisabled"
+            FROM cte1 c
+                join "AccM" p on p.id = c."parentId"
+                
+            ORDER BY
+                -- group rows by the immediate parent’s id
+                CASE WHEN c."accLeaf" = 'L' THEN c.id ELSE c."parentId" END,
+                -- within each group, put the parent row first
+                CASE WHEN c."accLeaf" = 'L' THEN 0 ELSE 1 END,
+                -- finally, order children by name (or id if you prefer strict sequence)
+                c."accName"
     """
 
     get_product_categories = """

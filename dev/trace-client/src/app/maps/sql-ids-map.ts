@@ -63,6 +63,8 @@ export const SqlIdsMap = {
   getAllProductsInfoForProductSelect:
     "get_all_products_info_for_product_select",
   getAllStockJournals: "get_all_stock_journals",
+  getAutoSubledgerAccountsOnClass:"get_auto_subledger_accounts_on_class",
+  getAutoSubledgerAccountsWithLedgersAndSubledgers:"get_auto_subledger_accounts_with_ledgers_and_subledgers",
   getBankOpBalance: "get_bank_op_balance",
   getBranchTransferDetailsOnTranHeaderId:
     "get_branch_transfer_details_on_tran_header_id",
@@ -78,6 +80,7 @@ export const SqlIdsMap = {
   getExtBusinessContactsAccM: "get_extBusinessContactsAccM",
   getFinYears: "get_fin_years",
   getGstin: "get_gstin",
+  getLeafAccountsOnClassWithoutAutoSubledgers:"get_leaf_accounts_on_class_without_auto_subledgers",
   getLeafCategories: "get_leaf_categories",
   getLeafCategoriesWithParent: "get_leaf_categories_with_parent",
   getLeafSubledgerAccountsOnClass: "get_leaf_subledger_accounts_on_class",

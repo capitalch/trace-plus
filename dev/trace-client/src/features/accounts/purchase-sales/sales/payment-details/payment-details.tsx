@@ -9,6 +9,7 @@ import { Messages } from '../../../../../utils/messages';
 import { IconCross } from '../../../../../controls/icons/icon-cross';
 import clsx from 'clsx';
 import { ControlledNumericInput } from '../../../../../controls/components/controlled-numeric-input';
+import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
 
 type SalesType = 'retail' | 'bill' | 'institution';
 
@@ -29,6 +30,7 @@ const PaymentDetails: React.FC = () => {
     });
 
     const [salesType, setSalesType] = useState<SalesType>('retail');
+    const isEditMode = Boolean(watch('id'))
 
     // Ensure we always have at least one item
     useEffect(() => {
@@ -36,6 +38,10 @@ const PaymentDetails: React.FC = () => {
             append(getDefaultDebitAccount());
         }
     }, [fields.length, append, getDefaultDebitAccount]);
+
+    useEffect(() => {
+        setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+    }, [salesType, setValue])
 
     const handleAddPaymentMethod = () => {
         if (getDefaultDebitAccount) {
@@ -81,6 +87,20 @@ const PaymentDetails: React.FC = () => {
         }
     };
 
+    const getSqlId = () => {
+        let sqlId = null
+        if (salesType === 'bill') {
+            if (isEditMode) {
+                sqlId = SqlIdsMap.getAutoSubledgerAccountsWithLedgersAndSubledgers
+            } else {
+                sqlId = SqlIdsMap.getAutoSubledgerAccountsOnClass
+            }
+        } else if (salesType === 'institution') {
+            sqlId = SqlIdsMap.getLeafAccountsOnClassWithoutAutoSubledgers
+        }
+        return (sqlId)
+    }
+
     return (
         <div className="p-4 bg-white border-l-4 border-violet-500 rounded-lg shadow-sm lg:col-span-6 h-full">
 
@@ -98,6 +118,7 @@ const PaymentDetails: React.FC = () => {
             </div>
 
             <div className="space-y-8">
+                {/* Radio buttons and sales account */}
                 <div className="rounded-lg">
                     <div className="mb-2">
                         <div className="flex items-center justify-between">
@@ -192,13 +213,14 @@ const PaymentDetails: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Payment methods rows */}
                     {fields.map((_, index) => (
                         <div key={index} className="p-2 bg-violet-50 border border-violet-200 rounded-lg">
                             <div className="grid gap-2 grid-col-4 lg:grid-cols-12 items-baseline">
 
                                 {/* Payment account */}
                                 <div className="col-span-4">
-                                    <label className="block mb-1 font-semibold text-gray-700 text-xs">💳 Payment Account</label>
+                                    <label className="block mb-1 font-semibold text-gray-700 text-sm items-center">💳 Payment Account</label>
                                     <AccountPickerFlat
                                         accClassNames={getAccClassNames(salesType, index)}
                                         instance={`${instance}-debit-account-${index}`}
@@ -206,7 +228,7 @@ const PaymentDetails: React.FC = () => {
                                             required: Messages.errRequired,
                                         })}
                                         onChange={(value) =>
-                                            setValue(`debitAccounts.${index}.accId`, value ,{
+                                            setValue(`debitAccounts.${index}.accId`, value, {
                                                 shouldValidate: true,
                                                 shouldDirty: true,
                                             })
@@ -214,14 +236,15 @@ const PaymentDetails: React.FC = () => {
                                         showRefreshButton={false}
                                         value={watch(`debitAccounts.${index}.accId`) as string}
                                         className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
+                                        sqlId={getSqlId()}
                                     />
                                 </div>
 
                                 {/* Amount */}
                                 <div className="col-span-2">
-                                    <label className="block mb-1 font-semibold text-gray-700 text-xs">💵 Amount</label>
+                                    <label className="block mb-1 font-semibold text-gray-700 text-sm">💵 Amount</label>
                                     <ControlledNumericInput
-                                        className={clsx("text-right h-8 w-full text-sm rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200",
+                                        className={clsx("text-right h-8 w-full text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200",
                                             errors?.debitAccounts?.[index]?.amount ? errorClass : '')}
                                         fieldName={`debitAccounts.${index}.amount`}
                                         onValueChange={(floatValue) => {
@@ -240,11 +263,11 @@ const PaymentDetails: React.FC = () => {
 
                                 {/* Instrument */}
                                 <div className="col-span-2">
-                                    <label className="block mb-1 font-semibold text-gray-700 text-xs">🎆 Instrument</label>
+                                    <label className="block mb-1 font-semibold text-gray-700 text-sm">🎆 Instrument</label>
                                     <input
                                         type="text"
                                         {...register(`debitAccounts.${index}.instrNo`)}
-                                        className={clsx("px-2 py-1 w-full h-8 text-sm rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
+                                        className={clsx("px-2 py-1 w-full h-8 text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
                                         placeholder="Instrument"
                                     />
                                 </div>
@@ -252,21 +275,21 @@ const PaymentDetails: React.FC = () => {
                                 <div className="col-span-4 flex gap-x-2 ">
                                     {/* Ref no */}
                                     <div className="">
-                                        <label className="block mb-1 font-semibold text-gray-700 text-xs">🎇 Ref</label>
+                                        <label className="block mb-1 font-semibold text-gray-700 text-sm">🎇 Ref</label>
                                         <input
                                             type="text"
                                             {...register(`debitAccounts.${index}.lineRefNo`)}
-                                            className={clsx("px-2 py-1 w-full h-8 text-sm rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
+                                            className={clsx("px-2 py-1 w-full h-8 text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
                                             placeholder="Reference"
                                         />
                                     </div>
 
                                     {/* Notes */}
                                     <div className="">
-                                        <label className="block mb-1 font-semibold text-gray-700 text-xs">📝 Notes</label>
+                                        <label className="block mb-1 font-semibold text-gray-700 text-sm">📝 Notes</label>
                                         <textarea
                                             {...register(`debitAccounts.${index}.remarks`)}
-                                            className={clsx("px-2 py-1 w-full h-8 text-sm rounded-md resize-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
+                                            className={clsx("px-2 py-1 w-full  text-md rounded-md resize-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
                                             rows={1}
                                             placeholder="Notes"
                                         />

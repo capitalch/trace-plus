@@ -8,6 +8,7 @@ import { IconRefresh } from '../../icons/icon-refresh';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn } from '../comp-slice';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 
 export function AccountPickerFlat({
     accClassNames = null,
@@ -20,6 +21,7 @@ export function AccountPickerFlat({
     showRefreshButton = true,
     value,
     toSelectFirstOption = false,
+    sqlId = null
 }: AccountPickerFlatType) {
     const selectRef: any = useRef<Select>(null);
     const [options, setOptions] = useState<AccountOptionType[]>([])
@@ -40,13 +42,13 @@ export function AccountPickerFlat({
         , decodedDbParamsObject
     } = useUtilsInfo()
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         if (accountOptions) {
             setOptions(accountOptions)
         } else {
             loadLocalData()
         }
-    }, [accountOptions, accClassNames])
+    }, [accountOptions, accClassNames, sqlId])
 
     useEffect(() => {
         if (value === null) {
@@ -58,7 +60,7 @@ export function AccountPickerFlat({
         if (options && toSelectFirstOption && (!value) && options.length > 0) {
             (selectRef?.current as any)?.selectOption(options[0])
         }
-    }, [options])
+    }, [options, toSelectFirstOption, value])
 
     return (
         <div className='relative'>
@@ -76,9 +78,42 @@ export function AccountPickerFlat({
                 options={options}
                 placeholder="Select an account"
                 ref={selectRef}
-                styles={Utils.getReactSelectStyles()}
-                components={{ Option: CustomOption }}
+                styles={{
+                    ...Utils.getReactSelectStyles(),
+                    menu: (provided: any) => ({
+                        ...provided,
+                        position: 'absolute',
+                        zIndex: 1000
+                    }),
+                    menuList: (provided: any) => ({
+                        ...provided,
+                        paddingTop: 0
+                    })
+                }}
+                components={{ 
+                    Option: CustomOption,
+                    MenuList: (props: any) => (
+                        <div>
+                            <div style={{
+                                padding: '8px 12px',
+                                borderBottom: '1px solid #eee',
+                                backgroundColor: '#f8f9fa',
+                                fontSize: '12px',
+                                color: '#666',
+                                fontWeight: 500
+                            }}>
+                                {options.length} {options.length === 1 ? 'item' : 'items'}
+                            </div>
+                            <div {...props} style={{
+                                ...props.style,
+                                maxHeight: '360px',
+                                overflowY: 'auto'
+                            }} />
+                        </div>
+                    )
+                }}
                 value={options.find((opt: AccountOptionType) => opt.id === value) || null}
+                maxMenuHeight={400}
             />
         </div>)
 
@@ -125,7 +160,7 @@ export function AccountPickerFlat({
                 dbName: dbName || '',
                 dbParams: decodedDbParamsObject || {},
                 instance: instance,
-                sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
+                sqlId: sqlId || SqlIdsMap.getLeafSubledgerAccountsOnClass,
                 sqlArgs: {
                     accClassNames: accClassNames?.join(',') || null
                 }
@@ -150,30 +185,42 @@ function CustomOption(props: any) {
 
     const index = selectProps.options.findIndex((opt: any) => opt.id === data.id);
     const isEven = index % 2 === 0;
+    const isDisabled = data.isDisabled;
 
     const bgColor = isSelected
         ? '#dcefff'
-        : isFocused
+        : isFocused && !isDisabled
             ? '#f0f8ff'
             : isEven
                 ? '#ffffff'
                 : '#f9f9f9';
 
+    const handleClick = (e: any) => {
+        if (isDisabled) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        innerProps.onClick?.(e);
+    };
+
     return (
         <div
             ref={innerRef}
             {...innerProps}
+            onClick={handleClick}
             style={{
                 backgroundColor: bgColor,
                 padding: '8px 12px',
-                cursor: 'pointer',
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
                 lineHeight: 1.4,
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'start',
                 gap: '8px',
-                borderBottom: '1px solid #eee'
+                borderBottom: '1px solid #eee',
+                opacity: isDisabled ? 0.5 : 1
             }}>
             {data.isSubledger && (
                 <div style={{ color: '#0077cc', fontSize: '12px', lineHeight: '18px' }}>
@@ -212,6 +259,7 @@ type AccountPickerFlatType = {
     showRefreshButton?: boolean
     value?: string | null;
     toSelectFirstOption?: boolean;
+    sqlId?: string | null;
 }
 
 export type AccountOptionType = {
@@ -219,6 +267,8 @@ export type AccountOptionType = {
     accName: string;
     accParent: string;
     isSubledger: boolean;
+    accLeaf: 'L' | 'S' | 'Y';
+    isDisabled: boolean;
 }
 
 export type AccClassName =
