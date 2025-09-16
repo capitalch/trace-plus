@@ -31,18 +31,6 @@ export function AllSales() {
         dispatch(setSalesViewMode(false));
     };
 
-    //  useEffect(() => {
-    //     // if (!isViewMode) {
-    //         window.scrollTo({ top: 0, behavior: 'smooth' });
-    //     // }
-    // }, []);
-
-    // useEffect(() => {
-    //     if (!isViewMode) {
-    //         window.scrollTo({ top: 0, behavior: 'smooth' });
-    //     }
-    // }, [isViewMode]);
-
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">

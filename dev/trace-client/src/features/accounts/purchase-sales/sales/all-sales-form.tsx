@@ -14,7 +14,7 @@ export function AllSalesForm() {
     }, []);
 
     return (
-        <div className="m-4 ml-0 min-h-screen bg-gray-50">
+        <div className="m-4 ml-0 min-h-screen bg-gray-50 text-">
             <StatusBar />
 
             {/* Invoice and Customer Details - Separate Components */}

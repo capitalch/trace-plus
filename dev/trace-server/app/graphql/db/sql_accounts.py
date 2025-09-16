@@ -942,6 +942,69 @@ class SqlAccounts:
     """
 
     get_all_sales = """
+        --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "tranTypeId" AS (VALUES (4))    
+            WITH "branchId" AS (VALUES (%(branchId)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "tranTypeId" AS (VALUES (%(tranTypeId)s))
+            , cte1 AS (  -- cte1 required for accounts other than sale
+                SELECT
+                    d."tranHeaderId",
+                    string_agg(a."accName", ', ') AS "accounts",
+                    -- Contacts details joined with '|', skipping NULLs
+                    concat_ws(
+                        ' | ',
+                        c."contactName",
+                        c."mobileNumber",
+                        c."email",
+                        c."address1",
+                        c."address2",
+                        c."gstin",
+                        c."pin"
+                    ) AS "contactDetails"
+                FROM "TranD" d
+                    JOIN "TranH" h ON h."id" = d."tranHeaderId"
+                    JOIN "AccM" a ON a."id" = d."accId"
+                    JOIN "Contacts" c ON c."id" = h."contactsId"
+                WHERE d."dc" = CASE (TABLE "tranTypeId") WHEN 4 THEN 'D' ELSE 'C' END
+                AND h."finYearId" = (TABLE "finYearId")
+                AND h."branchId"  = (TABLE "branchId")
+                GROUP BY d."tranHeaderId", c."contactName", c."mobileNumber",
+                        c."email", c."address1", c."address2", c."gstin", c."pin"
+            )
+            SELECT
+                ROW_NUMBER() OVER (ORDER BY h."tranDate" DESC, h."id" DESC) AS "index",
+                h."id"          AS "id",
+                h."autoRefNo",
+                h."userRefNo",
+                h."remarks",
+                c."accounts",
+                c."contactDetails",  -- new pipe-joined contact info
+                d."amount",
+                string_agg(b."brandName" || ' ' || p."label", ', ') AS "productDetails",
+                string_agg(s."jData"->>'serialNumbers', ', ')      AS "serialNumbers",
+                string_agg(p."productCode", ', ')                  AS "productCodes",
+                string_agg(s.hsn::text, ', ')                      AS "hsns",
+                SUM(s."qty")                                       AS "productQty",
+                SUM(s."qty" * (s."price" - s."discount"))          AS "aggr",
+                SUM(s."cgst")                                      AS "cgst",
+                SUM(s."sgst")                                      AS "sgst",
+                SUM(s."igst")                                      AS "igst",
+                h."tranDate",
+                string_agg(s."jData"->>'remarks', ', ')            AS "lineRemarks"
+            FROM "TranH" h
+                JOIN "TranD" d ON h."id" = d."tranHeaderId"
+                JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+                JOIN "ProductM" p ON p."id" = s."productId"
+                JOIN "BrandM"  b ON b."id" = p."brandId"
+                JOIN cte1      c ON c."tranHeaderId" = d."tranHeaderId"
+            WHERE h."tranTypeId" = (TABLE "tranTypeId")
+            AND h."finYearId"  = (TABLE "finYearId")
+            AND h."branchId"   = (TABLE "branchId")
+            GROUP BY
+                h."id",
+                d."amount",
+                d."remarks",
+                c."accounts",
+                c."contactDetails"
+            ORDER BY h."tranDate" DESC
     """
     
     get_all_schemas_in_database = """

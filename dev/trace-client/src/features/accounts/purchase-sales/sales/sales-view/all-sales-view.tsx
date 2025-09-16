@@ -1,4 +1,4 @@
-import {  RootStateType } from "../../../../../app/store";
+import { RootStateType } from "../../../../../app/store";
 import { useCallback, useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
@@ -11,7 +11,7 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
-import { SalesFormDataType,  } from "../all-sales";
+import { SalesFormDataType, } from "../all-sales";
 import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 import { useFormContext } from "react-hook-form";
 // import { useDispatch } from "react-redux";
@@ -85,17 +85,18 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
 
   return (
     <div className={clsx("flex flex-col w-full", className)}>
-      <div className="flex items-center mb-4 mr-4">
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-blue-500 rounded-md shadow-sm transition-colors hover:bg-blue-600 space-x-2"
-        >
-          <ArrowLeft size={16} className="flex-shrink-0" />
-          <span>BACK</span>
-        </button>
-      </div>
-
       <CompSyncFusionGridToolbar
+        CustomControl={() => (
+          <div className="flex items-center mr-4">
+            <button
+              onClick={onBack}
+              className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-blue-500 rounded-md shadow-sm transition-colors hover:bg-blue-600 space-x-2"
+            >
+              <ArrowLeft size={16} className="flex-shrink-0" />
+              <span>BACK</span>
+            </button>
+          </div>
+        )}
         className="mr-4"
         minWidth="600px"
         title={`Sales View`}
@@ -117,7 +118,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         deleteColumnWidth={40}
         editColumnWidth={40}
         hasCheckBoxSelection={true}
-        height="calc(100vh - 368px)"
+        height="calc(100vh - 260px)"
         instance={instance}
         isSmallerFont={true}
         loadData={loadData}
@@ -129,7 +130,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         onRowDataBound={handleOnRowDataBound}
         previewColumnWidth={40}
         rowHeight={35}
-        searchFields={['autoRefNo', 'userRefNo', 'productDetails', 'accounts', 'amount', 'serialNumbers', 'productCodes', 'hsns', 'remarks', 'lineRemarks']}
+        searchFields={['autoRefNo', 'userRefNo', 'productDetails', 'contactDetails', 'accounts', 'amount', 'serialNumbers', 'productCodes', 'hsns', 'remarks', 'lineRemarks']}
       />
     </div>
   );
@@ -142,7 +143,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         field: "autoRefNo",
         format: "N0",
         footerTemplate: (props: any) => (
-          <span className="text-right text-xs">Cnt: {props.Count}</span>
+          <span className="text-right text-xs">Count: {props.Count}</span>
         )
       },
       {
@@ -220,13 +221,13 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       },
       {
         field: "autoRefNo",
-        headerText: "Ref No",
+        headerText: "Invoice No",
         type: "string",
         width: 140
       },
       {
         field: "userRefNo",
-        headerText: "Invoice No",
+        headerText: "Ref No",
         type: "string",
         width: 140,
         clipMode: 'EllipsisWithTooltip'
@@ -241,6 +242,14 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       {
         field: 'accounts',
         headerText: 'Account',
+        width: 150,
+        textAlign: 'Left',
+        type: 'string',
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: 'contactDetails',
+        headerText: 'Contact',
         width: 150,
         textAlign: 'Left',
         type: 'string',
