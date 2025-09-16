@@ -1,3 +1,465 @@
-export function AllSalesView() {
-  return <div>AllSalesView</div>;
+import {  RootStateType } from "../../../../../app/store";
+import { useCallback, useEffect, useState } from "react";
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
+import clsx from "clsx";
+import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
+import { format } from "date-fns";
+import { Utils } from "../../../../../utils/utils";
+import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
+import { Messages } from "../../../../../utils/messages";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
+import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
+import { SalesFormDataType,  } from "../all-sales";
+import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
+import { useFormContext } from "react-hook-form";
+// import { useDispatch } from "react-redux";
+// import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
+import { ArrowLeft } from "lucide-react";
+
+interface AllSalesViewProps {
+  className?: string;
+  onBack: () => void;
+}
+
+export function AllSalesView({ className, onBack }: AllSalesViewProps) {
+  // const dispatch: AppDispatchType = useDispatch()
+  const instance = DataInstancesMap.allSales
+  const [rowsData, setRowsData] = useState<any[]>([]);
+  const {
+    currentDateFormat,
+    buCode,
+    branchId,
+    // branchName,
+    dbName,
+    decodedDbParamsObject,
+    finYearId,
+  } = useUtilsInfo();
+
+  const {
+    reset,
+    setValue,
+  } = useFormContext<SalesFormDataType>();
+
+  const loadData = useCallback(async () => {
+    try {
+      const state: RootStateType = Utils.getReduxState();
+      const isAllBranchesState = state.reduxComp.compSwitch[instance];
+      const buCode = state.login.currentBusinessUnit?.buCode;
+      const finYearId = state.login.currentFinYear?.finYearId;
+
+      const rowsData: any[] = await Utils.doGenericQuery({
+        buCode: buCode || "",
+        dbName: dbName || "",
+        dbParams: decodedDbParamsObject,
+        instance: instance,
+        sqlId: SqlIdsMap.getAllSales,
+        sqlArgs: {
+          branchId: isAllBranchesState
+            ? null
+            : state.login.currentBranch?.branchId,
+          finYearId: finYearId,
+          tranTypeId: Utils.getTranTypeId("Sales"),
+        },
+      });
+      let currentId: number | null | undefined = null;
+      let currentColor = false;
+
+      rowsData.forEach((row: any) => {
+        if (row.id !== currentId) {
+          currentId = row.id;
+          currentColor = !currentColor;
+        }
+        row.bColor = currentColor;
+      });
+      setRowsData(rowsData);
+    } catch (e: any) {
+      console.error(e);
+    }
+  }, [decodedDbParamsObject, dbName, instance]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData, finYearId, buCode, branchId]);
+
+  return (
+    <div className={clsx("flex flex-col w-full", className)}>
+      <div className="flex items-center mb-4 mr-4">
+        <button
+          onClick={onBack}
+          className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-blue-500 rounded-md shadow-sm transition-colors hover:bg-blue-600 space-x-2"
+        >
+          <ArrowLeft size={16} className="flex-shrink-0" />
+          <span>BACK</span>
+        </button>
+      </div>
+
+      <CompSyncFusionGridToolbar
+        className="mr-4"
+        minWidth="600px"
+        title={`Sales View`}
+        isPdfExport={true}
+        isExcelExport={true}
+        isCsvExport={true}
+        instance={instance}
+      />
+
+      <CompSyncFusionGrid
+        aggregates={getAggregates()}
+        allowPaging={true}
+        allowTextWrap={false}
+        pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000, 5000, 10000] }}
+        buCode={buCode}
+        className="mt-2"
+        columns={getColumns()}
+        dataSource={rowsData}
+        deleteColumnWidth={40}
+        editColumnWidth={40}
+        hasCheckBoxSelection={true}
+        height="calc(100vh - 368px)"
+        instance={instance}
+        isSmallerFont={true}
+        loadData={loadData}
+        minWidth="1400px"
+        onCopy={handleOnCopy}
+        onEdit={handleOnEdit}
+        onDelete={handleOnDelete}
+        onPreview={handleOnPreview}
+        onRowDataBound={handleOnRowDataBound}
+        previewColumnWidth={40}
+        rowHeight={35}
+        searchFields={['autoRefNo', 'userRefNo', 'productDetails', 'accounts', 'amount', 'serialNumbers', 'productCodes', 'hsns', 'remarks', 'lineRemarks']}
+      />
+    </div>
+  );
+
+  function getAggregates(): SyncFusionGridAggregateType[] {
+    return [
+      {
+        columnName: "autoRefNo",
+        type: "Count",
+        field: "autoRefNo",
+        format: "N0",
+        footerTemplate: (props: any) => (
+          <span className="text-right text-xs">Cnt: {props.Count}</span>
+        )
+      },
+      {
+        columnName: "amount",
+        type: "Sum",
+        field: "amount",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "aggr",
+        type: "Sum",
+        field: "aggr",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "cgst",
+        type: "Sum",
+        field: "cgst",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "sgst",
+        type: "Sum",
+        field: "sgst",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+      {
+        columnName: "igst",
+        type: "Sum",
+        field: "igst",
+        format: "N2",
+        footerTemplate: (props: any) => (
+          <span className="text-xs">{props.Sum}</span>
+        )
+      },
+    ];
+  }
+
+  function getColumns(): SyncFusionGridColumnType[] {
+    return [
+      {
+        field: 'index',
+        headerText: '#',
+        width: 70,
+        textAlign: 'Left',
+        type: 'number',
+      },
+      {
+        field: 'id',
+        headerText: 'Id',
+        width: 90,
+        textAlign: 'Left',
+        type: 'number',
+        visible: false
+      },
+      {
+        field: "tranDate",
+        headerText: "Date",
+        type: "string",
+        width: 75,
+        valueAccessor: (field: string, data: any) =>
+          format(data?.[field], currentDateFormat)
+      },
+      {
+        field: "autoRefNo",
+        headerText: "Ref No",
+        type: "string",
+        width: 140
+      },
+      {
+        field: "userRefNo",
+        headerText: "Invoice No",
+        type: "string",
+        width: 140,
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: "productDetails",
+        headerText: "Product Details",
+        type: "string",
+        width: 160,
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: 'accounts',
+        headerText: 'Account',
+        width: 150,
+        textAlign: 'Left',
+        type: 'string',
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: "amount",
+        headerText: "Amount",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 140
+      },
+      {
+        field: "aggr",
+        headerText: "Aggregate",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 130
+      },
+      {
+        field: "cgst",
+        headerText: "CGST",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 110
+      },
+      {
+        field: "sgst",
+        headerText: "SGST",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 110
+      },
+      {
+        field: "igst",
+        headerText: "IGST",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 110
+      },
+      {
+        field: "serialNumbers",
+        headerText: "Serial Numbers",
+        type: "string",
+        width: 160,
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: "productCodes",
+        headerText: "Product Codes",
+        type: "string",
+        width: 160,
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: "productQty",
+        headerText: "Pr Qty",
+        type: "number",
+        format: "N2",
+        textAlign: "Right",
+        width: 80
+      },
+      {
+        field: "hsns",
+        headerText: "HSN Codes",
+        type: "string",
+        width: 160,
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: "remarks",
+        headerText: "Remarks",
+        type: "string",
+        width: 120,
+        clipMode: 'EllipsisWithTooltip'
+      },
+      {
+        field: "lineRemarks",
+        headerText: "Line Remarks",
+        type: "string",
+        width: 200,
+        clipMode: 'EllipsisWithTooltip'
+      },
+    ];
+  }
+
+  async function getSalesDetailsOnId(id: number | undefined) {
+    if (!id) {
+      return
+    }
+    return (await Utils.doGenericQuery({
+      buCode: buCode || "",
+      dbName: dbName || "",
+      dbParams: decodedDbParamsObject,
+      instance: instance,
+      sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
+      sqlArgs: {
+        id: id,
+      },
+    }))
+  }
+
+  async function handleOnCopy(data: SalesFormDataType) {
+    const editData: any = await getSalesDetailsOnId(data.id)
+    const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+    setValue('saleEditData', undefined)
+    const tranH: TranHType = salesEditData.tranH
+    const tranD: TranDType[] = salesEditData.tranD
+    const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
+    const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
+
+    reset({
+      id: undefined,
+      tranTypeId: tranH.tranTypeId,
+      isGstInvoice: Boolean(extGsTranD?.id),
+      creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+      debitAccounts: tranD.filter((item) => item.dc === "D"),
+      gstin: extGsTranD?.gstin,
+      isIgst: extGsTranD?.igst ? true : false,
+
+      saleEditData: undefined,
+      salesLineItems: salePurchaseDetails.map((item) => ({
+        id: undefined,
+        productId: item.productId,
+        productCode: item.productCode,
+        productDetails: `${item.brandName} ${item.catName} ${item.label}`,
+        hsn: item.hsn.toString(),
+        qty: 1,
+        gstRate: item.gstRate,
+        price: item.price,
+        discount: item.discount,
+        priceGst: item.priceGst,
+        lineRemarks: null,
+        serialNumbers: null,
+        amount: item.price,
+        subTotal: item.price,
+        cgst: 0,
+        sgst: 0,
+        igst: 0
+      }))
+    })
+    onBack()
+  }
+
+  async function handleOnDelete(id: number | string) {
+    Utils.showDeleteConfirmDialog(async () => {
+      try {
+        if (!id) {
+          Utils.showAlertMessage("Error", Messages.errDeletingRecord)
+          return
+        }
+        await Utils.doGenericDelete({
+          buCode: buCode || '',
+          tableName: AllTables.TranH.name,
+          deletedIds: [id]
+        })
+        Utils.showSaveMessage();
+        loadData();
+      } catch (e: any) {
+        console.log(e)
+      }
+    })
+  }
+
+  async function handleOnEdit(data: any) {
+    const editData: any = await getSalesDetailsOnId(data.id)
+    const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+
+    if (!salesEditData) {
+      Utils.showErrorMessage("No data found for editing")
+      return
+    }
+
+    const tranH: TranHType = salesEditData.tranH
+    const tranD: TranDType[] = salesEditData.tranD
+    const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
+    const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
+
+    reset({
+      id: tranH.id,
+      autoRefNo: tranH.autoRefNo,
+      tranDate: tranH.tranDate,
+      userRefNo: tranH.userRefNo,
+      remarks: tranH.remarks,
+      tranTypeId: tranH.tranTypeId,
+      isGstInvoice: Boolean(extGsTranD?.id),
+      creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+      debitAccounts: tranD.filter((item) => item.dc === "D"),
+      gstin: extGsTranD?.gstin,
+      isIgst: extGsTranD?.igst ? true : false,
+
+      totalCgst: extGsTranD?.cgst,
+      totalSgst: extGsTranD?.sgst,
+      totalIgst: extGsTranD?.igst,
+      totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
+      totalInvoiceAmount: tranD?.[0]?.amount || 0,
+      saleEditData: salesEditData,
+      salesLineItems: []
+    })
+    onBack()
+  }
+
+  async function handleOnPreview(data: SalesFormDataType) {
+    console.log(data)
+    Utils.showAlertMessage("Preview", "Sales invoice preview functionality will be implemented soon.")
+  }
+
+  function handleOnRowDataBound(args: RowDataBoundEventArgs) {
+    const rowData: any = args.data;
+
+    if (args.row) {
+      if (rowData.bColor) {
+        args.row.classList.add("bg-green-50");
+      }
+    }
+  }
 }

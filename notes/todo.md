@@ -61,13 +61,14 @@ valid gstin: 24AAACC1206D1ZM
 													- Use cross for bin
 													- UX
 	- Payment details
-		- Accounts with autoSubledger parent, accounts with autoSubLedger leaves with parent
-		- populate
-			- Retail 		: cash and bank
-			- Bill 			: 1st row :ledger having subledger
-							: Other rows: cash bank
-			- Institution 	: 1st row :debtor, creditor
-							: Other rows: cash bank
+													- Purchase, pur ret trim down drop downs
+													- Accounts with autoSubledger parent, accounts with autoSubLedger leaves with parent
+												- populate
+													- Retail 		: cash and bank
+													- Bill 			: 1st row :ledger having subledger
+																	: Other rows: cash bank
+													- Institution 	: 1st row :debtor, creditor
+																	: Other rows: cash bank
 													- Default sales account
 													- Wholesale change to Auto subledger(Bill)
 													- Total amount at top
@@ -76,7 +77,8 @@ valid gstin: 24AAACC1206D1ZM
 													- Add clear button left to add button
 		
 	- Validation
-	- Shipping
+													- Payment details validations to add in Validation section
+												- Shipping
 	- Redux persistence
 												- Customer details
 													- Unique mobile no use
@@ -105,6 +107,7 @@ valid gstin: 24AAACC1206D1ZM
 		- Edit
 		- Preview
 		- Delete
+		- Transition back and forth
 											- Credit notes
 														- Startup
 													- Main

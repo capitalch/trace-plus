@@ -941,6 +941,9 @@ class SqlAccounts:
             order by "tranDate" DESC
     """
 
+    get_all_sales = """
+    """
+    
     get_all_schemas_in_database = """
         SELECT nspname
         FROM pg_namespace

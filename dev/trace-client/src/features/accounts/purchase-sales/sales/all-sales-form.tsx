@@ -5,8 +5,14 @@ import PaymentDetails from "./payment-details/payment-details";
 import Shipping from "./shipping/shipping";
 import StatusBar from "./status-bar/status-bar";
 import Validation from "./validation/validation";
+import { useEffect } from "react";
 
 export function AllSalesForm() {
+
+    useEffect(() => {
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
+    }, []);
+
     return (
         <div className="m-4 ml-0 min-h-screen bg-gray-50">
             <StatusBar />

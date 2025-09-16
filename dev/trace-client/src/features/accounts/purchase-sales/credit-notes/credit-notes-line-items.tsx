@@ -107,6 +107,7 @@ export function CreditNotesLineItems() {
           value={watch("debitAccId") as string}
           className="w-full"
           showRefreshButton={false}
+          toSelectFirstOption={true}
         />
       </FormField>
 

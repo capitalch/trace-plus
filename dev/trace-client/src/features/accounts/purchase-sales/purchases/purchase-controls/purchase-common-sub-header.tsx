@@ -51,6 +51,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     showAccountBalance
                     value={watch('debitAccId') as string}
                     className="mt-1 w-full max-w-80"
+                    toSelectFirstOption={true}
                 />
             </FormField>
 
@@ -78,6 +79,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
                     showAccountBalance
                     value={watch('creditAccId') as string}
                     className="mt-1 w-full max-w-80"
+                    sqlId={SqlIdsMap.getLeafAccountsOnClassWithoutAutoSubledgers}
                 />
             </FormField>
 

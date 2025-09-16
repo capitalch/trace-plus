@@ -10,6 +10,8 @@ import { IconCross } from '../../../../../controls/icons/icon-cross';
 import clsx from 'clsx';
 import { ControlledNumericInput } from '../../../../../controls/components/controlled-numeric-input';
 import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
+import Decimal from 'decimal.js';
+import { Utils } from '../../../../../utils/utils';
 
 type SalesType = 'retail' | 'bill' | 'institution';
 
@@ -23,7 +25,7 @@ const PaymentDetails: React.FC = () => {
         watch,
         formState: { errors }, } = useFormContext<SalesFormDataType>();
     const { getDefaultDebitAccount }: any = useFormContext<SalesFormDataType>();
-
+    const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
     const { fields, remove, append } = useFieldArray({
         control,
         name: 'debitAccounts'
@@ -63,12 +65,17 @@ const PaymentDetails: React.FC = () => {
             setValue(`debitAccounts.0.remarks`, defaultData.remarks);
             trigger('debitAccounts');
         }
+        setTotalDebitAmount()
     };
 
     // Calculate total amount from all payment methods
-    const calculateTotalAmount = () => {
+    const setTotalDebitAmount = () => {
         const debitAccounts = watch('debitAccounts') || [];
-        return debitAccounts.reduce((sum: number, account: any) => sum + (account?.amount || 0), 0);
+        const totalDebitAccount = debitAccounts.reduce((sum: Decimal, account: any) => {
+            const amount = account?.amount || 0;
+            return sum.add(new Decimal(amount));
+        }, new Decimal(0));
+        setValue('totalDebitAmount', totalDebitAccount)
     };
 
     const getAccClassNames = (salesType: SalesType, index: number): AccClassName[] => {
@@ -105,15 +112,18 @@ const PaymentDetails: React.FC = () => {
         <div className="p-4 bg-white border-l-4 border-violet-500 rounded-lg shadow-sm lg:col-span-6 h-full">
 
             {/* Header section */}
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-y-4">
                 <div className="flex items-center">
                     <div className="mr-3 p-2 text-white bg-violet-100 rounded-lg flex-shrink-0">
                         <Banknote className='w-5 h-5 text-violet-600' />
                     </div>
-                    <h2 className="font-semibold text-gray-800 text-lg">Payment Details</h2>
+                    <h2 className="font-semibold text-gray-800 text-lg">Payment Details <span className="text-sm text-gray-500 font-normal">({fields.length} rows)</span></h2>
+                </div>
+                <div>
+                    <div className="text-gray-800">Payable: {Utils.toDecimalFormat(getDebitCreditDifference())}</div>
                 </div>
                 <div className="text-right">
-                    <div className="font-bold text-lg text-gray-800">{calculateTotalAmount().toFixed(2)}</div>
+                    <div className="font-bold text-lg text-gray-800">Total: {Utils.toDecimalFormat(watch('totalDebitAmount').toDecimalPlaces(2).toNumber())}</div>
                 </div>
             </div>
 
@@ -121,7 +131,7 @@ const PaymentDetails: React.FC = () => {
                 {/* Radio buttons and sales account */}
                 <div className="rounded-lg">
                     <div className="mb-2">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-y-4">
                             {/* Radio buttons */}
                             <div className="flex items-center space-x-4">
                                 <label className="flex items-center cursor-pointer">
@@ -215,7 +225,11 @@ const PaymentDetails: React.FC = () => {
 
                     {/* Payment methods rows */}
                     {fields.map((_, index) => (
-                        <div key={index} className="p-2 bg-violet-50 border border-violet-200 rounded-lg">
+                        <div key={index} className="relative p-2 bg-violet-50 border border-violet-200 rounded-lg">
+                            {/* Row Index Badge */}
+                            <div className="absolute -top-1 -left-1 w-4 h-4 bg-violet-200 text-violet-700 text-xs font-medium rounded-full flex items-center justify-center z-10">
+                                {index + 1}
+                            </div>
                             <div className="grid gap-2 grid-col-4 lg:grid-cols-12 items-baseline">
 
                                 {/* Payment account */}
@@ -253,6 +267,7 @@ const PaymentDetails: React.FC = () => {
                                                 shouldValidate: true,
                                                 shouldTouch: true
                                             })
+                                            setTotalDebitAmount()
                                         }}
                                         validate={(value) => {
                                             const ret = value > 0 ? true : Messages.errAmountCannotBeZero;

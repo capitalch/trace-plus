@@ -5,36 +5,68 @@ import { ContactsType, SalePurchaseEditDataType, TranDType } from "../../../../u
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
+import { AllSalesView } from "./sales-view/all-sales-view";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { clearSalesFormData } from "./sales-slice";
+import { clearSalesFormData, setSalesViewMode } from "./sales-slice";
 import Decimal from "decimal.js";
+// import { useEffect } from "react";
 
 export function AllSales() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
+    const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
     const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject */  hasGstin, defaultGstRate } = useUtilsInfo();
+
     const methods = useForm<SalesFormDataType>(
         {
             mode: "all",
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
-    const { clearErrors, /*setError, getValues, setValue,*/ reset, /*watch, setFocus*/ } = methods;
-    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll }
+    const { clearErrors, getValues, /*setError, getValues, setValue,*/ reset, /*watch, setFocus*/ } = methods;
+    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference }
+
+    const handleBackToForm = () => {
+        dispatch(setSalesViewMode(false));
+    };
+
+    //  useEffect(() => {
+    //     // if (!isViewMode) {
+    //         window.scrollTo({ top: 0, behavior: 'smooth' });
+    //     // }
+    // }, []);
+
+    // useEffect(() => {
+    //     if (!isViewMode) {
+    //         window.scrollTo({ top: 0, behavior: 'smooth' });
+    //     }
+    // }, [isViewMode]);
 
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
                 <CompAccountsContainer
                     LeftCustomControl={() => <span className="ml-2 font-bold text-gray-500 text-lg">→ Sales</span>}>
-                    <AllSalesForm />
+                    {isViewMode ? (
+                        <AllSalesView onBack={handleBackToForm} />
+                    ) : (
+                        <AllSalesForm />
+                    )}
                 </CompAccountsContainer>
             </form>
         </FormProvider>
     );
 
     async function finalizeAndSubmit() { }
+
+    function getDebitCreditDifference(){
+        const totalInvoiceAmount = getValues('totalInvoiceAmount')
+        const totalDebitAmount = getValues('totalDebitAmount')
+        const diff = totalInvoiceAmount.minus(totalDebitAmount)
+        return (diff.toDecimalPlaces(2).toNumber())
+    }
+
     function getDefaultSalesFormValues(): SalesFormDataType {
         return ({
             id: undefined,
@@ -60,6 +92,7 @@ export function AllSales() {
             totalSgst: new Decimal(0),
             totalIgst: new Decimal(0),
             totalSubTotal: new Decimal(0),
+            totalDebitAmount: new Decimal(0),
 
             deletedIds: [],
             contactDisplayData: null,
@@ -142,6 +175,7 @@ export type SalesFormDataType = {
     totalSgst: Decimal;
     totalIgst: Decimal;
     totalSubTotal: Decimal;
+    totalDebitAmount: Decimal;
     shippingInfo: ShippingInfoType | null;
 
     saleEditData?: SalePurchaseEditDataType // Check if required

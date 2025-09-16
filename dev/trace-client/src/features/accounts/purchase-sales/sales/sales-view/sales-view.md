@@ -1,0 +1,11 @@
+# Do the following changes in sales folder
+    - The default sales screen consisting of AllSalesForm component is default screen
+    - Create a component named as AllSalesVew in all-sales-view.tsx file in folder sales-view
+        - AllSalesView will be on same pattern as of all-purchases-view.tsx
+    - When in StatusBar of default screen, View button is clicked:
+        - AllSalesForm component is replaced by AllSalesView on the screen
+        - In AllSalesView there is a nice prominent back button to go back to previous display consisting of AllSalesForm component
+            - Clicking of back button displays AllSalesForm
+        - When I click edit icon of a row in AllSalesView then AllSalesForm openes edit mode. At present don't show any data in edit mode
+    - I don't want to disturb existing UI of AllSalesForm
+    - At present just give plan with no execution
