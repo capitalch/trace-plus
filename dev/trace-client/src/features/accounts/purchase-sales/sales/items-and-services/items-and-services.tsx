@@ -48,6 +48,7 @@ const ItemsAndServices: React.FC = () => {
     const errorClass = 'bg-red-200 border-red-500';
     const lineItems = watch("salesLineItems") || [];
     const isIgst = watch('isIgst');
+    const isEditMode = Boolean(watch('id'))
 
     const debouncedPopulateProduct = useMemo(
         () => _.debounce((productCode: string, itemId: number) => {
@@ -169,7 +170,7 @@ const ItemsAndServices: React.FC = () => {
                                         required: Messages.errRequired
                                     })}
                                     readOnly
-                                    className={clsx("bg-gray-100 text-sm mt-1", inputFormFieldStyles,
+                                    className={clsx("bg-gray-100 text-sm mt-1 font-medium", inputFormFieldStyles,
                                         (errors.salesLineItems?.[index]?.productDetails ? errorClass : ''))} />
                             </div>
 
@@ -209,7 +210,7 @@ const ItemsAndServices: React.FC = () => {
                                 <div className="flex flex-col w-24">
                                     <label className="font-semibold text-[13px]">GST % {isGstInvoice && <WidgetAstrix />}</label>
                                     <ControlledNumericInput
-                                        className={clsx("text-right h-8 mt-1",
+                                        className={clsx("text-right h-8 mt-1 font-medium",
                                             inputFormFieldStyles, errors.salesLineItems?.[index]?.gstRate ? errorClass : '')}
                                         fieldName={`salesLineItems.${index}.gstRate`}
                                         onValueChange={(floatValue) => {
@@ -256,7 +257,7 @@ const ItemsAndServices: React.FC = () => {
                                 />
                                 {/* Age Display */}
                                 <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
-                                    <span className={age > 360 ? "text-orange-600 font-semibold" : "text-gray-500"}>
+                                    <span className={age > 360 ? "text-pink-600 font-semibold" : "text-gray-500"}>
                                         Age: {age}
                                     </span>
                                 </div>
@@ -278,13 +279,7 @@ const ItemsAndServices: React.FC = () => {
                                         computeLineItemValues(index)
                                         setStockAndProfit(index);
                                     }}
-                                    // onValueChange={({ floatValue }) => {
-                                    //     setValue(`salesLineItems.${index}.price`, floatValue || 0, { shouldDirty: true })
-                                    //     setPriceGst(index)
-                                    //     computeLineItemValues(index)
-                                    //     setStockAndProfit(index);
-                                    // }}
-                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    className={clsx("text-right h-8 mt-1 font-medium", inputFormFieldStyles)}
                                 />
                                 {/* Cost Display */}
                                 <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
@@ -311,23 +306,19 @@ const ItemsAndServices: React.FC = () => {
                                         computeLineItemValues(index)
                                         setStockAndProfit(index);
                                     }}
-                                // onValueChange={({ floatValue }) => {
-                                // setValue(`salesLineItems.${index}.discount`, floatValue || 0, { shouldDirty: true })
-                                // setPriceGst(index)
-                                // computeLineItemValues(index)
-                                // setStockAndProfit(index);
-                                // }}
                                 />
                                 {/* Stock Display */}
-                                <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
-                                    <span
-                                        className={clsx(
-                                            (stock - qty) < 0 ? "text-amber-800 font-medium animate-pulse" : "text-gray-500"
-                                        )}
-                                    >
-                                        Stock: {stock - qty}
-                                    </span>
-                                </div>
+                                {watch(`salesLineItems.${index}.productCode`) && (
+                                    <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
+                                        <span
+                                            className={clsx(
+                                                isEditMode ? (stock < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-500") : ((stock - qty) <= 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-500")
+                                            )}
+                                        >
+                                            Stock:  {stock}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Price GST */}
@@ -339,7 +330,7 @@ const ItemsAndServices: React.FC = () => {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
-                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    className={clsx("text-right h-8 mt-1 font-medium", inputFormFieldStyles)}
                                     onChange={(e) => {
                                         // this code executes only when value is changed by user using keyboard
                                         const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
@@ -360,10 +351,10 @@ const ItemsAndServices: React.FC = () => {
                                 <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
                                     <span
                                         className={clsx(
-                                            Number(profit) < 0 ? "text-amber-700 font-medium animate-pulse" : "text-gray-500"
+                                            Number(profit) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-500"
                                         )}
                                     >
-                                        Prft: {Utils.toDecimalFormat(profit)}
+                                        {Number(profit) < 0 ? 'Loss:' : 'Prft:'} {Utils.toDecimalFormat(Math.abs(+profit))}
                                     </span>
                                 </div>
                             </div>
@@ -512,12 +503,6 @@ const ItemsAndServices: React.FC = () => {
         trigger()
     }
 
-    // function getDefaultLineItem() {
-    //     const lineItem = getDefaultSalesLineItem();
-    //     lineItem.gstRate = defaultGstRate || 0;
-    //     return lineItem;
-    // }
-
     function getSnError(index: number) {
         const serialNumbers = watch(`salesLineItems.${index}.serialNumbers`);
         const sn = serialNumbers ? serialNumbers.replace(/[,;]$/, "") : "";
@@ -574,8 +559,6 @@ const ItemsAndServices: React.FC = () => {
             setPrice(index);
             computeLineItemValues(index);
             setStockAndProfit(index);
-            // setSummaryValues()
-            // trigger()
         }, 0);
     }
 
@@ -613,16 +596,8 @@ const ItemsAndServices: React.FC = () => {
         const discount = new Decimal(getValues(`salesLineItems.${index}.discount`) || 0);
         const lastPurchasePrice = new Decimal(getValues(`salesLineItems.${index}.lastPurchasePrice`) || 0);
         const stock = new Decimal(getValues(`salesLineItems.${index}.stock`) || 0);
-        // const stock = previousStock.minus(qty);
         const profit = lastPurchasePrice.gt(0) ? qty.times(price.minus(lastPurchasePrice).minus(discount)) : new Decimal(0);
-        // const pric = price.toNumber();
-        // const qt = qty.toNumber();
-        // const disc = discount.toNumber();
-        // const lpp = lastPurchasePrice.toNumber();
-        // const ps = previousStock.toNumber();
-        // const st = stock.toNumber();
-        // const pr = profit.toNumber();
-        // console.log(`setStockAndProfit: index=${index}, price=${pric}, qty=${qt}, discount=${disc}, lastPurchasePrice=${lpp}, previousStock=${ps} => stock=${st}, profit=${pr}`);
+        
         setValue(`salesLineItems.${index}.stock`, stock.toNumber(), { shouldDirty: true });
         setValue(`salesLineItems.${index}.profit`, profit.toDecimalPlaces(2).toNumber(), { shouldDirty: true });
     }

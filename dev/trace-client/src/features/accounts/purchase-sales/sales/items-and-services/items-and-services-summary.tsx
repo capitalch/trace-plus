@@ -46,7 +46,7 @@ const ItemsAndServicesSummary: React.FC<ItemsAndServicesSummaryProps> = ({remove
                 </div>
                 <div className="flex text-right text-sm gap-1">
                     <span className="text-gray-500">SubTotal:</span>
-                    <span>{watch('totalSubTotal').toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    <span>{watch('totalSubTotal')?.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 }) || 0}</span>
                 </div>
                 <div className="flex text-right text-sm gap-1">
                     <span className="text-gray-500">CGST:</span>

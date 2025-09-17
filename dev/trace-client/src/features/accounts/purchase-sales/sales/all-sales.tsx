@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
-import { ContactsType, SalePurchaseEditDataType, TranDType } from "../../../../utils/global-types-interfaces-enums";
+import { ContactsType, SalePurchaseEditDataType, TranDExtraType, TranDType } from "../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
@@ -10,13 +10,17 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { clearSalesFormData, setSalesViewMode } from "./sales-slice";
 import Decimal from "decimal.js";
+import { useAllSalesSubmit } from "./all-sales-submit-hook";
+// import { Messages } from "../../../../utils/messages";
+import { AllTables } from "../../../../app/maps/database-tables-map";
+import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 // import { useEffect } from "react";
 
 export function AllSales() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
-    const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject */  hasGstin, defaultGstRate } = useUtilsInfo();
+    const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject */  hasGstin, defaultGstRate, dbName, buCode } = useUtilsInfo();
 
     const methods = useForm<SalesFormDataType>(
         {
@@ -25,6 +29,7 @@ export function AllSales() {
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
     const { clearErrors, getValues, /*setError, getValues, setValue,*/ reset, /*watch, setFocus*/ } = methods;
+    const { getTranHData } = useAllSalesSubmit(methods);
     const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference }
 
     const handleBackToForm = () => {
@@ -46,11 +51,30 @@ export function AllSales() {
         </FormProvider>
     );
 
-    async function finalizeAndSubmit() { }
+    async function finalizeAndSubmit() {
+        try {
+            const xData: XDataObjectType = getTranHData();
+            // await Utils.doGenericUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: AllTables.TranH.name,
+            //     xData: xData,
+            // });
 
-    function getDebitCreditDifference(){
-        const totalInvoiceAmount = getValues('totalInvoiceAmount')
-        const totalDebitAmount = getValues('totalDebitAmount')
+            if (getValues('id')) {
+                dispatch(setSalesViewMode(true)); // Switch to view mode for existing sales
+            }
+            resetAll();
+            Utils.showSaveMessage();
+        } catch (e) {
+            console.error(e);
+            Utils.showErrorMessage('Error saving sales data');
+        }
+    }
+
+    function getDebitCreditDifference() {
+        const totalInvoiceAmount = getValues('totalInvoiceAmount') || new Decimal(0)
+        const totalDebitAmount = getValues('totalDebitAmount') || new Decimal(0)
         const diff = totalInvoiceAmount.minus(totalDebitAmount)
         return (diff.toDecimalPlaces(2).toNumber())
     }
@@ -63,12 +87,12 @@ export function AllSales() {
             userRefNo: null,
             remarks: null,
             tranTypeId: Utils.getTranTypeId("Sales"),
-            isGstInvoice: hasGstin,
-            isIgst: false,
-
             branchId: 0,
             finYearId: 0,
+
             hasCustomerGstin: false,
+            isGstInvoice: hasGstin,
+            isIgst: false,
 
             creditAccId: null,
             debitAccounts: [],
@@ -134,6 +158,7 @@ export function AllSales() {
 }
 
 export type SalesFormDataType = {
+    //TranH
     id?: number;
     autoRefNo?: string;
     tranDate: string;
@@ -142,6 +167,7 @@ export type SalesFormDataType = {
     tranTypeId: number;
     branchId: number;
     finYearId: number;
+    
     hasCustomerGstin: boolean;
     isGstInvoice: boolean;
     isIgst: boolean;
@@ -149,8 +175,9 @@ export type SalesFormDataType = {
     contactDisplayData: ContactDisplayDataType | null;
     contactData: ContactsType | null;
 
+    //TranD
     creditAccId: string | number | null;
-    debitAccounts: TranDType[];
+    debitAccounts: TranDExtraType[];
 
     gstin?: string | null;
 
@@ -166,7 +193,7 @@ export type SalesFormDataType = {
     totalDebitAmount: Decimal;
     shippingInfo: ShippingInfoType | null;
 
-    saleEditData?: SalePurchaseEditDataType // Check if required
+    salesEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
 }
 
@@ -207,13 +234,12 @@ export type SalesLineItemType = {
     age?: number | null;
     profit?: number | null | string;
     stock?: number | null;
-    // previousStock?: number | null;
     lastPurchasePrice?: number | null;
 }
 
 export type ContactDisplayDataType = {
+    id?: number;
     index?: number;
-    id: number;
     name: string;
     gstin: string;
     email: string;

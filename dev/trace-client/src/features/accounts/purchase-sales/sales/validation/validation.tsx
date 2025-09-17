@@ -57,7 +57,7 @@ const Validation: React.FC = () => {
         // Amount balance validation
         const diff = getDebitCreditDifference()
         const totalSaleAmount =Utils.toDecimalFormat(watch('totalInvoiceAmount').toDecimalPlaces(2).toNumber() || 0)
-        const totalDebitAmount = Utils.toDecimalFormat(watch('totalDebitAmount').toDecimalPlaces(2).toNumber() || 0)
+        const totalDebitAmount = Utils.toDecimalFormat(watch('totalDebitAmount')?.toDecimalPlaces(2).toNumber() || 0)
         
         if (diff !== 0) {
             paymentErrors.push(`Amount mismatch: Sale amount (${totalSaleAmount}) does not equal payment amount (${totalDebitAmount})`);

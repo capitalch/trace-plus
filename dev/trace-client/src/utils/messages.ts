@@ -66,6 +66,7 @@ const Messages = {
   errMustHaveOneDigit: 'Should have a digit',
   errMustHaveOneLetter: 'Should have one letter',
   errMustHaveOneSpecialChar: 'Must have a special character',
+  errNoDataFoundForEdit:'No data found for editing',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
   errProductNotSelected: 'Product not selected',

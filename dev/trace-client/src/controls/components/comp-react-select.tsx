@@ -13,7 +13,7 @@ export function CompReactSelect({
   placeHolder,
   selectedValue,
   staticOptions,
-  ...otherProps
+  // ...otherProps
 }: CompReactSelectType) {
   const [options, setOptions] = useState([]);
   const selectRef: any = useRef(null);
@@ -39,11 +39,11 @@ export function CompReactSelect({
   }, [options]);
 
   // Filter out DOM-specific props that shouldn't be passed to react-select
-  const {
-    name,
-    onBlur,
-    ...selectProps
-  } = otherProps;
+  // const {
+  //   name,
+  //   onBlur,
+  //   ...selectProps
+  // } = otherProps;
 
   return (
     <Select

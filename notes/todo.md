@@ -34,6 +34,7 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales
 	- Items and services
+		- When pr code is given, age cost stock is not correctly fetched
 													- labels 13 px as in prod code
 													- Change debounce logic
 													- Show summary
@@ -102,9 +103,15 @@ valid gstin: 24AAACC1206D1ZM
 			- Insert
 			- Edit
 	- View
-		- Sql
-		- Data
+														- Sql
+														- Data
 		- Edit
+			- Payment Details
+														- payable
+														- sale type
+														- payment account
+														- Shipping
+
 		- Preview
 		- Delete
 		- Transition back and forth

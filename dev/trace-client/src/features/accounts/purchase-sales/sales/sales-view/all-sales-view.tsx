@@ -11,12 +11,13 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
-import { SalesFormDataType, } from "../all-sales";
-import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
+import { SalesFormDataType, ShippingInfoType, } from "../all-sales";
+import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 import { useFormContext } from "react-hook-form";
 // import { useDispatch } from "react-redux";
 // import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { ArrowLeft } from "lucide-react";
+import Decimal from "decimal.js";
 
 interface AllSalesViewProps {
   className?: string;
@@ -360,7 +361,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
   async function handleOnCopy(data: SalesFormDataType) {
     const editData: any = await getSalesDetailsOnId(data.id)
     const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-    setValue('saleEditData', undefined)
+    setValue('salesEditData', undefined)
     const tranH: TranHType = salesEditData.tranH
     const tranD: TranDType[] = salesEditData.tranD
     const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
@@ -375,7 +376,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       gstin: extGsTranD?.gstin,
       isIgst: extGsTranD?.igst ? true : false,
 
-      saleEditData: undefined,
+      salesEditData: undefined,
       salesLineItems: salePurchaseDetails.map((item) => ({
         id: undefined,
         productId: item.productId,
@@ -424,15 +425,18 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
 
     if (!salesEditData) {
-      Utils.showErrorMessage("No data found for editing")
+      Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
       return
     }
 
     const tranH: TranHType = salesEditData.tranH
-    const tranD: TranDType[] = salesEditData.tranD
+    const billTo: ContactsType | null = salesEditData.billTo
+    const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any: null
+    const tranD: TranDExtraType[] = salesEditData.tranD
     const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
     const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
 
+    const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
     reset({
       id: tranH.id,
       autoRefNo: tranH.autoRefNo,
@@ -446,13 +450,30 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       gstin: extGsTranD?.gstin,
       isIgst: extGsTranD?.igst ? true : false,
 
-      totalCgst: extGsTranD?.cgst,
-      totalSgst: extGsTranD?.sgst,
-      totalIgst: extGsTranD?.igst,
-      totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
-      totalInvoiceAmount: tranD?.[0]?.amount || 0,
-      saleEditData: salesEditData,
-      salesLineItems: []
+      totalCgst: new Decimal(extGsTranD?.cgst),
+      totalSgst: new Decimal(extGsTranD?.sgst),
+      totalIgst: new Decimal(extGsTranD?.igst),
+      totalQty: new Decimal(salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0)),
+      totalInvoiceAmount: new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0),
+      totalDebitAmount: totalDebitAmount,
+      salesEditData: salesEditData,
+      salesLineItems: salePurchaseDetails.map((item) => ({
+        id: item.id,
+        productId: item.productId,
+        productCode: item.productCode,
+        upcCode: item.upcCode || null,
+        productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+        hsn: item.hsn.toString(),
+        qty: item.qty,
+        gstRate: item.gstRate,
+        price: item.price,
+        discount: item.discount,
+        priceGst: item.priceGst,
+        lineRemarks: item.remarks || null,
+        serialNumbers: item.serialNumbers || null
+      })),
+      contactData:billTo,
+      shippingInfo: shippingInfo,
     })
     onBack()
   }

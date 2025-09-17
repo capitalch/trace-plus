@@ -1006,7 +1006,7 @@ class SqlAccounts:
                 c."contactDetails"
             ORDER BY h."tranDate" DESC
     """
-    
+
     get_all_schemas_in_database = """
         SELECT nspname
         FROM pg_namespace
@@ -2020,113 +2020,120 @@ class SqlAccounts:
     """
 
     get_product_on_product_code_upc = """
-        -- with "productCodeOrUpc" as (values('1162')), "branchId" as (values(1)), "finYearId" as (values (2025)),
-        WITH "productCodeOrUpc" AS (VALUES(%(productCodeOrUpc)s)), "branchId" AS (VALUES(%(branchId)s::int)), "finYearId" AS (VALUES(%(finYearId)s::int)),
-     
+        --WITH "productCodeOrUpc" AS (VALUES('1161')), "branchId" AS (VALUES(1)), "finYearId" AS (VALUES(2025)),
+            WITH "productCodeOrUpc" AS (VALUES(%(productCodeOrUpc)s)), "branchId" AS (VALUES(%(branchId)s::int)), "finYearId" AS (VALUES(%(finYearId)s::int)),
+
             -- Get all stock movements for the specific product
             stock_movements AS (
-                SELECT   
-                    s."productId",   
-                    h."tranTypeId",   
-                    s."qty",   
-                    s."price",   
+                SELECT s."productId",
+                    h."tranTypeId",
+                    s."qty",
+                    s."price",
                     h."tranDate"
-                FROM "TranH" h  
-                JOIN "TranD" d ON h."id" = d."tranHeaderId"  
+                FROM "TranH" h
+                JOIN "TranD" d ON h."id" = d."tranHeaderId"
                 JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
                 JOIN "ProductM" p ON p."id" = s."productId"
-                WHERE h."branchId" = (TABLE "branchId")   
+                WHERE h."branchId" = (TABLE "branchId")
                 AND h."finYearId" = (TABLE "finYearId")
                 AND (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
                 
-                UNION ALL  
+                UNION ALL
                 
-                SELECT   
-                    sj."productId",   
-                    h."tranTypeId",   
-                    sj."qty",   
-                    0 AS "price",   
+                SELECT sj."productId",
+                    h."tranTypeId",
+                    sj."qty",
+                    0 AS "price",
                     h."tranDate"
-                FROM "TranH" h  
+                FROM "TranH" h
                 JOIN "StockJournal" sj ON h."id" = sj."tranHeaderId"
                 JOIN "ProductM" p ON p."id" = sj."productId"
-                WHERE h."branchId" = (TABLE "branchId")   
+                WHERE h."branchId" = (TABLE "branchId")
                 AND h."finYearId" = (TABLE "finYearId")
                 AND (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
             ),
-            
+
+            -- Get last purchase details for each product
+            last_purchase AS (
+                SELECT 
+                    sm."productId",
+                    sm."price" AS "lastPurchasePrice",
+                    sm."tranDate" AS "lastPurchaseDate",
+                    ROW_NUMBER() OVER (PARTITION BY sm."productId" ORDER BY sm."tranDate" DESC, sm."price" DESC) as rn
+                FROM stock_movements sm
+                WHERE sm."tranTypeId" IN (5, 11) -- Purchase and stock journal entries
+                AND sm."price" > 0
+            ),
+
             -- Calculate stock summary
             stock_calc AS (
-                SELECT   
-                    sm."productId",
+                SELECT 
+                    COALESCE(sm."productId", ob."productId") AS "productId",
                     -- Stock calculation: opening + purchase - purchaseRet - sale + saleRet + stockJournalDebits - stockJournalCredits
-                    COALESCE(ob."qty", 0) + 
+                    COALESCE(ob."qty", 0) +
                     COALESCE(SUM(CASE WHEN sm."tranTypeId" = 5 THEN sm."qty" ELSE 0 END), 0) -
                     COALESCE(SUM(CASE WHEN sm."tranTypeId" = 10 THEN sm."qty" ELSE 0 END), 0) -
                     COALESCE(SUM(CASE WHEN sm."tranTypeId" = 4 THEN sm."qty" ELSE 0 END), 0) +
                     COALESCE(SUM(CASE WHEN sm."tranTypeId" = 9 THEN sm."qty" ELSE 0 END), 0) +
-                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 11 THEN sm."qty" ELSE 0 END), 0) AS "clos",
-                    
-                    -- Last purchase price (most recent purchase or stock journal with price > 0)
-                    COALESCE(
-                        (SELECT sm2."price" 
-                        FROM stock_movements sm2 
-                        WHERE sm2."productId" = sm."productId" 
-                            AND sm2."tranTypeId" IN (5, 11) 
-                            AND sm2."price" > 0
-                        ORDER BY sm2."tranDate" DESC 
-                        LIMIT 1),
-                        ob."openingPrice", 
-                        0
-                    ) AS "lastPurchasePrice",
-                    
-                    -- Last purchase date
-                    COALESCE(
-                        (SELECT sm2."tranDate"
-                        FROM stock_movements sm2 
-                        WHERE sm2."productId" = sm."productId" 
-                            AND sm2."tranTypeId" IN (5, 11)
-                        ORDER BY sm2."tranDate" DESC 
-                        LIMIT 1),
-                        ob."lastPurchaseDate"
-                    ) AS "lastPurchaseDate"
-                    
+                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 11 THEN sm."qty" ELSE 0 END), 0) -
+                    COALESCE(SUM(CASE WHEN sm."tranTypeId" = 12 THEN sm."qty" ELSE 0 END), 0) AS "clos"
                 FROM stock_movements sm
-                LEFT JOIN "ProductOpBal" ob ON ob."productId" = sm."productId" 
-                AND ob."branchId" = (TABLE "branchId")
-                AND ob."finYearId" = (TABLE "finYearId")
-                GROUP BY sm."productId", ob."qty", ob."openingPrice", ob."lastPurchaseDate"
+                FULL OUTER JOIN "ProductOpBal" ob ON ob."productId" = sm."productId" 
+                                                AND ob."branchId" = (TABLE "branchId")
+                                                AND ob."finYearId" = (TABLE "finYearId")
+                JOIN "ProductM" p ON p."id" = COALESCE(sm."productId", ob."productId")
+                WHERE (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
+                GROUP BY COALESCE(sm."productId", ob."productId"), ob."qty"
+            ),
+
+            -- Get last purchase date for all movements (not just with price)
+            last_movement AS (
+                SELECT 
+                    sm."productId",
+                    sm."tranDate" AS "lastMovementDate",
+                    ROW_NUMBER() OVER (PARTITION BY sm."productId" ORDER BY sm."tranDate" DESC) as rn
+                FROM stock_movements sm
+                WHERE sm."tranTypeId" IN (5, 11) -- Purchase and stock journal entries
             )
 
-        SELECT 
-            p."id" AS "productId",
-            COALESCE(sc."lastPurchasePrice", p."purPrice", 0) AS "lastPurchasePrice",
-            c."catName",
-            b."brandName", 
-            COALESCE(p."hsn", c."hsn", 0) AS hsn,
-            p."info",
-            p."label",
-            p."productCode",
-            p."upcCode",
-            COALESCE(p."gstRate", 0) AS "gstRate",
-            ROUND(COALESCE(
-                NULLIF(p."salePriceGst", 0),
-                NULLIF((p."salePrice" - p."saleDiscount") * (1 + p."gstRate" / 100.0), 0),
-                p."maxRetailPrice"
-            ), 2) AS "calculatedSalePriceGst",
-            COALESCE(sc."clos", 0) AS "clos",
-            CASE 
-                WHEN COALESCE(sc."clos", 0) > 0 AND sc."lastPurchaseDate" IS NOT NULL 
-                THEN DATE_PART('day', CURRENT_DATE::timestamp - sc."lastPurchaseDate"::timestamp)
-                ELSE 0 
-            END AS "age"
-        FROM "ProductM" p
-        LEFT JOIN stock_calc sc ON p."id" = sc."productId"
-        LEFT JOIN "CategoryM" c ON c."id" = p."catId"
-        LEFT JOIN "BrandM" b ON b."id" = p."brandId"
-        WHERE (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
-        AND p."isActive"
-        LIMIT 1
+            SELECT 
+                p."id" AS "productId",
+                COALESCE(lp."lastPurchasePrice", ob."openingPrice", p."purPrice", 0) AS "lastPurchasePrice",
+                c."catName",
+                b."brandName",
+                COALESCE(p."hsn", c."hsn", 0) AS hsn,
+                p."info",
+                p."label",
+                p."productCode",
+                p."upcCode",
+                COALESCE(p."gstRate", 0) AS "gstRate",
+                ROUND(COALESCE(
+                    NULLIF(p."salePriceGst", 0),
+                    NULLIF((p."salePrice" - p."saleDiscount") * (1 + p."gstRate" / 100.0), 0),
+                    p."maxRetailPrice"
+                ), 2) AS "calculatedSalePriceGst",
+                COALESCE(sc."clos", ob."qty", 0) AS "clos",
+                CASE 
+                    WHEN lp."lastPurchaseDate" IS NOT NULL THEN 
+                        (CURRENT_DATE - lp."lastPurchaseDate"::date)::integer
+                    WHEN lm."lastMovementDate" IS NOT NULL THEN 
+                        (CURRENT_DATE - lm."lastMovementDate"::date)::integer
+                    WHEN ob."lastPurchaseDate" IS NOT NULL THEN 
+                        (CURRENT_DATE - ob."lastPurchaseDate"::date)::integer
+                    ELSE 0 
+                END AS "age"
+            FROM "ProductM" p
+            LEFT JOIN stock_calc sc ON p."id" = sc."productId"
+            LEFT JOIN last_purchase lp ON p."id" = lp."productId" AND lp.rn = 1
+            LEFT JOIN last_movement lm ON p."id" = lm."productId" AND lm.rn = 1
+            LEFT JOIN "ProductOpBal" ob ON ob."productId" = p."id" 
+                                        AND ob."branchId" = (TABLE "branchId")
+                                        AND ob."finYearId" = (TABLE "finYearId")
+            LEFT JOIN "CategoryM" c ON c."id" = p."catId"
+            LEFT JOIN "BrandM" b ON b."id" = p."brandId"
+            WHERE (p."productCode" = (TABLE "productCodeOrUpc") OR p."upcCode" = (TABLE "productCodeOrUpc"))
+            AND p."isActive" = true
+            LIMIT 1;
     """
 
     get_products_for_purchase = """
@@ -2366,67 +2373,110 @@ class SqlAccounts:
     """
 
     get_sale_purchase_details_on_id = """
-        --with "id" as (values (10892))
-        with "id" as (values (%(id)s::int))
-        , cte1 as (
-                select "id", "tranDate", "userRefNo", "remarks", "autoRefNo", "jData", "tranTypeId"
-                    from "TranH"
-                        where "id" = (table id)
-            ),
-            cte5 as (
-                select c.* 
-                    from "Contacts" c
-                        join "TranH" h
-                            on c."id" = h."contactsId"
-                        where  h."id" = (table id)
-            ),
-            cte2 as (
-                select d."id", d."accId", "dc", "amount", d."instrNo", d."remarks", "accClass", "accName", "accCode"
-                    from "cte1" c1 join "TranD" d 
-                        on c1."id" = d."tranHeaderId"
-                    join "AccM" m
-                        on m."id" = d."accId"
-                    join "AccClassM" c2
-                        on c2."id" = m."classId"
-            ),
-            cte3 as (
-                select x."id", "gstin", "cgst", "sgst", "igst"
-                    from "cte2" c2 join "ExtGstTranD" x
-                        on c2."id" = x."tranDetailsId"                        
-            ),
-            cte6 as (
-                select e.* from
-                    "AccM" a join "ExtBusinessContactsAccM" e
-                        on a."id" = e."accId"
-                    join cte2 c2
-                        on a."id" = c2."accId" limit 1
-            ),
-            cte4 as (
-                select s."id", "productId", "qty", "price", "priceGst", "discount"
-                    , "cgst", "sgst", "igst", s."amount", s."hsn", s."gstRate"
-                    , "productCode", "upcCode", "catName", "brandName", "info", "label"
-                    , s."jData"->>'serialNumbers' as "serialNumbers"
-                    , s."jData"->>'remarks' as "remarks"
-                    from "cte2" c2 
-                        join "SalePurchaseDetails" s
-                            on c2."id" = s."tranDetailsId"
-                        join "ProductM" p
-                            on p."id" = s."productId"
-                        join "CategoryM" c
-                            on c."id" = p."catId"
-                        join "BrandM" b
-                            on b."id" = p."brandId"
-                    
-            )
-
-            select json_build_object(
-                'tranH', (SELECT row_to_json(a) from cte1 a),
-                'billTo', (SELECT row_to_json(e) from cte5 e),
-                'businessContacts',(SELECT row_to_json(f) from cte6 f),
-                'tranD', (SELECT json_agg(b) from cte2 b),
-                'extGstTranD', (SELECT row_to_json(c) from cte3 c),
-                'salePurchaseDetails', (SELECT json_agg(d) from cte4 d)
-            ) as "jsonResult"
+        --WITH "id" AS (VALUES (10835)), ----10825
+		with "id" as (values (%(id)s::int)),
+		cte1 AS (
+		    SELECT
+		        "id",
+		        "tranDate",
+		        "userRefNo",
+		        "remarks",
+		        "autoRefNo",
+		        "jData",
+		        "tranTypeId"
+		    FROM "TranH"
+		    WHERE "id" = (TABLE id)
+		),
+		cte5 AS (
+		    SELECT
+		        c.*
+		    FROM "Contacts" c
+		    JOIN "TranH" h ON c."id" = h."contactsId"
+		    WHERE h."id" = (TABLE id)
+		),
+		cte2 AS (
+		    SELECT
+		        d."id",
+		        d."accId",
+		        d."dc",
+		        d."amount",
+		        d."instrNo",
+		        d."remarks",
+		        c2."accClass",
+		        m."accName",
+		        m."accCode",
+				x."isAutoSubledger"
+		    FROM cte1 c1
+		    JOIN "TranD" d
+		        ON c1."id" = d."tranHeaderId"
+		    JOIN "AccM" m
+		        ON m."id" = d."accId"
+		    JOIN "AccClassM" c2
+		        ON c2."id" = m."classId"
+			LEFT JOIN "ExtMiscAccM" x
+				on m."parentId" = x."accId" -- To find out if parent of account is isAutoSubledger
+		),
+		cte3 AS (
+		    SELECT
+		        x."id",
+		        x."gstin",
+		        x."cgst",
+		        x."sgst",
+		        x."igst"
+		    FROM cte2 c2
+		    JOIN "ExtGstTranD" x
+		        ON c2."id" = x."tranDetailsId"
+		),
+		cte6 AS (
+		    SELECT
+		        e.*
+		    FROM "AccM" a
+		    JOIN "ExtBusinessContactsAccM" e
+		        ON a."id" = e."accId"
+		    JOIN cte2 c2
+		        ON a."id" = c2."accId"
+		    LIMIT 1
+		),
+		cte4 AS (
+		    SELECT
+		        s."id",
+		        s."productId",
+		        s."qty",
+		        s."price",
+		        s."priceGst",
+		        s."discount",
+		        s."cgst",
+		        s."sgst",
+		        s."igst",
+		        s."amount",
+		        s."hsn",
+		        s."gstRate",
+		        p."productCode",
+		        p."upcCode",
+		        c."catName",
+		        b."brandName",
+		        p."info",
+		        p."label",
+		        s."jData"->>'serialNumbers' AS "serialNumbers",
+		        s."jData"->>'remarks'        AS "remarks"
+		    FROM cte2 c2
+		    JOIN "SalePurchaseDetails" s
+		        ON c2."id" = s."tranDetailsId"
+		    JOIN "ProductM" p
+		        ON p."id" = s."productId"
+		    JOIN "CategoryM" c
+		        ON c."id" = p."catId"
+		    JOIN "BrandM" b
+		        ON b."id" = p."brandId"
+		)
+		SELECT json_build_object(
+		    'tranH',              (SELECT row_to_json(a) FROM cte1 a),
+		    'billTo',             (SELECT row_to_json(e) FROM cte5 e),
+		    'businessContacts',   (SELECT row_to_json(f) FROM cte6 f),
+		    'tranD',              (SELECT json_agg(b) FROM cte2 b),
+		    'extGstTranD',        (SELECT row_to_json(c) FROM cte3 c),
+		    'salePurchaseDetails',(SELECT json_agg(d) FROM cte4 d)
+		) AS "jsonResult"
     """
 
     get_sales_report = """

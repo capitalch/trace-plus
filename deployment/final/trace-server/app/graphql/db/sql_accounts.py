@@ -941,6 +941,72 @@ class SqlAccounts:
             order by "tranDate" DESC
     """
 
+    get_all_sales = """
+        --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2024)), "tranTypeId" AS (VALUES (4))    
+            WITH "branchId" AS (VALUES (%(branchId)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "tranTypeId" AS (VALUES (%(tranTypeId)s))
+            , cte1 AS (  -- cte1 required for accounts other than sale
+                SELECT
+                    d."tranHeaderId",
+                    string_agg(a."accName", ', ') AS "accounts",
+                    -- Contacts details joined with '|', skipping NULLs
+                    concat_ws(
+                        ' | ',
+                        c."contactName",
+                        c."mobileNumber",
+                        c."email",
+                        c."address1",
+                        c."address2",
+                        c."gstin",
+                        c."pin"
+                    ) AS "contactDetails"
+                FROM "TranD" d
+                    JOIN "TranH" h ON h."id" = d."tranHeaderId"
+                    JOIN "AccM" a ON a."id" = d."accId"
+                    JOIN "Contacts" c ON c."id" = h."contactsId"
+                WHERE d."dc" = CASE (TABLE "tranTypeId") WHEN 4 THEN 'D' ELSE 'C' END
+                AND h."finYearId" = (TABLE "finYearId")
+                AND h."branchId"  = (TABLE "branchId")
+                GROUP BY d."tranHeaderId", c."contactName", c."mobileNumber",
+                        c."email", c."address1", c."address2", c."gstin", c."pin"
+            )
+            SELECT
+                ROW_NUMBER() OVER (ORDER BY h."tranDate" DESC, h."id" DESC) AS "index",
+                h."id"          AS "id",
+                h."autoRefNo",
+                h."userRefNo",
+                h."remarks",
+                c."accounts",
+                c."contactDetails",  -- new pipe-joined contact info
+                d."amount",
+                string_agg(b."brandName" || ' ' || p."label", ', ') AS "productDetails",
+                string_agg(s."jData"->>'serialNumbers', ', ')      AS "serialNumbers",
+                string_agg(p."productCode", ', ')                  AS "productCodes",
+                string_agg(s.hsn::text, ', ')                      AS "hsns",
+                SUM(s."qty")                                       AS "productQty",
+                SUM(s."qty" * (s."price" - s."discount"))          AS "aggr",
+                SUM(s."cgst")                                      AS "cgst",
+                SUM(s."sgst")                                      AS "sgst",
+                SUM(s."igst")                                      AS "igst",
+                h."tranDate",
+                string_agg(s."jData"->>'remarks', ', ')            AS "lineRemarks"
+            FROM "TranH" h
+                JOIN "TranD" d ON h."id" = d."tranHeaderId"
+                JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+                JOIN "ProductM" p ON p."id" = s."productId"
+                JOIN "BrandM"  b ON b."id" = p."brandId"
+                JOIN cte1      c ON c."tranHeaderId" = d."tranHeaderId"
+            WHERE h."tranTypeId" = (TABLE "tranTypeId")
+            AND h."finYearId"  = (TABLE "finYearId")
+            AND h."branchId"   = (TABLE "branchId")
+            GROUP BY
+                h."id",
+                d."amount",
+                d."remarks",
+                c."accounts",
+                c."contactDetails"
+            ORDER BY h."tranDate" DESC
+    """
+
     get_all_schemas_in_database = """
         SELECT nspname
         FROM pg_namespace
@@ -1708,34 +1774,174 @@ class SqlAccounts:
                 order by "catName"
     """
 
-    get_leaf_subledger_accounts_on_class = """
+    get_leaf_accounts_on_class_without_auto_subledgers = """
+        with "accClassNames" as (values (%(accClassNames)s::text)),
+				--WITH "accClassNames" AS (VALUES ('debtor,creditor'::text)),
+				
+				-- 1️⃣  All ledgers that are marked auto-subledger
+				auto_ledgers AS (
+				    SELECT x."accId"
+				    FROM "ExtMiscAccM" x
+				    WHERE x."isAutoSubledger" = TRUE
+				),
+				
+				-- 2️⃣  Main query excluding both those ledgers and their children
+				cte1 AS (
+				    SELECT
+				        a.id,
+				        a."accName",
+				        a."parentId",
+				        a."accLeaf",
+				        c."accClass",
+				        x."isAutoSubledger"
+				    FROM "AccM" a
+				    JOIN "AccClassM" c ON c.id = a."classId"
+				    LEFT JOIN "ExtMiscAccM" x ON a.id = x."accId"
+				    WHERE a."accLeaf" IN ('Y','S','L')
+				      AND (
+				            (TABLE "accClassNames") IS NULL
+				         OR c."accClass" = ANY(string_to_array((TABLE "accClassNames"), ','))
+				      )
+				      -- 🚫 Exclude rows that are auto-subledgers or whose parent is one
+				      AND a.id       NOT IN (SELECT "accId" FROM auto_ledgers)
+				      AND a."parentId" NOT IN (SELECT "accId" FROM auto_ledgers)
+				)
+				SELECT 
+					c.id,
+					c."accName",
+					c."parentId",
+					c."accLeaf",
+					c."accClass",
+					a."accName" as "accParent"
+				FROM cte1 c
+					join "AccM" a on a.id = c."parentId"
+				where c."accLeaf" in ('Y','S')
+				ORDER BY c."accName";
+    """
+
+    get_auto_subledger_accounts_with_ledgers_and_subledgers = """
+        with "accClassNames" as (values (%(accClassNames)s::text))
+			--WITH "accClassNames" AS (VALUES ('debtor'::text))
+			, cte1 AS (
+			    SELECT
+			        a.id,
+			        a."accName",
+			        a."parentId",
+			        a."accLeaf"
+			    FROM "AccM" a
+			    JOIN "AccClassM" c ON c.id = a."classId"
+			    JOIN "ExtMiscAccM" x ON a.id = x."accId"
+			    WHERE a."accLeaf" = 'L'               -- ledgers having subledger
+			      AND x."isAutoSubledger"
+			      AND (
+			            (table "accClassNames") IS NULL
+			         OR c."accClass" = ANY(string_to_array((table "accClassNames"), ','))
+			      )
+			),
+			ordered AS (
+			    SELECT
+			        m.id,
+			        m."accName",
+			        c."accName" AS "accParent",
+			        m."accLeaf",
+			        m."parentId",
+			        c.id AS root_id,
+			        1 AS child_rank
+			    FROM cte1 c
+			    JOIN "AccM" m ON c.id = m."parentId"
+			
+			    UNION ALL
+			
+			    SELECT
+			        c.id,
+			        c."accName",
+			        a."accName" AS "accParent",
+			        c."accLeaf",
+			        c."parentId",
+			        c.id AS root_id,
+			        0 AS child_rank
+			    FROM cte1 c
+			    JOIN "AccM" a ON a.id = c."parentId"
+			)
+			SELECT
+			    id,
+			    "accName",
+			    "accParent",
+			    "accLeaf",
+			    "parentId",
+			    CASE WHEN "accLeaf" = 'L' THEN TRUE ELSE FALSE END AS "isDisabled"
+			FROM ordered
+			ORDER BY
+			    root_id,        -- group by parent ledger
+			    child_rank,     -- parent first
+			    "accName";
+    """
+
+    get_auto_subledger_accounts_on_class = """
         with "accClassNames" as (values (%(accClassNames)s::text))
         --with "accClassNames" as  (values ('sale,purchase,debtor,cash'::text))
         , cte1 as (
             SELECT 
                 a.id,
                 "accName",
-                "parentId",
-                CASE 
-                WHEN "accLeaf" = 'Y' THEN false
-                WHEN "accLeaf" = 'S' THEN true
-                END as "isSubledger"
+                "parentId"
             FROM "AccM" a
                 join "AccClassM" c on c."id" = a."classId"
-            WHERE "accLeaf" IN ('Y', 'S')
+				join "ExtMiscAccM" x on a."id" = x."accId"
+            WHERE "accLeaf" IN ('L')
+				AND x."isAutoSubledger"
                 AND (
 				((table "accClassNames") is null) OR
 				("accClass" = ANY(string_to_array((table "accClassNames"),',')))
 				)
         )
         select c."id",
-                --c."accName" || ': ' || a."accName" as "accName",
 				c."accName",
 				a."accName" as "accParent",
-                c."isSubledger"
+				false as "isDisabled"
             FROM cte1 c 
                 join "AccM" a on a.id = c."parentId"
             ORDER by c."accName"
+
+    """
+
+    get_leaf_subledger_accounts_on_class = """
+        with "accClassNames" as (values (%(accClassNames)s::text)),
+            --WITH "accClassNames" AS (VALUES ('sale,purchase,debtor,cash'::text)),
+            cte1 AS (
+                SELECT
+                    a.id,
+                    a."accName",
+                    a."parentId",
+                    CASE WHEN a."accLeaf" = 'Y' or a."accLeaf" = 'L' THEN false
+                        WHEN a."accLeaf" = 'S' THEN true
+                    END AS "isSubledger",
+                    a."accLeaf",
+                    Case when a."accLeaf" = 'L' then true else false end as "isDisabled"
+                FROM "AccM" a
+                JOIN "AccClassM" c ON c.id = a."classId"
+                WHERE a."accLeaf" IN ('S','L','Y')
+                AND (
+                    (TABLE "accClassNames") IS NULL
+                    OR c."accClass" = ANY(string_to_array((TABLE "accClassNames"), ','))
+                )
+            )
+            SELECT c.id,
+                c."accName",
+                c."isSubledger",
+                c."accLeaf",
+                p."accName" as "accParent",
+                c."isDisabled"
+            FROM cte1 c
+                join "AccM" p on p.id = c."parentId"
+                
+            ORDER BY
+                -- group rows by the immediate parent’s id
+                CASE WHEN c."accLeaf" = 'L' THEN c.id ELSE c."parentId" END,
+                -- within each group, put the parent row first
+                CASE WHEN c."accLeaf" = 'L' THEN 0 ELSE 1 END,
+                -- finally, order children by name (or id if you prefer strict sequence)
+                c."accName"
     """
 
     get_product_categories = """
@@ -2160,67 +2366,107 @@ class SqlAccounts:
     """
 
     get_sale_purchase_details_on_id = """
-        --with "id" as (values (10892))
-        with "id" as (values (%(id)s::int))
-        , cte1 as (
-                select "id", "tranDate", "userRefNo", "remarks", "autoRefNo", "jData", "tranTypeId"
-                    from "TranH"
-                        where "id" = (table id)
-            ),
-            cte5 as (
-                select c.* 
-                    from "Contacts" c
-                        join "TranH" h
-                            on c."id" = h."contactsId"
-                        where  h."id" = (table id)
-            ),
-            cte2 as (
-                select d."id", d."accId", "dc", "amount", d."instrNo", d."remarks", "accClass", "accName", "accCode"
-                    from "cte1" c1 join "TranD" d 
-                        on c1."id" = d."tranHeaderId"
-                    join "AccM" m
-                        on m."id" = d."accId"
-                    join "AccClassM" c2
-                        on c2."id" = m."classId"
-            ),
-            cte3 as (
-                select x."id", "gstin", "cgst", "sgst", "igst"
-                    from "cte2" c2 join "ExtGstTranD" x
-                        on c2."id" = x."tranDetailsId"                        
-            ),
-            cte6 as (
-                select e.* from
-                    "AccM" a join "ExtBusinessContactsAccM" e
-                        on a."id" = e."accId"
-                    join cte2 c2
-                        on a."id" = c2."accId" limit 1
-            ),
-            cte4 as (
-                select s."id", "productId", "qty", "price", "priceGst", "discount"
-                    , "cgst", "sgst", "igst", s."amount", s."hsn", s."gstRate"
-                    , "productCode", "upcCode", "catName", "brandName", "info", "label"
-                    , s."jData"->>'serialNumbers' as "serialNumbers"
-                    , s."jData"->>'remarks' as "remarks"
-                    from "cte2" c2 
-                        join "SalePurchaseDetails" s
-                            on c2."id" = s."tranDetailsId"
-                        join "ProductM" p
-                            on p."id" = s."productId"
-                        join "CategoryM" c
-                            on c."id" = p."catId"
-                        join "BrandM" b
-                            on b."id" = p."brandId"
-                    
-            )
-
-            select json_build_object(
-                'tranH', (SELECT row_to_json(a) from cte1 a),
-                'billTo', (SELECT row_to_json(e) from cte5 e),
-                'businessContacts',(SELECT row_to_json(f) from cte6 f),
-                'tranD', (SELECT json_agg(b) from cte2 b),
-                'extGstTranD', (SELECT row_to_json(c) from cte3 c),
-                'salePurchaseDetails', (SELECT json_agg(d) from cte4 d)
-            ) as "jsonResult"
+        --WITH "id" AS (VALUES (10892)),
+		with "id" as (values (%(id)s::int)),
+		cte1 AS (
+		    SELECT
+		        "id",
+		        "tranDate",
+		        "userRefNo",
+		        "remarks",
+		        "autoRefNo",
+		        "jData",
+		        "tranTypeId"
+		    FROM "TranH"
+		    WHERE "id" = (TABLE id)
+		),
+		cte5 AS (
+		    SELECT
+		        c.*
+		    FROM "Contacts" c
+		    JOIN "TranH" h ON c."id" = h."contactsId"
+		    WHERE h."id" = (TABLE id)
+		),
+		cte2 AS (
+		    SELECT
+		        d."id",
+		        d."accId",
+		        d."dc",
+		        d."amount",
+		        d."instrNo",
+		        d."remarks",
+		        c2."accClass",
+		        m."accName",
+		        m."accCode"
+		    FROM cte1 c1
+		    JOIN "TranD" d
+		        ON c1."id" = d."tranHeaderId"
+		    JOIN "AccM" m
+		        ON m."id" = d."accId"
+		    JOIN "AccClassM" c2
+		        ON c2."id" = m."classId"
+		),
+		cte3 AS (
+		    SELECT
+		        x."id",
+		        x."gstin",
+		        x."cgst",
+		        x."sgst",
+		        x."igst"
+		    FROM cte2 c2
+		    JOIN "ExtGstTranD" x
+		        ON c2."id" = x."tranDetailsId"
+		),
+		cte6 AS (
+		    SELECT
+		        e.*
+		    FROM "AccM" a
+		    JOIN "ExtBusinessContactsAccM" e
+		        ON a."id" = e."accId"
+		    JOIN cte2 c2
+		        ON a."id" = c2."accId"
+		    LIMIT 1
+		),
+		cte4 AS (
+		    SELECT
+		        s."id",
+		        s."productId",
+		        s."qty",
+		        s."price",
+		        s."priceGst",
+		        s."discount",
+		        s."cgst",
+		        s."sgst",
+		        s."igst",
+		        s."amount",
+		        s."hsn",
+		        s."gstRate",
+		        p."productCode",
+		        p."upcCode",
+		        c."catName",
+		        b."brandName",
+		        p."info",
+		        p."label",
+		        s."jData"->>'serialNumbers' AS "serialNumbers",
+		        s."jData"->>'remarks'        AS "remarks"
+		    FROM cte2 c2
+		    JOIN "SalePurchaseDetails" s
+		        ON c2."id" = s."tranDetailsId"
+		    JOIN "ProductM" p
+		        ON p."id" = s."productId"
+		    JOIN "CategoryM" c
+		        ON c."id" = p."catId"
+		    JOIN "BrandM" b
+		        ON b."id" = p."brandId"
+		)
+		SELECT json_build_object(
+		    'tranH',              (SELECT row_to_json(a) FROM cte1 a),
+		    'billTo',             (SELECT row_to_json(e) FROM cte5 e),
+		    'businessContacts',   (SELECT row_to_json(f) FROM cte6 f),
+		    'tranD',              (SELECT json_agg(b) FROM cte2 b),
+		    'extGstTranD',        (SELECT row_to_json(c) FROM cte3 c),
+		    'salePurchaseDetails',(SELECT json_agg(d) FROM cte4 d)
+		) AS "jsonResult"
     """
 
     get_sales_report = """

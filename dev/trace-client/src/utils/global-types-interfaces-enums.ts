@@ -92,6 +92,13 @@ export type TranDType = {
   instrNo?: string | null;
 }
 
+export type TranDExtraType = TranDType & {
+  isAutoSubledger:boolean | null;
+  accClass: string;
+  accName: string;
+  accCode: number;
+}
+
 export type ExtGstTranDType = {
   id?: number;
   gstin?: string | null;
@@ -106,7 +113,7 @@ export type ExtGstTranDType = {
 
 export type SalePurchaseEditDataType = {
   tranH: TranHType;
-  tranD: TranDType[];
+  tranD: TranDExtraType[];
   extGstTranD: ExtGstTranDType;
   salePurchaseDetails: SalePurchaseDetailsWithExtraType[];
   billTo: ContactsType | null;

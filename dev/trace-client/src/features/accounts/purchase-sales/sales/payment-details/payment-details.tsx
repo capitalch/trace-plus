@@ -12,6 +12,8 @@ import { ControlledNumericInput } from '../../../../../controls/components/contr
 import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
 import Decimal from 'decimal.js';
 import { Utils } from '../../../../../utils/utils';
+import useDeepCompareEffect from 'use-deep-compare-effect';
+import { TranDExtraType } from '../../../../../utils/global-types-interfaces-enums';
 
 type SalesType = 'retail' | 'bill' | 'institution';
 
@@ -21,6 +23,7 @@ const PaymentDetails: React.FC = () => {
     const { control,
         register,
         setValue,
+        getValues,
         trigger,
         watch,
         formState: { errors }, } = useFormContext<SalesFormDataType>();
@@ -33,7 +36,7 @@ const PaymentDetails: React.FC = () => {
 
     const [salesType, setSalesType] = useState<SalesType>('retail');
     const isEditMode = Boolean(watch('id'))
-
+    const debitAccounts: TranDExtraType[] = watch('debitAccounts')
     // Ensure we always have at least one item
     useEffect(() => {
         if (fields.length === 0 && getDefaultDebitAccount) {
@@ -42,8 +45,21 @@ const PaymentDetails: React.FC = () => {
     }, [fields.length, append, getDefaultDebitAccount]);
 
     useEffect(() => {
-        setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+        // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
     }, [salesType, setValue])
+
+    useDeepCompareEffect(() => {
+        if (debitAccounts && isEditMode) {
+            if (debitAccounts.find(((item) => item.isAutoSubledger))) {
+                setSalesType('bill')
+            } else if (debitAccounts.find(((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor')))) {
+                setSalesType('institution')
+            }
+        }
+
+    }, [isEditMode, debitAccounts])
+
+
 
     const handleAddPaymentMethod = () => {
         if (getDefaultDebitAccount) {
@@ -123,7 +139,7 @@ const PaymentDetails: React.FC = () => {
                     <div className="text-gray-800">Payable: {Utils.toDecimalFormat(getDebitCreditDifference())}</div>
                 </div>
                 <div className="text-right">
-                    <div className="font-bold text-lg text-gray-800">Total: {Utils.toDecimalFormat(watch('totalDebitAmount').toDecimalPlaces(2).toNumber())}</div>
+                    <div className="font-bold text-lg text-gray-800">Total: {Utils.toDecimalFormat(watch('totalDebitAmount')?.toDecimalPlaces(2).toNumber()) || 0}</div>
                 </div>
             </div>
 
@@ -140,8 +156,11 @@ const PaymentDetails: React.FC = () => {
                                         name="salesType"
                                         value="retail"
                                         checked={salesType === 'retail'}
-                                        onChange={(e) => setSalesType(e.target.value as SalesType)}
-                                        className="mr-2 text-violet-500 cursor-pointer"
+                                        onChange={(e) => {
+                                            setSalesType(e.target.value as SalesType)
+                                            setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                        }}
+                                        className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏪 Retail</span>
                                 </label>
@@ -151,8 +170,11 @@ const PaymentDetails: React.FC = () => {
                                         name="salesType"
                                         value="bill"
                                         checked={salesType === 'bill'}
-                                        onChange={(e) => setSalesType(e.target.value as SalesType)}
-                                        className="mr-2 text-violet-500 cursor-pointer"
+                                        onChange={(e) => {
+                                            setSalesType(e.target.value as SalesType)
+                                            setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                        }}
+                                        className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏭 Auto Subledger (Bill Sale)</span>
                                 </label>
@@ -162,8 +184,11 @@ const PaymentDetails: React.FC = () => {
                                         name="salesType"
                                         value="institution"
                                         checked={salesType === 'institution'}
-                                        onChange={(e) => setSalesType(e.target.value as SalesType)}
-                                        className="mr-2 text-violet-500 cursor-pointer"
+                                        onChange={(e) => {
+                                            setSalesType(e.target.value as SalesType)
+                                            setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                        }}
+                                        className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏢 Institution</span>
                                 </label>
@@ -248,7 +273,7 @@ const PaymentDetails: React.FC = () => {
                                             })
                                         }
                                         showRefreshButton={false}
-                                        value={watch(`debitAccounts.${index}.accId`) as string}
+                                        value={getValues(`debitAccounts.${index}.accId`) as string}
                                         className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
                                         sqlId={getSqlId()}
                                     />
