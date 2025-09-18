@@ -29,7 +29,13 @@ from app.security.security_utils import (
     getPasswordHash,
 )
 from app.core.utils import get_env
-import base64, logging, jwt
+import base64
+import json
+import jwt
+import os
+
+# Cache for postal data - loaded once at module import
+_postal_data_cache = None
 
 
 async def forgot_password_helper(request: Request):
@@ -59,6 +65,72 @@ async def forgot_password_helper(request: Request):
         pass
     except Exception as e:
         raise e
+
+
+def _load_postal_data():
+    """Load postal data from JSON file - called once at module startup"""
+    global _postal_data_cache
+    if _postal_data_cache is None:
+        try:
+            current_dir = os.path.dirname(__file__)
+            json_file_path = os.path.join(current_dir, "postal_data.json")
+
+            with open(json_file_path, 'r', encoding='utf-8-sig') as file:
+                content = file.read().strip()
+                _postal_data_cache = json.loads(content)
+        except FileNotFoundError:
+            raise AppHttpException(
+                error_code="e1032",
+                message="Error",
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=Messages.err_file_not_found,
+            )
+        except json.JSONDecodeError:
+            raise AppHttpException(
+                error_code="e1033",
+                message="Error",
+                status_code=500,
+                detail=Messages.err_invalid_json_format,
+            )
+    return _postal_data_cache
+
+
+async def resolve_pincode_helper(pincode: str):
+    try:
+        # Get cached postal data
+        postal_data = _load_postal_data()
+
+        # Find matching entries for the given pincode
+        matching_entries = [
+            entry for entry in postal_data if entry.get("Pincode") == pincode]
+
+        if not matching_entries:
+            raise AppHttpException(
+                error_code="e1031",
+                message="Error",
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=Messages.err_pincode_not_found,
+            )
+
+        # Get the first matching entry (assuming all entries for same pincode have same city/state)
+        entry = matching_entries[0]
+
+        result = {
+            "country": "India",
+            "city": entry.get("City"),
+            "state": entry.get("State"),
+            "pincode": pincode
+        }
+
+        return JSONResponse(content=result)
+
+    except Exception as e:
+        raise AppHttpException(
+            error_code="e1031",
+            message="Error",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
 
 
 async def reset_password_helper(token: str):
@@ -162,7 +234,7 @@ async def login_helper(clientId, username, password):
         raise e
     except Exception as e:
         raise AppHttpException(
-            status_code=status.HTTP_401_UNAUTHORIZED, error_code="e1004", 
+            status_code=status.HTTP_401_UNAUTHORIZED, error_code="e1004",
             message=str(e)
         )
 

@@ -19,10 +19,12 @@ class Messages:
     err_email_send_error_server = "There was error in sending email from server"
     err_email_not_provided = "Email is not provided"
     err_empty_value_string_for_export = "Empty value string for export"
+    err_file_not_found = "File not found"
     err_internal_server_error = "Internal server error"
     err_inactive_user = "Inactive user"
     err_invalid_uid = "The current UID given by you is incorrect"
     err_invalid_current_password = "The current password given by you is incorrect"
+    err_invalid_json_format = "Invalid json file format"
     err_invalid_password = "Invalid password"
     err_invalid_reset_password_link = "The reset password link used by you is invalid"
     err_invalid_token_in_reset_password_link = (
@@ -35,6 +37,7 @@ class Messages:
     )
     err_missing_sql_id = "SqlId not found in the client request"
     err_missing_username_password = "Missing username or password"
+    err_pincode_not_found = "Pincode not found"
     err_reset_password_success_but_mail_send_fail = "Reset of password was successfully done, but corresponding mail sending was failed"
     err_unknown = "Unknown error"
     err_unknown_current_password_error = "Unknown error related to current password"
@@ -76,11 +79,14 @@ class customErrorCodes:
     e1028 = "Database connections parameters are missing for this external database. There was something wrong at the time of new client creation"
     e1029 = "Empty value string when export is requested and export-file endpoint is hit"
     e1030 = "Debits credits mismatch error"
+    e1031 = "Pincode was not found at server"
+    e1032 = "postal_data.json file is missing"
+    e1033 = "Invalid format of json file"
+
     
     
     
     e2000 = "Error occurred while executing GraphQL query in file graphql_helper"
-
 
 class EmailMessages:
     email_subject_update_user = "update of your user credentials"

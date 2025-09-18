@@ -10,6 +10,7 @@ import { IconReset } from '../../../../../controls/icons/icon-reset';
 import { Utils } from '../../../../../utils/utils';
 import { IconCross } from '../../../../../controls/icons/icon-cross';
 import axios from 'axios';
+import urlJoin from 'url-join';
 
 interface ShippingEditModalProps {
     shippingData: ShippingInfoType | null;
@@ -62,23 +63,15 @@ const ShippingEditModal: React.FC<ShippingEditModalProps> = ({ shippingData, set
         const lookupPincode = async (pincode: string) => {
             if (pincode && pincode.length === 6 && /^[0-9]{6}$/.test(pincode)) {
                 try {
-                    const pinCodeUrl = import.meta.env.VITE_PIN_CODE_URL || 'https://api.postalpincode.in/pincode/';
-                    const response = await axios.get(`${pinCodeUrl}${pincode}`);
+                    const hostUrl = Utils.getHostUrl()
+                    const pincodeUrl = urlJoin(hostUrl, `api/pincode/${pincode}`)
+                    const response = await axios.get(pincodeUrl);
 
-                    if (response.data && response.data[0] && response.data[0].Status === 'Success') {
-                        const firstResult = response.data[0].PostOffice[0];
-
-                        if (firstResult) {
-                            // Set country, state, city
-                            setValue('country', firstResult.Country || 'India');
-                            setValue('state', firstResult.State || '');
-                            setValue('city', firstResult.District || '');
-                        } else {
-                            // No data found, blank the fields
-                            setValue('country', '');
-                            setValue('state', '');
-                            setValue('city', '');
-                        }
+                    if (response.data && response.data.country) {
+                        // Set country, state, city from new API format
+                        setValue('country', response.data.country || 'India');
+                        setValue('state', response.data.state || '');
+                        setValue('city', response.data.city || '');
                     } else {
                         // API returned error status, blank the fields
                         setValue('country', '');

@@ -16,6 +16,7 @@ import { useUtilsInfo } from '../../../../../utils/utils-info-hook';
 import { AllTables } from '../../../../../app/maps/database-tables-map';
 import { SalesFormDataType } from '../all-sales';
 import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
+import urlJoin from 'url-join';
 
 interface CustomerNewEditModalProps {
     contactsData?: ContactsType | null;
@@ -100,6 +101,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactsDat
         }
         return undefined;
     };
+
     const {
         register,
         handleSubmit,
@@ -132,41 +134,33 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactsDat
         const lookupPincode = async (pincode: string) => {
             if (pincode && pincode.length === 6 && /^[0-9]{6}$/.test(pincode)) {
                 try {
-                    const pinCodeUrl = import.meta.env.VITE_PIN_CODE_URL || 'https://api.postalpincode.in/pincode/';
-                    const response = await axios.get(`${pinCodeUrl}${pincode}`);
+                    const hostUrl = Utils.getHostUrl()
+                    const pincodeUrl = urlJoin(hostUrl, `api/pincode/${pincode}`)
+                    const response = await axios.get(pincodeUrl);
+                    // const response = await axios.get(`/api/pincode/${pincode}`);
 
-                    if (response.data && response.data[0] && response.data[0].Status === 'Success') {
-                        const firstResult = response.data[0].PostOffice[0];
+                    if (response.data && response.data.country) {
+                        // Set country, state, city from new API format
+                        setValue('country', response.data.country || 'India');
+                        setValue('state', response.data.state || '');
+                        setValue('city', response.data.city || '');
 
-                        if (firstResult) {
-                            // Set country, state, city
-                            setValue('country', firstResult.Country || 'India');
-                            setValue('state', firstResult.State || '');
-                            setValue('city', firstResult.District || '');
-
-                            // Find and set state code
-                            const stateName = firstResult.State;
-                            if (stateName) {
-                                const stateCode = Object.keys(statesWithCodes).find(
-                                    code => statesWithCodes[code as keyof typeof statesWithCodes].toLowerCase() === stateName.toLowerCase()
-                                );
-                                if (stateCode) {
-                                    setValue('stateCode', parseInt(stateCode));
-                                } else {
-                                    setValue('stateCode', null);
-                                }
+                        // Find and set state code
+                        const stateName = response.data.state;
+                        if (stateName) {
+                            const stateCode = Object.keys(statesWithCodes).find(
+                                code => statesWithCodes[code as keyof typeof statesWithCodes].toLowerCase() === stateName.toLowerCase()
+                            );
+                            if (stateCode) {
+                                setValue('stateCode', parseInt(stateCode));
                             } else {
                                 setValue('stateCode', null);
                             }
                         } else {
-                            // No data found, blank the fields
-                            setValue('country', '');
-                            setValue('state', '');
-                            setValue('city', '');
                             setValue('stateCode', null);
                         }
                     } else {
-                        // API returned error status, blank the fields
+                        // No data found, blank the fields
                         setValue('country', '');
                         setValue('state', '');
                         setValue('city', '');
