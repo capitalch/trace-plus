@@ -14,8 +14,8 @@ const Validation: React.FC = () => {
 
         // Customer Details validation
         const customerErrors: string[] = [];
-        if (errors.contactData) {
-            customerErrors.push(errors.contactData.message || Messages.messRequiredCustomerDetails);
+        if (errors.contactsData) {
+            customerErrors.push(errors.contactsData.message || Messages.messRequiredCustomerDetails);
         }
         if (errors.gstin) {
             customerErrors.push(errors.gstin.message || Messages.messGstinValidationFailed);
@@ -70,7 +70,7 @@ const Validation: React.FC = () => {
         // Other field errors
         const otherErrors: string[] = [];
         Object.entries(errors).forEach(([field, error]) => {
-            if (error && typeof error === 'object' && 'message' in error && !['contactData', 'gstin', 'shippingInfo', 'debitAccounts', 'salesLineItems'].includes(field)) {
+            if (error && typeof error === 'object' && 'message' in error && !['contactsData', 'gstin', 'shippingInfo', 'debitAccounts', 'salesLineItems'].includes(field)) {
                 otherErrors.push(error.message as string);
             }
         });

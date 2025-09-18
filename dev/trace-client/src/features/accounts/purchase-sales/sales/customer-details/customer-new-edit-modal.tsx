@@ -18,12 +18,12 @@ import { SalesFormDataType } from '../all-sales';
 import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
 
 interface CustomerNewEditModalProps {
-    contactData?: ContactsType | null;
+    contactsData?: ContactsType | null;
     setParentValue: UseFormSetValue<SalesFormDataType>;
     triggerParent: UseFormTrigger<SalesFormDataType>;
 }
 
-const getDefaultContactData = (): ContactsType => {
+const getDefaultContactsData = (): ContactsType => {
     return {
         contactName: '',
         mobileNumber: null,
@@ -45,7 +45,7 @@ const getDefaultContactData = (): ContactsType => {
     };
 };
 
-const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData, setParentValue, triggerParent }) => {
+const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactsData, setParentValue, triggerParent }) => {
     const { isValidGstin, isValidEmail, checkMobileNo } = useValidators();
     const { dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
 
@@ -112,7 +112,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
     } = useForm<ContactsType>({
         mode: 'all',
         criteriaMode: 'all',
-        defaultValues: contactData || getDefaultContactData()
+        defaultValues: contactsData || getDefaultContactsData()
     });
 
     // Watch PIN code changes
@@ -193,7 +193,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
     useEffect(() => {
         const checkMobileForExistingContact = async (mobile: string) => {
             // Only check for new entries (not edit mode) and when mobile is valid
-            if (!contactData && mobile && mobile.length === 10 && /^[0-9]{10}$/.test(mobile)) {
+            if (!contactsData && mobile && mobile.length === 10 && /^[0-9]{10}$/.test(mobile)) {
                 try {
                     const result: ContactsType[] = await Utils.doGenericQuery({
                         buCode: buCode || '',
@@ -214,7 +214,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                         });
 
                         // Set the contact data in parent and close modal
-                        setParentValue('contactData', existingContact);
+                        setParentValue('contactsData', existingContact);
                         triggerParent();
                         handleOnClose();
                     }
@@ -227,13 +227,13 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
         if (mobileValue) {
             checkMobileForExistingContact(mobileValue);
         }
-    }, [mobileValue, contactData, buCode, dbName, setParentValue, triggerParent, decodedDbParamsObject]);
+    }, [mobileValue, contactsData, buCode, dbName, setParentValue, triggerParent, decodedDbParamsObject]);
 
     // Email validation for existing contacts (only for new entries) - with debouncing
     useEffect(() => {
         const checkEmailForExistingContact = async (email: string) => {
             // Only check for new entries (not edit mode) and when email is valid
-            if (!contactData && email && isValidEmail(email)) {
+            if (!contactsData && email && isValidEmail(email)) {
                 try {
                     const result: ContactsType[] = await Utils.doGenericQuery({
                         buCode: buCode || '',
@@ -254,7 +254,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                         });
 
                         // Set the contact data in parent and close modal
-                        setParentValue('contactData', existingContact);
+                        setParentValue('contactsData', existingContact);
                         triggerParent();
                         handleOnClose();
                     }
@@ -272,7 +272,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
         }, 3000); // Wait 800ms after user stops typing
 
         return () => clearTimeout(timeoutId);
-    }, [emailValue, contactData, buCode, dbName, setParentValue, triggerParent, decodedDbParamsObject, isValidEmail]);
+    }, [emailValue, contactsData, buCode, dbName, setParentValue, triggerParent, decodedDbParamsObject, isValidEmail]);
 
     const errorClass = 'border-red-500 bg-red-50';
     const inputClass = "border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-sm px-2 py-1.5 transition-all duration-200";
@@ -282,7 +282,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
     };
 
     const handleReset = () => {
-        reset(getDefaultContactData());
+        reset(getDefaultContactsData());
     };
 
     return (
@@ -292,7 +292,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                 {/* Modal Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200">
                     <h2 className="font-semibold text-gray-900 text-lg">
-                        {contactData ? 'Edit Customer' : 'New Customer'}
+                        {contactsData ? 'Edit Customer' : 'New Customer'}
                     </h2>
                     <button
                         type="button"
@@ -324,8 +324,8 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                         validate: (value) => !value || !checkMobileNo(value) || Messages.errInvalidMobileNo,
                                         onChange: async (e) => {
                                             const value = e.target.value;
-                                            if (contactData && value && value.length === 10 && /^[0-9]{10}$/.test(value)) {
-                                                const duplicateError = await checkMobileNoForUpdate(value, contactData.id);
+                                            if (contactsData && value && value.length === 10 && /^[0-9]{10}$/.test(value)) {
+                                                const duplicateError = await checkMobileNoForUpdate(value, contactsData.id);
                                                 if (duplicateError) {
                                                     Utils.showWarningMessage(duplicateError);
                                                     setValue('mobileNumber', '');
@@ -415,8 +415,8 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                         },
                                         onChange: async (e) => {
                                             const value = e.target.value;
-                                            if (contactData && value && isValidEmail(value)) {
-                                                const duplicateError = await checkEmailForUpdate(value, contactData.id);
+                                            if (contactsData && value && isValidEmail(value)) {
+                                                const duplicateError = await checkEmailForUpdate(value, contactsData.id);
                                                 if (duplicateError) {
                                                     Utils.showWarningMessage(duplicateError);
                                                     setValue('email', '');
@@ -462,8 +462,8 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
                                             validate: (value) => !value || !checkMobileNo(value) || Messages.errInvalidMobileNo,
                                             onChange: async (e) => {
                                                 const value = e.target.value;
-                                                if (contactData && value && value.length === 10 && /^[0-9]{10}$/.test(value)) {
-                                                    const duplicateError = await checkMobileNoForUpdate(value, contactData.id);
+                                                if (contactsData && value && value.length === 10 && /^[0-9]{10}$/.test(value)) {
+                                                    const duplicateError = await checkMobileNoForUpdate(value, contactsData.id);
                                                     if (duplicateError) {
                                                         Utils.showErrorMessage(duplicateError);
                                                         setValue('otherMobileNumber', '');
@@ -639,7 +639,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactData
     function copyDataToParent(customerId: number) {
         const formData = getValues();
         // Copy contact data to parent form
-        setParentValue('contactData', {
+        setParentValue('contactsData', {
             ...formData,
             id: customerId
         });

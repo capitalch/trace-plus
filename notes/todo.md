@@ -11,6 +11,7 @@ valid gstin: 24AAACC1206D1ZM
 - Provide remove button in sales report
 - Check why age of en-el25 on22-08-2025 sale showing 5702
 - Change all headers to LeftCustomControl mechanism
+- In all pages show main header -> page name
 
 ## security
 	- Change databaseTablesMap to tables schema type variables
@@ -31,10 +32,25 @@ valid gstin: 24AAACC1206D1ZM
 														- Accounts
 														- Categories
 
-
+- Sales return
 - Sales
+	- QA
+		- submit
+			- insert
+				- Trial balance
+				- DB
+					- contactsId
+					- TranH
+						- jData
+							- Check shipTo
+					- TranD
+						- debitRows
+					- ExtGstTranD
+					- salePurchaseDetails
+						- jData
+							- remarks, serial numbers
 	- Items and services
-		- When pr code is given, age cost stock is not correctly fetched
+													- When pr code is given, age cost stock is not correctly fetched
 													- labels 13 px as in prod code
 													- Change debounce logic
 													- Show summary
@@ -114,7 +130,7 @@ valid gstin: 24AAACC1206D1ZM
 
 		- Preview
 		- Delete
-		- Transition back and forth
+														- Transition back and forth
 											- Credit notes
 														- Startup
 													- Main

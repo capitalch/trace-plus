@@ -54,17 +54,18 @@ export function AllSales() {
     async function finalizeAndSubmit() {
         try {
             const xData: XDataObjectType = getTranHData();
-            // await Utils.doGenericUpdate({
-            //     buCode: buCode || "",
-            //     dbName: dbName || "",
-            //     tableName: AllTables.TranH.name,
-            //     xData: xData,
-            // });
+            console.log(JSON.stringify(xData))
+            await Utils.doGenericUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: AllTables.TranH.name,
+                xData: xData,
+            });
 
             if (getValues('id')) {
                 dispatch(setSalesViewMode(true)); // Switch to view mode for existing sales
             }
-            resetAll();
+            // resetAll();
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);
@@ -108,7 +109,7 @@ export function AllSales() {
 
             deletedIds: [],
             contactDisplayData: null,
-            contactData: null,
+            contactsData: null,
             salesLineItems: [],
             shippingInfo: null,
             toggle: false // For making the form forcefully dirty
@@ -154,6 +155,7 @@ export function AllSales() {
         clearErrors()
         reset(getDefaultSalesFormValues());
         dispatch(clearSalesFormData());
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
     }
 }
 
@@ -173,7 +175,7 @@ export type SalesFormDataType = {
     isIgst: boolean;
 
     contactDisplayData: ContactDisplayDataType | null;
-    contactData: ContactsType | null;
+    contactsData: ContactsType | null;
 
     //TranD
     creditAccId: string | number | null;

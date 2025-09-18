@@ -12,6 +12,7 @@ const StatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
     const { control } = useFormContext<SalesFormDataType>();
     const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
+    const { resetAll}: any = useFormContext<SalesFormDataType>()
     // Using useWatch is more effecient
     const totalInvoiceAmount = useWatch({
         control,
@@ -28,11 +29,6 @@ const StatusBar: React.FC = () => {
     const debits = totalDebitAmount instanceof Decimal ? totalDebitAmount.toNumber() : totalDebitAmount;
     const credits = totalInvoiceAmount instanceof Decimal ? totalInvoiceAmount.toNumber() : totalInvoiceAmount;
     const diff = getDebitCreditDifference()
-    // const diff = credits - debits;
-
-    const handleReset = () => {
-        console.log('Reset clicked');
-    };
 
     const handleView = () => {
         dispatch(setSalesViewMode(true));
@@ -64,7 +60,7 @@ const StatusBar: React.FC = () => {
                 {/* Action Buttons */}
                 <div className="flex flex-wrap justify-start gap-3 md:justify-end">
                     <button
-                        onClick={handleReset}
+                        onClick={resetAll}
                         className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-blue-500 rounded-md shadow-sm transition-colors hover:bg-blue-600 space-x-2"
                     >
                         <RotateCcw size={16} className="flex-shrink-0" />

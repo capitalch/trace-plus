@@ -68,7 +68,7 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
             
             // Auto-select if only one result
             if (result.length === 1) {
-                setValue('contactData', result[0]);
+                setValue('contactsData', result[0]);
                 handleOnClose();
                 trigger();
             }
@@ -267,8 +267,8 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
     );
 
     function onContactSelect(args: any) {
-        const contactData = args?.items?.[0]?.data;
-        setValue('contactData', contactData || null);
+        const contactsData = args?.items?.[0]?.data;
+        setValue('contactsData', contactsData || null);
         handleOnClose();
         trigger();
     }

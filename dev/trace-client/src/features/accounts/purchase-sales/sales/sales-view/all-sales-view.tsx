@@ -472,7 +472,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         lineRemarks: item.remarks || null,
         serialNumbers: item.serialNumbers || null
       })),
-      contactData:billTo,
+      contactsData:billTo,
       shippingInfo: shippingInfo,
     })
     onBack()

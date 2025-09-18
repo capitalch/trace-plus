@@ -23,9 +23,9 @@ const CustomerDetails: React.FC = () => {
         formState: { errors, }
     } = useFormContext<SalesFormDataType>();
 
-    // Register contactData field for validation
-    register('contactData', {
-        validate: validateContactData
+    // Register contactsData field for validation
+    register('contactsData', {
+        validate: validateContactsData
     });
     const isGstInvoice = watch("isGstInvoice");
     const hasCustomerGstin = watch("hasCustomerGstin");
@@ -38,22 +38,22 @@ const CustomerDetails: React.FC = () => {
         }
     }, [hasCustomerGstin, isGstInvoice, setValue]);
 
-    const contactData = watch('contactData');
+    const contactsData = watch('contactsData');
     useEffect(() => {
-        // Copies contactData to contactDisplayData for display
-        const contactData: ContactsType | null = getValues('contactData');
-        if (contactData) {
-            const displayData = formatContactDisplay(contactData);
+        // Copies contactsData to contactDisplayData for display
+        const contactsData: ContactsType | null = getValues('contactsData');
+        if (contactsData) {
+            const displayData = formatContactDisplay(contactsData);
             setValue('contactDisplayData', displayData);
-            if (contactData.gstin) {
+            if (contactsData.gstin) {
                 setValue('hasCustomerGstin', true);
-                setValue('gstin', contactData.gstin);
+                setValue('gstin', contactsData.gstin);
             }
             trigger('contactDisplayData');
         }
-        // Trigger validation for contactData whenever it changes
-        trigger('contactData');
-    }, [contactData, getValues, setValue, trigger]);
+        // Trigger validation for contactsData whenever it changes
+        trigger('contactsData');
+    }, [contactsData, getValues, setValue, trigger]);
 
     return (
         <div className="relative px-4 py-4 bg-white border-blue-400 border-l-4 rounded-lg shadow-sm">
@@ -178,7 +178,7 @@ const CustomerDetails: React.FC = () => {
                 {/* Right Column - Customer Display (spanning full height) */}
                 <div className={clsx(
                     "flex flex-col justify-between p-3 min-h-full bg-gray-50 border rounded-lg",
-                    errors?.contactData && "border-red-500 bg-red-100"
+                    errors?.contactsData && "border-red-500 bg-red-100"
                 )}>
                     <div className="text-sm space-y-1">
                         <div>
@@ -238,11 +238,11 @@ const CustomerDetails: React.FC = () => {
 
     function handleClearCustomer() {
         setValue('contactDisplayData', null);
-        setValue('contactData', null);
+        setValue('contactsData', null);
         setValue('hasCustomerGstin', false);
         setValue('gstin', null);
         // Trigger validation to show error when contact is cleared
-        trigger('contactData');
+        trigger('contactsData');
     }
 
     function handleCustomerSearch(query: string) {
@@ -273,18 +273,18 @@ const CustomerDetails: React.FC = () => {
     }
 
     function handleNewEditCustomer() {
-        const contactData: ContactsType | null = getValues('contactData');
+        const contactsData: ContactsType | null = getValues('contactsData');
         Utils.showHideModalDialogA({
-            title: `Edit Customer - ${contactData?.contactName || ''}`,
+            title: `Edit Customer - ${contactsData?.contactName || ''}`,
             isOpen: true,
-            element: <CustomerNewEditModal contactData={contactData} setParentValue={setValue} triggerParent={trigger} />,
+            element: <CustomerNewEditModal contactsData={contactsData} setParentValue={setValue} triggerParent={trigger} />,
             size: 'sm'
         });
     }
 
-    function validateContactData(): string | undefined {
-        const contactData = getValues('contactData');
-        if (!contactData) {
+    function validateContactsData(): string | undefined {
+        const contactsData = getValues('contactsData');
+        if (!contactsData) {
             return "Customer Details are required";
         }
         return;
