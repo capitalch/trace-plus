@@ -3,6 +3,7 @@ const Messages = {
   errAccNameExists: 'Account name altready exists',
   errAdminRoleNameExists: 'The admin role for current client already exists',
   errAmountCannotBeZero: 'Amount cannot be zero',
+  errAmountSalePaymentMismatch:"Amount mismatch: Sale amount does not equal payment amount",
   errAnniversaryDateInFuture: 'Anniversary date cannot be in the future',
   errAtLeast4Chars: 'Should be at least 4 chars long',
   errAtLeast8Chars: 'Should be at least 8 chars long',

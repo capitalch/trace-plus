@@ -413,6 +413,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                         onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                         className={clsx(inputFormFieldStyles, 'h-8 mt-1 text-right', errors.purchaseLineItems?.[index]?.hsn ? errorClass : '')} />
                                 </div>
+                                {/* Gst rate */}
                                 <div className="flex flex-col w-24 text-xs">
                                     <label className="font-semibold">GST % {isGstInvoice && <WidgetAstrix />}</label>
                                     <ControlledNumericInput
@@ -469,6 +470,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
+                                    allowNegative={false}
                                     onChange={() => {
                                         setPriceGst(index)
                                     }}
@@ -487,6 +489,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     value={watch(`purchaseLineItems.${index}.discount`)}
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                     thousandSeparator
+                                    allowNegative={false}
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
@@ -505,6 +508,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                     thousandSeparator
                                     decimalScale={2}
+                                    allowNegative={false}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
                                     onChange={() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Search, User, Edit, Trash2, X } from 'lucide-react';
 import { FormField } from '../../../../../controls/widgets/form-field';
 import clsx from 'clsx';
@@ -10,10 +10,15 @@ import { Utils } from '../../../../../utils/utils';
 import ContactSearch from './customer-search';
 import { ContactsType } from '../../../../../utils/global-types-interfaces-enums';
 import CustomerNewEditModal from './customer-new-edit-modal';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatchType, RootStateType } from '../../../../../app/store';
+import { setSearchQuery } from '../sales-slice';
 
 const CustomerDetails: React.FC = () => {
     const inputFormFieldStyle = 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
     const { isValidGstin } = useValidators();
+    const dispatch: AppDispatchType = useDispatch();
+    const searchQuery = useSelector((state: RootStateType) => state.sales.searchQuery);
     const {
         watch,
         getValues,
@@ -29,7 +34,6 @@ const CustomerDetails: React.FC = () => {
     });
     const isGstInvoice = watch("isGstInvoice");
     const hasCustomerGstin = watch("hasCustomerGstin");
-    const [searchQuery, setSearchQuery] = useState('');
 
     // Clear GSTIN when hasCustomerGstin or isGstInvoice is false
     useEffect(() => {
@@ -81,7 +85,7 @@ const CustomerDetails: React.FC = () => {
                             <input
                                 type="text"
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleCustomerSearch(searchQuery);
@@ -99,7 +103,7 @@ const CustomerDetails: React.FC = () => {
                                 <button
                                     type="button"
                                     className="absolute p-1.5 text-gray-400 rounded-full transition-colors duration-200 hover:text-gray-600 right-14 top-1.5"
-                                    onClick={() => setSearchQuery('')}
+                                    onClick={() => dispatch(setSearchQuery(''))}
                                     title="Clear search"
                                 >
                                     <X className="w-4 h-4" />

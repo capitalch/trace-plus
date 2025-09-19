@@ -3,11 +3,11 @@ import { useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import { Messages } from '../../../../../utils/messages';
 import { CircleCheckBig } from 'lucide-react';
-import { Utils } from '../../../../../utils/utils';
+// import { Utils } from '../../../../../utils/utils';
 
 const Validation: React.FC = () => {
     const { formState: { errors }, watch } = useFormContext<SalesFormDataType>();
-    const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
+    // const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
 
     const getFormErrorsBySection = () => {
         const sections: { [key: string]: string[] } = {};
@@ -43,7 +43,7 @@ const Validation: React.FC = () => {
         }
 
         // Payment Details validation
-        const paymentErrors: string[] = [];
+        const paymentErrors: (any)[] = [];
         const debitAccounts = watch('debitAccounts') || [];
         debitAccounts.forEach((account: any, index: number) => {
             if (!account.accId) {
@@ -54,13 +54,9 @@ const Validation: React.FC = () => {
             }
         });
 
-        // Amount balance validation
-        const diff = getDebitCreditDifference()
-        const totalSaleAmount =Utils.toDecimalFormat(watch('totalInvoiceAmount').toDecimalPlaces(2).toNumber() || 0)
-        const totalDebitAmount = Utils.toDecimalFormat(watch('totalDebitAmount')?.toDecimalPlaces(2).toNumber() || 0)
-        
-        if (diff !== 0) {
-            paymentErrors.push(`Amount mismatch: Sale amount (${totalSaleAmount}) does not equal payment amount (${totalDebitAmount})`);
+        // Amount balance validation (from form errors)
+        if (errors.debitCreditDiffAmount) {
+            paymentErrors.push(errors.debitCreditDiffAmount.message || Messages.errAmountSalePaymentMismatch);
         }
 
         if (paymentErrors.length > 0) {
@@ -70,7 +66,7 @@ const Validation: React.FC = () => {
         // Other field errors
         const otherErrors: string[] = [];
         Object.entries(errors).forEach(([field, error]) => {
-            if (error && typeof error === 'object' && 'message' in error && !['contactsData', 'gstin', 'shippingInfo', 'debitAccounts', 'salesLineItems'].includes(field)) {
+            if (error && typeof error === 'object' && 'message' in error && !['contactsData', 'gstin', 'shippingInfo', 'debitAccounts', 'salesLineItems', 'debitCreditDiffAmount'].includes(field)) {
                 otherErrors.push(error.message as string);
             }
         });

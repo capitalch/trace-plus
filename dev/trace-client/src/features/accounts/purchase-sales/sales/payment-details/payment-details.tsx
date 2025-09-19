@@ -136,7 +136,14 @@ const PaymentDetails: React.FC = () => {
                     <h2 className="font-semibold text-gray-800 text-lg">Payment Details <span className="text-sm text-gray-500 font-normal">({fields.length} rows)</span></h2>
                 </div>
                 <div>
-                    <div className="text-gray-800">Payable: {Utils.toDecimalFormat(getDebitCreditDifference())}</div>
+                    <div className={clsx(
+                        "font-medium",
+                        getDebitCreditDifference() !== 0
+                            ? "text-red-600 animate-pulse"
+                            : "text-gray-800"
+                    )}>
+                        Payable: {Utils.toDecimalFormat(getDebitCreditDifference())}
+                    </div>
                 </div>
                 <div className="text-right">
                     <div className="font-bold text-lg text-gray-800">Total: {Utils.toDecimalFormat(watch('totalDebitAmount')?.toDecimalPlaces(2).toNumber()) || 0}</div>

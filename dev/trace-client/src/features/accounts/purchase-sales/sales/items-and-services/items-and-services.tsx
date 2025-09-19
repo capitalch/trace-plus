@@ -257,7 +257,7 @@ const ItemsAndServices: React.FC = () => {
                                 />
                                 {/* Age Display */}
                                 <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
-                                    <span className={age > 360 ? "text-pink-600 font-semibold" : "text-gray-500"}>
+                                    <span className={age > 360 ? "text-pink-600 font-semibold" : "text-gray-700"}>
                                         Age: {age}
                                     </span>
                                 </div>
@@ -272,6 +272,7 @@ const ItemsAndServices: React.FC = () => {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
+                                    allowNegative={false}
                                     onChange={(e) => {
                                         const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
                                         setValue(`salesLineItems.${index}.price`, numericValue, { shouldDirty: true })
@@ -283,7 +284,7 @@ const ItemsAndServices: React.FC = () => {
                                 />
                                 {/* Cost Display */}
                                 <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
-                                    <span className={"text-gray-500"}>
+                                    <span className={"text-gray-700"}>
                                         Cost: {Utils.toDecimalFormat(cost)}
                                     </span>
                                 </div>
@@ -298,6 +299,7 @@ const ItemsAndServices: React.FC = () => {
                                     thousandSeparator
                                     decimalScale={2}
                                     fixedDecimalScale
+                                    allowNegative={false}
                                     className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
                                     onChange={(e) => {
                                         const numericValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
@@ -312,7 +314,7 @@ const ItemsAndServices: React.FC = () => {
                                     <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
                                         <span
                                             className={clsx(
-                                                isEditMode ? (stock < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-500") : ((stock - qty) <= 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-500")
+                                                isEditMode ? (stock < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700") : ((stock - qty) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700")
                                             )}
                                         >
                                             Stock:  {stock}
@@ -328,6 +330,7 @@ const ItemsAndServices: React.FC = () => {
                                     value={watch(`salesLineItems.${index}.priceGst`)}
                                     onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                     thousandSeparator
+                                    allowNegative={false}
                                     decimalScale={2}
                                     fixedDecimalScale
                                     className={clsx("text-right h-8 mt-1 font-medium", inputFormFieldStyles)}
@@ -351,7 +354,7 @@ const ItemsAndServices: React.FC = () => {
                                 <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
                                     <span
                                         className={clsx(
-                                            Number(profit) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-500"
+                                            Number(profit) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700"
                                         )}
                                     >
                                         {Number(profit) < 0 ? 'Loss:' : 'Prft:'} {Utils.toDecimalFormat(Math.abs(+profit))}

@@ -35,6 +35,8 @@ valid gstin: 24AAACC1206D1ZM
 - Sales return
 - Sales
 	- QA
+		- Check gst = 0
+		- check disabled submit
 		- submit
 			- insert
 				- Trial balance

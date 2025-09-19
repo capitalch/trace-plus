@@ -84,16 +84,6 @@ const ContactSearch: React.FC<ContactSearchProps> = ({ searchString, setValue, t
         loadContacts();
     }, [loadContacts])
 
-    // useEffect(() => {
-    //     // Set selected value after data is loaded
-    //     if (selectedId && listBoxContacts.length > 0 && listRef.current) {
-    //         const selectedItem = listBoxContacts.find(item => item.id === selectedId);
-    //         if (selectedItem) {
-    //             listRef.current.selectItems([selectedItem.text]);
-    //         }
-    //     }
-    // }, [selectedId, listBoxContacts])
-
     useEffect(() => {
         // Prevent background scroll when component is mounted
         document.body.style.overflow = 'hidden';

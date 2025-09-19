@@ -8,13 +8,14 @@ import { AllSalesForm } from "./all-sales-form";
 import { AllSalesView } from "./sales-view/all-sales-view";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { clearSalesFormData, setSalesViewMode } from "./sales-slice";
+import { clearSalesFormData, setSalesViewMode, clearSearchQuery } from "./sales-slice";
 import Decimal from "decimal.js";
 import { useAllSalesSubmit } from "./all-sales-submit-hook";
 // import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-// import { useEffect } from "react";
+import { useEffect } from "react";
+import { Messages } from "../../../../utils/messages";
 
 export function AllSales() {
     const dispatch: AppDispatchType = useDispatch()
@@ -28,9 +29,30 @@ export function AllSales() {
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
-    const { clearErrors, getValues, /*setError, getValues, setValue,*/ reset, /*watch, setFocus*/ } = methods;
+    const { clearErrors, getValues, register, /*setError, getValues, setValue,*/ reset, watch, trigger, /*setFocus*/ } = methods;
     const { getTranHData } = useAllSalesSubmit(methods);
     const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference }
+
+    // Register validation for amount balance
+    register('debitCreditDiffAmount', {
+        validate: () => {
+            const diff = getDebitCreditDifference();
+            if (diff !== 0) {
+                return Messages.errAmountSalePaymentMismatch;
+            }
+            return true;
+        }
+    });
+
+    // Watch for changes in amounts and trigger validation
+    const totalInvoiceAmount = watch('totalInvoiceAmount');
+    const totalDebitAmount = watch('totalDebitAmount');
+    const debitAccounts = watch('debitAccounts');
+
+    useEffect(() => {
+        // Trigger validation when amounts change
+        trigger('debitCreditDiffAmount');
+    }, [totalInvoiceAmount, totalDebitAmount, debitAccounts, trigger]);
 
     const handleBackToForm = () => {
         dispatch(setSalesViewMode(false));
@@ -155,6 +177,7 @@ export function AllSales() {
         clearErrors()
         reset(getDefaultSalesFormValues());
         dispatch(clearSalesFormData());
+        dispatch(clearSearchQuery());
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
     }
 }
@@ -197,6 +220,7 @@ export type SalesFormDataType = {
 
     salesEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
+    debitCreditDiffAmount?: any; // Virtual field for amount balance validation
 }
 
 export type ShippingInfoType = {

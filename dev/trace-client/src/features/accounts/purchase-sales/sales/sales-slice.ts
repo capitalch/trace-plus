@@ -4,6 +4,7 @@ import { SalesFormDataType } from "./all-sales";
 const initialState: SalesInitialStateType = {
     savedFormData: null,
     isViewMode: false,
+    searchQuery: '',
 }
 
 const salesSlice = createSlice({
@@ -23,6 +24,12 @@ const salesSlice = createSlice({
         setSalesViewMode(state, action: PayloadAction<boolean>) {
             state.isViewMode = action.payload;
         },
+        setSearchQuery(state, action: PayloadAction<string>) {
+            state.searchQuery = action.payload;
+        },
+        clearSearchQuery(state) {
+            state.searchQuery = '';
+        },
     }
 })
 
@@ -31,10 +38,13 @@ export const {
     saveSalesFormData,
     clearSalesFormData,
     toggleSalesViewMode,
-    setSalesViewMode
+    setSalesViewMode,
+    setSearchQuery,
+    clearSearchQuery
 } = salesSlice.actions
 
 export type SalesInitialStateType = {
     savedFormData: SalesFormDataType | null;
     isViewMode: boolean;
+    searchQuery: string;
 }
