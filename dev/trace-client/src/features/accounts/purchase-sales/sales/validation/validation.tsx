@@ -55,8 +55,8 @@ const Validation: React.FC = () => {
         });
 
         // Amount balance validation (from form errors)
-        if (errors.debitCreditDiffAmount) {
-            paymentErrors.push(errors.debitCreditDiffAmount.message || Messages.errAmountSalePaymentMismatch);
+        if (errors.root?.amountDifference) {
+            paymentErrors.push(errors.root.amountDifference.message || Messages.errAmountSalePaymentMismatch);
         }
 
         if (paymentErrors.length > 0) {
@@ -66,7 +66,7 @@ const Validation: React.FC = () => {
         // Other field errors
         const otherErrors: string[] = [];
         Object.entries(errors).forEach(([field, error]) => {
-            if (error && typeof error === 'object' && 'message' in error && !['contactsData', 'gstin', 'shippingInfo', 'debitAccounts', 'salesLineItems', 'debitCreditDiffAmount'].includes(field)) {
+            if (error && typeof error === 'object' && 'message' in error && !['contactsData', 'gstin', 'shippingInfo', 'debitAccounts', 'salesLineItems', 'root'].includes(field)) {
                 otherErrors.push(error.message as string);
             }
         });

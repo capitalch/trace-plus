@@ -41,6 +41,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
   const {
     reset,
     setValue,
+    // trigger,
   } = useFormContext<SalesFormDataType>();
 
   const loadData = useCallback(async () => {
@@ -436,6 +437,8 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
     const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
 
+    const totalInvoiceAmount= new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
+    // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
     const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
     reset({
       id: tranH.id,
@@ -454,7 +457,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       totalSgst: new Decimal(extGsTranD?.sgst),
       totalIgst: new Decimal(extGsTranD?.igst),
       totalQty: new Decimal(salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0)),
-      totalInvoiceAmount: new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0),
+      totalInvoiceAmount: totalInvoiceAmount,
       totalDebitAmount: totalDebitAmount,
       salesEditData: salesEditData,
       salesLineItems: salePurchaseDetails.map((item) => ({
@@ -476,6 +479,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       shippingInfo: shippingInfo,
     })
     onBack()
+    // trigger()
   }
 
   async function handleOnPreview(data: SalesFormDataType) {

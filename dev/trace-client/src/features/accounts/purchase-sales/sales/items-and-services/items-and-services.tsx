@@ -97,7 +97,9 @@ const ItemsAndServices: React.FC = () => {
                     const age: number = watch(`salesLineItems.${index}.age`) || 0;
                     const stock = watch(`salesLineItems.${index}.stock`) || 0;
                     const qty = watch(`salesLineItems.${index}.qty`) || 0;
-                    const cost = watch(`salesLineItems.${index}.lastPurchasePrice`) || 0;
+                    const lastPurchasePrice = watch(`salesLineItems.${index}.lastPurchasePrice`) || 0;
+                    const gstRate = watch(`salesLineItems.${index}.gstRate`)
+                    const cost = lastPurchasePrice*(1 + gstRate/100)
                     const profit = watch(`salesLineItems.${index}.profit`) || 0;
                     return (
                         <motion.div
@@ -257,7 +259,7 @@ const ItemsAndServices: React.FC = () => {
                                 />
                                 {/* Age Display */}
                                 <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
-                                    <span className={age > 360 ? "text-pink-600 font-semibold" : "text-gray-700"}>
+                                    <span className={age > 360 ? "text-blue-600 font-semibold" : "text-gray-700"}>
                                         Age: {age}
                                     </span>
                                 </div>
@@ -283,10 +285,11 @@ const ItemsAndServices: React.FC = () => {
                                     className={clsx("text-right h-8 mt-1 font-medium", inputFormFieldStyles)}
                                 />
                                 {/* Cost Display */}
-                                <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
+                                <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right relative">
                                     <span className={"text-gray-700"}>
                                         Cost: {Utils.toDecimalFormat(cost)}
                                     </span>
+                                    <span className='absolute -bottom-2.5 right-2 text-xs text-gray-400'>(With Gst)</span>
                                 </div>
                             </div>
 
@@ -502,6 +505,7 @@ const ItemsAndServices: React.FC = () => {
 
         setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber());
         setValue(`salesLineItems.${index}.amount`, amount.toNumber());
+        // setTimeout(()=>setSummaryValues(),100)
         setSummaryValues()
         trigger()
     }

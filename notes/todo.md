@@ -34,9 +34,12 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales return
 - Sales
+	- When not a gst invoice then if gst% has value, show error at time of validation
+	-  At the time of edit the summary values are no properly reflected due to setSummaryValues() executed
+													- show costGst
 	- QA
-		- Check gst = 0
-		- check disabled submit
+													- Check gst = 0
+													- check disabled submit
 		- submit
 			- insert
 				- Trial balance

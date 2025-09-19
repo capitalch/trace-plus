@@ -14,13 +14,14 @@ import { useAllSalesSubmit } from "./all-sales-submit-hook";
 // import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { Messages } from "../../../../utils/messages";
 
 export function AllSales() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
+
     const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject */  hasGstin, defaultGstRate, dbName, buCode } = useUtilsInfo();
 
     const methods = useForm<SalesFormDataType>(
@@ -29,20 +30,18 @@ export function AllSales() {
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
-    const { clearErrors, getValues, register, /*setError, getValues, setValue,*/ reset, watch, trigger, /*setFocus*/ } = methods;
+    const { clearErrors, getValues, setError, reset, watch, /*setFocus*/ } = methods;
+    
+    const getDebitCreditDifference = useCallback(() => {
+        const totalInvoiceAmount = getValues('totalInvoiceAmount') || new Decimal(0)
+        const totalDebitAmount = getValues('totalDebitAmount') || new Decimal(0)
+        const diff = totalInvoiceAmount.minus(totalDebitAmount)
+        return (diff.toDecimalPlaces(2).toNumber())
+    }, [getValues])
+    
     const { getTranHData } = useAllSalesSubmit(methods);
     const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference }
 
-    // Register validation for amount balance
-    register('debitCreditDiffAmount', {
-        validate: () => {
-            const diff = getDebitCreditDifference();
-            if (diff !== 0) {
-                return Messages.errAmountSalePaymentMismatch;
-            }
-            return true;
-        }
-    });
 
     // Watch for changes in amounts and trigger validation
     const totalInvoiceAmount = watch('totalInvoiceAmount');
@@ -50,9 +49,17 @@ export function AllSales() {
     const debitAccounts = watch('debitAccounts');
 
     useEffect(() => {
-        // Trigger validation when amounts change
-        trigger('debitCreditDiffAmount');
-    }, [totalInvoiceAmount, totalDebitAmount, debitAccounts, trigger]);
+        // Calculate difference and set/clear error accordingly
+        const diff = getDebitCreditDifference();
+        if (diff !== 0) {
+            setError('root.amountDifference', {
+                type: 'validation',
+                message: Messages.errAmountSalePaymentMismatch
+            });
+        } else {
+            clearErrors('root.amountDifference');
+        }
+    }, [totalInvoiceAmount, totalDebitAmount, debitAccounts, setError, clearErrors, getDebitCreditDifference]);
 
     const handleBackToForm = () => {
         dispatch(setSalesViewMode(false));
@@ -75,6 +82,11 @@ export function AllSales() {
 
     async function finalizeAndSubmit() {
         try {
+            const diff = getDebitCreditDifference();
+            if(diff !== 0){
+                Utils.showAlertMessage('Error', Messages.errDebitCreditMismatch)
+                return
+            }
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
             await Utils.doGenericUpdate({
@@ -93,13 +105,6 @@ export function AllSales() {
             console.error(e);
             Utils.showErrorMessage('Error saving sales data');
         }
-    }
-
-    function getDebitCreditDifference() {
-        const totalInvoiceAmount = getValues('totalInvoiceAmount') || new Decimal(0)
-        const totalDebitAmount = getValues('totalDebitAmount') || new Decimal(0)
-        const diff = totalInvoiceAmount.minus(totalDebitAmount)
-        return (diff.toDecimalPlaces(2).toNumber())
     }
 
     function getDefaultSalesFormValues(): SalesFormDataType {
@@ -192,7 +197,7 @@ export type SalesFormDataType = {
     tranTypeId: number;
     branchId: number;
     finYearId: number;
-    
+
     hasCustomerGstin: boolean;
     isGstInvoice: boolean;
     isIgst: boolean;
@@ -220,7 +225,6 @@ export type SalesFormDataType = {
 
     salesEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
-    debitCreditDiffAmount?: any; // Virtual field for amount balance validation
 }
 
 export type ShippingInfoType = {
