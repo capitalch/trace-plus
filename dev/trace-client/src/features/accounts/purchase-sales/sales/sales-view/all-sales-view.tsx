@@ -432,12 +432,12 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
 
     const tranH: TranHType = salesEditData.tranH
     const billTo: ContactsType | null = salesEditData.billTo
-    const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any: null
+    const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
     const tranD: TranDExtraType[] = salesEditData.tranD
     const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
     const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
 
-    const totalInvoiceAmount= new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
+    const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
     // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
     const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
     reset({
@@ -473,9 +473,14 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         discount: item.discount,
         priceGst: item.priceGst,
         lineRemarks: item.remarks || null,
-        serialNumbers: item.serialNumbers || null
+        serialNumbers: item.serialNumbers || null,
+        amount: item.amount,
+        cgst: item.cgst,
+        sgst: item.sgst,
+        igst: item.igst,
+        subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
       })),
-      contactsData:billTo,
+      contactsData: billTo,
       shippingInfo: shippingInfo,
     })
     onBack()

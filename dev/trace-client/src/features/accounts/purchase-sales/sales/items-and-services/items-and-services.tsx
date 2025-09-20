@@ -46,9 +46,7 @@ const ItemsAndServices: React.FC = () => {
 
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500';
-    const lineItems = watch("salesLineItems") || [];
     const isIgst = watch('isIgst');
-    const isEditMode = Boolean(watch('id'))
 
     const debouncedPopulateProduct = useMemo(
         () => _.debounce((productCode: string, itemId: number) => {
@@ -101,6 +99,7 @@ const ItemsAndServices: React.FC = () => {
                     const gstRate = watch(`salesLineItems.${index}.gstRate`)
                     const cost = lastPurchasePrice*(1 + gstRate/100)
                     const profit = watch(`salesLineItems.${index}.profit`) || 0;
+                    const lineItemId = watch(`salesLineItems.${index}.id`);
                     return (
                         <motion.div
                             key={index}
@@ -110,15 +109,24 @@ const ItemsAndServices: React.FC = () => {
                             transition={{ type: "spring", stiffness: 100, damping: 15 }}
                             className={
                                 clsx(
-                                    "flex flex-wrap items-start mt-2 p-2 gap-2 border rounded-md",
-                                    currentRowIndex === index ? "bg-green-50 border-l-4 border-l-teal-600" : "bg-white"
+                                    "flex flex-wrap items-start mt-2 p-2 gap-2 border rounded-md transition-all duration-200",
+                                    currentRowIndex === index ? "bg-green-50 border-l-4 border-l-teal-600" : "bg-white",
+                                    lineItemId ? "bg-amber-50 shadow-sm ring-1 ring-amber-200" : ""
                                 )}
                             onClick={() => setCurrentRowIndex(index)}
                         >
                             {/* Index */}
                             <div className="flex flex-col w-10 text-xs">
                                 <label className="font-semibold">#</label>
-                                <span className="mt-2">{index + 1}</span>
+                                <div className="flex items-center mt-2 gap-1">
+                                    <span>{index + 1}</span>
+                                    {lineItemId && (
+                                        <div
+                                            className="w-2 h-2 bg-amber-500 rounded-full"
+                                            title="Existing item"
+                                        />
+                                    )}
+                                </div>
                                 <button
                                     aria-label="Clear Line Item"
                                     tabIndex={-1}
@@ -258,11 +266,13 @@ const ItemsAndServices: React.FC = () => {
                                     }}
                                 />
                                 {/* Age Display */}
-                                <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
-                                    <span className={age > 360 ? "text-blue-600 font-semibold" : "text-gray-700"}>
-                                        Age: {age}
-                                    </span>
-                                </div>
+                                {!lineItemId && (
+                                    <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right">
+                                        <span className={age > 360 ? "text-blue-600 font-semibold" : "text-gray-700"}>
+                                            Age: {age}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Price */}
@@ -285,12 +295,14 @@ const ItemsAndServices: React.FC = () => {
                                     className={clsx("text-right h-8 mt-1 font-medium", inputFormFieldStyles)}
                                 />
                                 {/* Cost Display */}
-                                <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right relative">
-                                    <span className={"text-gray-700"}>
-                                        Cost: {Utils.toDecimalFormat(cost)}
-                                    </span>
-                                    <span className='absolute -bottom-2.5 right-2 text-xs text-gray-400'>(With Gst)</span>
-                                </div>
+                                {!lineItemId && (
+                                    <div className="mt-7 py-1 pr-2 rounded-md text-sm text-right relative">
+                                        <span className={"text-gray-700"}>
+                                            Cost: {Utils.toDecimalFormat(cost)}
+                                        </span>
+                                        <span className='absolute -bottom-2.5 right-2 text-xs text-gray-400'>(With Gst)</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Discount */}
@@ -313,11 +325,11 @@ const ItemsAndServices: React.FC = () => {
                                     }}
                                 />
                                 {/* Stock Display */}
-                                {watch(`salesLineItems.${index}.productCode`) && (
+                                {!lineItemId && watch(`salesLineItems.${index}.productCode`) && (
                                     <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
                                         <span
                                             className={clsx(
-                                                isEditMode ? (stock < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700") : ((stock - qty) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700")
+                                                (stock - qty) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700"
                                             )}
                                         >
                                             Stock:  {stock}
@@ -354,15 +366,17 @@ const ItemsAndServices: React.FC = () => {
                                 />
 
                                 {/* Profit Display */}
-                                <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
-                                    <span
-                                        className={clsx(
-                                            Number(profit) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700"
-                                        )}
-                                    >
-                                        {Number(profit) < 0 ? 'Loss:' : 'Prft:'} {Utils.toDecimalFormat(Math.abs(+profit))}
-                                    </span>
-                                </div>
+                                {!lineItemId && (
+                                    <div className={clsx("mt-7 py-1 pr-2 rounded-md text-sm text-right")}>
+                                        <span
+                                            className={clsx(
+                                                Number(profit) < 0 ? "text-pink-700 font-medium animate-ping" : "text-gray-700"
+                                            )}
+                                        >
+                                            {Number(profit) < 0 ? 'Loss:' : 'Prft:'} {Utils.toDecimalFormat(Math.abs(+profit))}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Serials */}
@@ -402,8 +416,8 @@ const ItemsAndServices: React.FC = () => {
                                         onClick={() => {
                                             const id = getValues(`salesLineItems.${index}.id`)
                                             if (id) {
-                                                const deletedIds = getValues('deletedIds') || []
-                                                setValue('deletedIds', [...deletedIds, id])
+                                                const deletedIds = getValues('salePurchDetailsDeletedIds') || []
+                                                setValue('salePurchDetailsDeletedIds', [...deletedIds, id])
                                             }
                                             if (fields.length > 1) {
                                                 remove(index)
@@ -610,7 +624,10 @@ const ItemsAndServices: React.FC = () => {
     }
 
     function setSummaryValues() {
-        const summary = lineItems.reduce(
+        // Get fresh data from form instead of relying on watched data
+        const currentLineItems = getValues("salesLineItems") || [];
+
+        const summary = currentLineItems.reduce(
             (acc, item) => {
                 acc.count += 1;
                 acc.qty = acc.qty.plus(new Decimal(item.qty || 0));

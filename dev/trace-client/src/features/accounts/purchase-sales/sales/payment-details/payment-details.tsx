@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'lodash'
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import { AccountPickerFlat, AccClassName } from '../../../../../controls/redux-components/account-picker-flat/account-picker-flat';
@@ -37,6 +38,7 @@ const PaymentDetails: React.FC = () => {
     const [salesType, setSalesType] = useState<SalesType>('retail');
     const isEditMode = Boolean(watch('id'))
     const debitAccounts: TranDExtraType[] = watch('debitAccounts')
+    
     // Ensure we always have at least one item
     useEffect(() => {
         if (fields.length === 0 && getDefaultDebitAccount) {
@@ -44,9 +46,6 @@ const PaymentDetails: React.FC = () => {
         }
     }, [fields.length, append, getDefaultDebitAccount]);
 
-    useEffect(() => {
-        // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-    }, [salesType, setValue])
 
     useDeepCompareEffect(() => {
         if (debitAccounts && isEditMode) {
@@ -59,8 +58,6 @@ const PaymentDetails: React.FC = () => {
 
     }, [isEditMode, debitAccounts])
 
-
-
     const handleAddPaymentMethod = () => {
         if (getDefaultDebitAccount) {
             append(getDefaultDebitAccount());
@@ -70,8 +67,16 @@ const PaymentDetails: React.FC = () => {
 
     const handleClearPaymentMethods = () => {
         // Remove all except first item, then clear the first item
+        const deletedIds = getValues('tranDDeletedIds') || []
         for (let i = fields.length - 1; i > 0; i--) {
+            const id = getValues(`debitAccounts.${i}.id`)
+            if (id) {
+                deletedIds.push(id)
+            }
             remove(i);
+            if (!_.isEmpty(deletedIds)) {
+                setValue('tranDDeletedIds', [...deletedIds])
+            }
         }
         if (fields.length > 0 && getDefaultDebitAccount) {
             const defaultData = getDefaultDebitAccount();
@@ -83,6 +88,16 @@ const PaymentDetails: React.FC = () => {
         }
         setTotalDebitAmount()
     };
+
+    const handleRemove = (index: number) => {
+        const id = getValues(`debitAccounts.${index}.id`)
+        if (id) {
+            const deletedIds = getValues('tranDDeletedIds') || []
+            setValue('tranDDeletedIds', [...deletedIds, id])
+        }
+        remove(index)
+        setTotalDebitAmount()
+    }
 
     // Calculate total amount from all payment methods
     const setTotalDebitAmount = () => {
@@ -256,112 +271,125 @@ const PaymentDetails: React.FC = () => {
                     </div>
 
                     {/* Payment methods rows */}
-                    {fields.map((_, index) => (
-                        <div key={index} className="relative p-2 bg-violet-50 border border-violet-200 rounded-lg">
-                            {/* Row Index Badge */}
-                            <div className="absolute -top-1 -left-1 w-4 h-4 bg-violet-200 text-violet-700 text-xs font-medium rounded-full flex items-center justify-center z-10">
-                                {index + 1}
-                            </div>
-                            <div className="grid gap-2 grid-col-4 lg:grid-cols-12 items-baseline">
-
-                                {/* Payment account */}
-                                <div className="col-span-4">
-                                    <label className="block mb-1 font-semibold text-gray-700 text-sm items-center">💳 Payment Account</label>
-                                    <AccountPickerFlat
-                                        accClassNames={getAccClassNames(salesType, index)}
-                                        instance={`${instance}-debit-account-${index}`}
-                                        {...register(`debitAccounts.${index}.accId`, {
-                                            required: Messages.errRequired,
-                                        })}
-                                        onChange={(value) =>
-                                            setValue(`debitAccounts.${index}.accId`, value, {
-                                                shouldValidate: true,
-                                                shouldDirty: true,
-                                            })
-                                        }
-                                        showRefreshButton={false}
-                                        value={getValues(`debitAccounts.${index}.accId`) as string}
-                                        className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
-                                        sqlId={getSqlId()}
-                                    />
+                    {fields.map((_, index) => {
+                        const paymentRowId = watch(`debitAccounts.${index}.id`);
+                        return (
+                            <div key={index} className={clsx(
+                                "relative p-2 border rounded-lg transition-all duration-200",
+                                paymentRowId ? "bg-amber-50 border-violet-200 shadow-sm ring-1 ring-amber-200" : "bg-violet-50 border-violet-200"
+                            )}>
+                                {/* Row Index Badge */}
+                                <div className="absolute -top-1 -left-1 w-4 h-4 bg-violet-200 text-violet-700 text-xs font-medium rounded-full flex items-center justify-center z-10">
+                                    {index + 1}
                                 </div>
-
-                                {/* Amount */}
-                                <div className="col-span-2">
-                                    <label className="block mb-1 font-semibold text-gray-700 text-sm">💵 Amount</label>
-                                    <ControlledNumericInput
-                                        className={clsx("text-right h-8 w-full text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200",
-                                            errors?.debitAccounts?.[index]?.amount ? errorClass : '')}
-                                        fieldName={`debitAccounts.${index}.amount`}
-                                        onValueChange={(floatValue) => {
-                                            setValue(`debitAccounts.${index}.amount`, floatValue || 0, {
-                                                shouldDirty: true,
-                                                shouldValidate: true,
-                                                shouldTouch: true
-                                            })
-                                            setTotalDebitAmount()
-                                        }}
-                                        validate={(value) => {
-                                            const ret = value > 0 ? true : Messages.errAmountCannotBeZero;
-                                            return (ret)
-                                        }}
+                                {/* Existing Row Indicator */}
+                                {paymentRowId && (
+                                    <div
+                                        className="absolute -top-1 left-4 w-2 h-2 bg-amber-500 rounded-full"
+                                        title="Existing payment entry"
                                     />
-                                </div>
+                                )}
+                                <div className="grid gap-2 grid-col-4 lg:grid-cols-12 items-baseline">
 
-                                {/* Instrument */}
-                                <div className="col-span-2">
-                                    <label className="block mb-1 font-semibold text-gray-700 text-sm">🎆 Instrument</label>
-                                    <input
-                                        type="text"
-                                        {...register(`debitAccounts.${index}.instrNo`)}
-                                        className={clsx("px-2 py-1 w-full h-8 text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
-                                        placeholder="Instrument"
-                                    />
-                                </div>
+                                    {/* Payment account */}
+                                    <div className="col-span-4">
+                                        <label className="block mb-1 font-semibold text-gray-700 text-sm items-center">💳 Payment Account</label>
+                                        <AccountPickerFlat
+                                            accClassNames={getAccClassNames(salesType, index)}
+                                            instance={`${instance}-debit-account-${index}`}
+                                            {...register(`debitAccounts.${index}.accId`, {
+                                                required: Messages.errRequired,
+                                            })}
+                                            onChange={(value) =>
+                                                setValue(`debitAccounts.${index}.accId`, value, {
+                                                    shouldValidate: true,
+                                                    shouldDirty: true,
+                                                })
+                                            }
+                                            showRefreshButton={false}
+                                            value={getValues(`debitAccounts.${index}.accId`) as string}
+                                            className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
+                                            sqlId={getSqlId()}
+                                        />
+                                    </div>
 
-                                <div className="col-span-4 flex gap-x-2 ">
-                                    {/* Ref no */}
-                                    <div className="">
-                                        <label className="block mb-1 font-semibold text-gray-700 text-sm">🎇 Ref</label>
+                                    {/* Amount */}
+                                    <div className="col-span-2">
+                                        <label className="block mb-1 font-semibold text-gray-700 text-sm">💵 Amount</label>
+                                        <ControlledNumericInput
+                                            className={clsx("text-right h-8 w-full text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200",
+                                                errors?.debitAccounts?.[index]?.amount ? errorClass : '')}
+                                            fieldName={`debitAccounts.${index}.amount`}
+                                            onValueChange={(floatValue) => {
+                                                setValue(`debitAccounts.${index}.amount`, floatValue || 0, {
+                                                    shouldDirty: true,
+                                                    shouldValidate: true,
+                                                    shouldTouch: true
+                                                })
+                                                setTotalDebitAmount()
+                                            }}
+                                            validate={(value) => {
+                                                const ret = value > 0 ? true : Messages.errAmountCannotBeZero;
+                                                return (ret)
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Instrument */}
+                                    <div className="col-span-2">
+                                        <label className="block mb-1 font-semibold text-gray-700 text-sm">🎆 Instrument</label>
                                         <input
                                             type="text"
-                                            {...register(`debitAccounts.${index}.lineRefNo`)}
+                                            {...register(`debitAccounts.${index}.instrNo`)}
                                             className={clsx("px-2 py-1 w-full h-8 text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
-                                            placeholder="Reference"
+                                            placeholder="Instrument"
                                         />
                                     </div>
 
-                                    {/* Notes */}
-                                    <div className="">
-                                        <label className="block mb-1 font-semibold text-gray-700 text-sm">📝 Notes</label>
-                                        <textarea
-                                            {...register(`debitAccounts.${index}.remarks`)}
-                                            className={clsx("px-2 py-1 w-full  text-md rounded-md resize-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
-                                            rows={1}
-                                            placeholder="Notes"
-                                        />
-                                    </div>
+                                    <div className="col-span-4 flex gap-x-2 ">
+                                        {/* Ref no */}
+                                        <div className="">
+                                            <label className="block mb-1 font-semibold text-gray-700 text-sm">🎇 Ref</label>
+                                            <input
+                                                type="text"
+                                                {...register(`debitAccounts.${index}.lineRefNo`)}
+                                                className={clsx("px-2 py-1 w-full h-8 text-md rounded-md focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
+                                                placeholder="Reference"
+                                            />
+                                        </div>
 
-                                    {/* Remove */}
-                                    <div className="flex items-end justify-center">
-                                        {index !== 0 ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => remove(index)}
-                                                className="mb-2 p-1.5 text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-md transition-all duration-200 hover:from-orange-600 hover:to-amber-600 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-300"
-                                                title="Remove payment method"
-                                                aria-label="Remove payment method"
-                                            >
-                                                <IconCross className="w-4 h-4" />
-                                            </button>
-                                        ) : (
-                                            <div className="mb-2 p-1.5 w-7 h-7"></div>
-                                        )}
+                                        {/* Notes */}
+                                        <div className="">
+                                            <label className="block mb-1 font-semibold text-gray-700 text-sm">📝 Notes</label>
+                                            <textarea
+                                                {...register(`debitAccounts.${index}.remarks`)}
+                                                className={clsx("px-2 py-1 w-full  text-md rounded-md resize-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200")}
+                                                rows={1}
+                                                placeholder="Notes"
+                                            />
+                                        </div>
+
+                                        {/* Remove */}
+                                        <div className="flex items-end justify-center">
+                                            {index !== 0 ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemove(index)}
+                                                    className="mb-2 p-1.5 text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-md transition-all duration-200 hover:from-orange-600 hover:to-amber-600 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                                    title="Remove payment method"
+                                                    aria-label="Remove payment method"
+                                                >
+                                                    <IconCross className="w-4 h-4" />
+                                                </button>
+                                            ) : (
+                                                <div className="mb-2 p-1.5 w-7 h-7"></div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </div>

@@ -5,15 +5,49 @@ import { useValidators } from '../../../../../utils/validators-hook';
 import { SalesFormDataType } from '../all-sales';
 import { useFormContext } from 'react-hook-form';
 import { Messages } from '../../../../../utils/messages';
+import { useEffect } from 'react';
+import { useUtilsInfo } from '../../../../../utils/utils-info-hook';
 
 const InvoiceDetails: React.FC = () => {
     const inputFormFieldStyle = 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
     const { checkAllowedDate } = useValidators();
+    const { defaultGstRate } = useUtilsInfo();
     const {
         watch,
         register,
+        setValue,
+        getValues,
         formState: { errors, }
     } = useFormContext<SalesFormDataType>();
+
+    const isGstInvoice = watch('isGstInvoice');
+
+    useEffect(() => {
+        const salesLineItems = getValues('salesLineItems');
+        if (salesLineItems && salesLineItems.length > 0) {
+            let hasChanges = false;
+            const updatedLineItems = salesLineItems.map(item => {
+                if (!isGstInvoice) {
+                    // When GST is unchecked, set all gstRate to 0
+                    if (item.gstRate !== 0) {
+                        hasChanges = true;
+                        return { ...item, gstRate: 0 };
+                    }
+                } else {
+                    // When GST is checked, set gstRate to defaultGstRate for any rows with gstRate 0
+                    if (item.gstRate === 0) {
+                        hasChanges = true;
+                        return { ...item, gstRate: defaultGstRate };
+                    }
+                }
+                return item;
+            });
+
+            if (hasChanges) {
+                setValue('salesLineItems', updatedLineItems);
+            }
+        }
+    }, [isGstInvoice, setValue, getValues, defaultGstRate]);
 
     return (
         <div className="relative px-4 py-4 bg-white border-purple-400 border-l-4 rounded-lg shadow-sm">

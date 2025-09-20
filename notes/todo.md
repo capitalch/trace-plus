@@ -34,27 +34,33 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales return
 - Sales
-	- When not a gst invoice then if gst% has value, show error at time of validation
-	-  At the time of edit the summary values are no properly reflected due to setSummaryValues() executed
+	- Auto subledger mecanism
+	- Spits error in react-select in payment details
+													- When not a gst invoice then if gst% has value, show error at time of validation
+													-  At the time of edit the summary values are no properly reflected due to setSummaryValues() executed
 													- show costGst
 	- QA
 													- Check gst = 0
 													- check disabled submit
 		- submit
-			- insert
-				- Trial balance
-				- DB
-					- contactsId
-					- TranH
-						- jData
-							- Check shipTo
-					- TranD
-						- debitRows
-					- ExtGstTranD
-					- salePurchaseDetails
-						- jData
-							- remarks, serial numbers
-	- Items and services
+			- update
+				- check deletedIds for TranD and SalePurchaseDetails table
+				- Delete and add some existing row
+				- clear rows
+										- insert
+											- Trial balance
+											- DB
+												- contactsId
+												- TranH
+													- jData
+														- Check shipTo
+												- TranD
+													- debitRows
+												- ExtGstTranD
+												- salePurchaseDetails
+													- jData
+														- remarks, serial numbers
+											- Items and services
 													- When pr code is given, age cost stock is not correctly fetched
 													- labels 13 px as in prod code
 													- Change debounce logic
@@ -82,7 +88,7 @@ valid gstin: 24AAACC1206D1ZM
 													- Interchange Amount and action
 													- Use cross for bin
 													- UX
-	- Payment details
+											- Payment details
 													- Purchase, pur ret trim down drop downs
 													- Accounts with autoSubledger parent, accounts with autoSubLedger leaves with parent
 												- populate
@@ -118,11 +124,12 @@ valid gstin: 24AAACC1206D1ZM
 														- Cust values back to main form
 														- Startup
 	- Main
-		- Reset
+														- Reset
 		- Preview
 		- Submit
-			- Insert
+														- Insert
 			- Edit
+														- Ids ok
 	- View
 														- Sql
 														- Data

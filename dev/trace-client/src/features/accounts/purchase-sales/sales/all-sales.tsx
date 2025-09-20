@@ -11,7 +11,6 @@ import { Utils } from "../../../../utils/utils";
 import { clearSalesFormData, setSalesViewMode, clearSearchQuery } from "./sales-slice";
 import Decimal from "decimal.js";
 import { useAllSalesSubmit } from "./all-sales-submit-hook";
-// import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { useEffect, useCallback } from "react";
@@ -22,7 +21,7 @@ export function AllSales() {
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
 
-    const { /*branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject */  hasGstin, defaultGstRate, dbName, buCode } = useUtilsInfo();
+    const { hasGstin, defaultGstRate, dbName, buCode } = useUtilsInfo();
 
     const methods = useForm<SalesFormDataType>(
         {
@@ -30,15 +29,15 @@ export function AllSales() {
             criteriaMode: "all",
             defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
         });
-    const { clearErrors, getValues, setError, reset, watch, /*setFocus*/ } = methods;
-    
+    const { clearErrors, getValues, setError, reset, watch /*setFocus*/ } = methods;
+
     const getDebitCreditDifference = useCallback(() => {
         const totalInvoiceAmount = getValues('totalInvoiceAmount') || new Decimal(0)
         const totalDebitAmount = getValues('totalDebitAmount') || new Decimal(0)
         const diff = totalInvoiceAmount.minus(totalDebitAmount)
         return (diff.toDecimalPlaces(2).toNumber())
     }, [getValues])
-    
+
     const { getTranHData } = useAllSalesSubmit(methods);
     const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference }
 
@@ -47,6 +46,20 @@ export function AllSales() {
     const totalInvoiceAmount = watch('totalInvoiceAmount');
     const totalDebitAmount = watch('totalDebitAmount');
     const debitAccounts = watch('debitAccounts');
+
+    // useEffect(() => {
+    //     if (savedFormData) {
+    //         reset(_.cloneDeep(savedFormData),);
+    //         setValue('toggle', !savedFormData.toggle, { shouldDirty: true }) // making forcefully dirty
+    //     }
+    // }, [savedFormData, reset, setValue]);
+
+    // useEffect(() => {
+    //     return (() => {
+    //         const data = getValues()
+    //         dispatch(saveSalesFormData(data));
+    //     })
+    // }, [dispatch, getValues])
 
     useEffect(() => {
         // Calculate difference and set/clear error accordingly
@@ -83,7 +96,7 @@ export function AllSales() {
     async function finalizeAndSubmit() {
         try {
             const diff = getDebitCreditDifference();
-            if(diff !== 0){
+            if (diff !== 0) {
                 Utils.showAlertMessage('Error', Messages.errDebitCreditMismatch)
                 return
             }
@@ -99,7 +112,7 @@ export function AllSales() {
             if (getValues('id')) {
                 dispatch(setSalesViewMode(true)); // Switch to view mode for existing sales
             }
-            // resetAll();
+            resetAll();
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);
@@ -134,7 +147,8 @@ export function AllSales() {
             totalSubTotal: new Decimal(0),
             totalDebitAmount: new Decimal(0),
 
-            deletedIds: [],
+            salePurchDetailsDeletedIds: [],
+            tranDDeletedIds: [],
             contactDisplayData: null,
             contactsData: null,
             salesLineItems: [],
@@ -211,7 +225,8 @@ export type SalesFormDataType = {
 
     gstin?: string | null;
 
-    deletedIds: number[]; // for PurchaseSaleDetails table
+    salePurchDetailsDeletedIds?: number[]; // for PurchaseSaleDetails table
+    tranDDeletedIds?: number[];
     salesLineItems: SalesLineItemType[];
 
     totalInvoiceAmount: Decimal;

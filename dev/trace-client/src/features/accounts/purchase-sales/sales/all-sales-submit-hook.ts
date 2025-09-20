@@ -35,6 +35,7 @@ export function useAllSalesSubmit(methods: UseFormReturn<SalesFormDataType>, tra
     return [{
       tableName: AllTables.TranD.name,
       fkeyName: "tranHeaderId",
+      deletedIds: getValues('tranDDeletedIds'),
       xData: getTranDData(),
     }];
   }
@@ -64,14 +65,14 @@ export function useAllSalesSubmit(methods: UseFormReturn<SalesFormDataType>, tra
     const debitAccounts = getValues('debitAccounts') || [];
     const debitEntries: XDataObjectType[] = debitAccounts.map(debitAcc =>
     ({
-        id: debitAcc?.id,
-        accId: debitAcc.accId,
-        dc: 'D',
-        amount: debitAcc.amount,
-        instrNo: debitAcc.instrNo,
-        lineRefNo: debitAcc.lineRefNo,
-        remarks: debitAcc.remarks
-      }));
+      id: debitAcc?.id,
+      accId: debitAcc.accId,
+      dc: 'D',
+      amount: debitAcc.amount,
+      instrNo: debitAcc.instrNo,
+      lineRefNo: debitAcc.lineRefNo,
+      remarks: debitAcc.remarks
+    }));
     return [credit, ...debitEntries];
   }
 
@@ -109,7 +110,7 @@ export function useAllSalesSubmit(methods: UseFormReturn<SalesFormDataType>, tra
       gstRate: entry.gstRate,
       jData: getJData(entry)
     }));
-    const deletedIds = getValues("deletedIds") || [];
+    const deletedIds = getValues("salePurchDetailsDeletedIds") || [];
     return {
       tableName: AllTables.SalePurchaseDetails.name,
       fkeyName: 'tranDetailsId',

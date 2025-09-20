@@ -131,7 +131,7 @@ const ItemsAndServicesSummary: React.FC<ItemsAndServicesSummaryProps> = ({remove
     }
 
     function handleClearAll() {
-        const deletedIds = getValues('deletedIds') || []
+        const deletedIds = getValues('salePurchDetailsDeletedIds') || []
         for (let i = lineItems.length - 1; i >= 0; i--) {
             const id = getValues(`salesLineItems.${i}.id`)
             if (id) {
@@ -140,7 +140,7 @@ const ItemsAndServicesSummary: React.FC<ItemsAndServicesSummaryProps> = ({remove
             remove(i);
         }
         if (!_.isEmpty(deletedIds)) {
-            setValue('deletedIds', [...deletedIds])
+            setValue('salePurchDetailsDeletedIds', [...deletedIds])
         }
     }
 
