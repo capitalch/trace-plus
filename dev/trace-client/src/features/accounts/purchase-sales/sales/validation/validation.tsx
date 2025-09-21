@@ -3,11 +3,9 @@ import { useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import { Messages } from '../../../../../utils/messages';
 import { CircleCheckBig } from 'lucide-react';
-// import { Utils } from '../../../../../utils/utils';
 
 const Validation: React.FC = () => {
     const { formState: { errors }, watch } = useFormContext<SalesFormDataType>();
-    // const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
 
     const getFormErrorsBySection = () => {
         const sections: { [key: string]: string[] } = {};
@@ -85,7 +83,7 @@ const Validation: React.FC = () => {
                     <CircleCheckBig className="w-5 h-5 text-amber-700" />
                     {/* <span className="font-bold text-sm text-orange-500">🐞</span> */}
                 </div>
-                <h2 className="font-semibold text-gray-800 text-lg">Validation</h2>
+                <h2 className="font-semibold text-gray-800 text-lg">Validation Errors</h2>
             </div>
 
             {Object.keys(getFormErrorsBySection()).length > 0 && (

@@ -12,7 +12,7 @@ valid gstin: 24AAACC1206D1ZM
 - Check why age of en-el25 on22-08-2025 sale showing 5702
 - Change all headers to LeftCustomControl mechanism
 - In all pages show main header -> page name
-
+- Stock summary remove pagination
 ## security
 	- Change databaseTablesMap to tables schema type variables
 										- QA for vouchers
@@ -34,19 +34,25 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales return
 - Sales
-	- Auto subledger mecanism
-	- Spits error in react-select in payment details
+	- Massive check
+	- Auto subledger mechanism
+													- Spits error in react-select in payment details
+													- persistance of sales data through redux
+	- Preview and pdf print
+	- Accounts isHidden
+	- Provision to print last sale bill in the terminal
+	- Provision for advance against supplies in sales receipts
 													- When not a gst invoice then if gst% has value, show error at time of validation
 													-  At the time of edit the summary values are no properly reflected due to setSummaryValues() executed
 													- show costGst
-	- QA
+										- QA
 													- Check gst = 0
 													- check disabled submit
-		- submit
-			- update
-				- check deletedIds for TranD and SalePurchaseDetails table
-				- Delete and add some existing row
-				- clear rows
+											- submit
+												- update
+													- check deletedIds for TranD and SalePurchaseDetails table
+													- Delete and add some existing row
+													- clear rows
 										- insert
 											- Trial balance
 											- DB
@@ -104,10 +110,9 @@ valid gstin: 24AAACC1206D1ZM
 													- Remove Payment Account
 													- Add clear button left to add button
 		
-	- Validation
+													- Validation
 													- Payment details validations to add in Validation section
 												- Shipping
-	- Redux persistence
 												- Customer details
 													- Unique mobile no use
 													- Unique email use
@@ -123,25 +128,22 @@ valid gstin: 24AAACC1206D1ZM
 														- gst treatment
 														- Cust values back to main form
 														- Startup
-	- Main
+											- Main
 														- Reset
-		- Preview
-		- Submit
+		
+												- Submit
 														- Insert
-			- Edit
+													- Edit
 														- Ids ok
-	- View
+													- View
 														- Sql
 														- Data
-		- Edit
-			- Payment Details
+													- Edit
+														- Payment Details
 														- payable
 														- sale type
 														- payment account
 														- Shipping
-
-		- Preview
-		- Delete
 														- Transition back and forth
 											- Credit notes
 														- Startup

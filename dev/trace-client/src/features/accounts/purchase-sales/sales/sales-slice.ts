@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SalesFormDataType } from "./all-sales";
+// import { SalesFormDataType } from "./all-sales";
 
 const initialState: SalesInitialStateType = {
     savedFormData: null,
@@ -12,7 +12,7 @@ const salesSlice = createSlice({
     initialState: initialState,
 
     reducers: {
-        saveSalesFormData(state, action: PayloadAction<SalesFormDataType>) {
+        saveSalesFormData(state, action: PayloadAction<any>) {
             state.savedFormData = action.payload;
         },
         clearSalesFormData(state) {
@@ -44,7 +44,7 @@ export const {
 } = salesSlice.actions
 
 export type SalesInitialStateType = {
-    savedFormData: SalesFormDataType | null;
+    savedFormData: any ; //SalesFormDataType | null;
     isViewMode: boolean;
     searchQuery: string;
 }

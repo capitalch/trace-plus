@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import _ from 'lodash'
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
@@ -35,10 +35,20 @@ const PaymentDetails: React.FC = () => {
         name: 'debitAccounts'
     });
 
-    const [salesType, setSalesType] = useState<SalesType>('retail');
     const isEditMode = Boolean(watch('id'))
     const debitAccounts: TranDExtraType[] = watch('debitAccounts')
-    
+    const totalInvoiceAmount = watch('totalInvoiceAmount')
+    const salesType = watch('salesType') as SalesType
+
+    // Calculate total amount from all payment methods
+    const setTotalDebitAmount = () => {
+        const debitAccounts = watch('debitAccounts') || [];
+        const totalDebitAccount = debitAccounts.reduce((sum: Decimal, account: any) => {
+            const amount = account?.amount || 0;
+            return sum.add(new Decimal(amount));
+        }, new Decimal(0));
+        setValue('totalDebitAmount', totalDebitAccount)
+    };
     // Ensure we always have at least one item
     useEffect(() => {
         if (fields.length === 0 && getDefaultDebitAccount) {
@@ -46,17 +56,50 @@ const PaymentDetails: React.FC = () => {
         }
     }, [fields.length, append, getDefaultDebitAccount]);
 
+    // Initialize salesType to 'retail' if not set
+    // useEffect(() => {
+        // if (!salesType) {
+        //     setValue('salesType', 'retail');
+        // }
+    // }, [salesType, setValue]);
+
 
     useDeepCompareEffect(() => {
         if (debitAccounts && isEditMode) {
             if (debitAccounts.find(((item) => item.isAutoSubledger))) {
-                setSalesType('bill')
+                setValue('salesType', 'bill')
             } else if (debitAccounts.find(((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor')))) {
-                setSalesType('institution')
+                setValue('salesType', 'institution')
             }
         }
 
-    }, [isEditMode, debitAccounts])
+    }, [isEditMode, debitAccounts, setValue])
+
+    useEffect(() => {
+        // if (salesType === 'bill') {
+        //     setValue('isAutoSubledger', true)
+        // } else {
+        //     setValue('isAutoSubledger', false)
+        // }
+    }, [salesType, setValue])
+
+    // Auto-set amount when totalInvoiceAmount changes and there's only one debit account
+    useEffect(() => {
+        if (totalInvoiceAmount && totalInvoiceAmount.greaterThan(0) && debitAccounts?.length === 1) {
+            const currentAmount = getValues(`debitAccounts.0.amount`) || 0;
+            const newAmount = totalInvoiceAmount.toDecimalPlaces(2).toNumber();
+
+            // Only update if the amount is different to avoid infinite loops
+            if (currentAmount !== newAmount) {
+                setValue(`debitAccounts.0.amount`, newAmount, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                    shouldTouch: true
+                });
+                setTotalDebitAmount();
+            }
+        }
+    }, [totalInvoiceAmount, debitAccounts?.length, setValue, getValues])
 
     const handleAddPaymentMethod = () => {
         if (getDefaultDebitAccount) {
@@ -98,16 +141,6 @@ const PaymentDetails: React.FC = () => {
         remove(index)
         setTotalDebitAmount()
     }
-
-    // Calculate total amount from all payment methods
-    const setTotalDebitAmount = () => {
-        const debitAccounts = watch('debitAccounts') || [];
-        const totalDebitAccount = debitAccounts.reduce((sum: Decimal, account: any) => {
-            const amount = account?.amount || 0;
-            return sum.add(new Decimal(amount));
-        }, new Decimal(0));
-        setValue('totalDebitAmount', totalDebitAccount)
-    };
 
     const getAccClassNames = (salesType: SalesType, index: number): AccClassName[] => {
         if (index !== 0) {
@@ -179,7 +212,7 @@ const PaymentDetails: React.FC = () => {
                                         value="retail"
                                         checked={salesType === 'retail'}
                                         onChange={(e) => {
-                                            setSalesType(e.target.value as SalesType)
+                                            setValue('salesType', e.target.value as SalesType)
                                             setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
@@ -193,7 +226,7 @@ const PaymentDetails: React.FC = () => {
                                         value="bill"
                                         checked={salesType === 'bill'}
                                         onChange={(e) => {
-                                            setSalesType(e.target.value as SalesType)
+                                            setValue('salesType', e.target.value as SalesType)
                                             setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
@@ -207,7 +240,7 @@ const PaymentDetails: React.FC = () => {
                                         value="institution"
                                         checked={salesType === 'institution'}
                                         onChange={(e) => {
-                                            setSalesType(e.target.value as SalesType)
+                                            setValue('salesType', e.target.value as SalesType)
                                             setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"

@@ -92,25 +92,34 @@ export function AccountPickerFlat({
                 }}
                 components={{ 
                     Option: CustomOption,
-                    MenuList: (props: any) => (
-                        <div>
-                            <div style={{
-                                padding: '8px 12px',
-                                borderBottom: '1px solid #eee',
-                                backgroundColor: '#f8f9fa',
-                                fontSize: '12px',
-                                color: '#666',
-                                fontWeight: 500
-                            }}>
-                                {options.length} {options.length === 1 ? 'item' : 'items'}
+                    MenuList: (props: any) => {
+                        const { children, innerRef, innerProps } = props;
+                        return (
+                            <div>
+                                <div style={{
+                                    padding: '8px 12px',
+                                    borderBottom: '1px solid #eee',
+                                    backgroundColor: '#f8f9fa',
+                                    fontSize: '12px',
+                                    color: '#666',
+                                    fontWeight: 500
+                                }}>
+                                    {options.length} {options.length === 1 ? 'item' : 'items'}
+                                </div>
+                                <div
+                                    ref={innerRef}
+                                    {...innerProps}
+                                    style={{
+                                        ...props.style,
+                                        maxHeight: '360px',
+                                        overflowY: 'auto'
+                                    }}
+                                >
+                                    {children}
+                                </div>
                             </div>
-                            <div {...props} style={{
-                                ...props.style,
-                                maxHeight: '360px',
-                                overflowY: 'auto'
-                            }} />
-                        </div>
-                    )
+                        );
+                    }
                 }}
                 value={options.find((opt: AccountOptionType) => opt.id === value) || null}
                 maxMenuHeight={400}
@@ -207,7 +216,6 @@ function CustomOption(props: any) {
     return (
         <div
             ref={innerRef}
-            {...innerProps}
             onClick={handleClick}
             style={{
                 backgroundColor: bgColor,

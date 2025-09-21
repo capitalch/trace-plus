@@ -111,9 +111,9 @@ export function StockSummaryReport({ title }: { title?: string }) {
 
       <CompSyncFusionGrid
         aggregates={getAggregates()}
-        allowPaging={true}
+        // allowPaging={true}
         allowTextWrap={false}
-        pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000] }}
+        // pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000] }}
         buCode={buCode}
         className="mt-4"
         columns={getColumns()}
@@ -125,7 +125,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         }}
         hasCheckBoxSelection={true}
         hasIndexColumn={true}
-        height="calc(100vh - 280px)"
+        height="calc(100vh - 230px)"
         indexColumnWidth={60}
         instance={instance}
         loadData={loadData}

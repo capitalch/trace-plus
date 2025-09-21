@@ -1,3 +1,15 @@
+## Sales: Logic for autoSubledger: insert and update
+- Client
+    - Sends isAutoSubledger field in json
+- Server
+    - If isAutoSubledger: exec_sql_object_with_auto_subledger
+        - exec_sql_object_with_auto_subledger: new method
+            - similar to exec_sql_object
+                - After handle_auto_ref_no
+                    - call new method id = create_auto_subledger: creates new autoSubledger account and gets its id
+                    - replace the autoSubledgerId in sqlObject
+                    - proceed
+
 ## sales: Logic for computation
 # onChange fires when data is changed by keyboard
 # onValueChange fires when data value itself changes irrespective of what initiated it

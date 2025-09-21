@@ -87,7 +87,7 @@ function addUniqueKeysToJson(data: any) {
   const traverseAndAddKeys = (node: any, parentKey: number): any => {
     // Create a new object with the pkey if the original is not extensible
     let workingNode = node;
-    
+
     if (!Object.isExtensible(node)) {
       // Create a new object that includes all properties plus pkey
       workingNode = { ...node, pkey: parentKey };
@@ -114,7 +114,7 @@ function addUniqueKeysToJson(data: any) {
         workingNode[key] = traverseAndAddKeys(workingNode[key], runningKey++);
       }
     });
-    
+
     return workingNode;
   };
 
@@ -187,7 +187,8 @@ async function doGenericUpdate({
   dbName,
   tableName,
   xData,
-  deletedIds
+  deletedIds,
+  autoSubledgerAccId,
 }: DoGenericUpdateType) {
   const userDetails: UserDetailsType = Utils.getUserDetails() || {};
   const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
@@ -196,7 +197,8 @@ async function doGenericUpdate({
     dbParams: decodedDbParamsObject,
     xData: xData,
     buCode: buCode,
-    deletedIds: deletedIds
+    deletedIds: deletedIds,
+    autoSubledgerAccId: autoSubledgerAccId
   };
   const q: any = GraphQLQueriesMap.genericUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.genericUpdate;
@@ -209,7 +211,7 @@ async function doValidateDebitCreditAndUpdate({
   dbName,
   tableName,
   xData,
-  deletedIds
+  deletedIds,
 }: DoGenericUpdateType) {
   const userDetails: UserDetailsType = Utils.getUserDetails() || {};
   const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
@@ -218,7 +220,7 @@ async function doValidateDebitCreditAndUpdate({
     dbParams: decodedDbParamsObject,
     xData: xData,
     buCode: buCode,
-    deletedIds: deletedIds
+    deletedIds: deletedIds,
   };
   const q: any = GraphQLQueriesMap.validateDebitCreditAndUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.validateDebitCreditAndUpdate;
@@ -376,7 +378,7 @@ function getToken() {
   return state.login.token;
 }
 
-function getTranTypeId(tranType: TranType): number{
+function getTranTypeId(tranType: TranType): number {
   return (TranTypeMap[tranType])
 }
 
@@ -588,26 +590,6 @@ function showErrorMessage(
     allowEscapeKey: true
   });
 }
-
-// async function showGetText() {
-//   // const ipAPI = "//api.ipify.org?format=json";
-//   // const response = await fetch(ipAPI);
-//   // const data = await response.json();
-//   const inputValue = '';
-//   const { value }: { value?: string | undefined } = await Swal.fire({
-//     title: "Enter Nesting Level",
-//     input: "text",
-//     inputLabel: "Nesting level",
-//     inputValue,
-//     showCancelButton: true,
-//     inputValidator: (value) => {
-//       if (!value) {
-//         return "You need to give nesting level";
-//       }
-//     }
-//   });
-//   return (value || '3')
-// }
 
 function showGraphQlErrorMessage(error: GraphQlErrorType) {
   Swal.fire({
@@ -872,7 +854,9 @@ export type DoGenericUpdateType = {
   dbName?: string;
   tableName?: string;
   xData: Record<string, any>[] | Record<string, any>;
-  deletedIds?: number[]
+  deletedIds?: number[];
+  // isAutoSubledger?: boolean;
+  autoSubledgerAccId?: number | null |string
 };
 
 export type DoGenericUpdateQueryType = {

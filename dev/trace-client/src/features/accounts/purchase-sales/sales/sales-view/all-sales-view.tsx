@@ -12,10 +12,8 @@ import { Messages } from "../../../../../utils/messages";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { SalesFormDataType, ShippingInfoType, } from "../all-sales";
-import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
+import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
 import { useFormContext } from "react-hook-form";
-// import { useDispatch } from "react-redux";
-// import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { ArrowLeft } from "lucide-react";
 import Decimal from "decimal.js";
 
@@ -25,24 +23,18 @@ interface AllSalesViewProps {
 }
 
 export function AllSalesView({ className, onBack }: AllSalesViewProps) {
-  // const dispatch: AppDispatchType = useDispatch()
   const instance = DataInstancesMap.allSales
   const [rowsData, setRowsData] = useState<any[]>([]);
   const {
     currentDateFormat,
     buCode,
     branchId,
-    // branchName,
     dbName,
     decodedDbParamsObject,
     finYearId,
   } = useUtilsInfo();
 
-  const {
-    reset,
-    setValue,
-    // trigger,
-  } = useFormContext<SalesFormDataType>();
+  const { reset } = useFormContext<SalesFormDataType>();
 
   const loadData = useCallback(async () => {
     try {
@@ -125,7 +117,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="1400px"
-        onCopy={handleOnCopy}
+        // onCopy={handleOnCopy}
         onEdit={handleOnEdit}
         onDelete={handleOnDelete}
         onPreview={handleOnPreview}
@@ -359,47 +351,47 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     }))
   }
 
-  async function handleOnCopy(data: SalesFormDataType) {
-    const editData: any = await getSalesDetailsOnId(data.id)
-    const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-    setValue('salesEditData', undefined)
-    const tranH: TranHType = salesEditData.tranH
-    const tranD: TranDType[] = salesEditData.tranD
-    const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
-    const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
+  // async function handleOnCopy(data: SalesFormDataType) {
+  //   const editData: any = await getSalesDetailsOnId(data.id)
+  //   const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+  //   setValue('salesEditData', undefined)
+  //   const tranH: TranHType = salesEditData.tranH
+  //   const tranD: TranDType[] = salesEditData.tranD
+  //   const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
+  //   const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
 
-    reset({
-      id: undefined,
-      tranTypeId: tranH.tranTypeId,
-      isGstInvoice: Boolean(extGsTranD?.id),
-      creditAccId: tranD.find((item) => item.dc === "C")?.accId,
-      debitAccounts: tranD.filter((item) => item.dc === "D"),
-      gstin: extGsTranD?.gstin,
-      isIgst: extGsTranD?.igst ? true : false,
+  //   reset({
+  //     id: undefined,
+  //     tranTypeId: tranH.tranTypeId,
+  //     isGstInvoice: Boolean(extGsTranD?.id),
+  //     creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+  //     debitAccounts: tranD.filter((item) => item.dc === "D"),
+  //     gstin: extGsTranD?.gstin,
+  //     isIgst: extGsTranD?.igst ? true : false,
 
-      salesEditData: undefined,
-      salesLineItems: salePurchaseDetails.map((item) => ({
-        id: undefined,
-        productId: item.productId,
-        productCode: item.productCode,
-        productDetails: `${item.brandName} ${item.catName} ${item.label}`,
-        hsn: item.hsn.toString(),
-        qty: 1,
-        gstRate: item.gstRate,
-        price: item.price,
-        discount: item.discount,
-        priceGst: item.priceGst,
-        lineRemarks: null,
-        serialNumbers: null,
-        amount: item.price,
-        subTotal: item.price,
-        cgst: 0,
-        sgst: 0,
-        igst: 0
-      }))
-    })
-    onBack()
-  }
+  //     salesEditData: undefined,
+  //     salesLineItems: salePurchaseDetails.map((item) => ({
+  //       id: undefined,
+  //       productId: item.productId,
+  //       productCode: item.productCode,
+  //       productDetails: `${item.brandName} ${item.catName} ${item.label}`,
+  //       hsn: item.hsn.toString(),
+  //       qty: 1,
+  //       gstRate: item.gstRate,
+  //       price: item.price,
+  //       discount: item.discount,
+  //       priceGst: item.priceGst,
+  //       lineRemarks: null,
+  //       serialNumbers: null,
+  //       amount: item.price,
+  //       subTotal: item.price,
+  //       cgst: 0,
+  //       sgst: 0,
+  //       igst: 0
+  //     }))
+  //   })
+  //   onBack()
+  // }
 
   async function handleOnDelete(id: number | string) {
     Utils.showDeleteConfirmDialog(async () => {
@@ -440,6 +432,16 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
     // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
     const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
+
+    // Determine salesType based on tranD data
+    const debitAccounts = tranD.filter((item) => item.dc === "D")
+    let salesType: 'retail' | 'bill' | 'institution' = 'retail'
+    if (debitAccounts.find((item) => item.isAutoSubledger)) {
+      salesType = 'bill'
+    } else if (debitAccounts.find((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor'))) {
+      salesType = 'institution'
+    }
+
     reset({
       id: tranH.id,
       autoRefNo: tranH.autoRefNo,
@@ -482,6 +484,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       })),
       contactsData: billTo,
       shippingInfo: shippingInfo,
+      salesType: salesType,
     })
     onBack()
     // trigger()
@@ -494,7 +497,6 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {
     const rowData: any = args.data;
-
     if (args.row) {
       if (rowData.bColor) {
         args.row.classList.add("bg-green-50");

@@ -8,7 +8,7 @@ import { AllSalesForm } from "./all-sales-form";
 import { AllSalesView } from "./sales-view/all-sales-view";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { clearSalesFormData, setSalesViewMode, clearSearchQuery } from "./sales-slice";
+import { clearSalesFormData, setSalesViewMode, clearSearchQuery, saveSalesFormData } from "./sales-slice";
 import Decimal from "decimal.js";
 import { useAllSalesSubmit } from "./all-sales-submit-hook";
 import { AllTables } from "../../../../app/maps/database-tables-map";
@@ -27,9 +27,9 @@ export function AllSales() {
         {
             mode: "all",
             criteriaMode: "all",
-            defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : savedFormData
+            defaultValues: _.isEmpty(savedFormData) ? getDefaultSalesFormValues() : getDeserializedFormData(savedFormData)
         });
-    const { clearErrors, getValues, setError, reset, watch /*setFocus*/ } = methods;
+    const { clearErrors, getValues, setError, reset, watch, setValue } = methods;
 
     const getDebitCreditDifference = useCallback(() => {
         const totalInvoiceAmount = getValues('totalInvoiceAmount') || new Decimal(0)
@@ -47,19 +47,22 @@ export function AllSales() {
     const totalDebitAmount = watch('totalDebitAmount');
     const debitAccounts = watch('debitAccounts');
 
-    // useEffect(() => {
-    //     if (savedFormData) {
-    //         reset(_.cloneDeep(savedFormData),);
-    //         setValue('toggle', !savedFormData.toggle, { shouldDirty: true }) // making forcefully dirty
-    //     }
-    // }, [savedFormData, reset, setValue]);
+    useEffect(() => {
+        if (savedFormData) {
+            reset(_.cloneDeep(getDeserializedFormData(savedFormData)));
+            // Use setTimeout to ensure setValue runs after reset completes
+            setTimeout(() => {
+                setValue('toggle', !savedFormData.toggle, { shouldDirty: true });
+            }, 0);
+        }
+    }, [savedFormData, reset, setValue]);
 
-    // useEffect(() => {
-    //     return (() => {
-    //         const data = getValues()
-    //         dispatch(saveSalesFormData(data));
-    //     })
-    // }, [dispatch, getValues])
+    useEffect(() => {
+        return (() => {
+            const data = getSerializedFormData()
+            dispatch(saveSalesFormData(data));
+        })
+    }, [dispatch, getValues])
 
     useEffect(() => {
         // Calculate difference and set/clear error accordingly
@@ -102,11 +105,17 @@ export function AllSales() {
             }
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
+            
+            const autoSubledgerAccId = getValues('salesType') === 'bill'
+                ? getValues('debitAccounts')?.find((account: any) => account.isAutoSubledger)?.accId || null
+                : null;
+
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
                 tableName: AllTables.TranH.name,
                 xData: xData,
+                autoSubledgerAccId: autoSubledgerAccId
             });
 
             if (getValues('id')) {
@@ -153,7 +162,9 @@ export function AllSales() {
             contactsData: null,
             salesLineItems: [],
             shippingInfo: null,
-            toggle: false // For making the form forcefully dirty
+            toggle: false, // For making the form forcefully dirty
+            // isAutoSubledger: false,
+            salesType: 'retail'
         })
     }
 
@@ -190,6 +201,35 @@ export function AllSales() {
             lineRefNo: null,
             remarks: null
         })
+    }
+
+    function getDeserializedFormData(data: any): SalesFormDataType {
+        const out: SalesFormDataType = {
+            ...data,
+            totalInvoiceAmount: new Decimal(data.totalInvoiceAmount),
+            totalQty: new Decimal(data.totalQty),
+            totalCgst: new Decimal(data.totalCgst),
+            totalSgst: new Decimal(data.totalSgst),
+            totalIgst: new Decimal(data.totalIgst),
+            totalSubTotal: new Decimal(data.totalSubTotal),
+            totalDebitAmount: new Decimal(data.totalDebitAmount),
+        }
+        return (out)
+    }
+
+    function getSerializedFormData() {
+        const formData = getValues()
+        const serFormData = {
+            ...formData,
+            totalInvoiceAmount: String(formData.totalInvoiceAmount),
+            totalQty: String(formData.totalQty),
+            totalCgst: String(formData.totalCgst),
+            totalSgst: String(formData.totalSgst),
+            totalIgst: String(formData.totalIgst),
+            totalSubTotal: String(formData.totalSubTotal),
+            totalDebitAmount: String(formData.totalDebitAmount)
+        }
+        return (serFormData)
     }
 
     function resetAll() {
@@ -240,6 +280,8 @@ export type SalesFormDataType = {
 
     salesEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
+    // isAutoSubledger: boolean;
+    salesType: 'retail' | 'bill' | 'institution';
 }
 
 export type ShippingInfoType = {

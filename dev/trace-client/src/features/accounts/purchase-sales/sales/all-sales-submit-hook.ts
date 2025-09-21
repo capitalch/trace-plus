@@ -12,6 +12,7 @@ export function useAllSalesSubmit(methods: UseFormReturn<SalesFormDataType>, tra
   const salesEditData = getValues('salesEditData')
   const contactsData: ContactsType | null = getValues('contactsData')
   const shippingInfo: ShippingInfoType | null = getValues('shippingInfo')
+  
   function getTranHData(): XDataObjectType {
     return {
       id: getValues("id") || undefined,
