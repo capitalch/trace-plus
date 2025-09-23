@@ -1177,7 +1177,7 @@ class SqlAccounts:
 
     get_auto_subledger_details = """
         --WITH "branchId" AS (VALUES(1)), "finYearId" AS (VALUES(2025)), "accId" AS (VALUES(160)), "contactsId" AS (VALUES(107))
-            WITH "branchId" AS (VALUES(%(branchId)s::int)), "finYearId" AS (VALUES(%(finYearId)s::int)), "accId" AS (VALUES(%(accId)s::int)), "contactsId" AS (VALUES(%(contactsId)s::int)),
+            WITH "branchId" AS (VALUES(%(branchId)s::int)), "finYearId" AS (VALUES(%(finYearId)s::int)), "accId" AS (VALUES(%(accId)s::int)), "contactsId" AS (VALUES(%(contactsId)s::int))
         , inserting AS (
             -- insert a starter row only if it does not already exist
             INSERT INTO "AutoSubledgerCounter" ("finYearId", "branchId", "accId", "lastNo")

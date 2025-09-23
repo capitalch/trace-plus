@@ -208,16 +208,17 @@ async def handle_auto_subledger(sqlObject, acur):
     contactsId = xData.get('contactsId', None)
     autoRefNo = xData.get('autoRefNo', None)
     xDetails = xData.get('xDetails', {})
-    detailsData = xDetails.get("xData", None)[1] 
-    # Get autoSubledger details
+    detailsData = xDetails[0].get("xData", None)[1] 
+    # Get autoSubledger details: Error
     await acur.execute(SqlAccounts.get_auto_subledger_details, {
         "finYearId": finYearId,
         "branchId": branchId,
         "accId": autoSubledgerAccId,
         "contactsId": contactsId})
     details = await acur.fetchone()
-    branchCode = details.get("branchCode", "")
-    autoSubledgerDetails = details.get("autoSubledgerDetails", None)
+    jsonResult = details.get("jsonResult", None)
+    branchCode = jsonResult.get("branchCode", "")
+    autoSubledgerDetails = jsonResult.get("autoSubledgerDetails", None)
     lastNo = autoSubledgerDetails.get("lastNo", 0)
     accTypeId = autoSubledgerDetails.get("accTypeId", None)
     classId = autoSubledgerDetails.get("classId", None)
