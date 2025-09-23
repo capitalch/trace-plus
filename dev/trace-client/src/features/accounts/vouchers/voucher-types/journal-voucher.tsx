@@ -92,6 +92,8 @@ export function JournalVoucher({ instance }: JournalVoucherType) {
                 sqlArgs: {
                     accClassNames: ['branch',
                         'capital',
+                        'cash',
+                        'bank',
                         'other',
                         'loan',
                         'iexp',

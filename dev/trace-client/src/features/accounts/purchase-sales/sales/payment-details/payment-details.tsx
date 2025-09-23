@@ -56,14 +56,6 @@ const PaymentDetails: React.FC = () => {
         }
     }, [fields.length, append, getDefaultDebitAccount]);
 
-    // Initialize salesType to 'retail' if not set
-    // useEffect(() => {
-        // if (!salesType) {
-        //     setValue('salesType', 'retail');
-        // }
-    // }, [salesType, setValue]);
-
-
     useDeepCompareEffect(() => {
         if (debitAccounts && isEditMode) {
             if (debitAccounts.find(((item) => item.isAutoSubledger))) {
@@ -333,12 +325,17 @@ const PaymentDetails: React.FC = () => {
                                             {...register(`debitAccounts.${index}.accId`, {
                                                 required: Messages.errRequired,
                                             })}
-                                            onChange={(value) =>
+                                            onChange={(value) => {
                                                 setValue(`debitAccounts.${index}.accId`, value, {
                                                     shouldValidate: true,
                                                     shouldDirty: true,
                                                 })
-                                            }
+                                                if (salesType === 'bill') {
+                                                    setValue(`debitAccounts.${index}.isAutoSubledger`, true)
+                                                } else {
+                                                    setValue(`debitAccounts.${index}.isAutoSubledger`, false)
+                                                }
+                                            }}
                                             showRefreshButton={false}
                                             value={getValues(`debitAccounts.${index}.accId`) as string}
                                             className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}

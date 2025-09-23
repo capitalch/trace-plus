@@ -189,12 +189,67 @@ async def handle_auto_ref_no(sqlObject, acur):
         # Update TranCounter
         await acur.execute(SqlAccounts.increment_last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
 
-
+# create new autoSubledger account and inject its id in sqlObject
 async def handle_auto_subledger(sqlObject, acur):
     if (not sqlObject.get('autoSubledgerAccId', None)):
         return
-    # create new autoSubledger account and inject
-    pass
+    # populate variables
+    # buCode = sqlObject.get('buCode', None)
+    autoSubledgerAccId = sqlObject.get('autoSubledgerAccId', None)
+    xData = sqlObject.get('xData', {})
+    if not xData:  # Check if xData is None or empty
+        # throw error
+        raise ValueError("xData is required")
+    accName = xData.get('accName', None)
+    tranDate = xData.get('tranDate', None)
+    # tranTypeId = xData.get('tranTypeId', None)
+    finYearId = xData.get('finYearId', None)
+    branchId = xData.get('branchId', None)
+    contactsId = xData.get('contactsId', None)
+    autoRefNo = xData.get('autoRefNo', None)
+    xDetails = xData.get('xDetails', {})
+    detailsData = xDetails.get("xData", None)[1] 
+    # Get autoSubledger details
+    await acur.execute(SqlAccounts.get_auto_subledger_details, {
+        "finYearId": finYearId,
+        "branchId": branchId,
+        "accId": autoSubledgerAccId,
+        "contactsId": contactsId})
+    details = await acur.fetchone()
+    branchCode = details.get("branchCode", "")
+    autoSubledgerDetails = details.get("autoSubledgerDetails", None)
+    lastNo = autoSubledgerDetails.get("lastNo", 0)
+    accTypeId = autoSubledgerDetails.get("accTypeId", None)
+    classId = autoSubledgerDetails.get("classId", None)
+    accClass = autoSubledgerDetails.get("accClass", None)
+    contactNameMobileObject = details.get("contactNameMobile", None)
+    contactName = contactNameMobileObject.get("contactName", "")
+    mobileNumber = contactNameMobileObject.get("mobileNumber", "")
+    nameWithMobile = f"{contactName}:{mobileNumber}"
+    # Insert new child subledger acccount of autoSubledgerAccId
+    accCode = f'{autoSubledgerAccId}/{branchCode}/{lastNo}/{finYearId}'
+    accName = f'{tranDate} {autoRefNo}: {autoSubledgerAccId}/{branchCode}/{lastNo} {nameWithMobile}'
+    await acur.execute(SqlAccounts.insert_account, {
+        "accCode": accCode,
+        "accName": accName,
+        "accType": accTypeId,
+        "parentId": autoSubledgerAccId,
+        "accLeaf": 'S',
+        "isPrimary": False,
+        "classId": classId
+    })
+    newAcc = await acur.fetchone()
+    newAccId = newAcc.get("id", None)
+    # update new accId in sqlObject
+    detailsData["accId"] = newAccId
+    # update lastNo +1 for AutosubledgerCounter
+    await acur.execute(SqlAccounts.update_auto_subledger_last_no, {
+        "lastNo": lastNo + 1,
+        "finYearId": finYearId,
+        "branchId": branchId,
+        "accId": autoSubledgerAccId
+    })
+    return
 
 
 async def process_data(xData, acur, tableName, fkeyName, fkeyValue):

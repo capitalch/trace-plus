@@ -2,13 +2,36 @@
 - Client
     - Sends isAutoSubledger field in json
 - Server
-    - If isAutoSubledger: exec_sql_object_with_auto_subledger
-        - exec_sql_object_with_auto_subledger: new method
-            - similar to exec_sql_object
-                - After handle_auto_ref_no
-                    - call new method id = create_auto_subledger: creates new autoSubledger account and gets its id
-                    - replace the autoSubledgerId in sqlObject
-                    - proceed
+    - handle_auto_subledger
+        - populate variables
+            buCode = sqlObject.buCode,
+            autoSubledgerAccId = sqlObject.autoSubledgerAccId
+            tranDate = sqlObject.xData.tranDate
+            tranTypeId,finYearid, branchId, contactsId, autoRefNo
+        - get last no for autosubledger as lastAutoSubledgerNo
+        - also get accType, classId, accClass
+        - Get contacts on contactsId
+            nameWithMobile = f"{result['contactName']}:{result['mobileNumber']}"
+        accCode = f'{accId}/{branchCode}/{lastNo}/{finYearId}'
+        accName = f'{tranDate} {autoRefNo}: {accId}/{branchCode}/{lastNo} {nameWithMobile}'
+        sqlString = allSqls['insert_account']
+    args = {
+        "accCode": accCode,
+        "accName": accName,
+        "accType": accType,
+        "parentId": accId,
+        "accLeaf": 'S',
+        "isPrimary": False,
+        "classId": classId
+    }
+    childAccId = out[0]  # extract accId
+    detailsData[1]['accId'] = childAccId
+    valueDict['data'][0]['remarks'] = f'Auto subledger {accCode}'
+    childAccObj = args.copy()
+    childAccObj['accId'] = childAccId
+    childAccObj['accClass'] = accClass
+
+    update lastNo for autosubledger
 
 ## sales: Logic for computation
 # onChange fires when data is changed by keyboard

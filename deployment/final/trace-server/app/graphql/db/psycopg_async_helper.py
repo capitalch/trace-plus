@@ -25,9 +25,9 @@ def get_conn_info(
 ) -> str:
     dbName = Config.DB_NAME if dbName is None else dbName
     db_params = dbParams.copy() if db_params is None else db_params.copy()
-    conn = db_params.get('conn',None)
-    if(conn):
-        conn =decrypt(conn)
+    conn = db_params.get('conn', None)
+    if (conn):
+        conn = decrypt(conn)
         db_params = json.loads(conn)
     env = get_env()
     # Decide host and port based on environment
@@ -147,6 +147,7 @@ async def exec_sql_object(
             await aconn.execute(f"set search_path to {schema or 'public'}")
             async with aconn.cursor(row_factory=dict_row) as acur:
                 await handle_auto_ref_no(sqlObject, acur)
+                # await handle_auto_subledger(sqlObject, acur)
                 records = await execSqlObject(sqlObject, acur)
             await acur.close()
             await aconn.commit()
@@ -187,6 +188,13 @@ async def handle_auto_ref_no(sqlObject, acur):
         xData["autoRefNo"] = autoRefNo
         # Update TranCounter
         await acur.execute(SqlAccounts.increment_last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
+
+
+async def handle_auto_subledger(sqlObject, acur):
+    if (not sqlObject.get('autoSubledgerAccId', None)):
+        return
+    # create new autoSubledger account and inject
+    pass
 
 
 async def process_data(xData, acur, tableName, fkeyName, fkeyValue):

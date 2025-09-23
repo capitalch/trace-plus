@@ -105,6 +105,7 @@ export function AllSales() {
             }
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
+
             
             const autoSubledgerAccId = getValues('salesType') === 'bill'
                 ? getValues('debitAccounts')?.find((account: any) => account.isAutoSubledger)?.accId || null
@@ -199,7 +200,8 @@ export function AllSales() {
             amount: 0,
             instrNo: null,
             lineRefNo: null,
-            remarks: null
+            remarks: null,
+
         })
     }
 

@@ -6,6 +6,7 @@ from app.security.security_helper import (
     forgot_password_helper,
     login_helper,
     login_clients_helper,
+    resolve_pincode_helper,
     reset_password_helper,
 )
 from app.core.dependencies import AppHttpException
@@ -43,6 +44,10 @@ async def resolve_test():
 @securityRouter.post("/api/login-clients")
 async def resolve_login_clients(request: Request):
     return await login_clients_helper(request)
+
+@securityRouter.get("/api/pincode/{pincode}")
+async def resolve_pincode(pincode: str):
+    return await resolve_pincode_helper(pincode)
 
 
 @securityRouter.post("/api/forgot-password")
