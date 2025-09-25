@@ -93,7 +93,8 @@ export type TranDType = {
 }
 
 export type TranDExtraType = TranDType & {
-  isAutoSubledger:boolean | null;
+  // isAutoSubledger:boolean | null;
+  isParentAutoSubledger:boolean | null;
   accClass: string;
   accName: string;
   accCode: number;

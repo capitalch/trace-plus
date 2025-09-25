@@ -22,6 +22,7 @@ class Messages:
     err_file_not_found = "File not found"
     err_internal_server_error = "Internal server error"
     err_inactive_user = "Inactive user"
+    err_invalid_data = "Invalid data format provided by client"
     err_invalid_uid = "The current UID given by you is incorrect"
     err_invalid_current_password = "The current password given by you is incorrect"
     err_invalid_json_format = "Invalid json file format"
@@ -82,10 +83,13 @@ class customErrorCodes:
     e1031 = "Pincode was not found at server"
     e1032 = "postal_data.json file is missing"
     e1033 = "Invalid format of json file"
+    e1034 = "Data provided by client has missing xData construct"
+    e1035 = "Missing xDetails data"
+    e1036 = "AutoSubledger account not found in details"
+    e1037 = "AutoSubledger details not found"
 
-    
-    
-    
+
+
     e2000 = "Error occurred while executing GraphQL query in file graphql_helper"
 
 class EmailMessages:

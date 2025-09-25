@@ -21,7 +21,9 @@ export function AccountPickerFlat({
     showRefreshButton = true,
     value,
     toSelectFirstOption = false,
-    sqlId = null
+    sqlId = null,
+    isDisabled = false,
+    isNotSelectable = false
 }: AccountPickerFlatType) {
     const selectRef: any = useRef<Select>(null);
     const [options, setOptions] = useState<AccountOptionType[]>([])
@@ -80,6 +82,10 @@ export function AccountPickerFlat({
                 ref={selectRef}
                 styles={{
                     ...Utils.getReactSelectStyles(),
+                    control: (provided: any) => ({
+                        ...provided,
+                        cursor: isNotSelectable ? 'not-allowed' : 'default'
+                    }),
                     menu: (provided: any) => ({
                         ...provided,
                         position: 'absolute',
@@ -90,8 +96,8 @@ export function AccountPickerFlat({
                         paddingTop: 0
                     })
                 }}
-                components={{ 
-                    Option: CustomOption,
+                components={{
+                    Option: (props: any) => <CustomOption {...props} isNotSelectable={isNotSelectable} />,
                     MenuList: (props: any) => {
                         const { children, innerRef, innerProps } = props;
                         return (
@@ -123,6 +129,7 @@ export function AccountPickerFlat({
                 }}
                 value={options.find((opt: AccountOptionType) => opt.id === value) || null}
                 maxMenuHeight={400}
+                isDisabled={isDisabled}
             />
         </div>)
 
@@ -154,6 +161,9 @@ export function AccountPickerFlat({
     }
 
     function handleOnSelectAccount(selectedAcc: AccountOptionType | null) {
+        if (isNotSelectable) {
+            return;
+        }
         if (showAccountBalance) {
             if (selectedAcc?.id) {
                 fetchAccountBalance(selectedAcc.id)
@@ -190,6 +200,7 @@ function CustomOption(props: any) {
         innerRef,
         innerProps,
         selectProps,
+        isNotSelectable = false
     } = props;
 
     const index = selectProps.options.findIndex((opt: any) => opt.id === data.id);
@@ -205,7 +216,7 @@ function CustomOption(props: any) {
                 : '#f9f9f9';
 
     const handleClick = (e: any) => {
-        if (isDisabled) {
+        if (isDisabled || isNotSelectable) {
             e.preventDefault();
             e.stopPropagation();
             return;
@@ -220,7 +231,7 @@ function CustomOption(props: any) {
             style={{
                 backgroundColor: bgColor,
                 padding: '8px 12px',
-                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                cursor: isDisabled || isNotSelectable ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
                 lineHeight: 1.4,
                 display: 'flex',
@@ -268,6 +279,8 @@ type AccountPickerFlatType = {
     value?: string | null;
     toSelectFirstOption?: boolean;
     sqlId?: string | null;
+    isDisabled?: boolean
+    isNotSelectable?: boolean
 }
 
 export type AccountOptionType = {

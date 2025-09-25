@@ -2449,7 +2449,7 @@ class SqlAccounts:
 		        c2."accClass",
 		        m."accName",
 		        m."accCode",
-				x."isAutoSubledger"
+				x."isAutoSubledger" as "isParentAutoSubledger"
 		    FROM cte1 c1
 		    JOIN "TranD" d
 		        ON c1."id" = d."tranHeaderId"

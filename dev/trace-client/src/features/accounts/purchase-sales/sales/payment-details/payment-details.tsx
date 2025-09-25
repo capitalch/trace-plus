@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import _ from 'lodash'
+// import _ from 'lodash'
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import { AccountPickerFlat, AccClassName } from '../../../../../controls/redux-components/account-picker-flat/account-picker-flat';
@@ -58,7 +58,7 @@ const PaymentDetails: React.FC = () => {
 
     useDeepCompareEffect(() => {
         if (debitAccounts && isEditMode) {
-            if (debitAccounts.find(((item) => item.isAutoSubledger))) {
+            if (debitAccounts.find(((item) => item.isParentAutoSubledger))) {
                 setValue('salesType', 'bill')
             } else if (debitAccounts.find(((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor')))) {
                 setValue('salesType', 'institution')
@@ -68,12 +68,13 @@ const PaymentDetails: React.FC = () => {
     }, [isEditMode, debitAccounts, setValue])
 
     useEffect(() => {
-        // if (salesType === 'bill') {
-        //     setValue('isAutoSubledger', true)
-        // } else {
-        //     setValue('isAutoSubledger', false)
-        // }
-    }, [salesType, setValue])
+        const firstRowId = getValues('debitAccounts.0.id');
+        if (firstRowId) {
+            // const deletedIds = getValues('tranDDeletedIds') || [];
+            // setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
+            // setValue('debitAccounts.0.id', undefined);
+        }
+    }, [salesType, setValue, getValues])
 
     // Auto-set amount when totalInvoiceAmount changes and there's only one debit account
     useEffect(() => {
@@ -101,26 +102,32 @@ const PaymentDetails: React.FC = () => {
     };
 
     const handleClearPaymentMethods = () => {
-        // Remove all except first item, then clear the first item
         const deletedIds = getValues('tranDDeletedIds') || []
-        for (let i = fields.length - 1; i > 0; i--) {
+
+        // Collect all existing IDs for deletion
+        for (let i = 0; i < fields.length; i++) {
             const id = getValues(`debitAccounts.${i}.id`)
             if (id) {
                 deletedIds.push(id)
             }
-            remove(i);
-            if (!_.isEmpty(deletedIds)) {
-                setValue('tranDDeletedIds', [...deletedIds])
-            }
         }
-        if (fields.length > 0 && getDefaultDebitAccount) {
-            const defaultData = getDefaultDebitAccount();
-            setValue(`debitAccounts.0.accId`, defaultData.accId);
-            setValue(`debitAccounts.0.amount`, defaultData.amount);
-            setValue(`debitAccounts.0.instrNo`, defaultData.instrNo);
-            setValue(`debitAccounts.0.remarks`, defaultData.remarks);
+
+        // Update deleted IDs list if any exist
+        if (deletedIds.length > 0) {
+            setValue('tranDDeletedIds', deletedIds)
+        }
+
+        // Remove all rows
+        for (let i = fields.length - 1; i >= 0; i--) {
+            remove(i);
+        }
+
+        // Add fresh default row
+        if (getDefaultDebitAccount) {
+            append(getDefaultDebitAccount());
             trigger('debitAccounts');
         }
+
         setTotalDebitAmount()
     };
 
@@ -133,6 +140,15 @@ const PaymentDetails: React.FC = () => {
         remove(index)
         setTotalDebitAmount()
     }
+
+    const clearFirstRowId = () => {
+        const firstRowId = getValues('debitAccounts.0.id');
+        if (firstRowId) {
+            const deletedIds = getValues('tranDDeletedIds') || [];
+            setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
+            setValue('debitAccounts.0.id', undefined);
+        }
+    };
 
     const getAccClassNames = (salesType: SalesType, index: number): AccClassName[] => {
         if (index !== 0) {
@@ -150,10 +166,13 @@ const PaymentDetails: React.FC = () => {
         }
     };
 
-    const getSqlId = () => {
+    const getSqlId = (index: number) => {
         let sqlId = null
-        if (salesType === 'bill') {
-            if (isEditMode) {
+        const firstRowId = getValues('debitAccounts.0.id');
+
+        // For bill salesType, only first row (index 0) uses auto-subledger logic
+        if (salesType === 'bill' && index === 0) {
+            if (firstRowId) {
                 sqlId = SqlIdsMap.getAutoSubledgerAccountsWithLedgersAndSubledgers
             } else {
                 sqlId = SqlIdsMap.getAutoSubledgerAccountsOnClass
@@ -161,6 +180,7 @@ const PaymentDetails: React.FC = () => {
         } else if (salesType === 'institution') {
             sqlId = SqlIdsMap.getLeafAccountsOnClassWithoutAutoSubledgers
         }
+        // For all other cases (including bill salesType with index > 0), return null to use default behavior
         return (sqlId)
     }
 
@@ -197,6 +217,7 @@ const PaymentDetails: React.FC = () => {
                         <div className="flex items-center justify-between flex-wrap gap-y-4">
                             {/* Radio buttons */}
                             <div className="flex items-center space-x-4">
+                                {/* retail */}
                                 <label className="flex items-center cursor-pointer">
                                     <input
                                         type="radio"
@@ -206,11 +227,13 @@ const PaymentDetails: React.FC = () => {
                                         onChange={(e) => {
                                             setValue('salesType', e.target.value as SalesType)
                                             setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                            clearFirstRowId()
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏪 Retail</span>
                                 </label>
+                                {/* Bill */}
                                 <label className="flex items-center cursor-pointer">
                                     <input
                                         type="radio"
@@ -220,11 +243,13 @@ const PaymentDetails: React.FC = () => {
                                         onChange={(e) => {
                                             setValue('salesType', e.target.value as SalesType)
                                             setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                            clearFirstRowId()
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏭 Auto Subledger (Bill Sale)</span>
                                 </label>
+                                {/* Institution */}
                                 <label className="flex items-center cursor-pointer">
                                     <input
                                         type="radio"
@@ -234,6 +259,7 @@ const PaymentDetails: React.FC = () => {
                                         onChange={(e) => {
                                             setValue('salesType', e.target.value as SalesType)
                                             setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                            clearFirstRowId()
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
@@ -330,16 +356,12 @@ const PaymentDetails: React.FC = () => {
                                                     shouldValidate: true,
                                                     shouldDirty: true,
                                                 })
-                                                if (salesType === 'bill') {
-                                                    setValue(`debitAccounts.${index}.isAutoSubledger`, true)
-                                                } else {
-                                                    setValue(`debitAccounts.${index}.isAutoSubledger`, false)
-                                                }
                                             }}
                                             showRefreshButton={false}
                                             value={getValues(`debitAccounts.${index}.accId`) as string}
                                             className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
-                                            sqlId={getSqlId()}
+                                            sqlId={getSqlId(index)}
+                                            isNotSelectable={Boolean(getValues(`debitAccounts.${index}.id`))} // If id exists, make it non-selectable
                                         />
                                     </div>
 

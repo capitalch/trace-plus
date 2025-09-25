@@ -16,6 +16,7 @@ import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePu
 import { useFormContext } from "react-hook-form";
 import { ArrowLeft } from "lucide-react";
 import Decimal from "decimal.js";
+import { generateSalesInvoicePDF } from "../all-sales-invoice-jspdf";
 
 interface AllSalesViewProps {
   className?: string;
@@ -34,7 +35,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     finYearId,
   } = useUtilsInfo();
 
-  const { reset } = useFormContext<SalesFormDataType>();
+  const { reset, /*getValues*/ } = useFormContext<SalesFormDataType>();
 
   const loadData = useCallback(async () => {
     try {
@@ -117,7 +118,6 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="1400px"
-        // onCopy={handleOnCopy}
         onEdit={handleOnEdit}
         onDelete={handleOnDelete}
         onPreview={handleOnPreview}
@@ -351,48 +351,6 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     }))
   }
 
-  // async function handleOnCopy(data: SalesFormDataType) {
-  //   const editData: any = await getSalesDetailsOnId(data.id)
-  //   const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-  //   setValue('salesEditData', undefined)
-  //   const tranH: TranHType = salesEditData.tranH
-  //   const tranD: TranDType[] = salesEditData.tranD
-  //   const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
-  //   const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
-
-  //   reset({
-  //     id: undefined,
-  //     tranTypeId: tranH.tranTypeId,
-  //     isGstInvoice: Boolean(extGsTranD?.id),
-  //     creditAccId: tranD.find((item) => item.dc === "C")?.accId,
-  //     debitAccounts: tranD.filter((item) => item.dc === "D"),
-  //     gstin: extGsTranD?.gstin,
-  //     isIgst: extGsTranD?.igst ? true : false,
-
-  //     salesEditData: undefined,
-  //     salesLineItems: salePurchaseDetails.map((item) => ({
-  //       id: undefined,
-  //       productId: item.productId,
-  //       productCode: item.productCode,
-  //       productDetails: `${item.brandName} ${item.catName} ${item.label}`,
-  //       hsn: item.hsn.toString(),
-  //       qty: 1,
-  //       gstRate: item.gstRate,
-  //       price: item.price,
-  //       discount: item.discount,
-  //       priceGst: item.priceGst,
-  //       lineRemarks: null,
-  //       serialNumbers: null,
-  //       amount: item.price,
-  //       subTotal: item.price,
-  //       cgst: 0,
-  //       sgst: 0,
-  //       igst: 0
-  //     }))
-  //   })
-  //   onBack()
-  // }
-
   async function handleOnDelete(id: number | string) {
     Utils.showDeleteConfirmDialog(async () => {
       try {
@@ -436,7 +394,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     // Determine salesType based on tranD data
     const debitAccounts = tranD.filter((item) => item.dc === "D")
     let salesType: 'retail' | 'bill' | 'institution' = 'retail'
-    if (debitAccounts.find((item) => item.isAutoSubledger)) {
+    if (debitAccounts.find((item) => item.isParentAutoSubledger)) {
       salesType = 'bill'
     } else if (debitAccounts.find((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor'))) {
       salesType = 'institution'
@@ -490,9 +448,28 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     // trigger()
   }
 
-  async function handleOnPreview(data: SalesFormDataType) {
-    console.log(data)
-    Utils.showAlertMessage("Preview", "Sales invoice preview functionality will be implemented soon.")
+  async function handleOnPreview(data: any) {
+    try {
+      // Get the sales details for the selected row
+      const editData: any = await getSalesDetailsOnId(data.id)
+      const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+
+      if (!salesEditData) {
+        Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+        return
+      }
+
+      // Get current branch name
+      const state: RootStateType = Utils.getReduxState();
+      const branchName = state.login.currentBranch?.branchName || '';
+
+      // Generate the PDF
+      generateSalesInvoicePDF(salesEditData, branchName, currentDateFormat)
+
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      Utils.showErrorMessage('Error generating PDF. Please try again.')
+    }
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {

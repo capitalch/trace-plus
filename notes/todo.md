@@ -34,11 +34,28 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales return
 - Sales
-	- Massive check
-	- Auto subledger mechanism
+	- Give  a refresh button
+	- Check why in Trace, invoice is not shown correctly when autosubledger
+												- Massive check
+												- Auto subledger mechanism
+													- Change auto subledger account:
+													- Check new entry: OK
 													- Spits error in react-select in payment details
 													- persistance of sales data through redux
 	- Preview and pdf print
+		- page margin
+		- page size
+		- Form Main address
+		- Tax Invoice align with company name
+		- Content of tax invoice
+		- customer details complete
+		- Shipping Address
+		- Align Main table and remove grid lines
+		- Content of main table
+		- Alignment of Receipts / Debits and its content
+		- Adjust Authorised signatory
+		- Adjust Aggregateamount
+
 	- Accounts isHidden
 	- Provision to print last sale bill in the terminal
 	- Provision for advance against supplies in sales receipts

@@ -106,11 +106,15 @@ export function AllSales() {
             const xData: XDataObjectType = getTranHData();
             console.log(JSON.stringify(xData))
 
-            
-            const autoSubledgerAccId = getValues('salesType') === 'bill'
-                ? getValues('debitAccounts')?.find((account: any) => account.isAutoSubledger)?.accId || null
-                : null;
-
+            const debitAccounts = getValues('debitAccounts') || [];
+            const salesType = getValues('salesType')
+            const firstRow = debitAccounts[0] || {};
+            let autoSubledgerAccId = null;
+            // autoSubledgerAccId is always the ledger account of type 'L', means ledger having subledger. At server this id is replaced by newly created subledger account id. Server creates the subledger account only if the ledger account enabled for auto subledger.
+            if (firstRow && !firstRow.id && salesType === 'bill') {
+                autoSubledgerAccId = debitAccounts[0]?.accId || null;
+            }
+            // console.log('Auto subledger acc id:', autoSubledgerAccId)
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
@@ -269,6 +273,7 @@ export type SalesFormDataType = {
 
     salePurchDetailsDeletedIds?: number[]; // for PurchaseSaleDetails table
     tranDDeletedIds?: number[];
+    // accMDeletedIds?: number[]; // to delete auto subledger entries
     salesLineItems: SalesLineItemType[];
 
     totalInvoiceAmount: Decimal;
