@@ -108,7 +108,7 @@ const ShippingEditModal: React.FC<ShippingEditModalProps> = ({ shippingData, set
         try {
             const formData = getValues();
             // Copy shipping data to parent form using setParentValue
-            setParentValue('shippingInfo', formData);
+            setParentValue('shippingInfo', formData, {shouldDirty: true});
             handleOnClose();
         } catch (error) {
             console.error('Error in submitting shipping data:', error);

@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import _ from 'lodash';
 import autoTable from 'jspdf-autotable';
 import { SalePurchaseEditDataType } from '../../../../utils/global-types-interfaces-enums';
 import { UnitInfoType, Utils } from '../../../../utils/utils';
@@ -13,7 +14,7 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   // const pageHeight = doc.internal.pageSize.getHeight();
   const rightAlignX = pageWidth - marginLeft;
   // const lineSpacing = 10;
-  const { tranH, billTo, /*businessContacts,*/ salePurchaseDetails, tranD, extGstTranD } = invoiceData;
+  const { tranH, billTo, /*businessContacts,*/ salePurchaseDetails, tranD, extGstTranD, shippingInfo } = invoiceData;
   const companyInfo: UnitInfoType = Utils.getUnitInfo() || {};
 
   // Company info from businessContacts (this is the selling company)
@@ -51,7 +52,7 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
 
   // GSTIN
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(9);
   doc.text(`GSTIN ${company.gstin}`, marginLeft, currentY);
   currentY += 10;
 
@@ -100,12 +101,12 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
 
   // Customer Details (left side)
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(10);
   doc.text('Customer Details', leftColumnX, leftY);
   leftY += 12;
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(9);
   doc.text(billTo?.contactName || '', leftColumnX, leftY);
   leftY += 10;
 
@@ -144,11 +145,17 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   //   doc.text(emailLines, leftColumnX, leftY);
   //   leftY += emailLines.length * 10;
   // }
-
-  const placeOfSupplyText = `Place of supply: ${company.state} State Code: ${company.stateCode}`;
-  const placeLines = doc.splitTextToSize(placeOfSupplyText, maxColumnWidth);
-  doc.text(placeLines, leftColumnX, leftY);
-  leftY += placeLines.length * 10;
+  const shipTo: ShippingInfoType | undefined | null = shippingInfo;
+  if(!_.isEmpty(shipTo)) {
+    const shipToText = `${shipTo.name || ''}, ${shipTo.address1 || ''} ${shipTo.address2 || ''} ${shipTo.city || ''} ${shipTo.state || ''} ${shipTo.country || ''} ${shipTo.pin ? `Pin: ${shipTo.pin}` : ''} ${shipTo.mobileNumber ? `Ph: ${shipTo.mobileNumber}` : ''} ${shipTo.email ? `Email: ${shipTo.email}` : ''}`;
+    const shipToLines = doc.splitTextToSize(shipToText, maxColumnWidth);
+    doc.text(shipToLines, leftColumnX, leftY);
+    leftY += shipToLines.length * 10;
+  }
+  // const placeOfSupplyText = `Place of supply: ${company.state} State Code: ${company.stateCode}`;
+  // const placeLines = doc.splitTextToSize(placeOfSupplyText, maxColumnWidth);
+  // doc.text(placeLines, leftColumnX, leftY);
+  // leftY += placeLines.length * 10;
 
   if (tranH.remarks) {
     const remarkLines = doc.splitTextToSize(`Remarks: ${tranH.remarks}`, maxColumnWidth);
@@ -166,49 +173,49 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   }
 
   // Shipping Address (right side) - if different from billing
-  const shippingInfo: ShippingInfoType = tranH?.jData?.shipTo;
-  if (shippingInfo) {
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text('Shipping Address', rightColumnX, rightY);
-    rightY += 12;
+  // const shippingInfo: ShippingInfoType = tranH?.jData?.shipTo;
+  // if (shippingInfo) {
+  //   doc.setFont('helvetica', 'bold');
+  //   doc.setFontSize(9);
+  //   doc.text('Shipping Address', rightColumnX, rightY);
+  //   rightY += 12;
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
+  //   doc.setFont('helvetica', 'normal');
+  //   doc.setFontSize(8);
 
-    if (shippingInfo.name) {
-      const nameLines = doc.splitTextToSize(shippingInfo.name, maxColumnWidth);
-      doc.text(nameLines, rightColumnX, rightY);
-      rightY += nameLines.length * 10;
-    }
+  //   if (shippingInfo.name) {
+  //     const nameLines = doc.splitTextToSize(shippingInfo.name, maxColumnWidth);
+  //     doc.text(nameLines, rightColumnX, rightY);
+  //     rightY += nameLines.length * 10;
+  //   }
 
-    if (shippingInfo.address1) {
-      const shippingLines = doc.splitTextToSize(shippingInfo.address1, maxColumnWidth);
-      doc.text(shippingLines, rightColumnX, rightY);
-      rightY += shippingLines.length * 10;
-    }
+  //   if (shippingInfo.address1) {
+  //     const shippingLines = doc.splitTextToSize(shippingInfo.address1, maxColumnWidth);
+  //     doc.text(shippingLines, rightColumnX, rightY);
+  //     rightY += shippingLines.length * 10;
+  //   }
 
-    if (shippingInfo.mobileNumber) {
-      doc.text(`Ph: ${shippingInfo.mobileNumber}`, rightColumnX, rightY);
-      rightY += 10;
-    }
+  //   if (shippingInfo.mobileNumber) {
+  //     doc.text(`Ph: ${shippingInfo.mobileNumber}`, rightColumnX, rightY);
+  //     rightY += 10;
+  //   }
 
-    if (shippingInfo.email) {
-      const emailLines = doc.splitTextToSize(`email: ${shippingInfo.email}`, maxColumnWidth);
-      doc.text(emailLines, rightColumnX, rightY);
-      rightY += emailLines.length * 10;
-    }
+  //   if (shippingInfo.email) {
+  //     const emailLines = doc.splitTextToSize(`email: ${shippingInfo.email}`, maxColumnWidth);
+  //     doc.text(emailLines, rightColumnX, rightY);
+  //     rightY += emailLines.length * 10;
+  //   }
 
-    if (shippingInfo.state) {
-      doc.text(`State: ${shippingInfo.state}`, rightColumnX, rightY);
-      rightY += 10;
-    }
+  //   if (shippingInfo.state) {
+  //     doc.text(`State: ${shippingInfo.state}`, rightColumnX, rightY);
+  //     rightY += 10;
+  //   }
 
-    if (shippingInfo.country) {
-      doc.text(`Country: ${shippingInfo.country}`, rightColumnX, rightY);
-      rightY += 10;
-    }
-  }
+  //   if (shippingInfo.country) {
+  //     doc.text(`Country: ${shippingInfo.country}`, rightColumnX, rightY);
+  //     rightY += 10;
+  //   }
+  // }
 
   currentY = Math.max(leftY, rightY) + 20;
 

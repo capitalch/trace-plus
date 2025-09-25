@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash'
-import { RotateCcw, Eye, Send } from 'lucide-react';
+import { Eye, Send, RefreshCw } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import Decimal from 'decimal.js';
@@ -11,9 +11,9 @@ import { setSalesViewMode } from '../sales-slice';
 
 const StatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
-    const { control, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
-    const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
-    const { resetAll }: any = useFormContext<SalesFormDataType>()
+    const { control, getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
+    const { getDebitCreditDifference, populateFormOverId, resetAll }: any = useFormContext<SalesFormDataType>();
+    // const { resetAll }: any = useFormContext<SalesFormDataType>()
     // Using useWatch is more effecient
     const totalInvoiceAmount = useWatch({
         control,
@@ -33,6 +33,15 @@ const StatusBar: React.FC = () => {
 
     const handleView = () => {
         dispatch(setSalesViewMode(true));
+    };
+
+    const handleRefresh = async () => {
+        const id = getValues('id');
+        if (id) {
+            await populateFormOverId(id);
+        } else {
+            resetAll();
+        }
     };
 
     return (
@@ -58,11 +67,11 @@ const StatusBar: React.FC = () => {
                 <div className="flex flex-wrap justify-start gap-3 md:justify-end">
                     <button
                         type='button'
-                        onClick={resetAll}
-                        className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-blue-500 rounded-md shadow-sm transition-colors hover:bg-blue-600 space-x-2"
+                        onClick={handleRefresh}
+                        className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-cyan-500 rounded-md shadow-sm transition-colors hover:bg-cyan-600 space-x-2"
                     >
-                        <RotateCcw size={16} className="flex-shrink-0" />
-                        <span>RESET</span>
+                        <RefreshCw size={16} className="flex-shrink-0" />
+                        <span>REFRESH</span>
                     </button>
                     <button
                         onClick={handleView}
@@ -75,11 +84,10 @@ const StatusBar: React.FC = () => {
                     <button
                         type='submit'
                         disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
-                        className={`flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap rounded-md shadow-sm transition-colors space-x-2 ${
-                            isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-green-500 hover:bg-green-600'
-                        }`}
+                        className={`flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap rounded-md shadow-sm transition-colors space-x-2 ${isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-green-500 hover:bg-green-600'
+                            }`}
                     >
                         <Send size={16} className="flex-shrink-0" />
                         <span>SUBMIT</span>

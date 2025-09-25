@@ -34,7 +34,8 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales return
 - Sales
-	- Give  a refresh button
+	- Give a refresh button
+	- Remove remarks when altering autoSubledger
 	- Check why in Trace, invoice is not shown correctly when autosubledger
 												- Massive check
 												- Auto subledger mechanism

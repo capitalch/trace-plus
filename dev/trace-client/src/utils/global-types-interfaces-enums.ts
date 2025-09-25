@@ -1,3 +1,5 @@
+import { ShippingInfoType } from "../features/accounts/purchase-sales/sales/all-sales";
+
 export enum UserTypesEnum {
   SuperAdmin = "S",
   Admin = "A",
@@ -117,6 +119,7 @@ export type SalePurchaseEditDataType = {
   tranD: TranDExtraType[];
   extGstTranD: ExtGstTranDType;
   salePurchaseDetails: SalePurchaseDetailsWithExtraType[];
+  shippingInfo?: ShippingInfoType | null;
   billTo: ContactsType | null;
   businessContacts: ExtBusinessContactsAccMType;
 }

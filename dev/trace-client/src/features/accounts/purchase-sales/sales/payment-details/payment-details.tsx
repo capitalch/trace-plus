@@ -147,6 +147,7 @@ const PaymentDetails: React.FC = () => {
             const deletedIds = getValues('tranDDeletedIds') || [];
             setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
             setValue('debitAccounts.0.id', undefined);
+            setValue('remarks', undefined);
         }
     };
 

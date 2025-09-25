@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
 import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
-import { ContactsType, SalePurchaseEditDataType, TranDExtraType, TranDType } from "../../../../utils/global-types-interfaces-enums";
+import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
@@ -15,13 +15,16 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { useEffect, useCallback } from "react";
 import { Messages } from "../../../../utils/messages";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 
 export function AllSales() {
+    const instance = DataInstancesMap.allSales
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
 
-    const { hasGstin, defaultGstRate, dbName, buCode } = useUtilsInfo();
+    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
 
     const methods = useForm<SalesFormDataType>(
         {
@@ -39,7 +42,7 @@ export function AllSales() {
     }, [getValues])
 
     const { getTranHData } = useAllSalesSubmit(methods);
-    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference }
+    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference, populateFormOverId }
 
 
     // Watch for changes in amounts and trigger validation
@@ -236,6 +239,98 @@ export function AllSales() {
             totalDebitAmount: String(formData.totalDebitAmount)
         }
         return (serFormData)
+    }
+
+    async function getSalesDetailsOnId(id: number | undefined) {
+        if (!id) {
+            return
+        }
+        return (await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            instance: instance,
+            sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
+            sqlArgs: {
+                id: id,
+            },
+        }))
+    }
+
+    async function populateFormOverId(id: any) {
+        const editData: any = await getSalesDetailsOnId(id)
+        const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+
+        if (!salesEditData) {
+            Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+            return
+        }
+
+        const tranH: TranHType = salesEditData.tranH
+        const billTo: ContactsType | null = salesEditData.billTo
+        const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
+        const tranD: TranDExtraType[] = salesEditData.tranD
+        const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
+        const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
+
+        const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
+        // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
+        const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
+
+        // Determine salesType based on tranD data
+        const debitAccounts = tranD.filter((item) => item.dc === "D")
+        let salesType: 'retail' | 'bill' | 'institution' = 'retail'
+        if (debitAccounts.find((item) => item.isParentAutoSubledger)) {
+            salesType = 'bill'
+        } else if (debitAccounts.find((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor'))) {
+            salesType = 'institution'
+        }
+        salesEditData.shippingInfo = shippingInfo
+        reset({
+            id: tranH.id,
+            autoRefNo: tranH.autoRefNo,
+            tranDate: tranH.tranDate,
+            userRefNo: tranH.userRefNo,
+            remarks: tranH.remarks,
+            tranTypeId: tranH.tranTypeId,
+            isGstInvoice: Boolean(extGsTranD?.id),
+            creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+            debitAccounts: tranD.filter((item) => item.dc === "D"),
+            gstin: extGsTranD?.gstin,
+            isIgst: extGsTranD?.igst ? true : false,
+
+            totalCgst: new Decimal(extGsTranD?.cgst),
+            totalSgst: new Decimal(extGsTranD?.sgst),
+            totalIgst: new Decimal(extGsTranD?.igst),
+            totalQty: new Decimal(salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0)),
+            totalInvoiceAmount: totalInvoiceAmount,
+            totalDebitAmount: totalDebitAmount,
+            salesEditData: salesEditData,
+            salesLineItems: salePurchaseDetails.map((item) => ({
+                id: item.id,
+                productId: item.productId,
+                productCode: item.productCode,
+                upcCode: item.upcCode || null,
+                productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+                hsn: item.hsn.toString(),
+                qty: item.qty,
+                gstRate: item.gstRate,
+                price: item.price,
+                discount: item.discount,
+                priceGst: item.priceGst,
+                lineRemarks: item.remarks || null,
+                serialNumbers: item.serialNumbers || null,
+                amount: item.amount,
+                cgst: item.cgst,
+                sgst: item.sgst,
+                igst: item.igst,
+                subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
+            })),
+            contactsData: billTo,
+            shippingInfo: shippingInfo,
+            salesType: salesType,
+        })
+        // onBack()
     }
 
     function resetAll() {

@@ -11,11 +11,11 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
-import { SalesFormDataType, ShippingInfoType, } from "../all-sales";
-import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranHType } from "../../../../../utils/global-types-interfaces-enums";
+import { SalesFormDataType, /*ShippingInfoType,*/ } from "../all-sales";
+// import { /*ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, TranDExtraType, TranHType*/ SalePurchaseEditDataType } from "../../../../../utils/global-types-interfaces-enums";
 import { useFormContext } from "react-hook-form";
 import { ArrowLeft } from "lucide-react";
-import Decimal from "decimal.js";
+// import Decimal from "decimal.js";
 import { generateSalesInvoicePDF } from "../all-sales-invoice-jspdf";
 
 interface AllSalesViewProps {
@@ -33,9 +33,10 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     dbName,
     decodedDbParamsObject,
     finYearId,
+    branchName
   } = useUtilsInfo();
-
-  const { reset, /*getValues*/ } = useFormContext<SalesFormDataType>();
+  const { getValues }: any = useFormContext<SalesFormDataType>();
+  const { populateFormOverId }:any = useFormContext<SalesFormDataType>();
 
   const loadData = useCallback(async () => {
     try {
@@ -118,7 +119,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="1400px"
-        onEdit={handleOnEdit}
+        onEdit={handleOnEditLocal}
         onDelete={handleOnDelete}
         onPreview={handleOnPreview}
         onRowDataBound={handleOnRowDataBound}
@@ -335,21 +336,21 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     ];
   }
 
-  async function getSalesDetailsOnId(id: number | undefined) {
-    if (!id) {
-      return
-    }
-    return (await Utils.doGenericQuery({
-      buCode: buCode || "",
-      dbName: dbName || "",
-      dbParams: decodedDbParamsObject,
-      instance: instance,
-      sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
-      sqlArgs: {
-        id: id,
-      },
-    }))
-  }
+  // async function getSalesDetailsOnId(id: number | undefined) {
+  //   if (!id) {
+  //     return
+  //   }
+  //   return (await Utils.doGenericQuery({
+  //     buCode: buCode || "",
+  //     dbName: dbName || "",
+  //     dbParams: decodedDbParamsObject,
+  //     instance: instance,
+  //     sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
+  //     sqlArgs: {
+  //       id: id,
+  //     },
+  //   }))
+  // }
 
   async function handleOnDelete(id: number | string) {
     Utils.showDeleteConfirmDialog(async () => {
@@ -371,104 +372,100 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     })
   }
 
-  async function handleOnEdit(data: any) {
-    const editData: any = await getSalesDetailsOnId(data.id)
-    const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-
-    if (!salesEditData) {
-      Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
-      return
-    }
-
-    const tranH: TranHType = salesEditData.tranH
-    const billTo: ContactsType | null = salesEditData.billTo
-    const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
-    const tranD: TranDExtraType[] = salesEditData.tranD
-    const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
-    const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
-
-    const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
-    // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
-    const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
-
-    // Determine salesType based on tranD data
-    const debitAccounts = tranD.filter((item) => item.dc === "D")
-    let salesType: 'retail' | 'bill' | 'institution' = 'retail'
-    if (debitAccounts.find((item) => item.isParentAutoSubledger)) {
-      salesType = 'bill'
-    } else if (debitAccounts.find((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor'))) {
-      salesType = 'institution'
-    }
-
-    reset({
-      id: tranH.id,
-      autoRefNo: tranH.autoRefNo,
-      tranDate: tranH.tranDate,
-      userRefNo: tranH.userRefNo,
-      remarks: tranH.remarks,
-      tranTypeId: tranH.tranTypeId,
-      isGstInvoice: Boolean(extGsTranD?.id),
-      creditAccId: tranD.find((item) => item.dc === "C")?.accId,
-      debitAccounts: tranD.filter((item) => item.dc === "D"),
-      gstin: extGsTranD?.gstin,
-      isIgst: extGsTranD?.igst ? true : false,
-
-      totalCgst: new Decimal(extGsTranD?.cgst),
-      totalSgst: new Decimal(extGsTranD?.sgst),
-      totalIgst: new Decimal(extGsTranD?.igst),
-      totalQty: new Decimal(salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0)),
-      totalInvoiceAmount: totalInvoiceAmount,
-      totalDebitAmount: totalDebitAmount,
-      salesEditData: salesEditData,
-      salesLineItems: salePurchaseDetails.map((item) => ({
-        id: item.id,
-        productId: item.productId,
-        productCode: item.productCode,
-        upcCode: item.upcCode || null,
-        productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
-        hsn: item.hsn.toString(),
-        qty: item.qty,
-        gstRate: item.gstRate,
-        price: item.price,
-        discount: item.discount,
-        priceGst: item.priceGst,
-        lineRemarks: item.remarks || null,
-        serialNumbers: item.serialNumbers || null,
-        amount: item.amount,
-        cgst: item.cgst,
-        sgst: item.sgst,
-        igst: item.igst,
-        subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
-      })),
-      contactsData: billTo,
-      shippingInfo: shippingInfo,
-      salesType: salesType,
-    })
+  async function handleOnEditLocal(data: any) {
+    await populateFormOverId(data.id);
     onBack()
-    // trigger()
+    //   const editData: any = await getSalesDetailsOnId(data.id)
+    //   const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+
+    //   if (!salesEditData) {
+    //     Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+    //     return
+    //   }
+
+    //   const tranH: TranHType = salesEditData.tranH
+    //   const billTo: ContactsType | null = salesEditData.billTo
+    //   const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
+    //   const tranD: TranDExtraType[] = salesEditData.tranD
+    //   const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
+    //   const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
+
+    //   const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
+    //   // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
+    //   const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
+
+    //   // Determine salesType based on tranD data
+    //   const debitAccounts = tranD.filter((item) => item.dc === "D")
+    //   let salesType: 'retail' | 'bill' | 'institution' = 'retail'
+    //   if (debitAccounts.find((item) => item.isParentAutoSubledger)) {
+    //     salesType = 'bill'
+    //   } else if (debitAccounts.find((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor'))) {
+    //     salesType = 'institution'
+    //   }
+
+    //   reset({
+    //     id: tranH.id,
+    //     autoRefNo: tranH.autoRefNo,
+    //     tranDate: tranH.tranDate,
+    //     userRefNo: tranH.userRefNo,
+    //     remarks: tranH.remarks,
+    //     tranTypeId: tranH.tranTypeId,
+    //     isGstInvoice: Boolean(extGsTranD?.id),
+    //     creditAccId: tranD.find((item) => item.dc === "C")?.accId,
+    //     debitAccounts: tranD.filter((item) => item.dc === "D"),
+    //     gstin: extGsTranD?.gstin,
+    //     isIgst: extGsTranD?.igst ? true : false,
+
+    //     totalCgst: new Decimal(extGsTranD?.cgst),
+    //     totalSgst: new Decimal(extGsTranD?.sgst),
+    //     totalIgst: new Decimal(extGsTranD?.igst),
+    //     totalQty: new Decimal(salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0)),
+    //     totalInvoiceAmount: totalInvoiceAmount,
+    //     totalDebitAmount: totalDebitAmount,
+    //     salesEditData: salesEditData,
+    //     salesLineItems: salePurchaseDetails.map((item) => ({
+    //       id: item.id,
+    //       productId: item.productId,
+    //       productCode: item.productCode,
+    //       upcCode: item.upcCode || null,
+    //       productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+    //       hsn: item.hsn.toString(),
+    //       qty: item.qty,
+    //       gstRate: item.gstRate,
+    //       price: item.price,
+    //       discount: item.discount,
+    //       priceGst: item.priceGst,
+    //       lineRemarks: item.remarks || null,
+    //       serialNumbers: item.serialNumbers || null,
+    //       amount: item.amount,
+    //       cgst: item.cgst,
+    //       sgst: item.sgst,
+    //       igst: item.igst,
+    //       subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
+    //     })),
+    //     contactsData: billTo,
+    //     shippingInfo: shippingInfo,
+    //     salesType: salesType,
+    //   })
+    //   onBack()
   }
 
   async function handleOnPreview(data: any) {
     try {
       // Get the sales details for the selected row
-      const editData: any = await getSalesDetailsOnId(data.id)
-      const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+      await populateFormOverId(data.id);
+      const salesEditData = getValues('salesEditData')
+      // const editData: any = await getSalesDetailsOnId(data.id)
+      // const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
 
       if (!salesEditData) {
-        Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+        Utils.showErrorMessage(Messages.errNoDataFound)
         return
       }
-
-      // Get current branch name
-      const state: RootStateType = Utils.getReduxState();
-      const branchName = state.login.currentBranch?.branchName || '';
-
-      // Generate the PDF
-      generateSalesInvoicePDF(salesEditData, branchName, currentDateFormat)
-
+      generateSalesInvoicePDF(salesEditData, branchName || '', currentDateFormat)
     } catch (error) {
       console.error('Error generating PDF:', error)
-      Utils.showErrorMessage('Error generating PDF. Please try again.')
+      Utils.showErrorMessage(Messages.errGeneratingPdf)
     }
   }
 
