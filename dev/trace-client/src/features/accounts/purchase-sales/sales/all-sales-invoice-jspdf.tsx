@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { ShippingInfoType } from './all-sales';
 
 export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, branchName: string, currentDateFormat: string) {
-  // const doc = new jsPDF({ unit: 'pt', format: [595, 420], orientation: 'portrait' }); // Always takes higher number as height
+  // const doc = new jsPDF({ unit: 'pt', format: [595, 420], orientation: 'landscape' }); // Always takes higher number as height
   const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' }); // Half A4 width
   const marginLeft = 25;
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -71,7 +71,7 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
 
   const leftColumnX = marginLeft;
   const leftColumnWidth = pageWidth * 0.7; // 70% width for left section
-  const rightColumnX = marginLeft + leftColumnWidth + 10; // Start right section after left with spacing
+  // const rightColumnX = marginLeft + leftColumnWidth + 10; // Start right section after left with spacing
   const rightColumnWidth = pageWidth * 0.3 - marginLeft - 10; // 30% width for right section
   const maxLeftColumnWidth = leftColumnWidth - 25; // Prevent text overflow in left
   const maxRightColumnWidth = rightColumnWidth - 25; // Prevent text overflow in right
@@ -288,9 +288,9 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
         { content: formatNumber(account.amount || 0), styles: { halign: 'right' as const, fontStyle: ['debtor', 'creditor'].includes(account.accClass) ? 'bold' : 'normal' } },
         { content: ['debtor', 'creditor'].includes(account.accClass) ? 'Dues' : 'Paid', styles: { fontStyle: ['debtor', 'creditor'].includes(account.accClass) ? 'bold' : 'normal' } }
       ]),
-      styles: { fontSize: 8, cellPadding: 2 },
+      styles: { fontSize: 8, cellPadding: 2, textColor: [0, 0, 0] },
       headStyles: {
-        fillColor: [245, 245, 245],
+        fillColor: [255, 255, 255],
         textColor: [0, 0, 0],
         // lineWidth: 0.5,
         halign: 'left',

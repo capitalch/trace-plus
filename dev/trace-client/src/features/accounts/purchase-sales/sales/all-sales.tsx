@@ -117,7 +117,7 @@ export function AllSales() {
             if (firstRow && !firstRow.id && salesType === 'bill') {
                 autoSubledgerAccId = debitAccounts[0]?.accId || null;
             }
-            // console.log('Auto subledger acc id:', autoSubledgerAccId)
+            console.log('Auto subledger acc id:', autoSubledgerAccId)
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",

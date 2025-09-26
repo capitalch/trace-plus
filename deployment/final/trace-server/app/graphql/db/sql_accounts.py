@@ -1175,6 +1175,50 @@ class SqlAccounts:
             order by "tranDate" DESC, h."id" DESC, d."id" DESC
     """
 
+    get_auto_subledger_details = """
+        --WITH "branchId" AS (VALUES(1)), "finYearId" AS (VALUES(2025)), "accId" AS (VALUES(160)), "contactsId" AS (VALUES(107))
+            WITH "branchId" AS (VALUES(%(branchId)s::int)), "finYearId" AS (VALUES(%(finYearId)s::int)), "accId" AS (VALUES(%(accId)s::int)), "contactsId" AS (VALUES(%(contactsId)s::int))
+        , inserting AS (
+            -- insert a starter row only if it does not already exist
+            INSERT INTO "AutoSubledgerCounter" ("finYearId", "branchId", "accId", "lastNo")
+            SELECT (TABLE "finYearId"), (TABLE "branchId"), (TABLE "accId"), 1
+            WHERE NOT EXISTS (
+            SELECT 1
+            FROM "AutoSubledgerCounter" d
+            WHERE d."finYearId" = (TABLE "finYearId")
+                AND d."branchId" = (TABLE "branchId")
+                AND d."accId" = (TABLE "accId")
+            )
+            RETURNING id
+        )
+
+        SELECT json_build_object(
+            'branchCode',
+            (SELECT "branchCode" FROM "BranchM" WHERE "id" = (TABLE "branchId")),
+            'autoSubledgerDetails',
+            (
+                SELECT row_to_json(t)
+                FROM (
+                SELECT d."lastNo", a."accType", a."classId", c."accClass"
+                FROM "AutoSubledgerCounter" d
+                JOIN "AccM" a ON a."id" = d."accId"
+                JOIN "AccClassM" c ON c."id" = a."classId"
+                WHERE d."finYearId" = (TABLE "finYearId")
+                    AND d."branchId" = (TABLE "branchId")
+                    AND d."accId" = (TABLE "accId")
+                ) t
+            ),
+            'contactNameMobile',
+            (
+                SELECT row_to_json(x)
+                FROM (
+                SELECT "contactName", "mobileNumber"
+                FROM "Contacts"
+                WHERE "id" = (TABLE "contactsId")
+                ) x
+            )
+        ) AS "jsonResult"
+    """
     get_balanceSheet_profitLoss = """
     WITH RECURSIVE hier AS (
             SELECT 
@@ -2405,7 +2449,7 @@ class SqlAccounts:
 		        c2."accClass",
 		        m."accName",
 		        m."accCode",
-				x."isAutoSubledger"
+				x."isAutoSubledger" as "isParentAutoSubledger"
 		    FROM cte1 c1
 		    JOIN "TranD" d
 		        ON c1."id" = d."tranHeaderId"
@@ -3540,6 +3584,12 @@ class SqlAccounts:
             AND "tranTypeId" = (table "tranTypeId")
     """
 
+    insert_account = """
+        insert into "AccM"("accCode", "accName", "accType", "parentId", "accLeaf", "isPrimary", "classId")
+            values(%(accCode)s, %(accName)s, %(accType)s, %(parentId)s, %(accLeaf)s, %(isPrimary)s, %(classId)s)
+                returning "id"
+    """
+
     insert_product = """
         WITH new_product_code AS (
             UPDATE "Settings"
@@ -3563,6 +3613,14 @@ class SqlAccounts:
 
     test_connection = """
         select 'ok' as "connection"
+    """
+
+    update_last_no_auto_subledger = """
+        update "AutoSubledgerCounter"
+        set "lastNo" = %(lastNo)s
+            where "finYearId" = %(finYearId)s 
+                and "branchId" = %(branchId)s
+                and "accId" = %(accId)s
     """
 
     def update_accounts_master(params):
