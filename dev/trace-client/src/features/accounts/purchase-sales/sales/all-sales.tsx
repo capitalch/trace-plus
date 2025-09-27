@@ -216,12 +216,12 @@ export function AllSales() {
         const out: SalesFormDataType = {
             ...data,
             totalInvoiceAmount: new Decimal(data.totalInvoiceAmount),
-            totalQty: new Decimal(data.totalQty),
-            totalCgst: new Decimal(data.totalCgst),
-            totalSgst: new Decimal(data.totalSgst),
-            totalIgst: new Decimal(data.totalIgst),
-            totalSubTotal: new Decimal(data.totalSubTotal),
-            totalDebitAmount: new Decimal(data.totalDebitAmount),
+            totalQty: new Decimal(data.totalQty || 0),
+            totalCgst: new Decimal(data.totalCgst || 0),
+            totalSgst: new Decimal(data.totalSgst || 0),
+            totalIgst: new Decimal(data.totalIgst || 0),
+            totalSubTotal: new Decimal(data.totalSubTotal || 0),
+            totalDebitAmount: new Decimal(data.totalDebitAmount || 0),
         }
         return (out)
     }

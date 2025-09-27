@@ -1,0 +1,11 @@
+# instructions to preview last sale invoice saved or last viewed invoice
+- Show a Print Preview icon just like in purchase-common-header.tsx file
+- The icon should appear to the left of Refresh button in StatusBar component
+- Clicking the Print Preview button will call generateSalesInvoicePDF method
+    - It will show the details in PDF of either of following:
+        - Last saved invoice
+        - Last viewd invoice
+        - if Editing then the invoice being edited
+- If required you can make use of Redux using sales-slice
+- No need to retrieve the data for last saved invoice from database. You can use the already existing form data for PDF preview if successfully saved.
+- give the plan first

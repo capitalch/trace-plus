@@ -34,32 +34,35 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales return
 - Sales
-	- Give a refresh button
-	- Remove remarks when altering autoSubledger
-	- Check why in Trace, invoice is not shown correctly when autosubledger
+	- Reset button (to reset edit)
+												- Give a refresh button
+												- Remove remarks when altering autoSubledger
+												- Check why in Trace, invoice is not shown correctly when autosubledger
 												- Massive check
 												- Auto subledger mechanism
 													- Change auto subledger account:
 													- Check new entry: OK
 													- Spits error in react-select in payment details
 													- persistance of sales data through redux
-	- Preview and pdf print
-		- page margin
-		- page size
-		- Form Main address
-		- Tax Invoice align with company name
-		- Content of tax invoice
-		- customer details complete
-		- Shipping Address
-		- Align Main table and remove grid lines
-		- Content of main table
-		- Alignment of Receipts / Debits and its content
-		- Adjust Authorised signatory
-		- Adjust Aggregateamount
+												- Preview and pdf print
+													- Pagination
+													- Check with multi pages invoice
+													- page margin
+													- page size
+													- Form Main address
+													- Tax Invoice align with company name
+													- Content of tax invoice
+													- customer details complete
+													- Shipping Address
+													- Align Main table and remove grid lines
+													- Content of main table
+													- Alignment of Receipts / Debits and its content
+													- Adjust Authorised signatory
+													- Adjust Aggregateamount
 
 	- Accounts isHidden
 	- Provision to print last sale bill in the terminal
-	- Provision for advance against supplies in sales receipts
+													- Provision for advance against supplies in sales receipts
 													- When not a gst invoice then if gst% has value, show error at time of validation
 													-  At the time of edit the summary values are no properly reflected due to setSummaryValues() executed
 													- show costGst

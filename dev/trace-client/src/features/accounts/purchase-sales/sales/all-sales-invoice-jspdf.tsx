@@ -46,6 +46,20 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
 
   let currentY = 30;
 
+  // Pagination helper functions
+  const addPageIfNeeded = (spaceNeeded: number) => {
+    if (currentY + spaceNeeded > pageHeight - 40) {
+      doc.addPage();
+      currentY = 30;
+    }
+  };
+
+  // const drawText = (text: string, x: number, y: number, options = {}) => {
+  //   addPageIfNeeded(20);
+  //   doc.text(text, x, y, options);
+  //   currentY = y;
+  // };
+
   // Company Header
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
@@ -191,7 +205,7 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   const tableStartY = currentY - 8 //+ 5;
   autoTable(doc, {
     startY: tableStartY,
-    head: [['#', 'Items', 'Qty', 'Rate', 'Disc', 'Aggregate', 'Tax amount (%)', 'Amount']],
+    head: [['#', 'Items', 'Qty', 'Price', 'Disc', 'Aggregate', 'Tax amount (%)', 'Amount']],
     body: [
       ...salePurchaseDetails.map((item, i) => [
         `${i + 1}`,
@@ -246,15 +260,20 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
         doc.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height);
       }
     },
+    didDrawPage: (data) => {
+      const pageCount = doc.getNumberOfPages();
+      doc.setFontSize(8);
+      doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth - marginLeft, 20, { align: 'right' });
+    },
     columnStyles: {
-      0: { cellWidth: 30, halign: 'left' }, // #
-      1: { cellWidth: 160 }, // Items
-      2: { cellWidth: 30, halign: 'right' }, // Qty
-      3: { cellWidth: 60, halign: 'right' }, // Rate
-      4: { cellWidth: 60, halign: 'right' }, // Disc
-      5: { cellWidth: 60, halign: 'right' }, // Aggregate
-      6: { cellWidth: 80, halign: 'right' }, // Tax amount (%)
-      7: { cellWidth: 65, halign: 'right' }, // Amount
+      0: { cellWidth: 'auto', halign: 'left', minCellWidth: 25 }, // #
+      1: { cellWidth: 'auto', minCellWidth: 120 }, // Items
+      2: { cellWidth: 'auto', halign: 'right', minCellWidth: 30 }, // Qty
+      3: { cellWidth: 'auto', halign: 'right', minCellWidth: 65 }, // Price
+      4: { cellWidth: 'auto', halign: 'right', minCellWidth: 45 }, // Disc
+      5: { cellWidth: 'auto', halign: 'right', minCellWidth: 70 }, // Aggregate
+      6: { cellWidth: 'auto', halign: 'right', minCellWidth: 80 }, // Tax amount (%)
+      7: { cellWidth: 'auto', halign: 'right', minCellWidth: 70 }, // Amount
     },
     margin: { left: marginLeft, right: marginLeft },
     theme: 'plain',
@@ -271,6 +290,10 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   // Receipts section (left side)
   const receiptDebitAccounts = tranD.filter(item => item.dc === 'D');
   if (receiptDebitAccounts.length > 0) {
+    // Check if we need a new page for receipts section
+    const receiptsSectionHeight = 100 + (receiptDebitAccounts.length * 20); // Estimate height needed
+    addPageIfNeeded(receiptsSectionHeight);
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.text('Receipts / Debits', marginLeft, currentY);
@@ -292,23 +315,23 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
       headStyles: {
         fillColor: [255, 255, 255],
         textColor: [0, 0, 0],
-        // lineWidth: 0.5,
         halign: 'left',
         fontStyle: 'bold'
       },
       columnStyles: {
-        0: { cellWidth: 20, halign: 'left' }, // #
-        1: { cellWidth: 90 }, // Account
-        2: { cellWidth: 150 }, // Details
-        3: { cellWidth: 70, halign: 'right' }, // Amount
-        4: { cellWidth: 40, halign: 'left' }, // Status
+        0: { cellWidth: 'auto', halign: 'left', minCellWidth: 25 }, // #
+        1: { cellWidth: 'auto', minCellWidth: 120 }, // Account
+        2: { cellWidth: 'auto', minCellWidth: 120 }, // Details
+        3: { cellWidth: 'auto', halign: 'right', minCellWidth: 50 }, // Amount
+        4: { cellWidth: 'auto', halign: 'left', minCellWidth: 30 }, // Status
       },
       didParseCell: function (data: any) {
         if (data.section === 'head' && data.column.index === 3) {
           data.cell.styles.halign = 'right';
         }
       },
-      margin: { left: marginLeft, right: pageWidth / 2 + 20 }, // Limit to left half
+      // margin: { left: marginLeft, right: pageWidth / 2 + 35 }, // Give receipts table a bit more width
+      margin: { left: marginLeft, right: pageWidth - 370 }, // Give receipts table more allowed width
       theme: 'grid',
       pageBreak: 'avoid'
     });
@@ -318,33 +341,49 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
 
   // Right side summary section - positioned to avoid receipts table
   const summaryX = pageWidth - marginLeft;
+  const summaryLeftX = pageWidth / 2 + 120; // Start summary with good spacing from receipts table
   summaryStartY = Math.max(currentY, summaryStartY);
+
+  // Check if we need a new page for summary section
+  const summaryRequiredHeight = 80; // Estimate height needed for summary
+  if (summaryStartY + summaryRequiredHeight > pageHeight - 40) {
+    doc.addPage();
+    summaryStartY = 30;
+  }
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text(`Aggregate amount:`, summaryX - 150, summaryStartY);
+  doc.text(`Aggregate amount:`, summaryLeftX, summaryStartY);
   doc.text(formatNumber(totalSubTotal), summaryX, summaryStartY, { align: 'right' });
   summaryStartY += 12;
 
-  doc.text(`Cgst:`, summaryX - 150, summaryStartY);
+  doc.text(`Cgst:`, summaryLeftX, summaryStartY);
   doc.text(formatNumber(totalCGST), summaryX, summaryStartY, { align: 'right' });
   summaryStartY += 12;
 
-  doc.text(`Sgst:`, summaryX - 150, summaryStartY);
+  doc.text(`Sgst:`, summaryLeftX, summaryStartY);
   doc.text(formatNumber(totalSGST), summaryX, summaryStartY, { align: 'right' });
   summaryStartY += 12;
 
-  doc.text(`Igst:`, summaryX - 150, summaryStartY);
+  doc.text(`Igst:`, summaryLeftX, summaryStartY);
   doc.text(formatNumber(totalIGST), summaryX, summaryStartY, { align: 'right' });
   summaryStartY += 12;
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
-  doc.text(`Total amount:`, summaryX - 150, summaryStartY);
+  doc.text(`Total amount:`, summaryLeftX, summaryStartY);
   doc.text(formatNumber(totalAmount), summaryX, summaryStartY, { align: 'right' });
 
   // Amount in words and final amount payable - ensure no overlap
-  currentY = Math.max(receiptEndY, summaryStartY) + 25;
+  currentY = Math.max(receiptEndY, summaryStartY) + 28;
+
+  // Check if we need a new page for amount in words section
+  const amountWordsRequiredHeight = 60; // Estimate height needed
+  if (currentY + amountWordsRequiredHeight > pageHeight - 40) {
+    doc.addPage();
+    currentY = 30;
+  }
+
   const amountWords = Utils.toWordsFromAmount(totalAmount);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
@@ -361,6 +400,14 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   // doc.text('Computer generated invoice', marginLeft, currentY);
   // currentY += 10;
   // doc.text('(No signature required)', marginLeft, currentY);
+
+  // Add page numbers at the end
+  const pageCount = doc.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.text(`Page ${i} of ${pageCount}`, pageWidth - marginLeft, 20, { align: 'right' });
+  }
 
   const blob = doc.output('blob');
   const blobURL = URL.createObjectURL(blob);

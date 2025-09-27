@@ -8,11 +8,16 @@ import { Utils } from '../../../../../utils/utils';
 import { useDispatch } from 'react-redux';
 import { AppDispatchType } from '../../../../../app/store';
 import { setSalesViewMode } from '../sales-slice';
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
+import { generateSalesInvoicePDF } from '../all-sales-invoice-jspdf';
+import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 
 const StatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
     const { control, getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
     const { getDebitCreditDifference, populateFormOverId, resetAll }: any = useFormContext<SalesFormDataType>();
+    const { branchName, currentDateFormat } = useUtilsInfo();
     // const { resetAll }: any = useFormContext<SalesFormDataType>()
     // Using useWatch is more effecient
     const totalInvoiceAmount = useWatch({
@@ -44,6 +49,29 @@ const StatusBar: React.FC = () => {
         }
     };
 
+    const getPrintPreview = () => {
+        const id = getValues('id');
+        const salesEditData = getValues('salesEditData');
+
+        // Show preview if we have either an id (saved/editing) or salesEditData (last viewed)
+        if (id || salesEditData) {
+            return (
+                <TooltipComponent content='Print Preview' className="flex">
+                    <button type='button' onClick={handleOnPreview}>
+                        <IconPreview1 className="w-8 h-8 text-blue-500 hover:text-blue-600" />
+                    </button>
+                </TooltipComponent>
+            );
+        }
+        return null;
+    };
+
+    const handleOnPreview = () => {
+        const salesEditData: any = getValues('salesEditData') || {};
+        if (_.isEmpty(salesEditData)) return;
+        generateSalesInvoicePDF(salesEditData, branchName || '', currentDateFormat);
+    };
+
     return (
         <div className="mr- px-4 py-3 text-gray-800 bg-gray-100 border rounded-lg">
             <div className="grid items-center gap-4 grid-cols-1 md:gap-8 md:grid-cols-[auto_1fr]">
@@ -65,6 +93,7 @@ const StatusBar: React.FC = () => {
 
                 {/* Action Buttons */}
                 <div className="flex flex-wrap justify-start gap-3 md:justify-end">
+                    {getPrintPreview()}
                     <button
                         type='button'
                         onClick={handleRefresh}
