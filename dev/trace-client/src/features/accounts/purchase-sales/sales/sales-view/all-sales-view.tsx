@@ -35,8 +35,8 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     finYearId,
     branchName
   } = useUtilsInfo();
-  const { getValues }: any = useFormContext<SalesFormDataType>();
-  const { populateFormOverId }:any = useFormContext<SalesFormDataType>();
+  // const { getValues }: any = useFormContext<SalesFormDataType>();
+  const { populateFormOverId, getSalesEditDataOnId }:any = useFormContext<SalesFormDataType>();
 
   const loadData = useCallback(async () => {
     try {
@@ -119,7 +119,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="1400px"
-        onEdit={handleOnEditLocal}
+        onEdit={handleOnEdit}
         onDelete={handleOnDelete}
         onPreview={handleOnPreview}
         onRowDataBound={handleOnRowDataBound}
@@ -336,22 +336,6 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     ];
   }
 
-  // async function getSalesDetailsOnId(id: number | undefined) {
-  //   if (!id) {
-  //     return
-  //   }
-  //   return (await Utils.doGenericQuery({
-  //     buCode: buCode || "",
-  //     dbName: dbName || "",
-  //     dbParams: decodedDbParamsObject,
-  //     instance: instance,
-  //     sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
-  //     sqlArgs: {
-  //       id: id,
-  //     },
-  //   }))
-  // }
-
   async function handleOnDelete(id: number | string) {
     Utils.showDeleteConfirmDialog(async () => {
       try {
@@ -372,92 +356,15 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     })
   }
 
-  async function handleOnEditLocal(data: any) {
+  async function handleOnEdit(data: any) {
     await populateFormOverId(data.id);
     onBack()
-    //   const editData: any = await getSalesDetailsOnId(data.id)
-    //   const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-
-    //   if (!salesEditData) {
-    //     Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
-    //     return
-    //   }
-
-    //   const tranH: TranHType = salesEditData.tranH
-    //   const billTo: ContactsType | null = salesEditData.billTo
-    //   const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
-    //   const tranD: TranDExtraType[] = salesEditData.tranD
-    //   const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
-    //   const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
-
-    //   const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
-    //   // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
-    //   const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
-
-    //   // Determine salesType based on tranD data
-    //   const debitAccounts = tranD.filter((item) => item.dc === "D")
-    //   let salesType: 'retail' | 'bill' | 'institution' = 'retail'
-    //   if (debitAccounts.find((item) => item.isParentAutoSubledger)) {
-    //     salesType = 'bill'
-    //   } else if (debitAccounts.find((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor'))) {
-    //     salesType = 'institution'
-    //   }
-
-    //   reset({
-    //     id: tranH.id,
-    //     autoRefNo: tranH.autoRefNo,
-    //     tranDate: tranH.tranDate,
-    //     userRefNo: tranH.userRefNo,
-    //     remarks: tranH.remarks,
-    //     tranTypeId: tranH.tranTypeId,
-    //     isGstInvoice: Boolean(extGsTranD?.id),
-    //     creditAccId: tranD.find((item) => item.dc === "C")?.accId,
-    //     debitAccounts: tranD.filter((item) => item.dc === "D"),
-    //     gstin: extGsTranD?.gstin,
-    //     isIgst: extGsTranD?.igst ? true : false,
-
-    //     totalCgst: new Decimal(extGsTranD?.cgst),
-    //     totalSgst: new Decimal(extGsTranD?.sgst),
-    //     totalIgst: new Decimal(extGsTranD?.igst),
-    //     totalQty: new Decimal(salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0)),
-    //     totalInvoiceAmount: totalInvoiceAmount,
-    //     totalDebitAmount: totalDebitAmount,
-    //     salesEditData: salesEditData,
-    //     salesLineItems: salePurchaseDetails.map((item) => ({
-    //       id: item.id,
-    //       productId: item.productId,
-    //       productCode: item.productCode,
-    //       upcCode: item.upcCode || null,
-    //       productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
-    //       hsn: item.hsn.toString(),
-    //       qty: item.qty,
-    //       gstRate: item.gstRate,
-    //       price: item.price,
-    //       discount: item.discount,
-    //       priceGst: item.priceGst,
-    //       lineRemarks: item.remarks || null,
-    //       serialNumbers: item.serialNumbers || null,
-    //       amount: item.amount,
-    //       cgst: item.cgst,
-    //       sgst: item.sgst,
-    //       igst: item.igst,
-    //       subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
-    //     })),
-    //     contactsData: billTo,
-    //     shippingInfo: shippingInfo,
-    //     salesType: salesType,
-    //   })
-    //   onBack()
   }
 
   async function handleOnPreview(data: any) {
     try {
       // Get the sales details for the selected row
-      await populateFormOverId(data.id);
-      const salesEditData = getValues('salesEditData')
-      // const editData: any = await getSalesDetailsOnId(data.id)
-      // const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-
+      const salesEditData = await getSalesEditDataOnId(data.id)
       if (!salesEditData) {
         Utils.showErrorMessage(Messages.errNoDataFound)
         return

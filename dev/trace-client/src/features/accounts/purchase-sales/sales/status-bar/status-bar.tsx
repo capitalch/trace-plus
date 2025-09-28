@@ -1,12 +1,12 @@
 import React from 'react';
 import _ from 'lodash'
-import { Eye, Send, RefreshCw } from 'lucide-react';
+import { Eye, Send, RefreshCw, RotateCcw } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { SalesFormDataType } from '../all-sales';
 import Decimal from 'decimal.js';
 import { Utils } from '../../../../../utils/utils';
-import { useDispatch } from 'react-redux';
-import { AppDispatchType } from '../../../../../app/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatchType, RootStateType } from '../../../../../app/store';
 import { setSalesViewMode } from '../sales-slice';
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
@@ -15,10 +15,10 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 
 const StatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
+    const lastSalesEditData = useSelector((state: RootStateType) => state.sales.lastSalesEditData);
     const { control, getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
     const { getDebitCreditDifference, populateFormOverId, resetAll }: any = useFormContext<SalesFormDataType>();
     const { branchName, currentDateFormat } = useUtilsInfo();
-    // const { resetAll }: any = useFormContext<SalesFormDataType>()
     // Using useWatch is more effecient
     const totalInvoiceAmount = useWatch({
         control,
@@ -38,6 +38,7 @@ const StatusBar: React.FC = () => {
 
     const handleView = () => {
         dispatch(setSalesViewMode(true));
+        resetAll();
     };
 
     const handleRefresh = async () => {
@@ -49,12 +50,18 @@ const StatusBar: React.FC = () => {
         }
     };
 
+    const handleReset = () => {
+        resetAll();
+    };
+
     const getPrintPreview = () => {
         const id = getValues('id');
         const salesEditData = getValues('salesEditData');
 
-        // Show preview if we have either an id (saved/editing) or salesEditData (last viewed)
-        if (id || salesEditData) {
+        // Show preview if we have either:
+        // 1. Current form data (id or salesEditData)
+        // 2. Last saved sales data from Redux
+        if (id || salesEditData || lastSalesEditData) {
             return (
                 <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={handleOnPreview}>
@@ -67,7 +74,13 @@ const StatusBar: React.FC = () => {
     };
 
     const handleOnPreview = () => {
-        const salesEditData: any = getValues('salesEditData') || {};
+        // Prioritize last saved data, fallback to current form data
+        let salesEditData: any = lastSalesEditData || {};
+
+        if (_.isEmpty(salesEditData)) {
+            salesEditData = getValues('salesEditData') || {};
+        }
+
         if (_.isEmpty(salesEditData)) return;
         generateSalesInvoicePDF(salesEditData, branchName || '', currentDateFormat);
     };
@@ -101,6 +114,14 @@ const StatusBar: React.FC = () => {
                     >
                         <RefreshCw size={16} className="flex-shrink-0" />
                         <span>REFRESH</span>
+                    </button>
+                    <button
+                        type='button'
+                        onClick={handleReset}
+                        className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-orange-500 rounded-md shadow-sm transition-colors hover:bg-orange-600 space-x-2"
+                    >
+                        <RotateCcw size={16} className="flex-shrink-0" />
+                        <span>RESET</span>
                     </button>
                     <button
                         onClick={handleView}

@@ -227,6 +227,7 @@ const ItemsAndServices: React.FC = () => {
                                             setValue(`salesLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
                                             setPrice(index)
                                             computeLineItemValues(index)
+                                            setStockAndProfit(index);
                                         }}
                                         validate={(value) => {
                                             if (isGstInvoice) {
@@ -519,7 +520,6 @@ const ItemsAndServices: React.FC = () => {
 
         setValue(`salesLineItems.${index}.subTotal`, subTotal.toNumber());
         setValue(`salesLineItems.${index}.amount`, amount.toNumber());
-        // setTimeout(()=>setSummaryValues(),100)
         setSummaryValues()
         trigger()
     }

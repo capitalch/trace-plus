@@ -12,11 +12,7 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   const marginLeft = 25;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  console.log({ pageWidth, pageHeight });
-  // const pageHeight = doc.internal.pageSize.getHeight();
-  // const rightAlignX = pageWidth - marginLeft;
-  // const lineSpacing = 10;
-  const { tranH, billTo, /*businessContacts,*/ salePurchaseDetails, tranD, extGstTranD, shippingInfo } = invoiceData;
+  const { tranH, billTo, salePurchaseDetails, tranD, extGstTranD, shippingInfo } = invoiceData;
   const companyInfo: UnitInfoType = Utils.getUnitInfo() || {};
 
   // Company info from businessContacts (this is the selling company)
@@ -54,12 +50,6 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
     }
   };
 
-  // const drawText = (text: string, x: number, y: number, options = {}) => {
-  //   addPageIfNeeded(20);
-  //   doc.text(text, x, y, options);
-  //   currentY = y;
-  // };
-
   // Company Header
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
@@ -85,7 +75,6 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
 
   const leftColumnX = marginLeft;
   const leftColumnWidth = pageWidth * 0.7; // 70% width for left section
-  // const rightColumnX = marginLeft + leftColumnWidth + 10; // Start right section after left with spacing
   const rightColumnWidth = pageWidth * 0.3 - marginLeft - 10; // 30% width for right section
   const maxLeftColumnWidth = leftColumnWidth - 25; // Prevent text overflow in left
   const maxRightColumnWidth = rightColumnWidth - 25; // Prevent text overflow in right
@@ -330,7 +319,6 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
           data.cell.styles.halign = 'right';
         }
       },
-      // margin: { left: marginLeft, right: pageWidth / 2 + 35 }, // Give receipts table a bit more width
       margin: { left: marginLeft, right: pageWidth - 370 }, // Give receipts table more allowed width
       theme: 'grid',
       pageBreak: 'avoid'
@@ -396,10 +384,6 @@ export function generateSalesInvoicePDF(invoiceData: SalePurchaseEditDataType, b
   doc.setFontSize(9);
   doc.text('Authorised signatory', summaryX, currentY, { align: 'right' });
   currentY += amountWordsLines.length * 10;
-  // currentY += 10;
-  // doc.text('Computer generated invoice', marginLeft, currentY);
-  // currentY += 10;
-  // doc.text('(No signature required)', marginLeft, currentY);
 
   // Add page numbers at the end
   const pageCount = doc.getNumberOfPages();

@@ -37,7 +37,7 @@ function Login() {
         required: Messages.errRequired,
         validate: { checkPassword },
         minLength: { value: 8, message: Messages.errAtLeast8Chars },
-        value: 'su$hant123'
+        value: 'tr@ce123'
     })
 
     return (

@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { SalesFormDataType } from "./all-sales";
 
 const initialState: SalesInitialStateType = {
     savedFormData: null,
     isViewMode: false,
     searchQuery: '',
+    lastSalesEditData: null,
 }
 
 const salesSlice = createSlice({
@@ -30,6 +30,12 @@ const salesSlice = createSlice({
         clearSearchQuery(state) {
             state.searchQuery = '';
         },
+        setLastSalesEditData(state, action: PayloadAction<any>) {
+            state.lastSalesEditData = action.payload;
+        },
+        clearLastSalesEditData(state) {
+            state.lastSalesEditData = null;
+        },
     }
 })
 
@@ -40,11 +46,14 @@ export const {
     toggleSalesViewMode,
     setSalesViewMode,
     setSearchQuery,
-    clearSearchQuery
+    clearSearchQuery,
+    setLastSalesEditData,
+    clearLastSalesEditData
 } = salesSlice.actions
 
 export type SalesInitialStateType = {
     savedFormData: any ; //SalesFormDataType | null;
     isViewMode: boolean;
     searchQuery: string;
+    lastSalesEditData: any; // Store the last successfully saved sales data for print preview
 }

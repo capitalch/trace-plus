@@ -16,6 +16,7 @@ import { IconPlus } from "../../../../controls/icons/icon-plus"
 import { AccountsAddGroupModal } from "./accounts-add-group-modal"
 import { IconEdit1 } from "../../../../controls/icons/icon-edit1"
 import { IconCross } from "../../../../controls/icons/icon-cross"
+import { IconMinusCircle } from "../../../../controls/icons/icon-minus-circle"
 import { AllTables } from "../../../../app/maps/database-tables-map"
 import { AccountsAddChildModal } from "./accounts-add-child-modal"
 import { AccountsEditModal } from "./accounts-edit-modal"
@@ -83,6 +84,7 @@ export function AccountsMaster() {
 
     function actionTemplate(props: AccountsMasterType) {
         const isDelButtonVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) // Not visible for primary and those having children
+        const isHideButtonVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) // Same logic as delete button
         const isEditButtonVisible: boolean = !props.isPrimary
         const isAddChildButtonVisible: boolean = ['L', 'N'].includes(props.accLeaf)
 
@@ -98,6 +100,12 @@ export function AccountsMaster() {
             {isEditButtonVisible && <button onClick={handeleOnClickEditSelf} className="flex items-center justify-center ml-4 font-medium text-green-700 text-xs">
                 <IconEdit1 className="mr-1.5 w-3 h-3" />
                 EDIT
+            </button>}
+
+            {/* Hide */}
+            {isHideButtonVisible && <button onClick={handeleOnClickHide} className="flex items-center justify-center ml-4 font-medium text-amber-500 text-xs">
+                <IconMinusCircle className="mr-1 w-4 h-4" />
+                HIDE
             </button>}
 
             {/* Delete */}
@@ -145,6 +153,27 @@ export function AccountsMaster() {
                 }
             })
         }
+
+        function handeleOnClickHide() {
+            Utils.showConfirmDialog('Hide Account', 'Are you sure you want to hide this account?', async () => {
+                try {
+                    await Utils.doGenericUpdate({
+                        buCode: buCode || '',
+                        dbName: dbName || '',
+                        tableName: AllTables.AccM.name,
+                        xData: {
+                            id: props.id,
+                            isHidden: true
+                        }
+                    })
+                    Utils.showSaveMessage()
+                    Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)
+                } catch (e: any) {
+                    console.log(e)
+                    Utils.showErrorMessage('Error hiding account')
+                }
+            })
+        }
     }
 
     function getColumns(): SyncFusionTreeGridColumnType[] {
@@ -153,13 +182,14 @@ export function AccountsMaster() {
                 field: 'accName',
                 headerText: 'Account name',
                 width: 250,
-                textAlign: 'Left'
+                textAlign: 'Left',
+                template: accountNameTemplate
             },
             {
                 field: '',
                 headerTemplate: actionHeaderTemplate,
                 template: actionTemplate,
-                width: 200,
+                width: 250,
             },
             {
                 field: 'accCode',
@@ -174,6 +204,14 @@ export function AccountsMaster() {
                 textAlign: 'Left',
                 type: 'boolean',
                 template: (props: any) => props.isPrimary ? 'Yes' : 'No'
+            },
+            {
+                field: 'isHidden',
+                headerText: 'Hidden',
+                width: 80,
+                textAlign: 'Left',
+                type: 'boolean',
+                template: hiddenStatusTemplate
             },
             {
                 field: 'accType',
@@ -255,6 +293,34 @@ export function AccountsMaster() {
         return (logicObject?.[props.accType] || '')
     }
 
+    function accountNameTemplate(props: AccountsMasterType) {
+        if (props.isHidden) {
+            return (
+                <span className="flex items-center text-gray-500">
+                    <IconMinusCircle className="w-4 h-4 mr-2 text-amber-500" />
+                    <span className="line-through">{props.accName}</span>
+                </span>
+            )
+        }
+        return <span>{props.accName}</span>
+    }
+
+    function hiddenStatusTemplate(props: AccountsMasterType) {
+        if (props.isHidden) {
+            return (
+                <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-amber-500 bg-orange-100 rounded-full">
+                    <IconMinusCircle className="w-3 h-3 mr-1" />
+                    Hidden
+                </span>
+            )
+        }
+        return (
+            <span className="text-gray-400 text-xs">
+                Visible
+            </span>
+        )
+    }
+
     function autoSubledgerTemplate(props: AccountsMasterType) {
         const isVisible: boolean = (props.accLeaf === 'L') && props.accClass === 'debtor'
         const isDisabled: boolean = (props?.children && (props.children.length > 0)) ? true : false
@@ -326,6 +392,7 @@ export type AccountsMasterType = {
     id: number
     isAddressExists?: boolean
     isAutoSubledger?: boolean
+    isHidden?: boolean
     isPrimary: boolean
     parentId: number
 }

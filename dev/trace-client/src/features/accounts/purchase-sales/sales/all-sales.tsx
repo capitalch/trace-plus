@@ -8,7 +8,7 @@ import { AllSalesForm } from "./all-sales-form";
 import { AllSalesView } from "./sales-view/all-sales-view";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
-import { clearSalesFormData, setSalesViewMode, clearSearchQuery, saveSalesFormData } from "./sales-slice";
+import { clearSalesFormData, setSalesViewMode, clearSearchQuery, saveSalesFormData, setLastSalesEditData } from "./sales-slice";
 import Decimal from "decimal.js";
 import { useAllSalesSubmit } from "./all-sales-submit-hook";
 import { AllTables } from "../../../../app/maps/database-tables-map";
@@ -42,7 +42,7 @@ export function AllSales() {
     }, [getValues])
 
     const { getTranHData } = useAllSalesSubmit(methods);
-    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference, populateFormOverId }
+    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference, populateFormOverId, getSalesEditDataOnId }
 
 
     // Watch for changes in amounts and trigger validation
@@ -99,6 +99,7 @@ export function AllSales() {
         </FormProvider>
     );
 
+    // === MAIN FORM ACTION FUNCTIONS ===
     async function finalizeAndSubmit() {
         try {
             const diff = getDebitCreditDifference();
@@ -117,15 +118,18 @@ export function AllSales() {
             if (firstRow && !firstRow.id && salesType === 'bill') {
                 autoSubledgerAccId = debitAccounts[0]?.accId || null;
             }
-            console.log('Auto subledger acc id:', autoSubledgerAccId)
-            await Utils.doGenericUpdate({
+            
+            const ret = await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
                 tableName: AllTables.TranH.name,
                 xData: xData,
                 autoSubledgerAccId: autoSubledgerAccId
             });
-
+            const newId = ret?.data?.genericUpdate
+            const tranHId = newId || getValues('id');
+            const salesEditData = await getSalesEditDataOnId(tranHId)
+            dispatch(setLastSalesEditData(salesEditData));
             if (getValues('id')) {
                 dispatch(setSalesViewMode(true)); // Switch to view mode for existing sales
             }
@@ -137,6 +141,7 @@ export function AllSales() {
         }
     }
 
+    // === FORM DEFAULT VALUE FUNCTIONS ===
     function getDefaultSalesFormValues(): SalesFormDataType {
         return ({
             id: undefined,
@@ -212,6 +217,7 @@ export function AllSales() {
         })
     }
 
+    // === DATA SERIALIZATION FUNCTIONS ===
     function getDeserializedFormData(data: any): SalesFormDataType {
         const out: SalesFormDataType = {
             ...data,
@@ -241,6 +247,7 @@ export function AllSales() {
         return (serFormData)
     }
 
+    // === DATABASE QUERY FUNCTIONS ===
     async function getSalesDetailsOnId(id: number | undefined) {
         if (!id) {
             return
@@ -257,24 +264,35 @@ export function AllSales() {
         }))
     }
 
-    async function populateFormOverId(id: any) {
+    async function getSalesEditDataOnId(id: number | undefined) {
         const editData: any = await getSalesDetailsOnId(id)
         const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+        if (!salesEditData) {
+            return null
+        }
+        const tranH: TranHType = salesEditData.tranH
+        const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
+        salesEditData.shippingInfo = shippingInfo
+        return(salesEditData)
+    }
 
+    // === FORM POPULATION FUNCTIONS ===
+    async function populateFormOverId(id: any) {
+        const salesEditData: SalePurchaseEditDataType | null = await getSalesEditDataOnId(id)
         if (!salesEditData) {
             Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
             return
         }
 
         const tranH: TranHType = salesEditData.tranH
-        const billTo: ContactsType | null = salesEditData.billTo
         const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
+        // salesEditData.shippingInfo = shippingInfo
+        const billTo: ContactsType | null = salesEditData.billTo
         const tranD: TranDExtraType[] = salesEditData.tranD
         const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
         const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
 
         const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
-        // const ia = totalInvoiceAmount.toDecimalPlaces(2).toNumber()
         const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
 
         // Determine salesType based on tranD data
@@ -285,7 +303,7 @@ export function AllSales() {
         } else if (debitAccounts.find((item) => (item.accClass === 'debtor') || (item.accClass === 'creditor'))) {
             salesType = 'institution'
         }
-        salesEditData.shippingInfo = shippingInfo
+
         reset({
             id: tranH.id,
             autoRefNo: tranH.autoRefNo,
@@ -330,15 +348,16 @@ export function AllSales() {
             shippingInfo: shippingInfo,
             salesType: salesType,
         })
-        // onBack()
     }
 
+    // === UTILITY FUNCTIONS ===
     function resetAll() {
         clearErrors()
         reset(getDefaultSalesFormValues());
         dispatch(clearSalesFormData());
         dispatch(clearSearchQuery());
-        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
+        // Scroll to top after all operations complete
+            setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
     }
 }
 
@@ -368,7 +387,6 @@ export type SalesFormDataType = {
 
     salePurchDetailsDeletedIds?: number[]; // for PurchaseSaleDetails table
     tranDDeletedIds?: number[];
-    // accMDeletedIds?: number[]; // to delete auto subledger entries
     salesLineItems: SalesLineItemType[];
 
     totalInvoiceAmount: Decimal;
@@ -382,7 +400,6 @@ export type SalesFormDataType = {
 
     salesEditData?: SalePurchaseEditDataType // Check if required
     toggle: boolean; // For making the form forcefully dirty
-    // isAutoSubledger: boolean;
     salesType: 'retail' | 'bill' | 'institution';
 }
 

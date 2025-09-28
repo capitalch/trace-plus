@@ -13,6 +13,7 @@ valid gstin: 24AAACC1206D1ZM
 - Change all headers to LeftCustomControl mechanism
 - In all pages show main header -> page name
 - Stock summary remove pagination
+- Provide branch address
 ## security
 	- Change databaseTablesMap to tables schema type variables
 										- QA for vouchers
@@ -34,7 +35,7 @@ valid gstin: 24AAACC1206D1ZM
 
 - Sales return
 - Sales
-	- Reset button (to reset edit)
+												- Reset button (to reset edit)
 												- Give a refresh button
 												- Remove remarks when altering autoSubledger
 												- Check why in Trace, invoice is not shown correctly when autosubledger
@@ -61,7 +62,7 @@ valid gstin: 24AAACC1206D1ZM
 													- Adjust Aggregateamount
 
 	- Accounts isHidden
-	- Provision to print last sale bill in the terminal
+													- Provision to print last sale bill in the terminal
 													- Provision for advance against supplies in sales receipts
 													- When not a gst invoice then if gst% has value, show error at time of validation
 													-  At the time of edit the summary values are no properly reflected due to setSummaryValues() executed
