@@ -8,12 +8,12 @@ import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 import { useDebitCreditNotesSubmit } from "../common/debit-credit-notes-submit-hook";
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { useEffect } from "react";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { Utils } from "../../../../utils/utils";
 import { Messages } from "../../../../utils/messages";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { AllTables } from "../../../../app/maps/database-tables-map";
-import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import Decimal from "decimal.js";
 import { CreditNotesMain } from "./credit-notes-main";
 import { clearCreditNoteFormData, saveCreditNoteFormData } from "./credit-notes-slice";
@@ -32,8 +32,14 @@ export function CreditNotes() {
         });
     const { clearErrors, reset, getValues, setValue, setFocus, watch } = methods;
     const { getTranHData } = useDebitCreditNotesSubmit(methods, Utils.getTranTypeId('CreditNote'))
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex || 0);
 
     const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst }
+
+    // Utility function to generate credit note title
+    const getCreditNoteTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Credit Notes View" : "Credit Notes";
+    }
 
     const tabsInfo: CompTabsType = [
         {
@@ -60,15 +66,18 @@ export function CreditNotes() {
         })
     }, [dispatch, getValues])
 
+    // Update main title when active tab changes
+    useEffect(() => {
+        const isViewMode = activeTabIndex === 1;
+        const title = getCreditNoteTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [activeTabIndex, dispatch]);
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
                 <CompAccountsContainer>
-                    <label className="mt-1 font-bold text-md text-primary-500">
-                        Credit Notes
-                    </label>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
-
+                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
                 </CompAccountsContainer>
             </form>
         </FormProvider>

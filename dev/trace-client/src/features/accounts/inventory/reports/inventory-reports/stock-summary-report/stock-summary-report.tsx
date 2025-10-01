@@ -1,7 +1,7 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType, } from "../../../../../../app/store";
 import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
-import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../../../../controls/redux-components/comp-slice";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
@@ -44,6 +44,10 @@ export function StockSummaryReport({ title }: { title?: string }) {
     decodedDbParamsObject,
     finYearId,
   } = useUtilsInfo();
+
+  useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
 
   useEffect(() => {
     {

@@ -1,28 +1,29 @@
-import { RootStateType } from "../../../../../app/store";
+import { RootStateType } from "../../../../app/store";
 import { useCallback, useEffect, useState } from "react";
-import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
-import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
+import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import clsx from "clsx";
-import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
+import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { format } from "date-fns";
-import { Utils } from "../../../../../utils/utils";
-import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
-import { Messages } from "../../../../../utils/messages";
-import { AllTables } from "../../../../../app/maps/database-tables-map";
-import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
-import { SalesFormDataType,} from "../all-sales";
+import { Utils } from "../../../../utils/utils";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
+// import { SalesReturnFormDataType } from "./all-sales-return";
+// import { useFormContext } from "react-hook-form";
 import { ArrowLeft } from "lucide-react";
-import { generateSalesInvoicePDF } from "../all-sales-invoice-jspdf";
+import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
+import { Messages } from "../../../../utils/messages";
+import { AllTables } from "../../../../app/maps/database-tables-map";
 import { useFormContext } from "react-hook-form";
+import { SalesReturnFormDataType } from "./all-sales-return";
 
-interface AllSalesViewProps {
+interface AllSalesReturnViewProps {
   className?: string;
   onBack: () => void;
 }
 
-export function AllSalesView({ className, onBack }: AllSalesViewProps) {
-  const instance = DataInstancesMap.allSales
+export function AllSalesReturnView({ className, onBack }: AllSalesReturnViewProps) {
+  const instance = DataInstancesMap.allSalesReturn
   const [rowsData, setRowsData] = useState<any[]>([]);
   const {
     currentDateFormat,
@@ -30,10 +31,9 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     branchId,
     dbName,
     decodedDbParamsObject,
-    finYearId,
-    branchName
+    finYearId
   } = useUtilsInfo();
-  const { populateFormOverId, getSalesEditDataOnId }:any = useFormContext<SalesFormDataType>();
+  const { populateFormOverId }:any = useFormContext<SalesReturnFormDataType>();
 
   const loadData = useCallback(async () => {
     try {
@@ -47,13 +47,13 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         dbName: dbName || "",
         dbParams: decodedDbParamsObject,
         instance: instance,
-        sqlId: SqlIdsMap.getAllSales,
+        sqlId: SqlIdsMap.getAllSales, // Reusing the sales query with sales return transaction type
         sqlArgs: {
           branchId: isAllBranchesState
             ? null
             : state.login.currentBranch?.branchId,
           finYearId: finYearId,
-          tranTypeId: Utils.getTranTypeId("Sales"),
+          tranTypeId: Utils.getTranTypeId("SaleReturn"),
         },
       });
       let currentId: number | null | undefined = null;
@@ -98,12 +98,11 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         isCsvExport={true}
         instance={instance}
       />
-
       <CompSyncFusionGrid
         aggregates={getAggregates()}
-        allowPaging={true}
+        // allowPaging={true}
         allowTextWrap={false}
-        pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000, 5000, 10000] }}
+        // pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000, 5000, 10000] }}
         buCode={buCode}
         className="mt-2"
         columns={getColumns()}
@@ -128,14 +127,14 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
   );
 
   function getAggregates(): SyncFusionGridAggregateType[] {
-    return [
+    return ([
       {
         columnName: "autoRefNo",
         type: "Count",
         field: "autoRefNo",
         format: "N0",
         footerTemplate: (props: any) => (
-          <span className="text-right text-xs">Count: {props.Count}</span>
+          <span className="text-right text-xs">Cnt: {props.Count}</span>
         )
       },
       {
@@ -144,46 +143,10 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         field: "amount",
         format: "N2",
         footerTemplate: (props: any) => (
-          <span className="text-xs">{props.Sum}</span>
+          <span className="text-right text-xs">Total: {Utils.toDecimalFormat(props.Sum)}</span>
         )
       },
-      {
-        columnName: "aggr",
-        type: "Sum",
-        field: "aggr",
-        format: "N2",
-        footerTemplate: (props: any) => (
-          <span className="text-xs">{props.Sum}</span>
-        )
-      },
-      {
-        columnName: "cgst",
-        type: "Sum",
-        field: "cgst",
-        format: "N2",
-        footerTemplate: (props: any) => (
-          <span className="text-xs">{props.Sum}</span>
-        )
-      },
-      {
-        columnName: "sgst",
-        type: "Sum",
-        field: "sgst",
-        format: "N2",
-        footerTemplate: (props: any) => (
-          <span className="text-xs">{props.Sum}</span>
-        )
-      },
-      {
-        columnName: "igst",
-        type: "Sum",
-        field: "igst",
-        format: "N2",
-        footerTemplate: (props: any) => (
-          <span className="text-xs">{props.Sum}</span>
-        )
-      },
-    ];
+    ]);
   }
 
   function getColumns(): SyncFusionGridColumnType[] {
@@ -205,21 +168,22 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       },
       {
         field: "tranDate",
-        headerText: "Date",
+        headerText: "Return Date",
         type: "string",
-        width: 75,
+        width: 100,
         valueAccessor: (field: string, data: any) =>
           format(data?.[field], currentDateFormat)
       },
       {
         field: "autoRefNo",
-        headerText: "Invoice No",
+        headerText: "Ref No",
         type: "string",
-        width: 140
+        width: 140,
+        clipMode: 'EllipsisWithTooltip'
       },
       {
         field: "userRefNo",
-        headerText: "Ref No",
+        headerText: "User Ref No",
         type: "string",
         width: 140,
         clipMode: 'EllipsisWithTooltip'
@@ -228,20 +192,12 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         field: "productDetails",
         headerText: "Product Details",
         type: "string",
-        width: 160,
+        width: 200,
         clipMode: 'EllipsisWithTooltip'
       },
       {
         field: 'accounts',
-        headerText: 'Account',
-        width: 150,
-        textAlign: 'Left',
-        type: 'string',
-        clipMode: 'EllipsisWithTooltip'
-      },
-      {
-        field: 'contactDetails',
-        headerText: 'Contact',
+        headerText: 'Customer',
         width: 150,
         textAlign: 'Left',
         type: 'string',
@@ -249,7 +205,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       },
       {
         field: "amount",
-        headerText: "Amount",
+        headerText: "Return Amount",
         type: "number",
         format: "N2",
         textAlign: "Right",
@@ -261,7 +217,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 130
+        width: 120
       },
       {
         field: "cgst",
@@ -269,7 +225,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 110
+        width: 100
       },
       {
         field: "sgst",
@@ -277,7 +233,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 110
+        width: 100
       },
       {
         field: "igst",
@@ -285,7 +241,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         type: "number",
         format: "N2",
         textAlign: "Right",
-        width: 110
+        width: 100
       },
       {
         field: "serialNumbers",
@@ -303,7 +259,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
       },
       {
         field: "productQty",
-        headerText: "Pr Qty",
+        headerText: "Qty",
         type: "number",
         format: "N2",
         textAlign: "Right",
@@ -313,25 +269,32 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         field: "hsns",
         headerText: "HSN Codes",
         type: "string",
-        width: 160,
+        width: 120,
         clipMode: 'EllipsisWithTooltip'
       },
       {
         field: "remarks",
         headerText: "Remarks",
         type: "string",
-        width: 120,
+        width: 150,
         clipMode: 'EllipsisWithTooltip'
       },
       {
         field: "lineRemarks",
         headerText: "Line Remarks",
         type: "string",
-        width: 200,
+        width: 150,
         clipMode: 'EllipsisWithTooltip'
       },
     ];
   }
+
+  // function onRowSelected(args: any) {
+  //   if (populateFormOverId && args?.data?.id) {
+  //     populateFormOverId(args.data.id);
+  //     onBack();
+  //   }
+  // }
 
   async function handleOnDelete(id: number | string) {
     Utils.showDeleteConfirmDialog(async () => {
@@ -360,20 +323,22 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
 
   async function handleOnPreview(data: any) {
     try {
+      console.log(data)
       // Get the sales details for the selected row
-      const salesEditData = await getSalesEditDataOnId(data.id)
-      if (!salesEditData) {
-        Utils.showErrorMessage(Messages.errNoDataFound)
-        return
-      }
-      generateSalesInvoicePDF(salesEditData, branchName || '', currentDateFormat)
+      // const salesEditData = await getSalesEditDataOnId(data.id)
+      // if (!salesEditData) {
+      //   Utils.showErrorMessage(Messages.errNoDataFound)
+      //   return
+      // }
+      // generateSalesInvoicePDF(salesEditData, branchName || '', currentDateFormat)
     } catch (error) {
       console.error('Error generating PDF:', error)
       Utils.showErrorMessage(Messages.errGeneratingPdf)
     }
   }
 
-  function handleOnRowDataBound(args: RowDataBoundEventArgs) {
+
+  function handleOnRowDataBound(args: RowDataBoundEventArgs): void {
     const rowData: any = args.data;
     if (args.row) {
       if (rowData.bColor) {

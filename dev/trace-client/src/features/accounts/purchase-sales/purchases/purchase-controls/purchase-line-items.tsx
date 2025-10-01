@@ -28,7 +28,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     // Hooks setup
     const { isValidHsn } = useValidators();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { buCode, dbName, decodedDbParamsObject, defaultGstRate , maxGstRate} = useUtilsInfo();
+    const { buCode, dbName, decodedDbParamsObject, defaultGstRate , maxGstRate, branchId, finYearId} = useUtilsInfo();
     const {
         control,
         register,
@@ -208,7 +208,9 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             dbParams: decodedDbParamsObject,
             sqlId: SqlIdsMap.getProductOnProductCodeUpc,
             sqlArgs: {
-                productCodeOrUpc: productCode
+                branchId: branchId || 1,
+                productCodeOrUpc: productCode,
+                finYearId: finYearId || 0
             }
         });
         const product = products?.[0];

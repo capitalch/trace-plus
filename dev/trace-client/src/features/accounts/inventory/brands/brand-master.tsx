@@ -1,5 +1,5 @@
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { useDispatch } from "react-redux";
 import { AppDispatchType } from "../../../../app/store";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
@@ -9,7 +9,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { NewEditBrandType } from "./new-edit-brand";
-import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
+import { openSlidingPane, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewBrandButton } from "./new-brand-button";
 import { changeAccSettings } from "../../accounts-slice";
@@ -28,13 +28,18 @@ export function BrandMaster() {
         }
     }, [buCode]);
 
+    // Set main title for Brand Master
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Brand Master" }));
+    }, [dispatch]);
+
     return (
         <CompAccountsContainer>
             <CompSyncFusionGridToolbar
                 className='mt-2 mr-6'
                 CustomControl={() => <NewBrandButton />}
                 minWidth="600px"
-                title='Brands'
+                title=''
                 isPdfExport={true}
                 isExcelExport={true}
                 isCsvExport={true}

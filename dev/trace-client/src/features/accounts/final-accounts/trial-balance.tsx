@@ -1,5 +1,5 @@
 import { Decimal } from 'decimal.js'
-import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../controls/redux-components/comp-accounts-container";
 import { DataInstancesMap } from "../../../app/maps/data-instances-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
@@ -8,12 +8,13 @@ import { useEffect } from "react";
 import { CompSwitch } from "../../../controls/redux-components/comp-switch";
 import { CompInstances } from "../../../controls/redux-components/comp-instances";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
-import { shallowEqual, useSelector } from 'react-redux';
-import { RootStateType } from '../../../app/store';
-import { selectCompSwitchStateFn } from '../../../controls/redux-components/comp-slice';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { AppDispatchType, RootStateType } from '../../../app/store';
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from '../../../controls/redux-components/comp-slice';
 import { Utils } from '../../../utils/utils';
 
 export function TrialBalance() {
+    const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.trialBalance
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchTrialBalance), shallowEqual) || false
     const {
@@ -34,11 +35,16 @@ export function TrialBalance() {
         }
     }, [buCode, finYearId, branchId, isAllBranches])
 
+    // Set main title for Trial Balance
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Trial Balance" }));
+    }, [dispatch]);
+
     return (
         <CompAccountsContainer>
             <CompSyncFusionTreeGridToolbar className='mt-2'
                 CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
-                title='Trial Balance'
+                title=''
                 isAllBranches={isAllBranches}
                 isLastNoOfRows={false}
                 instance={instance}

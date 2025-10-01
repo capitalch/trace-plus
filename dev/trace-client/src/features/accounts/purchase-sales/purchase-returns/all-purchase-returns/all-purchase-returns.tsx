@@ -9,10 +9,10 @@ import { CompTabs, CompTabsType } from "../../../../../controls/redux-components
 import { AllPurchaseReturnsMain } from "../../purchase-returns/all-purchase-returns/all-purchase-returns-main";
 import { AllPurchaseReturnsView } from "../../purchase-returns/all-purchase-returns/all-purchase-returns-view";
 import { clearPurchaseReturnFormData, savePurchaseReturnFormData } from "../../purchase-returns/purchase-return-slice";
-import { CompAccountsContainer } from "../../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../../controls/redux-components/comp-accounts-container";
 import { XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../../utils/utils";
-import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
+import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../../../controls/redux-components/comp-slice";
 import { useAllPurchasesSubmit } from "../../purchases/all-purchases/all-purchases-submit-hook";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { useEffect } from "react";
@@ -31,6 +31,12 @@ export function AllPurchaseReturns() {
     const { clearErrors, getValues, setValue, reset, watch, } = methods;
     const { getTranHData } = useAllPurchasesSubmit(methods, Utils.getTranTypeId('PurchaseReturn'))
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, }
+    const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
+
+    // Utility function to generate purchase return title
+    const getPurchaseReturnTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Purchase Return View" : "Purchase Return";
+    }
 
     const tabsInfo: CompTabsType = [
         {
@@ -57,14 +63,18 @@ export function AllPurchaseReturns() {
         })
     }, [dispatch, getValues])
 
+    // Update main title when active tab changes
+    useEffect(() => {
+        const isViewMode = selectedTabIndex === 1;
+        const title = getPurchaseReturnTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [selectedTabIndex, dispatch]);
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
                 <CompAccountsContainer>
-                    <label className="mt-1 font-bold text-md text-red-500">
-                        Purchase Return
-                    </label>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
+                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
                 </CompAccountsContainer>
             </form>
         </FormProvider>

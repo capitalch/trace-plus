@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
-import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../controls/redux-components/comp-accounts-container";
+import { setCompAccountsContainerMainTitle } from "../../../controls/redux-components/comp-slice";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { DataInstancesMap } from "../../../app/maps/data-instances-map";
 import { AppDispatchType } from "../../../app/store";
@@ -15,6 +16,7 @@ import { changeAccSettings } from "../accounts-slice";
 import Select from "react-select";
 import { NumericFormat } from 'react-number-format';
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { useEffect } from "react";
 
 export function GeneralSettings() {
     const dispatch: AppDispatchType = useDispatch()
@@ -39,6 +41,11 @@ export function GeneralSettings() {
             maxGstRate: generalSettings?.maxGstRate || 28,
         },
     });
+
+    // Set main title for General Settings
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "General Settings" }));
+    }, [dispatch]);
 
     useDeepCompareEffect(() => {
         if (buCode && dbName) {

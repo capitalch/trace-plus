@@ -25,6 +25,7 @@ import {
 import clsx from "clsx";
 import { SalesReportToolbarFilterDisplay } from "./sales-report-toolbar-filter-display";
 import { setSalesReportDateRange, setSalesReportFilters } from "./sales-report-slice";
+import { setCompAccountsContainerMainTitle } from "../../../../../../controls/redux-components/comp-slice";
 import { SalesReportFilterControl } from "./sales-report-filter-control";
 
 export function SalesReport({ title }: { title?: string }) {
@@ -49,6 +50,10 @@ export function SalesReport({ title }: { title?: string }) {
     finYearId,
     currentFinYear
   } = useUtilsInfo();
+
+  useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
 
   useEffect(() => {
     {

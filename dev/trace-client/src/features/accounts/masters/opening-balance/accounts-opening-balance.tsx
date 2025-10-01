@@ -1,10 +1,13 @@
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container"
+import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
 import { useEffect, useRef, useState } from "react"
+import { useDispatch } from "react-redux"
+import { AppDispatchType } from "../../../../app/store"
 import { Utils } from "../../../../utils/utils"
 import _ from "lodash"
 import { Messages } from "../../../../utils/messages"
@@ -15,6 +18,7 @@ import { NumericEditTemplate } from "../../../../controls/components/numeric-edi
 import { NumberFormatValues } from "react-number-format"
 
 export function AccountsOpeningBalance() {
+    const dispatch: AppDispatchType = useDispatch()
     const [, setRefresh] = useState({})
 
     const instance: string = DataInstancesMap.accountsOpeningBalance
@@ -39,9 +43,14 @@ export function AccountsOpeningBalance() {
         loadData()
     }, [finYearId, buCode, branchId])
 
+    // Set main title for Accounts Opening Balance
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Accounts Opening Balances" }));
+    }, [dispatch]);
+
     return (<CompAccountsContainer>
         <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} />}
-            title='Accounts opening balances'
+            title=''
             isLastNoOfRows={false}
             instance={instance}
             width="calc(100vw - 250px)" // This stops unnecessary flickers

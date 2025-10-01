@@ -1,6 +1,6 @@
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
@@ -19,8 +19,12 @@ import { EditCategoryModal } from "./actions/edit-category-modal"
 import { AssociateTagModal } from "./actions/associate-tag-modal"
 import { ChangeCatgoryParent } from "./actions/change-category-parent"
 import { useEffect } from "react"
+import { useDispatch } from "react-redux"
+import { AppDispatchType } from "../../../../app/store"
+import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice"
 
 export function ProductCategories() {
+    const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.productCategories
     const {
         buCode
@@ -36,11 +40,16 @@ export function ProductCategories() {
         }
     }, [buCode])
 
+    // Set main title for Product Categories
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Product Categories" }));
+    }, [dispatch]);
+
     return (<CompAccountsContainer>
         <CompSyncFusionTreeGridToolbar
             className="mt-2"
             CustomControl={() => <ProductCategoriesToolbarButtons />}
-            title='Product Categories'
+            title=''
             isLastNoOfRows={false}
             instance={instance}
             minWidth="950px"

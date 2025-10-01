@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import { AllSalesView } from "./sales-view/all-sales-view";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { clearSalesFormData, setSalesViewMode, clearSearchQuery, saveSalesFormData, setLastSalesEditData } from "./sales-slice";
+import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import Decimal from "decimal.js";
 import { useAllSalesSubmit } from "./all-sales-submit-hook";
 import { AllTables } from "../../../../app/maps/database-tables-map";
@@ -43,6 +44,11 @@ export function AllSales() {
 
     const { getTranHData } = useAllSalesSubmit(methods);
     const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference, populateFormOverId, getSalesEditDataOnId }
+
+    // Utility function to generate sales title
+    const getSalesTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Sales View" : "Sales";
+    }
 
 
     // Watch for changes in amounts and trigger validation
@@ -80,15 +86,20 @@ export function AllSales() {
         }
     }, [totalInvoiceAmount, totalDebitAmount, debitAccounts, setError, clearErrors, getDebitCreditDifference]);
 
+    // Update main title when view mode changes
+    useEffect(() => {
+        const title = getSalesTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [isViewMode, dispatch]);
+
     const handleBackToForm = () => {
         dispatch(setSalesViewMode(false));
     };
-
+    
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer
-                    LeftCustomControl={() => <span className="ml-2 font-bold text-gray-500 text-lg">→ Sales</span>}>
+                <CompAccountsContainer>
                     {isViewMode ? (
                         <AllSalesView onBack={handleBackToForm} />
                     ) : (

@@ -1,7 +1,7 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { AppDispatchType, RootStateType } from "../../../../app/store"
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
@@ -12,7 +12,7 @@ import { bankReconSelectedBankFn, selectBank, SelectedBankType } from "../../acc
 import { Messages } from "../../../../utils/messages"
 import { BankReconCustomControls } from "./bank-recon-custom-controls"
 import { useEffect, useRef, useState } from "react"
-import { compAppLoaderVisibilityFn } from "../../../../controls/redux-components/comp-slice"
+import { compAppLoaderVisibilityFn, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice"
 import { CompAppLoader } from "../../../../controls/redux-components/comp-app-loader"
 
 import Decimal from "decimal.js"
@@ -57,6 +57,11 @@ export function BankRecon() {
         resetData()
     }, [buCode])
 
+    // Set main title for Bank Recon
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Bank Reconciliation" }));
+    }, [dispatch]);
+
     const datePickerParams = {
         params: {
             format: currentDateFormat, // Set the date format
@@ -67,7 +72,7 @@ export function BankRecon() {
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             CustomControl={() => <BankReconCustomControls instance={instance} meta={meta} />}
             minWidth="1000px"
-            title='Bank reconcillation'
+            title=''
             isPdfExport={false}
             isExcelExport={false}
             isCsvExport={false}

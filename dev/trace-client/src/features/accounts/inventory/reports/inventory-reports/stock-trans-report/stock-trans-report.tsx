@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
-import { shallowEqual, useSelector } from "react-redux";
-import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
-import { RootStateType } from "../../../../../../app/store";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../../../../controls/redux-components/comp-slice";
+import { AppDispatchType, RootStateType } from "../../../../../../app/store";
 import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
 import { Utils } from "../../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../../app/maps/sql-ids-map";
@@ -17,7 +17,7 @@ import { StockTransReportFilterControl } from "./stock-trans-report-filter-contr
 import { StockTransReportToolbarFilterDisplay } from "./stock-trans-report-toolbar-filter-display";
 
 export function StockTransReport({ title }: { title?: string; }) {
-
+  const dispatch: AppDispatchType = useDispatch();
   const instance = DataInstancesMap.stockTransReport;
   const isAllBranches: boolean =
     useSelector(
@@ -37,6 +37,10 @@ export function StockTransReport({ title }: { title?: string; }) {
     decodedDbParamsObject,
     finYearId,
   } = useUtilsInfo();
+
+  useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
 
   useEffect(() => {
     {

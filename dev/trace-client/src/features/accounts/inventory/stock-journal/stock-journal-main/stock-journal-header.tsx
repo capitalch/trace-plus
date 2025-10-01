@@ -27,7 +27,7 @@ export function StockJournalHeader({ instance }: { instance: string }) {
       <FormField label="Auto ref no" className="w-52">
         <input
           type="text"
-          className={clsx("mt-1 bg-gray-200 rounded-lg")}
+          className={clsx("bg-gray-200 rounded-lg")}
           readOnly
           disabled
           title="Auto reference number"

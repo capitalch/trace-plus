@@ -3,7 +3,7 @@ const Messages = {
   errAccNameExists: 'Account name altready exists',
   errAdminRoleNameExists: 'The admin role for current client already exists',
   errAmountCannotBeZero: 'Amount cannot be zero',
-  errAmountSalePaymentMismatch:"Amount mismatch: Sale amount does not equal payment amount",
+  errAmountSalePaymentMismatch: "Amount mismatch: Sale amount does not equal payment amount",
   errAnniversaryDateInFuture: 'Anniversary date cannot be in the future',
   errAtLeast4Chars: 'Should be at least 4 chars long',
   errAtLeast8Chars: 'Should be at least 8 chars long',
@@ -68,7 +68,7 @@ const Messages = {
   errMustHaveOneDigit: 'Should have a digit',
   errMustHaveOneLetter: 'Should have one letter',
   errMustHaveOneSpecialChar: 'Must have a special character',
-  errNoDataFoundForEdit:'No data found for editing',
+  errNoDataFoundForEdit: 'No data found for editing',
   errNoDataFound: 'No data found',
   errNoSpceOrSpecialChar: 'Cannot have space or special character',
   errNoSpecialChar: 'Cannot have special character',
@@ -111,8 +111,10 @@ const Messages = {
   messDebitCreditNotTogether:
     'Debit and credit entries are not allowed together',
   messDebitsNotEqualsCredits: 'Debits and credits are not equal',
+  messEmptyValuesNotAllowed: 'Empty values are not allowed',
   messEndDateGreaterThanStartDate:
     'End date must be greater than or equal to start date',
+  messEnterInvoiceNo: 'Please enter an invoice no',
   messEnterSearchString: 'Please enter a search string',
   messEnterValidAmount: 'Please enter a valid target amount',
   messExistingLinksDropHere:

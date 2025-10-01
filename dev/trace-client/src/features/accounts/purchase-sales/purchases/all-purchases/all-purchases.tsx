@@ -2,7 +2,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { CompAccountsContainer } from "../../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../../controls/redux-components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchasesMain } from "../all-purchases/all-purchases-main";
 import { AllPurchasesView } from "../all-purchases/all-purchases-view";
@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearPurchaseFormData, savePurchaseFormData, setInvoicExists } from "../purchase-slice";
 import { useEffect } from "react";
 import { Utils } from "../../../../../utils/utils";
-import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
+import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../../../controls/redux-components/comp-slice";
 import { useAllPurchasesSubmit } from "./all-purchases-submit-hook";
 import { Messages } from "../../../../../utils/messages";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
@@ -32,6 +32,12 @@ export function AllPurchases() {
     const { clearErrors, setError, getValues, setValue, reset, watch, setFocus } = methods;
     const { getTranHData } = useAllPurchasesSubmit(methods)
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, checkPurchaseInvoiceExists }
+    const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
+
+    // Utility function to generate purchase title
+    const getPurchaseTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Purchase View" : "Purchase";
+    }
 
     const tabsInfo: CompTabsType = [
         {
@@ -58,14 +64,18 @@ export function AllPurchases() {
         })
     }, [dispatch, getValues])
 
+    // Update main title when active tab changes
+    useEffect(() => {
+        const isViewMode = selectedTabIndex === 1;
+        const title = getPurchaseTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [selectedTabIndex, dispatch]);
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
                 <CompAccountsContainer>
-                    <label className="mt-1 font-bold text-md text-primary-500">
-                        Purchase
-                    </label>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
+                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
                 </CompAccountsContainer>
             </form>
         </FormProvider>

@@ -230,7 +230,6 @@ class SqlAccounts:
     """
 
     get_accounts_master = """
-    -- modified by AI
         WITH RECURSIVE "children_cte" AS (
         SELECT 
             "parentId" AS "parent_id", 
@@ -248,7 +247,8 @@ class SqlAccounts:
                 a."accType", 
                 a."isPrimary", 
                 a."accLeaf", 
-                a."classId", 
+                a."classId",
+                a."isHidden",
                 c."accClass",
 
                 -- Optimized parentAccLeaf with JOIN
@@ -962,7 +962,7 @@ class SqlAccounts:
                 FROM "TranD" d
                     JOIN "TranH" h ON h."id" = d."tranHeaderId"
                     JOIN "AccM" a ON a."id" = d."accId"
-                    JOIN "Contacts" c ON c."id" = h."contactsId"
+                    LEFT JOIN "Contacts" c ON c."id" = h."contactsId"
                 WHERE d."dc" = CASE (TABLE "tranTypeId") WHEN 4 THEN 'D' ELSE 'C' END
                 AND h."finYearId" = (TABLE "finYearId")
                 AND h."branchId"  = (TABLE "branchId")
@@ -1007,6 +1007,100 @@ class SqlAccounts:
             ORDER BY h."tranDate" DESC
     """
 
+    get_all_sales_on_search_text = """
+        -- WITH "branchId"   AS (VALUES (1)), "finYearId"  AS (VALUES (2025)), "tranTypeId" AS (VALUES (4)), "searchText" AS (VALUES (NULL::text))
+            WITH "branchId" AS (VALUES (%(branchId)s::int)), "finYearId" AS (VALUES (%(finYearId)s::int)), "tranTypeId" AS (VALUES (%(tranTypeId)s::int)), "searchText" AS (VALUES (%(searchText)s::text))
+            , cte1 AS (  -- cte1 required for accounts other than sale
+                SELECT
+                d."tranHeaderId",
+                string_agg(a."accName", ', ') AS "accounts",
+                -- Contacts details joined with '|', skipping NULLs
+                concat_ws(
+                    ' | ',
+                    c."contactName",
+                    c."mobileNumber",
+                    c."email",
+                    c."address1",
+                    c."address2",
+                    c."gstin",
+                    c."pin"
+                ) AS "contactDetails"
+                FROM "TranD" d
+                JOIN "TranH" h ON h."id" = d."tranHeaderId"
+                JOIN "AccM" a ON a."id" = d."accId"
+                JOIN "Contacts" c ON c."id" = h."contactsId"
+                WHERE d."dc" = CASE (TABLE "tranTypeId") WHEN 4 THEN 'D' ELSE 'C' END
+                AND h."finYearId" = (TABLE "finYearId")
+                AND h."branchId"  = (TABLE "branchId")
+                GROUP BY d."tranHeaderId",
+                        c."contactName", c."mobileNumber", c."email",
+                        c."address1", c."address2", c."gstin", c."pin"
+            )
+
+            SELECT
+            ROW_NUMBER() OVER (ORDER BY h."tranDate" DESC, h."id" DESC) AS "index",
+            h."id"          AS "id",
+            h."autoRefNo",
+            h."userRefNo",
+            h."remarks",
+            c."accounts",
+            c."contactDetails",  -- new pipe-joined contact info
+            d."amount",
+            string_agg(b."brandName" || ' ' || p."label", ', ') AS "productDetails",
+            string_agg(s."jData"->>'serialNumbers', ', ')      AS "serialNumbers",
+            string_agg(p."productCode", ', ')                  AS "productCodes",
+            string_agg(s.hsn::text, ', ')                      AS "hsns",
+            string_agg(d."lineRefNo"::text, ', ')              AS "lineRefNos",
+			string_agg(d."instrNo"::text, ', ')                AS "instruments",
+			string_agg(d."remarks"::text, ', ')                AS "lineRemarks",
+            SUM(s."qty")                                       AS "productQty",
+            SUM(s."qty" * (s."price" - s."discount"))          AS "aggr",
+            SUM(s."cgst")                                      AS "cgst",
+            SUM(s."sgst")                                      AS "sgst",
+            SUM(s."igst")                                      AS "igst",
+            h."tranDate",
+            string_agg(s."jData"->>'remarks', ', ')            AS "productRemarks"
+            FROM "TranH" h
+            JOIN "TranD" d ON h."id" = d."tranHeaderId"
+            JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+            JOIN "ProductM" p ON p."id" = s."productId"
+            JOIN "BrandM"  b ON b."id" = p."brandId"
+            JOIN cte1      c ON c."tranHeaderId" = d."tranHeaderId"
+            WHERE h."tranTypeId" = (TABLE "tranTypeId")
+            AND h."finYearId"  = (TABLE "finYearId")
+            AND h."branchId"   = (TABLE "branchId")
+
+            -- search predicate: skip if searchText is NULL
+            AND (
+                (TABLE "searchText") IS NULL
+                OR (
+                COALESCE(h."autoRefNo"::text, '')        ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(h."userRefNo"::text, '')     ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(h."remarks"::text, '')       ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(c."contactDetails", '')      ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(d."remarks"::text, '')       ILIKE '%%' || (TABLE "searchText") || '%%'       -- detail remarks / instrument
+                OR COALESCE(s."jData"->>'remarks','')    ILIKE '%%' || (TABLE "searchText") || '%%'       -- salePurchaseDetails remarks
+                OR COALESCE(p."label", '')               ILIKE '%%' || (TABLE "searchText") || '%%'       -- product label
+                OR COALESCE(b."brandName", '')           ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(p."productCode", '')         ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(d."instrNo"::text, '')      ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(d."lineRefNo"::text, '')        ILIKE '%%' || (TABLE "searchText") || '%%'
+                OR COALESCE(s."jData"->>'serialNumbers', '') ILIKE '%%' || (TABLE "searchText") || '%%'  -- <-- ADDED
+                )
+            )
+
+            GROUP BY
+            h."id",
+            d."amount",
+            d."remarks",
+            c."accounts",
+            c."contactDetails",
+            h."autoRefNo",
+            h."userRefNo",
+            h."remarks",
+            h."tranDate"
+            ORDER BY h."tranDate" DESC
+    """
     get_all_schemas_in_database = """
         SELECT nspname
         FROM pg_namespace
@@ -1849,6 +1943,7 @@ class SqlAccounts:
 				      -- 🚫 Exclude rows that are auto-subledgers or whose parent is one
 				      AND a.id       NOT IN (SELECT "accId" FROM auto_ledgers)
 				      AND a."parentId" NOT IN (SELECT "accId" FROM auto_ledgers)
+                      AND NOT a."isHidden"
 				)
 				SELECT 
 					c.id,
@@ -1881,6 +1976,7 @@ class SqlAccounts:
 			            (table "accClassNames") IS NULL
 			         OR c."accClass" = ANY(string_to_array((table "accClassNames"), ','))
 			      )
+				  -- AND NOT a."isHidden"
 			),
 			ordered AS (
 			    SELECT
@@ -1893,7 +1989,7 @@ class SqlAccounts:
 			        1 AS child_rank
 			    FROM cte1 c
 			    JOIN "AccM" m ON c.id = m."parentId"
-			
+				WHERE NOT m."isHidden"
 			    UNION ALL
 			
 			    SELECT
@@ -1906,6 +2002,7 @@ class SqlAccounts:
 			        0 AS child_rank
 			    FROM cte1 c
 			    JOIN "AccM" a ON a.id = c."parentId"
+				WHERE NOT a."isHidden"
 			)
 			SELECT
 			    id,
@@ -1918,7 +2015,7 @@ class SqlAccounts:
 			ORDER BY
 			    root_id,        -- group by parent ledger
 			    child_rank,     -- parent first
-			    "accName";
+			    "accName"
     """
 
     get_auto_subledger_accounts_on_class = """
@@ -1947,6 +2044,14 @@ class SqlAccounts:
                 join "AccM" a on a.id = c."parentId"
             ORDER by c."accName"
 
+    """
+
+    get_id_on_auto_ref_no = """  
+        --WITH "autoRefNo" AS (VALUES ('H/SAL/40/2025'::text))
+		WITH "autoRefNo" AS (VALUES (%(autoRefNo)s::text))
+			SELECT id
+			FROM "TranH"
+			WHERE "autoRefNo" = (table "autoRefNo")
     """
 
     get_leaf_subledger_accounts_on_class = """
@@ -2446,6 +2551,7 @@ class SqlAccounts:
 		        d."amount",
 		        d."instrNo",
 		        d."remarks",
+                d."lineRefNo",
 		        c2."accClass",
 		        m."accName",
 		        m."accCode",

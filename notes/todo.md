@@ -3,16 +3,18 @@ entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
 ## General requirement
+														- Fix UI Stock opening balance
+														- Fix UI stock Journal
 - Menu button not expanding when small screen
 - Checkup price - discount in all reports as actual price
 - Supplier name and its due in summary report of inventory
 - drill down
-- Interchange sale bill type: cash, bill sale, institutional
+														- Interchange sale bill type: cash, bill sale, institutional
 - Provide remove button in sales report
 - Check why age of en-el25 on22-08-2025 sale showing 5702
-- Change all headers to LeftCustomControl mechanism
-- In all pages show main header -> page name
-- Stock summary remove pagination
+														- Change all headers to LeftCustomControl mechanism
+														- In all pages show main header -> page name
+														- Stock summary remove pagination
 - Provide branch address
 ## security
 	- Change databaseTablesMap to tables schema type variables
@@ -34,7 +36,28 @@ valid gstin: 24AAACC1206D1ZM
 														- Categories
 
 - Sales return
-- Sales
+	- non-serialized data with redux
+														- Startup
+													- Header UI
+														- Select and populate invoice data
+														- Customer details
+														- customer GSTIN
+													- Items and services
+														- Just like sales
+														- Summary
+													- Accounting details
+													- Validation
+	- Submit
+		- New
+		- Edit
+	- View
+		- Grid
+			- Sql
+			- Data
+		- Edit
+		- Delete
+		- Preview
+											- Sales
 												- Reset button (to reset edit)
 												- Give a refresh button
 												- Remove remarks when altering autoSubledger
@@ -61,7 +84,7 @@ valid gstin: 24AAACC1206D1ZM
 													- Adjust Authorised signatory
 													- Adjust Aggregateamount
 
-	- Accounts isHidden
+													- Accounts isHidden
 													- Provision to print last sale bill in the terminal
 													- Provision for advance against supplies in sales receipts
 													- When not a gst invoice then if gst% has value, show error at time of validation

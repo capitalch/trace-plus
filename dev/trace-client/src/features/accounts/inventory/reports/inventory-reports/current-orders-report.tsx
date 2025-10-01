@@ -1,4 +1,4 @@
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import {
@@ -9,13 +9,14 @@ import {
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BackToDashboardLink } from "../back-to-dashboard-link";
-import { RootStateType } from "../../../../../app/store";
-import { selectCompSwitchStateFn } from "../../../../../controls/redux-components/comp-slice";
+import { AppDispatchType, RootStateType } from "../../../../../app/store";
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../../controls/redux-components/comp-instances";
 import { CompSwitch } from "../../../../../controls/redux-components/comp-switch";
 import { useEffect } from "react";
 
 export function CurrentOrdersReport({ title }: { title?: string }) {
+  const dispatch: AppDispatchType = useDispatch();
   const instance = DataInstancesMap.currentOrdersReport;
   const isAllBranches: boolean =
     useSelector(
@@ -35,6 +36,10 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
     decodedDbParamsObject,
     finYearId
   } = useUtilsInfo();
+
+  useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
 
   useEffect(() => {
     // This block is necessary. Otherwise branch selection not works correctly

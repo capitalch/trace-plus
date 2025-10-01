@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
+import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { useValidators } from "../../../../utils/validators-hook";
 import { useForm } from "react-hook-form";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
@@ -64,6 +65,11 @@ export function CompanyInfo() {
     useEffect(() => {
         loadIndiaStates()
     }, [])
+
+    // Set main title for Company Info
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Company Info" }));
+    }, [dispatch]);
 
     useDeepCompareEffect(() => {
         if (buCode && dbName) {

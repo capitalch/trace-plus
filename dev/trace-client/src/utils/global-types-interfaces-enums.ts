@@ -95,7 +95,6 @@ export type TranDType = {
 }
 
 export type TranDExtraType = TranDType & {
-  // isAutoSubledger:boolean | null;
   isParentAutoSubledger:boolean | null;
   accClass: string;
   accName: string;
@@ -150,6 +149,7 @@ type SalePurchaseDetailsExtraType = {
   serialNumbers?: string;
   brandName?: string;
   catName?: string;
+  productDetails?: string;
 }
 
 export type SalePurchaseDetailsWithExtraType = SalePurchaseDetailsType & SalePurchaseDetailsExtraType

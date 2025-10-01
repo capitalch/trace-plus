@@ -4,9 +4,9 @@ import { DataInstancesMap } from "../../../app/maps/data-instances-map"
 import { LoginType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice"
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../app/store"
-import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
+import { CompAccountsContainer } from "../../../controls/redux-components/comp-accounts-container"
 import { CompSwitch } from "../../../controls/redux-components/comp-switch"
 import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/maps/graphql-queries-map"
@@ -133,6 +133,11 @@ export function BalanceSheet() {
         loadData()
     }, [buCode, finYearId, branchId, isAllBranches, loadData])
 
+    // Set main title for Balance Sheet
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Balance Sheet" }));
+    }, [dispatch]);
+
     return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
         {/* Header */}
 
@@ -222,8 +227,6 @@ export function BalanceSheet() {
     function CustomControl() {
 
         return (<div className="flex items-center justify-between">
-            <label className="font-medium text-primary-300 text-xl">Balance Sheet</label>
-
             {/* All branches */}
             <CompSwitch className="mt-1 mr-4 ml-4" instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
 

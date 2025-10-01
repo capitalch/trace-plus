@@ -1,14 +1,16 @@
-import { shallowEqual, useSelector } from "react-redux";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
+import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { CompDateRange } from "../../../../controls/redux-components/comp-date-range";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { CompSwitch } from "../../../../controls/redux-components/comp-switch";
 import { ExportFileTypeDropDownButton } from "./export-file-type-drop-down-button";
 import { ExportNamePicker } from "./export-name-picker";
-import { RootStateType } from "../../../../app/store";
+import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useEffect, useState } from "react";
 
 export function AllExports() {
+    const dispatch: AppDispatchType = useDispatch()
     const selectedExportName: ExportNameType = useSelector((state: RootStateType) => state.accounts.exports.exportName as ExportNameType, shallowEqual)
     const dateRangeInstance: string = CompInstances.compDateRangeExports
     const [isDateRangeDisabled, setDateRangeDisabled] = useState<boolean>(true)
@@ -20,6 +22,11 @@ export function AllExports() {
             setDateRangeDisabled(false)
         }
     }, [selectedExportName])
+
+    // Set main title for Exports
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Exports" }));
+    }, [dispatch]);
 
     return (<CompAccountsContainer MiddleCustomControl={() => <CompSwitch instance={CompInstances.compSwitchExports} leftLabel="All branches" />}>
         <div className="flex flex-col mt-8 space-y-8">

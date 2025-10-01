@@ -1,7 +1,7 @@
 import { ChangeEvent, ReactElement, useEffect, } from "react"
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompSyncFusionTreeGridToolbar } from "../../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
@@ -11,7 +11,7 @@ import { CompGenericSwitch } from "../../../../controls/components/comp-generic-
 import { AppDispatchType } from "../../../../app/store"
 import { useDispatch } from "react-redux"
 import { SlidingPaneEnum, SlidingPaneMap, } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map"
-import { openSlidingPane } from "../../../../controls/redux-components/comp-slice"
+import { openSlidingPane, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice"
 import { IconPlus } from "../../../../controls/icons/icon-plus"
 import { AccountsAddGroupModal } from "./accounts-add-group-modal"
 import { IconEdit1 } from "../../../../controls/icons/icon-edit1"
@@ -39,9 +39,14 @@ export function AccountsMaster() {
         }
     }, [buCode])
 
+    // Set main title for Accounts Master
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Accounts Master" }));
+    }, [dispatch]);
+
     return (<CompAccountsContainer>
         <CompSyncFusionTreeGridToolbar className="mt-2"
-            title='Accounts master'
+            title=''
             isLastNoOfRows={false}
             instance={instance}
             width="calc(100vw - 250px)" // This stops unnecessary flickers
@@ -60,7 +65,7 @@ export function AccountsMaster() {
             columns={getColumns()}
             height="calc(100vh - 227px)"
             instance={instance}
-            minWidth='950px'
+            minWidth='1400px'
             treeColumnIndex={0}
         />
     </CompAccountsContainer>)
@@ -84,11 +89,10 @@ export function AccountsMaster() {
 
     function actionTemplate(props: AccountsMasterType) {
         const isDelButtonVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) // Not visible for primary and those having children
-        const isHideButtonVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) // Same logic as delete button
         const isEditButtonVisible: boolean = !props.isPrimary
         const isAddChildButtonVisible: boolean = ['L', 'N'].includes(props.accLeaf)
 
-        return (<div className="flex items-center justify-start h-full">
+        return (<div className="flex items-center justify-start w-full" style={{ minWidth: '250px' }}>
 
             {/* Add child */}
             {isAddChildButtonVisible && <button onClick={handeleOnClickAddChild} className="flex items-center justify-center font-medium text-blue-700 text-xs">
@@ -100,12 +104,6 @@ export function AccountsMaster() {
             {isEditButtonVisible && <button onClick={handeleOnClickEditSelf} className="flex items-center justify-center ml-4 font-medium text-green-700 text-xs">
                 <IconEdit1 className="mr-1.5 w-3 h-3" />
                 EDIT
-            </button>}
-
-            {/* Hide */}
-            {isHideButtonVisible && <button onClick={handeleOnClickHide} className="flex items-center justify-center ml-4 font-medium text-amber-500 text-xs">
-                <IconMinusCircle className="mr-1 w-4 h-4" />
-                HIDE
             </button>}
 
             {/* Delete */}
@@ -154,26 +152,6 @@ export function AccountsMaster() {
             })
         }
 
-        function handeleOnClickHide() {
-            Utils.showConfirmDialog('Hide Account', 'Are you sure you want to hide this account?', async () => {
-                try {
-                    await Utils.doGenericUpdate({
-                        buCode: buCode || '',
-                        dbName: dbName || '',
-                        tableName: AllTables.AccM.name,
-                        xData: {
-                            id: props.id,
-                            isHidden: true
-                        }
-                    })
-                    Utils.showSaveMessage()
-                    Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)
-                } catch (e: any) {
-                    console.log(e)
-                    Utils.showErrorMessage('Error hiding account')
-                }
-            })
-        }
     }
 
     function getColumns(): SyncFusionTreeGridColumnType[] {
@@ -208,10 +186,9 @@ export function AccountsMaster() {
             {
                 field: 'isHidden',
                 headerText: 'Hidden',
-                width: 80,
+                width: 100,
                 textAlign: 'Left',
-                type: 'boolean',
-                template: hiddenStatusTemplate
+                template: hideUnhideSwitchTemplate
             },
             {
                 field: 'accType',
@@ -244,7 +221,8 @@ export function AccountsMaster() {
                 field: '',
                 headerText: 'Auto sub',
                 textAlign: 'Left',
-                template: autoSubledgerTemplate
+                template: autoSubledgerTemplate,
+                width: 100,
             },
         ])
     }
@@ -305,22 +283,6 @@ export function AccountsMaster() {
         return <span>{props.accName}</span>
     }
 
-    function hiddenStatusTemplate(props: AccountsMasterType) {
-        if (props.isHidden) {
-            return (
-                <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-amber-500 bg-orange-100 rounded-full">
-                    <IconMinusCircle className="w-3 h-3 mr-1" />
-                    Hidden
-                </span>
-            )
-        }
-        return (
-            <span className="text-gray-400 text-xs">
-                Visible
-            </span>
-        )
-    }
-
     function autoSubledgerTemplate(props: AccountsMasterType) {
         const isVisible: boolean = (props.accLeaf === 'L') && props.accClass === 'debtor'
         const isDisabled: boolean = (props?.children && (props.children.length > 0)) ? true : false
@@ -329,6 +291,17 @@ export function AccountsMaster() {
             defaultChecked={props.isAutoSubledger}
             disabled={isDisabled}
             onChange={handleOnChangeSwitch}
+        />)
+    }
+
+    function hideUnhideSwitchTemplate(props: AccountsMasterType) {
+        const isVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) // Same criteria as delete button
+        const isDisabled: boolean = false
+        return (isVisible && <CompGenericSwitch
+            customData={props}
+            defaultChecked={props.isHidden || false}
+            disabled={isDisabled}
+            onChange={handleOnChangeHideSwitch}
         />)
     }
 
@@ -363,6 +336,28 @@ export function AccountsMaster() {
         }
         Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)
         return (isSuccess)
+    }
+
+    async function handleOnChangeHideSwitch(event: ChangeEvent<HTMLInputElement>, props: AccountsMasterType) {
+        let isSuccess: boolean = false
+        try {
+            await Utils.doGenericUpdate({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                tableName: AllTables.AccM.name,
+                xData: {
+                    id: props.id,
+                    isHidden: event.target.checked
+                }
+            })
+            isSuccess = true
+            Utils.showSaveMessage()
+            Utils.loadDataInTreeGridWithSavedScrollPos(context, instance)
+        } catch (e: any) {
+            console.log(e)
+            Utils.showErrorMessage('Error updating account visibility')
+        }
+        return isSuccess
     }
 
     function setIsPaneOpen(accId: number, isAddressExists: boolean | undefined) {

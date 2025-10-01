@@ -149,17 +149,7 @@ export function PurchaseReturnHeader() {
 
             {/* Reset submit */}
             <div className="flex mt-6 ml-auto h-10 gap-3">
-                {/* Test */}
-                <button
-                    type="button" onClick={() => {
-                        handleOnTest()
-                        // const formData = getValues();
-                        // console.log("Form Data:", formData);
-                        // console.log(errors)
-                    }}
-                >
-                    Test
-                </button>
+                
                 {/* Reset */}
                 <button
                     onClick={resetAll}
@@ -198,52 +188,6 @@ export function PurchaseReturnHeader() {
                 id: id,
             },
         }))
-    }
-
-    async function handleOnTest() {
-        // setRefresh({})
-        // const id1 = 10892
-        // const editData: any = await getPurchaseDetailsOnId(id1);
-        // const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-        // setValue('purchaseEditData', undefined)
-        // const tranH: TranHType = purchaseEditData.tranH
-        // const tranD: TranDType[] = purchaseEditData.tranD
-        // const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
-        // const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
-
-        // reset({
-        //     id: undefined,
-        //     tranTypeId: tranH.tranTypeId,
-        //     remarks: tranH.userRefNo,
-        //     isGstInvoice: Boolean(extGsTranD?.id),
-        //     debitAccId: tranD.find((item) => item.dc === "C")?.accId,
-        //     creditAccId: tranD.find((item) => item.dc === "D")?.accId,
-        //     gstin: extGsTranD?.gstin,
-        //     isIgst: extGsTranD?.igst ? true : false,
-        //     purchaseEditData: undefined,
-
-        //     totalCgst: extGsTranD?.cgst,
-        //     totalSgst: extGsTranD?.sgst,
-        //     totalIgst: extGsTranD?.igst,
-        //     totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
-        //     totalInvoiceAmount: tranD?.[0]?.amount || 0,
-
-        //     purchaseLineItems: salePurchaseDetails.map((item) => ({
-        //         id: undefined,
-        //         productId: item.productId,
-        //         productCode: item.productCode,
-        //         upcCode: item.upcCode || null,
-        //         productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
-        //         hsn: item.hsn.toString(),
-        //         qty: item.qty,
-        //         gstRate: item.gstRate,
-        //         price: item.price,
-        //         discount: item.discount,
-        //         priceGst: item.priceGst,
-        //         lineRemarks: null,
-        //         serialNumbers: null
-        //     }))
-        // })
     }
 
     function handleOnPreview() {

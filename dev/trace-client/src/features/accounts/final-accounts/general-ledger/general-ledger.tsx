@@ -2,11 +2,11 @@ import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
 import _ from 'lodash'
 import Decimal from 'decimal.js'
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container"
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container"
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { CompSwitch } from "../../../../controls/redux-components/comp-switch"
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid"
-import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, setCompCheckBoxState } from "../../../../controls/redux-components/comp-slice"
+import { compAppLoaderVisibilityFn, selectCompCheckBoxStateFn, selectCompSwitchStateFn, setCompCheckBoxState, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../../app/store"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { useEffect, useRef, useState } from "react"
@@ -88,11 +88,15 @@ export function GeneralLedger() {
         setRefresh({})
     }, [toShowBalance, toShowReverse, toShowSummaryRow, instance, context,])
 
+    // Set main title for General Ledger
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "General Ledger" }));
+    }, [dispatch]);
+
     return (
         <CompAccountsContainer>
             <div className="flex items-center mt-6 min-w-[1200px]">
                 <div className="flex flex-col w-72">
-                    <label className="font-medium text-lg text-primary-400">General ledger</label>
                     <label className="font-medium text-blue-500">{meta?.current?.accName}</label>
                 </div>
                 <div className="flex flex-col flex-wrap items-end mr-8 min-w-[150px]">

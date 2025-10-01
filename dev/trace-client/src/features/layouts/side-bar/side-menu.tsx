@@ -51,7 +51,7 @@ function SideMenu() {
     function getChildren(item: MenuDataItemType) {
         const children = item.children.map((child: ChildMenuItemType, index: number) => {
             return (
-                <button key={index} id={child.id} onClick={(e: any) => handleChildClick(e, child.path)}
+                <button key={index} id={child.id} onClick={(e: any) => handleChildClick(e, child.label, child.path)}
                     className={clsx(childClass, getSelectedChildClass(child.id))}>
                     {child.label}
                 </button>
@@ -101,10 +101,6 @@ function SideMenu() {
 
     function getParentSelectedClass(item: any) {
         let ret = ''
-        // if((!item.children || (item.children.length === 0)) && (item.id === sideBarSelectedParentIdSelector)){
-        //     // ret = 'bg-primary-50'
-        //     ret = 'font-semibold'
-        // }
         if (item.id === sideBarSelectedParentIdSelector) {
             ret = 'font-bold'
         }
@@ -112,7 +108,6 @@ function SideMenu() {
     }
 
     function getSelectedChildClass(childId: string) {
-        // return ((sideBarSelectedChildIdSelector === childId) ? 'bg-primary-100' : 'bg-slate-50')
         return ((sideBarSelectedChildIdSelector === childId) ? 'font-bold' : '')
     }
 
@@ -128,10 +123,11 @@ function SideMenu() {
         }
     }
 
-    function handleChildClick(e: any, path?: string) {
+    function handleChildClick(e: any, _label: string, path?: string, ) {
         const id = e.currentTarget.id
         dispatch(setSideBarSelectedChildId({ id: id }))
         if (path) {
+            // dispatch(setSelectedSideBarLabel({ label: label }))
             navigate(path)
         }
     }

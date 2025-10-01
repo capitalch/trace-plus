@@ -47,7 +47,7 @@ export function StockJournalMain({ instance }: { instance: string }) {
   }, [dispatch, instance]);
 
   return (
-    <div className="relative h-[calc(100vh-240px)]">
+    <div className="relative h-[calc(100vh-240px)] mt-8">
       <FormProvider {...extendedMethods}>
         <form
           className="flex flex-col mr-6 min-w-[85rem] gap-4"

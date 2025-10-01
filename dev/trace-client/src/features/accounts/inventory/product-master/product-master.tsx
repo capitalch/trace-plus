@@ -1,5 +1,5 @@
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { useDispatch } from "react-redux";
 import { AppDispatchType } from "../../../../app/store";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
@@ -11,7 +11,7 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { NewProductButton } from "./new-product-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
-import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
+import { openSlidingPane, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { NewEditProductType } from "./new-edit-product";
 import { useEffect } from "react";
 
@@ -27,13 +27,18 @@ export function ProductMaster() {
         }
     }, [buCode])
 
+    // Set main title for Product Master
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Product Master" }));
+    }, [dispatch]);
+
     return (
         <CompAccountsContainer>
             <CompSyncFusionGridToolbar
                 className='mt-2 mr-6'
                 CustomControl={() => <NewProductButton />}
                 minWidth="1450px"
-                title='Product master'
+                title=''
                 isPdfExport={true}
                 isExcelExport={true}
                 isCsvExport={true}

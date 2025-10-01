@@ -194,7 +194,7 @@ export function ProductsOpeningBalancesWorkBench() {
                 <FormField label="Opening price" >
                     <NumericFormat
                         allowNegative={false}
-                        className={clsx('text-right mt-1 rounded-md')}
+                        className={clsx('text-right rounded-md')}
                         decimalScale={2}
                         fixedDecimalScale={true}
                         {...register('openingPrice')}
