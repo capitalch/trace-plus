@@ -14,12 +14,13 @@ import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
 import { QueryCellInfoEventArgs } from "@syncfusion/ej2-react-grids";
 import { PurchasePriceVariationToolbarFilterDisplay } from "./purchase-price-variation-toolbar-filter-display";
-import {  RootStateType} from "../../../../../../app/store";
-import { shallowEqual, useSelector } from "react-redux";
+import { AppDispatchType, RootStateType } from "../../../../../../app/store";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { CompSwitch } from "../../../../../../controls/redux-components/comp-switch";
-import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../../../../controls/redux-components/comp-slice";
 
 export function PurchasePriceVariationReport({ title }: { title?: string }) {
+  const dispatch: AppDispatchType = useDispatch();
   const instance = DataInstancesMap.purchasePriceVariationReport;
   const isAllBranches: boolean =
     useSelector(
@@ -36,6 +37,10 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
     decodedDbParamsObject,
     finYearId
   } = useUtilsInfo();
+
+  useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
 
   useEffect(() => {
     loadData();
@@ -57,7 +62,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
           </div>
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExportAsLandscape={true}
         isPdfExport={true}
@@ -76,10 +81,9 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         hasIndexColumn={true}
         height="calc(100vh - 245px)"
         instance={instance}
-        // isLoadOnInit={false}
         isSmallerFont={true}
         loadData={loadData}
-        minWidth="600px"
+        minWidth="400px"
         queryCellInfo={handleQueryCellInfo}
       />
     </div>

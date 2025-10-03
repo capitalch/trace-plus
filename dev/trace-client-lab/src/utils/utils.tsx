@@ -1,6 +1,5 @@
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
-// import _ from "lodash";
 import { RootStateType, store } from "../app/store";
 import { Messages } from "./messages";
 import { ReactElement } from "react";
@@ -51,10 +50,10 @@ export const Utils: UtilsType = {
   getToken: getToken,
   getTranTypeId: getTranTypeId,
   getTranTypeName: getTranTypeName,
+  getUniqueId: getUniqueId,
   getUnitInfo: getUnitInfo,
   getUserDetails: getUserDetails,
   gridUtils: gridUtils,
-  getUniqueId: getUniqueId,
   isAlmostEqual: isAlmostEqual,
   isNotNullOrUndefined: isNotNullOrUndefined,
   isNumeric: isNumeric,
@@ -67,9 +66,9 @@ export const Utils: UtilsType = {
   showDeleteConfirmDialog: showDeleteConfirmDialog,
   showErrorMessage: showErrorMessage,
   showFailureAlertMessage: showFailureAlertMessage,
+  showGraphQlErrorMessage: showGraphQlErrorMessage,
   showHideModalDialogA: showHideModalDialogA,
   showHideModalDialogB: showHideModalDialogB,
-  showGraphQlErrorMessage: showGraphQlErrorMessage,
   showOptionsSelect: showOptionsSelect,
   showSaveMessage: showSaveMessage,
   showSuccessAlertMessage: showSuccessAlertMessage,
@@ -85,31 +84,47 @@ function addUniqueKeysToJson(data: any) {
   // AI created
   let runningKey = 100000; // Start of child series
 
-  const traverseAndAddKeys = (node: any, parentKey: number) => {
-    // Mutate the node by adding a pkey
-    node.pkey = parentKey;
+  const traverseAndAddKeys = (node: any, parentKey: number): any => {
+    // Create a new object with the pkey if the original is not extensible
+    let workingNode = node;
+
+    if (!Object.isExtensible(node)) {
+      // Create a new object that includes all properties plus pkey
+      workingNode = { ...node, pkey: parentKey };
+    } else {
+      try {
+        node.pkey = parentKey;
+        workingNode = node;
+      } catch (error) {
+        console.error("Error assigning pkey:", error);
+        // Fallback to creating new object if assignment fails
+        workingNode = { ...node, pkey: parentKey };
+      }
+    }
 
     // Traverse through child nodes if present
-    Object.keys(node).forEach((key) => {
-      if (Array.isArray(node[key])) {
-        // Mutate children by adding unique running keys
-        node[key].forEach((child) => {
-          traverseAndAddKeys(child, runningKey++);
+    Object.keys(workingNode).forEach((key) => {
+      if (Array.isArray(workingNode[key])) {
+        // Process children by adding unique running keys
+        workingNode[key] = workingNode[key].map((child) => {
+          return traverseAndAddKeys(child, runningKey++);
         });
-      } else if (typeof node[key] === "object" && node[key] !== null) {
-        // Mutate nested objects
-        traverseAndAddKeys(node[key], runningKey++);
+      } else if (typeof workingNode[key] === "object" && workingNode[key] !== null && key !== 'pkey') {
+        // Process nested objects
+        workingNode[key] = traverseAndAddKeys(workingNode[key], runningKey++);
       }
     });
+
+    return workingNode;
   };
 
-  // Mutate the top-level data array
-  data.forEach((item: any, index: number) => {
+  // Process the top-level data array
+  const processedData = data.map((item: any, index: number) => {
     const parentKey = index + 1; // Assign a consistent parent key
-    traverseAndAddKeys(item, parentKey);
+    return traverseAndAddKeys(item, parentKey);
   });
 
-  return data; // Return the mutated data
+  return processedData; // Return the new processed data
 }
 
 async function decodeExtDbParams(encodedDbParams: string) {
@@ -172,7 +187,8 @@ async function doGenericUpdate({
   dbName,
   tableName,
   xData,
-  deletedIds
+  deletedIds,
+  autoSubledgerAccId,
 }: DoGenericUpdateType) {
   const userDetails: UserDetailsType = Utils.getUserDetails() || {};
   const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
@@ -181,7 +197,8 @@ async function doGenericUpdate({
     dbParams: decodedDbParamsObject,
     xData: xData,
     buCode: buCode,
-    deletedIds: deletedIds
+    deletedIds: deletedIds,
+    autoSubledgerAccId: autoSubledgerAccId
   };
   const q: any = GraphQLQueriesMap.genericUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.genericUpdate;
@@ -194,7 +211,7 @@ async function doValidateDebitCreditAndUpdate({
   dbName,
   tableName,
   xData,
-  deletedIds
+  deletedIds,
 }: DoGenericUpdateType) {
   const userDetails: UserDetailsType = Utils.getUserDetails() || {};
   const { dbName: dbAccounts, decodedDbParamsObject } = userDetails;
@@ -203,7 +220,7 @@ async function doValidateDebitCreditAndUpdate({
     dbParams: decodedDbParamsObject,
     xData: xData,
     buCode: buCode,
-    deletedIds: deletedIds
+    deletedIds: deletedIds,
   };
   const q: any = GraphQLQueriesMap.validateDebitCreditAndUpdate(dbName || dbAccounts || "", traceDataObject);
   const queryName: string = GraphQLQueriesMapNames.validateDebitCreditAndUpdate;
@@ -361,7 +378,7 @@ function getToken() {
   return state.login.token;
 }
 
-function getTranTypeId(tranType: TranType): number{
+function getTranTypeId(tranType: TranType): number {
   return (TranTypeMap[tranType])
 }
 
@@ -573,26 +590,6 @@ function showErrorMessage(
     allowEscapeKey: true
   });
 }
-
-// async function showGetText() {
-//   // const ipAPI = "//api.ipify.org?format=json";
-//   // const response = await fetch(ipAPI);
-//   // const data = await response.json();
-//   const inputValue = '';
-//   const { value }: { value?: string | undefined } = await Swal.fire({
-//     title: "Enter Nesting Level",
-//     input: "text",
-//     inputLabel: "Nesting level",
-//     inputValue,
-//     showCancelButton: true,
-//     inputValidator: (value) => {
-//       if (!value) {
-//         return "You need to give nesting level";
-//       }
-//     }
-//   });
-//   return (value || '3')
-// }
 
 function showGraphQlErrorMessage(error: GraphQlErrorType) {
   Swal.fire({
@@ -857,7 +854,9 @@ export type DoGenericUpdateType = {
   dbName?: string;
   tableName?: string;
   xData: Record<string, any>[] | Record<string, any>;
-  deletedIds?: number[]
+  deletedIds?: number[];
+  // isAutoSubledger?: boolean;
+  autoSubledgerAccId?: number | null |string
 };
 
 export type DoGenericUpdateQueryType = {
@@ -930,9 +929,9 @@ type UtilsType = {
   getToken: () => string | undefined;
   getTranTypeId: (tranTypeName: TranType) => number;
   getTranTypeName: (tranTypeId: number) => TranType | undefined;
+  getUniqueId: () => number;
   getUnitInfo: () => UnitInfoType | undefined;
   getUserDetails: () => UserDetailsType | undefined;
-  getUniqueId: () => number;
   gridUtils: GridUtilsType;
   isAlmostEqual: (a: number, b: number, tolerancePercent: number, toleranceAbsolute: number) => boolean
   isNotNullOrUndefined: (value: any) => boolean;
@@ -951,20 +950,15 @@ type UtilsType = {
   ) => void;
   showCustomMessage: (title: string) => void;
   showDeleteConfirmDialog: (onConfirm: () => void) => void;
-  showFailureAlertMessage: (alertMessage: AlertMessageType) => void;
-  showSuccessAlertMessage: (
-    alertMessage: AlertMessageType,
-    callback?: () => void
-  ) => void;
   showErrorMessage: (
     error?: any,
     errorCode?: string,
     errorMessage?: string
   ) => void;
-  // showGetText: () => any;
+  showFailureAlertMessage: (alertMessage: AlertMessageType) => void;
+  showGraphQlErrorMessage: (error: GraphQlErrorType) => void;
   showHideModalDialogA: (options: ShowHideModalDialogType) => void;
   showHideModalDialogB: (options: ShowHideModalDialogType) => void;
-  showGraphQlErrorMessage: (error: GraphQlErrorType) => void;
   showOptionsSelect: (
     message: string,
     option1: string,
@@ -972,6 +966,10 @@ type UtilsType = {
     action: (result: any) => void
   ) => void;
   showSaveMessage: () => void;
+  showSuccessAlertMessage: (
+    alertMessage: AlertMessageType,
+    callback?: () => void
+  ) => void;
   showWarningMessage: (warningMessage: string) => void;
   toDecimalFormat: (s: any) => string;
   toWordsFromAmount: (amt: number) => string;

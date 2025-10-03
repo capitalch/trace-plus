@@ -33,7 +33,7 @@ export function AdminLinkSecuredControlWithRoleModal({ roleId, instance }: Admin
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col w-auto gap-2 min-w-80">
+            <div className="flex flex-col w-auto min-w-80 gap-2">
 
                 {/* Secured control id */}
                 <label className="flex flex-col font-medium text-primary-400">

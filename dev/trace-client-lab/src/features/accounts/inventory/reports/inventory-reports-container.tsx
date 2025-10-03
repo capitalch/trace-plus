@@ -3,7 +3,7 @@ import {
   InventoryReportsComponentsMap,
   InventoryReportsRouterMap
 } from "./inventory-reports-map";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 
 export function InventoryReportsContainer() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +25,7 @@ export function InventoryReportsContainer() {
       // MiddleCustomControl={() => <div className="bg-amber-300">Test</div>}
     >
       <div className="">
-        <div className="flex items-center space-x-10 mb-2"></div>
+        <div className="flex items-center mb-2 space-x-10"></div>
         <ReportComponent title={title} />
       </div>
     </CompAccountsContainer>

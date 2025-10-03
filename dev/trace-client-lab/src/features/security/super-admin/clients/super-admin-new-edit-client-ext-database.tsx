@@ -143,59 +143,59 @@ export function SuperAdminNewEditClientExtDatabase({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex w-auto min-w-80 flex-col gap-2 text-xs'>
+            <div className='flex flex-col w-auto min-w-80 text-xs gap-2'>
 
                 {/* Client code */}
-                <label className='flex flex-col text-primary-400 font-medium gap-1'>
+                <label className='flex flex-col font-medium text-primary-400 gap-1'>
                     <span className='font-bold'>Client code <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g battle" autoComplete="off"
-                        className='h-8 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic'
+                        className='px-2 h-8 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs'
                         {...registerClientCode}
                     />
                     <span className="flex justify-between">
                         {(errors.clientCode)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientCode.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <TooltipComponent content={Messages.messClientCode} className="-top-5! border bg-white text-sm text-blue-500!">
-                            <span className='ml-auto text-xs text-primary-400 cursor-pointer'>?</span>
+                        <TooltipComponent content={Messages.messClientCode} className="text-blue-500! text-sm bg-white border -top-5!">
+                            <span className='ml-auto text-primary-400 text-xs cursor-pointer'>?</span>
                         </TooltipComponent>
                     </span>
                 </label>
 
                 {/* Client name */}
-                <label className='flex flex-col text-primary-400 font-medium gap-1'>
+                <label className='flex flex-col font-medium text-primary-400 gap-1'>
                     <span className='font-bold'>Client name <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g Battle ground" autoComplete="off"
-                        className='h-8 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerClientName}
+                        className='px-2 h-8 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerClientName}
                     />
                     <span className="flex justify-between">
                         {(errors.clientName)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientName.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <TooltipComponent content={Messages.messClientName} className="-top-5! border bg-white text-sm text-blue-500!">
-                            <span className='ml-auto text-xs text-primary-400 cursor-pointer'>?</span>
+                        <TooltipComponent content={Messages.messClientName} className="text-blue-500! text-sm bg-white border -top-5!">
+                            <span className='ml-auto text-primary-400 text-xs cursor-pointer'>?</span>
                         </TooltipComponent>
                     </span>
                 </label>
 
                 {/* Is active  */}
                 <div className="flex items-center">
-                    <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
+                    <input type="checkbox" id='isActive' className='w-4 h-4 cursor-pointer'
                         {...registerIsClientActive} />
-                    <label htmlFor="isActive" className="ml-2 cursor-pointer text-primary-500">Is this client active</label>
+                    <label htmlFor="isActive" className="ml-2 text-primary-500 cursor-pointer">Is this client active</label>
                 </div>
 
                 {/* External database details */}
-                <div className="flex w-full flex-col bg-slate-100 p-1 gap-1">
-                    <label className="text-xs font-bold text-primary-500">External database connection details</label>
+                <div className="flex flex-col p-1 w-full bg-slate-100 gap-1">
+                    <label className="font-bold text-primary-500 text-xs">External database connection details</label>
 
                     {/* db name and host */}
                     <div className="flex w-auto gap-1">
                         {/* db name */}
-                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1'>
-                            <span className='text-xs font-bold'>DB name <WidgetAstrix /></span>
+                        <label className='flex flex-col w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB name <WidgetAstrix /></span>
                             <input type='text' placeholder="e.g Battle_database" autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerDbName}
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerDbName}
                             />
                             <span className="flex justify-between">
                                 {(errors.dbName)
@@ -205,10 +205,10 @@ export function SuperAdminNewEditClientExtDatabase({
                         </label>
 
                         {/* db host */}
-                        <label className='flex w-1/2 flex-col pr-1 font-medium text-primary-400 gap-1'>
-                            <span className='text-xs font-bold'>DB host <WidgetAstrix /></span>
+                        <label className='flex flex-col pr-1 w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB host <WidgetAstrix /></span>
                             <input type='text' placeholder="e.g host name" autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerHost} />
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerHost} />
                             <span className="flex justify-between">
                                 {(errors.host)
                                     ? <WidgetFormErrorMessage errorMessage={errors.host.message} />
@@ -219,10 +219,10 @@ export function SuperAdminNewEditClientExtDatabase({
 
                     {/* User name and password */}
                     <div className="flex w-auto gap-1">
-                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1'>
-                            <span className='text-xs font-bold'>DB user name <WidgetAstrix /></span>
+                        <label className='flex flex-col w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB user name <WidgetAstrix /></span>
                             <input type='text' autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerUser} />
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerUser} />
                             <span className="flex justify-between">
                                 {(errors.user)
                                     ? <WidgetFormErrorMessage errorMessage={errors.user.message} />
@@ -230,10 +230,10 @@ export function SuperAdminNewEditClientExtDatabase({
                             </span>
                         </label>
 
-                        <label className='flex w-1/2 flex-col pr-1 font-medium text-primary-400 gap-1'>
-                            <span className='text-xs font-bold'>DB password <WidgetAstrix /></span>
+                        <label className='flex flex-col pr-1 w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB password <WidgetAstrix /></span>
                             <input type='password' autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerPassword} />
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerPassword} />
                             <span className="flex justify-between">
                                 {(errors.password)
                                     ? <WidgetFormErrorMessage errorMessage={errors.password.message} />
@@ -244,10 +244,10 @@ export function SuperAdminNewEditClientExtDatabase({
 
                     {/* DB port and DB url */}
                     <div className="flex w-auto gap-1">
-                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1'>
-                            <span className='text-xs font-bold'>DB public port <WidgetAstrix /></span>
+                        <label className='flex flex-col w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB public port <WidgetAstrix /></span>
                             <input type='number' autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerPort} />
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerPort} />
                             <span className="flex justify-between">
                                 {(errors.port)
                                     ? <WidgetFormErrorMessage errorMessage={errors.port.message} />
@@ -255,10 +255,10 @@ export function SuperAdminNewEditClientExtDatabase({
                             </span>
                         </label>
 
-                        <label className='flex w-1/2 flex-col pr-1 font-medium text-primary-400 gap-1'>
-                            <span className='text-xs font-bold'>DB url </span>
+                        <label className='flex flex-col pr-1 w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB url </span>
                             <input type='text' autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerUrl} />
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerUrl} />
                             <span className="flex justify-between">
                                 {(errors.url)
                                     ? <WidgetFormErrorMessage errorMessage={errors.url.message} />
@@ -269,20 +269,20 @@ export function SuperAdminNewEditClientExtDatabase({
 
                     {/* IP address and internal port */}
                     <div className="flex w-auto gap-1">
-                        <label className='flex w-1/2 flex-col  font-medium text-primary-400 gap-1'>
-                            <span className='text-xs font-bold'>DB IP address <WidgetAstrix /></span>
+                        <label className='flex flex-col w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB IP address <WidgetAstrix /></span>
                             <input type='text' autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerIpAddress} />
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerIpAddress} />
                             <span className="flex justify-between">
                                 {(errors.ipAddress)
                                     ? <WidgetFormErrorMessage errorMessage={errors.ipAddress.message} />
                                     : <WidgetFormHelperText helperText='&nbsp;' />}
                             </span>
                         </label>
-                        <label className='flex w-1/2 flex-col font-medium text-primary-400 gap-1 pr-1'>
-                            <span className='text-xs font-bold'>DB internal port <WidgetAstrix /></span>
+                        <label className='flex flex-col pr-1 w-1/2 font-medium text-primary-400 gap-1'>
+                            <span className='font-bold text-xs'>DB internal port <WidgetAstrix /></span>
                             <input type='number' autoComplete="off"
-                                className='h-7 rounded-md border border-primary-200 px-2 placeholder:text-slate-400 placeholder:text-xs placeholder:italic' {...registerInternalPort} />
+                                className='px-2 h-7 border border-primary-200 rounded-md placeholder:italic placeholder:text-slate-400 placeholder:text-xs' {...registerInternalPort} />
                             <span className="flex justify-between">
                                 {(errors.internalPort)
                                     ? <WidgetFormErrorMessage errorMessage={errors.internalPort.message} />
@@ -293,7 +293,7 @@ export function SuperAdminNewEditClientExtDatabase({
 
                     <button type="button" onClick={handleTestDbConnection}
                         disabled={isDbValidationErrors()}
-                        className="ml-auto h-7 w-max rounded-md bg-lime-600 px-2 text-xs text-white hover:bg-lime-700 disabled:bg-slate-300 active:shadow-primary-2">
+                        className="ml-auto px-2 w-max h-7 text-white text-xs bg-lime-600 rounded-md hover:bg-lime-700 active:shadow-primary-2 disabled:bg-slate-300">
                         Test database connection
                     </button>
                 </div>

@@ -87,13 +87,13 @@ export function StockSummaryReportFilterControl() {
   setCategory();
 
   return (
-    <div className="p-4 space-y-4 bg-white rounded shadow-sm">
-      <div className="flex w-full justify-between">
+    <div className="p-4 bg-white rounded shadow-sm space-y-4">
+      <div className="flex justify-between w-full">
         {/* Reset button */}
         <button
           type="button"
           onClick={handleResetFilters}
-          className="px-4 py-2 rounded-md text-white text-sm font-medium transition bg-amber-600 hover:bg-amber-800"
+          className="px-4 py-2 font-medium text-sm text-white bg-amber-600 rounded-md transition hover:bg-amber-800"
         >
           Reset Filters
         </button>
@@ -103,18 +103,18 @@ export function StockSummaryReportFilterControl() {
           type="button"
           onClick={handleApplyFilters}
           disabled={isApplyFilterButtonDisabled()}
-          className="px-4 py-2 rounded-md text-white text-sm font-medium transition bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="px-4 py-2 font-medium text-sm text-white bg-blue-500 rounded-md transition hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           Apply Filters
         </button>
       </div>
       <div className="flex flex-wrap gap-4">
         {/* On Date */}
-        <label className="flex flex-col text-sm font-semibold text-gray-600 w-40">
+        <label className="flex flex-col w-40 font-semibold text-gray-600 text-sm">
           On Date
           <input
             type="date"
-            className="mt-1 border rounded px-2 py-2 text-sm"
+            className="mt-1 px-2 py-2 text-sm border rounded"
             aria-label="on-date"
             max={format(new Date(),'yyyy-MM-dd')}
             value={pre.onDate || ""}
@@ -126,7 +126,7 @@ export function StockSummaryReportFilterControl() {
         </label>
 
         {/* Age */}
-        <label className="flex flex-col text-sm font-semibold text-gray-600">
+        <label className="flex flex-col font-semibold text-gray-600 text-sm">
           Age
           <Select
             options={ageOptions}
@@ -139,7 +139,7 @@ export function StockSummaryReportFilterControl() {
         </label>
 
         {/* Gross Profit */}
-        <label className="flex flex-col text-sm font-semibold text-gray-600">
+        <label className="flex flex-col font-semibold text-gray-600 text-sm">
           Gross Profit
           <Select
             options={grossProfitOptions}
@@ -154,7 +154,7 @@ export function StockSummaryReportFilterControl() {
 
       {/* Category Filter */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-gray-600">
+        <label className="font-semibold text-gray-600 text-sm">
           Categories
         </label>
         <DropDownTreeComponent
@@ -181,7 +181,7 @@ export function StockSummaryReportFilterControl() {
       {/* Brand and Tag Filters */}
       <div className="flex flex-wrap gap-4">
         {/* Brands */}
-        <label className="flex flex-col text-sm font-semibold text-gray-600 flex-1 min-w-[200px]">
+        <label className="flex flex-col flex-1 min-w-[200px] font-semibold text-gray-600 text-sm">
           Brands
           <Select
             className="mt-1 w-full"
@@ -196,7 +196,7 @@ export function StockSummaryReportFilterControl() {
         </label>
 
         {/* Tags */}
-        <label className="flex flex-col text-sm font-semibold text-gray-600 flex-1 min-w-[200px]">
+        <label className="flex flex-col flex-1 min-w-[200px] font-semibold text-gray-600 text-sm">
           Tags
           <Select
             className="mt-1 w-full"

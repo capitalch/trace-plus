@@ -14,6 +14,9 @@ const initialState: ReduxCompStateType = {
     title: "",
     width: "90%",
   },
+  compAccountsContainer: {
+    mainTitle: '',
+  }
 };
 
 const initializeNestedState = <T>(
@@ -151,6 +154,14 @@ const compSlice = createSlice({
       state.compTabs[instance].activeTabIndex = action.payload.activeTabIndex;
       state.compTabs[instance].id = action.payload.id || undefined;
     },
+
+    // compAccountsContainer
+    setCompAccountsContainerMainTitle: (
+      state: ReduxCompStateType,
+      action: PayloadAction<{ mainTitle: string }>
+    ) => {
+      state.compAccountsContainer.mainTitle = action.payload.mainTitle;
+    },
   },
 });
 
@@ -166,6 +177,7 @@ export const {
   setCompSwitchState,
   showCompAppLoader,
   updateLedgerSubledger,
+  setCompAccountsContainerMainTitle
 } = compSlice.actions;
 
 //Types
@@ -182,6 +194,9 @@ type ReduxCompStateType = {
     title: string;
     width: string;
   };
+  compAccountsContainer: {
+    mainTitle: string;
+  }
 };
 
 type StartDateEndDateType = {

@@ -4,9 +4,9 @@ import { DataInstancesMap } from "../../../app/maps/data-instances-map"
 import { LoginType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import { shallowEqual, useDispatch, useSelector } from "react-redux"
-import { selectCompSwitchStateFn } from "../../../controls/redux-components/comp-slice"
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../app/store"
-import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container"
+import { CompAccountsContainer } from "../../../controls/redux-components/comp-accounts-container"
 import { CompSwitch } from "../../../controls/redux-components/comp-switch"
 import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/maps/graphql-queries-map"
@@ -115,6 +115,11 @@ export function ProfitLoss() {
         loadData()
     }, [buCode, finYearId, branchId, isAllBranches, loadData])
 
+    // Set main title for Profit & Loss
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Profit & Loss" }));
+    }, [dispatch]);
+
     return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
 
         {/* Two horizontal grids */}
@@ -203,17 +208,15 @@ export function ProfitLoss() {
 
     function CustomControl() {
         return (<div className="flex items-center justify-between">
-            <label className="font-medium text-xl text-primary-300">Profit & Loss</label>
-
             {/* All branches */}
-            <CompSwitch className="ml-4 mt-1 mr-4" instance={CompInstances.compSwitchProfitLoss} leftLabel="All branches" />
+            <CompSwitch className="mt-1 mr-4 ml-4" instance={CompInstances.compSwitchProfitLoss} leftLabel="All branches" />
 
             <CompSyncFusionTreeGridSearchBox instance={profitLossInstance} handleOnChange={handleOnChangeSearchText} />
 
             {/* Pdf profit and loss */}
-            <TooltipComponent content='Preview' className="flex ml-4 items-center">
+            <TooltipComponent content='Preview' className="flex items-center ml-4">
                 <button onClick={() => { setIsDialogOpen(true) }}>
-                    <IconPreview1 className="text-blue-500 h-8 w-8" />
+                    <IconPreview1 className="w-8 h-8 text-blue-500" />
                 </button>
             </TooltipComponent>
 
@@ -263,10 +266,10 @@ export function ProfitLoss() {
             <TooltipComponent content="Set Nesting Level" position="TopCenter" className="mr-2">
                 <button
                     onClick={handleDoSettings}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 active:ring-2 ring-blue-300 transition duration-150"
+                    className="flex items-center px-3 py-1.5 bg-blue-50 border border-blue-200 ring-blue-300 rounded transition duration-150 hover:bg-blue-100 active:ring-2 gap-2"
                 >
-                    <IconSettings className="text-blue-500 h-6 w-6" />
-                    <span className="text-sm font-medium text-blue-700 whitespace-nowrap">
+                    <IconSettings className="w-6 h-6 text-blue-500" />
+                    <span className="font-medium text-blue-700 text-sm whitespace-nowrap">
                         Nesting: {maxNestLevel}
                     </span>
                 </button>

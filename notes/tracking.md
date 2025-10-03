@@ -17,6 +17,12 @@
 	- QA and release		: 30-08-2025
 
 ## History
+# 02-10-2025
+	- Did some bug fixes and UI / UX issues and UI enhancements
+	- Started drill down
+# 30-09-2025
+	- Completed Sales
+	- Completed Sales Return
 # 22-08-2025
 	- Completed Debit notes, Credit notes
 	- Started Sales

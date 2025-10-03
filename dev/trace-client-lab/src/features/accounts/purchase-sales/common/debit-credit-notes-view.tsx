@@ -1,10 +1,8 @@
 import { useDispatch } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
-// import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useCallback, useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useFormContext } from "react-hook-form";
-// import { DebitCreditNoteFormDataType } from "./debit-notes";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
@@ -103,11 +101,11 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
                 deleteColumnWidth={40}
                 editColumnWidth={40}
                 hasCheckBoxSelection={true}
-                height="calc(100vh - 368px)"
+                height="calc(100vh - 352px)"
                 instance={instance}
                 isSmallerFont={true}
                 loadData={loadData}
-                minWidth="1400px"
+                minWidth="400px"
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
                 onPreview={handleOnPreview}
@@ -127,7 +125,7 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
                 field: "autoRefNo",
                 format: "N0",
                 footerTemplate: (props: any) => (
-                    <span className="text-xs text-right">Cnt: {props.Count}</span>
+                    <span className="text-right text-xs">Cnt: {props.Count}</span>
                 )
             },
             {

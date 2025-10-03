@@ -2,21 +2,22 @@ import clsx from "clsx";
 import { WidgetAstrix } from "../widgets/widget-astrix";
 import { WidgetFormErrorMessage } from "../widgets/widget-form-error-message";
 
-export function FormField({ label, children, required, error, className }: {
+export function FormField({ label, children, required, error, className, toShowErrorMessage = true }: {
     label: string;
     children: React.ReactNode;
     required?: boolean;
     error?: string;
     className?: string;
+    toShowErrorMessage?: boolean
 }) {
     return (
         <div className={clsx("flex flex-col text-primary-500", className)}>
             <div className="flex gap-1">
-                <span className="font-semibold text-sm">{label}</span>
+                <span className={clsx("text-sm font-semibold")}>{label}</span>
                 {required && <WidgetAstrix />}
             </div>
             {children}
-            {error && <WidgetFormErrorMessage errorMessage={error} />}
+            {error && toShowErrorMessage && <WidgetFormErrorMessage errorMessage={error} />}
         </div>
     );
 }

@@ -51,9 +51,9 @@ export function BankReconOpBalance() {
     }
 
     return (<div className="flex flex-col">
-        <label className="text-sm font-medium">{selectedBank.accName}</label>
+        <label className="font-medium text-sm">{selectedBank.accName}</label>
         <div className="flex items-center mt-1">
-            <NumericFormat className="text-right w-40 border-spacing-1 border-gray-300 h-8  mr-6 rounded-md" allowNegative={false}
+            <NumericFormat className="mr-6 w-40 h-8 text-right border-gray-300 border-spacing-1 rounded-md" allowNegative={false}
                 decimalScale={2}
                 fixedDecimalScale={true}
                 onFocus={handleOnFocus}
@@ -76,8 +76,8 @@ export function BankReconOpBalance() {
             />
         </div>
         <button onClick={handleOnSubmit} type="button"
-            className="mt-8 w-full px-5 py-2 font-medium text-white inline-flex justify-center items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200">
-            <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit</button>
+            className="inline-flex items-center justify-center mt-8 px-5 py-2 w-full font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700">
+            <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit</button>
     </div>)
 
     function handleOnFocus(event: FocusEvent<HTMLInputElement>): void {

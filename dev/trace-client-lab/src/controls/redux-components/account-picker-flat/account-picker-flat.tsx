@@ -8,6 +8,7 @@ import { IconRefresh } from '../../icons/icon-refresh';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn } from '../comp-slice';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 
 export function AccountPickerFlat({
     accClassNames = null,
@@ -17,8 +18,12 @@ export function AccountPickerFlat({
     loadData,
     onChange,
     showAccountBalance = false,
-    showRefreshButton =true,
-    value
+    showRefreshButton = true,
+    value,
+    toSelectFirstOption = false,
+    sqlId = null,
+    isDisabled = false,
+    isNotSelectable = false
 }: AccountPickerFlatType) {
     const selectRef: any = useRef<Select>(null);
     const [options, setOptions] = useState<AccountOptionType[]>([])
@@ -39,13 +44,13 @@ export function AccountPickerFlat({
         , decodedDbParamsObject
     } = useUtilsInfo()
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         if (accountOptions) {
             setOptions(accountOptions)
         } else {
             loadLocalData()
         }
-    }, [accountOptions])
+    }, [accountOptions, accClassNames, sqlId])
 
     useEffect(() => {
         if (value === null) {
@@ -53,15 +58,21 @@ export function AccountPickerFlat({
         }
     }, [value])
 
+    useEffect(() => {
+        if (options && toSelectFirstOption && (!value) && options.length > 0) {
+            (selectRef?.current as any)?.selectOption(options[0])
+        }
+    }, [options, toSelectFirstOption, value])
+
     return (
         <div className='relative'>
-            {showRefreshButton && <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-5 left-1/2 -translate-x-1/2 '><IconRefresh className='w-5 h-5' /></button>}
-            <span className='absolute -top-5.5 right-1'>
+            {showRefreshButton && <button onClick={handleOnClickRefresh} type='button' className='absolute text-blue-500 -top-5 -translate-x-1/2 left-1/2'><IconRefresh className='w-5 h-5' /></button>}
+            {showAccountBalance && <span className='absolute -top-5.5 right-1'>
                 <label className='font-medium text-blue-400'>{decFormatter.format(Math.abs(accountBalance))}</label>
-                {showAccountBalance && <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>}
-            </span>
+                <label className={clsx(((accountBalance < 0) ? 'text-red-500' : 'text-blue-400'), 'font-bold')}>{(accountBalance < 0) ? ' Cr' : ' Dr'}</label>
+            </span>}
             <Select
-                className={clsx('w-full', className)}
+                className={clsx('w-full rounded-md', className)}
                 getOptionLabel={(option: AccountOptionType) => option.accName}
                 getOptionValue={(option: AccountOptionType) => option.id}
                 menuPlacement="auto"
@@ -69,9 +80,56 @@ export function AccountPickerFlat({
                 options={options}
                 placeholder="Select an account"
                 ref={selectRef}
-                styles={Utils.getReactSelectStyles()}
-                components={{ Option: CustomOption }}
+                styles={{
+                    ...Utils.getReactSelectStyles(),
+                    control: (provided: any) => ({
+                        ...provided,
+                        cursor: isNotSelectable ? 'not-allowed' : 'default'
+                    }),
+                    menu: (provided: any) => ({
+                        ...provided,
+                        position: 'absolute',
+                        zIndex: 1000
+                    }),
+                    menuList: (provided: any) => ({
+                        ...provided,
+                        paddingTop: 0
+                    })
+                }}
+                components={{
+                    Option: (props: any) => <CustomOption {...props} isNotSelectable={isNotSelectable} />,
+                    MenuList: (props: any) => {
+                        const { children, innerRef, innerProps } = props;
+                        return (
+                            <div>
+                                <div style={{
+                                    padding: '8px 12px',
+                                    borderBottom: '1px solid #eee',
+                                    backgroundColor: '#f8f9fa',
+                                    fontSize: '12px',
+                                    color: '#666',
+                                    fontWeight: 500
+                                }}>
+                                    {options.length} {options.length === 1 ? 'item' : 'items'}
+                                </div>
+                                <div
+                                    ref={innerRef}
+                                    {...innerProps}
+                                    style={{
+                                        ...props.style,
+                                        maxHeight: '360px',
+                                        overflowY: 'auto'
+                                    }}
+                                >
+                                    {children}
+                                </div>
+                            </div>
+                        );
+                    }
+                }}
                 value={options.find((opt: AccountOptionType) => opt.id === value) || null}
+                maxMenuHeight={400}
+                isDisabled={isDisabled}
             />
         </div>)
 
@@ -103,6 +161,9 @@ export function AccountPickerFlat({
     }
 
     function handleOnSelectAccount(selectedAcc: AccountOptionType | null) {
+        if (isNotSelectable) {
+            return;
+        }
         if (showAccountBalance) {
             if (selectedAcc?.id) {
                 fetchAccountBalance(selectedAcc.id)
@@ -118,7 +179,7 @@ export function AccountPickerFlat({
                 dbName: dbName || '',
                 dbParams: decodedDbParamsObject || {},
                 instance: instance,
-                sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
+                sqlId: sqlId || SqlIdsMap.getLeafSubledgerAccountsOnClass,
                 sqlArgs: {
                     accClassNames: accClassNames?.join(',') || null
                 }
@@ -139,34 +200,46 @@ function CustomOption(props: any) {
         innerRef,
         innerProps,
         selectProps,
+        isNotSelectable = false
     } = props;
 
     const index = selectProps.options.findIndex((opt: any) => opt.id === data.id);
     const isEven = index % 2 === 0;
+    const isDisabled = data.isDisabled;
 
     const bgColor = isSelected
         ? '#dcefff'
-        : isFocused
+        : isFocused && !isDisabled
             ? '#f0f8ff'
             : isEven
                 ? '#ffffff'
                 : '#f9f9f9';
 
+    const handleClick = (e: any) => {
+        if (isDisabled || isNotSelectable) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        innerProps.onClick?.(e);
+    };
+
     return (
         <div
             ref={innerRef}
-            {...innerProps}
+            onClick={handleClick}
             style={{
                 backgroundColor: bgColor,
                 padding: '8px 12px',
-                cursor: 'pointer',
+                cursor: isDisabled || isNotSelectable ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
                 lineHeight: 1.4,
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'start',
                 gap: '8px',
-                borderBottom: '1px solid #eee'
+                borderBottom: '1px solid #eee',
+                opacity: isDisabled ? 0.5 : 1
             }}>
             {data.isSubledger && (
                 <div style={{ color: '#0077cc', fontSize: '12px', lineHeight: '18px' }}>
@@ -204,6 +277,10 @@ type AccountPickerFlatType = {
     showAccountBalance?: boolean
     showRefreshButton?: boolean
     value?: string | null;
+    toSelectFirstOption?: boolean;
+    sqlId?: string | null;
+    isDisabled?: boolean
+    isNotSelectable?: boolean
 }
 
 export type AccountOptionType = {
@@ -211,6 +288,8 @@ export type AccountOptionType = {
     accName: string;
     accParent: string;
     isSubledger: boolean;
+    accLeaf: 'L' | 'S' | 'Y';
+    isDisabled: boolean;
 }
 
 export type AccClassName =

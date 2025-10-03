@@ -37,7 +37,7 @@ export function CompTabs({
 
   return (
     <div className={className}>
-      <div className="flex space-x-2 border-b border-gray-300 pb-0.5">
+      <div className="flex pb-0.5 border-b border-gray-300 space-x-2">
         {tabsInfo.map((tab: TabType, idx: number) => {
           const isActive = idx === (compTabsInstance?.activeTabIndex ?? 0);
           return (
@@ -62,12 +62,12 @@ export function CompTabs({
             >
               <div className="flex items-center gap-2">
                 {tab.hasError && (
-                  <IconError1 className="text-red-500 w-5 h-5" />
+                  <IconError1 className="w-5 h-5 text-red-500" />
                 )}
                 <span className="text-sm">{tab.label}</span>
               </div>
               {tab.tagLine && (
-                <span className="text-[11px] mt-0.5 text-gray-200 group-hover:text-white leading-tight">
+                <span className="mt-0.5 text-[11px] text-gray-200 leading-tight group-hover:text-white">
                   {tab.tagLine}
                 </span>
               )}

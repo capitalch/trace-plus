@@ -6,9 +6,11 @@ import { AppDispatchType } from "../../../../app/store"
 import { FinYearsOptions } from "./fin-years-options"
 import { BranchesOptions } from "./branches-options"
 import _ from 'lodash'
+import { useMediaQuery } from "react-responsive"
 
 export function FinYearsBranchesOptions() {
     const allFinYearsBranchesSelector = useSelector(allFinYearsBranchesSelectorFn, shallowEqual)
+    const isMobile = useMediaQuery({ query: '(max-width: 639px)' })
 
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const dispatch: AppDispatchType = useDispatch()
@@ -20,7 +22,7 @@ export function FinYearsBranchesOptions() {
     }, [allFinYearsBranchesSelector])
 
     return (
-        <div className="flex items-center">
+        <div className={`flex items-center ${isMobile ? 'gap-1' : 'gap-0'}`}>
             <FinYearsOptions />
             <BranchesOptions />
         </div>

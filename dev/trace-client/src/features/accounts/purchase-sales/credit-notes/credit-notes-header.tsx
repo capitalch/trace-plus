@@ -36,13 +36,12 @@ export function CreditNotesHeader() {
 
     return (
         <div className="relative mb-8">
-            {/* <div className="grid p-6 bg-red-50 shadow-sm gap-6 grid-cols-1 lg:grid-cols-8 md:grid-cols-3 sm:grid-cols-2"> */}
-            <div className="grid p-6 bg-red-50 shadow-sm gap-4 grid-cols-1 xl:grid-cols-12 lg:grid-cols-8 md:grid-cols-6 sm:gap-6 sm:grid-cols-2 sm:p-6">
+            <div className="flex flex-wrap p-4 sm:p-6 bg-red-50 shadow-sm gap-3 sm:gap-4">
                 {/* Auto ref no */}
-                <FormField label="Auto Ref No" className="xl:col-span-2 lg:col-span-2">
+                <FormField label="Auto Ref No" className="flex-1 min-w-[200px]">
                     <input
                         type="text"
-                        className={clsx(inputClassLeft, "bg-gray-200",)}
+                        className={clsx(inputClassLeft, "bg-gray-200")}
                         readOnly
                         disabled
                         title="Auto reference number"
@@ -55,7 +54,7 @@ export function CreditNotesHeader() {
                     label="Date"
                     required
                     error={errors?.tranDate?.message}
-                    className="xl:col-span-2 lg:col-span-2"
+                    className="flex-1 min-w-[200px]"
                 >
                     <input
                         type="date"
@@ -68,7 +67,7 @@ export function CreditNotesHeader() {
                 </FormField>
 
                 {/* User ref no */}
-                <FormField label="User Ref No" className="xl:col-span-2 lg:col-span-2">
+                <FormField label="User Ref No" className="flex-1 min-w-[200px]">
                     <input
                         type="text"
                         className={clsx(inputClassLeft)}
@@ -78,7 +77,7 @@ export function CreditNotesHeader() {
                 </FormField>
 
                 {/* Remarks */}
-                <FormField className="col-span-1 sm:col-span-2 xl:col-span-3 lg:col-span-2" label="Remarks">
+                <FormField className="flex-1 min-w-[250px]" label="Remarks">
                     <textarea
                         rows={3}
                         className={clsx(inputClassLeft, "resize-none")}
@@ -88,13 +87,13 @@ export function CreditNotesHeader() {
                 </FormField>
 
                 {/* isGstApplicable */}
-                <div className="flex-col items-center col-span-1">
+                <div className="flex-col items-center min-w-[200px]">
                     <FormField label="Apply GST?" className="flex flex-col items-start text-sm gap-3">
-                        <div className="flex items-center gap-3 mt-1">
+                        <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
                             <button
                                 type="button"
                                 className={clsx(
-                                    "px-3 py-1 rounded border transition-all duration-200",
+                                    "px-3 py-1 rounded border transition-all duration-200 text-sm",
                                     watch("isGstApplicable")
                                         ? "bg-blue-500 text-white border-blue-600"
                                         : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
@@ -112,7 +111,7 @@ export function CreditNotesHeader() {
                             <button
                                 type="button"
                                 className={clsx(
-                                    "px-3 py-1 rounded border transition-all duration-200",
+                                    "px-3 py-1 rounded border transition-all duration-200 text-sm",
                                     !watch("isGstApplicable")
                                         ? "bg-red-500 text-white border-red-600"
                                         : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
@@ -130,29 +129,29 @@ export function CreditNotesHeader() {
                             >
                                 No
                             </button>
+                            {/* igst inline */}
+                            {isGstApplicable && <label className="flex items-center font-medium text-xs cursor-pointer gap-2">
+                                <input
+                                    type="checkbox"
+                                    {...register("isIgst", {
+                                        onChange: () => {
+                                            computeGst()
+                                        },
+                                    })}
+                                    className="text-blue-600 border-gray-300 rounded cursor-pointer focus:ring-blue-500"
+                                />
+                                IGST
+                            </label>}
                         </div>
                     </FormField>
-                    {/* igst */}
-                    {isGstApplicable && <label className="flex items-center mt-4 font-medium text-xs cursor-pointer gap-2">
-                        <input
-                            type="checkbox"
-                            {...register("isIgst", {
-                                onChange: () => {
-                                    computeGst()
-                                },
-                            })}
-                            className="text-blue-600 border-gray-300 rounded cursor-pointer focus:ring-blue-500"
-                        />
-                        IGST
-                    </label>}
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-3 col-span-full xl:col-span-2 lg:col-span-full sm:col-span-2 ml-auto ">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto sm:ml-auto">
                     <button
                         onClick={resetAll}
                         type="button"
-                        className="flex items-center px-4 py-2 font-medium text-white bg-amber-500 rounded-lg transition-all duration-200 hover:bg-amber-600 disabled:bg-amber-300"
+                        className="flex items-center justify-center px-4 py-2 font-medium text-white bg-amber-500 rounded-lg transition-all duration-200 hover:bg-amber-600 disabled:bg-amber-300"
                     >
                         <IconReset className="mr-2 w-5 h-5" />
                         Reset
@@ -160,7 +159,7 @@ export function CreditNotesHeader() {
                     <button
                         type="submit"
                         disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || !isValid}
-                        className="flex items-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:bg-blue-300"
+                        className="flex items-center justify-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:bg-blue-300"
                     >
                         <IconSubmit className="mr-2 w-5 h-5" />
                         Submit
@@ -168,10 +167,9 @@ export function CreditNotesHeader() {
                 </div>
 
                 {/* Edit / New label */}
-                <div className="flex absolute -top-12 gap-2 right-0">
-                    {/* <button type="submit" >Test</button> */}
+                <div className="flex absolute -top-10 sm:-top-12 gap-2 right-4 sm:right-0">
                     {getPrintPreview()}
-                    <label className="font-medium text-amber-500 text-lg">
+                    <label className="font-medium text-amber-500 text-base sm:text-lg">
                         {watch("id") ? "Edit Credit Note" : "New Credit Note"}
                     </label>
                 </div>

@@ -3,18 +3,16 @@ import {
   ApolloLink,
   HttpLink,
   InMemoryCache,
-  NextLink,
-  Operation
 } from '@apollo/client'
 import urlJoin from 'url-join'
 import { Utils } from '../../utils/utils'
-
 export function getApolloClient () {
   const url = Utils.getHostUrl()
   const link = new HttpLink({
-    uri: urlJoin(url, 'graphql/')
+    uri: urlJoin(url, 'graphql/'),
+    // credentials: 'include' // not working
   })
-  const authLink = new ApolloLink((operation: Operation, forward: NextLink) => {
+  const authLink = new ApolloLink((operation, forward) => {
     const token = Utils.getToken()
     operation.setContext({
       headers: {
@@ -38,7 +36,7 @@ export function getApolloClient () {
         fetchPolicy: 'no-cache',
       }
     },
-    credentials:'include'
+    // credentials:'include'
   })
   return apolloClient
 }

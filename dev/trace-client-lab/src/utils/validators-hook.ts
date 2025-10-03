@@ -314,8 +314,44 @@ function useValidators() {
 
   // Helper methods
   function isValidEmail(input: string) {
-    const ret = input.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-    return ret;
+    if (!input || input.length === 0) return false;
+    
+    // Check for basic structure first
+    if (!/^[^@\s]+@[^@\s]+$/.test(input)) return false;
+    
+    // Split into local and domain parts
+    const parts = input.split('@');
+    if (parts.length !== 2) return false;
+    
+    const [localPart, domainPart] = parts;
+    
+    // Validate local part (before @)
+    if (!localPart || localPart.length === 0 || localPart.length > 64) return false;
+    if (localPart.startsWith('.') || localPart.endsWith('.')) return false;
+    if (localPart.includes('..')) return false;
+    if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(localPart)) return false;
+    
+    // Validate domain part (after @)
+    if (!domainPart || domainPart.length === 0 || domainPart.length > 255) return false;
+    if (domainPart.startsWith('.') || domainPart.endsWith('.')) return false;
+    if (domainPart.includes('..')) return false;
+    
+    // Split domain into labels
+    const domainLabels = domainPart.split('.');
+    if (domainLabels.length < 2) return false; // Must have at least domain.tld
+    
+    // Validate each domain label
+    for (const label of domainLabels) {
+      if (!label || label.length === 0 || label.length > 63) return false;
+      if (label.startsWith('-') || label.endsWith('-')) return false;
+      if (!/^[a-zA-Z0-9-]+$/.test(label)) return false;
+    }
+    
+    // Validate TLD (last label) - must be at least 2 characters and only letters
+    const tld = domainLabels[domainLabels.length - 1];
+    if (tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) return false;
+    
+    return true;
   }
 
   function isValidGstin(input: string) {

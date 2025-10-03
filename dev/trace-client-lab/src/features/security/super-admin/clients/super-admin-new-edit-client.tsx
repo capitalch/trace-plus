@@ -91,21 +91,21 @@ export function SuperAdminNewEditClient({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex flex-col gap-2 w-auto min-w-72'>
+            <div className='flex flex-col w-auto min-w-72 gap-2'>
 
                 {/* Client code */}
                 <label className='flex flex-col font-medium text-primary-400'>
                     <span className='font-bold'>Client code <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g battle" autoComplete="off"
-                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+                        className='px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs'
                         {...registerClientCode}
                     />
                     <span className="flex justify-between">
                         {(errors.clientCode)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientCode.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <TooltipComponent content={Messages.messClientCode} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
-                            <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
+                        <TooltipComponent content={Messages.messClientCode} className="font-normal text-blue-500! text-sm bg-white border-2 border-gray-200 -top-5!">
+                            <span className='ml-auto text-primary-400 text-xs hover:cursor-pointer'>?</span>
                         </TooltipComponent>
                     </span>
                 </label>
@@ -114,28 +114,28 @@ export function SuperAdminNewEditClient({
                 <label className='flex flex-col font-medium text-primary-400'>
                     <span className='font-bold'>Client name <WidgetAstrix /></span>
                     <input type='text' placeholder="e.g Battle ground" autoComplete="off"
-                        className='rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic'
+                        className='px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs'
                         {...registerClientName}
                     />
                     <span className="flex justify-between">
                         {(errors.clientName)
                             ? <WidgetFormErrorMessage errorMessage={errors.clientName.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />}
-                        <TooltipComponent content={Messages.messClientName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
-                            <span className='ml-auto text-xs text-primary-400 hover:cursor-pointer'>?</span>
+                        <TooltipComponent content={Messages.messClientName} className="font-normal text-blue-500! text-sm bg-white border-2 border-gray-200 -top-5!">
+                            <span className='ml-auto text-primary-400 text-xs hover:cursor-pointer'>?</span>
                         </TooltipComponent>
                     </span>
                 </label>
 
                 {/* Is active  */}
                 <div className="flex items-center">
-                    <input type="checkbox" id='isActive' className='h-4 w-4 cursor-pointer'
+                    <input type="checkbox" id='isActive' className='w-4 h-4 cursor-pointer'
                         checked={active}  {...registerIsClientActive} onChange={() => setActive(!active)} />
-                    <label htmlFor="isActive" className="ml-3 text-sm text-primary-500 cursor-pointer">Is this client active</label>
+                    <label htmlFor="isActive" className="ml-3 text-primary-500 text-sm cursor-pointer">Is this client active</label>
                 </div>
 
                 {/* Save */}
-                <div className='mt-4 flex justify-start'>
+                <div className='flex justify-start mt-4'>
                     <WidgetButtonSubmitFullWidth label='Save' disabled={!_.isEmpty(errors)} />
                 </div>
             

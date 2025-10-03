@@ -27,15 +27,15 @@ export function AdminLinkUsersWithBu() {
 
     return (
         <div className='flex flex-col ml-8'>
-            <div className='mt-6 flex justify-between items-center'>
-                <label className='text-xl font-semibold text-primary-400'>Link users with business units (bu)</label>
-                <label className=' text-primary-300 mr-6'>{Utils.getUserDetails()?.clientName}</label>
+            <div className='flex items-center justify-between mt-6'>
+                <label className='font-semibold text-primary-400 text-xl'>Link users with business units (bu)</label>
+                <label className='mr-6 text-primary-300'>{Utils.getUserDetails()?.clientName}</label>
             </div>
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
                         className='mt-4'
-                        CustomControl={() => <TooltipComponent content='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='w-10 h-8 px-2 mb-2 text-xs' /></TooltipComponent>}
+                        CustomControl={() => <TooltipComponent content='New business user' ><AdminNewBusinessUserButton dataInstance={businessUsersInstance} className='mb-2 px-2 w-10 h-8 text-xs' /></TooltipComponent>}
                         minWidth='300px'
                         title=''
                         isLastNoOfRows={false}
@@ -69,7 +69,7 @@ export function AdminLinkUsersWithBu() {
                             <TooltipComponent content='New business unit' >
                                 <AdminNewBusinessUnitButton
                                     dataInstance={linksInstance}
-                                    className='w-10 h-8 px-2 mb-2 text-xs'
+                                    className='mb-2 px-2 w-10 h-8 text-xs'
                                     isTreeGrid={true}
                                 />
                             </TooltipComponent>}
@@ -253,7 +253,7 @@ export function AdminLinkUsersWithBu() {
 
     function getChildCount(props: any) {
         return (
-            <span className='mt-2 ml-2 text-xs text-red-500'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
+            <span className='mt-2 ml-2 text-red-500 text-xs'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
         )
     }
 
@@ -261,11 +261,11 @@ export function AdminLinkUsersWithBu() {
         let ret = null
         if (props.level === 0) {
             ret = <TooltipComponent content="Link an existing user with business unit">
-                <button onClick={() => handleOnClickLink(props)}><IconLink className="w-5 h-5 ml-2 text-blue-500"></IconLink></button>
+                <button onClick={() => handleOnClickLink(props)}><IconLink className="ml-2 w-5 h-5 text-blue-500"></IconLink></button>
             </TooltipComponent>
         } else {
             ret = <TooltipComponent content="Unlink this user from business unit">
-                <button onClick={() => handleOnClickUnLink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+                <button onClick={() => handleOnClickUnLink(props)}><IconUnlink className="ml-2 w-5 h-5 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)
@@ -277,7 +277,7 @@ export function AdminLinkUsersWithBu() {
         if ((props.level === 0) && isVisible) {
             ret = <TooltipComponent content={Messages.messUnlinkAllBusinessUsers}>
                 <button onClick={() => handleOnClickUnlinkAll(props)}>
-                    <IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+                    <IconUnlink className="ml-2 w-5 h-5 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)

@@ -16,7 +16,7 @@ export function AllVouchersMain() {
     const voucherType = watch('voucherType')
     return (
         <div className="flex flex-col px-4">
-            <AllVouchersCrown className="absolute top-13 right-6 " />
+            <AllVouchersCrown className="absolute right-6 top-13" />
             <VoucherCommonHeader />
             {getVoucherTypeControl()}
         </div>

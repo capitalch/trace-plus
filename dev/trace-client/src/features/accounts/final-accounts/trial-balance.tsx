@@ -48,7 +48,8 @@ export function TrialBalance() {
                 isAllBranches={isAllBranches}
                 isLastNoOfRows={false}
                 instance={instance}
-                width="calc(100vw - 250px)" // This stops unnecessary flickers
+                minWidth="400px"
+                // width="calc(100vw - 250px)" // This stops unnecessary flickers
             />
             <CompSyncfusionTreeGrid                
                 aggregates={getTrialBalanceAggregates()}
@@ -66,7 +67,7 @@ export function TrialBalance() {
                 columns={getColumns()}
                 height="calc(100vh - 227px)"
                 instance={instance}
-                minWidth='950px'
+                minWidth='400px'
                 treeColumnIndex={0}
             />
         </CompAccountsContainer>

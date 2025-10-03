@@ -47,10 +47,10 @@ export function StockJournalMain({ instance }: { instance: string }) {
   }, [dispatch, instance]);
 
   return (
-    <div className="h-[calc(100vh-240px)] relative">
+    <div className="relative h-[calc(100vh-240px)] mt-8">
       <FormProvider {...extendedMethods}>
         <form
-          className="flex flex-col gap-4 mr-6 min-w-[85rem]"
+          className="flex flex-col mr-6 min-w-[85rem] gap-4"
           onSubmit={methods.handleSubmit(onSubmit)}
         >
           <StockJournalCrown className="absolute -top-5.5 right-6" />

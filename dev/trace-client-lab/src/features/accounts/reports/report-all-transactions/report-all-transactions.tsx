@@ -2,7 +2,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { transactionTypes } from "./export-constants";
 import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
-import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
+import { showCompAppLoader, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 export function ReportAllTransactions() {
@@ -53,12 +53,17 @@ export function ReportAllTransactions() {
         loadData()
     }, [buCode, branchId, finYearId])
 
+    // Set main title for All Transactions Report
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "All Transactions Report" }));
+    }, [dispatch]);
+
     return (
         <CompAccountsContainer className="z-0">
             <CompSyncFusionGridToolbar className='mt-2 mr-6'
                 CustomControl={() => <ReportAllTransactionsFilterBar />}
                 minWidth="1000px"
-                title='All transactions'
+                title=''
                 isPdfExport={false}
                 isExcelExport={false}
                 isCsvExport={true}
@@ -68,7 +73,7 @@ export function ReportAllTransactions() {
                 aggregates={getAggregates()}
                 allowPaging={true}
                 buCode={buCode}
-                className="mr-6 mt-4"
+                className="mt-4 mr-6"
                 columns={getColumns()}
                 dataSource={apiData}
                 dbName={dbName}
@@ -79,7 +84,7 @@ export function ReportAllTransactions() {
                 height="calc(100vh - 295px)"
                 instance={instance}
                 loadData={loadData}
-                minWidth="1400px"
+                minWidth="400px"
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
             />

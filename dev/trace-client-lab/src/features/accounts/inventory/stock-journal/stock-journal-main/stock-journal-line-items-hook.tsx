@@ -51,7 +51,7 @@ export function useStockJournalLineItems(
             return true;
         }
         return (
-            <div className="absolute top-0 right-0">
+            <div className="absolute right-0 top-0">
                 <button
                     aria-label="Error Tooltip"
                     tabIndex={-1}
@@ -64,16 +64,13 @@ export function useStockJournalLineItems(
                 >
                     {/* Small red triangle indicator */}
                     <div
-                        className="w-0 h-0 
-                    border-t-11 border-t-red-500 
-                    border-l-11 border-l-transparent 
-                    border-b-0 border-r-0"
+                        className="w-0 h-0 border-b-0 border-l-11 border-l-transparent border-r-0 border-t-11 border-t-red-500"
                     />
                 </button>
 
                 {/* Error Tooltip (Only shows for the clicked index) */}
                 {srNoTooltipIndex === index && (
-                    <div className="absolute right-0 top-2 bg-red-500 text-white text-xs p-2 rounded shadow-lg w-max z-10">
+                    <div className="absolute p-2 w-max text-white text-xs bg-red-500 rounded shadow-lg right-0 top-2 z-10">
                         {!snError || Messages.errQtySrNoNotMatch}
                     </div>
                 )}

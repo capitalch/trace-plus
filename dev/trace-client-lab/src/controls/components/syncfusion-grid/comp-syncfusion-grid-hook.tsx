@@ -135,8 +135,8 @@ export function useCompSyncFusionGrid({
               title: 'Copy',
               type: 'None',
               buttonOption: {
-                content: '📄', // fallback icon using emoji
-                cssClass: 'e-flat e-grid-copy text-green-500',
+                content: '❋', // fallback icon using emoji
+                cssClass: 'e-flat e-grid-copy text-purple-600',
               }
             }
           ]}

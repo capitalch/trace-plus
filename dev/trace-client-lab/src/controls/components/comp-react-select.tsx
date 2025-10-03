@@ -12,7 +12,8 @@ export function CompReactSelect({
   optionValueName,
   placeHolder,
   selectedValue,
-  staticOptions
+  staticOptions,
+  // ...otherProps
 }: CompReactSelectType) {
   const [options, setOptions] = useState([]);
   const selectRef: any = useRef(null);
@@ -36,6 +37,13 @@ export function CompReactSelect({
   useEffect(() => {
     selectItem();
   }, [options]);
+
+  // Filter out DOM-specific props that shouldn't be passed to react-select
+  // const {
+  //   name,
+  //   onBlur,
+  //   ...selectProps
+  // } = otherProps;
 
   return (
     <Select
@@ -72,4 +80,5 @@ type CompReactSelectType = {
   ref: any;
   selectedValue: any;
   staticOptions?: any;
+  [key: string]: any; // Allow additional props for register() spreading
 };

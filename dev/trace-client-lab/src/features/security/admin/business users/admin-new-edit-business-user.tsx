@@ -82,7 +82,7 @@ export function AdminNewEditBusinessUser({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-72">
+            <div className="flex flex-col w-auto min-w-72 gap-2">
 
                 {/* Role id */}
                 <label className="flex flex-col font-medium text-primary-400">
@@ -106,7 +106,7 @@ export function AdminNewEditBusinessUser({
                         type="text"
                         placeholder="e.g. John Doe"
                         autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerUserName}
                     />
                     {errors.userName && <WidgetFormErrorMessage errorMessage={errors.userName.message} />}
@@ -119,7 +119,7 @@ export function AdminNewEditBusinessUser({
                         type="text"
                         placeholder="e.g. +1234567890"
                         autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerMobileNo}
                     />
                     {errors.mobileNo && <WidgetFormErrorMessage errorMessage={errors.mobileNo.message} />}
@@ -132,7 +132,7 @@ export function AdminNewEditBusinessUser({
                         type="email"
                         placeholder="e.g. john@example.com"
                         autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerUserEmail}
                     />
                     {errors.userEmail && <WidgetFormErrorMessage errorMessage={errors.userEmail.message} />}
@@ -145,7 +145,7 @@ export function AdminNewEditBusinessUser({
                         type="text"
                         placeholder="e.g. Important user"
                         autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerDescr}
                     />
                 </label>
@@ -157,7 +157,7 @@ export function AdminNewEditBusinessUser({
                 </label>
 
                 {/* Save */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors) || isSubmitting} />
                 </div>
                 <span>{showServerValidationError()}</span>

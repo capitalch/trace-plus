@@ -16,6 +16,7 @@ import { IconUser1 } from "../../../controls/icons/icon-user1";
 import { GlobalContext, GlobalContextType, resetGlobalContext } from "../../../app/global-context";
 import { useContext } from "react";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { useMediaQuery } from "react-responsive";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
     const context: GlobalContextType = useContext(GlobalContext);
@@ -26,15 +27,23 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     const isNotSuperAdmin = !(userType === UserTypesEnum.SuperAdmin)
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const email: string | undefined = loginInfo.userDetails?.userEmail
+    const isMobile = useMediaQuery({ query: '(max-width: 639px)' })
+    const isTablet = useMediaQuery({ query: '(min-width: 640px) and (max-width: 1023px)' })
+
     return (
         <ClickAwayListener onClickAway={handleOnClickAway}>
             <div className="flex relative items-center ml-auto h-12 text-white bg-primary-500">
                 <TooltipComponent content={getLogoutTooltipContent()} position="LeftCenter">
                     <button onClick={handleShowDropdown} type="button"
-                        className={clsx(className, 'flex px-4 gap-3 py-2 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400')}>
-                        <span className="text-sm">{email}</span>
-                        <IconUser1 className='w-4 h-5 text-secondary-200' />
-                        <IconCheveronDown />
+                        className={clsx(className, 'flex gap-1 sm:gap-2 md:gap-3 py-2 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400', isMobile ? 'px-2' : 'px-3 sm:px-4')}>
+                        {/* Email - hide on mobile, truncate on tablet */}
+                        {!isMobile && (
+                            <span className={`text-xs sm:text-sm ${isTablet ? 'max-w-[80px] truncate' : ''}`}>
+                                {email}
+                            </span>
+                        )}
+                        <IconUser1 className='w-4 h-4 sm:w-5 sm:h-5 text-secondary-200' />
+                        <IconCheveronDown className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                     {
                         toShowNavBarDropDownSelector &&

@@ -21,7 +21,7 @@ export function JournalVoucher({ instance }: JournalVoucherType) {
     }, [])
 
     return (
-        <div className="flex flex-col gap-4 mr-6">
+        <div className="flex flex-col mr-6 gap-4">
             <VoucherLineItemEntry
                 accountOptions={debitAccountOptions}
                 allowAddRemove={true}
@@ -92,6 +92,8 @@ export function JournalVoucher({ instance }: JournalVoucherType) {
                 sqlArgs: {
                     accClassNames: ['branch',
                         'capital',
+                        // 'cash',
+                        // 'bank',
                         'other',
                         'loan',
                         'iexp',

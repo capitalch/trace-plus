@@ -34,7 +34,7 @@ useEffect(() => {
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExport={true}
         isExcelExport={true}
@@ -53,7 +53,7 @@ useEffect(() => {
         dbParams={decodedDbParamsObject}
         height="calc(100vh - 303px)"
         instance={instance}
-        minWidth="600px"
+        minWidth="400px"
         pageSettings={{ pageSize: 500, pageSizes: [200, 500, 1000, 2000] }}
         sqlId={SqlIdsMap.getAllProducts}
         sqlArgs={{

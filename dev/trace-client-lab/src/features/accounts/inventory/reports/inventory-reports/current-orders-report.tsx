@@ -1,4 +1,4 @@
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import {
@@ -9,13 +9,14 @@ import {
 import { CompSyncFusionGridToolbar } from "../../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BackToDashboardLink } from "../back-to-dashboard-link";
-import { RootStateType } from "../../../../../app/store";
-import { selectCompSwitchStateFn } from "../../../../../controls/redux-components/comp-slice";
+import { AppDispatchType, RootStateType } from "../../../../../app/store";
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../../controls/redux-components/comp-instances";
 import { CompSwitch } from "../../../../../controls/redux-components/comp-switch";
 import { useEffect } from "react";
 
 export function CurrentOrdersReport({ title }: { title?: string }) {
+  const dispatch: AppDispatchType = useDispatch();
   const instance = DataInstancesMap.currentOrdersReport;
   const isAllBranches: boolean =
     useSelector(
@@ -35,6 +36,10 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
     decodedDbParamsObject,
     finYearId
   } = useUtilsInfo();
+
+  useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
 
   useEffect(() => {
     // This block is necessary. Otherwise branch selection not works correctly
@@ -57,7 +62,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
           />
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExport={true}
         isExcelExport={true}
@@ -77,7 +82,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         hasIndexColumn={true}
         height="calc(100vh - 247px)"
         instance={instance}
-        minWidth="600px"
+        minWidth="400px"
         sqlId={SqlIdsMap.getCurrentOrders}
         sqlArgs={{
           branchId: isAllBranches ? null : branchId,
@@ -104,7 +109,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         field: "orderValue",
         format: "N2",
         footerTemplate: (props: any) => (
-          <span className="text-xs mr-4">{props.Sum}</span>
+          <span className="mr-4 text-xs">{props.Sum}</span>
         )
       }
     ];

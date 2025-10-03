@@ -28,9 +28,9 @@ export function AdminLinkSecuredControlsWithRoles() {
 
     return (
         <div className='flex flex-col ml-8'>
-            <div className='mt-6 flex justify-between items-center'>
-                <label className="text-xl font-semibold text-primary-400">Linking of secured controls with roles</label>
-                <label className=' text-primary-300 mr-6'>{Utils.getUserDetails()?.clientName}</label>
+            <div className='flex items-center justify-between mt-6'>
+                <label className="font-semibold text-primary-400 text-xl">Linking of secured controls with roles</label>
+                <label className='mr-6 text-primary-300'>{Utils.getUserDetails()?.clientName}</label>
             </div>
             <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col w-min' >
@@ -44,7 +44,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     <label className='mt-2 font-medium text-primary-300'>{Messages.messSecuredControlsDragFrom}</label>
                     <CompSyncFusionGrid
                         aggregates={getSecuredControlsAggregates()}
-                        className="mt-4 "
+                        className="mt-4"
                         columns={getSecuredControlsColumns()}
                         gridDragAndDropSettings={
                             {
@@ -71,7 +71,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     <label className='mt-2 font-medium text-primary-300'>{Messages.messExistingRolesWithLinksDropHere}</label>
                     <CompSyncfusionTreeGrid
                         addUniqueKeyToJson={true}
-                        className="mt-2 "
+                        className="mt-2"
                         childMapping="securedControls"
                         columns={getLinkColumns()}
                         height="calc(100vh - 290px)"
@@ -236,7 +236,7 @@ export function AdminLinkSecuredControlsWithRoles() {
 
     function getChildCount(props: any) {
         return (
-            <span className='mt-2 ml-2 text-xs text-red-500'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
+            <span className='mt-2 ml-2 text-red-500 text-xs'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
         )
     }
 
@@ -256,7 +256,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         if ((props.level === 0)) {
             ret = <TooltipComponent content={Messages.messAutoLinkBuiltinRoles}>
                 <button onClick={() => handleOnClickAutoLinkFromBuiltinRoles(props)} type="button" title="Auto link from built-in roles">
-                    <IconAutoLink className="w-5 h-5 ml-4 text-teal-500"></IconAutoLink></button>
+                    <IconAutoLink className="ml-4 w-5 h-5 text-teal-500"></IconAutoLink></button>
             </TooltipComponent>
         }
         return (ret)
@@ -274,11 +274,11 @@ export function AdminLinkSecuredControlsWithRoles() {
         let ret = null
         if (props.level === 0) {
             ret = <TooltipComponent content={Messages.messLinkSecuredControl}>
-                <button type="button" title="link" onClick={() => handleOnClickLink(props)}><IconLink className="w-5 h-5 ml-2 text-blue-500"></IconLink></button>
+                <button type="button" title="link" onClick={() => handleOnClickLink(props)}><IconLink className="ml-2 w-5 h-5 text-blue-500"></IconLink></button>
             </TooltipComponent>
         } else {
             ret = <TooltipComponent content={Messages.messUnlinkSecuredControl}>
-                <button type='button' title="link" onClick={() => handleOnClickUnlink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+                <button type='button' title="link" onClick={() => handleOnClickUnlink(props)}><IconUnlink className="ml-2 w-5 h-5 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)
@@ -290,7 +290,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         if ((props.level === 0) && isVisible) {
             ret = <TooltipComponent content={Messages.messUnlinkAllSecuredControl}>
                 <button type ='button' title="unlink" onClick={() => handleOnClickUnlinkAll(props)}>
-                    <IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+                    <IconUnlink className="ml-2 w-5 h-5 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)

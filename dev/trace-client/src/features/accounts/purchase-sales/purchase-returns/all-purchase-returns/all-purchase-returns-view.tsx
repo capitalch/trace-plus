@@ -106,7 +106,7 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 instance={instance}
                 isSmallerFont={true}
                 loadData={loadData}
-                minWidth="1400px"
+                minWidth="400px"
                 onCopy={handleOnCopy}
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}

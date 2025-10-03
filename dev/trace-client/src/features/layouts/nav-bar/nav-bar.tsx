@@ -17,17 +17,17 @@ export function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
     const { isOpen, identifier, title, width } = useSelector(selectSlidingPaneStateFn) // for sliding pane
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
-    const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleShowSideBar } = useNavBar()
+    const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleToggleSideBar } = useNavBar()
 
-    const SlidingPaneChildComp: FC<any>  = SlidingPaneMap[identifier]?.content 
+    const SlidingPaneChildComp: FC<any>  = SlidingPaneMap[identifier]?.content
     const slidingPaneChildCompProps: any = SlidingPaneMap[identifier]?.props
-    
+
     return (
-       // Top Nav bar
-       <div className="flex items-center h-12 bg-primary-500">
-       <div className="flex items-center text-lg text-white">
-           <button type="button" onClick={handleShowSideBar} className={clsx(getMenuShowHideClass(), 'mx-2')} title="toggle" >
-               <IconMenuUnfold className='h-6' />
+       // Top Nav bar - height matches sidebar logo height (h-12)
+       <div className="flex items-center h-12 bg-primary-500 px-1 sm:px-2">
+       <div className="flex items-center text-sm sm:text-base md:text-lg text-white gap-1 sm:gap-2">
+           <button type="button" onClick={handleToggleSideBar} className={clsx(getMenuShowHideClass(), 'p-1 sm:p-2')} title="Toggle sidebar" >
+               <IconMenuUnfold className='h-5 w-5 sm:h-6 sm:w-6' />
            </button>
            {getMenuButtons()}
            {getBuFyBranchInfo()}

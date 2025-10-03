@@ -11,15 +11,21 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { AppDispatchType, RootStateType, } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { AllVouchersView } from "./all-vouchers-view";
+import { AllVouchersView, VoucherTranDetailsType } from "./all-vouchers-view";
 import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { useEffect, useRef } from "react";
 import { Messages } from "../../../../utils/messages";
 import _ from "lodash";
 import { clearVoucherFormData, saveVoucherFormData } from "../voucher-slice";
+import { useLocation, /*useNavigate*/ } from "react-router-dom";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
+import { VoucherEditDataType } from "./all-vouchers-view";
+// import { WidgetButtonBackToReport } from "../../../../controls/widgets/widget-button-back-to-report";
 
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
+    const location = useLocation()
+    // const navigate = useNavigate()
     const savedFormData = useSelector((state: RootStateType) => state.vouchers.savedFormData);
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex || 0);
     const instance = DataInstancesMap.allVouchers;
@@ -27,7 +33,7 @@ export function AllVouchers() {
         totalDebits: 0,
         totalCredits: 0
     })
-    const { branchId, buCode, dbName, finYearId, hasGstin } = useUtilsInfo();
+    const { branchId, buCode, dbName, finYearId, hasGstin, decodedDbParamsObject } = useUtilsInfo();
     const methods = useForm<VoucherFormDataType>(
         {
             mode: "onTouched",
@@ -35,7 +41,7 @@ export function AllVouchers() {
             defaultValues: savedFormData ?? getDefaultVoucherFormValues()
         });
     const { watch, getValues, setValue, reset } = methods;
-    const extendedMethods = { ...methods, resetAll, resetDetails }
+    const extendedMethods = { ...methods, resetAll, resetDetails, getVoucherDetailsOnId, populateFormFromId };
     const voucherType = watch('voucherType')
 
     // Utility function to generate voucher title
@@ -75,13 +81,21 @@ export function AllVouchers() {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [voucherType, activeTabIndex, dispatch]);
 
+    // Handle navigation from report - auto-populate form with ID from location state
+    useEffect(() => {
+        if (location.state?.id && location.state?.returnPath) {
+            populateFormFromId(location.state.id)
+        }
+    }, [location.state?.id, location.state?.returnPath]);
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className="relative">
-                    {/* <label className="mt-1 font-bold text-md text-primary-500">
-                        All Vouchers
-                    </label> */}
+                    {/* Back to Report Button */}
+                    {/* <div className="mt-2 ml-6">
+                        <WidgetButtonBackToReport />
+                    </div> */}
                     {/* Sticky voucher type selector */}
                     <div className="sticky self-end right-6 top-0 z-5">
                         <VoucherTypeOptions className="absolute rounded right-0 top-10" />
@@ -284,10 +298,148 @@ export function AllVouchers() {
         setValue('deletedIds', [])
         setValue("creditEntries", [getDefaultEntry('C')])
         setValue("debitEntries", [getDefaultEntry('D')])
-        // setTimeout(() => {
-        //     setValue("creditEntries", [getDefaultEntry('C')])
-        //     setValue("debitEntries", [getDefaultEntry('D')])
-        // }, 0)
+    }
+
+    async function populateFormFromId(id: number) {
+        try {
+            const editData: any = await getVoucherDetailsOnId(id)
+            const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
+            if (!voucherEditData) {
+                Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+                return
+            }
+            const tranHeader = voucherEditData?.tranHeader
+            reset({
+                id: tranHeader.id,
+                tranDate: tranHeader.tranDate,
+                userRefNo: tranHeader.userRefNo,
+                remarks: tranHeader.remarks,
+                tranTypeId: tranHeader.tranTypeId,
+                autoRefNo: tranHeader.autoRefNo,
+                voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
+                isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
+                showGstInHeader: voucherType !== 'Contra',
+                deletedIds: [],
+                creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
+                    id: d.id,
+                    tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
+                    accId: d.accId as string | null,
+                    remarks: d.remarks,
+                    dc: d.dc,
+                    amount: d.amount,
+                    tranHeaderId: d.tranHeaderId,
+                    lineRefNo: d.lineRefNo,
+                    instrNo: d.instrNo,
+                    gst: d?.gst?.id ? {
+                        id: d.gst.id,
+                        gstin: d.gst.gstin,
+                        rate: d.gst.rate,
+                        cgst: d.gst.cgst,
+                        sgst: d.gst.sgst,
+                        igst: d.gst.igst,
+                        isIgst: d?.gst?.igst ? true : false,
+                        hsn: d.gst.hsn
+                    } : undefined
+                })),
+                debitEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
+                    id: d.id,
+                    tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
+                    accId: d.accId as string | null,
+                    remarks: d.remarks,
+                    dc: d.dc,
+                    amount: d.amount,
+                    tranHeaderId: d.tranHeaderId,
+                    lineRefNo: d.lineRefNo,
+                    instrNo: d.instrNo,
+                    gst: d?.gst?.id ? {
+                        id: d.gst.id,
+                        gstin: d.gst.gstin,
+                        rate: d.gst.rate,
+                        cgst: d.gst.cgst,
+                        sgst: d.gst.sgst,
+                        igst: d.gst.igst,
+                        isIgst: d?.gst?.igst ? true : false,
+                        hsn: d.gst.hsn
+                    } : undefined
+                })),
+            },)
+            // reset({
+            //     id: tranHeader.id,
+            //     tranDate: tranHeader.tranDate,
+            //     userRefNo: tranHeader.userRefNo,
+            //     remarks: tranHeader.remarks,
+            //     tranTypeId: tranHeader.tranTypeId,
+            //     autoRefNo: tranHeader.autoRefNo,
+            //     voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
+            //     isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
+            //     showGstInHeader: Utils.getTranTypeName(tranHeader.tranTypeId) !== 'Contra',
+            //     deletedIds: [],
+            //     finYearId: finYearId || 0,
+            //     branchId: branchId || 1,
+            //     posId: 1,
+            //     toggle: true,
+            //     creditEntries: voucherEditData?.tranDetails.filter((d) => d.dc === 'C').map((d) => ({
+            //         id: d.id,
+            //         accId: d.accId,
+            //         remarks: d.remarks,
+            //         dc: d.dc,
+            //         amount: d.amount,
+            //         tranHeaderId: d.tranHeaderId,
+            //         lineRefNo: d.lineRefNo,
+            //         instrNo: d.instrNo,
+            //         deletedIds: [],
+            //         gst: d.gst ? {
+            //             id: d.gst.id,
+            //             gstin: d.gst.gstin,
+            //             rate: d.gst.rate,
+            //             cgst: d.gst.cgst,
+            //             sgst: d.gst.sgst,
+            //             igst: d.gst.igst,
+            //             isIgst: d?.gst?.igst ? true : false,
+            //             hsn: d.gst.hsn
+            //         } : undefined
+            //     })),
+            //     debitEntries: voucherEditData?.tranDetails.filter((d) => d.dc === 'D').map((d) => ({
+            //         id: d.id,
+            //         accId: d.accId,
+            //         remarks: d.remarks,
+            //         dc: d.dc,
+            //         amount: d.amount,
+            //         tranHeaderId: d.tranHeaderId,
+            //         lineRefNo: d.lineRefNo,
+            //         instrNo: d.instrNo,
+            //         deletedIds: [],
+            //         gst: d.gst ? {
+            //             id: d.gst.id,
+            //             gstin: d.gst.gstin,
+            //             rate: d.gst.rate,
+            //             cgst: d.gst.cgst,
+            //             sgst: d.gst.sgst,
+            //             igst: d.gst.igst,
+            //             isIgst: d?.gst?.igst ? true : false,
+            //             hsn: d.gst.hsn
+            //         } : undefined
+            //     })),
+            // })
+            // Switch to edit tab
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
+        } catch (e: any) {
+            console.error(e);
+            Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+        }
+    }
+
+    async function getVoucherDetailsOnId(id: number | undefined) {
+        return (await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            instance: instance,
+            sqlId: SqlIdsMap.getVoucherDetailsOnId,
+            sqlArgs: {
+                id: id,
+            },
+        }))
     }
 }
 

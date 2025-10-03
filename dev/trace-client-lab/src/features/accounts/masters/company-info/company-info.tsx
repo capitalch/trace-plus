@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
+import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { useValidators } from "../../../../utils/validators-hook";
 import { useForm } from "react-hook-form";
 import { WidgetButtonSubmitFullWidth } from "../../../../controls/widgets/widget-button-submit-full-width";
@@ -65,6 +66,11 @@ export function CompanyInfo() {
         loadIndiaStates()
     }, [])
 
+    // Set main title for Company Info
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Company Info" }));
+    }, [dispatch]);
+
     useDeepCompareEffect(() => {
         if (buCode && dbName) {
             reset()
@@ -87,7 +93,7 @@ export function CompanyInfo() {
         <CompAccountsContainer className="h-[calc(100vh-80px)] overflow-y-scroll">
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 w-auto mt-2 mr-6 mb-2">
+                className="grid mt-2 mr-6 mb-2 w-auto gap-x-8 gap-y-4 grid-cols-1 sm:grid-cols-2">
 
                 {/* Unit name */}
                 <label className="flex flex-col font-medium text-primary-800">
@@ -95,7 +101,7 @@ export function CompanyInfo() {
                     <input
                         type="text"
                         placeholder="e.g. ABC Pvt Ltd."
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('unitName', {
                             required: Messages.errRequired,
                             validate: checkNoSpecialChar
@@ -111,7 +117,7 @@ export function CompanyInfo() {
                     <input
                         type="text"
                         placeholder="e.g. ABCPvtLtd"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('shortName', {
                             required: Messages.errRequired,
                             validate: checkNoSpaceOrSpecialChar
@@ -127,7 +133,7 @@ export function CompanyInfo() {
                     <input
                         type="text"
                         placeholder="e.g. 123 Main Street"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('address1', {
                             required: Messages.errRequired,
                             validate: checkAddress
@@ -142,7 +148,7 @@ export function CompanyInfo() {
                     <input
                         type="text"
                         placeholder="e.g. Apartment 4B"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('address2', {
                             validate: checkAddress
                         })}
@@ -156,8 +162,7 @@ export function CompanyInfo() {
                     <input
                         type="number"
                         placeholder="e.g. 123456"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300
-                        [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [appearance:textfield]" // classname from perplexity ai
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [appearance:textfield] placeholder:text-gray-300" // classname from perplexity ai
                         {...register('pin', {
                             required: Messages.errRequired,
                             validate: checkPinCode
@@ -190,7 +195,7 @@ export function CompanyInfo() {
                     <input
                         type="email"
                         placeholder="e.g. email@example.com"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('email', {
                             required: Messages.errRequired,
                             validate: checkEmail
@@ -205,7 +210,7 @@ export function CompanyInfo() {
                     <input
                         type="text"
                         placeholder="e.g. 22AAAAA0000A1Z5"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('gstin', {
                             validate: checkGstin
                         })}
@@ -219,7 +224,7 @@ export function CompanyInfo() {
                     <input
                         type="tel"
                         placeholder="e.g. 01122334455, 03322280608"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('landPhone', {
                             validate: checkLandPhones
                         })}
@@ -233,7 +238,7 @@ export function CompanyInfo() {
                     <input
                         type="tel"
                         placeholder="e.g. 9876543210, 9832077665"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('mobileNumber', {
                             required: Messages.errRequired,
                             validate: checkMobileNos
@@ -248,14 +253,14 @@ export function CompanyInfo() {
                     <input
                         type="text"
                         placeholder="e.g. https://example.com"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                         {...register('webSite', { validate: checkUrl })}
                     />
                     {errors.webSite && <WidgetFormErrorMessage errorMessage={errors.webSite.message} />}
                 </label>
 
                 {/* Submit */}
-                <div className="mt-7 flex justify-center">
+                <div className="flex justify-center mt-7">
                     <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
                 </div>
             </form>

@@ -57,13 +57,13 @@ export function NewEditBrand({ props }: { props: NewEditBrandType }) {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 w-auto mt-2 mr-6 mb-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid mt-2 mr-6 mb-2 w-auto gap-x-8 gap-y-4 grid-cols-1 sm:grid-cols-2">
             <label className="flex flex-col font-medium text-primary-800">
                 <span className="font-bold">Brand Name <WidgetAstrix /></span>
                 <input
                     type="text"
                     placeholder="e.g. Nike"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register('brandName', {
                         required: Messages.errRequired,
                         validate: checkNoSpecialChar
@@ -76,12 +76,12 @@ export function NewEditBrand({ props }: { props: NewEditBrandType }) {
                 <span className="font-bold">Remarks</span>
                 <textarea
                     placeholder="Add any remarks here..."
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register('remarks')}
                 />
             </label>
 
-            <div className="sm:col-span-2 mt-4">
+            <div className="mt-4 sm:col-span-2">
                 <WidgetButtonSubmitFullWidth label="Submit" disabled={isSubmitting || !_.isEmpty(errors)} />
             </div>
         </form>

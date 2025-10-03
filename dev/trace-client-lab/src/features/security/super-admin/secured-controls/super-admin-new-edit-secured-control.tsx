@@ -80,21 +80,21 @@ export function SuperAdminNewEditSecuredControl({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-72">
+            <div className="flex flex-col w-auto min-w-72 gap-2">
 
                 {/* Control name */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Control name <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. ViewReports" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerControlName}
                     />
                     <span className="flex justify-between">
                         {errors.controlName
                             ? <WidgetFormErrorMessage errorMessage={errors.controlName.message} />
                             : <WidgetFormHelperText helperText="&nbsp;" />}
-                        <TooltipComponent content={Messages.messSecuredControlName} className="font-normal text-sm -top-5! bg-white text-blue-500! border-gray-200 border-2">
-                            <span className="ml-auto text-xs text-primary-400 hover:cursor-pointer">?</span>
+                        <TooltipComponent content={Messages.messSecuredControlName} className="font-normal text-blue-500! text-sm bg-white border-2 border-gray-200 -top-5!">
+                            <span className="ml-auto text-primary-400 text-xs hover:cursor-pointer">?</span>
                         </TooltipComponent>
                     </span>
                 </label>
@@ -103,7 +103,7 @@ export function SuperAdminNewEditSecuredControl({
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Control number <WidgetAstrix /></span>
                     <input type="number" placeholder="e.g. 001" autoComplete="off" onFocus={(event) => event.target.select()}
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerControlNo}
                     />
                     {errors.controlNo && <WidgetFormErrorMessage errorMessage={errors.controlNo.message} />}
@@ -113,7 +113,7 @@ export function SuperAdminNewEditSecuredControl({
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Control type <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. menu" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerControlType}
                     />
                     {errors.controlType && <WidgetFormErrorMessage errorMessage={errors.controlType.message} />}
@@ -123,13 +123,13 @@ export function SuperAdminNewEditSecuredControl({
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Control description</span>
                     <input type="text" placeholder="e.g. Allows viewing of all reports" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerDescr}
                     />
                 </label>
 
                 {/* Save */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors)} />
                 </div>
                 <span>

@@ -6,7 +6,6 @@ const initialState: InitialStateType = {
     isSideBarOpen: false,
     selectedChildId: '',
     selectedParentId: '',
-    // selectedSideBarLabel: ''
   },
   navBar: {
     menuItem: 'accounts',
@@ -65,12 +64,6 @@ export const layoutsSlice = createSlice({
       state.sideBar.selectedChildId = action.payload.childId
     },
 
-    // setSelectedSideBarLabel: (
-    //   state: InitialStateType,
-    //   action: PayloadAction<{ label: string }>
-    // ) => {
-    //   state.sideBar.selectedSideBarLabel = action.payload.label
-    // },
   }
 })
 
@@ -82,7 +75,6 @@ export const {
   setSideBarSelectedChildId,
   setSideBarSelectedParentId,
   setSideBarSelectedParentChildIds,
-  // setSelectedSideBarLabel
 } = layoutsSlice.actions
 
 type IsSideBarOpenActionType = {
@@ -116,7 +108,6 @@ type InitialStateType = {
     isSideBarOpen: boolean
     selectedChildId: string
     selectedParentId: string
-    // selectedSideBarLabel: string
   }
   navBar: {
     menuItem: MenuItemType

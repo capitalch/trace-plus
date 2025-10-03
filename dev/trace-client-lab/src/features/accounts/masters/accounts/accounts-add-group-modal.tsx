@@ -60,7 +60,7 @@ export function AccountsAddGroupModal() {
     }, [])
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-auto min-w-72">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-auto min-w-72 gap-4">
 
             {/* Account Code */}
             <label className="flex flex-col font-medium text-primary-400">
@@ -69,7 +69,7 @@ export function AccountsAddGroupModal() {
                     type="text" aria-label="Account Code"
                     placeholder="e.g. cashAccount"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                     {...register('accountCode', {
                         required: Messages.errRequired,
                         validate: {
@@ -90,7 +90,7 @@ export function AccountsAddGroupModal() {
                     type="text"
                     placeholder="e.g. Cash Account"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                     {...register('accountName', {
                         required: Messages.errRequired,
                         validate: {
@@ -108,11 +108,11 @@ export function AccountsAddGroupModal() {
             <label className="flex flex-col font-medium text-primary-400">
                 <span className="font-bold">Account Type <WidgetAstrix /></span>
                 <select aria-label="Account Type" title="Account Type"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md"
                     {...register('accountType', { required: Messages.errRequired })}>
                     <option value="">--- select ---</option>
                     {accountTypeOptions.map((type) => (
-                        <option className="bg-white text-primary-700 hover:bg-primary-100 hover:text-primary-600" key={type.value} value={type.value}>{type.label}</option>
+                        <option className="text-primary-700 bg-white hover:bg-primary-100 hover:text-primary-600" key={type.value} value={type.value}>{type.label}</option>
                     ))}
                 </select>
                 {errors.accountType && <WidgetFormErrorMessage errorMessage={errors.accountType.message} />}
@@ -122,7 +122,7 @@ export function AccountsAddGroupModal() {
             <label className="flex flex-col font-medium text-primary-400">
                 <span className="font-bold">Account Class <WidgetAstrix /></span>
                 <select aria-label="Account Class" title="Account Class"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 text-gray-700"
+                    className="mt-1 px-2 text-gray-700 border-[1px] border-primary-200 rounded-md"
                     {...register('accountClass', { required: Messages.errRequired })}
                     disabled={!accountType}>
                     {getAccountClassOptions()}
@@ -131,7 +131,7 @@ export function AccountsAddGroupModal() {
             </label>
 
             {/* Submit Button */}
-            <div className="mt-4 flex justify-start">
+            <div className="flex justify-start mt-4">
                 <WidgetButtonSubmitFullWidth label="Save" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
             </div>
 

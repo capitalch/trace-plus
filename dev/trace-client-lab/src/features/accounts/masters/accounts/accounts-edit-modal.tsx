@@ -63,7 +63,7 @@ export function AccountsEditModal({
         return (<WidgetLoadingIndicator />)
     }
 
-    return (<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 ">
+    return (<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
         {/* Account Code */}
         <label className="flex flex-col font-medium text-primary-400">
@@ -72,7 +72,7 @@ export function AccountsEditModal({
                 type="text"
                 placeholder="e.g. cashAccount"
                 autoComplete="off"
-                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                 {...register('accountCode', {
                     required: Messages.errRequired,
                     validate: {
@@ -90,7 +90,7 @@ export function AccountsEditModal({
                 type="text"
                 placeholder="e.g. Cash Account"
                 autoComplete="off"
-                className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                 {...register('accountName', {
                     required: Messages.errRequired,
                     validate: {
@@ -120,7 +120,7 @@ export function AccountsEditModal({
         </label>
 
         {/* Submit Button */}
-        <div className="mt-4 flex justify-start">
+        <div className="flex justify-start mt-4">
             <WidgetButtonSubmitFullWidth label="Save" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
         </div>
 

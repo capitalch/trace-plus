@@ -44,7 +44,7 @@ export function ProductsOpeningBalancesGrid() {
       <CompSyncFusionGridToolbar
         CustomControl={() => <ProductsStockTransfer instance={instance} />}
         className="mt-2 mr-6"
-        minWidth="500px"
+        minWidth="400px"
         title={"Products opening balances"}
         isPdfExport={true}
         isExcelExport={true}
@@ -63,7 +63,7 @@ export function ProductsOpeningBalancesGrid() {
         height="calc(100vh - 260px)"
         instance={instance}
         loadData={loadData}
-        minWidth="800px"
+        minWidth="400px"
         onDelete={handleOnDelete}
         onEdit={handleOnEdit}
       />

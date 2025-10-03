@@ -102,11 +102,11 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 deleteColumnWidth={40}
                 editColumnWidth={40}
                 hasCheckBoxSelection={true}
-                height="calc(100vh - 368px)"
+                height="calc(100vh - 348px)"
                 instance={instance}
                 isSmallerFont={true}
                 loadData={loadData}
-                minWidth="1400px"
+                minWidth="400px"
                 onCopy={handleOnCopy}
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
@@ -127,7 +127,7 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 field: "autoRefNo",
                 format: "N0",
                 footerTemplate: (props: any) => (
-                    <span className="text-xs text-right">Cnt: {props.Count}</span>
+                    <span className="text-right text-xs">Cnt: {props.Count}</span>
                 )
             },
             {

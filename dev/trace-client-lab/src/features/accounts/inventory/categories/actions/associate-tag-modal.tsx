@@ -64,7 +64,7 @@ export function AssociateTagModal({ catId, id }: { catId: number, id: number | u
         {/* Submit Button */}
         <WidgetButtonSubmitFullWidth
             label="Submit"
-            className="max-w-96 mt-4"
+            className="mt-4 max-w-96"
             onClick={handleOnSubmit}
         />
     </div>)

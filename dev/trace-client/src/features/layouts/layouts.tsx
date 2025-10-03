@@ -8,26 +8,25 @@ import { useDispatch } from "react-redux"
 import { setIsSideBarOpen } from "./layouts-slice"
 
 function Layouts() {
-
-    const isBigScreen = useMediaQuery({ query: '(min-width: 1536px)' })
+    const isXLScreen = useMediaQuery({ query: '(min-width: 1280px)' })
     const dispatch: AppDispatchType = useDispatch()
 
+    // Initialize sidebar state based on screen size
     useEffect(() => {
-        if (isBigScreen) {
-            dispatch(setIsSideBarOpen({ isSideBarOpen: true }))
-        } else {
-            dispatch(setIsSideBarOpen({ isSideBarOpen: false }))
-        }
-    })
+        dispatch(setIsSideBarOpen({ isSideBarOpen: isXLScreen }))
+    }, [isXLScreen, dispatch])
 
-    return (<div className="">
-        <div className="flex w-screen h-screen bg-white">
+    return (
+        <div className="flex w-screen h-screen bg-white overflow-hidden">
             <SideBar />
-            <div className="flex flex-col w-full">
+
+            <div className="flex flex-col flex-1 min-w-0 relative">
                 <NavBar />
-                <Outlet />
+                <div className="flex-1 overflow-auto min-h-0">
+                    <Outlet />
+                </div>
             </div>
         </div>
-    </div>)
+    )
 }
 export { Layouts }

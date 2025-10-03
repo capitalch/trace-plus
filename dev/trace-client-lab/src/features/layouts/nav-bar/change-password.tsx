@@ -35,13 +35,13 @@ export function ChangePassword() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-72">
+            <div className="flex flex-col w-auto min-w-72 gap-2">
 
                 {/* Current Password */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Current Password <WidgetAstrix /></span>
                     <input type="password" placeholder="Enter current password" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerCurrentPwd}
                     />
                     <span className="flex justify-between">
@@ -55,7 +55,7 @@ export function ChangePassword() {
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">New Password <WidgetAstrix /></span>
                     <input type="password" placeholder="Enter new password" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerPwd}
                     />
                     <span className="flex justify-between">
@@ -67,7 +67,7 @@ export function ChangePassword() {
                 </label>
 
                 {/* Save */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors)} />
                 </div>
             </div>

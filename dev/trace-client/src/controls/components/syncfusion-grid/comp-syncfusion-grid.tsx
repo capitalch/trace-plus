@@ -66,6 +66,7 @@ export function CompSyncFusionGrid({
   onPreview = undefined,
   onRemove,
   onRowDataBound,
+  onZoomIn = undefined,
   pageSettings,
   previewColumnWidth,
   queryCellInfo,
@@ -74,7 +75,8 @@ export function CompSyncFusionGrid({
   rowSelected,
   searchFields,
   sqlArgs,
-  sqlId
+  sqlId,
+  zoomInColumnWidth
 }: CompSyncFusionGridType) {
   const context: GlobalContextType = useContext(GlobalContext);
   const gridRef: any = useRef({});
@@ -105,10 +107,12 @@ export function CompSyncFusionGrid({
     onEdit,
     onPreview,
     onRemove,
+    onZoomIn,
     previewColumnWidth,
     removeButtonWidth,
     sqlId,
-    sqlArgs
+    sqlArgs,
+    zoomInColumnWidth
   });
   const isSideBarOpenSelector = useSelector(isSideBarOpenSelectorFn);
   const maxWidth = isSideBarOpenSelector
@@ -275,6 +279,7 @@ export type CompSyncFusionGridType = {
   onPreview?: (args: any) => void;
   onRemove?: (args: any) => void;
   onRowDataBound?: (args: RowDataBoundEventArgs) => void;
+  onZoomIn?: (args: any) => void;
   pageSettings?: { pageSize: number; pageSizes: number[] };
   previewColumnWidth?: number;
   queryCellInfo?: (args: any) => void;
@@ -285,6 +290,7 @@ export type CompSyncFusionGridType = {
   // setRefresh?: (value: any) => void; // For refresh button
   sqlArgs?: GraphQLQueryArgsType; // SqlArgsType
   sqlId?: string;
+  zoomInColumnWidth?: number;
 };
 
 export type SyncFusionGridAggregateType = {

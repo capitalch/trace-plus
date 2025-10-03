@@ -161,9 +161,9 @@ export function GstInLinePanel({
             </div>
 
             {/* Tax Breakdown */}
-            <div className="flex flex-col gap-1 border-l-2 pl-3 border-blue-200 min-w-[130px] text-right text-xs text-gray-700 pr-2">
+            <div className="flex flex-col pr-2 pl-3 min-w-[130px] text-gray-700 text-right text-xs border-blue-200 border-l-2 gap-1">
                 {/* IGST Toggle */}
-                <div className="flex items-center justify-between gap-2 mb-1">
+                <div className="flex items-center justify-between mb-1 gap-2">
                     <label htmlFor={`${lineItemEntryName}.${index}.isIgst`} className="text-sm cursor-pointer">
                         Apply IGST
                     </label>

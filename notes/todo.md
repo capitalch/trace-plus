@@ -3,12 +3,30 @@ entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
 ## General requirement
+- UI
+														- VScroll bar issue in syncfusion grid
+														- Small screen whenn side menu appears then background invisible
+	- Vouchers overlapping issue in responsive
 														- Fix UI Stock opening balance
 														- Fix UI stock Journal
-- Menu button not expanding when small screen
+														- Menu button not expanding when small screen
+														- un-necessary horizontal scrollbar in several screens
 - Checkup price - discount in all reports as actual price
 - Supplier name and its due in summary report of inventory
-- drill down
+- Zoom in
+	- When comeback from zoom in retain the page and scroll position of the report
+														- Syncfusion
+															- Provide Drill down icon like edit icon
+														- All transactions report
+															- Sales
+															- Sales return
+															- Vouchers
+															- Debit notes
+															- Credit notes
+	- Trial balance
+	- Balance sheet
+	- PL Account
+	- General Ledger
 														- Interchange sale bill type: cash, bill sale, institutional
 - Provide remove button in sales report
 - Check why age of en-el25 on22-08-2025 sale showing 5702
@@ -35,8 +53,9 @@ valid gstin: 24AAACC1206D1ZM
 														- Accounts
 														- Categories
 
-- Sales return
-	- non-serialized data with redux
+										- Sales return
+											- Print preview
+														- non-serialized data with redux
 														- Startup
 													- Header UI
 														- Select and populate invoice data
@@ -47,16 +66,18 @@ valid gstin: 24AAACC1206D1ZM
 														- Summary
 													- Accounting details
 													- Validation
-	- Submit
-		- New
-		- Edit
-	- View
-		- Grid
-			- Sql
-			- Data
-		- Edit
-		- Delete
-		- Preview
+												- Submit
+													- New
+													- Edit
+														- Normal
+														- With delete
+											- View
+												- Grid
+													- Sql
+													- Data
+													- Edit
+													- Delete
+													- Preview
 											- Sales
 												- Reset button (to reset edit)
 												- Give a refresh button
@@ -83,7 +104,6 @@ valid gstin: 24AAACC1206D1ZM
 													- Alignment of Receipts / Debits and its content
 													- Adjust Authorised signatory
 													- Adjust Aggregateamount
-
 													- Accounts isHidden
 													- Provision to print last sale bill in the terminal
 													- Provision for advance against supplies in sales receipts

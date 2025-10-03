@@ -2,7 +2,8 @@ import { useDispatch } from "react-redux";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { AppDispatchType } from "../../../../app/store";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
+import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
@@ -26,11 +27,16 @@ export function FinYearMaster() {
         }
     }, [buCode])
 
+    // Set main title for Financial Year Master
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Financial Years Master" }));
+    }, [dispatch]);
+
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             CustomControl={() => <NewFinYearButton />}
             minWidth="1000px"
-            title='Financial years'
+            title=''
             isPdfExport={false}
             isExcelExport={false}
             isCsvExport={false}
@@ -41,7 +47,7 @@ export function FinYearMaster() {
         <CompSyncFusionGrid
             aggregates={getAggregates()}
             buCode={buCode}
-            className="mr-6 mt-4"
+            className="mt-4 mr-6"
             columns={getColumns()}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
@@ -49,7 +55,7 @@ export function FinYearMaster() {
             height="calc(100vh - 238px)"
             instance={instance}
             // isLoadOnInit={false}
-            minWidth="1400px"
+            minWidth="400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
             sqlId={SqlIdsMap.getFinYears}

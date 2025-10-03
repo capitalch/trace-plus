@@ -115,9 +115,9 @@ export function NewEditProduct({ props }: any) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-50 to-gray-100 flex items-center justify-center p-0.5">
+        <div className="flex items-center justify-center p-0.5 min-h-screen bg-gradient-to-br from-primary-50 to-gray-100">
             <form onSubmit={handleSubmit(onSubmit)}
-                className="w-full max-w-3xl bg-white rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+                className="w-full max-w-3xl bg-white rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl overflow-hidden">
                 <div className="p-4 space-y-6">
                     <div className="flex flex-col gap-4">
 
@@ -177,7 +177,7 @@ export function NewEditProduct({ props }: any) {
                             />
                         </FormField>
                     </div>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid gap-2 grid-cols-4">
 
                         {/* hsn */}
                         <FormField label="HSN" className="flex-1">
@@ -265,7 +265,7 @@ export function NewEditProduct({ props }: any) {
                             })}
                         // value={watch('info') || null}
                         />
-                        <span className="text-xs text-gray-500 mt-1 flex justify-end">
+                        <span className="flex justify-end mt-1 text-gray-500 text-xs">
                             <span className={watch("info")?.length || 0 > 400 ? "text-amber-500" : ""}>
                                 {watch("info")?.length || 0}
                             </span>/500 characters
@@ -273,7 +273,7 @@ export function NewEditProduct({ props }: any) {
                     </FormField>
 
                     <div className="space-y-6">
-                        <div className="grid grid-cols-3 gap-6">
+                        <div className="grid gap-6 grid-cols-3">
 
                             {/* Max retail price */}
                             <FormField label="Max Retail Price" error={errors.maxRetailPrice?.message}>
@@ -323,7 +323,7 @@ export function NewEditProduct({ props }: any) {
                         </div>
 
                         {/* dealer price */}
-                        <div className="grid grid-cols-3 gap-6">
+                        <div className="grid gap-6 grid-cols-3">
                             <FormField label="Dealer Price">
                                 <NumericFormat
                                     allowNegative={false}

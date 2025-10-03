@@ -27,26 +27,6 @@ export const MasterMenuData: MenuDataType = {
           label: "All Vouchers",
           path: "/all-vouchers",
         },
-        // {
-        //   id: "11",
-        //   label: "Journals",
-        //   path: "/blogs",
-        // },
-        // {
-        //   id: "12",
-        //   label: "Payments",
-        //   path: "/blogs",
-        // },
-        // {
-        //   id: "13",
-        //   label: "Receipts",
-        //   path: "/blogs",
-        // },
-        // {
-        //   id: "14",
-        //   label: "Contra",
-        //   path: "/blogs",
-        // },
       ],
     },
     {
@@ -62,7 +42,7 @@ export const MasterMenuData: MenuDataType = {
         },
         {
           id: "22",
-          label: "Purchase returns",
+          label: "Purchase Return",
           path: "/all-purchase-returns",
         },
         {
@@ -72,17 +52,17 @@ export const MasterMenuData: MenuDataType = {
         },
         {
           id: "24",
-          label: "Sales returns",
-          path: "/blogs",
+          label: "Sales Return",
+          path: "/all-sales-return",
         },
         {
           id: "25",
-          label: "Debit notes",
+          label: "Debit Notes",
           path: "/debit-notes",
         },
         {
           id: "26",
-          label: "Credit notes",
+          label: "Credit Notes",
           path: "/credit-notes",
         },
       ],
@@ -95,22 +75,22 @@ export const MasterMenuData: MenuDataType = {
       children: [
         {
           id: "31",
-          label: "Company info",
+          label: "Company Info",
           path: "/company-info",
         },
         {
           id: "32",
-          label: "General settings",
+          label: "General Settings",
           path: "/general-settings",
         },
         {
           id: "33",
-          label: "Accounts",
+          label: "Accounts Master",
           path: "/accounts-master",
         },
         {
           id: "34",
-          label: "Opening balances",
+          label: "Opening Balances",
           path: "/opening-balance",
         },
         {
@@ -120,35 +100,35 @@ export const MasterMenuData: MenuDataType = {
         },
         {
           id: "36",
-          label: "Financial years",
+          label: "Financial Years",
           path: "/fin-year-master",
         },
       ],
     },
     {
       id: "4",
-      label: "Final accounts",
+      label: "Final Accounts",
       icon: IconFinalAccounts,
       iconColorClass: "text-orange-500",
       children: [
         {
           id: "41",
-          label: "Trial balance",
+          label: "Trial Balance",
           path: "/trial-balance",
         },
         {
           id: "42",
-          label: "Balance sheet",
+          label: "Balance Sheet",
           path: "/balance-sheet",
         },
         {
           id: "43",
-          label: "PL account",
+          label: "PL Account",
           path: "/profit-loss",
         },
         {
           id: "44",
-          label: "General ledger",
+          label: "General Ledger",
           path: "/general-ledger",
         },
       ],
@@ -161,12 +141,12 @@ export const MasterMenuData: MenuDataType = {
       children: [
         {
           id: "51",
-          label: "Bank recon",
+          label: "Bank Recon",
           path: "/bank-recon",
         },
         {
           id: "52",
-          label: "Common utilities",
+          label: "Common Utilities",
           path: "/common-utilities",
         },
         {
@@ -184,7 +164,7 @@ export const MasterMenuData: MenuDataType = {
       children: [
         {
           id: "61",
-          label: "All transactions",
+          label: "All Transactions",
           path: "/report-all-transactions",
         },
       ],
@@ -207,12 +187,12 @@ export const MasterMenuData: MenuDataType = {
         },
         {
           id: "73",
-          label: "Product master",
+          label: "Product Master",
           path: "/product-master",
         },
         {
           id: "74",
-          label: "Opening stock",
+          label: "Opening Stock",
           path: "/products-opening-balances",
         },
         {
@@ -222,12 +202,12 @@ export const MasterMenuData: MenuDataType = {
         },
         {
           id: "76",
-          label: "Stock journal",
+          label: "Stock Journal",
           path: "/stock-journal",
         },
         {
           id: "77",
-          label: "Branch transfer",
+          label: "Branch Transfer",
           path: "/products-branch-transfers",
         },
       ],
@@ -244,7 +224,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "9",
-      label: "Business units",
+      label: "Business Units",
       icon: IconBusinessUnits,
       iconColorClass: "text-teal-500",
       path: "/admin-business-units",
@@ -260,7 +240,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "11",
-      label: "Business users",
+      label: "Business Users",
       icon: IconUsers,
       iconColorClass: "text-amber-500",
       children: [],
@@ -268,7 +248,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "12",
-      label: "Link users <-> bu",
+      label: "Link Users <-> Bu",
       icon: IconAdminLinkUsers,
       iconColorClass: "text-secondary-400",
       children: [],
@@ -276,7 +256,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "18",
-      label: "Link ctrls <-> roles",
+      label: "Link Controls <-> Roles",
       icon: IconAdminLinkUsers,
       iconColorClass: "text-green-500",
       children: [],
@@ -310,7 +290,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "16",
-      label: "Secured controls",
+      label: "Secured Controls",
       icon: IconSecuredControls,
       iconColorClass: "text-red-500",
       children: [],
@@ -318,7 +298,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "17",
-      label: "Admin users",
+      label: "Admin Users",
       icon: IconAdminUsers,
       iconColorClass: "text-red-500",
       children: [],
@@ -326,7 +306,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "18",
-      label: "Link ctrls <-> roles",
+      label: "Link Controls <-> Roles",
       icon: IconAdminLinkUsers,
       iconColorClass: "text-green-500",
       children: [],

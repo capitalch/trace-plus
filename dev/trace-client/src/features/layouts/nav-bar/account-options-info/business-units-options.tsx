@@ -9,8 +9,7 @@ import { Messages } from "../../../../utils/messages"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { UserTypesEnum } from "../../../../utils/global-types-interfaces-enums"
-// import { Navigate } from "react-router-dom"
-// import { setSideBarSelectedChildId } from "../../layouts-slice"
+import { useMediaQuery } from "react-responsive"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
@@ -18,12 +17,13 @@ export function BusinessUnitsOptions() {
     const currentBusinessUnitsSelector: BusinessUnitType[] = useSelector(userBusinessUnitsSelectorFn) || []
 
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-    const selectAccSettingsChanged = useSelector((state: RootStateType) => state.accounts.accSettingsChanged) // to reload this component when accSettings like unitInfo changes
+    const selectAccSettingsChanged = useSelector((state: RootStateType) => state.accounts.accSettingsChanged)
+    const isMobile = useMediaQuery({ query: '(max-width: 639px)' })
 
     useEffect(() => {
         setBusinessUnit()
     }, [currentBusinessUnitsSelector])
-    
+
     useEffect(() => {
         if (currentBusinessUnitSelector.buCode) {
             fetchAccDetails()
@@ -33,17 +33,20 @@ export function BusinessUnitsOptions() {
 
 
     return (
-        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectAccSettingsChanged)}>
-            <button type="button" onClick={handleOnClickBusinessUnit} className="flex items-center px-2 py-2 w-50 h-8 text-gray-800 bg-gray-200 rounded-full shadow-sm">
+        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="BottomCenter" key={String(selectAccSettingsChanged)}>
+            <button type="button" onClick={handleOnClickBusinessUnit}
+                className={`flex items-center ${isMobile ? 'px-1 py-1 h-6' : 'px-2 py-2 h-8'} text-gray-800 bg-gray-200 rounded-full shadow-sm`}>
 
                 {/* Badge section */}
-                <div className="px-1 py-1 font-bold text-white text-xs bg-blue-500 rounded-full">
+                <div className={`${isMobile ? 'px-0.5 py-0.5' : 'px-1 py-1'} font-bold text-white text-xs bg-blue-500 rounded-full`}>
                     BU
                 </div>
-                {/* Text section */}
-                <span className="ml-1 font-medium text-ellipsis text-sm whitespace-nowrap overflow-hidden">
-                    {currentBusinessUnitSelector?.buCode || ''}
-                </span>
+                {/* Text section - hide on mobile */}
+                {!isMobile && (
+                    <span className="ml-1 font-medium text-ellipsis text-xs sm:text-sm whitespace-nowrap overflow-hidden max-w-[60px] sm:max-w-[80px] md:max-w-none">
+                        {currentBusinessUnitSelector?.buCode || ''}
+                    </span>
+                )}
             </button>
         </TooltipComponent>
     )

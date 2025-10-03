@@ -9,6 +9,7 @@ import { Messages } from "../../../../utils/messages"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map"
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { UserTypesEnum } from "../../../../utils/global-types-interfaces-enums"
+import { useMediaQuery } from "react-responsive"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
@@ -16,12 +17,13 @@ export function BusinessUnitsOptions() {
     const currentBusinessUnitsSelector: BusinessUnitType[] = useSelector(userBusinessUnitsSelectorFn) || []
 
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
-    const selectAccSettingsChanged = useSelector((state: RootStateType) => state.accounts.accSettingsChanged) // to reload this component when accSettings like unitInfo changes
+    const selectAccSettingsChanged = useSelector((state: RootStateType) => state.accounts.accSettingsChanged)
+    const isMobile = useMediaQuery({ query: '(max-width: 639px)' })
 
     useEffect(() => {
         setBusinessUnit()
     }, [currentBusinessUnitsSelector])
-    
+
     useEffect(() => {
         if (currentBusinessUnitSelector.buCode) {
             fetchAccDetails()
@@ -31,17 +33,20 @@ export function BusinessUnitsOptions() {
 
 
     return (
-        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="LeftCenter" key={String(selectAccSettingsChanged)}>
-            <button type="button" onClick={handleOnClickBusinessUnit} className="flex h-8 w-50 items-center rounded-full bg-gray-200 px-2 py-2 text-gray-800 shadow-sm">
+        <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="BottomCenter" key={String(selectAccSettingsChanged)}>
+            <button type="button" onClick={handleOnClickBusinessUnit}
+                className={`flex items-center ${isMobile ? 'px-1 py-1 h-6' : 'px-2 py-2 h-8'} text-gray-800 bg-gray-200 rounded-full shadow-sm`}>
 
                 {/* Badge section */}
-                <div className="rounded-full bg-blue-500 px-1 py-1 text-xs font-bold text-white">
+                <div className={`${isMobile ? 'px-0.5 py-0.5' : 'px-1 py-1'} font-bold text-white text-xs bg-blue-500 rounded-full`}>
                     BU
                 </div>
-                {/* Text section */}
-                <span className="ml-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">
-                    {currentBusinessUnitSelector?.buCode || ''}
-                </span>
+                {/* Text section - hide on mobile */}
+                {!isMobile && (
+                    <span className="ml-1 font-medium text-ellipsis text-xs sm:text-sm whitespace-nowrap overflow-hidden max-w-[60px] sm:max-w-[80px] md:max-w-none">
+                        {currentBusinessUnitSelector?.buCode || ''}
+                    </span>
+                )}
             </button>
         </TooltipComponent>
     )
@@ -50,6 +55,13 @@ export function BusinessUnitsOptions() {
         const userDetails: UserDetailsType = loginInfo.userDetails || {}
         const dbName: string = userDetails.dbName || ''
         const dbParamsObject = userDetails.decodedDbParamsObject
+        // const isExternalDb: boolean = userDetails.isExternalDb || false
+        // const dbParams: string | undefined = userDetails?.dbParams
+        // let dbParamsObject: any
+        // if (isExternalDb && dbParams) {
+        //     dbParamsObject = await Utils.decodeExtDbParams(dbParams)
+        //     dispatch(setDecodedDbParamsObject(dbParamsObject))
+        // }
         // If there is no current business unit then show message and logout
         if (!loginInfo?.currentBusinessUnit?.buCode) {
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.messNoBusinessUnitsDefined })

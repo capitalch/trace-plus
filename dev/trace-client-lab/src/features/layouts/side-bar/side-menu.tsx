@@ -1,11 +1,12 @@
 import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
-import { MenuItemType, menuItemSelectorFn, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
+import { MenuItemType, menuItemSelectorFn, setIsSideBarOpen, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store"
 import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../master-menu-data"
 import { useNavigate } from "react-router-dom"
 import { IconCheveronUp } from "../../../controls/icons/icon-cheveron-up"
 import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down"
+import { useMediaQuery } from "react-responsive"
 
 function SideMenu() {
     const navigate = useNavigate()
@@ -13,12 +14,13 @@ function SideMenu() {
     const sideBarSelectedParentIdSelector = useSelector(sideBarSelectedParentIdFn)
     const sideBarSelectedChildIdSelector = useSelector(sideBarSelectedChildIdFn)
     const dispatch: AppDispatchType = useDispatch()
+    const isXLScreen = useMediaQuery({ query: '(min-width: 1280px)' })
 
     const menuData = MasterMenuData[menuItemSelector]
-    const rootClass = "prose mx-0.5 mt-0.5 flex flex-col text-sm text-black md:text-base"
-    const parentClass = "flex h-10 items-center gap-3 rounded-md border-b-[1px] px-2 hover:font-bold focus:outline-hidden text-primary-500"
-    const childClass = "flex h-10 w-full items-center rounded-md border-b-[1px] pl-9 hover:font-bold focus:outline-hidden text-primary-400"
-    const transitionClass = 'flex origin-top transform-gpu flex-col gap-1 transition-all duration-300 ease-out'
+    const rootClass = "flex flex-col p-2"
+    const parentClass = "flex h-11 items-center gap-3 px-3 rounded-lg hover:bg-neutral-100 focus:outline-none transition-colors group font-semibold text-base whitespace-nowrap"
+    const childClass = "flex h-10 w-full items-center pl-11 rounded-lg hover:bg-neutral-100 focus:outline-none transition-colors text-base whitespace-nowrap"
+    const transitionClass = 'flex flex-col gap-0.5 transition-all duration-200 ease-out mt-1'
 
     return (
         <div className={rootClass}>
@@ -38,10 +40,25 @@ function SideMenu() {
 
     function getParentWithChildren(item: MenuDataItemType) {
         return (
-            <div className="flex flex-col">
-                <button id={item.id} onClick={() => handleParentClick(item)}
-                    className={clsx(parentClass, getParentSelectedClass(item))}>
-                    <item.icon className={item.iconColorClass} /><span className="mr-auto">{item.label}</span><IconCheveronUp className={clsx(getArrowUpClass(item.id), getHiddenClassWhenNochildren(item))} /> <IconCheveronDown className={clsx(getArrowDownClass(item.id), getHiddenClassWhenNochildren(item))} />
+            <div className="flex flex-col mb-1">
+                <button
+                    id={item.id}
+                    onClick={() => handleParentClick(item)}
+                    className={clsx(
+                        parentClass,
+                        getParentSelectedClass(item)
+                    )}
+                >
+                    <item.icon className={clsx(item.iconColorClass, "h-5 w-5 flex-shrink-0")} />
+                    <span className="mr-auto text-neutral-800 group-hover:text-neutral-900">
+                        {item.label}
+                    </span>
+                    {item.children.length > 0 && (
+                        <>
+                            <IconCheveronUp className={clsx(getArrowUpClass(item.id), "h-4 w-4 text-neutral-400")} />
+                            <IconCheveronDown className={clsx(getArrowDownClass(item.id), "h-4 w-4 text-neutral-400")} />
+                        </>
+                    )}
                 </button>
                 {getChildren(item)}
             </div>
@@ -51,8 +68,16 @@ function SideMenu() {
     function getChildren(item: MenuDataItemType) {
         const children = item.children.map((child: ChildMenuItemType, index: number) => {
             return (
-                <button key={index} id={child.id} onClick={(e: any) => handleChildClick(e, child.path)}
-                    className={clsx(childClass, getSelectedChildClass(child.id))}>
+                <button
+                    key={index}
+                    id={child.id}
+                    onClick={(e: any) => handleChildClick(e, child.label, child.path)}
+                    className={clsx(
+                        childClass,
+                        getSelectedChildClass(child.id),
+                        "text-neutral-700 hover:text-neutral-900"
+                    )}
+                >
                     {child.label}
                 </button>
             )
@@ -85,35 +110,22 @@ function SideMenu() {
         return ((upDown === 'up') ? 'block' : 'hidden')
     }
 
-    function getHiddenClassWhenNochildren(item: any) {
-        let ret: string = 'hidden'
-        if (item.children && (item.children.length > 0)) {
-            ret = 'block'
-        }
-        return (ret)
-    }
-
     function getParentExpandedClass(parentId: string) {
-        return (
-            (sideBarSelectedParentIdSelector === parentId) ? 'block' : 'hidden'
-        )
+        return (sideBarSelectedParentIdSelector === parentId) ? 'block' : 'hidden'
     }
 
     function getParentSelectedClass(item: any) {
-        let ret = ''
-        // if((!item.children || (item.children.length === 0)) && (item.id === sideBarSelectedParentIdSelector)){
-        //     // ret = 'bg-primary-50'
-        //     ret = 'font-semibold'
-        // }
         if (item.id === sideBarSelectedParentIdSelector) {
-            ret = 'font-bold'
+            return 'bg-primary-50 text-primary-700'
         }
-        return (ret)
+        return ''
     }
 
     function getSelectedChildClass(childId: string) {
-        // return ((sideBarSelectedChildIdSelector === childId) ? 'bg-primary-100' : 'bg-slate-50')
-        return ((sideBarSelectedChildIdSelector === childId) ? 'font-bold' : '')
+        if (sideBarSelectedChildIdSelector === childId) {
+            return 'bg-primary-50 text-primary-700 font-medium'
+        }
+        return ''
     }
 
     function handleParentClick(item: MenuDataItemType) {
@@ -125,14 +137,22 @@ function SideMenu() {
         }
         if (item.path) {
             navigate(item.path)
+            // Auto-collapse sidebar on small/medium screens when navigating
+            if (!isXLScreen) {
+                dispatch(setIsSideBarOpen({ isSideBarOpen: false }))
+            }
         }
     }
 
-    function handleChildClick(e: any, path?: string) {
+    function handleChildClick(e: any, _label: string, path?: string) {
         const id = e.currentTarget.id
         dispatch(setSideBarSelectedChildId({ id: id }))
         if (path) {
             navigate(path)
+            // Auto-collapse sidebar on small/medium screens when navigating
+            if (!isXLScreen) {
+                dispatch(setIsSideBarOpen({ isSideBarOpen: false }))
+            }
         }
     }
 }

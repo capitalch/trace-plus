@@ -103,7 +103,7 @@ export function DebitNotesLineItems() {
               shouldDirty: true,
             })
           }
-          showAccountBalance
+          // showAccountBalance
           value={watch("creditAccId") as string}
           className="w-full"
           showRefreshButton={false}

@@ -103,7 +103,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
           </div>
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExportAsLandscape={true}
         isPdfExport={true}
@@ -133,7 +133,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
         indexColumnWidth={60}
         instance={instance}
         loadData={loadData}
-        minWidth="800px"
+        minWidth="400px"
         onRemove={handleOnRemove}
         rowHeight={30}
         searchFields={['productCode', 'catName', 'product']}

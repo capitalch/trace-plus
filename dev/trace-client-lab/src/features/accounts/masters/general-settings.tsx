@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
-import { CompAccountsContainer } from "../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../controls/redux-components/comp-accounts-container";
+import { setCompAccountsContainerMainTitle } from "../../../controls/redux-components/comp-slice";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { DataInstancesMap } from "../../../app/maps/data-instances-map";
 import { AppDispatchType } from "../../../app/store";
@@ -15,6 +16,7 @@ import { changeAccSettings } from "../accounts-slice";
 import Select from "react-select";
 import { NumericFormat } from 'react-number-format';
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { useEffect } from "react";
 
 export function GeneralSettings() {
     const dispatch: AppDispatchType = useDispatch()
@@ -40,6 +42,11 @@ export function GeneralSettings() {
         },
     });
 
+    // Set main title for General Settings
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "General Settings" }));
+    }, [dispatch]);
+
     useDeepCompareEffect(() => {
         if (buCode && dbName) {
             setValue('dateFormat', generalSettings?.dateFormat || 'DD/MM/YYYY', { shouldDirty: true })
@@ -52,7 +59,7 @@ export function GeneralSettings() {
 
     return (<CompAccountsContainer className="h-[calc(100vh-80px)] overflow-y-scroll">
         <form onSubmit={handleSubmit(onSubmit)}
-            className="grid grid-cols-1 gap-y-4 w-96 mt-2 mb-2">
+            className="grid mt-2 mb-2 w-96 gap-y-4 grid-cols-1">
 
             {/* Date format */}
             <label className="flex flex-col font-medium text-primary-800">
@@ -75,8 +82,7 @@ export function GeneralSettings() {
                 <input
                     type="number"
                     placeholder="e.g. 30"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300
-                        [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [appearance:textfield]" // classname from perplexity ai
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [appearance:textfield] placeholder:text-gray-300" // classname from perplexity ai
                     {...register('autoLogoutTimeInMins', {
                         required: Messages.errRequired,
                     })}
@@ -90,7 +96,7 @@ export function GeneralSettings() {
                 <span className="font-bold">Audit Lock Date</span>
                 <input
                     type="date"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300 w-full"
+                    className="mt-1 px-2 w-full border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register('auditLockDate')}
                     value={watch('auditLockDate') || ''}
                 />
@@ -107,7 +113,7 @@ export function GeneralSettings() {
                     thousandSeparator
                     placeholder="e.g. 18.00"
                     defaultValue={0}
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register('defaultGstRate')}
                     value={watch('defaultGstRate') ?? 0}
                     onValueChange={(values) => {
@@ -128,7 +134,7 @@ export function GeneralSettings() {
                     thousandSeparator
                     placeholder="e.g. 18.00"
                     defaultValue={0}
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder:text-gray-300"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
                     {...register('maxGstRate')}
                     value={watch('maxGstRate') ?? 0}
                     onValueChange={(values) => {
@@ -138,7 +144,7 @@ export function GeneralSettings() {
                 />
             </label>
 
-            <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96 mt-4" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
+            <WidgetButtonSubmitFullWidth label="Submit" className="mt-4 max-w-96" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
         </form>
     </CompAccountsContainer>)
 

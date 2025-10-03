@@ -17,7 +17,7 @@ export function StockSummaryReportToolbarFilterDisplay() {
         tag: selectedFilters.catFilterOption.selectedTag
     }
     return (
-        <div className="flex flex-wrap bg-amber-100 p-1 text-sm rounded-md gap-1">
+        <div className="flex flex-wrap p-1 text-sm bg-amber-100 rounded-md gap-1">
             {getDisplayControl({ label: 'Stock On Date: ', value: format(displayFilter.onDate, currentDateFormat) })}
             {displayFilter.age.value && getDisplayControl({ label: 'Age: ', value: displayFilter.age.label.slice(4) })}
             {(displayFilter.grossProfitStatus.value !== 0) && getDisplayControl({ label: 'Gross Profit:', value: displayFilter.grossProfitStatus.label.slice(12) })}
@@ -28,7 +28,7 @@ export function StockSummaryReportToolbarFilterDisplay() {
 
     function getDisplayControl(item: { label: string, value: string }) {
         return (
-            <label className="font-medium px-1 text-gray-800  even:bg-slate-100 odd:bg-white">
+            <label className="px-1 font-medium text-gray-800 odd:bg-white even:bg-slate-100">
                 {item.label}
                 <span className="font-normal">{item.value}</span>
             </label>)

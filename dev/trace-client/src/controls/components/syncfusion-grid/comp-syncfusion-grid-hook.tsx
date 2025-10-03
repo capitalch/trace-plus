@@ -33,10 +33,12 @@ export function useCompSyncFusionGrid({
   onEdit,
   onPreview,
   onRemove,
+  onZoomIn,
   previewColumnWidth,
   removeButtonWidth,
   sqlId,
-  sqlArgs
+  sqlArgs,
+  zoomInColumnWidth
 }: CompSyncFusionGridType) {
   const selectedLastNoOfRows: any = useSelector(
     (state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows
@@ -200,6 +202,26 @@ export function useCompSyncFusionGrid({
         />
       );
     }
+
+    if (onZoomIn) {
+      colDirectives.unshift(
+        <ColumnDirective
+          headerText="Z"
+          width={zoomInColumnWidth || "40"}
+          commands={[
+            {
+              title: 'Zoom In',
+              type: 'None',
+              buttonOption: {
+                iconCss: 'e-icons e-search',
+                cssClass: 'e-flat e-grid-zoomin text-indigo-600',
+              }
+            }
+          ]}
+        />
+      );
+    }
+
     if (hasIndexColumn) {
       colDirectives.unshift(
         <ColumnDirective
@@ -253,6 +275,10 @@ export function useCompSyncFusionGrid({
     }
     if (buttonClass?.includes('e-grid-preview')) {
       onPreview?.(rowData);
+      return
+    }
+    if (buttonClass?.includes('e-grid-zoomin')) {
+      onZoomIn?.(rowData);
       return
     }
     if (buttonClass?.includes('e-grid-remove')) {

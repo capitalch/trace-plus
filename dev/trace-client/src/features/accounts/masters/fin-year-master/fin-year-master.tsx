@@ -55,7 +55,7 @@ export function FinYearMaster() {
             height="calc(100vh - 238px)"
             instance={instance}
             // isLoadOnInit={false}
-            minWidth="1400px"
+            minWidth="400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
             sqlId={SqlIdsMap.getFinYears}

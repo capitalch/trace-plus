@@ -12,7 +12,7 @@ export function NumericEditTemplate(args: any, onValueChanged: (args: any, value
 
     return (
         <NumericFormat
-            className="text-right w-40 border-spacing-1 border-gray-300 h-8 rounded-md border-2 bg-white"
+            className="w-40 h-8 text-right bg-white border-2 border-gray-300 border-spacing-1 rounded-md"
             allowNegative={false}
             autoFocus={true}
             decimalScale={decimalScale ?? 2}

@@ -49,7 +49,8 @@ export function AccountsMaster() {
             title=''
             isLastNoOfRows={false}
             instance={instance}
-            width="calc(100vw - 250px)" // This stops unnecessary flickers
+            minWidth="400px"
+            // width="calc(100vw - 250px)" // This stops unnecessary flickers
         />
 
         <CompSyncfusionTreeGrid
@@ -63,9 +64,9 @@ export function AccountsMaster() {
             graphQlQueryFromMap={GraphQLQueriesMap.accountsMaster}
             graphQlQueryName={GraphQLQueriesMapNames.accountsMaster}
             columns={getColumns()}
-            height="calc(100vh - 227px)"
+            height="calc(100vh - 237px)"
             instance={instance}
-            minWidth='1400px'
+            minWidth='400px'
             treeColumnIndex={0}
         />
     </CompAccountsContainer>)

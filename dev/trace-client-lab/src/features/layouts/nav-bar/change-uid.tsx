@@ -41,13 +41,13 @@ export function ChangeUid() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-72">
+            <div className="flex flex-col w-auto min-w-72 gap-2">
 
                 {/* Current UID */}
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Current UID <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. old-uid-123" autoComplete="off" disabled={true}
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic disabled:bg-slate-100"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md disabled:bg-slate-100 placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerCurrentUid}
                     />
                     <span className="flex justify-between">
@@ -61,7 +61,7 @@ export function ChangeUid() {
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">New UID <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. new-uid-456" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerUid}
                     />
                     <span className="flex justify-between">
@@ -73,7 +73,7 @@ export function ChangeUid() {
                 </label>
 
                 {/* Save */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors)} />
                 </div>
                 <span>{showServerValidationError()}</span>

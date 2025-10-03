@@ -5,7 +5,7 @@ const initialState: InitialStateType = {
   sideBar: {
     isSideBarOpen: false,
     selectedChildId: '',
-    selectedParentId: ''
+    selectedParentId: '',
   },
   navBar: {
     menuItem: 'accounts',
@@ -63,6 +63,7 @@ export const layoutsSlice = createSlice({
       state.sideBar.selectedParentId = action.payload.parentId
       state.sideBar.selectedChildId = action.payload.childId
     },
+
   }
 })
 

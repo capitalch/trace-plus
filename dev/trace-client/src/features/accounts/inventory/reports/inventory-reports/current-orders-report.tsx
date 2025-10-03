@@ -62,7 +62,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
           />
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExport={true}
         isExcelExport={true}
@@ -82,7 +82,7 @@ export function CurrentOrdersReport({ title }: { title?: string }) {
         hasIndexColumn={true}
         height="calc(100vh - 247px)"
         instance={instance}
-        minWidth="600px"
+        minWidth="400px"
         sqlId={SqlIdsMap.getCurrentOrders}
         sqlArgs={{
           branchId: isAllBranches ? null : branchId,

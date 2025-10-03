@@ -13,7 +13,7 @@ export function CompCheckBox({
     const isChecked: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, instance)) || false
 
     return (<label className={clsx("inline-flex cursor-pointer items-center", className)}>
-        <span className="mr-2 text-md font-medium text-gray-500">{label}</span>
+        <span className="mr-2 font-medium text-gray-500 text-md">{label}</span>
         <input type="checkbox" checked={isChecked} className="cursor-pointer" onChange={handleOnChangeCheckBox} />
     </label>)
 

@@ -52,14 +52,14 @@ export function EditCategoryModal({ catName, descr, hasChildRecords, id, isLeaf,
     // }, [catName, descr, isLeaf, setValue]);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-auto min-w-72">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-auto min-w-72 gap-4">
             {/* Category Name */}
             <label className="flex flex-col font-medium text-primary-400">
                 <span className="font-bold">Category Name <WidgetAstrix /></span>
                 <input
                     type="text"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                     {...register("catName", {
                         required: Messages.errRequired,
                         validate: { validateCategoryName: checkNoSpecialChar },
@@ -77,7 +77,7 @@ export function EditCategoryModal({ catName, descr, hasChildRecords, id, isLeaf,
                 <input
                     type="text"
                     autoComplete="off"
-                    className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:italic"
+                    className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic"
                     {...register("descr")}
                 />
             </label>

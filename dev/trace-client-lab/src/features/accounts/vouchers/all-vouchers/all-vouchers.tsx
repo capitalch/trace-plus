@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { AllVouchersMain } from "./all-vouchers-main";
 import { VoucherTypeOptions } from "../voucher-controls/voucher-type-options";
@@ -12,7 +12,7 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { AppDispatchType, RootStateType, } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllVouchersView } from "./all-vouchers-view";
-import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { useEffect, useRef } from "react";
 import { Messages } from "../../../../utils/messages";
 import _ from "lodash";
@@ -21,6 +21,7 @@ import { clearVoucherFormData, saveVoucherFormData } from "../voucher-slice";
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
     const savedFormData = useSelector((state: RootStateType) => state.vouchers.savedFormData);
+    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex || 0);
     const instance = DataInstancesMap.allVouchers;
     const meta = useRef<MetaType>({
         totalDebits: 0,
@@ -36,6 +37,12 @@ export function AllVouchers() {
     const { watch, getValues, setValue, reset } = methods;
     const extendedMethods = { ...methods, resetAll, resetDetails }
     const voucherType = watch('voucherType')
+
+    // Utility function to generate voucher title
+    const getVoucherTitle = (type: VourcherType, isViewMode: boolean): string => {
+        return isViewMode ? `${type} View` : type;
+    }
+
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
@@ -61,18 +68,25 @@ export function AllVouchers() {
         })
     }, [dispatch, getValues])
 
+    // Update main title when voucher type or active tab changes
+    useEffect(() => {
+        const isViewMode = activeTabIndex === 1;
+        const title = getVoucherTitle(voucherType, isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [voucherType, activeTabIndex, dispatch]);
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
-                <CompAccountsContainer className=" relative">
-                    <label className="mt-1 text-md font-bold text-primary-500">
+                <CompAccountsContainer className="relative">
+                    {/* <label className="mt-1 font-bold text-md text-primary-500">
                         All Vouchers
-                    </label>
+                    </label> */}
                     {/* Sticky voucher type selector */}
-                    <div className="sticky top-0 right-6 self-end z-5">
-                        <VoucherTypeOptions className="absolute right-0 top-2 rounded" />
+                    <div className="sticky self-end right-6 top-0 z-5">
+                        <VoucherTypeOptions className="absolute rounded right-0 top-10" />
                     </div>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-2" />
+                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-9" />
                 </CompAccountsContainer>
             </form>
         </FormProvider>

@@ -79,12 +79,12 @@ export function VoucherLineItemEntry({
         <AnimatePresence>
 
             {/* Section Header */}
-            <div key={1} className="flex justify-between items-center">
-                <h3 className="text-md font-semibold text-secondary-400">{title}</h3>
+            <div key={1} className="flex items-center justify-between">
+                <h3 className="font-semibold text-md text-secondary-400">{title}</h3>
                 {allowAddRemove && (
                     <button
                         type="button"
-                        className="flex items-center gap-2 text-blue-600 hover:underline"
+                        className="flex items-center text-blue-600 hover:underline gap-2"
                         onClick={() =>
                             append({
                                 accId: null,
@@ -135,11 +135,11 @@ export function VoucherLineItemEntry({
                             )}
                         >
                             {/* Index + Clear */}
-                            <div className="flex flex-col items-start gap-4 mt-2">
-                                <div className="text-xs text-gray-600 font-semibold">{index + 1}</div>
+                            <div className="flex flex-col items-start mt-2 gap-4">
+                                <div className="font-semibold text-gray-600 text-xs">{index + 1}</div>
                                 <button
                                     type="button"
-                                    className="text-xs text-amber-600 hover:underline"
+                                    className="text-amber-600 text-xs hover:underline"
                                     onClick={() => {
                                         setValue(`${lineItemEntryName}.${index}.accId`, null);
                                         if (amount === undefined) {
@@ -182,7 +182,7 @@ export function VoucherLineItemEntry({
                                     }
                                     showAccountBalance
                                     value={watch(`${lineItemEntryName}.${index}.accId`)}
-                                    className="w-full mt-1.5"
+                                    className="mt-1.5 w-full"
                                 />
                             </FormField>
 
@@ -244,7 +244,7 @@ export function VoucherLineItemEntry({
                                 <>
                                     <button
                                         type="button"
-                                        className="absolute top-4 right-12 text-blue-500 hover:text-blue-700"
+                                        className="absolute text-blue-500 hover:text-blue-700 right-12 top-4"
                                         onClick={() =>
                                             insert(index + 1, {
                                                 accId: null,
@@ -264,7 +264,7 @@ export function VoucherLineItemEntry({
 
                                     <button
                                         type="button"
-                                        className="absolute top-4 right-2 text-red-500 hover:text-red-700"
+                                        className="absolute text-red-500 hover:text-red-700 right-2 top-4"
                                         onClick={() => {
                                             if (fields.length > 1) {
                                                 const deletedIds = getValues('deletedIds')
@@ -286,7 +286,7 @@ export function VoucherLineItemEntry({
 
             {/* Summary Footer */}
             {toShowSummary && (
-                <div className="flex items-center gap-2 text-xs text-blue-500 -mt-2 justify-end">
+                <div className="flex items-center justify-end text-blue-500 text-xs -mt-2 gap-2">
                     <div>
                         <span className="font-semibold">Total Amount:</span>{" "}
                         {Utils.toDecimalFormat(

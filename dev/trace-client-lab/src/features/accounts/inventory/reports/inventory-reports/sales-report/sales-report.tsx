@@ -25,6 +25,7 @@ import {
 import clsx from "clsx";
 import { SalesReportToolbarFilterDisplay } from "./sales-report-toolbar-filter-display";
 import { setSalesReportDateRange, setSalesReportFilters } from "./sales-report-slice";
+import { setCompAccountsContainerMainTitle } from "../../../../../../controls/redux-components/comp-slice";
 import { SalesReportFilterControl } from "./sales-report-filter-control";
 
 export function SalesReport({ title }: { title?: string }) {
@@ -51,6 +52,10 @@ export function SalesReport({ title }: { title?: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
+
+  useEffect(() => {
     {
       loadData();
     }
@@ -72,19 +77,19 @@ export function SalesReport({ title }: { title?: string }) {
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         CustomControl={() => (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-wrap items-center gap-2">
             <SalesReportToolbarFilterDisplay />
             <button
               type="button"
               onClick={handleOnClickFilter}
-              className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-blue-500 rounded hover:bg-blue-700"
             >
               Filter
             </button>
             <button
               type="button"
               onClick={handleOnClickResetFilter}
-              className="bg-amber-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-amber-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-amber-500 rounded hover:bg-amber-700"
             >
               Reset Filter
             </button>
@@ -98,7 +103,7 @@ export function SalesReport({ title }: { title?: string }) {
           </div>
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExportAsLandscape={true}
         isPdfExport={true}
@@ -123,7 +128,7 @@ export function SalesReport({ title }: { title?: string }) {
         instance={instance}
         isSmallerFont={true}
         loadData={loadData}
-        minWidth="800px"
+        minWidth="400px"
         onRemove={handleOnRemove}
         queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
         onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound

@@ -25,11 +25,10 @@ import { ControlledNumericInput } from "../../../../../controls/components/contr
 import { PurchaseProductSelectFromGrid } from "./purchase-product-select-from-grid";
 
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
+    // Hooks setup
     const { isValidHsn } = useValidators();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { buCode, dbName, decodedDbParamsObject, defaultGstRate, /*maxGstRate*/ } = useUtilsInfo();
-    // console.log(maxGstRate)
-    // const [,setRefresh] = useState({})
+    const { buCode, dbName, decodedDbParamsObject, defaultGstRate , maxGstRate, branchId, finYearId} = useUtilsInfo();
     const {
         control,
         register,
@@ -46,379 +45,18 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const lineItems = watch("purchaseLineItems") || [];
     const isIgst = watch('isIgst')
 
+    // Helper functions
     const getDefaultLineItem = useCallback(() => {
         const lineItem = getDefaultPurchaseLineItem();
         lineItem.gstRate = defaultGstRate || 0;
         return lineItem;
     }, [defaultGstRate, getDefaultPurchaseLineItem]);
 
-    const handleAddRow = (index: number) => {
-        insert(index + 1,
-            getDefaultLineItem(),
-            { shouldFocus: true }
-        );
-        setTimeout(() => setCurrentRowIndex(index + 1), 0);
-    };
-
-    const handleClearAll = () => {
-        const deletedIds = getValues('deletedIds') || []
-        for (let i = fields.length - 1; i >= 0; i--) {
-            const id = getValues(`purchaseLineItems.${i}.id`)
-            if (id) {
-                deletedIds.push(id)
-            }
-            // console.log(id)
-            remove(i);
-        }
-        if (!_.isEmpty(deletedIds)) {
-            setValue('deletedIds', [...deletedIds])
-        }
-        setTimeout(() => setCurrentRowIndex(0), 0);
-    };
-
     const onChangeProductCode = useMemo(
         () =>
             _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
                 populateProductOnProductCode(e.target.value, index);
             }, 2000), []
-    );
-
-    useEffect(() => {
-        return () => onChangeProductCode.cancel();
-    }, [onChangeProductCode]);
-
-    useEffect(() => {
-        if (lineItems.length === 0) {
-            append(getDefaultLineItem());
-        }
-    }, [lineItems.length, append, getDefaultLineItem]);
-
-    useEffect(() => {
-        fields.forEach((_, index) => {
-            computeLineItemValues(index)
-        })
-    }, [fields, isIgst])
-
-
-    return (
-        <AnimatePresence>
-            <div className="flex flex-col -mt-4">
-                <label className="font-medium">{title || "Line Items"}</label>
-                {/* <AnimatePresence initial={false}> */}
-                {/* Summary */}
-                {getSummaryMarkup()}
-
-                {fields.map((_, index) => {
-                    return (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 10 }}
-                            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                            className={
-                                clsx(
-                                    "flex flex-wrap items-start border border-gray-200 rounded-md p-2 gap-2 cursor-pointer mt-2",
-                                    currentRowIndex === index ? "bg-green-50 border-2 border-teal-600" : "bg-white"
-                                )}
-                            onClick={() => setCurrentRowIndex(index)}
-                        >
-                            {/* Index */}
-                            <div className="flex flex-col text-xs w-10">
-                                <label className="font-semibold">#</label>
-                                <span className="mt-2">{index + 1}</span>
-                                <TooltipComponent content="Clear Line Item" position="TopCenter" className="mt-5.5">
-                                    <button
-                                        aria-label="Clear Product"
-                                        tabIndex={-1}
-                                        type="button"
-                                        onClick={() => handleClearLineItem(index)}
-                                        className="text-blue-500"
-                                    >
-                                        <IconClear className="w-5 h-5" />
-                                    </button>
-                                </TooltipComponent>
-                            </div>
-
-                            {/* Product Code | UPC */}
-                            <div className="flex flex-col text-xs w-28">
-                                <label className="font-semibold">Prod Code | UPC {<WidgetAstrix />}</label>
-                                <input {...register(`purchaseLineItems.${index}.productCode`, {
-                                    required: Messages.errRequired,
-                                    onChange(event) {
-                                        onChangeProductCode(event, index);
-                                    },
-                                })}
-                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                    className={clsx(inputFormFieldStyles, 'h-8 mt-1',
-                                        errors.purchaseLineItems?.[index]?.productCode ? errorClass : '')
-                                    } />
-                                {/* Search Product Button */}
-                                <button
-                                    tabIndex={-1}
-                                    type="button"
-                                    className="text-sm text-blue-600 flex items-center mt-2 "
-                                    onClick={() => handleProductSearch(index)}
-                                >
-                                    <IconSearch className="mr-1 h-5 w-5" />
-                                    Search
-                                </button>
-                                {/* UPC Code Display */}
-                                <span
-                                    tabIndex={-1}
-                                    className="text-xs mt-1 text-teal-500 "
-                                >
-                                    {watch(`purchaseLineItems.${index}.upcCode`) || "-----------------------"}
-                                </span>
-                            </div>
-
-                            {/* Product Details */}
-                            <div className="flex flex-col text-xs w-40">
-                                <label className="font-semibold">Details {<WidgetAstrix />}</label>
-                                <textarea
-                                    rows={5}
-                                    tabIndex={-1}
-                                    {...register(`purchaseLineItems.${index}.productDetails`, {
-                                        required: Messages.errRequired
-                                    })}
-                                    readOnly
-                                    className={clsx("bg-gray-100 text-xs mt-1", inputFormFieldStyles,
-                                        (errors.purchaseLineItems?.[index]?.productDetails ? errorClass : ''))} />
-                            </div>
-
-                            {/* Remarks */}
-                            <div className="flex flex-col text-xs w-36">
-                                <label className="font-semibold">Remarks</label>
-                                <textarea {...register(`purchaseLineItems.${index}.lineRemarks`)}
-                                    rows={4}
-                                    className={clsx("text-sm mt-1", inputFormFieldStyles)} />
-                            </div>
-
-                            {/* Hsn | Gst Rate */}
-                            <div className="flex flex-col gap-1.5">
-                                <div className="flex flex-col text-xs w-24">
-                                    <label className="font-semibold">HSN {isGstInvoice && <WidgetAstrix />}</label>
-                                    <input {...register(`purchaseLineItems.${index}.hsn`, {
-                                        // required: isGstInvoice ? Messages.errRequired : undefined,
-                                        validate: (val) => {
-                                            const isRequired = watch("isGstInvoice");
-                                            if (isRequired && (!val || val.trim() === "")) {
-                                                return Messages.errRequired;
-                                            }
-                                            if (val && !isValidHsn(val)) {
-                                                return Messages.errInvalidHsn;
-                                            }
-                                            return true;
-                                        },
-                                    })}
-                                        type="text"
-                                        pattern="[0-9]*"
-                                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                        className={clsx(inputFormFieldStyles, 'h-8 mt-1 text-right', errors.purchaseLineItems?.[index]?.hsn ? errorClass : '')} />
-                                </div>
-                                <div className="flex flex-col text-xs w-24">
-                                    <label className="font-semibold">GST % {isGstInvoice && <WidgetAstrix />}</label>
-                                    <ControlledNumericInput
-                                        className={clsx("text-right h-8 mt-1",
-                                            inputFormFieldStyles, errors.purchaseLineItems?.[index]?.gstRate ? errorClass : '')}
-                                        fieldName={`purchaseLineItems.${index}.gstRate`}
-                                        onValueChange={(floatValue) => {
-                                            setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
-                                            computeLineItemValues(index)
-                                        }}
-                                        validate={(value) => {
-                                            if (isGstInvoice) {
-                                                if (value === undefined || value === null || isNaN(value)) {
-                                                    return Messages.errRequired
-                                                }
-                                                if (Utils.isAlmostEqual(0, value, 0.5, 0.2)) {
-                                                    // Utils.showWarningMessage(Messages.errGstRateTooLow)
-                                                }
-                                            }
-                                            if (value > 28) {
-                                                return Messages.errGstRateTooHigh;
-                                            }
-                                            return true;
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Qty */}
-                            <div className="flex flex-col text-xs w-20">
-                                <label className="font-semibold">Qty</label>
-                                <ControlledNumericInput
-                                    className={clsx("text-right h-8 mt-1",
-                                        inputFormFieldStyles, errors.purchaseLineItems?.[index]?.qty ? errorClass : '')}
-                                    fieldName={`purchaseLineItems.${index}.qty`}
-                                    onValueChange={(floatValue) => {
-                                        setValue(`purchaseLineItems.${index}.qty`, floatValue || 0, {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                            shouldTouch: true
-                                        })
-                                        computeLineItemValues(index)
-                                    }}
-                                    validate={(value) => {
-                                        const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
-                                        return (ret)
-                                    }}
-                                />
-                            </div>
-
-                            {/* Price */}
-                            <div className="flex flex-col text-xs w-30">
-                                <label className="font-semibold">Price</label>
-                                <NumericFormat
-                                    value={watch(`purchaseLineItems.${index}.price`)}
-                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                    thousandSeparator
-                                    decimalScale={2}
-                                    fixedDecimalScale
-                                    onChange={() => {
-                                        setPriceGst(index)
-                                    }}
-                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`purchaseLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
-                                        computeLineItemValues(index)
-                                    }}
-                                />
-                            </div>
-
-                            {/* Discount */}
-                            <div className="flex flex-col text-xs w-24">
-                                <label className="font-semibold">Discount(unit)</label>
-                                <NumericFormat
-                                    value={watch(`purchaseLineItems.${index}.discount`)}
-                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                    thousandSeparator
-                                    decimalScale={2}
-                                    fixedDecimalScale
-                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`purchaseLineItems.${index}.discount`, floatValue ?? 0, { shouldDirty: true })
-                                        computeLineItemValues(index)
-                                    }}
-                                />
-                            </div>
-
-                            {/* Price Gst*/}
-                            <div className="flex flex-col text-xs w-30">
-                                <label className="font-semibold">Price Gst</label>
-                                <NumericFormat
-                                    value={watch(`purchaseLineItems.${index}.priceGst`)}
-                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
-                                    thousandSeparator
-                                    decimalScale={2}
-                                    fixedDecimalScale
-                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
-                                    onChange={() => {
-                                        setPrice(index)
-                                    }}
-                                    onValueChange={({ floatValue }) => {
-                                        setValue(`purchaseLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })
-                                    }}
-                                />
-                            </div>
-
-                            {/* Serials */}
-                            <div className="flex flex-col text-xs w-40">
-                                <label className="font-semibold">Serials</label>
-                                <textarea
-                                    {...register(`purchaseLineItems.${index}.serialNumbers`, {
-                                        validate: () =>
-                                            getSnError(index)
-                                    })}
-                                    rows={4}
-                                    placeholder="Comma-separated serials"
-                                    className={
-                                        clsx("text-sm mt-1",
-                                            inputFormFieldStyles,
-                                            errors.purchaseLineItems?.[index]?.serialNumbers ? errorClass : ''
-                                        )} />
-                                {errors?.purchaseLineItems?.[index]?.serialNumbers && <WidgetFormErrorMessage errorMessage={errors?.purchaseLineItems?.[index]?.serialNumbers?.message} />}
-                            </div>
-
-                            {/* Totals */}
-                            <div className="flex flex-col text-xs w-26 rounded">
-                                <div className="font-semibold text-xs">Totals</div>
-                                <div className="flex flex-col gap-1">
-                                    <div className="flex justify-between">
-                                        <span>SubT:</span>
-                                        <span className="text-right bg-gray-50 w-16">{watch(`purchaseLineItems.${index}.subTotal`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>CGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.cgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>SGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.sgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>IGST:</span>
-                                        <span className="text-right w-16 bg-gray-50">{watch(`purchaseLineItems.${index}.igst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex flex-col w-32 ml-auto">
-                                <NumericFormat
-                                    value={watch(`purchaseLineItems.${index}.amount`)}
-                                    fixedDecimalScale
-                                    thousandSeparator
-                                    decimalScale={2}
-                                    disabled
-                                    readOnly
-                                    className={clsx("font-bold border-0 bg-gray-100 text-gray-900 text-right text-sm", inputFormFieldStyles)}
-                                />
-                                <div className="flex items-center justify-center gap-8 mt-6 ml-auto">
-                                    {/* delete */}
-                                    <button
-                                        type="button"
-                                        className={clsx("text-red-500", fields.length === 1 && "opacity-30 cursor-not-allowed")}
-                                        onClick={() => {
-                                            const id = getValues(`purchaseLineItems.${index}.id`)
-                                            if (id) {
-                                                const deletedIds = getValues('deletedIds') || []
-                                                setValue('deletedIds', [...deletedIds, id])
-                                            }
-                                            console.log(id)
-                                            if (fields.length > 1) {
-                                                remove(index)
-                                                setTimeout(() => {
-                                                    if (index === 0) {
-                                                        setCurrentRowIndex(0);
-                                                    } else {
-                                                        setCurrentRowIndex(index - 1);
-                                                    }
-                                                }, 0);
-                                            }
-                                        }}
-                                        disabled={fields.length === 1}
-                                    >
-                                        <IconCross className="w-7 h-7" />
-                                    </button>
-                                    {/* add */}
-                                    <button
-                                        type="button"
-                                        className="text-green-600"
-                                        onClick={() => handleAddRow(index)}
-                                    >
-                                        <IconPlus className="w-6 h-6 disabled:text-red-100" />
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    );
-                })}
-
-                {/* Summary */}
-                {getSummaryMarkup()}
-            </div>
-        </AnimatePresence>
     );
 
     function computeLineItemValues(index: number) {
@@ -486,57 +124,55 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         return (summary)
     }
 
-    function getSummaryMarkup() {
-        const summary = getSummary()
-        return (<div className="flex items-center flex-wrap mt-2 text-sm font-medium bg-gray-50 py-2 rounded border border-gray-200 w-full justify-between">
+    function setPrice(index: number) {
+        const priceGst = new Decimal(watch(`purchaseLineItems.${index}.priceGst`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
 
-            <div className="flex justify-between items-center flex-wrap gap-4 ">
-                {/* Clear All Button */}
-                <button
-                    type="button"
-                    onClick={handleClearAll}
-                    className="px-3 py-1 bg-amber-100 text-gray-500 rounded flex items-center gap-2 hover:bg-amber-200"
-                >
-                    <IconClear1 />
-                    Clear All Rows
-                </button>
+        const divisor = gstRate.dividedBy(100).plus(1);
+        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
 
-                <div className="text-right min-w-[100px] flex gap-1">
-                    <span className="text-gray-500">Items:</span>
-                    {summary.count}
-                </div>
-                <div className="text-right min-w-[120px] flex gap-1">
-                    <span className="text-gray-500">Qty:</span>
-                    {Utils.toDecimalFormat(summary.qty.toNumber())}
-                </div>
-                <div className="text-right min-w-[150px] flex gap-1">
-                    <span className="text-gray-500">SubTotal:</span>
-                    {summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </div>
-                <div className="text-right min-w-[120px] flex gap-1">
-                    <span className="text-gray-500">CGST:</span>
-                    {Utils.toDecimalFormat(summary.cgst.toNumber())}
-                </div>
-                <div className="text-right min-w-[120px] flex gap-1">
-                    <span className="text-gray-500">SGST:</span>
-                    {Utils.toDecimalFormat(summary.sgst.toNumber())}
-                </div>
-                <div className="text-right min-w-[120px] flex gap-1">
-                    <span className="text-gray-500">IGST:</span>
-                    {Utils.toDecimalFormat(summary.igst.toNumber())}
-                </div>
-                <div>
-                    <button onClick={() => {
-                        trigger()
-                    }}>Test</button>
-                </div>
-            </div>
-            <div className="text-right mr-4 flex gap-1">
-                <span className="text-gray-500">Total Amount:</span>
-                <strong>{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
-            </div>
-        </div>)
+        setValue(`purchaseLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
     }
+
+    function setPriceGst(index: number) {
+        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+
+        const multiplier = gstRate.dividedBy(100).plus(1);
+        const priceGst = multiplier.times(price);
+
+        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }
+
+    // Event handlers
+    const handleAddRow = (index: number) => {
+        insert(index + 1,
+            getDefaultLineItem(),
+            { shouldFocus: true }
+        );
+        setTimeout(() => setCurrentRowIndex(index + 1), 0);
+    };
+
+    const handleClearAll = () => {
+        const deletedIds = getValues('deletedIds') || []
+        for (let i = fields.length - 1; i >= 0; i--) {
+            const id = getValues(`purchaseLineItems.${i}.id`)
+            if (id) {
+                deletedIds.push(id)
+            }
+            remove(i);
+        }
+        if (!_.isEmpty(deletedIds)) {
+            setValue('deletedIds', [...deletedIds])
+        }
+        setTimeout(() => setCurrentRowIndex(0), 0);
+    };
 
     function handleClearLineItem(index: number) {
         setValue(`purchaseLineItems.${index}.productId`, null, { shouldDirty: true });
@@ -572,7 +208,9 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             dbParams: decodedDbParamsObject,
             sqlId: SqlIdsMap.getProductOnProductCodeUpc,
             sqlArgs: {
-                productCodeOrUpc: productCode
+                branchId: branchId || 1,
+                productCodeOrUpc: productCode,
+                finYearId: finYearId || 0
             }
         });
         const product = products?.[0];
@@ -580,7 +218,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             handleClearLineItem(index);
             return;
         }
-        // Set fetched values
         setLineItem(product, index);
     }
 
@@ -597,31 +234,392 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         }, 0);
     }
 
-    function setPrice(index: number) {
-        const priceGst = new Decimal(watch(`purchaseLineItems.${index}.priceGst`) || 0);
-        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+    // Effects
+    useEffect(() => {
+        return () => onChangeProductCode.cancel();
+    }, [onChangeProductCode]);
 
-        const divisor = gstRate.dividedBy(100).plus(1);
-        const price = divisor.gt(0) ? priceGst.dividedBy(divisor) : new Decimal(0);
+    useEffect(() => {
+        if (lineItems.length === 0) {
+            append(getDefaultLineItem());
+        }
+    }, [lineItems.length, append, getDefaultLineItem]);
 
-        setValue(`purchaseLineItems.${index}.price`, price.toDecimalPlaces(2).toNumber(), {
-            shouldDirty: true,
-            shouldValidate: true
-        });
+    useEffect(() => {
+        fields.forEach((_, index) => {
+            computeLineItemValues(index)
+        })
+    }, [fields, isIgst])
+
+    // Render helpers
+    function getSummaryMarkup() {
+        const summary = getSummary()
+        return (<div className="flex flex-wrap items-center justify-between mt-2 py-2 w-full font-medium text-sm bg-gray-50 border border-gray-200 rounded">
+
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <button
+                    type="button"
+                    onClick={handleClearAll}
+                    className="flex items-center px-3 py-1 text-gray-500 bg-amber-100 rounded hover:bg-amber-200 gap-2"
+                >
+                    <IconClear1 />
+                    Clear All Rows
+                </button>
+
+                <div className="flex min-w-[100px] text-right gap-1">
+                    <span className="text-gray-500">Items:</span>
+                    {summary.count}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">Qty:</span>
+                    {Utils.toDecimalFormat(summary.qty.toNumber())}
+                </div>
+                <div className="flex min-w-[150px] text-right gap-1">
+                    <span className="text-gray-500">SubTotal:</span>
+                    {summary.subTotal.toNumber().toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">CGST:</span>
+                    {Utils.toDecimalFormat(summary.cgst.toNumber())}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">SGST:</span>
+                    {Utils.toDecimalFormat(summary.sgst.toNumber())}
+                </div>
+                <div className="flex min-w-[120px] text-right gap-1">
+                    <span className="text-gray-500">IGST:</span>
+                    {Utils.toDecimalFormat(summary.igst.toNumber())}
+                </div>
+            </div>
+            <div className="flex mr-4 text-right gap-1">
+                <span className="text-gray-500">Total Amount:</span>
+                <strong>{Utils.toDecimalFormat(summary.amount.toNumber())}</strong>
+            </div>
+        </div>)
     }
 
-    function setPriceGst(index: number) {
-        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
-        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
 
-        const multiplier = gstRate.dividedBy(100).plus(1);
-        const priceGst = multiplier.times(price);
+    return (
+        <AnimatePresence>
+            <div className="flex flex-col -mt-4">
+                <label className="font-medium">{title || "Line Items"}</label>
+                {/* <AnimatePresence initial={false}> */}
 
-        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
-            shouldDirty: true,
-            shouldValidate: true
-        });
-    }
+                {/* Summary */}
+                {getSummaryMarkup()}
+
+                {fields.map((_, index) => {
+                    return (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                            className={
+                                clsx(
+                                    "flex flex-wrap items-start border border-gray-200 rounded-md p-2 gap-2 cursor-pointer mt-2",
+                                    currentRowIndex === index ? "bg-green-50 border-2 border-teal-600" : "bg-white"
+                                )}
+                            onClick={() => setCurrentRowIndex(index)}
+                        >
+                            {/* Index */}
+                            <div className="flex flex-col w-10 text-xs">
+                                <label className="font-semibold">#</label>
+                                <span className="mt-2">{index + 1}</span>
+                                <TooltipComponent content="Clear Line Item" position="TopCenter" className="mt-5.5">
+                                    <button
+                                        aria-label="Clear Product"
+                                        tabIndex={-1}
+                                        type="button"
+                                        onClick={() => handleClearLineItem(index)}
+                                        className="text-blue-500"
+                                    >
+                                        <IconClear className="w-5 h-5" />
+                                    </button>
+                                </TooltipComponent>
+                            </div>
+
+                            {/* Product Code | UPC */}
+                            <div className="flex flex-col w-28 text-xs">
+                                <label className="font-semibold">Prod Code | UPC {<WidgetAstrix />}</label>
+                                <input {...register(`purchaseLineItems.${index}.productCode`, {
+                                    required: Messages.errRequired,
+                                    onChange(event) {
+                                        onChangeProductCode(event, index);
+                                    },
+                                })}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    className={clsx(inputFormFieldStyles, 'h-8 mt-1',
+                                        errors.purchaseLineItems?.[index]?.productCode ? errorClass : '')
+                                    } />
+                                {/* Search Product Button */}
+                                <button
+                                    tabIndex={-1}
+                                    type="button"
+                                    className="flex items-center mt-2 text-blue-600 text-sm"
+                                    onClick={() => handleProductSearch(index)}
+                                >
+                                    <IconSearch className="mr-1 w-5 h-5" />
+                                    Search
+                                </button>
+                                {/* UPC Code Display */}
+                                <span
+                                    tabIndex={-1}
+                                    className="mt-1 text-teal-500 text-xs"
+                                >
+                                    {watch(`purchaseLineItems.${index}.upcCode`) || "-----------------------"}
+                                </span>
+                            </div>
+
+                            {/* Product Details */}
+                            <div className="flex flex-col w-40 text-xs">
+                                <label className="font-semibold">Details {<WidgetAstrix />}</label>
+                                <textarea
+                                    rows={5}
+                                    tabIndex={-1}
+                                    {...register(`purchaseLineItems.${index}.productDetails`, {
+                                        required: Messages.errRequired
+                                    })}
+                                    readOnly
+                                    className={clsx("bg-gray-100 text-xs mt-1", inputFormFieldStyles,
+                                        (errors.purchaseLineItems?.[index]?.productDetails ? errorClass : ''))} />
+                            </div>
+
+                            {/* Remarks */}
+                            <div className="flex flex-col w-36 text-xs">
+                                <label className="font-semibold">Remarks</label>
+                                <textarea {...register(`purchaseLineItems.${index}.lineRemarks`)}
+                                    rows={4}
+                                    className={clsx("text-sm mt-1", inputFormFieldStyles)} />
+                            </div>
+
+                            {/* Hsn | Gst Rate */}
+                            <div className="flex flex-col gap-1.5">
+                                <div className="flex flex-col w-24 text-xs">
+                                    <label className="font-semibold">HSN {isGstInvoice && <WidgetAstrix />}</label>
+                                    <input {...register(`purchaseLineItems.${index}.hsn`, {
+                                        validate: (val) => {
+                                            const isRequired = watch("isGstInvoice");
+                                            if (isRequired && (!val || val.trim() === "")) {
+                                                return Messages.errRequired;
+                                            }
+                                            if (val && !isValidHsn(val)) {
+                                                return Messages.errInvalidHsn;
+                                            }
+                                            return true;
+                                        },
+                                    })}
+                                        type="text"
+                                        pattern="[0-9]*"
+                                        onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                        className={clsx(inputFormFieldStyles, 'h-8 mt-1 text-right', errors.purchaseLineItems?.[index]?.hsn ? errorClass : '')} />
+                                </div>
+                                {/* Gst rate */}
+                                <div className="flex flex-col w-24 text-xs">
+                                    <label className="font-semibold">GST % {isGstInvoice && <WidgetAstrix />}</label>
+                                    <ControlledNumericInput
+                                        className={clsx("text-right h-8 mt-1",
+                                            inputFormFieldStyles, errors.purchaseLineItems?.[index]?.gstRate ? errorClass : '')}
+                                        fieldName={`purchaseLineItems.${index}.gstRate`}
+                                        onValueChange={(floatValue) => {
+                                            setValue(`purchaseLineItems.${index}.gstRate`, floatValue ?? 0, { shouldDirty: true, shouldValidate: true })
+                                            computeLineItemValues(index)
+                                        }}
+                                        validate={(value) => {
+                                            if (isGstInvoice) {
+                                                if (value === undefined || value === null || isNaN(value)) {
+                                                    return Messages.errRequired
+                                                }
+                                            }
+                                            if (maxGstRate && (value > maxGstRate)) {
+                                                return Messages.errGstRateTooHigh;
+                                            }
+                                            return true;
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Qty */}
+                            <div className="flex flex-col w-20 text-xs">
+                                <label className="font-semibold">Qty</label>
+                                <ControlledNumericInput
+                                    className={clsx("text-right h-8 mt-1",
+                                        inputFormFieldStyles, errors.purchaseLineItems?.[index]?.qty ? errorClass : '')}
+                                    fieldName={`purchaseLineItems.${index}.qty`}
+                                    onValueChange={(floatValue) => {
+                                        setValue(`purchaseLineItems.${index}.qty`, floatValue || 0, {
+                                            shouldDirty: true,
+                                            shouldValidate: true,
+                                            shouldTouch: true
+                                        })
+                                        computeLineItemValues(index)
+                                    }}
+                                    validate={(value) => {
+                                        const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
+                                        return (ret)
+                                    }}
+                                />
+                            </div>
+
+                            {/* Price */}
+                            <div className="flex flex-col w-30 text-xs">
+                                <label className="font-semibold">Price</label>
+                                <NumericFormat
+                                    value={watch(`purchaseLineItems.${index}.price`)}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    fixedDecimalScale
+                                    allowNegative={false}
+                                    onChange={() => {
+                                        setPriceGst(index)
+                                    }}
+                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    onValueChange={({ floatValue }) => {
+                                        setValue(`purchaseLineItems.${index}.price`, floatValue ?? 0, { shouldDirty: true })
+                                        computeLineItemValues(index)
+                                    }}
+                                />
+                            </div>
+
+                            {/* Discount */}
+                            <div className="flex flex-col w-24 text-xs">
+                                <label className="font-semibold">Discount(unit)</label>
+                                <NumericFormat
+                                    value={watch(`purchaseLineItems.${index}.discount`)}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    thousandSeparator
+                                    allowNegative={false}
+                                    decimalScale={2}
+                                    fixedDecimalScale
+                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    onValueChange={({ floatValue }) => {
+                                        setValue(`purchaseLineItems.${index}.discount`, floatValue ?? 0, { shouldDirty: true })
+                                        computeLineItemValues(index)
+                                    }}
+                                />
+                            </div>
+
+                            {/* Price Gst*/}
+                            <div className="flex flex-col w-30 text-xs">
+                                <label className="font-semibold">Price Gst</label>
+                                <NumericFormat
+                                    value={watch(`purchaseLineItems.${index}.priceGst`)}
+                                    onFocus={(e) => setTimeout(() => e.target.select(), 0)}
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    allowNegative={false}
+                                    fixedDecimalScale
+                                    className={clsx("text-right h-8 mt-1", inputFormFieldStyles)}
+                                    onChange={() => {
+                                        setPrice(index)
+                                    }}
+                                    onValueChange={({ floatValue }) => {
+                                        setValue(`purchaseLineItems.${index}.priceGst`, floatValue ?? 0, { shouldDirty: true })
+                                    }}
+                                />
+                            </div>
+
+                            {/* Serials */}
+                            <div className="flex flex-col w-40 text-xs">
+                                <label className="font-semibold">Serials</label>
+                                <textarea
+                                    {...register(`purchaseLineItems.${index}.serialNumbers`, {
+                                        validate: () =>
+                                            getSnError(index)
+                                    })}
+                                    rows={4}
+                                    placeholder="Comma-separated serials"
+                                    className={
+                                        clsx("text-sm mt-1",
+                                            inputFormFieldStyles,
+                                            errors.purchaseLineItems?.[index]?.serialNumbers ? errorClass : ''
+                                        )} />
+                                {errors?.purchaseLineItems?.[index]?.serialNumbers && <WidgetFormErrorMessage errorMessage={errors?.purchaseLineItems?.[index]?.serialNumbers?.message} />}
+                            </div>
+
+                            {/* Totals */}
+                            <div className="flex flex-col w-26 text-xs rounded">
+                                <div className="font-semibold text-xs">Totals</div>
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex justify-between">
+                                        <span>SubT:</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.subTotal`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>CGST:</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.cgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>SGST:</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.sgst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>IGST:</span>
+                                        <span className="w-16 text-right bg-gray-50">{watch(`purchaseLineItems.${index}.igst`)?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex flex-col ml-auto w-32">
+                                <NumericFormat
+                                    value={watch(`purchaseLineItems.${index}.amount`)}
+                                    fixedDecimalScale
+                                    thousandSeparator
+                                    decimalScale={2}
+                                    disabled
+                                    readOnly
+                                    className={clsx("font-bold border-0 bg-gray-100 text-gray-900 text-right text-sm", inputFormFieldStyles)}
+                                />
+                                <div className="flex items-center justify-center mt-6 ml-auto gap-8">
+                                    {/* delete */}
+                                    <button
+                                        type="button"
+                                        className={clsx("text-red-500", fields.length === 1 && "opacity-30 cursor-not-allowed")}
+                                        onClick={() => {
+                                            const id = getValues(`purchaseLineItems.${index}.id`)
+                                            if (id) {
+                                                const deletedIds = getValues('deletedIds') || []
+                                                setValue('deletedIds', [...deletedIds, id])
+                                            }
+                                            // console.log(id)
+                                            if (fields.length > 1) {
+                                                remove(index)
+                                                setTimeout(() => {
+                                                    if (index === 0) {
+                                                        setCurrentRowIndex(0);
+                                                    } else {
+                                                        setCurrentRowIndex(index - 1);
+                                                    }
+                                                }, 0);
+                                            }
+                                        }}
+                                        disabled={fields.length === 1}
+                                    >
+                                        <IconCross className="w-7 h-7" />
+                                    </button>
+                                    {/* add */}
+                                    <button
+                                        type="button"
+                                        className="text-green-600"
+                                        onClick={() => handleAddRow(index)}
+                                    >
+                                        <IconPlus className="w-6 h-6 disabled:text-red-100" />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    );
+                })}
+
+                {/* Summary */}
+                {getSummaryMarkup()}
+            </div>
+        </AnimatePresence>
+    );
 }
 
 type PurchaseLineItemsProps = {

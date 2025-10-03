@@ -34,16 +34,16 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
     return (<div className={clsx(className, "flex flex-col space-y-4")}>
 
         {/* Header */}
-        <div className="flex space-x-4 items-center">
-            <label className="text-lg font-semibold text-primary-500">{title || 'Select Date Range'}</label>
-            <span className='text-black-600 mt-1 font-semibold'>
+        <div className="flex items-center space-x-4">
+            <label className="font-semibold text-lg text-primary-500">{title || 'Select Date Range'}</label>
+            <span className='mt-1 font-semibold text-black-600'>
                 {format(selectedDateRange?.startDate || currentFinYear.startDate, currentDateFormat)} - {format(selectedDateRange?.endDate || currentFinYear.endDate, currentDateFormat)}
             </span>
         </div>
 
         <div className='flex space-x-6'>
             {/* custom range */}
-            <label className="flex items-center space-x-2 cursor-pointer">
+            <label className="flex items-center cursor-pointer space-x-2">
                 <input
                     type="radio"
                     name="dateType"
@@ -56,7 +56,7 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
             </label>
 
             {/* Quarters */}
-            <label className="flex items-center space-x-2 cursor-pointer">
+            <label className="flex items-center cursor-pointer space-x-2">
                 <input
                     type="radio"
                     name="dateType"
@@ -69,7 +69,7 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
             </label>
 
             {/* preset ranges */}
-            <label className="flex items-center space-x-2 cursor-pointer disabled:bg-gray-400 disabled:cursor-auto">
+            <label className="flex items-center cursor-pointer disabled:bg-gray-400 disabled:cursor-auto space-x-2">
                 <input
                     disabled={presetRangeDisabled}
                     type="radio"
@@ -85,9 +85,9 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
 
         {/* Custom date range */}
         {selectedType === "custom" && (
-            <div className="flex gap-4 justify-start items-center">
+            <div className="flex items-center justify-start gap-4">
                 <div className="w-48">
-                    <label className="block mb-2 text-sm font-medium">Start Date</label>
+                    <label className="block mb-2 font-medium text-sm">Start Date</label>
                     <input
                         type="date"
                         value={format(selectedDateRange?.startDate || currentFinYear.startDate, isoFormat)}
@@ -97,11 +97,11 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
                             setSelectedQuarter(undefined)
                             dispatch(setCompDateRangeStartDate({ instance: instance, startDate: date }))
                         }}
-                        className="w-full px-3 py-2 border rounded-md text-sm cursor-pointer"
+                        className="px-3 py-2 w-full text-sm border rounded-md cursor-pointer"
                     />
                 </div>
                 <div className="w-48">
-                    <label className="block mb-2 text-sm font-medium">End Date</label>
+                    <label className="block mb-2 font-medium text-sm">End Date</label>
                     <input
                         type="date"
                         value={format(selectedDateRange?.endDate || currentFinYear.endDate, isoFormat)}
@@ -112,18 +112,18 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
                             setSelectedQuarter(undefined)
                             dispatch(setCompDateRangeEndDate({ instance: instance, endDate: date }))
                         }}
-                        className="w-full px-3 py-2 border rounded-md text-sm cursor-pointer"
+                        className="px-3 py-2 w-full text-sm border rounded-md cursor-pointer"
                     />
                 </div>
-                <button onClick={handleResetToFiscalYear} className='bg-primary-400 text-sm text-gray-50 px-4 py-1 h-10 rounded-md mt-7 hover:bg-primary-500 font-semibold'>Reset to Fiscal Year</button>
+                <button onClick={handleResetToFiscalYear} className='mt-7 px-4 py-1 h-10 font-semibold text-gray-50 text-sm rounded-md hover:bg-primary-500 bg-primary-400'>Reset to Fiscal Year</button>
             </div>
         )}
 
         {/* Quarter date range */}
         {selectedType === "quarter" && (
-            <div className="grid grid-cols-4 gap-4 mr-6">
+            <div className="grid mr-6 gap-4 grid-cols-4">
                 {(["Q1", "Q2", "Q3", "Q4"] as Quarter[]).map((quarter) => (
-                    <label key={quarter} className="flex items-center space-x-2 p-4 border rounded-md hover:bg-gray-50 cursor-pointer">
+                    <label key={quarter} className="flex items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50 space-x-2">
                         <input
                             type="radio"
                             name="quarter"
@@ -132,7 +132,7 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
                             onChange={() => handleQuarterChange(quarter)}
                             className="w-4 h-4 text-blue-600 cursor-pointer"
                         />
-                        <span className="text-sm font-medium">{quarter}</span>
+                        <span className="font-medium text-sm">{quarter}</span>
                     </label>
                 ))}
             </div>
@@ -140,7 +140,7 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
 
         {/* Preset range */}
         {selectedType === "preset" && (
-            <div className="grid grid-cols-6 gap-4 mr-6">
+            <div className="grid mr-6 gap-4 grid-cols-6">
                 {[
                     { value: "thisMonth", label: "This Month" },
                     { value: "lastMonth", label: "Last Month" },
@@ -149,7 +149,7 @@ export function CompDateRange({ className, instance, title }: CompDateRangeType)
                     { value: "last9Months", label: "Last 9 Months" },
                     { value: "thisYear", label: "This Year" },
                 ].map(({ value, label }) => (
-                    <label key={value} className="flex items-center space-x-2 p-4 border rounded-md hover:bg-gray-50 cursor-pointer">
+                    <label key={value} className="flex items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50 space-x-2">
                         <input
                             type="radio"
                             name="preset"

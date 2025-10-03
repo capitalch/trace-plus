@@ -19,10 +19,12 @@ import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { ContactDisplayDataType } from "../sales/all-sales";
 import { Messages } from "../../../../utils/messages";
+import { useLocation } from "react-router-dom";
 
 export function AllSalesReturn() {
     const instance = DataInstancesMap.allSalesReturn
     const dispatch: AppDispatchType = useDispatch()
+    const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.salesReturn.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.salesReturn.isViewMode);
 
@@ -37,7 +39,7 @@ export function AllSalesReturn() {
     const { clearErrors, getValues, reset, setValue } = methods;
 
     const { getTranHData } = useAllSalesReturnSubmit(methods);
-    const extendedMethods = { ...methods, getDefaultSalesReturnLineItem, getDefaultCreditAccount, resetAll, populateFormOverId, getSalesReturnEditDataOnId, /*populateFormFromSalesInvoice*/ }
+    const extendedMethods = { ...methods, getDefaultSalesReturnLineItem, getDefaultCreditAccount, resetAll, populateFormOverId, getSalesReturnEditDataOnId,}
 
     // Utility function to generate sales return title
     const getSalesReturnTitle = (isViewMode: boolean): string => {
@@ -80,6 +82,13 @@ export function AllSalesReturn() {
         const title = getSalesReturnTitle(isViewMode);
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [isViewMode, dispatch]);
+
+    // Handle navigation from report - auto-populate form with ID from location state
+    useEffect(() => {
+        if (location.state?.id && location.state?.returnPath) {
+            populateFormOverId(location.state.id)
+        }
+    }, [location.state?.id, location.state?.returnPath]);
 
     const handleBackToForm = () => {
         dispatch(setSalesReturnViewMode(false));
@@ -213,7 +222,6 @@ export function AllSalesReturn() {
         return (out)
     }
 
-
     // === DATABASE QUERY FUNCTIONS ===
     async function getSalesReturnDetailsOnId(id: number | undefined) {
         if (!id) {
@@ -240,7 +248,6 @@ export function AllSalesReturn() {
         return (salesReturnEditData)
     }
 
-    // === FORM POPULATION FUNCTIONS ===
     async function populateFormOverId(id: any) {
         const salesReturnEditData: SalePurchaseEditDataType | null = await getSalesReturnEditDataOnId(id)
         if (!salesReturnEditData) {
@@ -256,7 +263,6 @@ export function AllSalesReturn() {
 
         const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "D")?.amount || 0)
         const creditAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
-        // const paymentAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
 
         reset({
             id: tranH.id,
@@ -302,93 +308,6 @@ export function AllSalesReturn() {
             contactsData: billTo,
         })
     }
-
-    // === POPULATE FROM SALES INVOICE ===
-    // async function populateFormFromSalesInvoice(salesInvoiceId: number) {
-    //     const salesEditData: SalePurchaseEditDataType | null = await getSalesEditDataOnId(salesInvoiceId)
-    //     if (!salesEditData) {
-    //         Utils.showErrorMessage("Selected sales invoice data not found")
-    //         return
-    //     }
-
-    //     const tranH: TranHType = salesEditData.tranH
-    //     const billTo: ContactsType | null = salesEditData.billTo
-    //     const tranD: TranDExtraType[] = salesEditData.tranD
-    //     const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
-    //     const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
-
-    //     const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
-
-    //     reset({
-    //         id: undefined, // New sales return
-    //         autoRefNo: undefined,
-    //         tranDate: new Date().toISOString().split('T')[0],
-    //         userRefNo: null,
-    //         remarks: `Return for Invoice: ${tranH.autoRefNo}`,
-    //         tranTypeId: Utils.getTranTypeId("SaleReturn"),
-    //         branchId: tranH.branchId,
-    //         finYearId: tranH.finYearId,
-    //         isGstInvoice: Boolean(extGsTranD?.id),
-    //         creditAccId: tranD.find((item) => item.dc === "C")?.accId,
-    //         // paymentAccId: null,
-    //         gstin: extGsTranD?.gstin,
-    //         isIgst: extGsTranD?.igst ? true : false,
-
-    //         totalCgst: new Decimal(extGsTranD?.cgst || 0),
-    //         totalSgst: new Decimal(extGsTranD?.sgst || 0),
-    //         totalIgst: new Decimal(extGsTranD?.igst || 0),
-    //         totalQty: new Decimal(salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0)),
-    //         totalInvoiceAmount: totalInvoiceAmount,
-    //         // paymentAmount: new Decimal(0),
-    //         selectedSalesInvoiceId: salesInvoiceId,
-    //         salesReturnLineItems: salePurchaseDetails.map((item) => ({
-    //             id: undefined, // New line items for return
-    //             productId: item.productId,
-    //             productCode: item.productCode,
-    //             upcCode: item.upcCode || null,
-    //             productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
-    //             hsn: item.hsn.toString(),
-    //             qty: item.qty,
-    //             gstRate: item.gstRate,
-    //             price: item.price,
-    //             discount: item.discount,
-    //             priceGst: item.priceGst,
-    //             lineRemarks: item.remarks || null,
-    //             serialNumbers: item.serialNumbers || null,
-    //             amount: item.amount,
-    //             cgst: item.cgst,
-    //             sgst: item.sgst,
-    //             igst: item.igst,
-    //             subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
-    //         })),
-    //         contactsData: billTo,
-    //         // paymentMethod: 'cash'
-    //     })
-    // }
-
-    // async function getSalesEditDataOnId(id: number | undefined) {
-    //     if (!id) {
-    //         return null
-    //     }
-    //     const editData: any = await Utils.doGenericQuery({
-    //         buCode: buCode || "",
-    //         dbName: dbName || "",
-    //         dbParams: decodedDbParamsObject,
-    //         instance: DataInstancesMap.allSales,
-    //         sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
-    //         sqlArgs: {
-    //             id: id,
-    //         },
-    //     })
-    //     const salesEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-    //     if (!salesEditData) {
-    //         return null
-    //     }
-    //     const tranH: TranHType = salesEditData.tranH
-    //     const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
-    //     salesEditData.shippingInfo = shippingInfo
-    //     return (salesEditData)
-    // }
 
     // === UTILITY FUNCTIONS ===
     function resetAll() {

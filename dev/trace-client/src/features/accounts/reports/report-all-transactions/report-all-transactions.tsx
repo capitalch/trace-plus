@@ -17,9 +17,11 @@ import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slic
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
 import { showCompAppLoader, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { useNavigate } from "react-router-dom";
 
 export function ReportAllTransactions() {
     const dispatch: AppDispatchType = useDispatch()
+    const navigate = useNavigate()
     const [apiData, setApiData] = useState<any[]>([])
     const instance: string = DataInstancesMap.reportAllTransactions
     const currentFinYear: FinYearType = useSelector(currentFinYearSelectorFn) || Utils.getRunningFinYear()
@@ -62,7 +64,7 @@ export function ReportAllTransactions() {
         <CompAccountsContainer className="z-0">
             <CompSyncFusionGridToolbar className='mt-2 mr-6'
                 CustomControl={() => <ReportAllTransactionsFilterBar />}
-                minWidth="1000px"
+                minWidth="400px"
                 title=''
                 isPdfExport={false}
                 isExcelExport={false}
@@ -84,8 +86,8 @@ export function ReportAllTransactions() {
                 height="calc(100vh - 295px)"
                 instance={instance}
                 loadData={loadData}
-                minWidth="1400px"
-                onEdit={handleOnEdit}
+                minWidth="400px"
+                onZoomIn={handleOnZoomIn}
                 onDelete={handleOnDelete}
             />
         </CompAccountsContainer>
@@ -244,8 +246,67 @@ export function ReportAllTransactions() {
         })
     }
 
-    function handleOnEdit() {
+    function handleOnZoomIn(rowData: any) {
+        const tranTypeId = rowData.tranTypeId
 
+        // Handle voucher types (Journal, Payment, Receipt, Contra)
+        if (tranTypeId === 1 || tranTypeId === 2 || tranTypeId === 3 || tranTypeId === 6) {
+            navigate('/all-vouchers', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/report-all-transactions',
+                    reportFilters: selectedAllTransactionsFilter
+                }
+            })
+        }
+        // Handle Sales
+        else if (tranTypeId === Utils.getTranTypeId('Sales')) {
+            navigate('/all-sales', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/report-all-transactions',
+                    reportFilters: selectedAllTransactionsFilter
+                }
+            })
+        }
+        // Handle Sales Return
+        else if (tranTypeId === Utils.getTranTypeId('SaleReturn')) {
+            navigate('/all-sales-return', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/report-all-transactions',
+                    reportFilters: selectedAllTransactionsFilter
+                }
+            })
+        }
+        // Handle Debit Notes
+        else if (tranTypeId === Utils.getTranTypeId('DebitNote')) {
+            navigate('/debit-notes', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/report-all-transactions',
+                    reportFilters: selectedAllTransactionsFilter
+                }
+            })
+        }
+        // Handle Credit Notes
+        else if (tranTypeId === Utils.getTranTypeId('CreditNote')) {
+            navigate('/credit-notes', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/report-all-transactions',
+                    reportFilters: selectedAllTransactionsFilter
+                }
+            })
+        }
+        else {
+            Utils.showErrorMessage('Edit functionality for this transaction type will be available soon')
+        }
     }
 
     async function loadData() {

@@ -1,4 +1,7 @@
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatchType } from "../../../../../app/store";
+import { setCompAccountsContainerMainTitle } from "../../../../../controls/redux-components/comp-slice";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import {
@@ -11,11 +14,16 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BackToDashboardLink } from "../back-to-dashboard-link";
 
 export function ProductsListReport({ title }: { title?: string }) {
+  const dispatch: AppDispatchType = useDispatch();
   const instance = DataInstancesMap.productsListReport;
 
   const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
 
 useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+    }, [dispatch]);
+
+    useEffect(() => {
         const loadData = context?.CompSyncFusionGrid[instance]?.loadData
         if (loadData && buCode) {
             loadData()
@@ -26,7 +34,7 @@ useEffect(() => {
     <div className="flex flex-col">
       <CompSyncFusionGridToolbar
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExport={true}
         isExcelExport={true}
@@ -45,7 +53,7 @@ useEffect(() => {
         dbParams={decodedDbParamsObject}
         height="calc(100vh - 303px)"
         instance={instance}
-        minWidth="600px"
+        minWidth="400px"
         pageSettings={{ pageSize: 500, pageSizes: [200, 500, 1000, 2000] }}
         sqlId={SqlIdsMap.getAllProducts}
         sqlArgs={{

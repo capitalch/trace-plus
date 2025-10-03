@@ -54,7 +54,7 @@ export function BranchMaster() {
             hasIndexColumn={true}
             height="calc(100vh - 240px)"
             instance={instance}
-            minWidth="1400px"
+            minWidth="400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
             sqlId={SqlIdsMap.getAllBranches}

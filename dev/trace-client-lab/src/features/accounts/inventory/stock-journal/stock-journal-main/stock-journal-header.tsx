@@ -22,12 +22,12 @@ export function StockJournalHeader({ instance }: { instance: string }) {
   const { xReset }: any = useFormContext(); // normal reset does not work. xReset is custom reset method defined in .._stock_journal_main.tsx
 
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex flex-wrap gap-2">
       {/* Auto ref no */}
-      <FormField label="Auto ref no" className="w-52 ">
+      <FormField label="Auto ref no" className="w-52">
         <input
           type="text"
-          className={clsx("mt-1 bg-gray-200 rounded-lg")}
+          className={clsx("bg-gray-200 rounded-lg")}
           readOnly
           disabled
           title="Auto reference number"
@@ -62,7 +62,7 @@ export function StockJournalHeader({ instance }: { instance: string }) {
       </FormField>
 
       {/* Remarks */}
-      <FormField className="min-w-60 w-auto" label="Remarks">
+      <FormField className="w-auto min-w-60" label="Remarks">
         <textarea
           rows={3}
           className={clsx(inputFormFieldStyles, "text-xs mt-1")}
@@ -72,14 +72,14 @@ export function StockJournalHeader({ instance }: { instance: string }) {
       </FormField>
 
       {/* Reset view submit */}
-      <div className="flex gap-3 ml-auto mt-6 h-10">
+      <div className="flex mt-6 ml-auto h-10 gap-3">
         {/* Reset */}
         <button
           onClick={xReset}
           type="button"
-          className="px-5 font-medium text-white inline-flex items-center bg-amber-500 hover:bg-amber-800 focus:ring-4 focus:outline-hidden focus:ring-amber-300 rounded-lg text-center dark:bg-amber-600 dark:hover:bg-amber-700 dark:focus:ring-amber-800 disabled:bg-amber-200"
+          className="inline-flex items-center px-5 font-medium text-center text-white bg-amber-500 rounded-lg hover:bg-amber-800 focus:outline-hidden focus:ring-4 focus:ring-amber-300 disabled:bg-amber-200 dark:bg-amber-600 dark:focus:ring-amber-800 dark:hover:bg-amber-700"
         >
-          <IconReset className="text-white w-6 h-6 mr-2" />
+          <IconReset className="mr-2 w-6 h-6 text-white" />
           Reset
         </button>
 
@@ -87,18 +87,18 @@ export function StockJournalHeader({ instance }: { instance: string }) {
         <button
           type="button"
           onClick={handleViewStockJournal}
-          className="px-5 py-2 font-medium text-white inline-flex items-center bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-200"
+          className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-hidden focus:ring-4 focus:ring-blue-300 disabled:bg-blue-200 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700"
         >
-          <IconView className="text-white w-6 h-6 mr-2" /> View
+          <IconView className="mr-2 w-6 h-6 text-white" /> View
         </button>
 
         {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
-          className="px-5 py-2 font-medium text-white inline-flex items-center bg-teal-500 hover:bg-teal-800 focus:ring-4 focus:outline-hidden focus:ring-teal-300 rounded-lg text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 disabled:bg-teal-200"
+          className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
         >
-          <IconSubmit className="text-white w-6 h-6 mr-2" /> Submit
+          <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
         </button>
       </div>
     </div>

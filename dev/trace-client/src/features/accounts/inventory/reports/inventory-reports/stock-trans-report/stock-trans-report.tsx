@@ -86,7 +86,7 @@ export function StockTransReport({ title }: { title?: string; }) {
         </div>
       )}
       className="mr-4"
-      minWidth="600px"
+      minWidth="400px"
       title={title || ""}
       isPdfExportAsLandscape={true}
       isPdfExport={true}
@@ -116,7 +116,7 @@ export function StockTransReport({ title }: { title?: string; }) {
       instance={instance}
       isSmallerFont={true}
       loadData={loadData}
-      minWidth="800px"
+      minWidth="400px"
       rowHeight={35}
       searchFields={['productCode', 'catName', 'product', 'tranType', 'remarks']}
       queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo

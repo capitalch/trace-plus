@@ -1,5 +1,5 @@
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
-import { CompAccountsContainer } from "../../../../controls/components/comp-accounts-container";
+import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { useDispatch } from "react-redux";
 import { AppDispatchType } from "../../../../app/store";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
@@ -9,7 +9,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { AllTables} from "../../../../app/maps/database-tables-map";
 import { NewEditBranchType } from "./new-edit-branch";
-import { openSlidingPane } from "../../../../controls/redux-components/comp-slice";
+import { openSlidingPane, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-components/sliding-pane/sliding-pane-map";
 import { NewBranchButton } from "./new-branch-button";
 import { changeAccSettings } from "../../accounts-slice";
@@ -27,11 +27,16 @@ export function BranchMaster() {
         }
     }, [buCode])
 
+    // Set main title for Branch Master
+    useEffect(() => {
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Branch Master" }));
+    }, [dispatch]);
+
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             CustomControl={() => <NewBranchButton />}
             minWidth="1000px"
-            title='Branches'
+            title=''
             isPdfExport={true}
             isExcelExport={true}
             isCsvExport={true}
@@ -42,14 +47,14 @@ export function BranchMaster() {
         <CompSyncFusionGrid
             aggregates={getAggregates()}
             buCode={buCode}
-            className="mr-6 mt-4"
+            className="mt-4 mr-6"
             columns={getColumns()}
             dbName={dbName}
             dbParams={decodedDbParamsObject}
             hasIndexColumn={true}
             height="calc(100vh - 240px)"
             instance={instance}
-            minWidth="1400px"
+            minWidth="400px"
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
             sqlId={SqlIdsMap.getAllBranches}

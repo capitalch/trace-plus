@@ -18,10 +18,12 @@ import { useEffect, useCallback } from "react";
 import { Messages } from "../../../../utils/messages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
+import { useLocation } from "react-router-dom";
 
 export function AllSales() {
     const instance = DataInstancesMap.allSales
     const dispatch: AppDispatchType = useDispatch()
+    const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
 
@@ -91,6 +93,13 @@ export function AllSales() {
         const title = getSalesTitle(isViewMode);
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [isViewMode, dispatch]);
+
+    // Handle navigation from report - auto-populate form with ID from location state
+    useEffect(() => {
+        if (location.state?.id && location.state?.returnPath) {
+            populateFormOverId(location.state.id)
+        }
+    }, [location.state?.id, location.state?.returnPath]);
 
     const handleBackToForm = () => {
         dispatch(setSalesViewMode(false));
@@ -288,6 +297,14 @@ export function AllSales() {
     }
 
     // === FORM POPULATION FUNCTIONS ===
+    // async function populateFormFromId(id: number) {
+    //     try {
+    //         await populateFormOverId(id)
+    //     } catch (e: any) {
+    //         Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+    //     }
+    // }
+
     async function populateFormOverId(id: any) {
         const salesEditData: SalePurchaseEditDataType | null = await getSalesEditDataOnId(id)
         if (!salesEditData) {

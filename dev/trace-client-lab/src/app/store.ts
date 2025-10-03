@@ -14,6 +14,7 @@ import { purchaseReturnReducer } from "../features/accounts/purchase-sales/purch
 import { debitNotesReducer } from "../features/accounts/purchase-sales/debit-notes/debit-notes-slice";
 import { creditNotesReducer } from "../features/accounts/purchase-sales/credit-notes/credit-notes-slice";
 import { salesReducer } from "../features/accounts/purchase-sales/sales/sales-slice";
+import { salesReturnReducer } from "../features/accounts/purchase-sales/sales-return/sales-return-slice";
 
 const rootReducer = combineReducers({
   accounts: accountsReducer,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   debitNotes: debitNotesReducer,
   creditNotes: creditNotesReducer,
   sales: salesReducer,
+  salesReturn: salesReturnReducer,
 });
 
 const reducerWithReset = (state: any, action: any) => {

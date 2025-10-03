@@ -32,7 +32,7 @@ export function ForgotPassword() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-2 w-auto min-w-72">
+            <div className="flex flex-col w-auto min-w-72 gap-2">
 
                 {/* ClientId */}
                 <label className="flex flex-col font-medium text-primary-400">
@@ -57,7 +57,7 @@ export function ForgotPassword() {
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Email <WidgetAstrix /></span>
                     <input type="email" placeholder="e.g. user@example.com" autoComplete="off"
-                        className="mt-1 rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerEmail}
                     />
                     <span className="flex justify-between">
@@ -68,7 +68,7 @@ export function ForgotPassword() {
                 </label>
 
                 {/* Send Reset Link */}
-                <div className="mt-4 flex justify-start">
+                <div className="flex justify-start mt-4">
                     <WidgetButtonSubmitFullWidth label="Send Reset Link" disabled={!_.isEmpty(errors)} />
                 </div>
             </div>

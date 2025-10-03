@@ -62,7 +62,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
           </div>
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExportAsLandscape={true}
         isPdfExport={true}
@@ -83,7 +83,7 @@ export function PurchasePriceVariationReport({ title }: { title?: string }) {
         instance={instance}
         isSmallerFont={true}
         loadData={loadData}
-        minWidth="600px"
+        minWidth="400px"
         queryCellInfo={handleQueryCellInfo}
       />
     </div>

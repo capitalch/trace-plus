@@ -11,6 +11,8 @@ import { TraceDataObjectType } from "../../../../utils/global-types-interfaces-e
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants";
 import { AllTables } from "../../../../app/maps/database-tables-map";
+import { useMediaQuery } from "react-responsive";
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 
 export function FinYearsOptions() {
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn)
@@ -19,26 +21,38 @@ export function FinYearsOptions() {
     const formattedStartDate = dayjs(currentFinYear?.startDate ? currentFinYear.startDate : '').format(currentDateFormat)
     const formattedEndDate = dayjs(currentFinYear?.endDate ? currentFinYear?.endDate : '').format(currentDateFormat)
     const dispatch: AppDispatchType = useDispatch()
+    const isMobile = useMediaQuery({ query: '(max-width: 639px)' })
 
     return (
-        <div className="flex items-center ml-4">
-            {/* Plus */}
-            <button onClick={handleOnClickPlus} title="Next Financial Year" className="ml-1" type="button">
-                <IconPlusCircle className="w-7 h-7" />
-            </button>
+        <div className={`flex items-center ${isMobile ? 'ml-0' : 'ml-2 sm:ml-4'}`}>
+            {/* Plus - hide on mobile */}
+            {!isMobile && (
+                <button onClick={handleOnClickPlus} title="Next Financial Year" className="ml-1" type="button">
+                    <IconPlusCircle className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+                </button>
+            )}
             {/* Financial year */}
-            <button onClick={handleOnClickFinYears} className="flex items-center ml-1 px-2 py-2 w-70 h-8 text-gray-800 bg-gray-200 rounded-full shadow-sm">
-                {/* Badge section */}
-                <div className="px-1 py-1 font-bold text-white text-xs bg-blue-500 rounded-full">
-                    FY
-                </div>
-                {/* Text section */}
-                <span className="ml-1 font-medium text-ellipsis text-sm whitespace-nowrap overflow-hidden">{`${currentFinYear?.finYearId} (${formattedStartDate} - ${formattedEndDate})`}</span>
-            </button>
-            {/* minus */}
-            <button onClick={handleOnClickMinus} className="ml-1" type="button" title="Previous Financial Year">
-                <IconMinusCircle className="w-7 h-7" />
-            </button>
+            <TooltipComponent content={`${currentFinYear?.finYearId} (${formattedStartDate} - ${formattedEndDate})`} position="BottomCenter">
+                <button onClick={handleOnClickFinYears}
+                    className={`flex items-center ${isMobile ? 'px-1 py-1 h-6' : 'ml-1 px-2 py-2 h-8'} text-gray-800 bg-gray-200 rounded-full shadow-sm`}>
+                    {/* Badge section */}
+                    <div className={`${isMobile ? 'px-0.5 py-0.5' : 'px-1 py-1'} font-bold text-white text-xs bg-blue-500 rounded-full`}>
+                        FY
+                    </div>
+                    {/* Text section - show only on tablet+ */}
+                    {!isMobile && (
+                        <span className="ml-1 font-medium text-ellipsis text-xs sm:text-sm whitespace-nowrap overflow-hidden max-w-[80px] sm:max-w-[120px] md:max-w-none">
+                            {`${currentFinYear?.finYearId} (${formattedStartDate} - ${formattedEndDate})`}
+                        </span>
+                    )}
+                </button>
+            </TooltipComponent>
+            {/* minus - hide on mobile */}
+            {!isMobile && (
+                <button onClick={handleOnClickMinus} className="ml-1" type="button" title="Previous Financial Year">
+                    <IconMinusCircle className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+                </button>
+            )}
         </div>)
 
     function handleOnClickFinYears() {

@@ -28,7 +28,7 @@ export function ChangeCatgoryParent({ catId }: { catId: number | undefined }) {
 
     return (<div className="flex flex-col w-full">
         <CompSyncFusionTreeGridToolbar
-            CustomControl={() => <button className="px-2 py-1 bg-primary-400 text-gray-100 rounded-md hover:bg-primary-800 hover:text-white text-xs" onClick={handleNoParent}>No parent</button>}
+            CustomControl={() => <button className="px-2 py-1 text-gray-100 text-xs rounded-md hover:bg-primary-800 hover:text-white bg-primary-400" onClick={handleNoParent}>No parent</button>}
             className=""
             title=''
             isLastNoOfRows={false}

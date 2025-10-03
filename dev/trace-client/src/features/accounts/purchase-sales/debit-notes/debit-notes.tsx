@@ -11,19 +11,22 @@ import { Utils } from "../../../../utils/utils";
 import { useEffect } from "react";
 import { clearDebitNoteFormData, saveDebitNoteFormData } from "./debit-notes-slice";
 import { Messages } from "../../../../utils/messages";
-import { DebitCreditNoteEditDataType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
+import { DebitCreditNoteEditDataType, ExtGstTranDType, TranDType, TranHType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { AllTables } from "../../../../app/maps/database-tables-map";
+import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { useDebitCreditNotesSubmit } from "../common/debit-credit-notes-submit-hook";
 import Decimal from "decimal.js";
 import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
+import { useLocation } from "react-router-dom";
 
 
 export function DebitNotes() {
     const dispatch: AppDispatchType = useDispatch()
+    const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.debitNotes.savedFormData);
     const instance = DataInstancesMap.debitNotes;
-    const { branchId, finYearId, dbName, buCode } = useUtilsInfo();
+    const { branchId, finYearId, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
     const methods = useForm<DebitCreditNoteFormDataType>(
         {
             mode: "all",
@@ -34,7 +37,7 @@ export function DebitNotes() {
     const { getTranHData } = useDebitCreditNotesSubmit(methods)
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex || 0);
 
-    const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst }
+    const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst, populateFormFromId, getDebitNoteEditDataOnId }
 
     // Utility function to generate debit note title
     const getDebitNoteTitle = (isViewMode: boolean): string => {
@@ -72,6 +75,13 @@ export function DebitNotes() {
         const title = getDebitNoteTitle(isViewMode);
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [activeTabIndex, dispatch]);
+
+    // Handle navigation from report - auto-populate form with ID from location state
+    useEffect(() => {
+        if (location.state?.id && location.state?.returnPath) {
+            populateFormFromId(location.state.id)
+        }
+    }, [location.state?.id, location.state?.returnPath]);
 
     return (
         <FormProvider {...extendedMethods}>
@@ -200,6 +210,75 @@ export function DebitNotes() {
             }
         }
         return (true)
+    }
+
+    // === DATABASE QUERY FUNCTIONS ===
+    async function getDebitNoteEditDataOnId(id: number | undefined) {
+        if (!id) {
+            return
+        }
+        return (await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            instance: instance,
+            sqlId: SqlIdsMap.getDebitCreditNoteDetailsOnId,
+            sqlArgs: {
+                id: id,
+            },
+        }))
+    }
+
+    // === FORM POPULATION FUNCTIONS ===
+    async function populateFormFromId(id: number) {
+        try {
+            const editData: any = await getDebitNoteEditDataOnId(id)
+            const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
+            if (!dcEditData) {
+                Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+                return
+            }
+            const tranH: TranHType = dcEditData.tranH
+            const tranD: TranDType[] = dcEditData.tranD
+            const extGsTranD: ExtGstTranDType | undefined = dcEditData?.extGstTranD
+            const debitRow: TranDType = tranD.find((item) => item.dc === "D") as TranDType
+            const creditRow: TranDType = tranD.find((item) => item.dc === "C") as TranDType
+            reset({
+                //TranH
+                id: tranH.id,
+                autoRefNo: tranH.autoRefNo,
+                tranDate: tranH.tranDate,
+                userRefNo: tranH.userRefNo,
+                remarks: tranH.remarks,
+                tranTypeId: tranH.tranTypeId,
+
+                //TranD
+                debitAccId: debitRow?.accId,
+                debitRefNo: debitRow?.lineRefNo,
+                debitRemarks: debitRow?.remarks,
+                creditAccId: creditRow?.accId,
+                creditRefNo: creditRow?.lineRefNo,
+                creditRemarks: creditRow?.remarks,
+                amount: creditRow?.amount || 0,
+
+                //ExtGstTranD
+                isGstApplicable: Boolean(extGsTranD?.id),
+                gstin: extGsTranD?.gstin,
+                gstRate: extGsTranD?.rate || 0,
+                isIgst: extGsTranD?.igst ? true : false,
+                cgst: extGsTranD?.cgst || 0,
+                sgst: extGsTranD?.sgst || 0,
+                igst: extGsTranD?.igst || 0,
+                hsn: extGsTranD?.hsn || '',
+
+                debitCreditNoteEditData: dcEditData
+            })
+
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
+        } catch (e: any) {
+            console.error(e);
+            Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+        }
     }
 
     function resetAll() {

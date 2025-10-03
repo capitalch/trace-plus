@@ -15,20 +15,20 @@ export function AdminDashBoard() {
     )
 
     function getContent() {
-        return (<div className="flex justify-between items-start gap-8 mt-8">
+        return (<div className="flex items-start justify-between mt-8 gap-8">
             {/* Misc */}
-            <div className="flex h-40 w-60 flex-col gap-2 bg-primary-100 p-4 font-sans text-sm text-black">
-                <label className="text-lg font-bold">Counts</label>
+            <div className="flex flex-col p-4 w-60 h-40 font-sans text-black text-sm bg-primary-100 gap-2">
+                <label className="font-bold text-lg">Counts</label>
                 <span className="flex justify-between">
-                    <label className="text-sm font-normal">Business units</label>
+                    <label className="font-normal text-sm">Business units</label>
                     <label>{adminDashBoard.counts.businessUnits}</label>
                 </span>
                 <span className="flex justify-between">
-                    <label className="text-sm font-normal">Roles</label>
+                    <label className="font-normal text-sm">Roles</label>
                     <label>{adminDashBoard.counts.roles}</label>
                 </span>
                 <span className="flex justify-between">
-                    <label className="text-sm font-normal">Business users</label>
+                    <label className="font-normal text-sm">Business users</label>
                     <label>{adminDashBoard.counts.businessUsers}</label>
                 </span>
             </div>

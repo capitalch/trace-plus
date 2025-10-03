@@ -31,8 +31,9 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     } = useUtilsInfo();
     const {
         reset,
-        watch
+        watch,
     } = useFormContext<VoucherFormDataType>();
+    const {getVoucherDetailsOnId, populateFormFromId}:any = useFormContext<VoucherFormDataType>();
 
     const voucherType = watch('voucherType')
     const tranTypeId = Utils.getTranTypeId(voucherType);
@@ -106,7 +107,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 instance={instance}
                 isSmallerFont={true}
                 loadData={loadData}
-                minWidth="1400px"
+                minWidth="400px"
                 onCopy={handleOnCopy}
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
@@ -303,19 +304,6 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         ];
     }
 
-    async function getVoucherDetails(id: number | undefined) {
-        return (await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            instance: instance,
-            sqlId: SqlIdsMap.getVoucherDetailsOnId,
-            sqlArgs: {
-                id: id,
-            },
-        }))
-    }
-
     async function handleOnDelete(id: number | string) {
         Utils.showDeleteConfirmDialog(async () => {
             try {
@@ -338,7 +326,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
 
     async function handleOnCopy(data: RowDataType) {
         try {
-            const editData: any = await getVoucherDetails(data.id)
+            const editData: any = await getVoucherDetailsOnId(data.id)
             const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
             const tranHeader = voucherEditData?.tranHeader
             reset({
@@ -403,64 +391,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
 
     async function handleOnEdit(data: RowDataType) {
         try {
-            const editData: any = await getVoucherDetails(data.id)
-            const voucherEditData: VoucherEditDataType = editData?.[0]?.jsonResult;
-            const tranHeader = voucherEditData?.tranHeader
-            reset({
-                id: tranHeader.id,
-                tranDate: tranHeader.tranDate,
-                userRefNo: tranHeader.userRefNo,
-                remarks: tranHeader.remarks,
-                tranTypeId: tranHeader.tranTypeId,
-                autoRefNo: tranHeader.autoRefNo,
-                voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
-                isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
-                showGstInHeader: voucherType !== 'Contra',
-                deletedIds: [],
-                creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
-                    id: d.id,
-                    tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
-                    accId: d.accId as string | null,
-                    remarks: d.remarks,
-                    dc: d.dc,
-                    amount: d.amount,
-                    tranHeaderId: d.tranHeaderId,
-                    lineRefNo: d.lineRefNo,
-                    instrNo: d.instrNo,
-                    gst: d?.gst?.id ? {
-                        id: d.gst.id,
-                        gstin: d.gst.gstin,
-                        rate: d.gst.rate,
-                        cgst: d.gst.cgst,
-                        sgst: d.gst.sgst,
-                        igst: d.gst.igst,
-                        isIgst: d?.gst?.igst ? true : false,
-                        hsn: d.gst.hsn
-                    } : undefined
-                })),
-                debitEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'D').map((d: VoucherTranDetailsType) => ({
-                    id: d.id,
-                    tranDetailsId: d.id, // The id is replaced by some guid, so storing in tranDetailsId
-                    accId: d.accId as string | null,
-                    remarks: d.remarks,
-                    dc: d.dc,
-                    amount: d.amount,
-                    tranHeaderId: d.tranHeaderId,
-                    lineRefNo: d.lineRefNo,
-                    instrNo: d.instrNo,
-                    gst: d?.gst?.id ? {
-                        id: d.gst.id,
-                        gstin: d.gst.gstin,
-                        rate: d.gst.rate,
-                        cgst: d.gst.cgst,
-                        sgst: d.gst.sgst,
-                        igst: d.gst.igst,
-                        isIgst: d?.gst?.igst ? true : false,
-                        hsn: d.gst.hsn
-                    } : undefined
-                })),
-            },)
-            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
+            populateFormFromId(data.id);
         } catch (e: any) {
             console.error(e);
         }

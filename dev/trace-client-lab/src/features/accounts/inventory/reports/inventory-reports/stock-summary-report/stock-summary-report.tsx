@@ -1,7 +1,7 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType, } from "../../../../../../app/store";
 import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
-import { selectCompSwitchStateFn } from "../../../../../../controls/redux-components/comp-slice";
+import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../../../../controls/redux-components/comp-slice";
 import { useUtilsInfo } from "../../../../../../utils/utils-info-hook";
 import { useEffect, useState } from "react";
 import { Utils } from "../../../../../../utils/utils";
@@ -46,6 +46,10 @@ export function StockSummaryReport({ title }: { title?: string }) {
   } = useUtilsInfo();
 
   useEffect(() => {
+    dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Inventory Reports" }));
+  }, [dispatch]);
+
+  useEffect(() => {
     {
       loadData();
     }
@@ -71,21 +75,21 @@ export function StockSummaryReport({ title }: { title?: string }) {
             <button
               type="button"
               onClick={handleOnClickFilter}
-              className="bg-blue-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-blue-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-blue-500 rounded hover:bg-blue-700"
             >
               Filter
             </button>
             <button
               type="button"
               onClick={handleOnClickResetFilter}
-              className="bg-amber-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-amber-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-amber-500 rounded hover:bg-amber-700"
             >
               Reset Filter
             </button>
             <button
               type="button"
               onClick={handleOnClickTrim}
-              className="bg-green-500 text-white px-2 py-1 rounded font-medium text-sm hover:bg-purple-700"
+              className="px-2 py-1 font-medium text-sm text-white bg-green-500 rounded hover:bg-purple-700"
             >
               Trim
             </button>
@@ -99,7 +103,7 @@ export function StockSummaryReport({ title }: { title?: string }) {
           </div>
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExportAsLandscape={true}
         isPdfExport={true}
@@ -111,9 +115,9 @@ export function StockSummaryReport({ title }: { title?: string }) {
 
       <CompSyncFusionGrid
         aggregates={getAggregates()}
-        allowPaging={true}
+        // allowPaging={true}
         allowTextWrap={false}
-        pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000] }}
+        // pageSettings={{ pageSize: 500, pageSizes: [500, 1000, 2000] }}
         buCode={buCode}
         className="mt-4"
         columns={getColumns()}
@@ -125,11 +129,11 @@ export function StockSummaryReport({ title }: { title?: string }) {
         }}
         hasCheckBoxSelection={true}
         hasIndexColumn={true}
-        height="calc(100vh - 280px)"
+        height="calc(100vh - 230px)"
         indexColumnWidth={60}
         instance={instance}
         loadData={loadData}
-        minWidth="800px"
+        minWidth="400px"
         onRemove={handleOnRemove}
         rowHeight={30}
         searchFields={['productCode', 'catName', 'product']}

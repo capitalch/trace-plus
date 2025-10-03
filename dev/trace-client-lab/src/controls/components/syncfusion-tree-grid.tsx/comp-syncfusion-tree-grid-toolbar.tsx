@@ -54,37 +54,37 @@ export function CompSyncFusionTreeGridToolbar({
     }
 
     return (<div className={clsx("flex justify-between items-center", className)} style={{ minWidth: `${minWidth}`, width: `${width}` }}>
-        {<label className="text-lg font-medium text-primary-500 mb-1">{isTitleVisible ? title : ''}</label>}
-        <div className="flex items-center gap-2 flex-wrap" >
+        {<label className="mb-1 font-medium text-lg text-primary-500">{isTitleVisible ? title : ''}</label>}
+        <div className="flex flex-wrap items-center gap-2" >
             {CustomControl && <CustomControl />}
 
             {/* Pdf export  */}
             {isPdfExport && <TooltipComponent content="Pdf export">
-                <button type="button" title="Pdf export" className="h-8 w-8 rounded-md bg-yellow-300 hover:bg-yellow-400" onClick={() => {
+                <button type="button" title="Pdf export" className="w-8 h-8 bg-yellow-300 rounded-md hover:bg-yellow-400" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.pdfExport(pdfExportProperties)
                 }}>
-                    <IconFilePdf className="m-auto h-6 w-6 text-red-600" />
+                    <IconFilePdf className="m-auto w-6 h-6 text-red-600" />
                 </button>
             </TooltipComponent>}
 
             {/* Excel export */}
             {isExcelExport && <TooltipComponent content="Excel export">
-                <button type="button" title="Excel export" className="h-8 w-8 rounded-md bg-gray-200 hover:bg-gray-300" onClick={() => {
+                <button type="button" title="Excel export" className="w-8 h-8 bg-gray-200 rounded-md hover:bg-gray-300" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.excelExport()
                 }}>
-                    <IconFileExcel className="m-auto h-6 w-6 text-green-600" />
+                    <IconFileExcel className="m-auto w-6 h-6 text-green-600" />
                 </button>
             </TooltipComponent>}
 
             {/* csv export */}
             {isCsvExport && <TooltipComponent content="Csv export">
-                <button type="button" title="Csv export" className="h-8 w-8 rounded-md bg-red-100 hover:bg-red-200" onClick={() => {
+                <button type="button" title="Csv export" className="w-8 h-8 bg-red-100 rounded-md hover:bg-red-200" onClick={() => {
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
                     gridRef.current.csvExport()
                 }}>
-                    <IconFileCsv className="m-auto h-6 w-6 text-blue-600" />
+                    <IconFileCsv className="m-auto w-6 h-6 text-blue-600" />
                 </button>
             </TooltipComponent>}
 

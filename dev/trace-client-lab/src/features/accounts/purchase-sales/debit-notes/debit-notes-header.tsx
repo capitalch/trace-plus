@@ -32,17 +32,16 @@ export function DebitNotesHeader() {
     const isGstApplicable = watch('isGstApplicable')
     const { computeGst, resetAll }: any = useFormContext<DebitCreditNoteFormDataType>();
     const errorClass = 'border-red-500 bg-red-50';
-    const inputClassLeft = "border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium text-sm w-full rounded-lg px-3 transition-all duration-200";
+    const inputClassLeft = "border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium text-sm w-full rounded-md px-3 transition-all duration-200 mt-1";
 
     return (
-        <div className="mb-8 relative">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-8 xl:grid-cols-12 gap-6 bg-white p-6 rounded-lg shadow-sm">
-
+        <div className="relative mb-8">
+            <div className="flex flex-wrap p-4 sm:p-6 shadow-sm gap-3 sm:gap-4">
                 {/* Auto ref no */}
-                <FormField label="Auto Ref No" className="col-span-1 lg:col-span-2">
+                <FormField label="Auto Ref No" className="flex-1 min-w-[200px]">
                     <input
                         type="text"
-                        className={clsx("bg-gray-100 rounded-lg h-10 px-3 text-sm", inputClassLeft)}
+                        className={clsx(inputClassLeft, "bg-gray-200")}
                         readOnly
                         disabled
                         title="Auto reference number"
@@ -55,7 +54,7 @@ export function DebitNotesHeader() {
                     label="Date"
                     required
                     error={errors?.tranDate?.message}
-                    className="col-span-1 lg:col-span-2"
+                    className="flex-1 min-w-[200px]"
                 >
                     <input
                         type="date"
@@ -68,7 +67,7 @@ export function DebitNotesHeader() {
                 </FormField>
 
                 {/* User ref no */}
-                <FormField label="User Ref No" className="col-span-1 lg:col-span-2">
+                <FormField label="User Ref No" className="flex-1 min-w-[200px]">
                     <input
                         type="text"
                         className={clsx(inputClassLeft)}
@@ -78,7 +77,7 @@ export function DebitNotesHeader() {
                 </FormField>
 
                 {/* Remarks */}
-                <FormField className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-3" label="Remarks">
+                <FormField className="flex-1 min-w-[250px]" label="Remarks">
                     <textarea
                         rows={3}
                         className={clsx(inputClassLeft, "resize-none")}
@@ -88,13 +87,13 @@ export function DebitNotesHeader() {
                 </FormField>
 
                 {/* isGstApplicable */}
-                <div className="flex-col col-span-1 items-center">
-                    <FormField label="Apply GST?" className="flex flex-col gap-3 items-start text-sm">
-                        <div className="flex items-center gap-3">
+                <div className="flex-col items-center min-w-[200px]">
+                    <FormField label="Apply GST?" className="flex flex-col items-start text-sm gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
                             <button
                                 type="button"
                                 className={clsx(
-                                    "px-3 py-1 rounded border transition-all duration-200",
+                                    "px-3 py-1 rounded border transition-all duration-200 text-sm",
                                     watch("isGstApplicable")
                                         ? "bg-blue-500 text-white border-blue-600"
                                         : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
@@ -112,7 +111,7 @@ export function DebitNotesHeader() {
                             <button
                                 type="button"
                                 className={clsx(
-                                    "px-3 py-1 rounded border transition-all duration-200",
+                                    "px-3 py-1 rounded border transition-all duration-200 text-sm",
                                     !watch("isGstApplicable")
                                         ? "bg-red-500 text-white border-red-600"
                                         : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
@@ -125,54 +124,52 @@ export function DebitNotesHeader() {
                                         const deletedIds = getValues('deletedIds') || []
                                         setValue('deletedIds', [...deletedIds, id])
                                         editData.extGstTranD = undefined
-                                        // editData.extGstTranD.id = undefined
                                     }
                                 }}
                             >
                                 No
                             </button>
+                            {/* igst inline */}
+                            {isGstApplicable && <label className="flex items-center font-medium text-xs cursor-pointer gap-2">
+                                <input
+                                    type="checkbox"
+                                    {...register("isIgst", {
+                                        onChange: () => {
+                                            computeGst()
+                                        },
+                                    })}
+                                    className="text-blue-600 border-gray-300 rounded cursor-pointer focus:ring-blue-500"
+                                />
+                                IGST
+                            </label>}
                         </div>
                     </FormField>
-                    {/* igst */}
-                    {isGstApplicable && <label className="flex items-center gap-2 text-xs cursor-pointer font-medium mt-4">
-                        <input
-                            type="checkbox"
-                            {...register("isIgst", {
-                                onChange: () => {
-                                    computeGst()
-                                },
-                            })}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                        />
-                        IGST
-                    </label>}
                 </div>
 
                 {/* Action Buttons */}
-                <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-2 flex items-center gap-3 ml-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto sm:ml-auto">
                     <button
                         onClick={resetAll}
                         type="button"
-                        className="px-4 py-2 font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg flex items-center transition-all duration-200 disabled:bg-amber-300"
+                        className="flex items-center justify-center px-4 py-2 font-medium text-white bg-amber-500 rounded-lg transition-all duration-200 hover:bg-amber-600 disabled:bg-amber-300"
                     >
-                        <IconReset className="w-5 h-5 mr-2" />
+                        <IconReset className="mr-2 w-5 h-5" />
                         Reset
                     </button>
                     <button
                         type="submit"
                         disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || !isValid}
-                        className="px-4 py-2 font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg flex items-center transition-all duration-200 disabled:bg-blue-300"
+                        className="flex items-center justify-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:bg-blue-300"
                     >
-                        <IconSubmit className="w-5 h-5 mr-2" />
+                        <IconSubmit className="mr-2 w-5 h-5" />
                         Submit
                     </button>
                 </div>
 
                 {/* Edit / New label */}
-                <div className="flex absolute right-0 -top-12 gap-2">
-                    {/* <button type="submit" >Test</button> */}
+                <div className="flex absolute -top-10 sm:-top-12 gap-2 right-4 sm:right-0">
                     {getPrintPreview()}
-                    <label className="text-amber-500 font-medium text-lg">
+                    <label className="font-medium text-amber-500 text-base sm:text-lg">
                         {watch("id") ? "Edit Debit Note" : "New Debit Note"}
                     </label>
                 </div>
@@ -187,7 +184,7 @@ export function DebitNotesHeader() {
             if (id) {
                 Ret = <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={() => handleOnPreview()}>
-                        <IconPreview1 className="text-blue-500 h-8 w-8" />
+                        <IconPreview1 className="w-8 h-8 text-blue-500" />
                     </button>
                 </TooltipComponent>
             }

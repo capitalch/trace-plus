@@ -37,7 +37,7 @@ export function ProductMaster() {
             <CompSyncFusionGridToolbar
                 className='mt-2 mr-6'
                 CustomControl={() => <NewProductButton />}
-                minWidth="1450px"
+                minWidth="400px"
                 title=''
                 isPdfExport={true}
                 isExcelExport={true}
@@ -57,7 +57,7 @@ export function ProductMaster() {
                 editColumnWidth={40}
                 height="calc(100vh - 293px)"
                 instance={instance}
-                minWidth="1500px"
+                minWidth="400px"
                 onDelete={handleOnDelete}
                 onEdit={handleOnEdit}
                 sqlId={SqlIdsMap.getAllProducts}

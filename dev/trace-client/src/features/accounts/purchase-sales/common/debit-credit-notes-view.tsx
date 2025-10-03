@@ -1,5 +1,5 @@
-import { useDispatch } from "react-redux";
-import { AppDispatchType, RootStateType } from "../../../../app/store";
+// import { useDispatch } from "react-redux";
+import { /*AppDispatchType,*/ RootStateType } from "../../../../app/store";
 import { useCallback, useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useFormContext } from "react-hook-form";
@@ -12,13 +12,13 @@ import clsx from "clsx";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
-import { DebitCreditNoteEditDataType, ExtGstTranDType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
-import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
+import { DebitCreditNoteEditDataType,/*ExtGstTranDType, TranDType, TranHType*/ } from "../../../../utils/global-types-interfaces-enums";
+// import { setActiveTabIndex } from "../../../../controls/redux-components/comp-slice";
 import { generateDebitCreditNotePDF } from "./debit-credit-note-jspdf";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 
 export function DebitCreditNotesView({ className, tranTypeId, instance }: { className?: string; tranTypeId: number; instance: string }) {
-    const dispatch: AppDispatchType = useDispatch()
+    // const dispatch: AppDispatchType = useDispatch()
     // const instance = DataInstancesMap.debitNotes
     const [rowsData, setRowsData] = useState<any[]>([]);
     const {
@@ -27,14 +27,13 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
         branchId,
         branchName,
         dbName,
-        defaultGstRate,
+        // defaultGstRate,
         decodedDbParamsObject,
         finYearId,
     } = useUtilsInfo();
 
-    const {
-        reset,
-    } = useFormContext<DebitCreditNoteFormDataType>();
+    // const { reset, } = useFormContext<DebitCreditNoteFormDataType>();
+    const { populateFormOnId }: any = useFormContext<DebitCreditNoteFormDataType>();
 
     const loadData = useCallback(async () => {
         try {
@@ -105,7 +104,7 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
                 instance={instance}
                 isSmallerFont={true}
                 loadData={loadData}
-                minWidth="1400px"
+                minWidth="400px"
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
                 onPreview={handleOnPreview}
@@ -332,45 +331,46 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
     }
 
     async function handleOnEdit(data: any) {
-        const editData: any = await getDebitCreditNoteDetailsOnId(data.id)
-        const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
-        const tranH: TranHType = dcEditData.tranH
-        const tranD: TranDType[] = dcEditData.tranD
-        const extGsTranD: ExtGstTranDType | undefined = dcEditData?.extGstTranD
-        const debitRow: TranDType = tranD.find((item) => item.dc === "D") as TranDType
-        const creditRow: TranDType = tranD.find((item) => item.dc === "C") as TranDType
-        reset({
-            //TranH
-            id: tranH.id,
-            autoRefNo: tranH.autoRefNo,
-            tranDate: tranH.tranDate,
-            userRefNo: tranH.userRefNo,
-            remarks: tranH.remarks,
-            tranTypeId: tranH.tranTypeId,
+        populateFormOnId(data.id)
+        // const editData: any = await getDebitCreditNoteDetailsOnId(data.id)
+        // const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
+        // const tranH: TranHType = dcEditData.tranH
+        // const tranD: TranDType[] = dcEditData.tranD
+        // const extGsTranD: ExtGstTranDType | undefined = dcEditData?.extGstTranD
+        // const debitRow: TranDType = tranD.find((item) => item.dc === "D") as TranDType
+        // const creditRow: TranDType = tranD.find((item) => item.dc === "C") as TranDType
+        // reset({
+        //     //TranH
+        //     id: tranH.id,
+        //     autoRefNo: tranH.autoRefNo,
+        //     tranDate: tranH.tranDate,
+        //     userRefNo: tranH.userRefNo,
+        //     remarks: tranH.remarks,
+        //     tranTypeId: tranH.tranTypeId,
 
-            //TranD
-            debitAccId: debitRow?.accId,
-            debitRefNo: debitRow?.lineRefNo,
-            debitRemarks: debitRow?.remarks,
-            creditAccId: creditRow?.accId,
-            creditRefNo: creditRow?.lineRefNo,
-            creditRemarks: creditRow?.remarks,
-            amount: creditRow?.amount || 0,
+        //     //TranD
+        //     debitAccId: debitRow?.accId,
+        //     debitRefNo: debitRow?.lineRefNo,
+        //     debitRemarks: debitRow?.remarks,
+        //     creditAccId: creditRow?.accId,
+        //     creditRefNo: creditRow?.lineRefNo,
+        //     creditRemarks: creditRow?.remarks,
+        //     amount: creditRow?.amount || 0,
 
-            //ExtGstTranD
-            isGstApplicable: Boolean(extGsTranD?.id),
-            gstin: extGsTranD?.gstin,
-            gstRate: extGsTranD?.rate || defaultGstRate,
-            isIgst: extGsTranD?.igst ? true : false,
-            cgst: extGsTranD?.cgst || 0,
-            sgst: extGsTranD?.sgst || 0,
-            igst: extGsTranD?.igst || 0,
-            hsn: extGsTranD?.hsn || '',
+        //     //ExtGstTranD
+        //     isGstApplicable: Boolean(extGsTranD?.id),
+        //     gstin: extGsTranD?.gstin,
+        //     gstRate: extGsTranD?.rate || defaultGstRate,
+        //     isIgst: extGsTranD?.igst ? true : false,
+        //     cgst: extGsTranD?.cgst || 0,
+        //     sgst: extGsTranD?.sgst || 0,
+        //     igst: extGsTranD?.igst || 0,
+        //     hsn: extGsTranD?.hsn || '',
 
-            debitCreditNoteEditData: dcEditData
-        })
+        //     debitCreditNoteEditData: dcEditData
+        // })
 
-        dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
+        // dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
     }
 
     async function handleOnPreview(data: DebitCreditNoteFormDataType) {

@@ -11,7 +11,7 @@ export function AdminMenuButton() {
     const clsName = menuItemSelector === 'admin' ? 'bg-primary-700' : 'bg-primary-500'
 
     return (<button onClick={handleOnClick}
-        className={clsx(clsName, 'px-10 py-2 text-gray-200 hover:text-white hover:bg-primary-600 hover:cursor-pointer active:bg-primary-400')}>
+        className={clsx(clsName, 'px-4 sm:px-6 md:px-10 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base text-gray-200 hover:text-white hover:bg-primary-600 hover:cursor-pointer active:bg-primary-400')}>
         Admin
     </button>)
 

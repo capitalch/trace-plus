@@ -20,10 +20,10 @@ export function VoucherCommonHeader() {
     } = useFormContext<VoucherFormDataType>();
     const showGstInHeader = watch('showGstInHeader');
     return (
-        <div className="flex gap-4 flex-wrap mt-2">
+        <div className="flex flex-wrap mt-2 gap-4">
 
             {/* Auto ref no */}
-            <FormField label="Auto ref no" className="w-40 ">
+            <FormField label="Auto ref no" className="w-40">
                 <input
                     type="text"
                     className={clsx("mt-1 bg-gray-200 rounded-lg", inputFormFieldStyles)}
@@ -61,7 +61,7 @@ export function VoucherCommonHeader() {
             </FormField>
 
             {/* Remarks */}
-            <FormField className="min-w-60 w-auto" label="Remarks">
+            <FormField className="w-auto min-w-60" label="Remarks">
                 <textarea
                     rows={3}
                     className={clsx(inputFormFieldStyles, "text-xs mt-1")}
@@ -73,11 +73,11 @@ export function VoucherCommonHeader() {
             {/* GST Toggle */}
             {hasGstin && showGstInHeader && (
                 <FormField label="GST Applicable" className="items-center">
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center mt-3 gap-2">
                         <button
                             type="button"
                             className={clsx(
-                                "px-4 py-1 text-sm rounded-full border",
+                                "px-4 py-1 text-sm rounded-sm border",
                                 watch("isGst")
                                     ? "bg-green-500 text-white border-green-600"
                                     : "bg-white text-gray-600 border-gray-300"
@@ -89,7 +89,7 @@ export function VoucherCommonHeader() {
                         <button
                             type="button"
                             className={clsx(
-                                "px-4 py-1 text-sm rounded-full border",
+                                "px-4 py-1 text-sm rounded-sm border",
                                 !watch("isGst")
                                     ? "bg-red-500 text-white border-red-600"
                                     : "bg-white text-gray-600 border-gray-300"

@@ -1,3 +1,5 @@
+import { ShippingInfoType } from "../features/accounts/purchase-sales/sales/all-sales";
+
 export enum UserTypesEnum {
   SuperAdmin = "S",
   Admin = "A",
@@ -83,13 +85,20 @@ export type TranHType = {
 
 export type TranDType = {
   id?: number;
-  accId: number;
+  accId: number | null |string;
   remarks?: string | null;
   dc: string;
   amount: number;
-  tranHeaderId: number;
+  tranHeaderId: number | null;
   lineRefNo?: string | null;
   instrNo?: string | null;
+}
+
+export type TranDExtraType = TranDType & {
+  isParentAutoSubledger:boolean | null;
+  accClass: string;
+  accName: string;
+  accCode: number;
 }
 
 export type ExtGstTranDType = {
@@ -106,28 +115,29 @@ export type ExtGstTranDType = {
 
 export type SalePurchaseEditDataType = {
   tranH: TranHType;
-  tranD: TranDType[];
+  tranD: TranDExtraType[];
   extGstTranD: ExtGstTranDType;
   salePurchaseDetails: SalePurchaseDetailsWithExtraType[];
+  shippingInfo?: ShippingInfoType | null;
   billTo: ContactsType | null;
   businessContacts: ExtBusinessContactsAccMType;
 }
 
 export type SalePurchaseDetailsType = {
   id: number;
-    tranDetailsId: number;
-    productId: number;
-    qty?: number;
-    price?: number;
-    priceGst?: number;
-    discount?: number;
-    cgst?: number;
-    sgst?: number;
-    igst?: number;
-    amount?: number;
-    jData?: { [key: string]: string | null } | null;
-    hsn: number;
-    gstRate?: number;
+  tranDetailsId: number;
+  productId: number;
+  qty?: number;
+  price?: number;
+  priceGst?: number;
+  discount?: number;
+  cgst?: number;
+  sgst?: number;
+  igst?: number;
+  amount?: number;
+  jData?: { [key: string]: string | null } | null;
+  hsn: number;
+  gstRate?: number;
 }
 
 type SalePurchaseDetailsExtraType = {
@@ -139,47 +149,48 @@ type SalePurchaseDetailsExtraType = {
   serialNumbers?: string;
   brandName?: string;
   catName?: string;
+  productDetails?: string;
 }
 
 export type SalePurchaseDetailsWithExtraType = SalePurchaseDetailsType & SalePurchaseDetailsExtraType
 
 export type ContactsType = {
   id?: number;
-    contactName: string;
-    mobileNumber?: string | null;
-    otherMobileNumber?: string | null;
-    landPhone?: string | null;
-    email?: string | null;
-    descr?: string | null;
-    jData?: { [key: string]: string | null } | null;
-    anniversaryDate?: string | null;
-    address1: string;
-    address2?: string | null;
-    country: string;
-    state?: string | null;
-    city?: string | null;
-    gstin?: string | null;
-    pin: string;
-    dateOfBirth?: string | null;
-    stateCode?: number | null;
+  contactName: string;
+  mobileNumber?: string | null;
+  otherMobileNumber?: string | null;
+  landPhone?: string | null;
+  email?: string | null;
+  descr?: string | null;
+  jData?: { [key: string]: string | null } | null;
+  anniversaryDate?: string | null;
+  address1: string;
+  address2?: string | null;
+  country: string;
+  state?: string | null;
+  city?: string | null;
+  gstin?: string | null;
+  pin: string;
+  dateOfBirth?: string | null;
+  stateCode?: number | null;
 }
 
 export type ExtBusinessContactsAccMType = {
   id?: number;
-    contactName: string;
-    contactCode: string;
-    mobileNumber?: string | null;
-    otherMobileNumber?: string | null;
-    landPhone?: string | null;
-    email?: string | null;
-    otherEmail?: string | null;
-    jAddress: { [key: string]: string | null } | null;
-    descr?: string | null;
-    accId?: number | null;
-    jData?: { [key: string]: string | null } | null;
-    gstin?: string | null;
-    timestamp?: string | null;
-    stateCode?: number | null;
+  contactName: string;
+  contactCode: string;
+  mobileNumber?: string | null;
+  otherMobileNumber?: string | null;
+  landPhone?: string | null;
+  email?: string | null;
+  otherEmail?: string | null;
+  jAddress: { [key: string]: string | null } | null;
+  descr?: string | null;
+  accId?: number | null;
+  jData?: { [key: string]: string | null } | null;
+  gstin?: string | null;
+  timestamp?: string | null;
+  stateCode?: number | null;
 }
 
 export type DebitCreditNoteEditDataType = {

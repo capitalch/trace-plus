@@ -103,7 +103,7 @@ export function SalesReport({ title }: { title?: string }) {
           </div>
         )}
         className="mr-4"
-        minWidth="600px"
+        minWidth="400px"
         title={title || ""}
         isPdfExportAsLandscape={true}
         isPdfExport={true}
@@ -128,7 +128,7 @@ export function SalesReport({ title }: { title?: string }) {
         instance={instance}
         isSmallerFont={true}
         loadData={loadData}
-        minWidth="800px"
+        minWidth="400px"
         onRemove={handleOnRemove}
         queryCellInfo={handleQueryCellInfo} // Text color works with queryCellInfo
         onRowDataBound={handleOnRowDataBound} // Background color works with onRowDataBound

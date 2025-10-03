@@ -33,8 +33,8 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
 
     return (
         <div className='flex flex-col ml-8'>
-            <label className="mt-6 text-xl font-semibold text-primary-400">Linking of secured controls with roles</label>
-            <div className='flex gap-8 ' style={{ width: 'calc(100vw - 260px)' }}>
+            <label className="mt-6 font-semibold text-primary-400 text-xl">Linking of secured controls with roles</label>
+            <div className='flex gap-8' style={{ width: 'calc(100vw - 260px)' }}>
                 <div className='flex flex-col w-min' >
                     <CompSyncFusionGridToolbar
                         className='mt-4'
@@ -46,7 +46,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     <label className='mt-2 font-medium text-primary-300'>{Messages.messSecuredControlsDragFrom}</label>
                     <CompSyncFusionGrid
                         aggregates={getSecuredControlsAggregates()}
-                        className="mt-4 "
+                        className="mt-4"
                         columns={getSecuredControlsColumns()}
                         gridDragAndDropSettings={
                             {
@@ -73,7 +73,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     <label className='mt-2 font-medium text-primary-300'>{Messages.messExistingRolesWithLinksDropHere}</label>
                     <CompSyncfusionTreeGrid
                         addUniqueKeyToJson={true}
-                        className="mt-2 "
+                        className="mt-2"
                         childMapping="securedControls"
                         columns={getLinkColumns()}
                         height="calc(100vh - 273px)"
@@ -238,7 +238,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
 
     function getChildCount(props: any) {
         return (
-            <span className='mt-2 ml-2 text-xs text-red-500'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
+            <span className='mt-2 ml-2 text-red-500 text-xs'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
         )
     }
 
@@ -256,11 +256,11 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         let ret = null
         if (props.level === 0) {
             ret = <TooltipComponent content={Messages.messLinkSecuredControl}>
-                <button onClick={() => handleOnClickLink(props)}><IconLink className="w-5 h-5 ml-2 text-blue-500"></IconLink></button>
+                <button onClick={() => handleOnClickLink(props)}><IconLink className="ml-2 w-5 h-5 text-blue-500"></IconLink></button>
             </TooltipComponent>
         } else {
             ret = <TooltipComponent content={Messages.messUnlinkSecuredControl}>
-                <button onClick={() => handleOnClickUnlink(props)}><IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+                <button onClick={() => handleOnClickUnlink(props)}><IconUnlink className="ml-2 w-5 h-5 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)
@@ -272,7 +272,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         if ((props.level === 0) && isVisible) {
             ret = <TooltipComponent content={Messages.messUnlinkAllSecuredControl}>
                 <button onClick={() => handleOnClickUnlinkAll(props)}>
-                    <IconUnlink className="w-5 h-5 ml-2 text-red-500"></IconUnlink></button>
+                    <IconUnlink className="ml-2 w-5 h-5 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }
         return (ret)

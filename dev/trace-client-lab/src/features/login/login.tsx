@@ -37,15 +37,15 @@ function Login() {
         required: Messages.errRequired,
         validate: { checkPassword },
         minLength: { value: 8, message: Messages.errAtLeast8Chars },
-        value: 'su$hant123'
+        value: 'tr@ce123'
     })
 
     return (
         <div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex h-screen">
-                <div className="m-auto flex w-96 flex-col gap-3 rounded-md border-[2px] border-primary-200 p-5 shadow-xl">
-                    <span className="text-xs text-primary-300 flex justify-end -my-4 -mr-4">{GLOBAL_APP_NAME} {GLOBAL_APP_VERSION}</span>
-                    <h2 className="mx-auto font-bold text-primary-400 m-2 text-2xl"> Login </h2>
+                <div className="flex flex-col m-auto p-5 w-96 border-[2px] border-primary-200 rounded-md shadow-xl gap-3">
+                    <span className="flex justify-end text-primary-300 text-xs -mr-4 -my-4">{GLOBAL_APP_NAME} {GLOBAL_APP_VERSION}</span>
+                    <h2 className="m-2 mx-auto font-bold text-2xl text-primary-400"> Login </h2>
 
                     {/* ClientId */}
                     <label className="flex flex-col font-medium text-primary-400">
@@ -72,7 +72,7 @@ function Login() {
                         <input autoComplete="username"
                             placeholder="accounts@gmail.com"
                             type="text"
-                            className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic"
+                            className="px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                             {...registerUserName} />
                         {(errors.username)
                             ? <WidgetFormErrorMessage errorMessage={Messages.errInvalidUserNameOrEmail} />
@@ -83,20 +83,20 @@ function Login() {
                     {/* Password */}
                     <label className="flex flex-col font-medium text-primary-400">
                         <span className="font-bold">Password <WidgetAstrix /></span>
-                        <input placeholder="*****" type="password" className="rounded-md border-[1px] border-primary-200 px-2 placeholder-slate-400 placeholder:text-xs placeholder:italic" {...registerPassword} />
+                        <input placeholder="*****" type="password" className="px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs" {...registerPassword} />
                         {(errors.password
                             ? <WidgetFormErrorMessage errorMessage={errors.password.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />)}
                         <WidgetFormHelperText helperText={Messages.messPasswordHelper} />
                     </label>
-                    <span onClick={handleForgotPassword} className="ml-auto px-2 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-blue-400 hover:underline">Forgot password</span>
+                    <span onClick={handleForgotPassword} className="ml-auto px-2 text-primary-400 text-xs hover:cursor-pointer hover:font-semibold hover:text-blue-400 hover:underline">Forgot password</span>
 
-                    <div className="mt-2 flex flex-col">
+                    <div className="flex flex-col mt-2">
                         <WidgetButtonSubmitFullWidth label="Sign in" />
-                        <div className="mt-2 flex justify-start">
-                            <span onClick={() => handleTestSignIn(UserTypesEnum.SuperAdmin)} className="py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Super admin</span>
-                            <span onClick={() => handleTestSignIn(UserTypesEnum.Admin)} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Admin</span>
-                            <span onClick={() => handleTestSignIn(UserTypesEnum.BusinessUser)} className="ml-auto py-1 text-xs text-primary-400 hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Business user</span>
+                        <div className="flex justify-start mt-2">
+                            <span onClick={() => handleTestSignIn(UserTypesEnum.SuperAdmin)} className="py-1 text-primary-400 text-xs hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Super admin</span>
+                            <span onClick={() => handleTestSignIn(UserTypesEnum.Admin)} className="ml-auto py-1 text-primary-400 text-xs hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Admin</span>
+                            <span onClick={() => handleTestSignIn(UserTypesEnum.BusinessUser)} className="ml-auto py-1 text-primary-400 text-xs hover:cursor-pointer hover:font-semibold hover:text-primary-600 hover:underline">Business user</span>
                         </div>
                     </div>
                 </div>
