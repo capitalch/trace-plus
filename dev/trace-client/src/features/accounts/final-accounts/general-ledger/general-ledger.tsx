@@ -118,7 +118,7 @@ export function GeneralLedger() {
                     isLastNoOfRows={false}
                     instance={instance}
                     isPdfExport={false}
-                    minWidth="500px"
+                    minWidth="400px"
                 />
                 <AccountPickerTree instance={instance} showAccountBalance={false} />
             </div>
@@ -130,6 +130,7 @@ export function GeneralLedger() {
                 dataSource={meta?.current?.transactions || []}
                 hasIndexColumn={false}
                 height="calc(100vh - 320px)"
+                minWidth="400px"
                 instance={instance}
                 loadData={loadData}
                 onRowDataBound={onRowDataBound}
