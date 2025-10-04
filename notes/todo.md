@@ -26,7 +26,10 @@ valid gstin: 24AAACC1206D1ZM
 	- Trial balance
 	- Balance sheet
 	- PL Account
+	- Bank Recon
+		- When come back persist the original state
 	- General Ledger
+		- When come back persist the original state
 														- Interchange sale bill type: cash, bill sale, institutional
 - Provide remove button in sales report
 - Check why age of en-el25 on22-08-2025 sale showing 5702

@@ -12,9 +12,12 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { AppDispatchType, RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from '../../../controls/redux-components/comp-slice';
 import { Utils } from '../../../utils/utils';
+import { useNavigate } from 'react-router-dom';
+import { setAccountPickerAccId } from '../../../controls/redux-components/account-picker-tree/account-picker-tree-slice';
 
 export function TrialBalance() {
     const dispatch: AppDispatchType = useDispatch()
+    const navigate = useNavigate()
     const instance: string = DataInstancesMap.trialBalance
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchTrialBalance), shallowEqual) || false
     const {
@@ -51,7 +54,7 @@ export function TrialBalance() {
                 minWidth="400px"
                 // width="calc(100vw - 250px)" // This stops unnecessary flickers
             />
-            <CompSyncfusionTreeGrid                
+            <CompSyncfusionTreeGrid
                 aggregates={getTrialBalanceAggregates()}
                 buCode={buCode}
                 childMapping="children"
@@ -69,6 +72,7 @@ export function TrialBalance() {
                 instance={instance}
                 minWidth='400px'
                 treeColumnIndex={0}
+                onZoomIn={handleOnZoomIn}
             />
         </CompAccountsContainer>
     )
@@ -117,7 +121,6 @@ export function TrialBalance() {
                 width: 40,
                 textAlign: 'Center'
             }
-
         ])
     }
 
@@ -182,6 +185,19 @@ export function TrialBalance() {
                 return acc.plus(new Decimal(multiplier).times(new Decimal(current[colType] || 0))); // Multiply and add with Decimal
             }, new Decimal(0)); // Initialize accumulator as Decimal
         return (res.abs().toNumber()); // Get the absolute value and convert back to a number
+    }
+
+    function handleOnZoomIn(rowData: any) {
+        if (!rowData.accId) {
+            return
+        }
+        // Set the account ID in the account picker state for general ledger
+        dispatch(setAccountPickerAccId({
+            instance: DataInstancesMap.generalLedger,
+            id: rowData.accId
+        }))
+        // Navigate to general ledger
+        navigate('/general-ledger')
     }
 
     function openingColumnTemplate(props: any) {

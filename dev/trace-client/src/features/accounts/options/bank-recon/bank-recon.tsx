@@ -6,7 +6,6 @@ import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnTy
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar"
 import { useUtilsInfo } from "../../../../utils/utils-info-hook"
 import { Utils } from "../../../../utils/utils"
-// import { currentFinYearSelectorFn, FinYearType } from "../../../login/login-slice"
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { bankReconSelectedBankFn, selectBank, SelectedBankType } from "../../accounts-slice"
 import { Messages } from "../../../../utils/messages"
@@ -19,11 +18,13 @@ import Decimal from "decimal.js"
 import _ from "lodash"
 import { AllTables } from "../../../../app/maps/database-tables-map"
 import { format } from "date-fns"
+import { useNavigate } from "react-router-dom"
 
 export function BankRecon() {
     const [, setRefresh] = useState({})
     const instance = DataInstancesMap.bankRecon
     const dispatch: AppDispatchType = useDispatch()
+    const navigate = useNavigate()
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance))
     const selectedBank: SelectedBankType = useSelector(bankReconSelectedBankFn, shallowEqual)
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
@@ -71,7 +72,7 @@ export function BankRecon() {
     return (<CompAccountsContainer MiddleCustomControl={() => getHeader()}>
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             CustomControl={() => <BankReconCustomControls instance={instance} meta={meta} />}
-            minWidth="1000px"
+            minWidth="400px"
             title=''
             isPdfExport={false}
             isExcelExport={false}
@@ -101,6 +102,7 @@ export function BankRecon() {
             rowHeight={25}
             onCellEdit={onCellEdit}
             onDelete={handleOnDelete}
+            onZoomIn={handleOnZoomIn}
             queryCellInfo={onQueryCellInfo}
         />
         {isVisibleAppLoader && <CompAppLoader />}
@@ -262,6 +264,84 @@ export function BankRecon() {
         })
     }
 
+    function handleOnZoomIn(rowData: any) {
+        const tranTypeId = rowData.tranTypeId
+
+        // Handle voucher types (Journal, Payment, Receipt, Contra)
+        if (tranTypeId === 1 || tranTypeId === 2 || tranTypeId === 3 || tranTypeId === 6) {
+            navigate('/all-vouchers', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/bank-recon'
+                }
+            })
+        }
+        // Handle Sales
+        else if (tranTypeId === Utils.getTranTypeId('Sales')) {
+            navigate('/all-sales', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/bank-recon'
+                }
+            })
+        }
+        // Handle Sales Return
+        else if (tranTypeId === Utils.getTranTypeId('SaleReturn')) {
+            navigate('/all-sales-return', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/bank-recon'
+                }
+            })
+        }
+        // Handle Purchase
+        else if (tranTypeId === Utils.getTranTypeId('Purchase')) {
+            navigate('/all-purchases', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/bank-recon'
+                }
+            })
+        }
+        // Handle Purchase Return
+        else if (tranTypeId === Utils.getTranTypeId('PurchaseReturn')) {
+            navigate('/all-purchase-returns', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/bank-recon'
+                }
+            })
+        }
+        // Handle Debit Notes
+        else if (tranTypeId === Utils.getTranTypeId('DebitNote')) {
+            navigate('/debit-notes', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/bank-recon'
+                }
+            })
+        }
+        // Handle Credit Notes
+        else if (tranTypeId === Utils.getTranTypeId('CreditNote')) {
+            navigate('/credit-notes', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/bank-recon'
+                }
+            })
+        }
+        else {
+            Utils.showAlertMessage('Alert', Messages.errNoDataFound)
+        }
+    }
+
     function onCellEdit(args: any) { // clearDate set as tranDate
         if (!args?.value) {
             args.rowData['clearDate'] = args?.rowData?.['tranDate']
@@ -331,22 +411,13 @@ export function BankRecon() {
         if (args.requestType === 'save') {
             const item = meta.current.rows.find((x: any) => x.id === args.data.id)
             const currentClearDate = args.data['clearDate'] ? format(args.data['clearDate'], isoFormat) : undefined
-            // const origClearDate = item?.origClearDate ? format(item?.origClearDate, isoFormat) : undefined
             const currentClearRemarks = args.data['clearRemarks']
-            // const origClearRemarks = item?.origClearRemarks
-            // if ((origClearDate !== currentClearDate)) {
-            //     args.row.cells[4].style.backgroundColor = 'lightgreen';
-            // }
-            // if (origClearRemarks !== currentClearRemarks) {
-            //     args.row.cells[8].style.backgroundColor = 'lightgreen';
-            // }
             item.clearDate = currentClearDate // This line is important
             item.clearRemarks = currentClearRemarks // This line is important
         }
     }
 
     function onQueryCellInfo(args: any) {
-
         if (args.column.field === "clearDate") {
             if (args.data.clearDate !== args.data.origClearDate) {
                 args.cell.style.backgroundColor = 'lightgreen';
@@ -367,11 +438,9 @@ export function BankRecon() {
         const gridRef = context.CompSyncFusionGrid[instance].gridRef
         meta.current.rows.length = 0 // clear existing data
         if (gridRef) {
-            // setTimeout(() => {
             gridRef.current.endEdit() // end any ongoing edit
             gridRef.current.dataSource = [];
             gridRef.current.refresh();
-            // }, 100)
         }
         dispatch(selectBank({ accId: undefined, accName: '' })) // reset selected bank
         setRefresh({}) // trigger re-render
@@ -388,6 +457,7 @@ export type BankReconType = {
     credit: number
     debit: number
     headerId: number
+    id?: number
     index?: number
     info?: string
     instrNo?: string
@@ -398,6 +468,7 @@ export type BankReconType = {
     remarks?: string
     tranDate: string
     tranDetailsId: number
+    tranTypeId?: number
     userRefNo?: string
 }
 

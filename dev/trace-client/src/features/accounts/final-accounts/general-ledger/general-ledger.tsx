@@ -20,10 +20,13 @@ import dayjs from "dayjs"
 import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
 import { setAccountPickerAccId } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree-slice"
 import { GeneralLedgerPrintPreviewButton } from "./general-ledger-print-preview-button"
+import { useNavigate } from "react-router-dom"
+import { Messages } from "../../../../utils/messages"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
     const dispatch: AppDispatchType = useDispatch()
+    const navigate = useNavigate()
     const instance: string = DataInstancesMap.generalLedger
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance), shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
@@ -134,6 +137,7 @@ export function GeneralLedger() {
                 instance={instance}
                 loadData={loadData}
                 onRowDataBound={onRowDataBound}
+                onZoomIn={handleOnZoomIn}
             />
             {/* Separate instance of appLoader is needed otherwise it clashes with global appLoader with instance compAppLoader */}
             {isVisibleAppLoader && <CompAppLoader />}
@@ -442,6 +446,91 @@ export function GeneralLedger() {
         meta.current.transactions = clonedTransactions
     }
 
+    function handleOnZoomIn(rowData: any) {
+        const tranTypeId = rowData.tranTypeId
+
+        // Handle voucher types (Journal, Payment, Receipt, Contra)
+        if (tranTypeId === 1 || tranTypeId === 2 || tranTypeId === 3 || tranTypeId === 6) {
+            navigate('/all-vouchers', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/general-ledger',
+                    accountId: selectedAccountPickerAccId
+                }
+            })
+        }
+        // Handle Sales
+        else if (tranTypeId === Utils.getTranTypeId('Sales')) {
+            navigate('/all-sales', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/general-ledger',
+                    accountId: selectedAccountPickerAccId
+                }
+            })
+        }
+        // Handle Sales Return
+        else if (tranTypeId === Utils.getTranTypeId('SaleReturn')) {
+            navigate('/all-sales-return', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/general-ledger',
+                    accountId: selectedAccountPickerAccId
+                }
+            })
+        }
+        // Handle Purchase
+        else if (tranTypeId === Utils.getTranTypeId('Purchase')) {
+            navigate('/all-purchases', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/general-ledger',
+                    accountId: selectedAccountPickerAccId
+                }
+            })
+        }
+        // Handle Purchase Return
+        else if (tranTypeId === Utils.getTranTypeId('PurchaseReturn')) {
+            navigate('/all-purchase-returns', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/general-ledger',
+                    accountId: selectedAccountPickerAccId
+                }
+            })
+        }
+        // Handle Debit Notes
+        else if (tranTypeId === Utils.getTranTypeId('DebitNote')) {
+            navigate('/debit-notes', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/general-ledger',
+                    accountId: selectedAccountPickerAccId
+                }
+            })
+        }
+        // Handle Credit Notes
+        else if (tranTypeId === Utils.getTranTypeId('CreditNote')) {
+            navigate('/credit-notes', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/general-ledger',
+                    accountId: selectedAccountPickerAccId
+                }
+            })
+        }
+        else {
+            Utils.showAlertMessage('Alert',Messages.errNoDataFound)
+        }
+    }
+
     function onRowDataBound(args: RowDataBoundEventArgs) {
         const rowData: AccTranType = args.data as any
         if (rowData.autoRefNo === 'Summary') {
@@ -470,6 +559,7 @@ export type AccTranType = {
     id?: string
     tranDate: string
     tranType?: string
+    tranTypeId?: number
     autoRefNo?: string
     userRefNo?: string
     lineRemarks?: string

@@ -2,7 +2,7 @@ import { FC, useContext, useEffect, useRef } from "react"
 import { GlobalContext, GlobalContextType } from "../../../app/global-context"
 import { useCompSyncfusionTreeGrid } from "./comp-syncfusion-tree-grid-hook"
 import { WidgetLoadingIndicator } from "../../widgets/widget-loading-indicator"
-import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, Edit, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Selection, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
+import { Aggregate, AggregateColumnsDirective, AggregateDirective, AggregatesDirective, ColumnsDirective, CommandColumn, Edit, ExcelExport, Filter, InfiniteScroll, Inject, Page, PdfExport, Resize, RowDD, RowDropSettingsModel, SearchSettingsModel, Selection, Sort, Toolbar, TreeGridComponent } from "@syncfusion/ej2-react-treegrid"
 import { GraphQLQueriesMapNames, GraphQLQueryArgsType } from "../../../app/maps/graphql-queries-map"
 import { DocumentNode } from "graphql"
 import { shallowEqual, useSelector } from "react-redux"
@@ -35,6 +35,7 @@ export function CompSyncfusionTreeGrid({
     instance,
     loadData,
     minWidth = '600px',
+    onZoomIn = undefined,
     pageSize = 50,
     queryCellInfo,
     rowDataBound,
@@ -44,10 +45,11 @@ export function CompSyncfusionTreeGrid({
     rowSelected,
     sqlArgs,
     sqlId,
-    treeColumnIndex = 0
+    treeColumnIndex = 0,
+    // zoomInColumnWidth
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, sqlId, sqlArgs, treeColumnIndex })
+    const { getAggregateColumnDirectives, getColumnDirectives, /*handleCommandClick,*/ loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, onZoomIn, sqlId, sqlArgs, treeColumnIndex, /*zoomInColumnWidth*/ })
     const gridRef: any = useRef({})
     const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
@@ -115,6 +117,7 @@ export function CompSyncfusionTreeGrid({
                 childMapping={childMapping}
                 className={className}
                 collapsed={onRowCollapsed}
+                // commandClick={handleCommandClick}
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
                 enableCollapseAll={(isCollapsedRedux === undefined) ? true : isCollapsedRedux || false}
@@ -149,6 +152,7 @@ export function CompSyncfusionTreeGrid({
                 </AggregatesDirective>}
                 <Inject services={[
                     Aggregate
+                    , CommandColumn
                     , ExcelExport
                     , Edit
                     , Filter // In treeGrid control Filter module is used in place of Search module. It works the same way
@@ -237,6 +241,7 @@ export type CompSyncfusionTreeGridType = {
     instance: string
     loadData?: () => void
     minWidth?: string
+    onZoomIn?: (args: any) => void
     pageSize?: number
     onRowDrop?: (args: any) => void
     queryCellInfo?: (args: any) => void
@@ -248,6 +253,7 @@ export type CompSyncfusionTreeGridType = {
     sqlArgs?: SqlArgsType
     sqlId?: string
     treeColumnIndex: number
+    zoomInColumnWidth?: number
 }
 
 export type SyncFusionTreeGridColumnType = {

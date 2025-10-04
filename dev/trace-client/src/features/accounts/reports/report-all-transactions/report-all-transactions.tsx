@@ -18,6 +18,7 @@ import { CompInstances } from "../../../../controls/redux-components/comp-instan
 import { showCompAppLoader, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useNavigate } from "react-router-dom";
+import { Messages } from "../../../../utils/messages";
 
 export function ReportAllTransactions() {
     const dispatch: AppDispatchType = useDispatch()
@@ -282,6 +283,28 @@ export function ReportAllTransactions() {
                 }
             })
         }
+        // Handle Purchase
+        else if (tranTypeId === Utils.getTranTypeId('Purchase')) {
+            navigate('/all-purchases', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/report-all-transactions',
+                    reportFilters: selectedAllTransactionsFilter
+                }
+            })
+        }
+        // Handle Purchase Return
+        else if (tranTypeId === Utils.getTranTypeId('PurchaseReturn')) {
+            navigate('/all-purchase-returns', {
+                state: {
+                    id: rowData.id,
+                    tranTypeId: tranTypeId,
+                    returnPath: '/report-all-transactions',
+                    reportFilters: selectedAllTransactionsFilter
+                }
+            })
+        }
         // Handle Debit Notes
         else if (tranTypeId === Utils.getTranTypeId('DebitNote')) {
             navigate('/debit-notes', {
@@ -305,7 +328,7 @@ export function ReportAllTransactions() {
             })
         }
         else {
-            Utils.showErrorMessage('Edit functionality for this transaction type will be available soon')
+            Utils.showAlertMessage('Alert', Messages.errNoDataFound)
         }
     }
 

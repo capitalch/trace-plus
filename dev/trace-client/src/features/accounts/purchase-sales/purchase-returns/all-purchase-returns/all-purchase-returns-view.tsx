@@ -35,7 +35,9 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
     const {
         reset,
         setValue,
-    } = useFormContext<PurchaseFormDataType>();
+        populateFormFromId,
+        getPurchaseReturnEditDataOnId
+    } = useFormContext<PurchaseFormDataType>() as any;
 
     const loadData = useCallback(async () => {
         try {
@@ -318,30 +320,17 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
         ];
     }
 
-    async function getPurchaseDetailsOnId(id: number | undefined) {
-        if (!id) {
+    async function handleOnCopy(data: PurchaseFormDataType) {
+        const editData: SalePurchaseEditDataType | null = await getPurchaseReturnEditDataOnId(data.id)
+        if (!editData) {
+            Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
             return
         }
-        return (await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            instance: instance,
-            sqlId: SqlIdsMap.getSalePurchaseDetailsOnId,
-            sqlArgs: {
-                id: id,
-            },
-        }))
-    }
-
-    async function handleOnCopy(data: PurchaseFormDataType) {
-        const editData: any = await getPurchaseDetailsOnId(data.id)
-        const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
         setValue('purchaseEditData', undefined)
-        const tranH: TranHType = purchaseEditData.tranH
-        const tranD: TranDType[] = purchaseEditData.tranD
-        const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
-        const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
+        const tranH: TranHType = editData.tranH
+        const tranD: TranDType[] = editData.tranD
+        const extGsTranD: ExtGstTranDType = editData.extGstTranD
+        const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = editData.salePurchaseDetails
 
         reset({
             id: undefined,
@@ -394,54 +383,15 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
     }
 
     async function handleOnEdit(data: any) {
-        const editData: any = await getPurchaseDetailsOnId(data.id)
-        const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
-        const tranH: TranHType = purchaseEditData.tranH
-        const tranD: TranDType[] = purchaseEditData.tranD
-        const extGsTranD: ExtGstTranDType = purchaseEditData.extGstTranD
-        const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = purchaseEditData.salePurchaseDetails
-
-        reset({
-            id: tranH.id,
-            autoRefNo: tranH.autoRefNo,
-            tranDate: tranH.tranDate,
-            userRefNo: tranH.userRefNo,
-            remarks: tranH.remarks,
-            tranTypeId: tranH.tranTypeId,
-            isGstInvoice: Boolean(extGsTranD?.id),
-            debitAccId: tranD.find((item) => item.dc === "D")?.accId,
-            creditAccId: tranD.find((item) => item.dc === "C")?.accId,
-            gstin: extGsTranD?.gstin,
-            isIgst: extGsTranD?.igst ? true : false,
-
-            totalCgst: extGsTranD?.cgst,
-            totalSgst: extGsTranD?.sgst,
-            totalIgst: extGsTranD?.igst,
-            totalQty: salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0),
-            totalInvoiceAmount: tranD?.[0]?.amount || 0,
-            purchaseEditData: purchaseEditData,
-            purchaseLineItems: salePurchaseDetails.map((item) => ({
-                id: item.id,
-                productId: item.productId,
-                productCode: item.productCode,
-                upcCode: item.upcCode || null,
-                productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
-                hsn: item.hsn.toString(),
-                qty: item.qty,
-                gstRate: item.gstRate,
-                price: item.price,
-                discount: item.discount,
-                priceGst: item.priceGst,
-                lineRemarks: item.remarks || null,
-                serialNumbers: item.serialNumbers || null
-            }))
-        })
-        dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
+        await populateFormFromId(data.id)
     }
 
     async function handleOnPreview(data: PurchaseFormDataType) {
-        const editData: any = await getPurchaseDetailsOnId(data.id)
-        const purchaseEditData: SalePurchaseEditDataType = editData?.[0]?.jsonResult
+        const purchaseEditData: SalePurchaseEditDataType | null = await getPurchaseReturnEditDataOnId(data.id)
+        if (!purchaseEditData) {
+            Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
+            return
+        }
         generatePurchaseReturnInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
     }
 

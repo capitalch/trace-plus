@@ -206,7 +206,8 @@ export function CompSyncFusionGrid({
       )}
       <Inject
         services={[
-          Aggregate, CommandColumn,
+          Aggregate, 
+          CommandColumn,
           Edit,
           ExcelExport,
           InfiniteScroll,

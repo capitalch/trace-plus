@@ -188,10 +188,11 @@ class SqlAccounts:
           AND COALESCE((TABLE "branchId"), a."branchId") = a."branchId"
     ),
     cte3 AS (
-        SELECT d.id,
+        SELECT h.id,
             "tranDate",
             "tranType",
             "autoRefNo",
+            h."tranTypeId",
             "userRefNo",
             d."remarks" AS "lineRemarks",
             "lineRefNo",

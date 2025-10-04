@@ -17,8 +17,10 @@ export function useCompSyncfusionTreeGrid({
     , graphQlQueryName
     , hasCheckBoxSelection
     , instance
+    , onZoomIn
     , sqlId
     , sqlArgs
+    // , zoomInColumnWidth
 }: CompSyncfusionTreeGridType) {
 
     const args: GraphQLQueryArgsType = {
@@ -83,6 +85,27 @@ export function useCompSyncfusionTreeGrid({
                 width={col.width}
             />)
         })
+
+        if (onZoomIn) {
+            colDirectives.unshift(
+                <ColumnDirective
+                    headerText="Z"
+                    width={"40"}
+                    commands={[
+                        {
+                            title: 'Zoom In',
+                            type: 'None',
+                            buttonOption: {
+                                iconCss: 'e-icons e-search',
+                                cssClass: 'e-flat e-grid-zoomin text-indigo-600',
+                                click: onZoomIn
+                            }
+                        }
+                    ]}
+                />
+            );
+        }
+
         if (addUniqueKeyToJson) {
             colDirectives.push(<ColumnDirective
                 field="pkey"
@@ -98,10 +121,19 @@ export function useCompSyncfusionTreeGrid({
         return (colDirectives)
     }
 
+    // function handleCommandClick(args: any) {
+    //     const rowData = args.rowData;
+    //     const buttonClass = args.commandColumn?.buttonOption?.cssClass;
+    //     if (buttonClass?.includes('e-grid-zoomin')) {
+    //         onZoomIn?.(rowData);
+    //         return
+    //     }
+    // }
     // Custom header template function
     function selectHeaderTemplate() {
         return <div></div>; // Empty div removes the checkbox, or add custom content if desired
     }
 
-    return ({ getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData })
+    return ({ getAggregateColumnDirectives, getColumnDirectives, /*handleCommandClick,*/ loading, loadData, selectedData })
+
 }
