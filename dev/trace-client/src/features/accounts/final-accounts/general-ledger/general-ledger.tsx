@@ -20,13 +20,15 @@ import dayjs from "dayjs"
 import { AccountPickerTree } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree"
 import { setAccountPickerAccId } from "../../../../controls/redux-components/account-picker-tree/account-picker-tree-slice"
 import { GeneralLedgerPrintPreviewButton } from "./general-ledger-print-preview-button"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { Messages } from "../../../../utils/messages"
+import useDeepCompareEffect from "use-deep-compare-effect"
 
 export function GeneralLedger() {
     const [, setRefresh] = useState({})
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
+    const location = useLocation()
     const instance: string = DataInstancesMap.generalLedger
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, instance), shallowEqual)
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual)
@@ -42,7 +44,6 @@ export function GeneralLedger() {
         transactions: [],
         transactionsCopy: []
     })
-
     const {
         branchId
         , buCode
@@ -70,6 +71,17 @@ export function GeneralLedger() {
         }
     }, [selectedAccountPickerAccId, isAllBranches, currentFinYear?.finYearId, branchId, instance, context])
 
+    // Handle navigation state - select account if accountId passed from trial-balance
+    useEffect(() => {
+        const state = location.state as any
+        if (state?.accountId) {
+            dispatch(setAccountPickerAccId({
+                instance: instance,
+                id: state.accountId
+            }))
+        }
+    }, [dispatch, instance, location.state])
+
     useEffect(() => {
         return (() => { //cleanup
             dispatch(setCompCheckBoxState({
@@ -78,9 +90,12 @@ export function GeneralLedger() {
                     , CompInstances.compCheckBoxSummaryLedger]
                 , checkBoxState: false
             }))
-            dispatch(setAccountPickerAccId({ instance: instance, id: null }))
+            const state = location.state as any
+            if (state?.accountId) {
+                dispatch(setAccountPickerAccId({ instance: instance, id: null }))
+            }
         })
-    }, [dispatch, instance])
+    }, [dispatch, instance, location?.state])
 
     useEffect(() => {
         formatData()
@@ -95,6 +110,14 @@ export function GeneralLedger() {
     useEffect(() => {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "General Ledger" }));
     }, [dispatch]);
+
+    useDeepCompareEffect(() => {
+        if (!_.isEmpty(meta.current.transactions)) {
+            setTimeout(() => {
+                Utils.gridUtils.restoreScrollPos(context, instance)
+            }, 100)
+        }
+    }, [meta.current.transactions])
 
     return (
         <CompAccountsContainer>
@@ -448,86 +471,31 @@ export function GeneralLedger() {
 
     function handleOnZoomIn(rowData: any) {
         const tranTypeId = rowData.tranTypeId
+        const routeMap: Record<number, string> = {
+            1: '/all-vouchers', 2: '/all-vouchers', 3: '/all-vouchers', 6: '/all-vouchers',
+            [Utils.getTranTypeId('Sales')]: '/all-sales',
+            [Utils.getTranTypeId('SaleReturn')]: '/all-sales-return',
+            [Utils.getTranTypeId('Purchase')]: '/all-purchases',
+            [Utils.getTranTypeId('PurchaseReturn')]: '/all-purchase-returns',
+            [Utils.getTranTypeId('DebitNote')]: '/debit-notes',
+            [Utils.getTranTypeId('CreditNote')]: '/credit-notes'
+        }
 
-        // Handle voucher types (Journal, Payment, Receipt, Contra)
-        if (tranTypeId === 1 || tranTypeId === 2 || tranTypeId === 3 || tranTypeId === 6) {
-            navigate('/all-vouchers', {
+        const route = routeMap[tranTypeId]
+        if (route) {
+            // Preserve the original returnPath if general-ledger was navigated from another page (e.g., trial-balance)
+            const previousReturnPath = location.state?.returnPath
+            navigate(route, {
                 state: {
                     id: rowData.id,
-                    tranTypeId: tranTypeId,
+                    tranTypeId,
                     returnPath: '/general-ledger',
-                    accountId: selectedAccountPickerAccId
+                    accountId: selectedAccountPickerAccId,
+                    previousReturnPath: previousReturnPath
                 }
             })
-        }
-        // Handle Sales
-        else if (tranTypeId === Utils.getTranTypeId('Sales')) {
-            navigate('/all-sales', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/general-ledger',
-                    accountId: selectedAccountPickerAccId
-                }
-            })
-        }
-        // Handle Sales Return
-        else if (tranTypeId === Utils.getTranTypeId('SaleReturn')) {
-            navigate('/all-sales-return', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/general-ledger',
-                    accountId: selectedAccountPickerAccId
-                }
-            })
-        }
-        // Handle Purchase
-        else if (tranTypeId === Utils.getTranTypeId('Purchase')) {
-            navigate('/all-purchases', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/general-ledger',
-                    accountId: selectedAccountPickerAccId
-                }
-            })
-        }
-        // Handle Purchase Return
-        else if (tranTypeId === Utils.getTranTypeId('PurchaseReturn')) {
-            navigate('/all-purchase-returns', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/general-ledger',
-                    accountId: selectedAccountPickerAccId
-                }
-            })
-        }
-        // Handle Debit Notes
-        else if (tranTypeId === Utils.getTranTypeId('DebitNote')) {
-            navigate('/debit-notes', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/general-ledger',
-                    accountId: selectedAccountPickerAccId
-                }
-            })
-        }
-        // Handle Credit Notes
-        else if (tranTypeId === Utils.getTranTypeId('CreditNote')) {
-            navigate('/credit-notes', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/general-ledger',
-                    accountId: selectedAccountPickerAccId
-                }
-            })
-        }
-        else {
-            Utils.showAlertMessage('Alert',Messages.errNoDataFound)
+        } else {
+            Utils.showAlertMessage('Alert', Messages.errNoDataFound)
         }
     }
 

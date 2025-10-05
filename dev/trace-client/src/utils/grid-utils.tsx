@@ -3,24 +3,24 @@ import { GlobalContextType } from "../app/global-context"
 export const gridUtils: GridUtilsType = {
 
     resetScrollPos(context: GlobalContextType, instance: string) {
-        context.CompSyncFusionGrid[instance].scrollPos = 0
+        context.CompSyncFusionGrid[instance].scrollPos=0;
     },
 
     restoreScrollPos(context: GlobalContextType, instance: string) {
-        const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
-        const gridElement = gridRef?.current?.grid?.getContent();
+        const gridRef: any = context?.CompSyncFusionGrid?.[instance]?.gridRef
+        const gridElement = gridRef?.current?.getContent();
         if (gridElement) {
             const scrollableContainer = gridElement.querySelector('.e-content');
-            scrollableContainer.scrollTop = context.CompSyncFusionGrid[instance].scrollPos
+            setTimeout(() => (scrollableContainer.scrollTop = context.CompSyncFusionGrid[instance].scrollPos), 500)
         }
     },
-    
+
     saveScrollPos(context: GlobalContextType, instance: string) {
-        const gridRef: any = context.CompSyncFusionGrid[instance].gridRef
-        const gridElement = gridRef?.current?.grid?.getContent();
+        const gridRef: any = context?.CompSyncFusionGrid?.[instance]?.gridRef
+        const gridElement = gridRef?.current?.getContent();
         if (gridElement) {
             const scrollableContainer = gridElement.querySelector('.e-content'); // Adjust selector if needed
-            if(scrollableContainer.scrollTop > 0){
+            if (scrollableContainer.scrollTop > 0) {
                 context.CompSyncFusionGrid[instance].scrollPos = scrollableContainer.scrollTop
             }
         }

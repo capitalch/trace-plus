@@ -25,10 +25,12 @@ import { format, parseISO } from "date-fns"
 import { IconSettings } from "../../../controls/icons/icon-settings"
 import Swal from "sweetalert2"
 import { IconPreview1 } from "../../../controls/icons/icon-preview1"
+import { useNavigate } from "react-router-dom"
 
 export function BalanceSheet() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const dispatch: AppDispatchType = useDispatch()
+    const navigate = useNavigate()
     const balanceSheetInstance: string = DataInstancesMap.balanceSheet
     const liabsInstance: string = DataInstancesMap.liabilities
     const assetsInstance: string = DataInstancesMap.assets
@@ -100,14 +102,17 @@ export function BalanceSheet() {
                 });
             }
 
+            const liabsDataWithKeys = Utils.addUniqueKeysToJson(jsonResult?.[liabsInstance])
+            const assetsDataWithKeys = Utils.addUniqueKeysToJson(jsonResult?.[assetsInstance])
+
             dispatch(setQueryHelperData({
                 instance: liabsInstance,
-                data: jsonResult?.[liabsInstance],
+                data: liabsDataWithKeys,
             }));
 
             dispatch(setQueryHelperData({
                 instance: assetsInstance,
-                data: jsonResult?.[assetsInstance],
+                data: assetsDataWithKeys,
             }));
 
             const assetsClosing = customClosingAggregate(jsonResult[assetsInstance], 'closing', 'closing_dc');
@@ -133,6 +138,18 @@ export function BalanceSheet() {
         loadData()
     }, [buCode, finYearId, branchId, isAllBranches, loadData])
 
+    // Restore scroll position after data loads
+    useEffect(() => {
+        if (liabsData && assetsData) {
+            // Delay added to ensure grid is fully rendered and expanded nodes are restored
+            // before attempting to restore scroll position (total delay: 100ms + 500ms internal)
+            setTimeout(() => {
+                Utils.treeGridUtils.restoreScrollPos(context, liabsInstance)
+                Utils.treeGridUtils.restoreScrollPos(context, assetsInstance)
+            }, 100)
+        }
+    }, [liabsData, assetsData, context, liabsInstance, assetsInstance])
+
     // Set main title for Balance Sheet
     useEffect(() => {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Balance Sheet" }));
@@ -155,6 +172,8 @@ export function BalanceSheet() {
                     title='Liabilities'
                 />
                 <CompSyncfusionTreeGrid
+                
+                    addUniqueKeyToJson={true}
                     aggregates={getAggregates()}
                     buCode={buCode}
                     childMapping="children"
@@ -166,6 +185,8 @@ export function BalanceSheet() {
                     height="calc(100vh - 245px)"
                     instance={liabsInstance}
                     treeColumnIndex={0}
+                    onZoomIn={handleOnZoomIn}
+                    zoomInColumnWidth={30}
                 />
             </div>
 
@@ -180,6 +201,7 @@ export function BalanceSheet() {
                     title='Assets'
                 />
                 <CompSyncfusionTreeGrid
+                    addUniqueKeyToJson={true}
                     aggregates={getAggregates()}
                     buCode={buCode}
                     childMapping="children"
@@ -191,6 +213,8 @@ export function BalanceSheet() {
                     height="calc(100vh - 245px)"
                     instance={assetsInstance}
                     treeColumnIndex={0}
+                    onZoomIn={handleOnZoomIn}
+                    zoomInColumnWidth={30}
                 />
             </div>
         </div>
@@ -366,5 +390,17 @@ export function BalanceSheet() {
 
         const gridRefAssets: any = context.CompSyncFusionTreeGrid[assetsInstance].gridRef
         gridRefAssets.current.search(event.target.value)
+    }
+
+    function handleOnZoomIn(rowData: any) {
+        if (!rowData?.id) {
+            return
+        }
+        navigate('/general-ledger', {
+            state: {
+                accountId: rowData.id,
+                returnPath: '/balance-sheet'
+            }
+        })
     }
 }

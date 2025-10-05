@@ -3,6 +3,12 @@ entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
 ## General requirement
+- Provide branch address
+- When bu, finYearId or branch changes, behavior of existing screen to be checked
+- Checkup price - discount in all reports as actual price
+- Supplier name and its due in summary report of inventory
+- Check why age of en-el25 on22-08-2025 sale showing 5702
+- deep QA
 - UI
 														- VScroll bar issue in syncfusion grid
 														- Small screen whenn side menu appears then background invisible
@@ -11,10 +17,9 @@ valid gstin: 24AAACC1206D1ZM
 														- Fix UI stock Journal
 														- Menu button not expanding when small screen
 														- un-necessary horizontal scrollbar in several screens
-- Checkup price - discount in all reports as actual price
-- Supplier name and its due in summary report of inventory
-- Zoom in
-	- When comeback from zoom in retain the page and scroll position of the report
+												- Zoom in
+														- CompSyncfusionGrid retain scrollPos
+														- When comeback from zoom in retain the page and scroll position of the report
 														- Syncfusion
 															- Provide Drill down icon like edit icon
 														- All transactions report
@@ -23,20 +28,20 @@ valid gstin: 24AAACC1206D1ZM
 															- Vouchers
 															- Debit notes
 															- Credit notes
-	- Trial balance
-	- Balance sheet
-	- PL Account
-	- Bank Recon
-		- When come back persist the original state
-	- General Ledger
-		- When come back persist the original state
+														- Trial balance
+														- Balance sheet
+														- PL Account
+														- All transaction report
+													- Bank Recon
+														- When come back persist the original state
+													- General Ledger
+														- When come back persist the original state
 														- Interchange sale bill type: cash, bill sale, institutional
-- Provide remove button in sales report
-- Check why age of en-el25 on22-08-2025 sale showing 5702
+														- Provide remove button in sales report
 														- Change all headers to LeftCustomControl mechanism
 														- In all pages show main header -> page name
 														- Stock summary remove pagination
-- Provide branch address
+
 ## security
 	- Change databaseTablesMap to tables schema type variables
 										- QA for vouchers

@@ -17,14 +17,26 @@ export function WidgetButtonBackToReport() {
     const handleBackToReport = () => {
         const returnPath = location.state.returnPath
         const reportFilters = location.state.reportFilters
+        const accountId = location.state.accountId
+        const previousReturnPath = location.state.previousReturnPath
 
         // Restore report filters if available
         if (reportFilters) {
             dispatch(setAllTransactionFilter(reportFilters))
         }
 
-        // Navigate back to report
-        navigate(returnPath)
+        // Navigate back to report, preserving accountId and previousReturnPath if present
+        const navigationState: any = {}
+        if (accountId) {
+            navigationState.accountId = accountId
+        }
+        if (previousReturnPath) {
+            navigationState.returnPath = previousReturnPath
+        }
+
+        navigate(returnPath, {
+            state: Object.keys(navigationState).length > 0 ? navigationState : undefined
+        })
     }
 
     return (

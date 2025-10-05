@@ -41,6 +41,8 @@ export function BankRecon() {
     const meta: any = useRef({
         rows: []
     })
+    const prevBuCode = useRef(buCode)
+    const prevFinYearId = useRef(finYearId)
 
     useEffect(() => {
         if (selectedBank.accId) {
@@ -49,14 +51,21 @@ export function BankRecon() {
     }, [selectedBank, finYearId])
 
     useEffect(() => {
-        return (() => {
-            dispatch(selectBank({ accId: undefined, accName: '' })) //cleanup
-        })
-    }, [])
-
-    useEffect(() => {
-        resetData()
-    }, [buCode])
+        // Only process if values were previously defined (not on initial mount)
+        if (prevBuCode.current !== undefined && prevFinYearId.current !== undefined) {
+            // If buCode changed, reset everything (clear bank selection and grid)
+            if (prevBuCode.current !== buCode) {
+                resetData()
+            }
+            // If only finYearId changed, reload data for the selected bank
+            else if (prevFinYearId.current !== finYearId && selectedBank.accId) {
+                loadData()
+            }
+        }
+        // Update previous values
+        prevBuCode.current = buCode
+        prevFinYearId.current = finYearId
+    }, [buCode, finYearId])
 
     // Set main title for Bank Recon
     useEffect(() => {
@@ -266,78 +275,22 @@ export function BankRecon() {
 
     function handleOnZoomIn(rowData: any) {
         const tranTypeId = rowData.tranTypeId
+        const routeMap: Record<number, string> = {
+            1: '/all-vouchers', 2: '/all-vouchers', 3: '/all-vouchers', 6: '/all-vouchers',
+            [Utils.getTranTypeId('Sales')]: '/all-sales',
+            [Utils.getTranTypeId('SaleReturn')]: '/all-sales-return',
+            [Utils.getTranTypeId('Purchase')]: '/all-purchases',
+            [Utils.getTranTypeId('PurchaseReturn')]: '/all-purchase-returns',
+            [Utils.getTranTypeId('DebitNote')]: '/debit-notes',
+            [Utils.getTranTypeId('CreditNote')]: '/credit-notes'
+        }
 
-        // Handle voucher types (Journal, Payment, Receipt, Contra)
-        if (tranTypeId === 1 || tranTypeId === 2 || tranTypeId === 3 || tranTypeId === 6) {
-            navigate('/all-vouchers', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/bank-recon'
-                }
+        const route = routeMap[tranTypeId]
+        if (route) {
+            navigate(route, {
+                state: { id: rowData.id, tranTypeId, returnPath: '/bank-recon' }
             })
-        }
-        // Handle Sales
-        else if (tranTypeId === Utils.getTranTypeId('Sales')) {
-            navigate('/all-sales', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/bank-recon'
-                }
-            })
-        }
-        // Handle Sales Return
-        else if (tranTypeId === Utils.getTranTypeId('SaleReturn')) {
-            navigate('/all-sales-return', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/bank-recon'
-                }
-            })
-        }
-        // Handle Purchase
-        else if (tranTypeId === Utils.getTranTypeId('Purchase')) {
-            navigate('/all-purchases', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/bank-recon'
-                }
-            })
-        }
-        // Handle Purchase Return
-        else if (tranTypeId === Utils.getTranTypeId('PurchaseReturn')) {
-            navigate('/all-purchase-returns', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/bank-recon'
-                }
-            })
-        }
-        // Handle Debit Notes
-        else if (tranTypeId === Utils.getTranTypeId('DebitNote')) {
-            navigate('/debit-notes', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/bank-recon'
-                }
-            })
-        }
-        // Handle Credit Notes
-        else if (tranTypeId === Utils.getTranTypeId('CreditNote')) {
-            navigate('/credit-notes', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/bank-recon'
-                }
-            })
-        }
-        else {
+        } else {
             Utils.showAlertMessage('Alert', Messages.errNoDataFound)
         }
     }
@@ -436,11 +389,11 @@ export function BankRecon() {
 
     function resetData() {
         const gridRef = context.CompSyncFusionGrid[instance].gridRef
-        meta.current.rows.length = 0 // clear existing data
-        if (gridRef) {
+        meta.current.rows = [] // clear existing data
+        if (gridRef?.current) {
             gridRef.current.endEdit() // end any ongoing edit
-            gridRef.current.dataSource = [];
-            gridRef.current.refresh();
+            gridRef.current.dataSource = []
+            gridRef.current.refresh()
         }
         dispatch(selectBank({ accId: undefined, accName: '' })) // reset selected bank
         setRefresh({}) // trigger re-render

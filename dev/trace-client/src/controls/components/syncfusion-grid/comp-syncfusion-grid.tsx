@@ -79,7 +79,7 @@ export function CompSyncFusionGrid({
   zoomInColumnWidth
 }: CompSyncFusionGridType) {
   const context: GlobalContextType = useContext(GlobalContext);
-  const gridRef: any = useRef({});
+  const gridRef = useRef<GridComponent>(null);
   const {
     getAggrColDirectives,
     getColumnDirectives,
@@ -124,13 +124,27 @@ export function CompSyncFusionGrid({
     if (!context.CompSyncFusionGrid[instance]) {
       context.CompSyncFusionGrid[instance] = {
         gridRef: undefined,
-        loadData: undefined
+        loadData: undefined,
+        scrollPos: 0
       };
     }
     context.CompSyncFusionGrid[instance].loadData = loadData || loadDataLocal;
     context.CompSyncFusionGrid[instance].gridRef = gridRef;
-    // context.CompSyncFusionGrid[instance].setRefresh = setRefresh;
   }, []);
+
+  // Attach scroll event listener after data is loaded
+    useEffect(() => {
+        const treeGridElement = gridRef?.current?.getContent();
+        if (treeGridElement && (dataSource || selectedData)) {
+            const scrollableContainer = treeGridElement.querySelector('.e-content');
+            if (scrollableContainer) {
+                scrollableContainer.addEventListener('scroll', handleScroll);
+                return () => {
+                    scrollableContainer.removeEventListener('scroll', handleScroll);
+                };
+            }
+        }
+    }, [dataSource, selectedData])
 
   if (loading) {
     return <WidgetLoadingIndicator />;
@@ -206,7 +220,7 @@ export function CompSyncFusionGrid({
       )}
       <Inject
         services={[
-          Aggregate, 
+          Aggregate,
           CommandColumn,
           Edit,
           ExcelExport,
@@ -232,6 +246,10 @@ export function CompSyncFusionGrid({
       gridRef.current.search(searchString);
     }
   }
+
+  function handleScroll() {
+        Utils.gridUtils.saveScrollPos(context, instance)
+    }
 }
 
 type GridDragAndDropSettingsType = {

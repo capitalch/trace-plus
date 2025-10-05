@@ -30,5 +30,4 @@ type ReduxCompStateType = {
 type AccountPickerTreePayloadActionType = {
     instance: string;
     id: string | null
-
 }

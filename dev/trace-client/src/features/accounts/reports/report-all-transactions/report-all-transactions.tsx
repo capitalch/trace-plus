@@ -1,4 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import _ from 'lodash'
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
@@ -60,6 +61,14 @@ export function ReportAllTransactions() {
     useEffect(() => {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "All Transactions Report" }));
     }, [dispatch]);
+
+    useDeepCompareEffect(() => {
+        if (!_.isEmpty(apiData)) {
+            setTimeout(() => {
+                Utils.gridUtils.restoreScrollPos(context, instance)
+            }, 100)
+        }
+    }, [apiData])
 
     return (
         <CompAccountsContainer className="z-0">
@@ -249,85 +258,22 @@ export function ReportAllTransactions() {
 
     function handleOnZoomIn(rowData: any) {
         const tranTypeId = rowData.tranTypeId
+        const routeMap: Record<number, string> = {
+            1: '/all-vouchers', 2: '/all-vouchers', 3: '/all-vouchers', 6: '/all-vouchers',
+            [Utils.getTranTypeId('Sales')]: '/all-sales',
+            [Utils.getTranTypeId('SaleReturn')]: '/all-sales-return',
+            [Utils.getTranTypeId('Purchase')]: '/all-purchases',
+            [Utils.getTranTypeId('PurchaseReturn')]: '/all-purchase-returns',
+            [Utils.getTranTypeId('DebitNote')]: '/debit-notes',
+            [Utils.getTranTypeId('CreditNote')]: '/credit-notes'
+        }
 
-        // Handle voucher types (Journal, Payment, Receipt, Contra)
-        if (tranTypeId === 1 || tranTypeId === 2 || tranTypeId === 3 || tranTypeId === 6) {
-            navigate('/all-vouchers', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/report-all-transactions',
-                    reportFilters: selectedAllTransactionsFilter
-                }
+        const route = routeMap[tranTypeId]
+        if (route) {
+            navigate(route, {
+                state: { id: rowData.id, tranTypeId, returnPath: '/report-all-transactions', reportFilters: selectedAllTransactionsFilter }
             })
-        }
-        // Handle Sales
-        else if (tranTypeId === Utils.getTranTypeId('Sales')) {
-            navigate('/all-sales', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/report-all-transactions',
-                    reportFilters: selectedAllTransactionsFilter
-                }
-            })
-        }
-        // Handle Sales Return
-        else if (tranTypeId === Utils.getTranTypeId('SaleReturn')) {
-            navigate('/all-sales-return', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/report-all-transactions',
-                    reportFilters: selectedAllTransactionsFilter
-                }
-            })
-        }
-        // Handle Purchase
-        else if (tranTypeId === Utils.getTranTypeId('Purchase')) {
-            navigate('/all-purchases', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/report-all-transactions',
-                    reportFilters: selectedAllTransactionsFilter
-                }
-            })
-        }
-        // Handle Purchase Return
-        else if (tranTypeId === Utils.getTranTypeId('PurchaseReturn')) {
-            navigate('/all-purchase-returns', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/report-all-transactions',
-                    reportFilters: selectedAllTransactionsFilter
-                }
-            })
-        }
-        // Handle Debit Notes
-        else if (tranTypeId === Utils.getTranTypeId('DebitNote')) {
-            navigate('/debit-notes', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/report-all-transactions',
-                    reportFilters: selectedAllTransactionsFilter
-                }
-            })
-        }
-        // Handle Credit Notes
-        else if (tranTypeId === Utils.getTranTypeId('CreditNote')) {
-            navigate('/credit-notes', {
-                state: {
-                    id: rowData.id,
-                    tranTypeId: tranTypeId,
-                    returnPath: '/report-all-transactions',
-                    reportFilters: selectedAllTransactionsFilter
-                }
-            })
-        }
-        else {
+        } else {
             Utils.showAlertMessage('Alert', Messages.errNoDataFound)
         }
     }

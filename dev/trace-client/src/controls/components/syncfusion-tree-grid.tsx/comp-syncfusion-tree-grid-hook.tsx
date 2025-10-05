@@ -20,7 +20,7 @@ export function useCompSyncfusionTreeGrid({
     , onZoomIn
     , sqlId
     , sqlArgs
-    // , zoomInColumnWidth
+    , zoomInColumnWidth
 }: CompSyncfusionTreeGridType) {
 
     const args: GraphQLQueryArgsType = {
@@ -87,21 +87,28 @@ export function useCompSyncfusionTreeGrid({
         })
 
         if (onZoomIn) {
-            colDirectives.unshift(
+            const zoomTemplate = (props: any) => {
+                if (props.hasChildRecords) {
+                    return null;
+                }
+                return (
+                    <div className="flex justify-center">
+                        <button
+                            className="e-icons e-search text-indigo-600 cursor-pointer"
+                            onClick={() => onZoomIn(props)}
+                            title="Zoom In"
+                        />
+                    </div>
+                );
+            };
+
+            colDirectives.splice(1, 0,
                 <ColumnDirective
                     headerText="Z"
-                    width={"40"}
-                    commands={[
-                        {
-                            title: 'Zoom In',
-                            type: 'None',
-                            buttonOption: {
-                                iconCss: 'e-icons e-search',
-                                cssClass: 'e-flat e-grid-zoomin text-indigo-600',
-                                click: onZoomIn
-                            }
-                        }
-                    ]}
+                    width={zoomInColumnWidth || 40}
+                    key='Z'
+                    textAlign="Center"
+                    template={zoomTemplate}
                 />
             );
         }
@@ -111,7 +118,7 @@ export function useCompSyncfusionTreeGrid({
                 field="pkey"
                 isPrimaryKey={true}
                 visible={false}
-                width={0}
+                width={40}
                 key='P'
             />)
         }
@@ -121,19 +128,11 @@ export function useCompSyncfusionTreeGrid({
         return (colDirectives)
     }
 
-    // function handleCommandClick(args: any) {
-    //     const rowData = args.rowData;
-    //     const buttonClass = args.commandColumn?.buttonOption?.cssClass;
-    //     if (buttonClass?.includes('e-grid-zoomin')) {
-    //         onZoomIn?.(rowData);
-    //         return
-    //     }
-    // }
     // Custom header template function
     function selectHeaderTemplate() {
         return <div></div>; // Empty div removes the checkbox, or add custom content if desired
     }
 
-    return ({ getAggregateColumnDirectives, getColumnDirectives, /*handleCommandClick,*/ loading, loadData, selectedData })
+    return ({ getAggregateColumnDirectives, getColumnDirectives, loading, loadData, selectedData })
 
 }

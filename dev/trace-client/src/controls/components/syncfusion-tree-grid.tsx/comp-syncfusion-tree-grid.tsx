@@ -46,10 +46,10 @@ export function CompSyncfusionTreeGrid({
     sqlArgs,
     sqlId,
     treeColumnIndex = 0,
-    // zoomInColumnWidth
+    zoomInColumnWidth
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, /*handleCommandClick,*/ loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, onZoomIn, sqlId, sqlArgs, treeColumnIndex, /*zoomInColumnWidth*/ })
+    const { getAggregateColumnDirectives, getColumnDirectives, /*handleCommandClick,*/ loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, onZoomIn, sqlId, sqlArgs, treeColumnIndex, zoomInColumnWidth })
     const gridRef: any = useRef({})
     const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
@@ -64,27 +64,21 @@ export function CompSyncfusionTreeGrid({
         }
         context.CompSyncFusionTreeGrid[instance].loadData = loadData || loadDataLocal
         context.CompSyncFusionTreeGrid[instance].gridRef = gridRef
-        // Add scroll event listener to remember scrolled location
-        const treeGridElement = gridRef?.current?.grid?.getContent() // (treegridRef.current as any).grid.element;
-        if (treeGridElement) {
-            const scrollableContainer = treeGridElement.querySelector('.e-content');
-            scrollableContainer.addEventListener('scroll', handleScroll);
-        }
-
-        return () => {
-            if (treeGridElement) {
-                // const scrollableContainer = treeGridElement.querySelector('.e-content'); // Adjust selector if needed
-                // context.CompSyncFusionTreeGrid[instance].scrollPos = scrollableContainer.scrollTop
-                treeGridElement.removeEventListener('scroll', handleScroll);
-            }
-            // if (current) {
-            //     const treegridElement = current?.grid?.getContent() // (treegridRef.current as any).grid.element;
-            //     if (treegridElement) {
-            //         treegridElement.removeEventListener('scroll', handleScroll);
-            //     }
-            // }
-        };
     }, [])
+
+    // Attach scroll event listener after data is loaded
+    useEffect(() => {
+        const treeGridElement = gridRef?.current?.grid?.getContent();
+        if (treeGridElement && (dataSource || selectedData)) {
+            const scrollableContainer = treeGridElement.querySelector('.e-content');
+            if (scrollableContainer) {
+                scrollableContainer.addEventListener('scroll', handleScroll);
+                return () => {
+                    scrollableContainer.removeEventListener('scroll', handleScroll);
+                };
+            }
+        }
+    }, [dataSource, selectedData])
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
@@ -121,7 +115,7 @@ export function CompSyncfusionTreeGrid({
                 dataSource={dataSource || selectedData}
                 editSettings={editSettings}
                 enableCollapseAll={(isCollapsedRedux === undefined) ? true : isCollapsedRedux || false}
-                enablePersistence={true}
+                enablePersistence={false}
                 expanded={onRowExpanded}
                 gridLines="Both"
                 height={height}

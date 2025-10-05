@@ -25,10 +25,12 @@ import { format, parseISO } from "date-fns"
 import Swal from "sweetalert2"
 import { IconSettings } from "../../../controls/icons/icon-settings"
 import { IconPreview1 } from "../../../controls/icons/icon-preview1"
+import { useNavigate } from "react-router-dom"
 
 export function ProfitLoss() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const dispatch: AppDispatchType = useDispatch()
+    const navigate = useNavigate()
     const profitLossInstance: string = DataInstancesMap.profitLoss
     const expensesInstance: string = DataInstancesMap.expenses
     const incomesInstance: string = DataInstancesMap.incomes
@@ -85,13 +87,17 @@ export function ProfitLoss() {
             } else {
                 jsonResult[expensesInstance].push({ accName: 'Profit for the year', closing: Math.abs(profitOrLoss), closing_dc: 'D', parentId: null })
             }
+
+            const expensesDataWithKeys = Utils.addUniqueKeysToJson(jsonResult?.[expensesInstance])
+            const incomesDataWithKeys = Utils.addUniqueKeysToJson(jsonResult?.[incomesInstance])
+
             dispatch(setQueryHelperData({
                 instance: expensesInstance,
-                data: jsonResult?.[expensesInstance]
+                data: expensesDataWithKeys
             }))
             dispatch(setQueryHelperData({
                 instance: incomesInstance,
-                data: jsonResult?.[incomesInstance]
+                data: incomesDataWithKeys
             }))
             const incomesClosing = customClosingAggregate(jsonResult[incomesInstance], 'closing', 'closing_dc')
             const expensesClosing = customClosingAggregate(jsonResult[expensesInstance], 'closing', 'closing_dc')
@@ -115,6 +121,18 @@ export function ProfitLoss() {
         loadData()
     }, [buCode, finYearId, branchId, isAllBranches, loadData])
 
+    // Restore scroll position after data loads
+    useEffect(() => {
+        if (expensesData && incomesData) {
+            // Delay added to ensure grid is fully rendered and expanded nodes are restored
+            // before attempting to restore scroll position (total delay: 100ms + 500ms internal)
+            setTimeout(() => {
+                Utils.treeGridUtils.restoreScrollPos(context, expensesInstance)
+                Utils.treeGridUtils.restoreScrollPos(context, incomesInstance)
+            }, 100)
+        }
+    }, [expensesData, incomesData, context, expensesInstance, incomesInstance])
+
     // Set main title for Profit & Loss
     useEffect(() => {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Profit & Loss" }));
@@ -136,6 +154,7 @@ export function ProfitLoss() {
                     title='Expenses'
                 />
                 <CompSyncfusionTreeGrid
+                    addUniqueKeyToJson={true}
                     aggregates={getAggregates()}
                     buCode={buCode}
                     childMapping="children"
@@ -148,6 +167,8 @@ export function ProfitLoss() {
                     height="calc(100vh - 245px)"
                     instance={expensesInstance}
                     treeColumnIndex={0}
+                    onZoomIn={handleOnZoomIn}
+                    zoomInColumnWidth={30}
                 />
             </div>
 
@@ -162,6 +183,7 @@ export function ProfitLoss() {
                     title='Income'
                 />
                 <CompSyncfusionTreeGrid
+                    addUniqueKeyToJson={true}
                     aggregates={getAggregates()}
                     buCode={buCode}
                     childMapping="children"
@@ -173,6 +195,8 @@ export function ProfitLoss() {
                     height="calc(100vh - 245px)"
                     instance={incomesInstance}
                     treeColumnIndex={0}
+                    onZoomIn={handleOnZoomIn}
+                    zoomInColumnWidth={30}
                 />
             </div>
         </div>
@@ -344,5 +368,17 @@ export function ProfitLoss() {
 
         const gridRefAssets: any = context.CompSyncFusionTreeGrid[incomesInstance].gridRef
         gridRefAssets.current.search(event.target.value)
+    }
+
+    function handleOnZoomIn(rowData: any) {
+        if (!rowData?.id) {
+            return
+        }
+        navigate('/general-ledger', {
+            state: {
+                accountId: rowData.id,
+                returnPath: '/profit-loss'
+            }
+        })
     }
 }

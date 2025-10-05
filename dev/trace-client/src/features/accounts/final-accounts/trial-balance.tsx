@@ -13,13 +13,13 @@ import { AppDispatchType, RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from '../../../controls/redux-components/comp-slice';
 import { Utils } from '../../../utils/utils';
 import { useNavigate } from 'react-router-dom';
-import { setAccountPickerAccId } from '../../../controls/redux-components/account-picker-tree/account-picker-tree-slice';
 
 export function TrialBalance() {
     const dispatch: AppDispatchType = useDispatch()
     const navigate = useNavigate()
     const instance: string = DataInstancesMap.trialBalance
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchTrialBalance), shallowEqual) || false
+    const treeGridData = useSelector((state: RootStateType) => state.queryHelper[instance]?.data?.[0]?.jsonResult)
     const {
         branchId
         , buCode
@@ -38,6 +38,17 @@ export function TrialBalance() {
         }
     }, [buCode, finYearId, branchId, isAllBranches])
 
+    // Restore scroll position after data loads
+    useEffect(() => {
+        if (treeGridData) {
+            // Delay added to ensure grid is fully rendered and expanded nodes are restored
+            // before attempting to restore scroll position (total delay: 100ms + 500ms internal)
+            setTimeout(() => {
+                Utils.treeGridUtils.restoreScrollPos(context, instance)
+            }, 100)
+        }
+    }, [treeGridData, context, instance])
+
     // Set main title for Trial Balance
     useEffect(() => {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Trial Balance" }));
@@ -52,9 +63,9 @@ export function TrialBalance() {
                 isLastNoOfRows={false}
                 instance={instance}
                 minWidth="400px"
-                // width="calc(100vw - 250px)" // This stops unnecessary flickers
             />
             <CompSyncfusionTreeGrid
+                addUniqueKeyToJson={true}
                 aggregates={getTrialBalanceAggregates()}
                 buCode={buCode}
                 childMapping="children"
@@ -73,6 +84,7 @@ export function TrialBalance() {
                 minWidth='400px'
                 treeColumnIndex={0}
                 onZoomIn={handleOnZoomIn}
+                zoomInColumnWidth={30}
             />
         </CompAccountsContainer>
     )
@@ -188,16 +200,15 @@ export function TrialBalance() {
     }
 
     function handleOnZoomIn(rowData: any) {
-        if (!rowData.accId) {
+        if (!rowData?.id) {
             return
         }
-        // Set the account ID in the account picker state for general ledger
-        dispatch(setAccountPickerAccId({
-            instance: DataInstancesMap.generalLedger,
-            id: rowData.accId
-        }))
-        // Navigate to general ledger
-        navigate('/general-ledger')
+        navigate('/general-ledger', {
+            state: {
+                accountId:rowData.id,
+                returnPath:'/trial-balance'
+            }
+        })
     }
 
     function openingColumnTemplate(props: any) {

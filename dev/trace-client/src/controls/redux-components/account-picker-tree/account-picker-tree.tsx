@@ -26,6 +26,7 @@ export function AccountPickerTree({
             (state: RootStateType) => selectCompSwitchStateFn(state, instance),
             shallowEqual
         ) || false;
+    const selectedAccountPickerAccId = useSelector((state: RootStateType) => state.accountPickerTree[instance]?.id, shallowEqual)
     const {
         branchId
         , buCode
@@ -46,6 +47,18 @@ export function AccountPickerTree({
     useEffect(() => {
         loadAccountOptions()
     }, [])
+
+    // Programmatically select account when Redux state changes (e.g., from navigation)
+    useEffect(() => {
+        if (selectedAccountPickerAccId && accountOptions.length > 0 && dropDownTreeRef.current) {
+            dropDownTreeRef.current.value = [selectedAccountPickerAccId.toString()]
+            dropDownTreeRef.current.dataBind()
+            // Fetch balance if needed
+            if (showAccountBalance) {
+                fetchAccountBalance(+selectedAccountPickerAccId)
+            }
+        }
+    }, [selectedAccountPickerAccId, accountOptions, showAccountBalance])
 
     return (
         <div className={clsx('flex flex-col gap-2 w-96 mr-6 mb-8', className,)}>
@@ -80,6 +93,7 @@ export function AccountPickerTree({
                 ref={dropDownTreeRef}
                 select={handleOnSelectAccount}
                 showClearButton={false}
+                // value={['167']}
             />
         </div>
     );
