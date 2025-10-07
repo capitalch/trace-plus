@@ -485,13 +485,16 @@ export function GeneralLedger() {
         if (route) {
             // Preserve the original returnPath if general-ledger was navigated from another page (e.g., trial-balance)
             const previousReturnPath = location.state?.returnPath
+            const previousReportName = location.state?.reportName
             navigate(route, {
                 state: {
                     id: rowData.id,
                     tranTypeId,
                     returnPath: '/general-ledger',
+                    reportName: 'General Ledger',
                     accountId: selectedAccountPickerAccId,
-                    previousReturnPath: previousReturnPath
+                    previousReturnPath: previousReturnPath,
+                    previousReportName: previousReportName
                 }
             })
         } else {

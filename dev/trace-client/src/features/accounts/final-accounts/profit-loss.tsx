@@ -377,7 +377,8 @@ export function ProfitLoss() {
         navigate('/general-ledger', {
             state: {
                 accountId: rowData.id,
-                returnPath: '/profit-loss'
+                returnPath: '/profit-loss',
+                reportName: 'Profit & Loss'
             }
         })
     }

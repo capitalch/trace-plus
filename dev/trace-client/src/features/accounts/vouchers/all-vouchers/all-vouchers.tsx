@@ -39,7 +39,7 @@ export function AllVouchers() {
             defaultValues: savedFormData ?? getDefaultVoucherFormValues()
         });
     const { watch, getValues, setValue, reset } = methods;
-    const extendedMethods = { ...methods, resetAll,/* resetDetails,*/ getVoucherDetailsOnId, populateFormFromId };
+    const extendedMethods = { ...methods, resetAll, getVoucherDetailsOnId, populateFormFromId };
     const voucherType = watch('voucherType')
 
     // Utility function to generate voucher title
@@ -282,15 +282,6 @@ export function AllVouchers() {
         reset(getDefaultVoucherFormValues())
         dispatch(clearVoucherFormData());
     }
-
-    // function resetDetails() {
-    // setValue("id", undefined)
-    // setValue('autoRefNo', '')
-    // setValue('isGst', false)
-    // setValue('deletedIds', [])
-    // setValue("creditEntries", [getDefaultEntry('C')])
-    // setValue("debitEntries", [getDefaultEntry('D')])
-    // }
 
     async function populateFormFromId(id: number) {
         try {

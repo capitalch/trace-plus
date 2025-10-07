@@ -20,13 +20,14 @@ export function WidgetButtonBackToReport({ className }: { className?: string }) 
         const reportFilters = location.state.reportFilters
         const accountId = location.state.accountId
         const previousReturnPath = location.state.previousReturnPath
+        const previousReportName = location.state.previousReportName
 
         // Restore report filters if available
         if (reportFilters) {
             dispatch(setAllTransactionFilter(reportFilters))
         }
 
-        // Navigate back to report, preserving accountId and previousReturnPath if present
+        // Navigate back to report, preserving accountId, previousReturnPath, and previousReportName if present
         const navigationState: any = {}
         if (accountId) {
             navigationState.accountId = accountId
@@ -34,21 +35,26 @@ export function WidgetButtonBackToReport({ className }: { className?: string }) 
         if (previousReturnPath) {
             navigationState.returnPath = previousReturnPath
         }
+        if (previousReportName) {
+            navigationState.reportName = previousReportName
+        }
 
         navigate(returnPath, {
             state: Object.keys(navigationState).length > 0 ? navigationState : undefined
         })
     }
 
+    const reportName = location.state?.reportName || 'Report'
+
     return (
         <span className={clsx("flex items-center", className)}>
             <a
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-colors duration-200"
                 onClick={handleBackToReport}
-                title="Back to All Transactions Report"
+                title={`Back to ${reportName}`}
             >
                 <IconChangeArrow className='w-5 h-5' />
-                <span className="text-lg font-bold ">Back to Report</span>
+                <span className="text-lg font-bold ">Back to {reportName}</span>
             </a>
         </span>
     )

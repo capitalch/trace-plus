@@ -399,7 +399,8 @@ export function BalanceSheet() {
         navigate('/general-ledger', {
             state: {
                 accountId: rowData.id,
-                returnPath: '/balance-sheet'
+                returnPath: '/balance-sheet',
+                reportName: 'Balance Sheet'
             }
         })
     }

@@ -104,7 +104,7 @@ export function useCompSyncfusionTreeGrid({
 
             colDirectives.splice(1, 0,
                 <ColumnDirective
-                    headerText="Z"
+                    headerText=""
                     width={zoomInColumnWidth || 40}
                     key='Z'
                     textAlign="Center"

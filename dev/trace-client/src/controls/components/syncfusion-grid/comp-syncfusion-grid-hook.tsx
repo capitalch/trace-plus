@@ -206,7 +206,7 @@ export function useCompSyncFusionGrid({
     if (onZoomIn) {
       colDirectives.unshift(
         <ColumnDirective
-          headerText="Z"
+          headerText=""
           width={zoomInColumnWidth || "40"}
           commands={[
             {

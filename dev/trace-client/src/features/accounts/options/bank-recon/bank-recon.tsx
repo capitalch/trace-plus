@@ -288,7 +288,7 @@ export function BankRecon() {
         const route = routeMap[tranTypeId]
         if (route) {
             navigate(route, {
-                state: { id: rowData.id, tranTypeId, returnPath: '/bank-recon' }
+                state: { id: rowData.id, tranTypeId, returnPath: '/bank-recon', reportName: 'Bank Reconciliation' }
             })
         } else {
             Utils.showAlertMessage('Alert', Messages.errNoDataFound)

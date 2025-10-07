@@ -206,7 +206,8 @@ export function TrialBalance() {
         navigate('/general-ledger', {
             state: {
                 accountId:rowData.id,
-                returnPath:'/trial-balance'
+                returnPath:'/trial-balance',
+                reportName: 'Trial Balance'
             }
         })
     }

@@ -271,7 +271,7 @@ export function ReportAllTransactions() {
         const route = routeMap[tranTypeId]
         if (route) {
             navigate(route, {
-                state: { id: rowData.id, tranTypeId, returnPath: '/report-all-transactions', reportFilters: selectedAllTransactionsFilter }
+                state: { id: rowData.id, tranTypeId, returnPath: '/report-all-transactions', reportName: 'All Transactions Report', reportFilters: selectedAllTransactionsFilter }
             })
         } else {
             Utils.showAlertMessage('Alert', Messages.errNoDataFound)
