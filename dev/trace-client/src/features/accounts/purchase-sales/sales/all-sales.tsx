@@ -104,7 +104,7 @@ export function AllSales() {
     const handleBackToForm = () => {
         dispatch(setSalesViewMode(false));
     };
-    
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
@@ -138,7 +138,7 @@ export function AllSales() {
             if (firstRow && !firstRow.id && salesType === 'bill') {
                 autoSubledgerAccId = debitAccounts[0]?.accId || null;
             }
-            
+
             const ret = await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
@@ -150,10 +150,12 @@ export function AllSales() {
             const tranHId = newId || getValues('id');
             const salesEditData = await getSalesEditDataOnId(tranHId)
             dispatch(setLastSalesEditData(salesEditData));
-            if (getValues('id')) {
+            if (getValues('id') && (!location.state?.id)) {
                 dispatch(setSalesViewMode(true)); // Switch to view mode for existing sales
             }
-            resetAll();
+            if (!location.state?.id) {
+                resetAll();
+            }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);
@@ -293,17 +295,10 @@ export function AllSales() {
         const tranH: TranHType = salesEditData.tranH
         const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
         salesEditData.shippingInfo = shippingInfo
-        return(salesEditData)
+        return (salesEditData)
     }
 
     // === FORM POPULATION FUNCTIONS ===
-    // async function populateFormFromId(id: number) {
-    //     try {
-    //         await populateFormOverId(id)
-    //     } catch (e: any) {
-    //         Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
-    //     }
-    // }
 
     async function populateFormOverId(id: any) {
         const salesEditData: SalePurchaseEditDataType | null = await getSalesEditDataOnId(id)
@@ -314,7 +309,6 @@ export function AllSales() {
 
         const tranH: TranHType = salesEditData.tranH
         const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
-        // salesEditData.shippingInfo = shippingInfo
         const billTo: ContactsType | null = salesEditData.billTo
         const tranD: TranDExtraType[] = salesEditData.tranD
         const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
@@ -385,7 +379,7 @@ export function AllSales() {
         dispatch(clearSalesFormData());
         dispatch(clearSearchQuery());
         // Scroll to top after all operations complete
-            setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
     }
 }
 

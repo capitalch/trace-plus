@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
-import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, /*ExtGstTranDType, SalePurchaseDetailsWithExtraType,*/ SalePurchaseEditDataType, TranDExtraType, /*TranDExtraType,*/ TranDType, TranHType, /*TranHType*/ } from "../../../../utils/global-types-interfaces-enums";
+import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType, } from "../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllSalesReturnForm } from "./all-sales-return-form";
@@ -39,7 +39,7 @@ export function AllSalesReturn() {
     const { clearErrors, getValues, reset, setValue } = methods;
 
     const { getTranHData } = useAllSalesReturnSubmit(methods);
-    const extendedMethods = { ...methods, getDefaultSalesReturnLineItem, getDefaultCreditAccount, resetAll, populateFormOverId, getSalesReturnEditDataOnId,}
+    const extendedMethods = { ...methods, getDefaultSalesReturnLineItem, getDefaultCreditAccount, resetAll, populateFormOverId, getSalesReturnEditDataOnId, }
 
     // Utility function to generate sales return title
     const getSalesReturnTitle = (isViewMode: boolean): string => {
@@ -124,10 +124,12 @@ export function AllSalesReturn() {
             const tranHId = newId || getValues('id');
             const salesReturnEditData = await getSalesReturnEditDataOnId(tranHId)
             dispatch(setLastSalesReturnEditData(salesReturnEditData));
-            if (getValues('id')) {
+            if (getValues('id') && (!location.state?.id)) {
                 dispatch(setSalesReturnViewMode(true)); // Switch to view mode for existing sales return
             }
-            resetAll();
+            if (!location.state?.id) {
+                resetAll();
+            }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);

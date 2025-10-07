@@ -123,10 +123,12 @@ export function CreditNotes() {
                 xData: xData,
             });
 
-            if (watch('id')) {
+            if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            resetAll()
+            if (!location.state?.id) {
+                resetAll()
+            }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);

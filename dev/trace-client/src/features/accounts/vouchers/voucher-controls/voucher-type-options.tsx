@@ -19,10 +19,10 @@ import { closeVoucherPreview, triggerVoucherPreview } from "../voucher-slice";
 
 export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
     const dispatch: AppDispatchType = useDispatch()
-    const { register, watch, setValue } = useFormContext<VoucherFormDataType>();
+    const { watch, setValue } = useFormContext<VoucherFormDataType>();
     const isPreviewOpen = useSelector((state: RootStateType) => state.vouchers.isPreviewOpen);
     const voucherIdToPreview = useSelector((state: RootStateType) => state.vouchers.voucherIdToPreview);
-    const { resetDetails }: any = useFormContext()
+    const { resetAll }: any = useFormContext()
     const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
     const {
@@ -91,13 +91,17 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
     }, [voucherIdToPreview, isPreviewOpen, getVoucherDetails]);
 
     useEffect(() => {
-        resetDetails()
         if (voucherType === 'Contra') {
             setValue('showGstInHeader', false)
         } else {
             setValue('showGstInHeader', true)
         }
-    }, [voucherType, setValue, /*resetDetails*/])
+    }, [voucherType, setValue])
+
+    function handleVoucherTypeChange(newType: string) {
+        resetAll();
+        setValue('voucherType', newType as any);
+    }
 
     return (
         <div className={clsx("flex gap-2 items-center", className)}>
@@ -106,8 +110,10 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
             </label>
             {getPrintPreview()}
             {voucherTypes.map((type) => (
-                <label
+                <button
                     key={type}
+                    type="button"
+                    onClick={() => handleVoucherTypeChange(type)}
                     className={clsx(
                         "cursor-pointer px-4 py-1 rounded-md border font-medium text-md",
                         voucherType === type
@@ -115,14 +121,8 @@ export function VoucherTypeOptions({ className }: VoucherTypeOptionsType) {
                             : "bg-gray-50 text-gray-900 border-gray-300 hover:bg-green-400",
                     )}
                 >
-                    <input
-                        type="radio"
-                        value={type}
-                        {...register("voucherType")}
-                        className="sr-only"
-                    />
                     {type}
-                </label>
+                </button>
             ))}
 
             {/* Custom modal dialog */}

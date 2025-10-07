@@ -12,9 +12,10 @@ export function CompAccountsContainer({ children, className, CustomControl, Midd
                 <div className="flex items-center">
                     <label className='font-semibold text-primary-400 text-xl'>{Utils.getUnitInfo()?.unitName}</label>
                     {<span className="ml-2 text-lg text-gray-600 font-bold">→ {selectedMainTitle}</span>}
-                    &nbsp;<WidgetButtonBackToReport />
+                    
                     {LeftCustomControl && <LeftCustomControl />}
                 </div>
+                <WidgetButtonBackToReport className="" />
                 {MiddleCustomControl && <MiddleCustomControl />}
                 <div className="flex items-center">
                     {CustomControl && <CustomControl />}

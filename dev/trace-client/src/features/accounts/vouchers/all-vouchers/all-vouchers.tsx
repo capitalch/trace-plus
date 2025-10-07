@@ -17,15 +17,13 @@ import { useEffect, useRef } from "react";
 import { Messages } from "../../../../utils/messages";
 import _ from "lodash";
 import { clearVoucherFormData, saveVoucherFormData } from "../voucher-slice";
-import { useLocation, /*useNavigate*/ } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { VoucherEditDataType } from "./all-vouchers-view";
-// import { WidgetButtonBackToReport } from "../../../../controls/widgets/widget-button-back-to-report";
 
 export function AllVouchers() {
     const dispatch: AppDispatchType = useDispatch()
     const location = useLocation()
-    // const navigate = useNavigate()
     const savedFormData = useSelector((state: RootStateType) => state.vouchers.savedFormData);
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex || 0);
     const instance = DataInstancesMap.allVouchers;
@@ -41,7 +39,7 @@ export function AllVouchers() {
             defaultValues: savedFormData ?? getDefaultVoucherFormValues()
         });
     const { watch, getValues, setValue, reset } = methods;
-    const extendedMethods = { ...methods, resetAll, resetDetails, getVoucherDetailsOnId, populateFormFromId };
+    const extendedMethods = { ...methods, resetAll,/* resetDetails,*/ getVoucherDetailsOnId, populateFormFromId };
     const voucherType = watch('voucherType')
 
     // Utility function to generate voucher title
@@ -86,16 +84,13 @@ export function AllVouchers() {
         if (location.state?.id && location.state?.returnPath) {
             populateFormFromId(location.state.id)
         }
-    }, [location.state?.id, location.state?.returnPath]);
+    }, [location.state?.id, location.state?.returnPath, dispatch]);
 
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className="relative">
                     {/* Back to Report Button */}
-                    {/* <div className="mt-2 ml-6">
-                        <WidgetButtonBackToReport />
-                    </div> */}
                     {/* Sticky voucher type selector */}
                     <div className="sticky self-end right-6 top-0 z-5">
                         <VoucherTypeOptions className="absolute rounded right-0 top-10" />
@@ -166,10 +161,12 @@ export function AllVouchers() {
                 xData: xData,
             });
 
-            if (watch('id')) {
+            if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            resetAll()
+            if (!location.state?.id) {
+                resetAll()
+            }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);
@@ -282,23 +279,18 @@ export function AllVouchers() {
     }
 
     function resetAll() {
-        // retain voucherType
-        const vchrType = watch('voucherType')
         reset(getDefaultVoucherFormValues())
-        if (vchrType) {
-            setValue('voucherType', vchrType)
-        }
         dispatch(clearVoucherFormData());
     }
 
-    function resetDetails() {
-        setValue("id", undefined)
-        setValue('autoRefNo', '')
-        setValue('isGst', false)
-        setValue('deletedIds', [])
-        setValue("creditEntries", [getDefaultEntry('C')])
-        setValue("debitEntries", [getDefaultEntry('D')])
-    }
+    // function resetDetails() {
+    // setValue("id", undefined)
+    // setValue('autoRefNo', '')
+    // setValue('isGst', false)
+    // setValue('deletedIds', [])
+    // setValue("creditEntries", [getDefaultEntry('C')])
+    // setValue("debitEntries", [getDefaultEntry('D')])
+    // }
 
     async function populateFormFromId(id: number) {
         try {
@@ -309,6 +301,8 @@ export function AllVouchers() {
                 return
             }
             const tranHeader = voucherEditData?.tranHeader
+            const voucherType = Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType
+
             reset({
                 id: tranHeader.id,
                 tranDate: tranHeader.tranDate,
@@ -316,7 +310,7 @@ export function AllVouchers() {
                 remarks: tranHeader.remarks,
                 tranTypeId: tranHeader.tranTypeId,
                 autoRefNo: tranHeader.autoRefNo,
-                voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
+                voucherType: voucherType,
                 isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
                 showGstInHeader: voucherType !== 'Contra',
                 deletedIds: [],
@@ -363,64 +357,8 @@ export function AllVouchers() {
                     } : undefined
                 })),
             },)
-            // reset({
-            //     id: tranHeader.id,
-            //     tranDate: tranHeader.tranDate,
-            //     userRefNo: tranHeader.userRefNo,
-            //     remarks: tranHeader.remarks,
-            //     tranTypeId: tranHeader.tranTypeId,
-            //     autoRefNo: tranHeader.autoRefNo,
-            //     voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
-            //     isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
-            //     showGstInHeader: Utils.getTranTypeName(tranHeader.tranTypeId) !== 'Contra',
-            //     deletedIds: [],
-            //     finYearId: finYearId || 0,
-            //     branchId: branchId || 1,
-            //     posId: 1,
-            //     toggle: true,
-            //     creditEntries: voucherEditData?.tranDetails.filter((d) => d.dc === 'C').map((d) => ({
-            //         id: d.id,
-            //         accId: d.accId,
-            //         remarks: d.remarks,
-            //         dc: d.dc,
-            //         amount: d.amount,
-            //         tranHeaderId: d.tranHeaderId,
-            //         lineRefNo: d.lineRefNo,
-            //         instrNo: d.instrNo,
-            //         deletedIds: [],
-            //         gst: d.gst ? {
-            //             id: d.gst.id,
-            //             gstin: d.gst.gstin,
-            //             rate: d.gst.rate,
-            //             cgst: d.gst.cgst,
-            //             sgst: d.gst.sgst,
-            //             igst: d.gst.igst,
-            //             isIgst: d?.gst?.igst ? true : false,
-            //             hsn: d.gst.hsn
-            //         } : undefined
-            //     })),
-            //     debitEntries: voucherEditData?.tranDetails.filter((d) => d.dc === 'D').map((d) => ({
-            //         id: d.id,
-            //         accId: d.accId,
-            //         remarks: d.remarks,
-            //         dc: d.dc,
-            //         amount: d.amount,
-            //         tranHeaderId: d.tranHeaderId,
-            //         lineRefNo: d.lineRefNo,
-            //         instrNo: d.instrNo,
-            //         deletedIds: [],
-            //         gst: d.gst ? {
-            //             id: d.gst.id,
-            //             gstin: d.gst.gstin,
-            //             rate: d.gst.rate,
-            //             cgst: d.gst.cgst,
-            //             sgst: d.gst.sgst,
-            //             igst: d.gst.igst,
-            //             isIgst: d?.gst?.igst ? true : false,
-            //             hsn: d.gst.hsn
-            //         } : undefined
-            //     })),
-            // })
+            // const data = getValues()
+            // console.log(data)
             // Switch to edit tab
             dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
         } catch (e: any) {

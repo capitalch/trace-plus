@@ -19,7 +19,7 @@ export function ReceiptVoucher({ instance }: ReceiptVoucherType) {
         , dbName
         , decodedDbParamsObject
     } = useUtilsInfo()
-
+    
     useEffect(() => {
         loadCreditAccountOptions()
     }, [])

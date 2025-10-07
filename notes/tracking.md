@@ -17,6 +17,9 @@
 	- QA and release		: 30-08-2025
 
 ## History
+# 07-10-2025
+	- Drill down completed
+	- Started bug fixes
 # 02-10-2025
 	- Did some bug fixes and UI / UX issues and UI enhancements
 	- Started drill down
