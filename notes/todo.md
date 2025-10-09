@@ -3,16 +3,15 @@ entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
 ## General requirement
-- Provide branch address
 - When bu, finYearId or branch changes, behavior of existing screen to be checked
 - Checkup price - discount in all reports as actual price
 - Supplier name and its due in summary report of inventory
 - Check why age of en-el25 on22-08-2025 sale showing 5702
 - deep QA
-- UI
+														- UI
 														- VScroll bar issue in syncfusion grid
 														- Small screen whenn side menu appears then background invisible
-	- Vouchers overlapping issue in responsive
+														- Vouchers overlapping issue in responsive
 														- Fix UI Stock opening balance
 														- Fix UI stock Journal
 														- Menu button not expanding when small screen
@@ -55,6 +54,11 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+	- Provide branch address
+	- Product query screen
+	- CRM
+		- Flash message on whatsapp
+		- Record enquiry cust details on mobile in database
 													- Fix
 														- Debit notes
 														- credit notes

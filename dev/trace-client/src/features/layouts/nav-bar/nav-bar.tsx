@@ -12,6 +12,7 @@ import ReactSlidingPane from "react-sliding-pane"
 import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/sliding-pane-map"
 import { FC } from "react"
 import { ModalDialogB } from "./modal-dialogB"
+import { SearchProduct } from "./search-product"
 
 export function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
@@ -31,6 +32,7 @@ export function NavBar() {
            </button>
            {getMenuButtons()}
            {getBuFyBranchInfo()}
+           <SearchProduct />
        </div>
        <LogoutMenuButton />
        <ModalDialogA />

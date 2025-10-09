@@ -3,7 +3,7 @@ import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { AllVouchersMain } from "./all-vouchers-main";
-import { VoucherTypeOptions } from "../voucher-controls/voucher-type-options";
+import { VoucherStatusBar } from "../voucher-controls/voucher-status-bar";
 import { FormProvider, useForm } from "react-hook-form";
 import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
@@ -90,12 +90,13 @@ export function AllVouchers() {
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className="relative">
-                    {/* Back to Report Button */}
-                    {/* Sticky voucher type selector */}
-                    <div className="sticky self-end right-6 top-0 z-5">
-                        <VoucherTypeOptions className="absolute rounded right-0 top-10" />
+                    {/* Voucher Control Header */}
+                    <div className="mt-4 mb-2">
+                        <VoucherStatusBar />
                     </div>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-9" />
+
+                    {/* Tabs Section */}
+                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
                 </CompAccountsContainer>
             </form>
         </FormProvider>
@@ -348,8 +349,6 @@ export function AllVouchers() {
                     } : undefined
                 })),
             },)
-            // const data = getValues()
-            // console.log(data)
             // Switch to edit tab
             dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
         } catch (e: any) {

@@ -42,7 +42,7 @@ export function AllVouchersCrown({ className }: AllVouchersCrownType) {
     const diffSide = diff.isPositive() ? "Dr" : "Cr";
 
     return (
-        <div className={clsx("flex flex-wrap gap-4 text-sm font-semibold", className)}>
+        <div className={clsx("flex flex-wrap gap-4 font-semibold", className)}>
             <div className="text-indigo-700 space-x-1">
                 <label>GST Debits:</label>
                 <span>{Utils.toDecimalFormat(gstDebits.toFixed(2))}</span>

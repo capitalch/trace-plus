@@ -21,6 +21,7 @@ export function CompModalDialog({
     sm: "w-full max-w-sm",
     md: "w-full md:max-w-xl",
     lg: "w-full lg:max-w-4xl",
+    xlg: "w-full max-w-6xl",
     xl: "w-full xl:max-w-[90vw]",
   };
 
@@ -32,21 +33,21 @@ export function CompModalDialog({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className={clsx("relative mx-4 sm:mx-0", sizeLogic[size])}>
-          <div className="flex flex-col max-h-[95vh] bg-white border border-gray-300 rounded-lg shadow-lg">
-            
+          <div className="flex flex-col max-h-[95vh] bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-300 rounded-lg shadow-2xl">
+
             {/* Header */}
-            <div className={clsx("flex items-center justify-between px-4 py-2 border-b", className)}>
-              <h2 className="text-lg font-semibold text-primary-500">{title}</h2>
+            <div className={clsx("flex items-center justify-between px-4 py-2 border-b border-slate-300 bg-gradient-to-r from-indigo-100 to-indigo-200", className)}>
+              <h2 className="text-lg font-semibold text-indigo-800">{title}</h2>
               <button
                 onClick={onClickClose}
-                className="p-2 text-gray-500 hover:text-red-500"
+                className="p-2 text-indigo-700 hover:text-red-600 hover:bg-indigo-50 rounded transition-colors duration-200"
               >
                 ✕
               </button>
             </div>
 
             {/* Body - Scrollable for large content */}
-            <div className="flex-1 px-4 py-2">{body}</div>
+            <div className="flex-1 px-4 py-2 bg-white">{body}</div>
 
             {/* Footer */}
             {toShowCloseButton && (
@@ -79,7 +80,7 @@ type CompModalDialogType = {
   body?: React.ReactElement;
   className?: string;
   isOpen: boolean;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xlg" | "xl";
   title: string;
   toShowCloseButton?: boolean;
   instanceName: string;

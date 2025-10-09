@@ -27,7 +27,7 @@ export function CompSyncFusionGridToolbar({
   isSearch = true,
   minWidth = "1200px",
   title,
-  setToggleReload,
+  onRefresh,
   subTitleControl = undefined
 }: CompSyncFusionGridToolbarType) {
   const context: GlobalContextType = useContext(GlobalContext);
@@ -164,8 +164,8 @@ export function CompSyncFusionGridToolbar({
                 const loadData: any =
                   context.CompSyncFusionGrid[instance].loadData;
 
-                if (setToggleReload) {
-                  setToggleReload((prev: boolean) => !prev)
+                if (onRefresh) {
+                  onRefresh((prev: boolean) => !prev)
                 } else if (loadData) {
                   await loadData();
                 }
@@ -209,5 +209,5 @@ type CompSyncFusionGridToolbarType = {
   minWidth?: string;
   subTitleControl?: ReactElement;
   title: string;
-  setToggleReload?: (value: (val: boolean) => boolean) => void;
+  onRefresh?: (value: (val: boolean) => boolean) => void;
 };

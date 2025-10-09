@@ -60,6 +60,7 @@ export const DataInstancesMap = {
   reportAllTransactions: "report-all-transactions",
   salesReport: "sales-report",
   salesInvoiceSelect:"sales-invoice-select",
+  searchProductModal:"search-product-model",
   securedControls: "secured-controls",
   securedControlsLinkRoles: "secured-controls-link-roles",
   stockJournal: "stock-journal",

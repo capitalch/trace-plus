@@ -1,4 +1,4 @@
-import { AllVouchersCrown } from "./all-vouchers-crown";
+// import { AllVouchersCrown } from "./all-vouchers-crown";
 import { VoucherCommonHeader } from "../voucher-controls/voucher-common-header";
 import { PaymentVoucher } from "../voucher-types/payment-voucher";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
@@ -16,7 +16,8 @@ export function AllVouchersMain() {
     const voucherType = watch('voucherType')
     return (
         <div className="flex flex-col px-4">
-            <AllVouchersCrown className="absolute right-6 top-13" />
+            {/* absolute right-6 top-13 */}
+            {/* <AllVouchersCrown className="ml-auto mr-2" />  */}
             <VoucherCommonHeader />
             {getVoucherTypeControl()}
         </div>

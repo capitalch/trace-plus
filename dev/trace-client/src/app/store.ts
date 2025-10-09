@@ -15,6 +15,7 @@ import { debitNotesReducer } from "../features/accounts/purchase-sales/debit-not
 import { creditNotesReducer } from "../features/accounts/purchase-sales/credit-notes/credit-notes-slice";
 import { salesReducer } from "../features/accounts/purchase-sales/sales/sales-slice";
 import { salesReturnReducer } from "../features/accounts/purchase-sales/sales-return/sales-return-slice";
+import searchProductReducer from "../features/layouts/nav-bar/search-product-slice";
 
 const rootReducer = combineReducers({
   accounts: accountsReducer,
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   creditNotes: creditNotesReducer,
   sales: salesReducer,
   salesReturn: salesReturnReducer,
+  searchProduct: searchProductReducer,
 });
 
 const reducerWithReset = (state: any, action: any) => {

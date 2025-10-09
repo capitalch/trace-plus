@@ -8,7 +8,6 @@ import { FormActionButtons } from "./form-action-buttons";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
-
 export function VoucherCommonHeader() {
     const { checkAllowedDate } = useValidators();
     const { hasGstin } = useUtilsInfo()
@@ -101,7 +100,7 @@ export function VoucherCommonHeader() {
                     </div>
                 </FormField>
             )}
-            <FormActionButtons className="mt-8 ml-auto" />
+            <FormActionButtons className="mt-6 ml-auto" />
         </div>
     )
 

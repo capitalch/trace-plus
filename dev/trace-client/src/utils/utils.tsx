@@ -813,7 +813,7 @@ type ShowHideModalDialogType = {
   isOpen: boolean;
   title?: string | undefined;
   element?: ReactElement;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xlg" | "xl";
 };
 
 type ShowModalDialogMessageArgsType = {
@@ -822,7 +822,7 @@ type ShowModalDialogMessageArgsType = {
   isOpen: boolean;
   element?: ReactElement;
   instanceName: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xlg" | "xl";
 };
 
 export type DbNameDbParamsType = {

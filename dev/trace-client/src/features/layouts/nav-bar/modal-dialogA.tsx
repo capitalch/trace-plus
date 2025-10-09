@@ -38,5 +38,5 @@ type ModalDialogMetaType = {
     isOpen: boolean
     title: string
     element: any
-    size?: 'sm' | 'md' | 'lg' |'xl'
+    size?: 'sm' | 'md' | 'lg' | 'xlg' | 'xl'
 }
