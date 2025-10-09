@@ -2,6 +2,14 @@
 entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
 
+## Training
+- Purchase entry
+	- 10 invoices
+	- Add product if not present
+-  5 sales bills
+- In capichow check prices
+
+
 ## General requirement
 - When bu, finYearId or branch changes, behavior of existing screen to be checked
 - Checkup price - discount in all reports as actual price
@@ -55,7 +63,7 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 	- Provide branch address
-	- Product query screen
+													- Product query screen
 	- CRM
 		- Flash message on whatsapp
 		- Record enquiry cust details on mobile in database

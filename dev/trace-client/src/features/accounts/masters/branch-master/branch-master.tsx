@@ -35,13 +35,14 @@ export function BranchMaster() {
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
             CustomControl={() => <NewBranchButton />}
-            minWidth="1000px"
+            minWidth="400px"
             title=''
             isPdfExport={true}
             isExcelExport={true}
             isCsvExport={true}
             isLastNoOfRows={false}
             instance={instance}
+            isRefresh={true}
         />
 
         <CompSyncFusionGrid

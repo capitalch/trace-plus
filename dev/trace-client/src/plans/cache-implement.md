@@ -525,246 +525,246 @@ Each phase is **independently testable** and can be deployed incrementally.
 
           ---
 
-# PHASE 3: Make SearchProductModal Globally Reusable
+          # PHASE 3: Make SearchProductModal Globally Reusable
 
-**Goal**: Use same modal across Sales, Purchase, Sales Return, Purchase Return
+          **Goal**: Use same modal across Sales, Purchase, Sales Return, Purchase Return
 
-**Duration**: 2-3 hours
-**Testing**: Each module can select products successfully
+          **Duration**: 2-3 hours
+          **Testing**: Each module can select products successfully
 
-## Step 3.1: Create Reusable Product Selection Utility
+          ## Step 3.1: Create Reusable Product Selection Utility
 
-**File**: `src/utils/utils.tsx` (add new function)
+          **File**: `src/utils/utils.tsx` (add new function)
 
-### Add to Utils object:
+          ### Add to Utils object:
 
-```typescript
-// In Utils object
-showProductSearch: showProductSearch,
-```
+          ```typescript
+          // In Utils object
+          showProductSearch: showProductSearch,
+          ```
 
-### Add function definition:
+          ### Add function definition:
 
-```typescript
-function showProductSearch(onProductSelect: (product: ProductInfoType) => void) {
-  showHideModalDialogA({
-    isOpen: true,
-    title: "Search Product",
-    element: <SearchProductModal onProductSelect={onProductSelect} />,
-    size: "xlg"
-  })
-}
-```
+          ```typescript
+          function showProductSearch(onProductSelect: (product: ProductInfoType) => void) {
+            showHideModalDialogA({
+              isOpen: true,
+              title: "Search Product",
+              element: <SearchProductModal onProductSelect={onProductSelect} />,
+              size: "xlg"
+            })
+          }
+          ```
 
-### Add to UtilsType:
+          ### Add to UtilsType:
 
-```typescript
-export type UtilsType = {
-  // ... existing methods
-  showProductSearch: (onProductSelect: (product: ProductInfoType) => void) => void
-}
-```
+          ```typescript
+          export type UtilsType = {
+            // ... existing methods
+            showProductSearch: (onProductSelect: (product: ProductInfoType) => void) => void
+          }
+          ```
 
----
+          ---
 
-## Step 3.2: Update Existing Search Product Button (NavBar)
+          ## Step 3.2: Update Existing Search Product Button (NavBar)
 
-**File**: `src/features/layouts/nav-bar/search-product.tsx`
+          **File**: `src/features/layouts/nav-bar/search-product.tsx`
 
-**Keep as-is** (no callback needed for general search):
+          **Keep as-is** (no callback needed for general search):
 
-```typescript
-export function SearchProduct() {
-    const handleSearch = () => {
-        Utils.showHideModalDialogA({
-            isOpen: true,
-            title: "Search Product",
-            element: <SearchProductModal />,  // No callback = browse only
-            size: "xlg"
-        })
-    }
+          ```typescript
+          export function SearchProduct() {
+              const handleSearch = () => {
+                  Utils.showHideModalDialogA({
+                      isOpen: true,
+                      title: "Search Product",
+                      element: <SearchProductModal />,  // No callback = browse only
+                      size: "xlg"
+                  })
+              }
 
-    return (
-        <TooltipComponent content="Search Product" position="BottomCenter">
-            <button
-                onClick={handleSearch}
-                className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white shadow-md hover:shadow-xl transition-all duration-200 active:scale-95 hover:scale-105"
-                type="button"
-            >
-                <IconSearch className="w-5 h-5" />
-            </button>
-        </TooltipComponent>
-    )
-}
-```
+              return (
+                  <TooltipComponent content="Search Product" position="BottomCenter">
+                      <button
+                          onClick={handleSearch}
+                          className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white shadow-md hover:shadow-xl transition-all duration-200 active:scale-95 hover:scale-105"
+                          type="button"
+                      >
+                          <IconSearch className="w-5 h-5" />
+                      </button>
+                  </TooltipComponent>
+              )
+          }
+          ```
 
----
+          ---
 
-## Step 3.3: Integrate into Sales Module
+          ## Step 3.3: Integrate into Sales Module
 
-**File**: `src/features/accounts/purchase-sales/sales/sales-controls/items-and-services.tsx` (or wherever "Add Item" button exists)
+          **File**: `src/features/accounts/purchase-sales/sales/sales-controls/items-and-services.tsx` (or wherever "Add Item" button exists)
 
-### Example Integration:
+          ### Example Integration:
 
-```typescript
-import { Utils } from '../../../../../utils/utils'
-import { ProductInfoType } from '../../../../layouts/nav-bar/search-product-modal'
+          ```typescript
+          import { Utils } from '../../../../../utils/utils'
+          import { ProductInfoType } from '../../../../layouts/nav-bar/search-product-modal'
 
-function handleAddProductClick() {
-    Utils.showProductSearch((selectedProduct: ProductInfoType) => {
-        // Handle product selection
-        const newLineItem = {
-            productId: selectedProduct.id,
-            productName: selectedProduct.product || selectedProduct.label,
-            quantity: 1,
-            rate: selectedProduct.salePriceGst || 0,
-            gstRate: selectedProduct.gstRate || 0,
-            hsn: selectedProduct.hsn,
-            // ... map other fields as needed
-        }
+          function handleAddProductClick() {
+              Utils.showProductSearch((selectedProduct: ProductInfoType) => {
+                  // Handle product selection
+                  const newLineItem = {
+                      productId: selectedProduct.id,
+                      productName: selectedProduct.product || selectedProduct.label,
+                      quantity: 1,
+                      rate: selectedProduct.salePriceGst || 0,
+                      gstRate: selectedProduct.gstRate || 0,
+                      hsn: selectedProduct.hsn,
+                      // ... map other fields as needed
+                  }
 
-        // Add to form (using react-hook-form)
-        const currentItems = getValues('lineItems') || []
-        setValue('lineItems', [...currentItems, newLineItem])
+                  // Add to form (using react-hook-form)
+                  const currentItems = getValues('lineItems') || []
+                  setValue('lineItems', [...currentItems, newLineItem])
 
-        // Or dispatch Redux action
-        // dispatch(addSalesLineItem(newLineItem))
-    })
-}
+                  // Or dispatch Redux action
+                  // dispatch(addSalesLineItem(newLineItem))
+              })
+          }
 
-// In JSX:
-<button onClick={handleAddProductClick}>
-    <IconAdd /> Add Product
-</button>
-```
+          // In JSX:
+          <button onClick={handleAddProductClick}>
+              <IconAdd /> Add Product
+          </button>
+          ```
 
----
+          ---
 
-## Step 3.4: Integrate into Purchase Module
+          ## Step 3.4: Integrate into Purchase Module
 
-**File**: `src/features/accounts/purchase-sales/purchases/purchase-controls/purchase-line-items.tsx` (or similar)
+          **File**: `src/features/accounts/purchase-sales/purchases/purchase-controls/purchase-line-items.tsx` (or similar)
 
-### Example Integration:
+          ### Example Integration:
 
-```typescript
-function handleAddProductClick() {
-    Utils.showProductSearch((selectedProduct: ProductInfoType) => {
-        const newLineItem = {
-            productId: selectedProduct.id,
-            productName: selectedProduct.product || selectedProduct.label,
-            quantity: 1,
-            rate: selectedProduct.lastPurchasePriceGst || 0,  // Note: Purchase price, not sale
-            gstRate: selectedProduct.gstRate || 0,
-            hsn: selectedProduct.hsn,
-        }
+          ```typescript
+          function handleAddProductClick() {
+              Utils.showProductSearch((selectedProduct: ProductInfoType) => {
+                  const newLineItem = {
+                      productId: selectedProduct.id,
+                      productName: selectedProduct.product || selectedProduct.label,
+                      quantity: 1,
+                      rate: selectedProduct.lastPurchasePriceGst || 0,  // Note: Purchase price, not sale
+                      gstRate: selectedProduct.gstRate || 0,
+                      hsn: selectedProduct.hsn,
+                  }
 
-        const currentItems = getValues('lineItems') || []
-        setValue('lineItems', [...currentItems, newLineItem])
-    })
-}
-```
+                  const currentItems = getValues('lineItems') || []
+                  setValue('lineItems', [...currentItems, newLineItem])
+              })
+          }
+          ```
 
----
+          ---
 
-## Step 3.5: Integrate into Sales Return Module
+          ## Step 3.5: Integrate into Sales Return Module
 
-**File**: `src/features/accounts/purchase-sales/sales-return/sales-return-controls/sales-return-items-and-services.tsx` (or similar)
+          **File**: `src/features/accounts/purchase-sales/sales-return/sales-return-controls/sales-return-items-and-services.tsx` (or similar)
 
-### Example Integration:
+          ### Example Integration:
 
-```typescript
-function handleAddReturnProductClick() {
-    Utils.showProductSearch((selectedProduct: ProductInfoType) => {
-        const returnLineItem = {
-            productId: selectedProduct.id,
-            productName: selectedProduct.product || selectedProduct.label,
-            returnQuantity: 1,
-            rate: selectedProduct.salePriceGst || 0,
-            gstRate: selectedProduct.gstRate || 0,
-            hsn: selectedProduct.hsn,
-        }
+          ```typescript
+          function handleAddReturnProductClick() {
+              Utils.showProductSearch((selectedProduct: ProductInfoType) => {
+                  const returnLineItem = {
+                      productId: selectedProduct.id,
+                      productName: selectedProduct.product || selectedProduct.label,
+                      returnQuantity: 1,
+                      rate: selectedProduct.salePriceGst || 0,
+                      gstRate: selectedProduct.gstRate || 0,
+                      hsn: selectedProduct.hsn,
+                  }
 
-        // Add to return items
-        const currentItems = getValues('returnLineItems') || []
-        setValue('returnLineItems', [...currentItems, returnLineItem])
-    })
-}
-```
+                  // Add to return items
+                  const currentItems = getValues('returnLineItems') || []
+                  setValue('returnLineItems', [...currentItems, returnLineItem])
+              })
+          }
+          ```
 
----
+          ---
 
-## Step 3.6: Integrate into Purchase Return Module
+          ## Step 3.6: Integrate into Purchase Return Module
 
-**File**: `src/features/accounts/purchase-sales/purchase-returns/purchase-return-controls/purchase-return-line-items.tsx` (or similar)
+          **File**: `src/features/accounts/purchase-sales/purchase-returns/purchase-return-controls/purchase-return-line-items.tsx` (or similar)
 
-### Example Integration:
+          ### Example Integration:
 
-```typescript
-function handleAddReturnProductClick() {
-    Utils.showProductSearch((selectedProduct: ProductInfoType) => {
-        const returnLineItem = {
-            productId: selectedProduct.id,
-            productName: selectedProduct.product || selectedProduct.label,
-            returnQuantity: 1,
-            rate: selectedProduct.lastPurchasePriceGst || 0,
-            gstRate: selectedProduct.gstRate || 0,
-            hsn: selectedProduct.hsn,
-        }
+          ```typescript
+          function handleAddReturnProductClick() {
+              Utils.showProductSearch((selectedProduct: ProductInfoType) => {
+                  const returnLineItem = {
+                      productId: selectedProduct.id,
+                      productName: selectedProduct.product || selectedProduct.label,
+                      returnQuantity: 1,
+                      rate: selectedProduct.lastPurchasePriceGst || 0,
+                      gstRate: selectedProduct.gstRate || 0,
+                      hsn: selectedProduct.hsn,
+                  }
 
-        const currentItems = getValues('returnLineItems') || []
-        setValue('returnLineItems', [...currentItems, returnLineItem])
-    })
-}
-```
+                  const currentItems = getValues('returnLineItems') || []
+                  setValue('returnLineItems', [...currentItems, returnLineItem])
+              })
+          }
+          ```
 
----
+          ---
 
-## Step 3.7: Testing Phase 3
+          ## Step 3.7: Testing Phase 3
 
-**Test Checklist for EACH Module**:
+          **Test Checklist for EACH Module**:
 
-### Sales Module
-- [ ] Click "Add Product" in Sales form
-- [ ] Modal opens with products
-- [ ] Products are cached (instant load if opened before)
-- [ ] Select a product
-- [ ] Product adds to Sales line items
-- [ ] Modal closes automatically
-- [ ] Product details populated correctly (name, price, GST, HSN)
+          ### Sales Module
+          - [ ] Click "Add Product" in Sales form
+          - [ ] Modal opens with products
+          - [ ] Products are cached (instant load if opened before)
+          - [ ] Select a product
+          - [ ] Product adds to Sales line items
+          - [ ] Modal closes automatically
+          - [ ] Product details populated correctly (name, price, GST, HSN)
 
-### Purchase Module
-- [ ] Click "Add Product" in Purchase form
-- [ ] Same cached products appear
-- [ ] Select product
-- [ ] Product adds to Purchase line items
-- [ ] Purchase price used (not sale price)
+          ### Purchase Module
+          - [ ] Click "Add Product" in Purchase form
+          - [ ] Same cached products appear
+          - [ ] Select product
+          - [ ] Product adds to Purchase line items
+          - [ ] Purchase price used (not sale price)
 
-### Sales Return Module
-- [ ] Click "Add Product" in Sales Return form
-- [ ] Same cache used
-- [ ] Select product
-- [ ] Product adds to return line items
-- [ ] Correct pricing applied
+          ### Sales Return Module
+          - [ ] Click "Add Product" in Sales Return form
+          - [ ] Same cache used
+          - [ ] Select product
+          - [ ] Product adds to return line items
+          - [ ] Correct pricing applied
 
-### Purchase Return Module
-- [ ] Same tests as above for purchase return
+          ### Purchase Return Module
+          - [ ] Same tests as above for purchase return
 
-### Cross-Module Cache Verification
-- [ ] Open search in Sales → Products load
-- [ ] Open search in Purchase → Products appear instantly (cache hit)
-- [ ] Click refresh in Purchase modal
-- [ ] Open search in Sales Return → Updated products appear
-- [ ] **Result**: Single shared cache across all modules ✅
+          ### Cross-Module Cache Verification
+          - [ ] Open search in Sales → Products load
+          - [ ] Open search in Purchase → Products appear instantly (cache hit)
+          - [ ] Click refresh in Purchase modal
+          - [ ] Open search in Sales Return → Updated products appear
+          - [ ] **Result**: Single shared cache across all modules ✅
 
-**Success Criteria**:
-- All 4 modules can select products
-- Cache is shared (only 1 API call needed)
-- Each module gets correct callback data
-- No console errors
+          **Success Criteria**:
+          - All 4 modules can select products
+          - Cache is shared (only 1 API call needed)
+          - Each module gets correct callback data
+          - No console errors
 
-**Rollback**: Remove `Utils.showProductSearch()` calls, restore old product selection logic
+          **Rollback**: Remove `Utils.showProductSearch()` calls, restore old product selection logic
 
----
+          ---
 
 # PHASE 4: Advanced Features & Polish
 
@@ -773,180 +773,180 @@ function handleAddReturnProductClick() {
 **Duration**: 2-3 hours
 **Testing**: Edge cases and performance
 
-## Step 4.1: Context-Aware Caching
+          ## Step 4.1: Context-Aware Caching
 
-**Problem**: Cache should be branch/year specific
+          **Problem**: Cache should be branch/year specific
 
-**Solution**: Modify Redux state to cache by context
+          **Solution**: Modify Redux state to cache by context
 
-### Update Slice
+          ### Update Slice
 
-**File**: `src/features/layouts/nav-bar/search-product-slice.ts`
+          **File**: `src/features/layouts/nav-bar/search-product-slice.ts`
 
-```typescript
-// New state structure
-export type SearchProductState = {
-  cacheByContext: {
-    [key: string]: {  // key = "branchId-finYearId"
-      products: ProductInfoType[]
-      lastFetched: number
-    }
-  }
-  isLoading: boolean
-  error: string | null
-  cacheExpiry: number
-  currentContextKey: string | null
-}
+          ```typescript
+          // New state structure
+          export type SearchProductState = {
+            cacheByContext: {
+              [key: string]: {  // key = "branchId-finYearId"
+                products: ProductInfoType[]
+                lastFetched: number
+              }
+            }
+            isLoading: boolean
+            error: string | null
+            cacheExpiry: number
+            currentContextKey: string | null
+          }
 
-// Helper to generate context key
-function getContextKey(branchId: number, finYearId: number): string {
-  return `${branchId}-${finYearId}`
-}
+          // Helper to generate context key
+          function getContextKey(branchId: number, finYearId: number): string {
+            return `${branchId}-${finYearId}`
+          }
 
-// Updated reducers
-const searchProductSlice = createSlice({
-  name: 'searchProduct',
-  initialState,
-  reducers: {
-    clearCache: (state) => {
-      state.cacheByContext = {}
-      state.currentContextKey = null
-      state.error = null
-    },
-    clearContextCache: (state, action: PayloadAction<string>) => {
-      delete state.cacheByContext[action.payload]
-    }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchProducts.fulfilled, (state, action) => {
-        const { branchId, finYearId } = action.meta.arg
-        const contextKey = getContextKey(branchId, finYearId)
+          // Updated reducers
+          const searchProductSlice = createSlice({
+            name: 'searchProduct',
+            initialState,
+            reducers: {
+              clearCache: (state) => {
+                state.cacheByContext = {}
+                state.currentContextKey = null
+                state.error = null
+              },
+              clearContextCache: (state, action: PayloadAction<string>) => {
+                delete state.cacheByContext[action.payload]
+              }
+            },
+            extraReducers: (builder) => {
+              builder
+                .addCase(fetchProducts.fulfilled, (state, action) => {
+                  const { branchId, finYearId } = action.meta.arg
+                  const contextKey = getContextKey(branchId, finYearId)
 
-        state.cacheByContext[contextKey] = {
-          products: action.payload,
-          lastFetched: Date.now()
-        }
-        state.currentContextKey = contextKey
-        state.isLoading = false
-        state.error = null
-      })
-  }
-})
+                  state.cacheByContext[contextKey] = {
+                    products: action.payload,
+                    lastFetched: Date.now()
+                  }
+                  state.currentContextKey = contextKey
+                  state.isLoading = false
+                  state.error = null
+                })
+            }
+          })
 
-// Updated selectors
-export const selectProductsForContext = (branchId: number, finYearId: number) =>
-  (state: any) => {
-    const key = getContextKey(branchId, finYearId)
-    return state.searchProduct.cacheByContext[key]?.products || []
-  }
+          // Updated selectors
+          export const selectProductsForContext = (branchId: number, finYearId: number) =>
+            (state: any) => {
+              const key = getContextKey(branchId, finYearId)
+              return state.searchProduct.cacheByContext[key]?.products || []
+            }
 
-export const selectLastFetchedForContext = (branchId: number, finYearId: number) =>
-  (state: any) => {
-    const key = getContextKey(branchId, finYearId)
-    return state.searchProduct.cacheByContext[key]?.lastFetched || null
-  }
-```
+          export const selectLastFetchedForContext = (branchId: number, finYearId: number) =>
+            (state: any) => {
+              const key = getContextKey(branchId, finYearId)
+              return state.searchProduct.cacheByContext[key]?.lastFetched || null
+            }
+          ```
 
-### Update SearchProductModal
+          ### Update SearchProductModal
 
-```typescript
-// Use context-aware selectors
-const products = useSelector(selectProductsForContext(branchId, finYearId))
-const lastFetched = useSelector(selectLastFetchedForContext(branchId, finYearId))
-```
+          ```typescript
+          // Use context-aware selectors
+          const products = useSelector(selectProductsForContext(branchId, finYearId))
+          const lastFetched = useSelector(selectLastFetchedForContext(branchId, finYearId))
+          ```
 
----
+          ---
 
-## Step 4.2: Auto-Clear Cache on Product Mutations
+          ## Step 4.2: Auto-Clear Cache on Product Mutations
 
-**Goal**: Clear cache when products are added/edited
+          **Goal**: Clear cache when products are added/edited
 
-### Hook into Product Save
+          ### Hook into Product Save
 
-**Example**: After saving a product in product master
+          **Example**: After saving a product in product master
 
-```typescript
-// In product save success handler
-import { clearCache } from '../../layouts/nav-bar/search-product-slice'
+          ```typescript
+          // In product save success handler
+          import { clearCache } from '../../layouts/nav-bar/search-product-slice'
 
-const handleProductSaveSuccess = () => {
-  // ... save logic
+          const handleProductSaveSuccess = () => {
+            // ... save logic
 
-  // Clear product cache to force refresh
-  dispatch(clearCache())
+            // Clear product cache to force refresh
+            dispatch(clearCache())
 
-  Utils.showSaveMessage()
-}
-```
+            Utils.showSaveMessage()
+          }
+          ```
 
-**Apply to**:
-- Product master create/update
-- Product delete
-- Bulk import
+          **Apply to**:
+          - Product master create/update
+          - Product delete
+          - Bulk import
 
----
+          ---
 
-## Step 4.3: Loading States & Animations
+          ## Step 4.3: Loading States & Animations
 
-### Add Loading Overlay
+          ### Add Loading Overlay
 
-**File**: `search-product-modal.tsx`
+          **File**: `search-product-modal.tsx`
 
-```typescript
-{isLoading && (
-  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-      <p className="text-gray-600 font-medium">Loading products...</p>
-    </div>
-  </div>
-)}
-```
+          ```typescript
+          {isLoading && (
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <p className="text-gray-600 font-medium">Loading products...</p>
+              </div>
+            </div>
+          )}
+          ```
 
-### Animate Refresh Icon
+          ### Animate Refresh Icon
 
-```typescript
-<IconRefresh className={clsx(
-  "w-4 h-4 transition-transform duration-200",
-  isLoading && "animate-spin"
-)} />
-```
+          ```typescript
+          <IconRefresh className={clsx(
+            "w-4 h-4 transition-transform duration-200",
+            isLoading && "animate-spin"
+          )} />
+          ```
 
----
+          ---
 
-## Step 4.4: Testing Phase 4
+          ## Step 4.4: Testing Phase 4
 
-**Test Checklist**:
+          **Test Checklist**:
 
-### Context-Aware Cache
-- [ ] Open modal in Branch A, Year 2024
-- [ ] Products load and cache
-- [ ] Switch to Branch B, Year 2024
-- [ ] Open modal → New API call (different context)
-- [ ] Switch back to Branch A, Year 2024
-- [ ] Open modal → Cached products appear (context match)
+          ### Context-Aware Cache
+          - [ ] Open modal in Branch A, Year 2024
+          - [ ] Products load and cache
+          - [ ] Switch to Branch B, Year 2024
+          - [ ] Open modal → New API call (different context)
+          - [ ] Switch back to Branch A, Year 2024
+          - [ ] Open modal → Cached products appear (context match)
 
-### Cache Invalidation
-- [ ] Load products
-- [ ] Create/edit a product
-- [ ] Re-open search modal
-- [ ] Fresh data loads (cache cleared)
+          ### Cache Invalidation
+          - [ ] Load products
+          - [ ] Create/edit a product
+          - [ ] Re-open search modal
+          - [ ] Fresh data loads (cache cleared)
 
-### Performance
-- [ ] Load time with cache: <100ms
-- [ ] Load time without cache: <1s
-- [ ] No memory leaks (check browser task manager)
-- [ ] Large dataset (10k+ products): smooth scrolling
+          ### Performance
+          - [ ] Load time with cache: <100ms
+          - [ ] Load time without cache: <1s
+          - [ ] No memory leaks (check browser task manager)
+          - [ ] Large dataset (10k+ products): smooth scrolling
 
-**Success Criteria**:
-- Context switching works correctly
-- Auto-invalidation on mutations works
-- No performance degradation
+          **Success Criteria**:
+          - Context switching works correctly
+          - Auto-invalidation on mutations works
+          - No performance degradation
 
-**Rollback**: Revert to Phase 3 state
+          **Rollback**: Revert to Phase 3 state
 
----
+          ---
 
 # PHASE 5: AND-Based Multi-Term Search
 

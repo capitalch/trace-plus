@@ -165,7 +165,7 @@ export function CompSyncFusionGridToolbar({
                   context.CompSyncFusionGrid[instance].loadData;
 
                 if (onRefresh) {
-                  onRefresh((prev: boolean) => !prev)
+                  onRefresh()
                 } else if (loadData) {
                   await loadData();
                 }
@@ -209,5 +209,5 @@ type CompSyncFusionGridToolbarType = {
   minWidth?: string;
   subTitleControl?: ReactElement;
   title: string;
-  onRefresh?: (value: (val: boolean) => boolean) => void;
+  onRefresh?: () => void;
 };

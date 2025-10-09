@@ -24,6 +24,8 @@ import { treeGridUtils, TreeGridUtilsType } from "./tree-grid-utils";
 import { gridUtils, GridUtilsType } from "./grid-utils";
 import { GlobalContextType } from "../app/global-context";
 import { TranType, TranTypeMap, TranTypeReverseMap } from "./global-types-interfaces-enums";
+import { SearchProductModal } from "../features/layouts/nav-bar/search-product-modal";
+import type { ProductInfoType } from "../features/layouts/nav-bar/search-product-modal";
 
 export const Utils: UtilsType = {
   addUniqueKeysToJson: addUniqueKeysToJson,
@@ -70,6 +72,7 @@ export const Utils: UtilsType = {
   showHideModalDialogA: showHideModalDialogA,
   showHideModalDialogB: showHideModalDialogB,
   showOptionsSelect: showOptionsSelect,
+  showProductSearch: showProductSearch,
   showSaveMessage: showSaveMessage,
   showSuccessAlertMessage: showSuccessAlertMessage,
   showWarningMessage: showWarningMessage,
@@ -728,6 +731,20 @@ function showWarningMessage(
   });
 }
 
+/**
+ * Opens the product search modal with callback for product selection
+ * Used across Sales, Purchase, Sales Return, and Purchase Return modules
+ * @param onProductSelect - Callback function called when a product is selected
+ */
+function showProductSearch(onProductSelect: (product: ProductInfoType) => void) {
+  showHideModalDialogA({
+    isOpen: true,
+    title: "Search Product",
+    element: <SearchProductModal onProductSelect={onProductSelect} />,
+    size: "xlg"
+  });
+}
+
 function toDecimalFormat(s: any) {
   s = s ?? "";
   if (s === "") {
@@ -965,6 +982,7 @@ type UtilsType = {
     option2: string,
     action: (result: any) => void
   ) => void;
+  showProductSearch: (onProductSelect: (product: ProductInfoType) => void) => void;
   showSaveMessage: () => void;
   showSuccessAlertMessage: (
     alertMessage: AlertMessageType,

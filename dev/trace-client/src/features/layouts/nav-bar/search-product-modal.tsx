@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DataInstancesMap } from "../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
+import { Utils } from "../../../utils/utils";
 import { CompSyncFusionGridToolbar } from "../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import {
@@ -17,7 +18,7 @@ import {
 } from "./search-product-slice";
 import type { AppDispatchType } from "../../../app/store";
 
-export function SearchProductModal() {
+export function SearchProductModal({ onProductSelect }: SearchProductModalPropsType) {
     const instance = DataInstancesMap.searchProductModal;
     const { branchId, buCode, dbName, decodedDbParamsObject, finYearId } = useUtilsInfo();
 
@@ -36,7 +37,7 @@ export function SearchProductModal() {
         }
     }, [branchId, finYearId, buCode]);
 
-    function handleRefresh(_toggleFn?: (val: boolean) => boolean) {
+    function handleRefresh() {
         if (!branchId || !finYearId || !buCode || !dbName) {
             return;
         }
@@ -51,7 +52,7 @@ export function SearchProductModal() {
         dispatch(fetchProducts(params));
     }
 
-    return (<div className="">
+    return (<div className="relative">
         <CompSyncFusionGridToolbar
             className="mt-2"
             minWidth="400px"
@@ -76,9 +77,7 @@ export function SearchProductModal() {
         )}
 
         {isLoading && products.length === 0 ? (
-            <div className="flex items-center justify-center h-40">
-                <div className="text-gray-500">Loading products...</div>
-            </div>
+            <div className="text-center py-8">Loading products...</div>
         ) : (
             <CompSyncFusionGrid
                 aggregates={getAggregates()}
@@ -89,6 +88,7 @@ export function SearchProductModal() {
                 height='calc(100vh - 280px)'
                 instance={instance}
                 minWidth="400px"
+                rowSelected={onProductSelect ? onRowSelected : undefined}
                 searchFields={['product', 'label', 'brandName', 'catName', 'info', 'hsn', 'productCode', 'upcCode']}
             />
         )}
@@ -149,18 +149,22 @@ export function SearchProductModal() {
     //     return (r)
     // }
 
-    // function onRowSelected(args: any) {
-    //     if (onSelect) {
-    //         onSelect(args?.data)
-    //         Utils.showHideModalDialogA({
-    //             isOpen: false
-    //         })
-    //     }
-    // }
+    function onRowSelected(args: any) {
+        if (onProductSelect) {
+            onProductSelect(args?.data)
+            Utils.showHideModalDialogA({
+                isOpen: false
+            })
+        }
+    }
 
     function productTemplate(props: ProductInfoType) {
         return (''.concat(props.brandName, ' ', props.catName, ' ', props.label))
     }
+}
+
+export type SearchProductModalPropsType = {
+    onProductSelect?: (product: ProductInfoType) => void
 }
 
 export type ProductInfoType = {
@@ -184,5 +188,8 @@ export type ProductInfoType = {
     sale: number
     saleDiscount: number
     salePrice: number
+    salePriceGst: number
+    calculatedSalePriceGst: number
     upcCode: string
+    product?: string  // Computed product name
 }

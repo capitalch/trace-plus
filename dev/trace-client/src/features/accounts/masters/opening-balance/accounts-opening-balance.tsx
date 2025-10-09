@@ -53,7 +53,8 @@ export function AccountsOpeningBalance() {
             title=''
             isLastNoOfRows={false}
             instance={instance}
-            width="calc(100vw - 250px)" // This stops unnecessary flickers
+            // width="calc(100vw - 250px)" // This stops unnecessary flickers
+            minWidth="400px"
         />
 
         <CompSyncfusionTreeGrid
@@ -73,7 +74,7 @@ export function AccountsOpeningBalance() {
             height="calc(100vh - 227px)"
             instance={instance}
             loadData={loadData}
-            minWidth='950px'
+            minWidth='400px'
             queryCellInfo={onQueryCellInfo}
             treeColumnIndex={0}
         />

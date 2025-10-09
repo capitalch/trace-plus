@@ -5,7 +5,7 @@ import { NumericFormat } from "react-number-format";
 import { Utils } from "../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { ProductInfoType, ProductSelectFromGrid } from "../../../../../controls/components/product-select-from-grid";
+import { ProductInfoType } from "../../../../../controls/components/product-select-from-grid";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { IconPlus } from "../../../../../controls/icons/icon-plus";
 import { IconCross } from "../../../../../controls/icons/icon-cross";
@@ -422,11 +422,8 @@ const SalesReturnItemsAndServices: React.FC = () => {
     }
 
     function handleProductSearch(itemId: number) {
-        Utils.showHideModalDialogA({
-            isOpen: true,
-            size: "lg",
-            element: <ProductSelectFromGrid onSelect={(product: any) => setLineItem(product, itemId)} />,
-            title: "Select a product"
+        Utils.showProductSearch((product: any) => {
+            setLineItem(product, itemId);
         });
     }
 

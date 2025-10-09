@@ -22,7 +22,6 @@ import { ProductInfoType } from "../../../../../controls/components/product-sele
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { AnimatePresence, motion } from "framer-motion";
 import { ControlledNumericInput } from "../../../../../controls/components/controlled-numeric-input";
-import { PurchaseProductSelectFromGrid } from "./purchase-product-select-from-grid";
 
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     // Hooks setup
@@ -189,11 +188,8 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     }
 
     function handleProductSearch(index: number) {
-        Utils.showHideModalDialogA({
-            isOpen: true,
-            size: "lg",
-            element: <PurchaseProductSelectFromGrid onSelect={(product) => setLineItem(product, index)} />,
-            title: "Select a product"
+        Utils.showProductSearch((product) => {
+            setLineItem(product, index);
         });
     }
 

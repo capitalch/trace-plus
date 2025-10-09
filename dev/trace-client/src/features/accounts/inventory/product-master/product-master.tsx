@@ -14,6 +14,7 @@ import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-comp
 import { openSlidingPane, setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { NewEditProductType } from "./new-edit-product";
 import { useEffect } from "react";
+import { clearCache } from "../../../layouts/nav-bar/search-product-slice";
 
 export function ProductMaster() {
     const instance = DataInstancesMap.productMaster;
@@ -116,6 +117,10 @@ export function ProductMaster() {
                     tableName: AllTables.ProductM.name,
                     deletedIds: [id]
                 });
+
+                // Clear product search cache to force refresh after deletion
+                dispatch(clearCache());
+
                 Utils.showSaveMessage();
                 dispatch(changeAccSettings());
                 const loadData = context.CompSyncFusionGrid[instance].loadData;

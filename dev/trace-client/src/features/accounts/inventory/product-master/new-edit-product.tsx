@@ -24,6 +24,7 @@ import { ibukiDdebounceEmit, ibukiDebounceFilterOn } from "../../../../utils/ibu
 import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { FormField } from "../../../../controls/widgets/form-field";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
+import { clearCache } from "../../../layouts/nav-bar/search-product-slice";
 
 export function NewEditProduct({ props }: any) {
     const { id } = props
@@ -433,6 +434,9 @@ export function NewEditProduct({ props }: any) {
                     sqlArgs: data
                 })
             }
+
+            // Clear product search cache to force refresh with updated product data
+            dispatch(clearCache());
 
             Utils.showSaveMessage();
             dispatch(closeSlidingPane());
