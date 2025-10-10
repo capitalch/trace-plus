@@ -114,7 +114,6 @@ export function AllVouchers() {
             posId: 1,
             autoRefNo: '',
             voucherType: 'Payment' as VourcherType,
-            isGst: false,
             creditEntries: [getDefaultEntry('C')],
             debitEntries: [getDefaultEntry('D')],
             deletedIds: [],
@@ -157,12 +156,12 @@ export function AllVouchers() {
             // ✅ Proceed with saving
             xData.deletedIds = undefined
             console.log(JSON.stringify(xData))
-            await Utils.doValidateDebitCreditAndUpdate({
-                buCode: buCode || "",
-                dbName: dbName || "",
-                tableName: AllTables.TranH.name,
-                xData: xData,
-            });
+            // await Utils.doValidateDebitCreditAndUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: AllTables.TranH.name,
+            //     xData: xData,
+            // });
 
             if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
@@ -232,7 +231,7 @@ export function AllVouchers() {
     }
 
     function getExtGstTranDDetails(entry: VoucherLineItemEntryDataType): TraceDataObjectType | undefined {
-        const hasGstData = getValues("isGst") && entry.gst?.rate;
+        const hasGstData = entry.isGstApplicableForEntry && entry.gst?.rate;
         const deletedIds = getDeletedIdsFromDebitAndCreditEntries();
 
         // If no GST data and no deleted IDs, return undefined
@@ -311,7 +310,6 @@ export function AllVouchers() {
                 tranTypeId: tranHeader.tranTypeId,
                 autoRefNo: tranHeader.autoRefNo,
                 voucherType: voucherType,
-                isGst: false,
                 showGstInHeader: voucherType !== 'Contra',
                 deletedIds: [],
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
@@ -395,7 +393,6 @@ export type VoucherFormDataType =
         posId?: number | null;
         autoRefNo: string;
 
-        isGst: boolean;
         voucherType: VourcherType;
         creditEntries: VoucherLineItemEntryDataType[];
         debitEntries: VoucherLineItemEntryDataType[];

@@ -331,13 +331,10 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
             const tranHeader = voucherEditData?.tranHeader
             reset({
                 id: undefined,
-                // tranDate: tranHeader.tranDate,
                 userRefNo: tranHeader.userRefNo,
                 remarks: tranHeader.remarks,
                 tranTypeId: tranHeader.tranTypeId,
-                // autoRefNo: tranHeader.autoRefNo,
                 voucherType: Utils.getTranTypeName(tranHeader.tranTypeId) as VourcherType,
-                isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
                 showGstInHeader: voucherType !== 'Contra',
                 deletedIds: [],
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
@@ -350,6 +347,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                     tranHeaderId: d.tranHeaderId,
                     lineRefNo: d.lineRefNo,
                     instrNo: d.instrNo,
+                    isGstApplicableForEntry: d?.gst?.id ? true : false,
                     gst: d?.gst?.id ? {
                         id: undefined, //d.gst.id,
                         gstin: d.gst.gstin,
@@ -371,6 +369,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                     tranHeaderId: d.tranHeaderId,
                     lineRefNo: d.lineRefNo,
                     instrNo: d.instrNo,
+                    isGstApplicableForEntry: d?.gst?.id ? true : false,
                     gst: d?.gst?.id ? {
                         id: undefined, //d.gst.id,
                         gstin: d.gst.gstin,

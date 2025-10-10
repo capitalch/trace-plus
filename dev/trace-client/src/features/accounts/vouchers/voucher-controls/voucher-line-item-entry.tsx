@@ -178,6 +178,17 @@ export function VoucherLineItemEntry({
                                     type="button"
                                     onClick={() => {
                                         const currentValue = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
+
+                                        // If turning OFF and GST record exists in DB, track it for deletion
+                                        if (currentValue) {
+                                            const gstId = watch(`${lineItemEntryName}.${index}.gst.id`);
+                                            if (gstId) {
+                                                const currentDeletedIds = watch(`${lineItemEntryName}.${index}.deletedIds`) || [];
+                                                setValue(`${lineItemEntryName}.${index}.deletedIds`, [...currentDeletedIds, gstId], { shouldDirty: true });
+                                            }
+                                        }
+
+                                        // Toggle the checkbox
                                         setValue(`${lineItemEntryName}.${index}.isGstApplicableForEntry`, !currentValue, { shouldDirty: true });
                                     }}
                                     className={clsx(
