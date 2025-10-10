@@ -36,6 +36,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             title="Credit Entries ( from Cash / Bank)"
             toShowInstrNo={true}
             tranTypeName="Credit"
+            voucherType="Payment"
         />
 
         <VoucherLineItemEntry
@@ -51,6 +52,7 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             toShowInstrNo={false}
             toShowSummary={true}
             tranTypeName="Debit"
+            voucherType="Payment"
         />
     </div>)
 

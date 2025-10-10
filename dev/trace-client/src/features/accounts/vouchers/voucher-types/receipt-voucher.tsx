@@ -36,6 +36,7 @@ export function ReceiptVoucher({ instance }: ReceiptVoucherType) {
             title="Debit Entries ( to Cash / Bank)"
             toShowInstrNo={true}
             tranTypeName="Debit"
+            voucherType="Receipt"
         />
 
         <VoucherLineItemEntry
@@ -51,6 +52,7 @@ export function ReceiptVoucher({ instance }: ReceiptVoucherType) {
             toShowInstrNo={false}
             toShowSummary={true}
             tranTypeName="Credit"
+            voucherType="Receipt"
         />
     </div>)
 

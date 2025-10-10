@@ -133,6 +133,7 @@ export function AllVouchers() {
             tranHeaderId: undefined,
             lineRefNo: null,
             instrNo: null,
+            isGstApplicableForEntry: false,
             gst: undefined,
             deletedIds: [],
         })
@@ -155,6 +156,7 @@ export function AllVouchers() {
             }
             // ✅ Proceed with saving
             xData.deletedIds = undefined
+            console.log(JSON.stringify(xData))
             await Utils.doValidateDebitCreditAndUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
@@ -280,7 +282,13 @@ export function AllVouchers() {
     }
 
     function resetAll() {
-        reset(getDefaultVoucherFormValues())
+        const currentVoucherType = getValues('voucherType');
+        const defaults = getDefaultVoucherFormValues();
+        reset({
+            ...defaults,
+            voucherType: currentVoucherType,
+            showGstInHeader: currentVoucherType !== 'Contra'
+        });
         dispatch(clearVoucherFormData());
     }
 
@@ -303,7 +311,7 @@ export function AllVouchers() {
                 tranTypeId: tranHeader.tranTypeId,
                 autoRefNo: tranHeader.autoRefNo,
                 voucherType: voucherType,
-                isGst: voucherEditData?.tranDetails.some((entry) => entry.gst?.id || ((entry?.gst?.rate || 0) > 0)),
+                isGst: false,
                 showGstInHeader: voucherType !== 'Contra',
                 deletedIds: [],
                 creditEntries: voucherEditData?.tranDetails?.filter((d: VoucherTranDetailsType) => d.dc === 'C').map((d: VoucherTranDetailsType) => ({
@@ -316,6 +324,7 @@ export function AllVouchers() {
                     tranHeaderId: d.tranHeaderId,
                     lineRefNo: d.lineRefNo,
                     instrNo: d.instrNo,
+                    isGstApplicableForEntry: d?.gst?.id ? true : false,
                     gst: d?.gst?.id ? {
                         id: d.gst.id,
                         gstin: d.gst.gstin,
@@ -337,6 +346,7 @@ export function AllVouchers() {
                     tranHeaderId: d.tranHeaderId,
                     lineRefNo: d.lineRefNo,
                     instrNo: d.instrNo,
+                    isGstApplicableForEntry: d?.gst?.id ? true : false,
                     gst: d?.gst?.id ? {
                         id: d.gst.id,
                         gstin: d.gst.gstin,
@@ -403,6 +413,7 @@ type VoucherLineItemEntryDataType = {
     tranHeaderId?: number;
     lineRefNo?: string | null;
     instrNo?: string | null;
+    isGstApplicableForEntry?: boolean;
     gst?: GstDataType
     tranDetailsId?: number;
     deletedIds: number[]; // for ExtGstTranDTable

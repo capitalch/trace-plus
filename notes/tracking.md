@@ -11,12 +11,16 @@
 																		- Deployment: May 2025
 																		- Vouchers: 23rd July 2025
 
-- July 2025
-	- sales / purchases		: 30-07-2025
+																		- July 2025
+																			- sales / purchases		: 30-07-2025
 - Bug fixes etc.
 	- QA and release		: 30-08-2025
 
 ## History
+# 10-10-2025
+	- Still doing bug fixes
+	- UI enhancements
+	- Massive QA
 # 07-10-2025
 	- Drill down completed
 	- Started bug fixes

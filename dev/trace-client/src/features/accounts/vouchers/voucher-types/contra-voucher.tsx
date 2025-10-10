@@ -29,6 +29,7 @@ export function ContraVoucher({ instance }: ContraVoucherType) {
             title="Debit Entries ( to Cash / Bank)"
             toShowInstrNo={true}
             tranTypeName="Debit"
+            voucherType="Contra"
         />
 
         <VoucherLineItemEntry
@@ -42,6 +43,7 @@ export function ContraVoucher({ instance }: ContraVoucherType) {
             title="Credit Entries ( from Cash / Bank)"
             toShowInstrNo={true}
             tranTypeName="Credit"
+            voucherType="Contra"
         />
     </div>)
 

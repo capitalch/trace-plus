@@ -62,6 +62,7 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+	- When voucher is saved defaults to payment voucher
 	- Provide branch address
 													- Product query screen
 	- CRM

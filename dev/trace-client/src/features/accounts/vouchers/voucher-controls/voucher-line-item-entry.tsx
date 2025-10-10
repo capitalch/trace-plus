@@ -11,10 +11,12 @@ import clsx from "clsx";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import { IconCross } from "../../../../controls/icons/icon-cross";
 import { GstInLinePanel } from "./gst-inline-panel";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
+import { useUtilsInfo } from "../../../../utils/utils-info-hook";
+import { VourcherType } from "../../../../utils/global-types-interfaces-enums";
 
 export function VoucherLineItemEntry({
     accountOptions,
@@ -30,7 +32,8 @@ export function VoucherLineItemEntry({
     title,
     toShowInstrNo,
     toShowSummary = false,
-    tranTypeName
+    tranTypeName,
+    voucherType
 }: VoucherLineItemEntryType) {
 
     const {
@@ -42,9 +45,14 @@ export function VoucherLineItemEntry({
         setValue,
         formState: { errors },
     } = useFormContext<VoucherFormDataType>();
+    const {hasGstin} = useUtilsInfo()
 
     const { fields, append, remove, insert } = useFieldArray({ control, name: lineItemEntryName });
-    const isGst = watch('isGst')
+
+    // Memoize the GST applicable states to avoid complex expressions in dependency array
+    const gstApplicableStates = useMemo(() => {
+        return fields.map((_, i) => watch(`${lineItemEntryName}.${i}.isGstApplicableForEntry`)).join(',');
+    }, [fields, lineItemEntryName, watch]);
 
     useEffect(() => {
         onChangeAmount?.(0, 0);
@@ -56,11 +64,16 @@ export function VoucherLineItemEntry({
         }
     }, [amount, lineItemEntryName, setValue])
 
+    // Clear GST data for specific row when isGstApplicableForEntry is toggled off
     useEffect(() => {
-        if (!isGst) {
-            fields.forEach((_, index) => {
+        fields.forEach((_, index) => {
+            const isRowGstApplicable = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
+
+            if (!isRowGstApplicable) {
+                // Clear GST data for this specific row
                 setValue(`${lineItemEntryName}.${index}.gst.rate`, 0, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.hsn`, null, { shouldDirty: true });
+                setValue(`${lineItemEntryName}.${index}.gst.gstin`, null, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.igst`, 0, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.cgst`, 0, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.sgst`, 0, { shouldDirty: true });
@@ -70,10 +83,34 @@ export function VoucherLineItemEntry({
                     `${lineItemEntryName}.${index}.gst.hsn`,
                     `${lineItemEntryName}.${index}.gst.gstin`,
                 ]);
+            }
+        });
+    }, [gstApplicableStates, lineItemEntryName, setValue, fields, clearErrors, watch]);
 
-            });
+    function shouldShowGstCheckbox(): boolean {
+        if (!hasGstin) return false; // No GSTIN, no GST checkbox
+        if (!voucherType) return false; // No voucher type specified
+
+        // Contra: Never show GST checkbox
+        if (voucherType === 'Contra') return false;
+
+        // Payment: Show GST only for Debit entries (dc === 'D')
+        if (voucherType === 'Payment') {
+            return dc === 'D';
         }
-    }, [isGst, fields.length, lineItemEntryName, setValue, fields, clearErrors]);
+
+        // Receipt: Show GST only for Credit entries (dc === 'C')
+        if (voucherType === 'Receipt') {
+            return dc === 'C';
+        }
+
+        // Journal: Always show GST checkbox (for both D and C)
+        if (voucherType === 'Journal') {
+            return true;
+        }
+
+        return false;
+    }
 
     return (
         <AnimatePresence>
@@ -91,6 +128,7 @@ export function VoucherLineItemEntry({
                                 amount: 0,
                                 dc,
                                 id: undefined,
+                                isGstApplicableForEntry: false,
                                 gst: {
                                     isIgst: false,
                                     rate: 0,
@@ -134,6 +172,37 @@ export function VoucherLineItemEntry({
                                 (field.dc === 'D') ? 'bg-amber-50' : 'bg-red-50'
                             )}
                         >
+                            {/* GST Checkbox - Absolute positioned badge button */}
+                            {shouldShowGstCheckbox() && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const currentValue = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
+                                        setValue(`${lineItemEntryName}.${index}.isGstApplicableForEntry`, !currentValue, { shouldDirty: true });
+                                    }}
+                                    className={clsx(
+                                        "absolute -top-2 -left-2 z-10",
+                                        "flex items-center gap-1 px-1 py-0.5 rounded shadow-sm",
+                                        "border-2 transition-all duration-200",
+                                        "hover:shadow-md hover:scale-105",
+                                        watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`)
+                                            ? "bg-emerald-600 border-emerald-700"
+                                            : "bg-gray-400 border-gray-500"
+                                    )}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`${lineItemEntryName}.${index}.isGstApplicableForEntry`}
+                                        {...register(`${lineItemEntryName}.${index}.isGstApplicableForEntry`)}
+                                        className="w-3.5 h-3.5 pointer-events-none border-2 border-white rounded accent-yellow-400"
+                                        tabIndex={-1}
+                                    />
+                                    <span className="text-xs font-bold text-white uppercase">
+                                        GST
+                                    </span>
+                                </button>
+                            )}
+
                             {/* Index + Clear */}
                             <div className="flex flex-col items-start mt-2 gap-4">
                                 <div className="font-semibold text-gray-600 text-xs">{index + 1}</div>
@@ -148,6 +217,7 @@ export function VoucherLineItemEntry({
                                         setValue(`${lineItemEntryName}.${index}.lineRefNo`, "");
                                         setValue(`${lineItemEntryName}.${index}.remarks`, "");
                                         setValue(`${lineItemEntryName}.${index}.instrNo`, "");
+                                        setValue(`${lineItemEntryName}.${index}.isGstApplicableForEntry`, false);
                                         setValue(`${lineItemEntryName}.${index}.gst.rate`, 0);
                                         setValue(`${lineItemEntryName}.${index}.gst.hsn`, null);
                                         setValue(`${lineItemEntryName}.${index}.gst.isIgst`, false);
@@ -251,6 +321,7 @@ export function VoucherLineItemEntry({
                                                 amount: 0,
                                                 dc: dc,
                                                 id: undefined,
+                                                isGstApplicableForEntry: false,
                                                 tranHeaderId: undefined,
                                                 instrNo: "",
                                                 lineRefNo: "",
@@ -314,7 +385,7 @@ export function VoucherLineItemEntry({
                 />
             </FormField>
         } else
-            if (isGst) {
+            if (watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`)) {
                 Ret = <GstInLinePanel index={index} lineItemEntryName={lineItemEntryName} />
             } else {
                 // clearError
@@ -339,4 +410,5 @@ type VoucherLineItemEntryType = {
     toShowSummary?: boolean;
     tranTypeName: 'Debit' | 'Credit'
     tranDetailsId?: number
+    voucherType?: VourcherType
 }

@@ -25,7 +25,6 @@ export function GstInLinePanel({
 
     const { isValidGstin } = useValidators();
     const { defaultGstRate } = useUtilsInfo()
-    const isGst = watch(`isGst`)
     const gstRateErrorMessage = errors?.[lineItemEntryName]?.[index]?.gst?.rate?.message
     const hsnErrorMessage = errors?.[lineItemEntryName]?.[index]?.gst?.hsn?.message
     const gstinErrorMessage = errors?.[lineItemEntryName]?.[index]?.gst?.gstin?.message
@@ -35,7 +34,7 @@ export function GstInLinePanel({
 
     const calculateGst = useCallback(
         ({ amount, rate, isIgst, index }: { amount: number, rate: number, isIgst: boolean, index: number }) => {
-            if (!isGst || !amount || !rate) return;
+            if (!amount || !rate) return;
 
             const amt = new Decimal(amount);
             const rat = new Decimal(rate);
@@ -55,7 +54,7 @@ export function GstInLinePanel({
                 setValue(`${lineItemEntryName}.${index}.gst.sgst`, gstHalf.toNumber(), { shouldDirty: true });
             }
         },
-        [isGst, setValue, lineItemEntryName] // dependencies
+        [setValue, lineItemEntryName] // dependencies
     );
 
     useEffect(() => {
@@ -69,13 +68,13 @@ export function GstInLinePanel({
 
     useEffect(() => {
         const currentRate = watch(`${lineItemEntryName}.${index}.gst.rate`);
-        if (isGst && (!currentRate || currentRate === 0) && defaultGstRate > 0) {
+        if ((!currentRate || currentRate === 0) && defaultGstRate > 0) {
             setValue(`${lineItemEntryName}.${index}.gst.rate`, defaultGstRate, {
                 shouldDirty: true,
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [index, lineItemEntryName, isGst, defaultGstRate, setValue]);
+    }, [index, lineItemEntryName, defaultGstRate, setValue]);
 
     return (
         <div className={clsx("flex gap-2 min-w-[130px] bg-gray-50 border p-1 px-2 rounded-sm items-start", className)}>
@@ -102,8 +101,8 @@ export function GstInLinePanel({
                             value={watch(`${lineItemEntryName}.${index}.gst.rate`)}
                             {...register(`${lineItemEntryName}.${index}.gst.rate`, {
                                 validate: (value) => {
-                                    const liveIsGst = watch("isGst"); // Get latest value dynamically
-                                    if (liveIsGst && (!value || value === 0)) return Messages.errRequiredShort;
+                                    const isRowGstApplicable = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
+                                    if (isRowGstApplicable && (!value || value === 0)) return Messages.errRequiredShort;
                                     return true;
                                 },
                             })}
@@ -118,15 +117,15 @@ export function GstInLinePanel({
                             onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                             {...register(`${lineItemEntryName}.${index}.gst.hsn`, {
                                 validate: (value) => {
-                                    const liveIsGst = watch("isGst");
-                                    if (!liveIsGst) return true;
+                                    const isRowGstApplicable = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
+                                    if (!isRowGstApplicable) return true;
                                     if (value === null || value === undefined) {
-                                        return Messages.errRequiredShort; // Example: "HSN required"
+                                        return Messages.errRequiredShort;
                                     }
 
                                     const num = Number(value);
                                     if (isNaN(num) || num === 0) {
-                                        return Messages.errInvalidHsn; // Custom message
+                                        return Messages.errInvalidHsn;
                                     }
                                     return true;
                                 },
@@ -141,8 +140,8 @@ export function GstInLinePanel({
                         type="text"
                         {...register(`${lineItemEntryName}.${index}.gst.gstin`, {
                             validate: (value) => {
-                                const liveIsGst = watch("isGst");
-                                if (!liveIsGst) return true; // Skip validation if GST is not applicable
+                                const isRowGstApplicable = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
+                                if (!isRowGstApplicable) return true;
                                 if (!value) return Messages.errRequiredShort;
                                 if (!isValidGstin(value)) {
                                     return (Messages.errInvalidGstin);

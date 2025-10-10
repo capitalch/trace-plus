@@ -34,6 +34,7 @@ export function JournalVoucher({ instance }: JournalVoucherType) {
                 toShowInstrNo={false}
                 toShowSummary={true}
                 tranTypeName="Debit"
+                voucherType="Journal"
             />
 
             <VoucherLineItemEntry
@@ -48,6 +49,7 @@ export function JournalVoucher({ instance }: JournalVoucherType) {
                 toShowInstrNo={false}
                 toShowSummary={true}
                 tranTypeName="Credit"
+                voucherType="Journal"
             />
         </div>
     )
