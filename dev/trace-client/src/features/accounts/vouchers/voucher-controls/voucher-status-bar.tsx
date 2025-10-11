@@ -17,8 +17,9 @@ import { PDFViewer } from "@react-pdf/renderer";
 import { AllVouchersPDF } from "../all-vouchers/all-vouchers-pdf";
 import { closeVoucherPreview, triggerVoucherPreview } from "../voucher-slice";
 import { AllVouchersCrown } from "../all-vouchers/all-vouchers-crown";
+import { CompTabHeaders, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 
-export function VoucherStatusBar({ className }: VoucherStatusBarType) {
+export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) {
     const dispatch: AppDispatchType = useDispatch()
     const { watch, setValue } = useFormContext<VoucherFormDataType>();
     const isPreviewOpen = useSelector((state: RootStateType) => state.vouchers.isPreviewOpen);
@@ -43,10 +44,10 @@ export function VoucherStatusBar({ className }: VoucherStatusBarType) {
                     <button
                         type='button'
                         onClick={() => handleOnPreview(id)}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-md shadow-sm border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200"
+                        className="flex items-center gap-2 px-1 py-1 bg-white rounded-md shadow-sm border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200"
                     >
                         <IconPreview1 className="w-5 h-5 text-indigo-600" />
-                        <span className="text-xs font-semibold text-slate-700">Preview</span>
+                        {/* <span className="text-xs font-semibold text-slate-700">Preview</span> */}
                     </button>
                 </TooltipComponent>
             }
@@ -101,25 +102,48 @@ export function VoucherStatusBar({ className }: VoucherStatusBarType) {
     }
 
     return (
-        <div className={clsx("flex gap-3 items-center justify-between w-full bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-3 rounded-lg shadow-sm border border-slate-200", className)}>
-            <AllVouchersCrown />
-            <div className="flex gap-2 items-center flex-wrap">
-                {getPrintPreview()}
-                {voucherTypes.map((type) => (
-                    <button
-                        key={type}
-                        type="button"
-                        onClick={() => handleVoucherTypeChange(type)}
-                        className={clsx(
-                            "cursor-pointer px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm",
-                            voucherType === type
-                                ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-2 border-indigo-500 shadow-md scale-105"
-                                : "bg-white text-slate-700 border-2 border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md",
-                        )}
-                    >
-                        {type}
-                    </button>
-                ))}</div>
+        <div className={clsx("w-full bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-3 rounded-lg shadow-sm border border-slate-200", className)}>
+            <div className="flex flex-wrap gap-3 items-center">
+                {/* Left section - Crown */}
+                <div className="flex-shrink-0">
+                    <AllVouchersCrown />
+                </div>
+
+                {/* Middle section - Tab Headers (Fixed Position) */}
+                {tabsInfo && (
+                    <div className="flex-shrink-0 order-3 lg:order-2 w-full lg:w-auto justify-center  flex lg:flex-1 lg:justify-center">
+                        <CompTabHeaders
+                            instance={DataInstancesMap.allVouchers}
+                            tabsInfo={tabsInfo}
+                        />
+                    </div>
+                )}
+
+                {/* Right section - Preview and Voucher Type Buttons */}
+                <div className="flex gap-2 items-center flex-wrap flex-shrink-0 order-2 lg:order-3 ml-auto">
+                    <div className="flex gap-2 items-center">
+                        {/* Preview button with fixed width to prevent layout shift */}
+                        <div >
+                            {getPrintPreview()}
+                        </div>
+                        {voucherTypes.map((type) => (
+                            <button
+                                key={type}
+                                type="button"
+                                onClick={() => handleVoucherTypeChange(type)}
+                                className={clsx(
+                                    "cursor-pointer px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm whitespace-nowrap",
+                                    voucherType === type
+                                        ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-2 border-indigo-500 shadow-md scale-105"
+                                        : "bg-white text-slate-700 border-2 border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md",
+                                )}
+                            >
+                                {type}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
             {/* Custom modal dialog */}
             <CustomModalDialog
@@ -150,4 +174,5 @@ export function VoucherStatusBar({ className }: VoucherStatusBarType) {
 
 type VoucherStatusBarType = {
     className?: string
+    tabsInfo?: CompTabsType
 }

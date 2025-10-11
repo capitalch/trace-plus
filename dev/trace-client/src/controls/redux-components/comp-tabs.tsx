@@ -5,6 +5,73 @@ import { AppDispatchType, RootStateType } from "../../app/store";
 import { setActiveTabIndex } from "./comp-slice";
 import { IconError1 } from "../icons/icon-error1";
 
+export function CompTabHeaders({
+  className,
+  instance,
+  tabsInfo
+}: {
+  className?: string;
+  instance: string;
+  tabsInfo: CompTabsType;
+}) {
+  const dispatch: AppDispatchType = useDispatch();
+  const ripple =
+    "px-6 py-1.5 rounded-md shadow-sm transition-all duration-200 active:scale-95 group ";
+  const spanRipple =
+    "inset-0 bg-white opacity-30 scale-0 group-active:scale-200 transition-transform duration-500 ";
+  const compTabsInstance = useSelector(
+    (state: RootStateType) => state.reduxComp.compTabs[instance]
+  );
+
+  useEffect(() => {
+    if (compTabsInstance?.activeTabIndex === undefined) {
+      dispatch(
+        setActiveTabIndex({
+          instance: instance,
+          activeTabIndex: 0
+        })
+      )
+    }
+  }, [dispatch, instance, compTabsInstance?.activeTabIndex])
+
+  return (
+    <div className={clsx("flex gap-2 items-center", className)}>
+      {tabsInfo.map((tab: TabType, idx: number) => {
+        const isActive = idx === (compTabsInstance?.activeTabIndex ?? 0);
+        return (
+          <button
+            key={idx}
+            type="button"
+            className={clsx(
+              ripple,
+              "flex items-center justify-center rounded-lg transition-colors duration-200 min-w-fit",
+              isActive
+                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold border-2 border-blue-500 shadow-md"
+                : "bg-white text-slate-700 border-2 border-slate-300 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md"
+            )}
+            onClick={() =>
+              dispatch(
+                setActiveTabIndex({
+                  instance: instance,
+                  activeTabIndex: idx
+                })
+              )
+            }
+          >
+            <div className="flex items-center gap-2">
+              {tab.hasError && (
+                <IconError1 className="w-4 h-4 text-red-500" />
+              )}
+              <span className="text-sm">{tab.label}</span>
+            </div>
+            <span className={spanRipple}></span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function CompTabs({
   className,
   instance,

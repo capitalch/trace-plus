@@ -16,7 +16,7 @@ export function VoucherCommonHeader() {
         formState: { errors }
     } = useFormContext<VoucherFormDataType>();
     return (
-        <div className="flex flex-wrap mt-2 gap-4">
+        <div className="flex flex-wrap gap-4">
 
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-40">
@@ -66,7 +66,7 @@ export function VoucherCommonHeader() {
                 />
             </FormField>
 
-            <FormActionButtons className="mt-6 ml-auto" />
+            <FormActionButtons className="ml-auto" />
         </div>
     )
 }

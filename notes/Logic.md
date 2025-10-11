@@ -1,3 +1,12 @@
+## Logic for ExtGstTranD
+- currentValue = true: After click it becomes false
+    - if gstId
+        - if already present in deletedIds nothing
+            - else add in deletedIds
+- currentValue = false: After click it becomes true
+    - if gstId
+        - remove gstId from deletedIds if already present in deletedIds
+
 ## Sales: Logic for autoSubledger: insert and update
 - Client
     - Sends isAutoSubledger field in json

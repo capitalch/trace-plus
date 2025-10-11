@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
-import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
+import { CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { AllVouchersMain } from "./all-vouchers-main";
 import { VoucherStatusBar } from "../voucher-controls/voucher-status-bar";
 import { FormProvider, useForm } from "react-hook-form";
@@ -90,13 +90,15 @@ export function AllVouchers() {
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className="relative">
-                    {/* Voucher Control Header */}
+                    {/* Voucher Control Header with Tabs */}
                     <div className="mt-4 mb-2">
-                        <VoucherStatusBar />
+                        <VoucherStatusBar tabsInfo={tabsInfo} />
                     </div>
 
-                    {/* Tabs Section */}
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
+                    {/* Tab Content */}
+                    <div className="mt-4">
+                        {tabsInfo[activeTabIndex].content}
+                    </div>
                 </CompAccountsContainer>
             </form>
         </FormProvider>
@@ -156,12 +158,12 @@ export function AllVouchers() {
             // ✅ Proceed with saving
             xData.deletedIds = undefined
             console.log(JSON.stringify(xData))
-            // await Utils.doValidateDebitCreditAndUpdate({
-            //     buCode: buCode || "",
-            //     dbName: dbName || "",
-            //     tableName: AllTables.TranH.name,
-            //     xData: xData,
-            // });
+            await Utils.doValidateDebitCreditAndUpdate({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                tableName: AllTables.TranH.name,
+                xData: xData,
+            });
 
             if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
@@ -232,7 +234,7 @@ export function AllVouchers() {
 
     function getExtGstTranDDetails(entry: VoucherLineItemEntryDataType): TraceDataObjectType | undefined {
         const hasGstData = entry.isGstApplicableForEntry && entry.gst?.rate;
-        const deletedIds = getDeletedIdsFromDebitAndCreditEntries();
+        const deletedIds = entry.deletedIds || [];
 
         // If no GST data and no deleted IDs, return undefined
         if (!hasGstData && _.isEmpty(deletedIds)) return undefined;
@@ -262,23 +264,23 @@ export function AllVouchers() {
         return trace;
     }
 
-    function getDeletedIdsFromDebitAndCreditEntries() {
-        const deletedIds: number[] = []
-        const creditEntries = getValues("creditEntries") || [];
-        const debitEntries = getValues("debitEntries") || [];
-        creditEntries.forEach((entry: any) => {
-            if (entry?.deletedIds?.length) {
-                deletedIds.push(...entry.deletedIds);
-            }
-        });
+    // function getDeletedIdsFromDebitAndCreditEntries() {
+    //     const deletedIds: number[] = []
+    //     const creditEntries = getValues("creditEntries") || [];
+    //     const debitEntries = getValues("debitEntries") || [];
+    //     creditEntries.forEach((entry: any) => {
+    //         if (entry?.deletedIds?.length) {
+    //             deletedIds.push(...entry.deletedIds);
+    //         }
+    //     });
 
-        debitEntries.forEach((entry: any) => {
-            if (entry?.deletedIds?.length) {
-                deletedIds.push(...entry.deletedIds);
-            }
-        });
-        return deletedIds;
-    }
+    //     debitEntries.forEach((entry: any) => {
+    //         if (entry?.deletedIds?.length) {
+    //             deletedIds.push(...entry.deletedIds);
+    //         }
+    //     });
+    //     return deletedIds;
+    // }
 
     function resetAll() {
         const currentVoucherType = getValues('voucherType');

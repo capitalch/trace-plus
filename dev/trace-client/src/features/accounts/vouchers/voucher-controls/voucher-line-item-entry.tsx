@@ -45,7 +45,7 @@ export function VoucherLineItemEntry({
         setValue,
         formState: { errors },
     } = useFormContext<VoucherFormDataType>();
-    const {hasGstin} = useUtilsInfo()
+    const { hasGstin } = useUtilsInfo()
 
     const { fields, append, remove, insert } = useFieldArray({ control, name: lineItemEntryName });
 
@@ -87,30 +87,47 @@ export function VoucherLineItemEntry({
         });
     }, [gstApplicableStates, lineItemEntryName, setValue, fields, clearErrors, watch]);
 
-    function shouldShowGstCheckbox(): boolean {
-        if (!hasGstin) return false; // No GSTIN, no GST checkbox
-        if (!voucherType) return false; // No voucher type specified
+    /**
+     * Updates the deletedIds array when GST checkbox is toggled.
+     *
+     * Deletion Tracking Logic:
+     * - When GST is turned OFF (currently enabled): Add gstId to deletedIds array (marks for deletion on save)
+     * - When GST is turned ON (currently disabled): Remove gstId from deletedIds array (undo deletion mark)
+     *
+     * This allows users to toggle GST on/off multiple times before saving,
+     * and only the final state determines if the GST record should be deleted.
+     *
+     * @param isGstCurrentlyEnabled - Current state of GST checkbox (true = enabled, false = disabled)
+     * @param gstId - Database ID of the GST record (undefined if not yet saved to DB)
+     * @param deletedGstIds - Current array of GST IDs marked for deletion
+     * @param entryName - Form field name for the entry ('debitEntries' or 'creditEntries')
+     * @param entryIndex - Index of the entry in the array
+     */
+    // const updateGstDeletionTracking = (
+    //     isGstCurrentlyEnabled: boolean,
+    //     gstId: number | undefined,
+    //     deletedGstIds: number[],
+    //     entryName: string,
+    //     entryIndex: number
+    // ) => {
+    //     // Early return: No GST record exists in database, nothing to track
+    //     if (!gstId) return;
 
-        // Contra: Never show GST checkbox
-        if (voucherType === 'Contra') return false;
+    //     const isIdMarkedForDeletion = deletedGstIds.includes(gstId);
 
-        // Payment: Show GST only for Debit entries (dc === 'D')
-        if (voucherType === 'Payment') {
-            return dc === 'D';
-        }
-
-        // Receipt: Show GST only for Credit entries (dc === 'C')
-        if (voucherType === 'Receipt') {
-            return dc === 'C';
-        }
-
-        // Journal: Always show GST checkbox (for both D and C)
-        if (voucherType === 'Journal') {
-            return true;
-        }
-
-        return false;
-    }
+    //     if (isGstCurrentlyEnabled) {
+    //         // Turning GST OFF - mark the GST record for deletion
+    //         if (!isIdMarkedForDeletion) {
+    //             setValue(`${entryName}.${entryIndex}.deletedIds`, [...deletedGstIds, gstId], { shouldDirty: true });
+    //         }
+    //     } else {
+    //         // Turning GST ON - remove from deletion list (undo the deletion mark)
+    //         if (isIdMarkedForDeletion) {
+    //             const updatedDeletedIds = deletedGstIds.filter(id => id !== gstId);
+    //             setValue(`${entryName}.${entryIndex}.deletedIds`, updatedDeletedIds, { shouldDirty: true });
+    //         }
+    //     }
+    // };
 
     return (
         <AnimatePresence>
@@ -177,19 +194,21 @@ export function VoucherLineItemEntry({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const currentValue = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
+                                        // Get current state
+                                        const isGstEnabled = Boolean(watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`));
+                                        const gstRecordId = watch(`${lineItemEntryName}.${index}.gst.id`);
+                                        const deletedGstIds = watch(`${lineItemEntryName}.${index}.deletedIds`) || [];
 
-                                        // If turning OFF and GST record exists in DB, track it for deletion
-                                        if (currentValue) {
-                                            const gstId = watch(`${lineItemEntryName}.${index}.gst.id`);
-                                            if (gstId) {
-                                                const currentDeletedIds = watch(`${lineItemEntryName}.${index}.deletedIds`) || [];
-                                                setValue(`${lineItemEntryName}.${index}.deletedIds`, [...currentDeletedIds, gstId], { shouldDirty: true });
-                                            }
-                                        }
+                                        // Update deletion tracking for existing GST records
+                                        updateGstDeletionTracking(
+                                            isGstEnabled,
+                                            gstRecordId,
+                                            deletedGstIds,
+                                            index
+                                        );
 
-                                        // Toggle the checkbox
-                                        setValue(`${lineItemEntryName}.${index}.isGstApplicableForEntry`, !currentValue, { shouldDirty: true });
+                                        // Toggle the GST checkbox state
+                                        setValue(`${lineItemEntryName}.${index}.isGstApplicableForEntry`, !isGstEnabled, { shouldDirty: true });
                                     }}
                                     className={clsx(
                                         "absolute -top-2 -left-2 z-10",
@@ -402,6 +421,54 @@ export function VoucherLineItemEntry({
                 // clearError
             }
         return (Ret)
+    }
+
+    function shouldShowGstCheckbox(): boolean {
+        if (!hasGstin) return false; // No GSTIN, no GST checkbox
+        if (!voucherType) return false; // No voucher type specified
+
+        // Contra: Never show GST checkbox
+        if (voucherType === 'Contra') return false;
+
+        // Payment: Show GST only for Debit entries (dc === 'D')
+        if (voucherType === 'Payment') {
+            return dc === 'D';
+        }
+
+        // Receipt: Show GST only for Credit entries (dc === 'C')
+        if (voucherType === 'Receipt') {
+            return dc === 'C';
+        }
+
+        // Journal: Always show GST checkbox (for both D and C)
+        if (voucherType === 'Journal') {
+            return true;
+        }
+
+        return false;
+    }
+
+    function updateGstDeletionTracking(isGstCurrentlyEnabled: boolean,
+        gstId: number | undefined,
+        deletedGstIds: number[],
+        index: number) {
+        // Early return: No GST record exists in database, nothing to track
+        if (!gstId) return;
+
+        const isIdMarkedForDeletion = deletedGstIds.includes(gstId);
+
+        if (isGstCurrentlyEnabled) {
+            // Turning GST OFF - mark the GST record for deletion
+            if (!isIdMarkedForDeletion) {
+                setValue(`${lineItemEntryName}.${index}.deletedIds`, [...deletedGstIds, gstId], { shouldDirty: true });
+            }
+        } else {
+            // Turning GST ON - remove from deletion list (undo the deletion mark)
+            if (isIdMarkedForDeletion) {
+                const updatedDeletedIds = deletedGstIds.filter(id => id !== gstId);
+                setValue(`${lineItemEntryName}.${index}.deletedIds`, updatedDeletedIds, { shouldDirty: true });
+            }
+        }
     }
 }
 
