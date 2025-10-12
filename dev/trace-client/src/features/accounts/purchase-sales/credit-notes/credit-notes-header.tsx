@@ -8,6 +8,7 @@ import { IconReset } from "../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../controls/icons/icon-submit";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../controls/icons/icon-preview1";
+import { WidgetModeIndicatorBadge } from "../../../../controls/widgets/widget-mode-indicator-badge";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { RootStateType } from "../../../../app/store";
 import { useSelector } from "react-redux";
@@ -35,7 +36,12 @@ export function CreditNotesHeader() {
     const inputClassLeft = "border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium text-sm w-full rounded-md px-3 transition-all duration-200 mt-1";
 
     return (
-        <div className="relative mb-8">
+        <div className="relative mb-8 mt-4">
+            {/* Mode Badge - Top Left Corner */}
+            <div className="absolute -top-7 -left-5 z-10">
+                <WidgetModeIndicatorBadge isEditMode={!!watch('id')} />
+            </div>
+
             <div className="flex flex-wrap p-4 sm:p-6 bg-red-50 shadow-sm gap-3 sm:gap-4">
                 {/* Auto ref no */}
                 <FormField label="Auto Ref No" className="flex-1 min-w-[200px]">
@@ -54,7 +60,7 @@ export function CreditNotesHeader() {
                     label="Date"
                     required
                     error={errors?.tranDate?.message}
-                    className="flex-1 min-w-[200px]"
+                    className="w-36"
                 >
                     <input
                         type="date"
@@ -67,7 +73,7 @@ export function CreditNotesHeader() {
                 </FormField>
 
                 {/* User ref no */}
-                <FormField label="User Ref No" className="flex-1 min-w-[200px]">
+                <FormField label="User Ref No" className="flex-1 min-w-[150px]">
                     <input
                         type="text"
                         className={clsx(inputClassLeft)}
@@ -148,6 +154,7 @@ export function CreditNotesHeader() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto sm:ml-auto">
+                    {getPrintPreview()}
                     <button
                         onClick={resetAll}
                         type="button"
@@ -167,12 +174,12 @@ export function CreditNotesHeader() {
                 </div>
 
                 {/* Edit / New label */}
-                <div className="flex absolute -top-10 sm:-top-12 gap-2 right-4 sm:right-0">
+                {/* <div className="flex absolute -top-10 sm:-top-12 gap-2 right-4 sm:right-0">
                     {getPrintPreview()}
                     <label className="font-medium text-amber-500 text-base sm:text-lg">
                         {watch("id") ? "Edit Credit Note" : "New Credit Note"}
                     </label>
-                </div>
+                </div> */}
             </div>
         </div>
     )

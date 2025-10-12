@@ -11,22 +11,26 @@ import { IconSubmit } from "../../../../../controls/icons/icon-submit";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { RootStateType } from "../../../../../app/store";
 import { useSelector } from "react-redux";
+import { useMemo } from "react";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
-import { useMemo } from "react";
+import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
 
 export function PurchaseCommonHeader() {
-    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex)
     const isInvoiceExists = useSelector((state: RootStateType) => state.purchase.isInvoiceExists)
-    const { branchName, currentDateFormat } = useUtilsInfo();
+    const activeTabIndex = useSelector(
+        (state: RootStateType) =>
+            state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex ?? 0
+    );
     const { checkAllowedDate } = useValidators();
+    const { branchName, currentDateFormat } = useUtilsInfo()
     const {
+        getValues,
         setValue,
         watch,
         register,
-        getValues,
         formState: { errors, isSubmitting, isDirty, isValid }
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll, checkPurchaseInvoiceExists }: any = useFormContext();
@@ -54,7 +58,11 @@ export function PurchaseCommonHeader() {
     }
 
     return (
-        <div className="flex relative flex-wrap gap-6">
+        <div className="relative flex flex-wrap gap-6 mt-4 mb-6">
+            {/* Mode Badge - Top Left Corner */}
+            <div className="absolute -top-7 -left-5 z-10">
+                <WidgetModeIndicatorBadge isEditMode={!!watch('id')} />
+            </div>
 
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-52">
@@ -145,7 +153,7 @@ export function PurchaseCommonHeader() {
 
             {/* Reset submit */}
             <div className="flex mt-6 ml-auto h-10 gap-3">
-
+                {getPrintPreview()}
                 {/* Reset */}
                 <button
                     onClick={resetAll}
@@ -167,10 +175,10 @@ export function PurchaseCommonHeader() {
             </div>
 
             {/* Edit / New label */}
-            <div className="flex absolute -top-13 gap-2 right-0">
+            {/* <div className="flex absolute -top-13 gap-2 right-0">
                 {getPrintPreview()}
                 <label className="font-medium text-amber-500 text-lg">{watch('id') ? 'Edit Purchase' : 'New Purchase'}</label>
-            </div>
+            </div> */}
         </div>
     );
 

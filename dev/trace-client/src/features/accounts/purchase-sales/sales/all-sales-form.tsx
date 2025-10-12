@@ -6,17 +6,18 @@ import Shipping from "./shipping/shipping";
 import StatusBar from "./status-bar/status-bar";
 import Validation from "./validation/validation";
 import { useEffect } from "react";
+import { useScrollToTop } from "../../../../utils/use-scroll-to-top-hook";
 
 export function AllSalesForm() {
+    const { scrollToTop } = useScrollToTop();
 
     useEffect(() => {
-        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
-    }, []);
+        scrollToTop();
+    }, [scrollToTop]);
 
     return (
-        <div className="m-4 ml-0 min-h-screen bg-gray-50 text-">
-            <StatusBar />
-
+        <div className="m-4 ml-0 min-h-screen bg-gray-50">
+            <StatusBar />            
             {/* Invoice and Customer Details - Separate Components */}
             <div className="grid py-6 gap-6 grid-cols-1 lg:grid-cols-2">
                 <InvoiceDetails />

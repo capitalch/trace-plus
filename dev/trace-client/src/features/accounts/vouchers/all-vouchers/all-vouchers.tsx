@@ -264,24 +264,6 @@ export function AllVouchers() {
         return trace;
     }
 
-    // function getDeletedIdsFromDebitAndCreditEntries() {
-    //     const deletedIds: number[] = []
-    //     const creditEntries = getValues("creditEntries") || [];
-    //     const debitEntries = getValues("debitEntries") || [];
-    //     creditEntries.forEach((entry: any) => {
-    //         if (entry?.deletedIds?.length) {
-    //             deletedIds.push(...entry.deletedIds);
-    //         }
-    //     });
-
-    //     debitEntries.forEach((entry: any) => {
-    //         if (entry?.deletedIds?.length) {
-    //             deletedIds.push(...entry.deletedIds);
-    //         }
-    //     });
-    //     return deletedIds;
-    // }
-
     function resetAll() {
         const currentVoucherType = getValues('voucherType');
         const defaults = getDefaultVoucherFormValues();

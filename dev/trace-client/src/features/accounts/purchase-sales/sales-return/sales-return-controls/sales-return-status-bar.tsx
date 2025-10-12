@@ -12,6 +12,7 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { generateSalesReturnInvoicePDF } from '../all-sales-return-invoice-jspdf';
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
+import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
 
 const SalesReturnStatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
@@ -75,7 +76,12 @@ const SalesReturnStatusBar: React.FC = () => {
     };
 
     return (
-        <div className="mr- px-4 py-3 text-gray-800 bg-gray-100 border rounded-lg">
+        <div className="relative mr- px-4 py-3 text-gray-800 bg-gray-100 border rounded-lg">
+            {/* Mode Badge - Top Left Corner */}
+            <div className="absolute -top-4 -left-5 z-10">
+                <WidgetModeIndicatorBadge isEditMode={!!getValues('id')} />
+            </div>
+
             <div className="grid items-center gap-4 grid-cols-1 md:gap-8 md:grid-cols-[auto_1fr]">
                 {/* Status Indicators */}
                 <div className="flex flex-wrap gap-6">

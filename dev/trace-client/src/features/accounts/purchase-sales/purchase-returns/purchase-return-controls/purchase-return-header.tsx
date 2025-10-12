@@ -14,6 +14,7 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
+import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
 import { PurchaseFormDataType } from "../../purchases/all-purchases/all-purchases";
 import { Utils } from "../../../../../utils/utils";
 import { PurchaseReturnSelectInvoice } from "./purchase-return-select-invoice";
@@ -60,7 +61,11 @@ export function PurchaseReturnHeader() {
     }, [purchaseReturnToggle, trigger])
 
     return (
-        <div className="flex relative flex-wrap p-2 bg-red-50 gap-6">
+        <div className="relative flex flex-wrap p-2 bg-red-50 gap-6 mt-4 mb-6">
+            {/* Mode Badge - Top Left Corner */}
+            <div className="absolute -top-7 -left-5 z-10">
+                <WidgetModeIndicatorBadge isEditMode={!!watch('id')} />
+            </div>
 
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-52">
@@ -149,7 +154,8 @@ export function PurchaseReturnHeader() {
 
             {/* Reset submit */}
             <div className="flex mt-6 ml-auto h-10 gap-3">
-                
+                {getPrintPreview()}
+
                 {/* Reset */}
                 <button
                     onClick={resetAll}
@@ -168,12 +174,6 @@ export function PurchaseReturnHeader() {
                 >
                     <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
                 </button>
-            </div>
-
-            {/* Edit / New label */}
-            <div className="flex absolute -top-13 gap-2 right-0">
-                {getPrintPreview()}
-                <label className="font-medium text-lg text-red-500">{watch('id') ? 'Edit Purchase Return' : 'New Purchase Return'}</label>
             </div>
         </div>
     );

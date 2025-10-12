@@ -8,18 +8,26 @@ export function CompAccountsContainer({ children, className, CustomControl, Midd
     const selectedMainTitle = useSelector((state: any) => state.reduxComp.compAccountsContainer.mainTitle)
     return (
         <div className={clsx(className, 'flex flex-col ml-8',)}>
-            <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center">
-                    <label className='font-semibold text-primary-400 text-xl'>{Utils.getUnitInfo()?.unitName}</label>
-                    {<span className="ml-2 text-lg text-gray-600 font-bold">→ {selectedMainTitle}</span>}
-                    
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 items-center mt-4">
+                {/* Column 1: Unit and Title */}
+                <div className="flex items-center gap-2">
+                    <label className='font-semibold text-primary-400 text-lg lg:text-xl'>{Utils.getUnitInfo()?.unitName}</label>
+                    <span className="text-base lg:text-lg text-gray-600 font-bold">→ {selectedMainTitle}</span>
                     {LeftCustomControl && <LeftCustomControl />}
                 </div>
-                <WidgetButtonBackToReport className="" />
-                {MiddleCustomControl && <MiddleCustomControl />}
-                <div className="flex items-center">
-                    {CustomControl && <CustomControl />}
-                    <label className="mr-6 font-semibold text-primary-300">{Utils.getUserDetails()?.clientName}</label>
+
+                {/* Column 2: Toggle Buttons - Always Centered */}
+                <div className="flex justify-center">
+                    {MiddleCustomControl && <MiddleCustomControl />}
+                </div>
+
+                {/* Column 3: Back and Client */}
+                <div className="flex flex-wrap items-center gap-3 md:gap-4 justify-center lg:justify-end">
+                    <WidgetButtonBackToReport className="" />
+                    <div className="flex items-center gap-2">
+                        {CustomControl && <CustomControl />}
+                        <label className="font-semibold text-primary-300 text-sm lg:text-base">{Utils.getUserDetails()?.clientName}</label>
+                    </div>
                 </div>
             </div>
             {children}

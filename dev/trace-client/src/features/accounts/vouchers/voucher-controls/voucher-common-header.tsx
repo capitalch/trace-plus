@@ -5,7 +5,6 @@ import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-fi
 import { Messages } from "../../../../utils/messages";
 import { useValidators } from "../../../../utils/validators-hook";
 import { FormActionButtons } from "./form-action-buttons";
-// import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 
 export function VoucherCommonHeader() {
@@ -15,9 +14,9 @@ export function VoucherCommonHeader() {
         register,
         formState: { errors }
     } = useFormContext<VoucherFormDataType>();
+
     return (
         <div className="flex flex-wrap gap-4">
-
             {/* Auto ref no */}
             <FormField label="Auto ref no" className="w-40">
                 <input

@@ -18,6 +18,7 @@ import { AllVouchersPDF } from "../all-vouchers/all-vouchers-pdf";
 import { closeVoucherPreview, triggerVoucherPreview } from "../voucher-slice";
 import { AllVouchersCrown } from "../all-vouchers/all-vouchers-crown";
 import { CompTabHeaders, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
+import { WidgetModeIndicatorBadge } from "../../../../controls/widgets/widget-mode-indicator-badge";
 
 export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -102,7 +103,12 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
     }
 
     return (
-        <div className={clsx("w-full bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-3 rounded-lg shadow-sm border border-slate-200", className)}>
+        <div className={clsx("relative w-full bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-3 rounded-lg shadow-sm border border-slate-200", className)}>
+            {/* Mode Badge - Top Left Corner */}
+            <div className="absolute -top-4 -left-5 z-10">
+                <WidgetModeIndicatorBadge isEditMode={!!watch('id')} />
+            </div>
+
             <div className="flex flex-wrap gap-3 items-center">
                 {/* Left section - Crown */}
                 <div className="flex-shrink-0">

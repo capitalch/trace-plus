@@ -3,9 +3,10 @@ import _ from 'lodash'
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { CompAccountsContainer } from "../../../../../controls/redux-components/comp-accounts-container";
-import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
+import { CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchasesMain } from "../all-purchases/all-purchases-main";
 import { AllPurchasesView } from "../all-purchases/all-purchases-view";
+import { WidgetTabToggleButtons } from "../../../../../controls/widgets/widget-tab-toggle-buttons";
 import { SalePurchaseEditDataType, XDataObjectType, ExtGstTranDType, TranDType, TranHType, SalePurchaseDetailsWithExtraType } from "../../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -73,6 +74,13 @@ export function AllPurchases() {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [selectedTabIndex, dispatch]);
 
+    // Reset form when switches to View tab
+    useEffect(() => {
+        if (selectedTabIndex === 1 ) {
+            resetAll();
+        }
+    }, [selectedTabIndex]);
+
     // Handle navigation from report - auto-populate form with ID from location state
     useEffect(() => {
         if (location.state?.id && location.state?.returnPath) {
@@ -83,8 +91,17 @@ export function AllPurchases() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
+                <CompAccountsContainer
+                    MiddleCustomControl={() => (
+                        <WidgetTabToggleButtons
+                            instance={instance}
+                            tabsInfo={tabsInfo}
+                        />
+                    )}
+                >
+                    <div className="mt-4">
+                        {tabsInfo[selectedTabIndex].content}
+                    </div>
                 </CompAccountsContainer>
             </form>
         </FormProvider>
@@ -141,9 +158,9 @@ export function AllPurchases() {
             if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            if (!location.state?.id){
-                resetAll()
-            }
+            // if (!location.state?.id){
+                // resetAll()
+            // }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);

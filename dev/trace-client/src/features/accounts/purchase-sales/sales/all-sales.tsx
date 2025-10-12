@@ -19,6 +19,7 @@ import { Messages } from "../../../../utils/messages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useLocation } from "react-router-dom";
+import { useScrollToTop } from "../../../../utils/use-scroll-to-top-hook";
 
 export function AllSales() {
     const instance = DataInstancesMap.allSales
@@ -28,6 +29,7 @@ export function AllSales() {
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
 
     const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
+    const { scrollToTop } = useScrollToTop();
 
     const methods = useForm<SalesFormDataType>(
         {
@@ -378,8 +380,7 @@ export function AllSales() {
         reset(getDefaultSalesFormValues());
         dispatch(clearSalesFormData());
         dispatch(clearSearchQuery());
-        // Scroll to top after all operations complete
-        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+        scrollToTop();
     }
 }
 

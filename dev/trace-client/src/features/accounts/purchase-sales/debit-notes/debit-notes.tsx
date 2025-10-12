@@ -4,7 +4,8 @@ import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { FormProvider, useForm, } from "react-hook-form";
-import { CompTabs, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
+import { CompTabsType } from "../../../../controls/redux-components/comp-tabs";
+import { WidgetTabToggleButtons } from "../../../../controls/widgets/widget-tab-toggle-buttons";
 import { DebitNotesMain } from "./debit-notes-main";
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { Utils } from "../../../../utils/utils";
@@ -35,7 +36,7 @@ export function DebitNotes() {
         });
     const { clearErrors, reset, getValues, setValue, setFocus, watch } = methods;
     const { getTranHData } = useDebitCreditNotesSubmit(methods)
-    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex || 0);
+    const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
 
     const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst, populateFormFromId, getDebitNoteEditDataOnId }
 
@@ -71,10 +72,17 @@ export function DebitNotes() {
 
     // Update main title when active tab changes
     useEffect(() => {
-        const isViewMode = activeTabIndex === 1;
+        const isViewMode = selectedTabIndex === 1;
         const title = getDebitNoteTitle(isViewMode);
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
-    }, [activeTabIndex, dispatch]);
+    }, [selectedTabIndex, dispatch]);
+
+    // Reset form when switches to View tab
+    useEffect(() => {
+        if (selectedTabIndex === 1) {
+            resetAll();
+        }
+    }, [selectedTabIndex]);
 
     // Handle navigation from report - auto-populate form with ID from location state
     useEffect(() => {
@@ -86,8 +94,17 @@ export function DebitNotes() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
+                <CompAccountsContainer
+                    MiddleCustomControl={() => (
+                        <WidgetTabToggleButtons
+                            instance={instance}
+                            tabsInfo={tabsInfo}
+                        />
+                    )}
+                >
+                    <div className="mt-4">
+                        {tabsInfo[selectedTabIndex].content}
+                    </div>
                 </CompAccountsContainer>
             </form>
         </FormProvider>

@@ -42,10 +42,9 @@ const CustomerDetails: React.FC = () => {
         }
     }, [hasCustomerGstin, isGstInvoice, setValue]);
 
-    // const contactsData = watch('contactsData');
+    const contactsData = watch('contactsData');
     useEffect(() => {
         // Copies contactsData to contactDisplayData for display
-        const contactsData: ContactsType | null = getValues('contactsData');
         if (contactsData) {
             const displayData = formatContactDisplay(contactsData);
             setValue('contactDisplayData', displayData);
@@ -57,7 +56,7 @@ const CustomerDetails: React.FC = () => {
         }
         // Trigger validation for contactsData whenever it changes
         trigger('contactsData');
-    }, [getValues, setValue, trigger]);
+    }, [contactsData, setValue, trigger]);
 
     return (
         <div className="relative px-4 py-4 bg-white border-blue-400 border-l-4 rounded-lg shadow-sm">

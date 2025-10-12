@@ -5,9 +5,10 @@ import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { FormProvider, useForm } from "react-hook-form";
 import { PurchaseFormDataType, PurchaseLineItemType } from "../../purchases/all-purchases/all-purchases";
-import { CompTabs, CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
+import { CompTabsType } from "../../../../../controls/redux-components/comp-tabs";
 import { AllPurchaseReturnsMain } from "../../purchase-returns/all-purchase-returns/all-purchase-returns-main";
 import { AllPurchaseReturnsView } from "../../purchase-returns/all-purchase-returns/all-purchase-returns-view";
+import { WidgetTabToggleButtons } from "../../../../../controls/widgets/widget-tab-toggle-buttons";
 import { clearPurchaseReturnFormData, savePurchaseReturnFormData } from "../../purchase-returns/purchase-return-slice";
 import { CompAccountsContainer } from "../../../../../controls/redux-components/comp-accounts-container";
 import { XDataObjectType, SalePurchaseEditDataType, ExtGstTranDType, TranDType, TranHType, SalePurchaseDetailsWithExtraType } from "../../../../../utils/global-types-interfaces-enums";
@@ -74,6 +75,12 @@ export function AllPurchaseReturns() {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [selectedTabIndex, dispatch]);
 
+     useEffect(() => {
+        if (selectedTabIndex === 1 ) {
+            resetAll();
+        }
+    }, [selectedTabIndex]);
+    
     // Handle navigation from report - auto-populate form with ID from location state
     useEffect(() => {
         if (location.state?.id && location.state?.returnPath) {
@@ -84,8 +91,17 @@ export function AllPurchaseReturns() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer>
-                    <CompTabs tabsInfo={tabsInfo} instance={instance} className="mt-4" />
+                <CompAccountsContainer
+                    MiddleCustomControl={() => (
+                        <WidgetTabToggleButtons
+                            instance={instance}
+                            tabsInfo={tabsInfo}
+                        />
+                    )}
+                >
+                    <div className="mt-4">
+                        {tabsInfo[selectedTabIndex].content}
+                    </div>
                 </CompAccountsContainer>
             </form>
         </FormProvider>
@@ -105,9 +121,9 @@ export function AllPurchaseReturns() {
             if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            if (!location.state?.id) {
-                resetAll()
-            }
+            // if (!location.state?.id) {
+            //     resetAll()
+            // }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);

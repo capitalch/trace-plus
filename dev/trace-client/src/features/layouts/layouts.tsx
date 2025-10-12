@@ -22,7 +22,7 @@ function Layouts() {
 
             <div className="flex flex-col flex-1 min-w-0 relative">
                 <NavBar />
-                <div className="flex-1 overflow-auto min-h-0">
+                <div id="main-scroll-container" className="flex-1 overflow-auto min-h-0">
                     <Outlet />
                 </div>
             </div>

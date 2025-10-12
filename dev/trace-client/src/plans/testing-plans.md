@@ -1,177 +1,115 @@
 # Manual Testing Plan: Account Transactions CRUD Operations
 ## Vouchers Testing
 
-### 4. Journal Voucher (tranTypeId: 1)
-
-#### 4.1 CREATE - New Journal Voucher
-
-**Test Case J-C-001: Create Simple Journal Entry**
-- **Objective:** Verify basic journal entry creation
-- **Test Steps:**
-  1. Select "Journal" voucher type
-  2. Enter transaction date
-  3. Debit Entry: "Salary Expense", 50,000.00
-  4. Credit Entry: "Salary Payable", 50,000.00
-  5. Add remarks: "Salary accrued for January"
-  6. Click "Submit"
-- **Expected Results:**
-  - Journal entry saved successfully
-  - Can use any account type (not restricted to bank/cash)
-  - Proper double-entry maintained
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case J-C-002: Create Compound Journal Entry**
-- **Objective:** Verify journal with multiple debits and credits
-- **Test Steps:**
-  1. Select "Journal" voucher type
-  2. Debit Entries:
-     - "Furniture & Fixtures", 30,000.00
-     - "Computer Equipment", 20,000.00
-  3. Credit Entries:
-     - "Capital Account", 40,000.00
-     - "Loan Account", 10,000.00
-  4. Verify total debits = total credits = 50,000
-  5. Click "Submit"
-- **Expected Results:**
-  - Complex journal entry saved
-  - All four line items recorded in TranD
-  - Totals balanced correctly
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case J-C-003: Create Journal Entry with GST**
-- **Objective:** Verify journal entry can include GST if configured
-- **Test Steps:**
-  1. Select "Journal" voucher type
-  2. Enable GST checkbox
-  3. Create entry with GST calculations
-  4. Click "Submit"
-- **Expected Results:**
-  - GST is calculated and saved if showGstInHeader is true
-  - ExtGstTranD records created
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-#### 4.2-4.4 READ, UPDATE, DELETE Journal Voucher
-
-*(Follow same test case patterns as Payment Voucher)*
-
----
+- Completed
 
 ## Sales Testing
 
 ### 5. Sales Invoice (tranTypeId: 4)
 
-#### 5.1 CREATE - New Sales Invoice
+                              #### 5.1 CREATE - New Sales Invoice
 
-**Test Case S-C-001: Create Simple Sales Invoice (Single Item, No GST)**
-- **Objective:** Verify basic sales invoice creation
-- **Pre-conditions:**
-  - Customer contact exists
-  - Product exists
-  - Customer does not have GSTIN (for non-GST sale)
-- **Test Steps:**
-  1. Navigate to Sales screen
-  2. Enter transaction date
-  3. Enter invoice number: "SI001"
-  4. Select customer from dropdown
-  5. Verify customer details populate (address, contact)
-  6. Add line item:
-     - Select product: "Product A"
-     - Enter quantity: 10
-     - Enter rate: 500.00
-     - Verify amount calculates: 5,000.00
-  7. Verify totals:
-     - Sub Total: 5,000.00
-     - Total Invoice Amount: 5,000.00
-  8. In Debit/Payment section:
-     - Select account: "Cash"
-     - Amount should auto-fill: 5,000.00
-  9. Verify difference = 0 (invoice amount - payment amount)
-  10. Click "Submit"
-- **Expected Results:**
-  - Sales invoice saved successfully
-  - TranH record created with tranTypeId = 4
-  - TranD record created for sales line item (credit entry)
-  - TranD record created for payment (debit entry)
-  - contactsId field populated with customer ID
-  - Auto reference number generated
-  - Success message displayed
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                              **Test Case S-C-001: Create Simple Sales Invoice (Single Item, No GST)**
+                              - **Objective:** Verify basic sales invoice creation
+                              - **Pre-conditions:**
+                                - Customer contact exists
+                                - Product exists
+                                - Customer does not have GSTIN (for non-GST sale)
+                              - **Test Steps:**
+                                1. Navigate to Sales screen
+                                2. Enter transaction date
+                                3. Enter invoice number: "SI001"
+                                4. Select customer from dropdown
+                                5. Verify customer details populate (address, contact)
+                                6. Add line item:
+                                  - Select product: "Product A"
+                                  - Enter quantity: 10
+                                  - Enter rate: 500.00
+                                  - Verify amount calculates: 5,000.00
+                                7. Verify totals:
+                                  - Sub Total: 5,000.00
+                                  - Total Invoice Amount: 5,000.00
+                                8. In Debit/Payment section:
+                                  - Select account: "Cash"
+                                  - Amount should auto-fill: 5,000.00
+                                9. Verify difference = 0 (invoice amount - payment amount)
+                                10. Click "Submit"
+                              - **Expected Results:**
+                                - Sales invoice saved successfully
+                                - TranH record created with tranTypeId = 4
+                                - TranD record created for sales line item (credit entry)
+                                - TranD record created for payment (debit entry)
+                                - contactsId field populated with customer ID
+                                - Auto reference number generated
+                                - Success message displayed
+                              - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                              - **Notes:**
 
----
+                              ---
 
-**Test Case S-C-002: Create Sales Invoice with GST (Intrastate - CGST + SGST)**
-- **Objective:** Verify GST calculation for intrastate sale
-- **Pre-conditions:**
-  - Company GSTIN: 29XXXXX (Karnataka)
-  - Customer GSTIN: 29YYYYY (Karnataka - same state)
-- **Test Steps:**
-  1. Create new sales invoice
-  2. Select customer with same state GSTIN
-  3. System should detect intrastate transaction
-  4. Add line item:
-     - Product: "Service B"
-     - Quantity: 1
-     - Rate: 10,000.00
-     - GST Rate: 18% (should calculate as 9% CGST + 9% SGST)
-  5. Verify calculations:
-     - Base Amount: 10,000.00
-     - CGST (9%): 900.00
-     - SGST (9%): 900.00
-     - IGST: 0.00
-     - Total: 11,800.00
-  6. Add payment: Cash, 11,800.00
-  7. Click "Submit"
-- **Expected Results:**
-  - CGST and SGST calculated correctly (no IGST)
-  - ExtGstTranD record created with:
-    - cgst = 900.00
-    - sgst = 900.00
-    - igst = 0.00
-    - isInput = false (output GST for sales)
-  - Total invoice amount = 11,800.00
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                              **Test Case S-C-002: Create Sales Invoice with GST (Intrastate - CGST + SGST)**
+                              - **Objective:** Verify GST calculation for intrastate sale
+                              - **Pre-conditions:**
+                                - Company GSTIN: 29XXXXX (Karnataka)
+                                - Customer GSTIN: 29YYYYY (Karnataka - same state)
+                              - **Test Steps:**
+                                1. Create new sales invoice
+                                2. Select customer with same state GSTIN
+                                3. System should detect intrastate transaction
+                                4. Add line item:
+                                  - Product: "Service B"
+                                  - Quantity: 1
+                                  - Rate: 10,000.00
+                                  - GST Rate: 18% (should calculate as 9% CGST + 9% SGST)
+                                5. Verify calculations:
+                                  - Base Amount: 10,000.00
+                                  - CGST (9%): 900.00
+                                  - SGST (9%): 900.00
+                                  - IGST: 0.00
+                                  - Total: 11,800.00
+                                6. Add payment: Cash, 11,800.00
+                                7. Click "Submit"
+                              - **Expected Results:**
+                                - CGST and SGST calculated correctly (no IGST)
+                                - ExtGstTranD record created with:
+                                  - cgst = 900.00
+                                  - sgst = 900.00
+                                  - igst = 0.00
+                                  - isInput = false (output GST for sales)
+                                - Total invoice amount = 11,800.00
+                              - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                              - **Notes:**
 
----
+                              ---
 
-**Test Case S-C-003: Create Sales Invoice with GST (Interstate - IGST)**
-- **Objective:** Verify GST calculation for interstate sale
-- **Pre-conditions:**
-  - Company GSTIN: 29XXXXX (Karnataka)
-  - Customer GSTIN: 27YYYYY (Maharashtra - different state)
-- **Test Steps:**
-  1. Create new sales invoice
-  2. Select customer with different state GSTIN
-  3. System should detect interstate transaction
-  4. Add line item:
-     - Product with 18% GST
-     - Amount: 10,000.00
-  5. Verify calculations:
-     - Base Amount: 10,000.00
-     - CGST: 0.00
-     - SGST: 0.00
-     - IGST (18%): 1,800.00
-     - Total: 11,800.00
-  6. Add payment
-  7. Click "Submit"
-- **Expected Results:**
-  - IGST calculated correctly (no CGST/SGST)
-  - ExtGstTranD record: igst = 1,800.00, cgst = sgst = 0
-  - Total matches invoice amount
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                                **Test Case S-C-003: Create Sales Invoice with GST (Interstate - IGST)**
+                                - **Objective:** Verify GST calculation for interstate sale
+                                - **Pre-conditions:**
+                                  - Company GSTIN: 29XXXXX (Karnataka)
+                                  - Customer GSTIN: 27YYYYY (Maharashtra - different state)
+                                - **Test Steps:**
+                                  1. Create new sales invoice
+                                  2. Select customer with different state GSTIN
+                                  3. System should detect interstate transaction
+                                  4. Add line item:
+                                    - Product with 18% GST
+                                    - Amount: 10,000.00
+                                  5. Verify calculations:
+                                    - Base Amount: 10,000.00
+                                    - CGST: 0.00
+                                    - SGST: 0.00
+                                    - IGST (18%): 1,800.00
+                                    - Total: 11,800.00
+                                  6. Add payment
+                                  7. Click "Submit"
+                                - **Expected Results:**
+                                  - IGST calculated correctly (no CGST/SGST)
+                                  - ExtGstTranD record: igst = 1,800.00, cgst = sgst = 0
+                                  - Total matches invoice amount
+                                - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                                - **Notes:**
 
----
+                                ---
 
 **Test Case S-C-004: Create Sales Invoice with Multiple Items (Different GST Rates)**
 - **Objective:** Verify handling of multiple items with different GST rates

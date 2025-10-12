@@ -1,0 +1,9 @@
+- Branch address
+    - I want to include branch address along with branch name
+    - branch address consists of address1, address2, pin, phone
+    - PostgreSql database table BranchM consists of id, branchCode, branchName, jData
+    - jData is of type jsonb
+    - We can store address info in jData with json field named as address.
+    - Need to upgrade code in branch-master folder so that it can accommodate branch address
+    - Required CRUD operations compatible with existing code in the project
+    - Good UI is required
