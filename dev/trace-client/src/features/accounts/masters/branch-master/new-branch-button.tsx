@@ -16,10 +16,15 @@ export function NewBranchButton({ className }: NewBranchButtonType) {
         props.branchCode = ''
         props.branchName = ''
         props.remarks = undefined
+        props.address1 = undefined
+        props.address2 = undefined
+        props.pin = undefined
+        props.phones = undefined
+        props.gstin = undefined
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.branchMaster,
             title: 'New branch',
-            width: '600px'
+            width: '700px'  // Increased from 600px to accommodate address fields
         }))
     }
 }

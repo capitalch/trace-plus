@@ -8,7 +8,7 @@ export function CompAccountsContainer({ children, className, CustomControl, Midd
     const selectedMainTitle = useSelector((state: any) => state.reduxComp.compAccountsContainer.mainTitle)
     return (
         <div className={clsx(className, 'flex flex-col ml-8',)}>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 items-center mt-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 items-center mt-4 mr-6">
                 {/* Column 1: Unit and Title */}
                 <div className="flex items-center gap-2">
                     <label className='font-semibold text-primary-400 text-lg lg:text-xl'>{Utils.getUnitInfo()?.unitName}</label>

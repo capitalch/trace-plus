@@ -104,10 +104,12 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
 
     return (
         <div className={clsx("relative w-full bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-3 rounded-lg shadow-sm border border-slate-200", className)}>
-            {/* Mode Badge - Top Left Corner */}
-            <div className="absolute -top-4 -left-5 z-10">
-                <WidgetModeIndicatorBadge isEditMode={!!watch('id')} />
-            </div>
+            {/* Mode Badge - Top Left Corner - Only show on New/Edit tab */}
+            {activeTabIndex === 0 && (
+                <div className="absolute -top-4 -left-5 z-10">
+                    <WidgetModeIndicatorBadge isEditMode={!!watch('id')} />
+                </div>
+            )}
 
             <div className="flex flex-wrap gap-3 items-center">
                 {/* Left section - Crown */}

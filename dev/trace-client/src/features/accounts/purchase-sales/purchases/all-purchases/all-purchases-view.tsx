@@ -105,7 +105,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
         deleteColumnWidth={40}
         editColumnWidth={40}
         hasCheckBoxSelection={true}
-        height="calc(100vh - 348px)"
+        height="calc(100vh - 285px)"
         instance={instance}
         isSmallerFont={true}
         loadData={loadData}

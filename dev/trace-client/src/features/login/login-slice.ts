@@ -181,10 +181,23 @@ export type AccSettingType = {
   intValue: number
 }
 
+export type BranchAddressType = {
+  address1: string
+  address2?: string
+  pin: string
+  phones?: string
+}
+
+export type BranchJDataType = {
+  address?: BranchAddressType
+  gstin?: string
+}
+
 export type BranchType = {
   branchId: number
   branchName: string
   branchCode: string
+  jData?: BranchJDataType | null
 }
 
 export type BusinessUnitType = {

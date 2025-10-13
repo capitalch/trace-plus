@@ -59,6 +59,7 @@ export function BranchMaster() {
             onDelete={handleOnDelete}
             onEdit={handleOnEdit}
             sqlId={SqlIdsMap.getAllBranches}
+            searchFields={['branchName', 'branchCode', 'remarks', 'addressSearch']}
         />
     </CompAccountsContainer>)
 
@@ -84,21 +85,56 @@ export function BranchMaster() {
                 field: 'branchName',
                 headerText: 'Branch name',
                 type: 'string',
-                width: 200,
+                width: 180,
             },
             {
                 field: 'branchCode',
                 headerText: 'Branch code',
                 type: 'string',
-                width: 80,
+                width: 100,
+            },
+            {
+                field: 'address',
+                headerText: 'Address',
+                type: 'string',
+                width: 250,
+                template: addressTemplate
             },
             {
                 field: 'remarks',
                 headerText: 'Remarks',
                 type: 'string',
-                // width: 40,
+            },
+            {
+                field: 'addressSearch',
+                headerText: 'addressSearch',
+                type: 'string',
+                width: 0,
+                visible:false
             },
         ])
+    }
+
+    function addressTemplate(props: any) {
+        const jData = props.jData
+        if (!jData || !jData.address) {
+            return <span className="text-xs text-gray-400">No address</span>
+        }
+
+        const { address1, address2, pin, phones } = jData.address
+        const gstin = jData.gstin  // GSTIN is separate from address object
+        const addressLine1 = address1 || ''
+        const addressLine2 = address2 ? `, ${address2}` : ''
+        const pinText = pin ? `, PIN: ${pin}` : ''
+        const addressText = `${addressLine1}${addressLine2}${pinText}`
+
+        return (
+            <div className="text-xs">
+                <div className="truncate" title={addressText}>{addressText}</div>
+                {phones && <div className="text-gray-500 truncate" title={phones}>Ph: {phones}</div>}
+                {gstin && <div className="text-gray-500 truncate" title={gstin}>GSTIN: {gstin}</div>}
+            </div>
+        )
     }
 
     async function handleOnDelete(id: string | number) {
@@ -122,16 +158,44 @@ export function BranchMaster() {
         }
     }
 
-    async function handleOnEdit(args: NewEditBranchType) {
+    async function handleOnEdit(args: any) {
         const props: NewEditBranchType = SlidingPaneMap[SlidingPaneEnum.branchMaster].props
+
+        // Parse address and gstin from jData (as separate fields)
+        let address1 = ''
+        let address2 = ''
+        let pin = ''
+        let phones = ''
+        let gstin = ''
+
+        if (args.jData) {
+            // Parse address object
+            if (args.jData.address) {
+                const addr = args.jData.address
+                address1 = addr.address1 || ''
+                address2 = addr.address2 || ''
+                pin = addr.pin || ''
+                phones = addr.phones || ''
+            }
+
+            // Parse gstin (separate from address)
+            gstin = args.jData.gstin || ''
+        }
+
         props.id = args.id
         props.branchCode = args.branchCode
         props.branchName = args.branchName
         props.remarks = args.remarks
+        props.address1 = address1
+        props.address2 = address2
+        props.pin = pin
+        props.phones = phones
+        props.gstin = gstin
+
         dispatch(openSlidingPane({
             identifier: SlidingPaneEnum.branchMaster,
             title: 'Edit branch',
-            width: '600px'
+            width: '700px'  // Increased width for address fields
         }))
     }
 }

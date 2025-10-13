@@ -41,6 +41,7 @@ export function AllVouchers() {
     const { watch, getValues, setValue, reset } = methods;
     const extendedMethods = { ...methods, resetAll, getVoucherDetailsOnId, populateFormFromId };
     const voucherType = watch('voucherType')
+    const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
 
     // Utility function to generate voucher title
     const getVoucherTitle = (type: VourcherType, isViewMode: boolean): string => {
@@ -78,6 +79,13 @@ export function AllVouchers() {
         const title = getVoucherTitle(voucherType, isViewMode);
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [voucherType, activeTabIndex, dispatch]);
+
+    // Reset form when switches to View tab
+    useEffect(() => {
+        if (selectedTabIndex === 1) {
+            resetAll();
+        }
+    }, [selectedTabIndex]);
 
     // Handle navigation from report - auto-populate form with ID from location state
     useEffect(() => {
@@ -157,7 +165,7 @@ export function AllVouchers() {
             }
             // ✅ Proceed with saving
             xData.deletedIds = undefined
-            console.log(JSON.stringify(xData))
+            // console.log(JSON.stringify(xData))
             await Utils.doValidateDebitCreditAndUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",

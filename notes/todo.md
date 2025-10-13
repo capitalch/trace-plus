@@ -63,7 +63,8 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
-	- Resize grids in purchase, purchase return, debit notes, credit notes
+													- CompAccountsContainer needs to be responsive in better manner
+													- Resize grids in purchase, purchase return, debit notes, credit notes
 													- When voucher is saved defaults to payment voucher
 	- Provide branch address
 													- Product query screen

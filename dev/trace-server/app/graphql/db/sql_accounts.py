@@ -364,7 +364,15 @@ class SqlAccounts:
     """
 
     get_all_branches = """
-    select "id", "branchCode", "branchName", "remarks"
+    select "id", "branchCode", "branchName", "remarks", "jData",
+    -- Extract searchable address text
+    CONCAT_WS(' ',
+      "jData"->'address'->>'address1',
+      "jData"->'address'->>'address2',
+      "jData"->'address'->>'pin',
+      "jData"->'address'->>'phones',
+      "jData"->>'gstin'
+    ) as "addressSearch"
         from "BranchM"
             order by "id"
     """

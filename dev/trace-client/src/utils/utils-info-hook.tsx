@@ -1,5 +1,5 @@
 import { shallowEqual, useSelector } from "react-redux"
-import { BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, UserDetailsType } from "../features/login/login-slice"
+import { BranchAddressType, BranchType, BusinessUnitType, currentBranchSelectorFn, currentBusinessUnitSelectorFn, currentFinYearSelectorFn, FinYearType, UserDetailsType } from "../features/login/login-slice"
 import { GeneralSettingsType, UnitInfoType, Utils } from "./utils"
 import { GlobalContext, GlobalContextType } from "../app/global-context"
 import { useContext } from "react"
@@ -20,6 +20,11 @@ export function useUtilsInfo() {
     const branchId: number | undefined = currentBranch?.branchId
     const branchCode: string | undefined = currentBranch?.branchCode
     const branchName = currentBranch?.branchName
+
+    // Parse branch address from jData
+    const branchAddress: BranchAddressType | undefined = currentBranch?.jData?.address
+    const branchGstin: string | undefined = currentBranch?.jData?.gstin
+
     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
     const hasGstin: boolean = unitInfo.gstin ? true : false
     const genericUpdateQueryName: string = GraphQLQueriesMapNames.genericUpdate;
@@ -30,6 +35,8 @@ export function useUtilsInfo() {
         branchId
         , branchCode
         , branchName
+        , branchAddress    // New: Full address object
+        , branchGstin      // New: Branch GSTIN
         , buCode
         , context
         , currentDateFormat

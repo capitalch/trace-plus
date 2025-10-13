@@ -95,7 +95,7 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
                 deleteColumnWidth={40}
                 editColumnWidth={40}
                 hasCheckBoxSelection={true}
-                height="calc(100vh - 352px)"
+                height="calc(100vh - 300px)"
                 instance={instance}
                 isSmallerFont={true}
                 loadData={loadData}
