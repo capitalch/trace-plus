@@ -2964,7 +2964,7 @@ class SqlAccounts:
 
     get_settings_fin_years_branches = """
         with cte1 as (
-		select id as "branchId", "branchName", "branchCode"
+		select id as "branchId", "branchName", "branchCode", "jData"
 			from "BranchM"
 				order by "branchName", "branchCode")
         , cte2 as (

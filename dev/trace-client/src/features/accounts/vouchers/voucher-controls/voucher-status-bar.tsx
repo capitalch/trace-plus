@@ -31,7 +31,10 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
     const {
         currentDateFormat,
         buCode,
+        branchId,
         branchName,
+        branchAddress,
+        branchGstin,
         dbName,
         decodedDbParamsObject,
     } = useUtilsInfo();
@@ -164,8 +167,11 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
                 element={
                     previewData ? (<PDFViewer style={{ width: "100%", height: "100%" }}>
                         <AllVouchersPDF
-                            currentDateFormat={currentDateFormat}
+                            branchId={branchId}
                             branchName={branchName || ''}
+                            branchAddress={branchAddress}
+                            branchGstin={branchGstin}
+                            currentDateFormat={currentDateFormat}
                             tranH={previewData?.tranH || {}}
                             tranD={previewData?.tranD || []}
                         />

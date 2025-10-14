@@ -30,8 +30,6 @@ export function BusinessUnitsOptions() {
         }
     }, [currentBusinessUnitSelector, selectAccSettingsChanged])
 
-
-
     return (
         <TooltipComponent content={currentBusinessUnitSelector?.buName || ''} position="BottomCenter" key={String(selectAccSettingsChanged)}>
             <button type="button" onClick={handleOnClickBusinessUnit}

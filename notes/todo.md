@@ -63,10 +63,14 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+	- Voucher print
+		- print media correction as a4
+		- branch separate state code and email inclusion
+		- when branch address updated then refresh data globally
 													- CompAccountsContainer needs to be responsive in better manner
 													- Resize grids in purchase, purchase return, debit notes, credit notes
 													- When voucher is saved defaults to payment voucher
-	- Provide branch address
+													- Provide branch address
 													- Product query screen
 	- CRM
 		- Flash message on whatsapp

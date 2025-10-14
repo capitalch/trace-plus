@@ -4,10 +4,14 @@ import Decimal from "decimal.js";
 import { TranHeaderType } from "../../../../utils/global-types-interfaces-enums";
 import { format } from "date-fns";
 import { VoucherTranDetailsType } from "./all-vouchers-view";
+import { BranchAddressType } from "../../../../features/login/login-slice";
 
 export type VoucherPdfProps = {
-  branchName: string,
-  currentDateFormat: string,
+  branchId: number | undefined;
+  branchName: string;
+  branchAddress: BranchAddressType | undefined;
+  branchGstin: string | undefined;
+  currentDateFormat: string;
   tranH: TranHeaderType;
   tranD: VoucherTranDetailsType[];
 };
@@ -16,13 +20,58 @@ const formatAmount = (amount: number | string | Decimal) =>
   new Decimal(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 export function AllVouchersPDF({
+  branchId,
   branchName,
+  branchAddress,
+  branchGstin,
   currentDateFormat,
   tranH,
   tranD
 }: VoucherPdfProps) {
   const unitInfo: UnitInfoType = Utils.getUnitInfo() || {};
   const dateRange: string = Utils.getCurrentFinYearFormattedDateRange();
+
+  // Determine if this is head office (branchId === 1)
+  const isHeadOffice = branchId === 1;
+
+  // Determine which address to display
+  const displayAddress = isHeadOffice
+    ? {
+        address1: unitInfo.address1,
+        address2: unitInfo.address2,
+        pin: unitInfo.pin,
+      }
+    : {
+        address1: branchAddress?.address1,
+        address2: branchAddress?.address2,
+        pin: branchAddress?.pin,
+      };
+
+  // For GSTIN: Branch GSTIN has priority if available, otherwise use unit GSTIN
+  const displayGstin = isHeadOffice
+    ? unitInfo.gstin
+    : branchGstin || unitInfo.gstin;
+
+  // Build address parts array and filter out empty strings
+  const addressParts: string[] = [];
+
+  if (isHeadOffice) {
+    addressParts.push("Branch: " + branchName);
+    if (displayGstin) addressParts.push("GSTIN: " + displayGstin);
+  } else {
+    // For non-head office, GSTIN comes first
+    if (displayGstin) addressParts.push("GSTIN: " + displayGstin);
+  }
+
+  if (displayAddress.address1) addressParts.push("Address: " + displayAddress.address1);
+  if (displayAddress.address2) addressParts.push(displayAddress.address2);
+  if (displayAddress.pin) addressParts.push("Pin: " + displayAddress.pin);
+  if (branchAddress?.phones) addressParts.push("Phones: " + branchAddress.phones);
+  if (unitInfo.email) addressParts.push("Email: " + unitInfo.email);
+  if (unitInfo.webSite) addressParts.push("Web: " + unitInfo.webSite);
+  if (unitInfo.state) addressParts.push("State: " + unitInfo.state);
+
+  const addressString = addressParts.join(" ");
 
   const debitEntries = tranD.filter((x: VoucherTranDetailsType) => x.dc === 'D');
   const creditEntries = tranD.filter((x: VoucherTranDetailsType) => x.dc === 'C');
@@ -39,19 +88,18 @@ export function AllVouchersPDF({
         <View style={styles.header} fixed>
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{unitInfo.unitName}</Text>
-            <Text style={{ marginTop: 4 }}>{
-              "".concat(
-                "Branch: " + branchName,
-                unitInfo.gstin ? " GSTIN: " + unitInfo.gstin : "",
-                unitInfo.address1 ? " Address: " + unitInfo.address1 : "",
-                " ",
-                unitInfo.address2 || "",
-                unitInfo.pin ? " Pin: " + unitInfo.pin : "",
-                unitInfo.email ? " Email: " + unitInfo.email : "",
-                unitInfo.webSite ? " Web: " + unitInfo.webSite : "",
-                unitInfo.state ? " State: " + unitInfo.state : ""
-              )
-            }</Text>
+            {!isHeadOffice && unitInfo.address1 && (
+              <Text style={{ marginTop: 2, fontSize: 8, color: '#555' }}>
+                Head Office: {unitInfo.address1}
+                {unitInfo.address2 ? " " + unitInfo.address2 : ""}
+                {unitInfo.pin ? " Pin: " + unitInfo.pin : ""}
+                {unitInfo.state ? " State: " + unitInfo.state : ""}
+              </Text>
+            )}
+            {!isHeadOffice && (
+              <Text style={{ marginTop: 2, fontWeight: "bold" }}>{branchName}</Text>
+            )}
+            <Text style={{ marginTop: 4 }}>{addressString}</Text>
           </View>
           <View style={styles.transactionInfo}>
             <Text style={{ fontWeight: "bold", fontSize: 14 }}>{`Voucher type: ${tranH.tranType || ""}`}</Text>
