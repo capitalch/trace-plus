@@ -27,7 +27,7 @@ import { triggerPurchaseReturn } from "../purchase-return-slice";
 export function PurchaseReturnHeader() {
     const dispatch:AppDispatchType = useDispatch()
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allPurchaseReturns]?.activeTabIndex)
-    const { branchName, buCode, dbName, decodedDbParamsObject, currentDateFormat } = useUtilsInfo();
+    const { branchId, branchName, branchAddress, branchGstin, buCode, dbName, decodedDbParamsObject, currentDateFormat } = useUtilsInfo();
     const purchaseReturnToggle = useSelector((state:RootStateType)=>state.purchaseReturn.toggle)
     const { checkAllowedDate } = useValidators();
     const {
@@ -193,7 +193,7 @@ export function PurchaseReturnHeader() {
     function handleOnPreview() {
         const purchaseEditData: any = getValues('purchaseEditData') || {}
         if (_.isEmpty(purchaseEditData)) return
-        generatePurchaseReturnInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
+        generatePurchaseReturnInvoicePDF(purchaseEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat)
     }
 
     function handleSearchInvoice() {

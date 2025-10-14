@@ -27,6 +27,8 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
         buCode,
         branchId,
         branchName,
+        branchAddress,
+        branchGstin,
         dbName,
         decodedDbParamsObject,
         finYearId,
@@ -392,7 +394,7 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
             Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
             return
         }
-        generatePurchaseReturnInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
+        generatePurchaseReturnInvoicePDF(purchaseEditData, branchId, branchName ?? '', branchAddress, branchGstin, currentDateFormat)
     }
 
     function handleOnRowDataBound(args: RowDataBoundEventArgs) {

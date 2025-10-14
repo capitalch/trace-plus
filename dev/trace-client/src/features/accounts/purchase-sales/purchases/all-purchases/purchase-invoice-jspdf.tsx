@@ -3,8 +3,16 @@ import autoTable from 'jspdf-autotable';
 import { SalePurchaseEditDataType } from '../../../../../utils/global-types-interfaces-enums';
 import { UnitInfoType, Utils } from '../../../../../utils/utils';
 import { format } from 'date-fns';
+import { BranchAddressType } from '../../../../login/login-slice';
 
-export function generatePurchaseInvoicePDF(invoiceData: SalePurchaseEditDataType, branchName: string, currentDateFormat: string) {
+export function generatePurchaseInvoicePDF(
+    invoiceData: SalePurchaseEditDataType,
+    branchId: number | undefined,
+    branchName: string,
+    branchAddress: BranchAddressType | undefined,
+    branchGstin: string | undefined,
+    currentDateFormat: string
+) {
     const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
     const marginLeft = 25;
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -13,12 +21,34 @@ export function generatePurchaseInvoicePDF(invoiceData: SalePurchaseEditDataType
     const lineSpacing = 12;
     const { tranH, businessContacts, salePurchaseDetails, tranD, extGstTranD } = invoiceData;
     const companyInfo: UnitInfoType = Utils.getUnitInfo() || {};
-    const company = {
-        name: companyInfo.unitName || 'This Company Pvt Ltd',
-        branchName: branchName || '',
-        address: `${companyInfo.address1?.trim() || ''} ${companyInfo.address2?.trim() || ''} Pin: ${companyInfo.pin} State: ${companyInfo.state}`,
-        gstin: `GSTIN: ${companyInfo.gstin || ''} Email: ${companyInfo.email || ''}`,
-    };
+
+    // Determine if this is head office (branchId === 1)
+    const isHeadOffice = branchId === 1;
+
+    // Determine which address to display (similar to all-vouchers-pdf.tsx)
+    const displayAddress = isHeadOffice
+        ? {
+            address1: companyInfo.address1,
+            address2: companyInfo.address2,
+            pin: companyInfo.pin,
+            email: companyInfo.email,
+            stateCode: companyInfo.state,
+            phones: branchAddress?.phones,
+        }
+        : {
+            address1: branchAddress?.address1,
+            address2: branchAddress?.address2,
+            pin: branchAddress?.pin,
+            email: branchAddress?.email,
+            stateCode: branchAddress?.stateCode,
+            phones: branchAddress?.phones,
+        };
+
+    // For GSTIN: Branch GSTIN has priority if available, otherwise use unit GSTIN
+    const displayGstin = isHeadOffice
+        ? companyInfo.gstin
+        : branchGstin || companyInfo.gstin;
+
     const addr: any = businessContacts?.jAddress?.[0] || {};
 
     const formatNumber = (n: number) => n.toLocaleString('en-IN', { minimumFractionDigits: 2 });
@@ -89,14 +119,110 @@ export function generatePurchaseInvoicePDF(invoiceData: SalePurchaseEditDataType
     drawText('Customer Details', marginLeft, currentY);
     currentY += lineSpacing;
     doc.setFont('helvetica', 'normal');
-    drawText(company.name, marginLeft, currentY);
+
+    // Company name
+    drawText(companyInfo.unitName || '', marginLeft, currentY);
     currentY += lineSpacing;
-    drawText(company.branchName, marginLeft, currentY);
-    currentY += lineSpacing;
-    drawText(company.address, marginLeft, currentY);
-    currentY += lineSpacing;
-    drawText(company.gstin, marginLeft, currentY);
-    currentY += lineSpacing;
+
+    if (isHeadOffice) {
+        // Head Office: Show branch name, then all details
+        drawText(branchName || '', marginLeft, currentY);
+        currentY += lineSpacing;
+
+        // GSTIN in bold
+        if (displayGstin) {
+            doc.setFont('helvetica', 'bold');
+            drawText(`GSTIN: ${displayGstin}`, marginLeft, currentY);
+            doc.setFont('helvetica', 'normal');
+            currentY += lineSpacing;
+        }
+
+        // Address
+        if (displayAddress.address1) {
+            drawText(`${displayAddress.address1}${displayAddress.address2 ? ', ' + displayAddress.address2 : ''}`, marginLeft, currentY);
+            currentY += lineSpacing;
+        }
+
+        // Pin and State Code
+        const pinStateText = [
+            displayAddress.pin ? `Pin: ${displayAddress.pin}` : '',
+            displayAddress.stateCode ? `State Code: ${displayAddress.stateCode}` : ''
+        ].filter(Boolean).join(', ');
+        if (pinStateText) {
+            drawText(pinStateText, marginLeft, currentY);
+            currentY += lineSpacing;
+        }
+
+        // Email
+        if (displayAddress.email) {
+            drawText(`Email: ${displayAddress.email}`, marginLeft, currentY);
+            currentY += lineSpacing;
+        }
+
+    } else {
+        // Branch: Show head office first, then branch details
+
+        // Head office info (smaller font, gray color simulation via lighter text)
+        doc.setFontSize(7);
+
+        // Head Office GSTIN in bold
+        if (companyInfo.gstin) {
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Head Office: GSTIN: ${companyInfo.gstin}`, marginLeft, currentY);
+            doc.setFont('helvetica', 'normal');
+            currentY += lineSpacing;
+        }
+
+        // Head office address line
+        const hoAddressParts = [
+            companyInfo.address1,
+            companyInfo.address2,
+            companyInfo.pin ? `Pin: ${companyInfo.pin}` : '',
+            companyInfo.state ? `State Code: ${companyInfo.state}` : '',
+            companyInfo.email ? `Email: ${companyInfo.email}` : ''
+        ].filter(Boolean).join(', ');
+
+        if (hoAddressParts) {
+            doc.text(hoAddressParts, marginLeft, currentY);
+            currentY += lineSpacing;
+        }
+
+        doc.setFontSize(8);
+        currentY += 3; // Small spacing
+
+        // Branch name in bold
+        doc.setFont('helvetica', 'bold');
+        drawText(branchName || '', marginLeft, currentY);
+        doc.setFont('helvetica', 'normal');
+        currentY += lineSpacing;
+
+        // Branch GSTIN in bold
+        if (displayGstin) {
+            doc.setFont('helvetica', 'bold');
+            drawText(`GSTIN: ${displayGstin}`, marginLeft, currentY);
+            doc.setFont('helvetica', 'normal');
+            currentY += lineSpacing;
+        }
+
+        // Branch address
+        if (displayAddress.address1) {
+            drawText(`${displayAddress.address1}${displayAddress.address2 ? ', ' + displayAddress.address2 : ''}`, marginLeft, currentY);
+            currentY += lineSpacing;
+        }
+
+        // Branch pin, phones, email, state code
+        const branchDetails = [
+            displayAddress.pin ? `Pin: ${displayAddress.pin}` : '',
+            displayAddress.phones ? `Phones: ${displayAddress.phones}` : '',
+            displayAddress.email ? `Email: ${displayAddress.email}` : '',
+            displayAddress.stateCode ? `State Code: ${displayAddress.stateCode}` : ''
+        ].filter(Boolean).join(', ');
+
+        if (branchDetails) {
+            drawText(branchDetails, marginLeft, currentY);
+            currentY += lineSpacing;
+        }
+    }
 
     const tableStartY = currentY + 10;
     autoTable(doc, {

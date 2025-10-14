@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { AppDispatchType } from "../../../../app/store"
 import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix"
 import { WidgetFormErrorMessage } from "../../../../controls/widgets/widget-form-error-message"
@@ -13,6 +13,7 @@ import _ from "lodash"
 import { AllTables } from "../../../../app/maps/database-tables-map"
 import { closeSlidingPane } from "../../../../controls/redux-components/comp-slice"
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
+import { BranchType, currentBranchSelectorFn, setCurrentBranch } from "../../../login/login-slice"
 
 export function NewEditBranch({ props }: any) {
     const {
@@ -24,17 +25,22 @@ export function NewEditBranch({ props }: any) {
         address2,
         pin,
         phones,  // Comma-separated phone numbers
+        email,
+        stateCode,
         gstin
     } = props
     const instance: string = DataInstancesMap.branchMaster
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, context } = useUtilsInfo()
+    const currentBranch: BranchType | undefined = useSelector(currentBranchSelectorFn)
 
     const {
         checkNoSpaceOrSpecialChar,
         checkNoSpecialChar,
         checkMobileNos,   // For multiple mobile numbers
         checkLandPhones,  // For multiple landline numbers
+        checkEmail,       // For email validation
+        checkGstStateCode,  // For state code validation
         checkGstin        // For GSTIN validation
     } = useValidators()
 
@@ -54,6 +60,8 @@ export function NewEditBranch({ props }: any) {
             address2: address2 || '',
             pin: pin || '',
             phones: phones || '',  // Comma-separated phone numbers
+            email: email || '',
+            stateCode: stateCode || '',
             gstin: gstin || ''
         },
     });
@@ -159,6 +167,38 @@ export function NewEditBranch({ props }: any) {
                 {errors.phones && <WidgetFormErrorMessage errorMessage={errors.phones.message} />}
             </label>
 
+            {/* Email */}
+            <label className="flex flex-col font-medium text-primary-800">
+                <span className="font-bold">Email</span>
+                <input
+                    type="text"
+                    placeholder="e.g. branch@company.com"
+                    className="mt-0.5 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
+                    {...register('email', {
+                        validate: checkEmail
+                    })}
+                />
+                {errors.email && <WidgetFormErrorMessage errorMessage={errors.email.message} />}
+            </label>
+
+            {/* State Code */}
+            <label className="flex flex-col font-medium text-primary-800">
+                <span className="font-bold">State Code</span>
+                <input
+                    type="text"
+                    placeholder="e.g. 27 (Maharashtra)"
+                    maxLength={2}
+                    className="mt-0.5 px-2 border-[1px] border-primary-200 rounded-md placeholder:text-gray-300"
+                    {...register('stateCode', {
+                        validate: (value) => {
+                            if (!value) return true;
+                            return checkGstStateCode(value);
+                        }
+                    })}
+                />
+                {errors.stateCode && <WidgetFormErrorMessage errorMessage={errors.stateCode.message} />}
+            </label>
+
             {/* GSTIN */}
             <label className="flex flex-col font-medium text-primary-800 sm:col-span-2">
                 <span className="font-bold">GSTIN</span>
@@ -207,7 +247,9 @@ export function NewEditBranch({ props }: any) {
                     address1: data.address1,
                     address2: data.address2 || null,
                     pin: data.pin,
-                    phones: data.phones || null  // Comma-separated phone numbers
+                    phones: data.phones || null,  // Comma-separated phone numbers
+                    email: data.email || null,
+                    stateCode: data.stateCode || null
                 }
             }
 
@@ -228,6 +270,18 @@ export function NewEditBranch({ props }: any) {
                 }
             })
             Utils.showSaveMessage()
+
+            // Update currentBranch in Redux if the edited branch is the currently selected one
+            if (currentBranch && data.id && currentBranch.branchId === data.id) {
+                const updatedBranch: BranchType = {
+                    branchId: data.id,
+                    branchCode: data.branchCode,
+                    branchName: data.branchName,
+                    jData: Object.keys(jData).length > 0 ? jData : null
+                }
+                dispatch(setCurrentBranch(updatedBranch))
+            }
+
             dispatch(changeAccSettings())
             dispatch(closeSlidingPane())
             const loadData = context.CompSyncFusionGrid[instance].loadData
@@ -249,5 +303,7 @@ export type NewEditBranchType = {
     address2?: string
     pin?: string
     phones?: string  // Comma-separated phone numbers
+    email?: string
+    stateCode?: string  // 2-digit numeric state code
     gstin?: string
 }

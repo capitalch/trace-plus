@@ -25,7 +25,7 @@ export function PurchaseCommonHeader() {
             state.reduxComp.compTabs[DataInstancesMap.allPurchases]?.activeTabIndex ?? 0
     );
     const { checkAllowedDate } = useValidators();
-    const { branchName, currentDateFormat } = useUtilsInfo()
+    const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo()
     const {
         getValues,
         setValue,
@@ -185,7 +185,7 @@ export function PurchaseCommonHeader() {
     function handleOnPreview() {
         const purchaseEditData: any = getValues('purchaseEditData') || {}
         if (_.isEmpty(purchaseEditData)) return
-        generatePurchaseInvoicePDF(purchaseEditData, branchName || '', currentDateFormat)
+        generatePurchaseInvoicePDF(purchaseEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat)
     }
 
 }

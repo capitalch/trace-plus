@@ -63,10 +63,29 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
-	- Voucher print
-		- print media correction as a4
-		- branch separate state code and email inclusion
-		- when branch address updated then refresh data globally
+	- Check resetAll mechanism for all transactions
+		- New entry
+		- ZoomIn
+		- Edit
+													- Purchase invoice print
+													- Purchase return print
+	- Sales print
+	- Sales return print
+	- Debit note print
+	- Credit note print
+	- Deep QA for
+													- vouchers
+		- Sales
+		- Sales return
+		- Purchase
+		- Purchase return
+		- Debit note
+		- credit note
+
+												- Voucher print
+													- print media correction as a4
+													- branch separate state code and email inclusion
+													- when branch address updated then refresh data globally
 													- CompAccountsContainer needs to be responsive in better manner
 													- Resize grids in purchase, purchase return, debit notes, credit notes
 													- When voucher is saved defaults to payment voucher

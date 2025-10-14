@@ -121,17 +121,19 @@ export function BranchMaster() {
             return <span className="text-xs text-gray-400">No address</span>
         }
 
-        const { address1, address2, pin, phones } = jData.address
+        const { address1, address2, pin, phones, email, stateCode } = jData.address
         const gstin = jData.gstin  // GSTIN is separate from address object
         const addressLine1 = address1 || ''
         const addressLine2 = address2 ? `, ${address2}` : ''
         const pinText = pin ? `, PIN: ${pin}` : ''
-        const addressText = `${addressLine1}${addressLine2}${pinText}`
+        const stateCodeText = stateCode ? `, State: ${stateCode}` : ''
+        const addressText = `${addressLine1}${addressLine2}${pinText}${stateCodeText}`
 
         return (
             <div className="text-xs">
                 <div className="truncate" title={addressText}>{addressText}</div>
                 {phones && <div className="text-gray-500 truncate" title={phones}>Ph: {phones}</div>}
+                {email && <div className="text-gray-500 truncate" title={email}>Email: {email}</div>}
                 {gstin && <div className="text-gray-500 truncate" title={gstin}>GSTIN: {gstin}</div>}
             </div>
         )
@@ -166,6 +168,8 @@ export function BranchMaster() {
         let address2 = ''
         let pin = ''
         let phones = ''
+        let email = ''
+        let stateCode = ''
         let gstin = ''
 
         if (args.jData) {
@@ -176,6 +180,8 @@ export function BranchMaster() {
                 address2 = addr.address2 || ''
                 pin = addr.pin || ''
                 phones = addr.phones || ''
+                email = addr.email || ''
+                stateCode = addr.stateCode || ''
             }
 
             // Parse gstin (separate from address)
@@ -190,6 +196,8 @@ export function BranchMaster() {
         props.address2 = address2
         props.pin = pin
         props.phones = phones
+        props.email = email
+        props.stateCode = stateCode
         props.gstin = gstin
 
         dispatch(openSlidingPane({

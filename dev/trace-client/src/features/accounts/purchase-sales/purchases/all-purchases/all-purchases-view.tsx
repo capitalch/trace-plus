@@ -28,6 +28,8 @@ export function AllPurchasesView({ className }: { className?: string }) {
     buCode,
     branchId,
     branchName,
+    branchAddress,
+    branchGstin,
     dbName,
     decodedDbParamsObject,
     finYearId,
@@ -394,7 +396,7 @@ export function AllPurchasesView({ className }: { className?: string }) {
       Utils.showErrorMessage(Messages.errNoDataFoundForEdit)
       return
     }
-    generatePurchaseInvoicePDF(purchaseEditData, branchName ?? '', currentDateFormat)
+    generatePurchaseInvoicePDF(purchaseEditData, branchId, branchName ?? '', branchAddress, branchGstin, currentDateFormat)
   }
 
   function handleOnRowDataBound(args: RowDataBoundEventArgs) {

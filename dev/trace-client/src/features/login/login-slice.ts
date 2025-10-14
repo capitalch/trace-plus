@@ -186,6 +186,8 @@ export type BranchAddressType = {
   address2?: string
   pin: string
   phones?: string
+  email?: string
+  stateCode?: string
 }
 
 export type BranchJDataType = {

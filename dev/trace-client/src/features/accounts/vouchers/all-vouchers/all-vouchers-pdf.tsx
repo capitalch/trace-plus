@@ -40,11 +40,17 @@ export function AllVouchersPDF({
         address1: unitInfo.address1,
         address2: unitInfo.address2,
         pin: unitInfo.pin,
+        email: unitInfo.email,
+        stateCode: unitInfo.state,
+        phones: branchAddress?.phones,
       }
     : {
         address1: branchAddress?.address1,
         address2: branchAddress?.address2,
         pin: branchAddress?.pin,
+        email: branchAddress?.email,
+        stateCode: branchAddress?.stateCode,
+        phones: branchAddress?.phones,
       };
 
   // For GSTIN: Branch GSTIN has priority if available, otherwise use unit GSTIN
@@ -56,20 +62,26 @@ export function AllVouchersPDF({
   const addressParts: string[] = [];
 
   if (isHeadOffice) {
+    // Head Office
     addressParts.push("Branch: " + branchName);
     if (displayGstin) addressParts.push("GSTIN: " + displayGstin);
+    if (displayAddress.address1) addressParts.push("Address: " + displayAddress.address1);
+    if (displayAddress.address2) addressParts.push(displayAddress.address2);
+    if (displayAddress.pin) addressParts.push("Pin: " + displayAddress.pin);
+    if (displayAddress.phones) addressParts.push("Phones: " + displayAddress.phones);
+    if (displayAddress.email) addressParts.push("Email: " + displayAddress.email);
+    if (displayAddress.stateCode) addressParts.push("State Code: " + displayAddress.stateCode);
+    if (unitInfo.webSite) addressParts.push("Web: " + unitInfo.webSite);
   } else {
-    // For non-head office, GSTIN comes first
+    // Branch (not head office)
     if (displayGstin) addressParts.push("GSTIN: " + displayGstin);
+    if (displayAddress.address1) addressParts.push("Address: " + displayAddress.address1);
+    if (displayAddress.address2) addressParts.push(displayAddress.address2);
+    if (displayAddress.pin) addressParts.push("Pin: " + displayAddress.pin);
+    if (displayAddress.phones) addressParts.push("Phones: " + displayAddress.phones);
+    if (displayAddress.email) addressParts.push("Email: " + displayAddress.email);
+    if (displayAddress.stateCode) addressParts.push("State Code: " + displayAddress.stateCode);
   }
-
-  if (displayAddress.address1) addressParts.push("Address: " + displayAddress.address1);
-  if (displayAddress.address2) addressParts.push(displayAddress.address2);
-  if (displayAddress.pin) addressParts.push("Pin: " + displayAddress.pin);
-  if (branchAddress?.phones) addressParts.push("Phones: " + branchAddress.phones);
-  if (unitInfo.email) addressParts.push("Email: " + unitInfo.email);
-  if (unitInfo.webSite) addressParts.push("Web: " + unitInfo.webSite);
-  if (unitInfo.state) addressParts.push("State: " + unitInfo.state);
 
   const addressString = addressParts.join(" ");
 
@@ -83,17 +95,25 @@ export function AllVouchersPDF({
 
   return (// half height of A4
     <Document>
-      <Page size={{ width: 595.28, height: 420.945 }} style={styles.page}> 
+      <Page size={"A4"} style={styles.page}> 
         {/* Header */}
         <View style={styles.header} fixed>
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{unitInfo.unitName}</Text>
             {!isHeadOffice && unitInfo.address1 && (
               <Text style={{ marginTop: 2, fontSize: 8, color: '#555' }}>
-                Head Office: {unitInfo.address1}
+                Head Office: {unitInfo.gstin ? (
+                  <Text style={{ fontWeight: 'bold', color: '#333' }}>
+                    GSTIN: {unitInfo.gstin}
+                  </Text>
+                ) : ""}
+                {unitInfo.gstin && unitInfo.address1 ? " " : ""}
+                {unitInfo.address1}
                 {unitInfo.address2 ? " " + unitInfo.address2 : ""}
                 {unitInfo.pin ? " Pin: " + unitInfo.pin : ""}
-                {unitInfo.state ? " State: " + unitInfo.state : ""}
+                {unitInfo.state ? " State Code: " + unitInfo.state : ""}
+                {unitInfo.email ? " Email: " + unitInfo.email : ""}
+                {unitInfo.webSite ? " Web: " + unitInfo.webSite : ""}
               </Text>
             )}
             {!isHeadOffice && (
