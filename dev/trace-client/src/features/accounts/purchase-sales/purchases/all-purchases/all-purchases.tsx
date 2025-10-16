@@ -148,6 +148,7 @@ export function AllPurchases() {
         }
         try {
             const xData: XDataObjectType = getTranHData();
+            console.log(JSON.stringify(xData))
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",
@@ -158,9 +159,9 @@ export function AllPurchases() {
             if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            // if (!location.state?.id){
-                // resetAll()
-            // }
+            if (!location.state?.id){
+                resetAll()
+            }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);

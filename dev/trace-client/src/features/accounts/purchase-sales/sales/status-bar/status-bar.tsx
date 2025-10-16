@@ -19,7 +19,7 @@ const StatusBar: React.FC = () => {
     const lastSalesEditData = useSelector((state: RootStateType) => state.sales.lastSalesEditData);
     const { control, getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
     const { getDebitCreditDifference, populateFormOverId, resetAll }: any = useFormContext<SalesFormDataType>();
-    const { branchName, currentDateFormat } = useUtilsInfo();
+    const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo();
     // Using useWatch is more effecient
     const totalInvoiceAmount = useWatch({
         control,
@@ -83,7 +83,7 @@ const StatusBar: React.FC = () => {
         }
 
         if (_.isEmpty(salesEditData)) return;
-        generateSalesInvoicePDF(salesEditData, branchName || '', currentDateFormat);
+        generateSalesInvoicePDF(salesEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat);
     };
 
     return (

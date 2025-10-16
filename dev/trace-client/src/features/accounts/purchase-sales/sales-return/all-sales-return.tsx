@@ -193,7 +193,8 @@ export function AllSalesReturn() {
             subTotal: 0,
             cgst: 0,
             sgst: 0,
-            igst: 0
+            igst: 0,
+            originalSaleQty: undefined
         };
     }
 
@@ -305,7 +306,8 @@ export function AllSalesReturn() {
                 cgst: item.cgst,
                 sgst: item.sgst,
                 igst: item.igst,
-                subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
+                subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0),
+                originalSaleQty: undefined
             })),
             contactsData: billTo,
         })
@@ -384,4 +386,5 @@ export type SalesReturnLineItemType = {
     igst: number;
     lineRemarks?: string | null;
     serialNumbers?: string | null;
+    originalSaleQty?: number;
 }

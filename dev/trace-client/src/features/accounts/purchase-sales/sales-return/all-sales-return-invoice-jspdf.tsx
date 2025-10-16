@@ -3,8 +3,16 @@ import autoTable from 'jspdf-autotable';
 import { SalePurchaseEditDataType } from '../../../../utils/global-types-interfaces-enums';
 import { UnitInfoType, Utils } from '../../../../utils/utils';
 import { format } from 'date-fns';
+import { BranchAddressType } from '../../../login/login-slice';
 
-export function generateSalesReturnInvoicePDF(invoiceData: SalePurchaseEditDataType, branchName: string, currentDateFormat: string) {
+export function generateSalesReturnInvoicePDF(
+  invoiceData: SalePurchaseEditDataType,
+  branchId: number | undefined,
+  branchName: string,
+  branchAddress: BranchAddressType | undefined,
+  branchGstin: string | undefined,
+  currentDateFormat: string
+) {
   const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
   const marginLeft = 25;
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -12,17 +20,33 @@ export function generateSalesReturnInvoicePDF(invoiceData: SalePurchaseEditDataT
   const { tranH, billTo, salePurchaseDetails, tranD, extGstTranD } = invoiceData;
   const companyInfo: UnitInfoType = Utils.getUnitInfo() || {};
 
-  // Company info from businessContacts (this is the selling company)
-  const company = {
-    name: companyInfo.unitName || 'This Company Pvt Ltd',
-    branchName: branchName || '',
-    address: `${companyInfo.address1?.trim() || ''} ${companyInfo.address2?.trim() || ''} Pin: ${companyInfo.pin}`,
-    gstin: companyInfo.gstin || '',
-    phone: companyInfo.mobileNumber || '',
-    email: companyInfo.email || '',
-    website: companyInfo.webSite || '',
-    stateCode: companyInfo.state || ''
-  };
+  // Determine if this is head office (branchId === 1)
+  const isHeadOffice = branchId === 1;
+
+  // Determine which address to display (similar to purchase-invoice-jspdf.tsx)
+  const displayAddress = isHeadOffice
+    ? {
+        address1: companyInfo.address1,
+        address2: companyInfo.address2,
+        pin: companyInfo.pin,
+        email: companyInfo.email,
+        stateCode: companyInfo.state,
+        phones: branchAddress?.phones,
+      }
+    : {
+        address1: branchAddress?.address1,
+        address2: branchAddress?.address2,
+        pin: branchAddress?.pin,
+        email: branchAddress?.email,
+        stateCode: branchAddress?.stateCode,
+        phones: branchAddress?.phones,
+      };
+
+  // For GSTIN: Branch GSTIN has priority if available, otherwise use unit GSTIN
+  const displayGstin = isHeadOffice
+    ? companyInfo.gstin
+    : branchGstin || companyInfo.gstin;
+
 
   const formatNumber = (n: number) => n.toLocaleString('en-IN', { minimumFractionDigits: 2 });
   const computedQty = salePurchaseDetails.reduce((sum, item) => sum + (item.qty || 0), 0);
@@ -50,25 +74,122 @@ export function generateSalesReturnInvoicePDF(invoiceData: SalePurchaseEditDataT
   // Company Header
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
-  doc.text(company.name, marginLeft, currentY);
+  doc.text(companyInfo.unitName || '', marginLeft, currentY);
   currentY += 12;
 
-  // GSTIN
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text(`GSTIN ${company.gstin}`, marginLeft, currentY);
-  currentY += 10;
 
-  // Address
-  doc.text(company.address, marginLeft, currentY);
-  currentY += 10;
+  if (isHeadOffice) {
+    // Head Office: Show branch name, then all details
+    doc.setFont('helvetica', 'bold');
+    doc.text(branchName || '', marginLeft, currentY);
+    doc.setFont('helvetica', 'normal');
+    currentY += 10;
 
-  // Contact details
-  doc.text(`Ph: ${company.phone} email: ${company.email} ${company.website ? `Web: ${company.website}` : ''}`, marginLeft, currentY);
-  currentY += 10;
+    // GSTIN in bold
+    if (displayGstin) {
+      doc.setFont('helvetica', 'bold');
+      doc.text(`GSTIN: ${displayGstin}`, marginLeft, currentY);
+      doc.setFont('helvetica', 'normal');
+      currentY += 10;
+    }
 
-  // State
-  doc.text(`State code: ${company.stateCode}`, marginLeft, currentY);
+    // Address
+    if (displayAddress.address1) {
+      doc.text(`${displayAddress.address1?.trim() || ''}${displayAddress.address2 ? ', ' + displayAddress.address2.trim() : ''}`, marginLeft, currentY);
+      currentY += 10;
+    }
+
+    // Pin and State Code
+    const pinStateText = [
+      displayAddress.pin ? `Pin: ${displayAddress.pin}` : '',
+      displayAddress.stateCode ? `State code: ${displayAddress.stateCode}` : ''
+    ].filter(Boolean).join(', ');
+    if (pinStateText) {
+      doc.text(pinStateText, marginLeft, currentY);
+      currentY += 10;
+    }
+
+    // Contact details
+    const contactParts = [
+      displayAddress.phones ? `Ph: ${displayAddress.phones}` : '',
+      displayAddress.email ? `Email: ${displayAddress.email}` : '',
+      companyInfo.webSite ? `Web: ${companyInfo.webSite}` : ''
+    ].filter(Boolean).join(', ');
+    if (contactParts) {
+      doc.text(contactParts, marginLeft, currentY);
+      currentY += 10;
+    }
+
+  } else {
+    // Branch: Show head office first, then branch details
+
+    // Head office info (smaller font)
+    doc.setFontSize(7);
+
+    // Head Office GSTIN in bold
+    if (companyInfo.gstin) {
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Head Office: GSTIN: ${companyInfo.gstin}`, marginLeft, currentY);
+      doc.setFont('helvetica', 'normal');
+      currentY += 10;
+    }
+
+    // Head office address line - wrapped to prevent overlap with Sales Return section
+    const hoAddressParts = [
+      companyInfo.address1,
+      companyInfo.address2,
+      companyInfo.pin ? `Pin: ${companyInfo.pin}` : '',
+      companyInfo.state ? `State code: ${companyInfo.state}` : '',
+      companyInfo.email ? `Email: ${companyInfo.email}` : '',
+      companyInfo.webSite ? `Web: ${companyInfo.webSite}` : ''
+    ].filter(Boolean).join(', ');
+
+    if (hoAddressParts) {
+      // Wrap text to prevent overlap with right section (Sales Return)
+      const maxWidth = pageWidth * 0.60; // Use 60% of page width to leave space for Sales Return section
+      const hoAddressLines = doc.splitTextToSize(hoAddressParts, maxWidth);
+      doc.text(hoAddressLines, marginLeft, currentY);
+      currentY += hoAddressLines.length * 10;
+    }
+
+    doc.setFontSize(9);
+    currentY += 3; // Small spacing
+
+    // Branch name in bold
+    doc.setFont('helvetica', 'bold');
+    doc.text(branchName || '', marginLeft, currentY);
+    doc.setFont('helvetica', 'normal');
+    currentY += 10;
+
+    // Branch GSTIN in bold
+    if (displayGstin) {
+      doc.setFont('helvetica', 'bold');
+      doc.text(`GSTIN: ${displayGstin}`, marginLeft, currentY);
+      doc.setFont('helvetica', 'normal');
+      currentY += 10;
+    }
+
+    // Branch address
+    if (displayAddress.address1) {
+      doc.text(`${displayAddress.address1?.trim() || ''}${displayAddress.address2 ? ', ' + displayAddress.address2.trim() : ''}`, marginLeft, currentY);
+      currentY += 10;
+    }
+
+    // Branch pin, phones, email, state code
+    const branchDetails = [
+      displayAddress.pin ? `Pin: ${displayAddress.pin}` : '',
+      displayAddress.phones ? `Ph: ${displayAddress.phones}` : '',
+      displayAddress.email ? `Email: ${displayAddress.email}` : '',
+      displayAddress.stateCode ? `State code: ${displayAddress.stateCode}` : ''
+    ].filter(Boolean).join(', ');
+
+    if (branchDetails) {
+      doc.text(branchDetails, marginLeft, currentY);
+      currentY += 10;
+    }
+  }
 
   const leftColumnX = marginLeft;
   const leftColumnWidth = pageWidth * 0.7; // 70% width for left section

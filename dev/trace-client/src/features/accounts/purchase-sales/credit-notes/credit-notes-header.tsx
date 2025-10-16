@@ -21,7 +21,7 @@ import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 export function CreditNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.creditNotes]?.activeTabIndex)
     const { checkAllowedDate } = useValidators();
-    const { branchName, currentDateFormat } = useUtilsInfo()
+    const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo()
     const {
         getValues,
         watch,
@@ -203,9 +203,12 @@ export function CreditNotesHeader() {
         const noteData: DebitCreditNoteEditDataType | undefined = getValues('debitCreditNoteEditData')
         if (_.isEmpty(noteData)) return
         generateDebitCreditNotePDF({
-            branchName: branchName || '1',
-            currentDateFormat: currentDateFormat,
             noteData: noteData,
+            branchId: branchId,
+            branchName: branchName || '1',
+            branchAddress: branchAddress,
+            branchGstin: branchGstin,
+            currentDateFormat: currentDateFormat,
             tranTypeId: Utils.getTranTypeId('CreditNote')
         })
     }

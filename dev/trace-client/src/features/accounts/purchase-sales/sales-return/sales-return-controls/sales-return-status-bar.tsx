@@ -19,7 +19,7 @@ const SalesReturnStatusBar: React.FC = () => {
     const lastSalesReturnEditData = useSelector((state: RootStateType) => state.salesReturn.lastSalesReturnEditData);
     const { getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesReturnFormDataType>();
     const { populateFormOverId, resetAll }: any = useFormContext<SalesReturnFormDataType>();
-    const { branchName, currentDateFormat } = useUtilsInfo();
+    const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo();
     const totalInvoiceAmount = getValues('totalInvoiceAmount') || new Decimal(0);
     const creditAccount = getValues('creditAccount') || {};
     const totalRefundAmount = new Decimal(creditAccount?.amount || 0);
@@ -72,7 +72,7 @@ const SalesReturnStatusBar: React.FC = () => {
         }
 
         if (_.isEmpty(salesReturnEditData)) return;
-        generateSalesReturnInvoicePDF(salesReturnEditData, branchName || '', currentDateFormat);
+        generateSalesReturnInvoicePDF(salesReturnEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat);
     };
 
     return (

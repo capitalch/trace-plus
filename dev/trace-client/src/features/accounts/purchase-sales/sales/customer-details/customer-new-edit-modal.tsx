@@ -208,7 +208,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactsDat
                         });
 
                         // Set the contact data in parent and close modal
-                        setParentValue('contactsData', existingContact);
+                        setParentValue('contactsData', existingContact, { shouldDirty: true });
                         triggerParent();
                         handleOnClose();
                     }
@@ -248,7 +248,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactsDat
                         });
 
                         // Set the contact data in parent and close modal
-                        setParentValue('contactsData', existingContact);
+                        setParentValue('contactsData', existingContact, { shouldDirty: true });
                         triggerParent();
                         handleOnClose();
                     }
@@ -636,7 +636,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactsDat
         setParentValue('contactsData', {
             ...formData,
             id: customerId
-        });
+        }, { shouldDirty: true });
     }
 
     async function handleOnSubmit() {

@@ -427,7 +427,8 @@ const SalesReturnHeaderSection: React.FC = () => {
                 cgst: item.cgst,
                 sgst: item.sgst,
                 igst: item.igst,
-                subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
+                subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0),
+                originalSaleQty: item.qty
             })),
         })
     }

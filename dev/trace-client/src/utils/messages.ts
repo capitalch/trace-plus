@@ -75,6 +75,7 @@ const Messages = {
   errProductNotSelected: 'Product not selected',
   errQtyCannotBeZero: 'Qty cannot be zero',
   errQtySrNoNotMatch: 'Qty and serial no count mismatch',
+  errReturnQtyExceedsSaleQty: 'Return quantity cannot exceed original sale quantity',
   errRequired: 'This value is required',
   errRequiredShort: "Required",
   errSameAccountCannotAppearInDebitAndCredit: 'Same Account cannot appear in both Debit and Credit',

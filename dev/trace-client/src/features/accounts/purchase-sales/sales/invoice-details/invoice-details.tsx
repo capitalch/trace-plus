@@ -22,6 +22,13 @@ const InvoiceDetails: React.FC = () => {
 
     const isGstInvoice = watch('isGstInvoice');
 
+    // Clear IGST when GST Invoice is disabled
+    useEffect(() => {
+        if (!isGstInvoice) {
+            setValue('isIgst', false);
+        }
+    }, [isGstInvoice, setValue]);
+
     useEffect(() => {
         const salesLineItems = getValues('salesLineItems');
         if (salesLineItems && salesLineItems.length > 0) {
@@ -68,6 +75,7 @@ const InvoiceDetails: React.FC = () => {
                             type="checkbox"
                             className="sr-only"
                             {...register("isGstInvoice")}
+                            disabled
                         />
                         <div className={clsx(
                             "relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200",
@@ -86,24 +94,33 @@ const InvoiceDetails: React.FC = () => {
                     </label>
 
                     {/* IGST Toggle */}
-                    <label className="flex items-center cursor-pointer">
+                    <label className={clsx(
+                        "flex items-center",
+                        isGstInvoice ? "cursor-pointer" : "cursor-not-allowed opacity-50"
+                    )}>
                         <input
                             type="checkbox"
                             className="sr-only"
                             {...register("isIgst")}
+                            disabled={!isGstInvoice}
                         />
                         <div className={clsx(
                             "relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200",
-                            watch("isIgst") ? "bg-green-500" : "bg-gray-300"
+                            !isGstInvoice
+                                ? "bg-gray-200"
+                                : watch("isIgst") ? "bg-green-500" : "bg-gray-300"
                         )}>
                             <span
                                 className={clsx(
                                     "inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200",
-                                    watch("isIgst") ? "translate-x-5" : "translate-x-0.5"
+                                    isGstInvoice && watch("isIgst") ? "translate-x-5" : "translate-x-0.5"
                                 )}
                             />
                         </div>
-                        <span className="ml-2 font-medium text-gray-700 text-sm">
+                        <span className={clsx(
+                            "ml-2 font-medium text-sm",
+                            isGstInvoice ? "text-gray-700" : "text-gray-400"
+                        )}>
                             IGST
                         </span>
                     </label>

@@ -10,7 +10,6 @@ import { Utils } from "../../../../../utils/utils";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { PurchaseFormDataType } from "../../purchases/all-purchases/all-purchases";
-// import { PurchaseTotalsPanel } from "../../purchases/purchase-controls/purchase-totals-panel";
 import { PurchaseReturnTotalsPanel } from "./purchase-return-totals-panel";
 
 export function PurchaseReturnSubHeader({ className }: PurchaseCommonSubHeaderType) {
@@ -51,6 +50,7 @@ export function PurchaseReturnSubHeader({ className }: PurchaseCommonSubHeaderTy
                     showAccountBalance
                     value={watch('creditAccId') as string}
                     className="mt-1 w-full max-w-80"
+                    toSelectFirstOption
                 />
             </FormField>
 

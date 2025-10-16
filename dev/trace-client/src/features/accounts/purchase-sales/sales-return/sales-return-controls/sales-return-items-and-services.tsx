@@ -236,7 +236,14 @@ const SalesReturnItemsAndServices: React.FC = () => {
 
                             {/* Qty */}
                             <div className="flex flex-col w-20">
-                                <label className="font-semibold text-[13px]">Qty</label>
+                                <label className="font-semibold text-[13px]">
+                                    Qty
+                                    {watch(`salesReturnLineItems.${index}.originalSaleQty`) !== undefined && (
+                                        <span className="text-xs text-gray-500 ml-1">
+                                            (Max: {watch(`salesReturnLineItems.${index}.originalSaleQty`)})
+                                        </span>
+                                    )}
+                                </label>
                                 <ControlledNumericInput
                                     className={clsx("text-right h-8 mt-1",
                                         inputFormFieldStyles, errors.salesReturnLineItems?.[index]?.qty ? errorClass : '')}
@@ -250,8 +257,14 @@ const SalesReturnItemsAndServices: React.FC = () => {
                                         computeLineItemValues(index)
                                     }}
                                     validate={(value) => {
-                                        const ret = value > 0 ? true : Messages.errQtyCannotBeZero;
-                                        return (ret)
+                                        if (value <= 0) {
+                                            return Messages.errQtyCannotBeZero;
+                                        }
+                                        const originalQty = watch(`salesReturnLineItems.${index}.originalSaleQty`);
+                                        if (originalQty !== undefined && value > originalQty) {
+                                            return `${Messages.errReturnQtyExceedsSaleQty} (${originalQty})`;
+                                        }
+                                        return true;
                                     }}
                                 />
                             </div>

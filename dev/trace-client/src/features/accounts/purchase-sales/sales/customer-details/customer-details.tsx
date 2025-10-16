@@ -47,10 +47,14 @@ const CustomerDetails: React.FC = () => {
         // Copies contactsData to contactDisplayData for display
         if (contactsData) {
             const displayData = formatContactDisplay(contactsData);
-            setValue('contactDisplayData', displayData);
+            setValue('contactDisplayData', displayData, { shouldDirty: true });
             if (contactsData.gstin) {
-                setValue('hasCustomerGstin', true);
-                setValue('gstin', contactsData.gstin);
+                setValue('hasCustomerGstin', true, { shouldDirty: true });
+                setValue('gstin', contactsData.gstin, { shouldDirty: true });
+            } else {
+                // Clear GSTIN when new customer has no GSTIN
+                setValue('hasCustomerGstin', false, { shouldDirty: true });
+                setValue('gstin', null, { shouldDirty: true });
             }
             trigger('contactDisplayData');
         }
@@ -87,6 +91,7 @@ const CustomerDetails: React.FC = () => {
                                 onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
+                                        e.preventDefault(); // prevent default behavior of form submission
                                         handleCustomerSearch(searchQuery);
                                     }
                                 }}
@@ -210,6 +215,7 @@ const CustomerDetails: React.FC = () => {
                     <div className="grid mt-2 pt-2 border-t gap-2 grid-cols-2">
                         {/* New / Edit */}
                         <button
+                            type='button'
                             onClick={handleNewEditCustomer}
                             className="flex items-center justify-center px-2 py-1 text-blue-700 text-md bg-blue-100 rounded-md transition-colors hover:bg-blue-200 space-x-1">
                             <Edit size={14} className="flex-shrink-0" />
@@ -217,6 +223,7 @@ const CustomerDetails: React.FC = () => {
                         </button>
                         {/* Clear */}
                         <button
+                            type='button'
                             onClick={handleClearCustomer}
                             className="flex items-center justify-center px-2 py-1 text-amber-700 text-md bg-amber-100 rounded-md transition-colors hover:bg-amber-200 space-x-1">
                             <Trash2 size={14} className="flex-shrink-0" />

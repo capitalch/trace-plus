@@ -21,7 +21,7 @@ import { Utils } from "../../../../utils/utils";
 export function DebitNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
     const { checkAllowedDate } = useValidators();
-    const { branchName, currentDateFormat } = useUtilsInfo()
+    const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo()
     const {
         getValues,
         watch,
@@ -203,9 +203,12 @@ export function DebitNotesHeader() {
         const noteData: DebitCreditNoteEditDataType | undefined = getValues('debitCreditNoteEditData')
         if (_.isEmpty(noteData)) return
         generateDebitCreditNotePDF({
+            noteData: noteData,
+            branchId: branchId,
             branchName: branchName || '1',
+            branchAddress: branchAddress,
+            branchGstin: branchGstin,
             currentDateFormat: currentDateFormat,
-            noteData:noteData,
             tranTypeId: Utils.getTranTypeId('DebitNote')
         })
     }

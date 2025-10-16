@@ -3,6 +3,7 @@ import { DebitCreditNoteEditDataType } from "../../../../utils/global-types-inte
 import { UnitInfoType, Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
 import autoTable from "jspdf-autotable";
+import { BranchAddressType } from "../../../login/login-slice";
 
 // Constants for better maintainability
 const PDF_CONFIG = {
@@ -50,12 +51,16 @@ const PDF_CONFIG = {
 
 const TRAN_TYPE_LABELS = {
     7: 'Debit Note',
-    default: 'Credit Note'
+    8: 'Credit Note',
+    default: 'Note'
 } as const;
 
 type GenerateNotePDFProps = {
     noteData: DebitCreditNoteEditDataType;
+    branchId: number | undefined;
     branchName: string;
+    branchAddress: BranchAddressType | undefined;
+    branchGstin: string | undefined;
     currentDateFormat: string;
     tranTypeId: number;
 };
@@ -76,16 +81,6 @@ const formatNumber = (n: number): string =>
 
 const buildAddress = (...parts: (string | undefined)[]): string =>
     parts.filter(part => part && part.trim()).join(' ').trim();
-
-const buildCompanyAddress = (companyInfo: UnitInfoType): string => {
-    const addressParts = [
-        companyInfo.address1?.trim(),
-        companyInfo.address2?.trim(),
-        companyInfo.pin ? `Pin: ${companyInfo.pin}` : '',
-        companyInfo.state ? `State: ${companyInfo.state}` : ''
-    ];
-    return buildAddress(...addressParts);
-};
 
 // PDF helper functions
 const initializePDFContext = (): PDFContext => {
@@ -114,6 +109,7 @@ const initializePDFContext = (): PDFContext => {
 
 const setFont = (
     doc: jsPDF,
+    
     style: 'normal' | 'bold' | 'italic',
     size: number = PDF_CONFIG.FONT_SIZES.normal
 ): void => {
@@ -188,28 +184,122 @@ const drawTitle = (context: PDFContext, title: string): void => {
 const drawCompanyDetails = (
     context: PDFContext,
     companyInfo: UnitInfoType,
-    branchName: string
+    branchId: number | undefined,
+    branchName: string,
+    branchAddress: BranchAddressType | undefined,
+    branchGstin: string | undefined
 ): number => {
     const detailsTopY = context.currentY;
     let leftY = detailsTopY;
 
-    const company = {
-        name: companyInfo.unitName || 'This Company Pvt Ltd',
-        branchName: branchName || '',
-        address: buildCompanyAddress(companyInfo),
-        gstin: `GSTIN: ${companyInfo.gstin || ''} Email: ${companyInfo.email || ''}`,
-    };
+    // Determine if this is head office (branchId === 1)
+    const isHeadOffice = branchId === 1;
+
+    // Determine which address to display
+    const displayAddress = isHeadOffice
+        ? {
+            address1: companyInfo.address1,
+            address2: companyInfo.address2,
+            pin: companyInfo.pin,
+            email: companyInfo.email,
+            stateCode: companyInfo.state,
+            phones: branchAddress?.phones,
+          }
+        : {
+            address1: branchAddress?.address1,
+            address2: branchAddress?.address2,
+            pin: branchAddress?.pin,
+            email: branchAddress?.email,
+            stateCode: branchAddress?.stateCode,
+            phones: branchAddress?.phones,
+          };
+
+    // For GSTIN: Branch GSTIN has priority if available, otherwise use unit GSTIN
+    const displayGstin = isHeadOffice
+        ? companyInfo.gstin
+        : branchGstin || companyInfo.gstin;
 
     setFont(context.doc, 'bold');
-    //   context.doc.text('Company Details', PDF_CONFIG.PAGE.marginLeft, leftY);
-    //   leftY += PDF_CONFIG.SPACING.line;
-    //   setFont(context.doc, 'normal');
-    leftY = drawWrappedText(context, company.name, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
-    if (company.branchName) {
-        leftY = drawWrappedText(context, company.branchName, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+    leftY = drawWrappedText(context, companyInfo.unitName || '', PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+
+    if (isHeadOffice) {
+        // Head Office: Show branch name, then all details
+        setFont(context.doc, 'bold');
+        if (branchName) {
+            leftY = drawWrappedText(context, branchName, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
+        setFont(context.doc, 'normal');
+
+        // GSTIN and Email
+        if (displayGstin) {
+            const gstinEmail = `GSTIN: ${displayGstin}${displayAddress.email ? ` Email: ${displayAddress.email}` : ''}`;
+            leftY = drawWrappedText(context, gstinEmail, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
+
+        // Address
+        const addressParts = [
+            displayAddress.address1?.trim(),
+            displayAddress.address2?.trim(),
+            displayAddress.pin ? `Pin: ${displayAddress.pin}` : '',
+            displayAddress.stateCode ? `State: ${displayAddress.stateCode}` : ''
+        ];
+        const addressText = buildAddress(...addressParts);
+        if (addressText) {
+            leftY = drawWrappedText(context, addressText, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
+
+    } else {
+        // Branch: Show head office first, then branch details
+        setFont(context.doc, 'normal');
+        context.doc.setFontSize(7);
+
+        // Head Office GSTIN and Email
+        if (companyInfo.gstin) {
+            const hoGstinEmail = `Head Office: GSTIN: ${companyInfo.gstin}${companyInfo.email ? ` Email: ${companyInfo.email}` : ''}`;
+            leftY = drawWrappedText(context, hoGstinEmail, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
+
+        // Head office address - wrapped to prevent overlap
+        const hoAddressParts = [
+            companyInfo.address1,
+            companyInfo.address2,
+            companyInfo.pin ? `Pin: ${companyInfo.pin}` : '',
+            companyInfo.state ? `State: ${companyInfo.state}` : ''
+        ];
+        const hoAddressText = buildAddress(...hoAddressParts);
+        if (hoAddressText) {
+            leftY = drawWrappedText(context, hoAddressText, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
+
+        context.doc.setFontSize(PDF_CONFIG.FONT_SIZES.normal);
+        leftY += PDF_CONFIG.SPACING.minimal; // Small spacing
+
+        // Branch name in bold
+        setFont(context.doc, 'bold');
+        if (branchName) {
+            leftY = drawWrappedText(context, branchName, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
+        setFont(context.doc, 'normal');
+
+        // Branch GSTIN and Email
+        if (displayGstin) {
+            const branchGstinEmail = `GSTIN: ${displayGstin}${displayAddress.email ? ` Email: ${displayAddress.email}` : ''}`;
+            leftY = drawWrappedText(context, branchGstinEmail, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
+
+        // Branch address
+        const branchAddressParts = [
+            displayAddress.address1?.trim(),
+            displayAddress.address2?.trim(),
+            displayAddress.pin ? `Pin: ${displayAddress.pin}` : '',
+            displayAddress.phones ? `Ph: ${displayAddress.phones}` : '',
+            displayAddress.stateCode ? `State: ${displayAddress.stateCode}` : ''
+        ];
+        const branchAddressText = buildAddress(...branchAddressParts);
+        if (branchAddressText) {
+            leftY = drawWrappedText(context, branchAddressText, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
+        }
     }
-    leftY = drawWrappedText(context, company.address, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
-    leftY = drawWrappedText(context, company.gstin, PDF_CONFIG.PAGE.marginLeft, leftY, context.detailsColumnWidth);
 
     return leftY + PDF_CONFIG.SPACING.line;
 };
@@ -454,12 +544,24 @@ const outputPDF = (doc: jsPDF): void => {
 // Main export function
 export function generateDebitCreditNotePDF({
     noteData,
+    branchId,
     branchName,
+    branchAddress,
+    branchGstin,
     currentDateFormat,
     tranTypeId,
 }: GenerateNotePDFProps): void {
     try {
-        const title = TRAN_TYPE_LABELS[tranTypeId as keyof typeof TRAN_TYPE_LABELS] || TRAN_TYPE_LABELS.default;
+        // Get the title based on tranTypeId
+        let title: string;
+        if (tranTypeId === 7) {
+            title = TRAN_TYPE_LABELS[7];
+        } else if (tranTypeId === 8) {
+            title = TRAN_TYPE_LABELS[8];
+        } else {
+            title = TRAN_TYPE_LABELS.default;
+        }
+
         const context = initializePDFContext();
 
         // Extract data
@@ -474,7 +576,7 @@ export function generateDebitCreditNotePDF({
         drawTitle(context, title);
 
         // Draw company and party details side by side
-        const leftY = drawCompanyDetails(context, companyInfo, branchName);
+        const leftY = drawCompanyDetails(context, companyInfo, branchId, branchName, branchAddress, branchGstin);
         context.currentY = PDF_CONFIG.PAGE.marginLeft + 32; // Reset to details top for party details (40 + 32 = 72)
         const rightY = drawPartyDetails(context, businessContacts);
 

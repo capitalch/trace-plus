@@ -31,7 +31,9 @@ export function AllSalesReturnView({ className, onBack }: AllSalesReturnViewProp
     dbName,
     decodedDbParamsObject,
     finYearId,
-    branchName
+    branchName,
+    branchAddress,
+    branchGstin
   } = useUtilsInfo();
   const { populateFormOverId, getSalesReturnEditDataOnId }:any = useFormContext<SalesReturnFormDataType>();
 
@@ -322,7 +324,7 @@ export function AllSalesReturnView({ className, onBack }: AllSalesReturnViewProp
         Utils.showErrorMessage(Messages.errNoDataFound)
         return
       }
-      generateSalesReturnInvoicePDF(salesReturnEditData, branchName || '', currentDateFormat)
+      generateSalesReturnInvoicePDF(salesReturnEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat)
     } catch (error) {
       console.error('Error generating PDF:', error)
       Utils.showErrorMessage(Messages.errGeneratingPdf)

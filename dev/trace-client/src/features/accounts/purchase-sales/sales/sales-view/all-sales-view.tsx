@@ -31,7 +31,9 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     dbName,
     decodedDbParamsObject,
     finYearId,
-    branchName
+    branchName,
+    branchAddress,
+    branchGstin
   } = useUtilsInfo();
   const { populateFormOverId, getSalesEditDataOnId }:any = useFormContext<SalesFormDataType>();
 
@@ -366,7 +368,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         Utils.showErrorMessage(Messages.errNoDataFound)
         return
       }
-      generateSalesInvoicePDF(salesEditData, branchName || '', currentDateFormat)
+      generateSalesInvoicePDF(salesEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat)
     } catch (error) {
       console.error('Error generating PDF:', error)
       Utils.showErrorMessage(Messages.errGeneratingPdf)

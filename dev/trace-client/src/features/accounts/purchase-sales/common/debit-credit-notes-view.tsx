@@ -22,6 +22,8 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
         buCode,
         branchId,
         branchName,
+        branchAddress,
+        branchGstin,
         dbName,
         // defaultGstRate,
         decodedDbParamsObject,
@@ -334,10 +336,13 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
         const editData: any = await getDebitCreditNoteDetailsOnId(data.id)
         const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
         generateDebitCreditNotePDF({
-            branchName: branchName || '',
-            currentDateFormat: currentDateFormat,
             noteData: dcEditData,
-            tranTypeId: 7
+            branchId: branchId,
+            branchName: branchName || '',
+            branchAddress: branchAddress,
+            branchGstin: branchGstin,
+            currentDateFormat: currentDateFormat,
+            tranTypeId: tranTypeId
         })
     }
 

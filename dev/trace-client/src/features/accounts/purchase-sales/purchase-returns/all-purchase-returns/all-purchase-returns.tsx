@@ -121,9 +121,9 @@ export function AllPurchaseReturns() {
             if (watch('id') && (!location.state?.id)) {
                 dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 1 })) // Switch to the second tab (Edit tab)
             }
-            // if (!location.state?.id) {
-            //     resetAll()
-            // }
+            if (!location.state?.id) {
+                resetAll()
+            }
             Utils.showSaveMessage();
         } catch (e) {
             console.error(e);

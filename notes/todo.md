@@ -16,7 +16,6 @@ valid gstin: 24AAACC1206D1ZM
 - Checkup price - discount in all reports as actual price
 - Supplier name and its due in summary report of inventory
 - Check why age of en-el25 on22-08-2025 sale showing 5702
-- deep QA
 														- UI
 														- VScroll bar issue in syncfusion grid
 														- Small screen whenn side menu appears then background invisible
@@ -63,16 +62,16 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
-	- Check resetAll mechanism for all transactions
-		- New entry
-		- ZoomIn
-		- Edit
+												- Check resetAll mechanism for all transactions
+													- New entry
+													- ZoomIn
+													- Edit
 													- Purchase invoice print
 													- Purchase return print
-	- Sales print
-	- Sales return print
-	- Debit note print
-	- Credit note print
+													- Sales print
+													- Sales return print
+													- Debit note print
+													- Credit note print
 	- Deep QA for
 													- vouchers
 		- Sales
