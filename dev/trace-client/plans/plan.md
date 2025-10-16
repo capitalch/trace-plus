@@ -1,329 +1,216 @@
-# Plan: Fix Credit Note PDF Label
+# Fix Index Column NaN Issue in Stock Summary Report
 
-## Problem Statement
-When generating PDF for credit notes, the title shows "Debit Note" instead of "Credit Note". Debit notes correctly show "Debit Note".
+## Problem Analysis (Updated)
 
-## Root Cause Analysis
+The index column in the stock summary report grid is showing `NaN` when the refresh button is clicked and `loadData` is executed.
 
-### Current Implementation
-**File**: `src/features/accounts/purchase-sales/common/debit-credit-note-jspdf.tsx`
+### Root Cause (Corrected)
 
-**Lines 52-55:**
+Based on testing:
+- **On first load**: `props.index` has correct values (0, 1, 2, 3...)
+- **After refresh button clicked**: `props.index` becomes `undefined`
+
+This indicates that the issue is related to how the grid re-renders when data is refreshed. When `loadData` is called and `setRowsData(rowsData)` updates the state, the grid re-renders but the `props.index` is not properly maintained during this refresh cycle.
+
+### Current Code
+
+**Index Template Function** (`comp-syncfusion-grid-hook.tsx:294-303`):
 ```typescript
-const TRAN_TYPE_LABELS = {
-    7: 'Debit Note',
-    default: 'Credit Note'
-} as const;
-```
-
-**Line 553:**
-```typescript
-const title = TRAN_TYPE_LABELS[tranTypeId as keyof typeof TRAN_TYPE_LABELS] || TRAN_TYPE_LABELS.default;
-```
-
-### Transaction Type IDs
-From `global-types-interfaces-enums.ts`:
-```typescript
-export const TranTypeMap: { [key: string]: number } = {
-    // ...
-    DebitNote: 7,    // ✓ Works correctly
-    CreditNote: 8,   // ✗ Falls through to default
-    // ...
+function indexColumnTemplate(props: any) {
+  const idx: number = props.index !== undefined
+    ? +props.index + 1
+    : (props.__index !== undefined ? +props.__index + 1 : 1);
+  return idx;
 }
 ```
 
-### The Bug
-The `TRAN_TYPE_LABELS` object only has:
-- Key `7` for "Debit Note"
-- Key `default` for fallback
+**Problem**: When `props.index` is `undefined` after refresh, it falls back to checking `props.__index` (also undefined), then returns 1 for all rows.
 
-When `tranTypeId` is 8 (Credit Note):
-1. Lookup `TRAN_TYPE_LABELS[8]` returns `undefined`
-2. Falls back to `|| TRAN_TYPE_LABELS.default`
-3. Returns "Credit Note" ✓
+## Investigation Needed
 
-**Wait... this should work correctly!**
+### 1. Check Grid Refresh Mechanism
+The issue might be in how the grid handles the `loadData` prop:
 
-Let me re-analyze the issue...
-
-## Re-Analysis
-
-Looking at line 553 more carefully:
+**File**: `stock-summary-report.tsx:133`
 ```typescript
-const title = TRAN_TYPE_LABELS[tranTypeId as keyof typeof TRAN_TYPE_LABELS] || TRAN_TYPE_LABELS.default;
+<CompSyncFusionGrid
+  ...
+  loadData={loadData}
+  ...
+/>
 ```
 
-The problem is `as keyof typeof TRAN_TYPE_LABELS`:
-- `keyof typeof TRAN_TYPE_LABELS` = `7 | 'default'`
-- When `tranTypeId = 8`, TypeScript coerces it to match the union type
-- Since 8 is not 7, it might not be accessing the property correctly
-
-**Actually, let me check how the function is being called...**
-
-### Credit Notes PDF Call
-**File**: `src/features/accounts/purchase-sales/credit-notes/credit-notes-header.tsx`
-**Line 205-212:**
+**File**: `comp-syncfusion-grid.tsx:131`
 ```typescript
-generateDebitCreditNotePDF({
-    noteData: noteData,
-    branchId: branchId,
-    branchName: branchName,
-    branchAddress: branchAddress,
-    branchGstin: branchGstin,
-    currentDateFormat: currentDateFormat,
-    tranTypeId: Utils.getTranTypeId('CreditNote')  // This should be 8
-});
+context.CompSyncFusionGrid[instance].loadData = loadData || loadDataLocal;
 ```
 
-### Debit Notes PDF Call
-**File**: `src/features/accounts/purchase-sales/debit-notes/debit-notes-header.tsx`
-**Line 205-212:**
+### 2. Check How DataSource Updates Affect Template Props
+When `setRowsData(rowsData)` is called in `loadData` function (`stock-summary-report.tsx:538-572`), the grid's dataSource changes. We need to verify if this causes the template to lose the index information.
+
+**File**: `comp-syncfusion-grid.tsx:177`
 ```typescript
-generateDebitCreditNotePDF({
-    noteData: noteData,
-    branchId: branchId,
-    branchName: branchName,
-    branchAddress: branchAddress,
-    branchGstin: branchGstin,
-    currentDateFormat: currentDateFormat,
-    tranTypeId: Utils.getTranTypeId('DebitNote')  // This should be 7
-});
+dataSource={dataSource || selectedData || []}
 ```
 
-## Actual Problem Identified
+### 3. Potential Grid State Issue
+The grid might be losing its internal state when dataSource changes. SyncFusion GridComponent might need a key or proper refresh mechanism.
 
-The issue is that the TRAN_TYPE_LABELS object doesn't have a key for `8` (Credit Note). The logic is:
+## Solution Options
 
+### Option 1: Force Grid Refresh with Proper Index (Recommended)
+Add a key to force proper re-rendering when data changes:
+
+**Modify**: `comp-syncfusion-grid.tsx:161-199`
 ```typescript
-TRAN_TYPE_LABELS[8]  // undefined (no key 8 exists)
-||
-TRAN_TYPE_LABELS.default  // "Credit Note"
+<GridComponent
+  key={`${instance}-${(dataSource || selectedData || []).length}`}
+  ...
+/>
 ```
 
-This should work... **UNLESS** the issue is in the type coercion:
+This forces React to recreate the grid component when data changes, ensuring props.index is properly set.
 
+### Option 2: Use GridComponent's refresh() Method
+Call the grid's `refresh()` method after data is loaded to ensure proper state:
+
+**Modify**: `stock-summary-report.tsx:538-572` - Add after `setRowsData(rowsData)`:
 ```typescript
-tranTypeId as keyof typeof TRAN_TYPE_LABELS
-```
+async function loadData() {
+  try {
+    // ... existing code ...
+    setRowsData(rowsData);
 
-When `tranTypeId = 8`, this coercion to `keyof typeof TRAN_TYPE_LABELS` (which is `7 | 'default'`) might cause unexpected behavior.
-
-**Let me check if there's a typo or logic error...**
-
-Actually, looking more carefully at the mapping:
-- Line 53: `7: 'Debit Note'` ✓
-- Line 54: `default: 'Credit Note'` ✓
-
-Wait! The issue might be that when accessing with `[tranTypeId as keyof typeof TRAN_TYPE_LABELS]`, if `tranTypeId` is 8:
-- It's not equal to 7
-- It's not equal to string 'default'
-- So the property access returns `undefined`
-- Then `|| TRAN_TYPE_LABELS.default` should trigger
-
-**But user reports it shows "Debit Note" for credit notes!**
-
-Let me reconsider... Maybe the default is wrong?
-
-**AH! I see it now:**
-
-Looking at line 54: `default: 'Credit Note'`
-
-The **intention** seems to be that:
-- tranTypeId = 7 → "Debit Note"
-- tranTypeId = 8 (or anything else) → fallback to default → "Credit Note"
-
-**But the user says credit notes show "Debit Note"!**
-
-This means the logic is somehow returning the wrong value. Let me check if there's another code path...
-
-## Actual Root Cause
-
-After careful analysis, the issue must be that **BOTH** are using the same mapping and somehow credit notes are being passed `tranTypeId = 7` instead of `tranTypeId = 8`.
-
-OR, the mapping is simply wrong and should be:
-```typescript
-const TRAN_TYPE_LABELS = {
-    7: 'Debit Note',
-    8: 'Credit Note',      // ← Missing!
-    default: 'Debit/Credit Note'
-} as const;
-```
-
-## Solution
-
-### Option 1: Add Explicit Mapping for Credit Note (Recommended)
-Make the mapping explicit for both transaction types:
-
-```typescript
-const TRAN_TYPE_LABELS = {
-    7: 'Debit Note',
-    8: 'Credit Note',
-    default: 'Note'  // Fallback for unknown types
-} as const;
-```
-
-**Pros:**
-- Explicit and clear
-- No reliance on default behavior
-- Easier to debug
-- Better type safety
-
-**Cons:**
-- None
-
-### Option 2: Fix the Logic
-Ensure the fallback logic works correctly:
-
-```typescript
-const title = TRAN_TYPE_LABELS[tranTypeId] || TRAN_TYPE_LABELS.default;
-```
-
-Remove the type assertion that might be causing issues.
-
-**Pros:**
-- Minimal change
-- Keeps default fallback
-
-**Cons:**
-- Still relies on implicit behavior
-- TypeScript might complain
-
-## Recommended Implementation
-
-**Use Option 1: Explicit Mapping**
-
-### File to Modify
-`src/features/accounts/purchase-sales/common/debit-credit-note-jspdf.tsx`
-
-### Changes Required
-
-**Before (Lines 52-55):**
-```typescript
-const TRAN_TYPE_LABELS = {
-    7: 'Debit Note',
-    default: 'Credit Note'
-} as const;
-```
-
-**After:**
-```typescript
-const TRAN_TYPE_LABELS = {
-    7: 'Debit Note',
-    8: 'Credit Note',
-    default: 'Note'
-} as const;
-```
-
-**Also update line 553:**
-
-**Before:**
-```typescript
-const title = TRAN_TYPE_LABELS[tranTypeId as keyof typeof TRAN_TYPE_LABELS] || TRAN_TYPE_LABELS.default;
-```
-
-**After:**
-```typescript
-const title = TRAN_TYPE_LABELS[tranTypeId] || TRAN_TYPE_LABELS.default;
-```
-
-This removes the type assertion and relies on the explicit mapping.
-
-### TypeScript Considerations
-
-The type will be:
-```typescript
-const TRAN_TYPE_LABELS: {
-    readonly 7: "Debit Note";
-    readonly 8: "Credit Note";
-    readonly default: "Note";
+    // Force grid refresh to maintain index
+    const gridInstance = context.CompSyncFusionGrid[instance]?.gridRef?.current;
+    if (gridInstance) {
+      setTimeout(() => gridInstance.refresh(), 0);
+    }
+  } catch (e: any) {
+    console.log(e);
+  }
 }
 ```
 
-And accessing with `TRAN_TYPE_LABELS[tranTypeId]` where `tranTypeId: number` will:
-- Return the correct string if tranTypeId is 7 or 8
-- Return undefined if tranTypeId is something else
-- Then fallback to `TRAN_TYPE_LABELS.default`
+### Option 3: Use Column valueAccessor Instead of Template
+Instead of using template, use `valueAccessor` which might preserve index better:
+
+**Modify**: `comp-syncfusion-grid-hook.tsx:225-236`
+```typescript
+if (hasIndexColumn) {
+  colDirectives.unshift(
+    <ColumnDirective
+      key="#"
+      allowEditing={false}
+      field="__rowIndex"
+      headerText="#"
+      valueAccessor={(field: string, data: any, column: any) => {
+        // This gets called with proper context
+        return data.index !== undefined ? data.index + 1 : '';
+      }}
+      width={indexColumnWidth}
+    />
+  );
+}
+```
+
+### Option 4: Store Index in Data (Most Reliable)
+Modify the data to include the index when setting it:
+
+**Modify**: `stock-summary-report.tsx:568`
+```typescript
+setRowsData(rowsData.map((row, idx) => ({ ...row, __rowIndex: idx + 1 })));
+```
+
+Then use simple field reference:
+```typescript
+if (hasIndexColumn) {
+  colDirectives.unshift(
+    <ColumnDirective
+      key="#"
+      allowEditing={false}
+      field="__rowIndex"
+      headerText="#"
+      width={indexColumnWidth}
+    />
+  );
+}
+```
+
+## Recommended Approach
+
+**Use Option 4** (Store Index in Data) because:
+1. Most reliable - index is part of the data
+2. No dependency on SyncFusion's internal state
+3. Works consistently on initial load and refresh
+4. Simple to implement and maintain
 
 ## Implementation Steps
 
-### Step 1: Update TRAN_TYPE_LABELS constant
-Add key `8` with value `'Credit Note'`
+1. **Modify the loadData function** in all files using `CompSyncFusionGrid` with `hasIndexColumn={true}`
+   - Update `setRowsData()` calls to inject `__rowIndex`
 
-### Step 2: Update title assignment
-Remove type assertion for cleaner code
+2. **For stock-summary-report.tsx**:
+   ```typescript
+   setRowsData(rowsData.map((row, idx) => ({ ...row, __rowIndex: idx + 1 })));
+   ```
 
-### Step 3: Test
-- Generate debit note PDF → Should show "Debit Note"
-- Generate credit note PDF → Should show "Credit Note"
+3. **Update the trim handler** (`stock-summary-report.tsx:517-521`):
+   ```typescript
+   function handleOnClickTrim() {
+     setRowsData((prev) =>
+       prev
+         .filter((item: RowDataType) => item.clos !== 0)
+         .map((row, idx) => ({ ...row, __rowIndex: idx + 1 }))
+     );
+   }
+   ```
 
-## Testing Plan
+4. **Update the remove handler** (`stock-summary-report.tsx:574-578`):
+   ```typescript
+   function handleOnRemove(props: any) {
+     setRowsData((prev) =>
+       prev
+         .filter((item: RowDataType) => item.productId !== props.productId)
+         .map((row, idx) => ({ ...row, __rowIndex: idx + 1 }))
+     );
+   }
+   ```
 
-### Test Case 1: Debit Note PDF
-**Steps:**
-1. Create/open a debit note
-2. Click print/preview PDF
-3. Check PDF title
+5. **Update index column in hook** (`comp-syncfusion-grid-hook.tsx:225-236`):
+   ```typescript
+   if (hasIndexColumn) {
+     colDirectives.unshift(
+       <ColumnDirective
+         key="#"
+         allowEditing={false}
+         field="__rowIndex"
+         headerText="#"
+         textAlign="Right"
+         width={indexColumnWidth}
+       />
+     );
+   }
+   ```
 
-**Expected:**
-- PDF title: "Debit Note" ✓
-- Header info: "Debit Note Info" ✓
+6. **Remove the indexColumnTemplate function** - no longer needed
 
-### Test Case 2: Credit Note PDF
-**Steps:**
-1. Create/open a credit note
-2. Click print/preview PDF
-3. Check PDF title
+## Files to Modify
 
-**Expected:**
-- PDF title: "Credit Note" ✓
-- Header info: "Credit Note Info" ✓
+1. `c:\projects\trace-plus\dev\trace-client\src\controls\components\syncfusion-grid\comp-syncfusion-grid-hook.tsx`
+   - Lines 225-236: Update index column directive to use `field="__rowIndex"`
+   - Lines 294-303: Remove `indexColumnTemplate` function
 
-### Test Case 3: TypeScript Build
-**Steps:**
-1. Run `npm run build`
+2. `c:\projects\trace-plus\dev\trace-client\src\features\accounts\inventory\reports\inventory-reports\stock-summary-report\stock-summary-report.tsx`
+   - Line 568: Update `setRowsData` to inject `__rowIndex`
+   - Lines 517-521: Update `handleOnClickTrim` to re-index after filtering
+   - Lines 574-578: Update `handleOnRemove` to re-index after removing
 
-**Expected:**
-- No TypeScript errors ✓
-- Build succeeds ✓
+## Expected Outcome
 
-## Verification Points
-
-After implementation, verify:
-1. ✅ Debit notes show "Debit Note" in PDF
-2. ✅ Credit notes show "Credit Note" in PDF
-3. ✅ No TypeScript errors
-4. ✅ No runtime errors
-5. ✅ Default fallback still works
-
-## Alternative Investigation
-
-If the fix doesn't work, check:
-1. Is `Utils.getTranTypeId('CreditNote')` returning 8?
-2. Is the tranTypeId being passed correctly to the function?
-3. Add console.log to debug the actual value
-
-**Debug snippet to add temporarily:**
-```typescript
-export function generateDebitCreditNotePDF({ ..., tranTypeId, ... }) {
-    console.log('PDF Generation - tranTypeId:', tranTypeId);
-    console.log('Expected: 7 for Debit Note, 8 for Credit Note');
-
-    const title = TRAN_TYPE_LABELS[tranTypeId] || TRAN_TYPE_LABELS.default;
-    console.log('Resolved title:', title);
-
-    // ... rest of code
-}
-```
-
-## Success Criteria
-
-1. ✅ Credit notes display "Credit Note" as PDF title
-2. ✅ Debit notes still display "Debit Note" as PDF title
-3. ✅ TypeScript compilation succeeds
-4. ✅ No runtime errors
-5. ✅ Code is clean and maintainable
-
-## Estimated Time
-- Implementation: 5 minutes
-- Testing: 10 minutes
-- **Total: 15 minutes**
+After the fix:
+- Index column displays sequential numbers (1, 2, 3, ...) correctly on initial load
+- Index column maintains sequential numbers after refresh button is clicked
+- Index numbers update correctly after trim or remove operations
+- No NaN values appear in any scenario
+- Index is always in sync with the visible row position

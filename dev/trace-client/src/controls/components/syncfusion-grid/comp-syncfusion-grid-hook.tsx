@@ -227,9 +227,14 @@ export function useCompSyncFusionGrid({
         <ColumnDirective
           key="#"
           allowEditing={false}
-          field=""
+          // field=""
+          field="__rowIndex"
           headerText="#"
           template={indexColumnTemplate}
+          // valueAccessor={(field: string, data: any, column: any) => {
+          //   // This gets called with proper context
+          //   return data.index !== undefined ? data.index + 1 : '';
+          // }}
           width={indexColumnWidth}
         />
       );
@@ -292,7 +297,13 @@ export function useCompSyncFusionGrid({
   }
 
   function indexColumnTemplate(props: any) {
-    const idx: number = +props.index + 1;
+    // const idx: number =  +(props.index ?? -1) + 1;
+    // const idx: number = props.index !== undefined && props.index !== null
+    // ? +props.index + 1
+    // : 0;
+    const idx: number = props.index !== undefined
+      ? +props.index + 1
+      : (props.__index !== undefined ? +props.__index + 1 : 1);
     return idx;
   }
 

@@ -957,11 +957,11 @@
 
                             ---
 
-#### 10.2-10.4 READ, UPDATE, DELETE Credit Note
+                            #### 10.2-10.4 READ, UPDATE, DELETE Credit Note
 
-*(Similar test patterns)*
+                            *(Similar test patterns)*
 
----
+                            ---
 
 ## Cross-Module Integration Testing
 
