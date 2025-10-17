@@ -62,6 +62,12 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+	- Sales edit payment check
+		- Create new sales with retail
+		- Change retail to bill by clear
+		- change retail to institution
+		- create bill sale
+		- change bill sale to institution
 	- Bugs
 		- Check stock valuation logic after stock journal
 													- Grid index column is Nan on refresh button click

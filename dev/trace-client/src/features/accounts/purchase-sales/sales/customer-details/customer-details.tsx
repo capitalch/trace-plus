@@ -84,7 +84,7 @@ const CustomerDetails: React.FC = () => {
                                 Customer
                             </label>
                         </div>
-                        <div className="relative">
+                        <div className="relative" tabIndex={0}>
                             <input
                                 type="text"
                                 value={searchQuery}
@@ -100,7 +100,6 @@ const CustomerDetails: React.FC = () => {
                                     searchQuery ? "pr-20" : "pr-12"
                                 )}
                                 placeholder="Search customer..."
-                                tabIndex={0}
                             />
 
                             {/* Clear button - only show when there's text */}

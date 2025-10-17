@@ -141,6 +141,17 @@ const PaymentDetails: React.FC = () => {
         setTotalDebitAmount()
     }
 
+    const handleSalesTypeChange = (newSalesType: SalesType) => {
+        setValue('salesType', newSalesType)
+        // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+        // clearFirstRowId()
+        setValue(`debitAccounts.${0}.isParentAutoSubledger`, null)
+        setValue(`debitAccounts.${0}.accClass`, '')
+        setValue(`debitAccounts.${0}.accName`, '')
+        setValue(`debitAccounts.${0}.accId`, null)
+        trigger(`debitAccounts.${0}.accId`)
+    }
+
     // const clearFirstRowId = () => {
     //     const firstRowId = getValues('debitAccounts.0.id');
     //     if (firstRowId) {
@@ -225,11 +236,7 @@ const PaymentDetails: React.FC = () => {
                                         name="salesType"
                                         value="retail"
                                         checked={salesType === 'retail'}
-                                        onChange={(e) => {
-                                            setValue('salesType', e.target.value as SalesType)
-                                            // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-                                            // clearFirstRowId()
-                                        }}
+                                        onChange={(e) => handleSalesTypeChange(e.target.value as SalesType)}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏪 Retail</span>
@@ -241,11 +248,7 @@ const PaymentDetails: React.FC = () => {
                                         name="salesType"
                                         value="bill"
                                         checked={salesType === 'bill'}
-                                        onChange={(e) => {
-                                            setValue('salesType', e.target.value as SalesType)
-                                            // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-                                            // clearFirstRowId()
-                                        }}
+                                        onChange={(e) => handleSalesTypeChange(e.target.value as SalesType)}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏭 Auto Subledger (Bill Sale)</span>
@@ -257,11 +260,7 @@ const PaymentDetails: React.FC = () => {
                                         name="salesType"
                                         value="institution"
                                         checked={salesType === 'institution'}
-                                        onChange={(e) => {
-                                            setValue('salesType', e.target.value as SalesType)
-                                            // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-                                            // clearFirstRowId()
-                                        }}
+                                        onChange={(e) => handleSalesTypeChange(e.target.value as SalesType)}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
                                     <span className="font-semibold text-gray-700 text-sm">🏢 Institution</span>
@@ -363,7 +362,7 @@ const PaymentDetails: React.FC = () => {
                                             value={getValues(`debitAccounts.${index}.accId`) as string}
                                             className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
                                             sqlId={getSqlId(index)}
-                                            // isNotSelectable={Boolean(getValues(`debitAccounts.${index}.id`))} // If id exists, make it non-selectable
+                                        // isNotSelectable={Boolean(getValues(`debitAccounts.${index}.id`))} // If id exists, make it non-selectable
                                         />
                                     </div>
 
