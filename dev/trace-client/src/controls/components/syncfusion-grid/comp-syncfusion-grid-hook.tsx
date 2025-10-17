@@ -43,23 +43,18 @@ export function useCompSyncFusionGrid({
   const selectedLastNoOfRows: any = useSelector(
     (state: RootStateType) => state.queryHelper[instance]?.lastNoOfRows
   );
-  if (sqlArgs) {
-    //sqlArgs is meaningful when there is no loadData defined for CompSyncfusionGrid and loadDataLocal is used
-    sqlArgs["noOfRows"] =
-      selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null;
-  }
-  useEffect(() => {
-    if (!(loadData || dataSource)) {
-      // For custom loadData the loading should be taken care of in the calling code
-      loadDataLocal();
-    }
-  }, [selectedLastNoOfRows]);
+
+  // Create a local copy of sqlArgs with noOfRows to avoid mutating props
+  const sqlArgsWithNoOfRows = sqlArgs ? {
+    ...sqlArgs,
+    noOfRows: selectedLastNoOfRows === undefined ? 100 : selectedLastNoOfRows || null
+  } : undefined;
 
   const args: GraphQLQueryArgsType = {
     buCode: buCode,
     dbParams: dbParams,
     sqlId: sqlId,
-    sqlArgs: sqlArgs
+    sqlArgs: sqlArgsWithNoOfRows
   };
 
   const { loadData: loadDataLocal, loading } = useQueryHelper({
@@ -67,6 +62,13 @@ export function useCompSyncFusionGrid({
     getQueryArgs: () => args,
     instance: instance,
   });
+
+  useEffect(() => {
+    if (!(loadData || dataSource)) {
+      // For custom loadData the loading should be taken care of in the calling code
+      loadDataLocal();
+    }
+  }, [selectedLastNoOfRows, loadData, dataSource, loadDataLocal]);
 
   const selectedData: any = useSelector((state: RootStateType) => {
     const ret: any = state.queryHelper[instance]?.data;
@@ -297,13 +299,13 @@ export function useCompSyncFusionGrid({
   }
 
   function indexColumnTemplate(props: any) {
-    // const idx: number =  +(props.index ?? -1) + 1;
+    const idx: number =  +(props.index ?? -1) + 1;
     // const idx: number = props.index !== undefined && props.index !== null
     // ? +props.index + 1
     // : 0;
-    const idx: number = props.index !== undefined
-      ? +props.index + 1
-      : (props.__index !== undefined ? +props.__index + 1 : 1);
+    // const idx: number = props.index !== undefined
+    //   ? +props.index + 1
+    //   : (props.__index !== undefined ? +props.__index + 1 : 1);
     return idx;
   }
 

@@ -141,15 +141,15 @@ const PaymentDetails: React.FC = () => {
         setTotalDebitAmount()
     }
 
-    const clearFirstRowId = () => {
-        const firstRowId = getValues('debitAccounts.0.id');
-        if (firstRowId) {
-            const deletedIds = getValues('tranDDeletedIds') || [];
-            setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
-            setValue('debitAccounts.0.id', undefined);
-            setValue('remarks', undefined);
-        }
-    };
+    // const clearFirstRowId = () => {
+    //     const firstRowId = getValues('debitAccounts.0.id');
+    //     if (firstRowId) {
+    //         const deletedIds = getValues('tranDDeletedIds') || [];
+    //         setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
+    //         setValue('debitAccounts.0.id', undefined);
+    //         setValue('remarks', undefined);
+    //     }
+    // };
 
     const getAccClassNames = (salesType: SalesType, index: number): AccClassName[] => {
         if (index !== 0) {
@@ -227,8 +227,8 @@ const PaymentDetails: React.FC = () => {
                                         checked={salesType === 'retail'}
                                         onChange={(e) => {
                                             setValue('salesType', e.target.value as SalesType)
-                                            setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-                                            clearFirstRowId()
+                                            // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                            // clearFirstRowId()
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
@@ -243,8 +243,8 @@ const PaymentDetails: React.FC = () => {
                                         checked={salesType === 'bill'}
                                         onChange={(e) => {
                                             setValue('salesType', e.target.value as SalesType)
-                                            setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-                                            clearFirstRowId()
+                                            // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                            // clearFirstRowId()
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
@@ -259,8 +259,8 @@ const PaymentDetails: React.FC = () => {
                                         checked={salesType === 'institution'}
                                         onChange={(e) => {
                                             setValue('salesType', e.target.value as SalesType)
-                                            setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-                                            clearFirstRowId()
+                                            // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
+                                            // clearFirstRowId()
                                         }}
                                         className="mr-2 text-violet-950 cursor-pointer"
                                     />
@@ -302,6 +302,7 @@ const PaymentDetails: React.FC = () => {
                 <div className="space-y-1">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="font-bold text-gray-800 text-sm">Payment Methods</h3>
+                        {/* Buttons */}
                         <div className="flex space-x-2">
                             {/* Clear */}
                             <button
@@ -362,7 +363,7 @@ const PaymentDetails: React.FC = () => {
                                             value={getValues(`debitAccounts.${index}.accId`) as string}
                                             className={clsx("text-sm", errors?.debitAccounts?.[index]?.accId && errorClass)}
                                             sqlId={getSqlId(index)}
-                                            isNotSelectable={Boolean(getValues(`debitAccounts.${index}.id`))} // If id exists, make it non-selectable
+                                            // isNotSelectable={Boolean(getValues(`debitAccounts.${index}.id`))} // If id exists, make it non-selectable
                                         />
                                     </div>
 

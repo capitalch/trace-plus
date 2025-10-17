@@ -1,4 +1,5 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import _ from 'lodash'
 import { AppDispatchType, RootStateType, } from "../../../../../../app/store";
 import { DataInstancesMap } from "../../../../../../app/maps/data-instances-map";
 import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../../../../controls/redux-components/comp-slice";
@@ -116,18 +117,16 @@ export function StockSummaryReport({ title }: { title?: string }) {
       <CompSyncFusionGrid
         aggregates={getAggregates()}
         allowTextWrap={false}
+        allowPaging={true}
+        pageSettings={{ pageSize: 5000, pageSizes: [5000, 10000, 20000] }}
         buCode={buCode}
         className="mt-4"
         columns={getColumns()}
         dataSource={rowsData}
-        editSettings={{
-          allowEditing: false,
-          allowDeleting: false,
-          mode: "Normal",
-        }}
         hasCheckBoxSelection={true}
         hasIndexColumn={true}
-        height="calc(100vh - 230px)"
+        // height="calc(100vh - 230px)"
+        height="calc(100vh - 280px)"
         indexColumnWidth={60}
         instance={instance}
         loadData={loadData}
@@ -140,6 +139,12 @@ export function StockSummaryReport({ title }: { title?: string }) {
       />
     </div>
   );
+
+  // editSettings={{
+  //   allowEditing: false,
+  //   allowDeleting: false,
+  //   mode: "Normal",
+  // }}
 
   function getAggregates(): SyncFusionGridAggregateType[] {
     return [
@@ -564,8 +569,9 @@ export function StockSummaryReport({ title }: { title?: string }) {
           grossProfitFilter: selectedFiltersState.selectedGrossProfitStatus.value
         },
       });
-
-      setRowsData(rowsData);
+      // setRowsData([])
+      // setTimeout(()=>setRowsData(rowsData),100)
+      setRowsData(_.cloneDeep(rowsData));
     } catch (e: any) {
       console.log(e);
     }

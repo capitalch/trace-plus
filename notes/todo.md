@@ -63,8 +63,8 @@ valid gstin: 24AAACC1206D1ZM
 														- new row with gst details
 ## features
 	- Bugs
-		- When you enter a sales return transaction, then refresh an already open inventory report, the debits in item are not updated even after clicking the refresh button. But when you close and open the screen, it works. But sales is refreshed correctly. Problem is there with sales return only.
-		- Grid index column is Nan on refresh button click
+		- Check stock valuation logic after stock journal
+													- Grid index column is Nan on refresh button click
 												- Check resetAll mechanism for all transactions
 													- New entry
 													- ZoomIn

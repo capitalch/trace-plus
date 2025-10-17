@@ -1,7 +1,0 @@
-- This is the logic as which address is to print in company address place in pdf in top left after the unit's name
-    - The pdf file is associated with a branch
-    - The branch is either head office or any other office. Head office has branchid 1
-    - If it is head office, then address field will have unit address, GSTIN no is of unit's GSTIN
-    - If it is any other branch then branch address should be present in place of company address. Branch Name should be the first item after unit's name
-    - If branch has individual GSTIN then it will have priority for printing otherwise unit's GSTIN will be considered in address's place
-- Create a plan in file voucher-pdf-plan.md only. Don't make changes

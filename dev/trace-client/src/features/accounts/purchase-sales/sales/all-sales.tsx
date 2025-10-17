@@ -141,17 +141,17 @@ export function AllSales() {
                 autoSubledgerAccId = debitAccounts[0]?.accId || null;
             }
 
-            const ret = await Utils.doGenericUpdate({
-                buCode: buCode || "",
-                dbName: dbName || "",
-                tableName: AllTables.TranH.name,
-                xData: xData,
-                autoSubledgerAccId: autoSubledgerAccId
-            });
-            const newId = ret?.data?.genericUpdate
-            const tranHId = newId || getValues('id');
-            const salesEditData = await getSalesEditDataOnId(tranHId)
-            dispatch(setLastSalesEditData(salesEditData));
+            // const ret = await Utils.doGenericUpdate({
+            //     buCode: buCode || "",
+            //     dbName: dbName || "",
+            //     tableName: AllTables.TranH.name,
+            //     xData: xData,
+            //     autoSubledgerAccId: autoSubledgerAccId
+            // });
+            // const newId = ret?.data?.genericUpdate
+            // const tranHId = newId || getValues('id');
+            // const salesEditData = await getSalesEditDataOnId(tranHId)
+            // dispatch(setLastSalesEditData(salesEditData));
             if (getValues('id') && (!location.state?.id)) {
                 dispatch(setSalesViewMode(true)); // Switch to view mode for existing sales
             }

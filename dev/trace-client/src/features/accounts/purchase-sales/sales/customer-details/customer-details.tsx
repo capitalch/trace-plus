@@ -100,6 +100,7 @@ const CustomerDetails: React.FC = () => {
                                     searchQuery ? "pr-20" : "pr-12"
                                 )}
                                 placeholder="Search customer..."
+                                tabIndex={0}
                             />
 
                             {/* Clear button - only show when there's text */}
