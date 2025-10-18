@@ -75,12 +75,12 @@ export function AllPurchaseReturns() {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
     }, [selectedTabIndex, dispatch]);
 
-     useEffect(() => {
-        if (selectedTabIndex === 1 ) {
+    useEffect(() => {
+        if (selectedTabIndex === 1) {
             resetAll();
         }
     }, [selectedTabIndex]);
-    
+
     // Handle navigation from report - auto-populate form with ID from location state
     useEffect(() => {
         if (location.state?.id && location.state?.returnPath) {
@@ -255,7 +255,7 @@ export function AllPurchaseReturns() {
                     lineRemarks: item.remarks || null,
                     serialNumbers: item.serialNumbers || null
                 }))
-            })
+            },)
             dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 })) // Switch to the first tab (Edit tab)
         } catch (e: any) {
             console.error(e);

@@ -963,622 +963,622 @@
 
                             ---
 
-## Cross-Module Integration Testing
+                          ## Cross-Module Integration Testing
 
-### 11. Integration Test Cases
+                          ### 11. Integration Test Cases
 
-**Test Case INT-001: Create Sales Invoice, Then Sales Return**
-- **Objective:** Verify end-to-end flow from sale to return
-- **Test Steps:**
-  1. Create sales invoice: 10 items @ 1,000 = 10,000 + GST
-  2. Save and note invoice ID
-  3. Create sales return for 5 items
-  4. Reference original invoice
-  5. Verify return calculations
-  6. Save sales return
-  7. Check accounting entries:
-     - Original sale created debit (cash) and credit (sales)
-     - Return created debit (sales return) and credit (cash)
-- **Expected Results:**
-  - Both transactions saved correctly
-  - GST handled properly in both
-  - Net effect: 5 items sold with net GST on 5 items
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                          **Test Case INT-001: Create Sales Invoice, Then Sales Return**
+                          - **Objective:** Verify end-to-end flow from sale to return
+                          - **Test Steps:**
+                            1. Create sales invoice: 10 items @ 1,000 = 10,000 + GST
+                            2. Save and note invoice ID
+                            3. Create sales return for 5 items
+                            4. Reference original invoice
+                            5. Verify return calculations
+                            6. Save sales return
+                            7. Check accounting entries:
+                              - Original sale created debit (cash) and credit (sales)
+                              - Return created debit (sales return) and credit (cash)
+                          - **Expected Results:**
+                            - Both transactions saved correctly
+                            - GST handled properly in both
+                            - Net effect: 5 items sold with net GST on 5 items
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
 
----
+                          ---
 
-**Test Case INT-002: Create Purchase Invoice, Then Purchase Return**
-- **Objective:** Verify purchase to return flow
-- **Test Steps:**
-  1. Create purchase invoice
-  2. Save
-  3. Create purchase return
-  4. Reference original
-  5. Verify accounting entries
-- **Expected Results:**
-  - Both saved correctly
-  - Input GST reversed properly on return
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                          **Test Case INT-002: Create Purchase Invoice, Then Purchase Return**
+                          - **Objective:** Verify purchase to return flow
+                          - **Test Steps:**
+                            1. Create purchase invoice
+                            2. Save
+                            3. Create purchase return
+                            4. Reference original
+                            5. Verify accounting entries
+                          - **Expected Results:**
+                            - Both saved correctly
+                            - Input GST reversed properly on return
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
 
----
+                          ---
 
-**Test Case INT-003: Payment Voucher Linked to Sales Invoice**
-- **Objective:** Verify payment can be recorded separately from sale
-- **Test Steps:**
-  1. Create sales invoice on credit (no payment)
-  2. Save
-  3. Later, create payment voucher:
-     - Debit: Bank
-     - Credit: Customer account
-     - Reference invoice number in remarks
-  4. Save
-- **Expected Results:**
-  - Invoice shows as unpaid initially
-  - Payment voucher records receipt
-  - Customer balance updated
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                            **Test Case INT-003: Payment Voucher Linked to Sales Invoice**
+                            - **Objective:** Verify payment can be recorded separately from sale
+                            - **Test Steps:**
+                              1. Create sales invoice on credit (no payment)
+                              2. Save
+                              3. Later, create payment voucher:
+                                - Debit: Bank
+                                - Credit: Customer account
+                                - Reference invoice number in remarks
+                              4. Save
+                            - **Expected Results:**
+                              - Invoice shows as unpaid initially
+                              - Payment voucher records receipt
+                              - Customer balance updated
+                            - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                            - **Notes:**
 
----
+                            ---
 
-**Test Case INT-004: Receipt Voucher Linked to Purchase Invoice**
-- **Objective:** Verify payment to supplier can be recorded separately
-- **Test Steps:**
-  1. Create purchase on credit
-  2. Later, create payment voucher to supplier
-  3. Reference purchase invoice
-- **Expected Results:**
-  - Purchase on credit recorded
-  - Payment updates supplier balance
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                        **Test Case INT-004: Receipt Voucher Linked to Purchase Invoice**
+                        - **Objective:** Verify payment to supplier can be recorded separately
+                        - **Test Steps:**
+                          1. Create purchase on credit
+                          2. Later, create payment voucher to supplier
+                          3. Reference purchase invoice
+                        - **Expected Results:**
+                          - Purchase on credit recorded
+                          - Payment updates supplier balance
+                        - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                        - **Notes:**
 
----
+                        ---
 
-**Test Case INT-005: Journal Entry to Correct Previous Transaction**
-- **Objective:** Verify journal entry can adjust errors
-- **Test Steps:**
-  1. Identify an error in previous transaction (e.g., wrong account used)
-  2. Create journal entry to reverse and correct
-  3. Save
-- **Expected Results:**
-  - Journal entry creates adjusting entries
-  - Net effect corrects the error
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case INT-006: GST Reports Reflect All Transactions**
-- **Objective:** Verify all GST transactions appear in GST reports
-- **Test Steps:**
-  1. Create sales invoice with GST (output)
-  2. Create purchase invoice with GST (input)
-  3. Create sales return (output reversal)
-  4. Create purchase return (input reversal)
-  5. Navigate to GST reports (GSTR-1, GSTR-3B equivalent)
-  6. Verify all transactions appear
-  7. Verify net GST liability calculated correctly
-- **Expected Results:**
-  - All GST transactions captured
-  - Output GST = Sales GST - Sales Return GST
-  - Input GST = Purchase GST - Purchase Return GST
-  - Net GST payable calculated correctly
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                      **Test Case INT-005: Journal Entry to Correct Previous Transaction**
+                      - **Objective:** Verify journal entry can adjust errors
+                      - **Test Steps:**
+                        1. Identify an error in previous transaction (e.g., wrong account used)
+                        2. Create journal entry to reverse and correct
+                        3. Save
+                      - **Expected Results:**
+                        - Journal entry creates adjusting entries
+                        - Net effect corrects the error
+                      - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                      - **Notes:**
 
 ---
 
-**Test Case INT-007: Financial Year Transition**
-- **Objective:** Verify transactions in different financial years
-- **Test Steps:**
-  1. Set financial year to FY 2023-24
-  2. Create sales invoice
-  3. Save
-  4. Switch financial year to FY 2024-25
-  5. Create another sales invoice
-  6. Verify both invoices in respective years
-  7. Verify reports filter by financial year
-- **Expected Results:**
-  - Transactions segregated by finYearId
-  - Reports show data for selected year only
-  - No cross-year data contamination
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                        **Test Case INT-006: GST Reports Reflect All Transactions**
+                        - **Objective:** Verify all GST transactions appear in GST reports
+                        - **Test Steps:**
+                          1. Create sales invoice with GST (output)
+                          2. Create purchase invoice with GST (input)
+                          3. Create sales return (output reversal)
+                          4. Create purchase return (input reversal)
+                          5. Navigate to GST reports (GSTR-1, GSTR-3B equivalent)
+                          6. Verify all transactions appear
+                          7. Verify net GST liability calculated correctly
+                        - **Expected Results:**
+                          - All GST transactions captured
+                          - Output GST = Sales GST - Sales Return GST
+                          - Input GST = Purchase GST - Purchase Return GST
+                          - Net GST payable calculated correctly
+                        - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                        - **Notes:**
+
+                        ---
+
+                      **Test Case INT-007: Financial Year Transition**
+                      - **Objective:** Verify transactions in different financial years
+                      - **Test Steps:**
+                        1. Set financial year to FY 2023-24
+                        2. Create sales invoice
+                        3. Save
+                        4. Switch financial year to FY 2024-25
+                        5. Create another sales invoice
+                        6. Verify both invoices in respective years
+                        7. Verify reports filter by financial year
+                      - **Expected Results:**
+                        - Transactions segregated by finYearId
+                        - Reports show data for selected year only
+                        - No cross-year data contamination
+                      - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                      - **Notes:**
 
 ---
 
-**Test Case INT-008: Multi-Branch Transactions**
-- **Objective:** Verify branch-wise transaction segregation
-- **Test Steps:**
-  1. Set branch to "Branch A"
-  2. Create sales invoice
-  3. Switch to "Branch B"
-  4. Create sales invoice
-  5. Verify transactions are branch-specific
-  6. Check reports filter by branch
-- **Expected Results:**
-  - Transactions tagged with branchId
-  - Reports show branch-specific data
-  - No cross-branch data leakage
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
+                            **Test Case INT-008: Multi-Branch Transactions**
+                            - **Objective:** Verify branch-wise transaction segregation
+                            - **Test Steps:**
+                              1. Set branch to "Branch A"
+                              2. Create sales invoice
+                              3. Switch to "Branch B"
+                              4. Create sales invoice
+                              5. Verify transactions are branch-specific
+                              6. Check reports filter by branch
+                            - **Expected Results:**
+                              - Transactions tagged with branchId
+                              - Reports show branch-specific data
+                              - No cross-branch data leakage
+                            - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                            - **Notes:**
 
----
+                            ---
 
 ## Edge Cases & Validation Testing
 
 ### 12. Edge Case Test Scenarios
 
-**Test Case EDGE-001: Maximum Decimal Precision**
-- **Objective:** Verify system handles high decimal precision
-- **Test Steps:**
-  1. Create sales invoice
-  2. Enter quantity: 10.12345
-  3. Enter rate: 123.456789
-  4. Verify amount calculation
-  5. Apply GST
-  6. Verify all calculations maintain precision
-- **Expected Results:**
-  - System handles precision correctly (typically 2 decimal places for currency)
-  - Rounding is consistent
-  - No precision loss in calculations
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-002: Very Large Amount Transaction**
-- **Objective:** Verify handling of large amounts
-- **Test Steps:**
-  1. Create transaction with amount: 99,999,999.99
-  2. Save
-- **Expected Results:**
-  - System accepts large amounts
-  - No overflow errors
-  - Database field size adequate
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-003: Very Small Amount Transaction**
-- **Objective:** Verify handling of small amounts
-- **Test Steps:**
-  1. Create transaction with amount: 0.01
-  2. Save
-- **Expected Results:**
-  - System accepts small amounts
-  - No validation error (unless minimum amount enforced)
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-004: Maximum Line Items**
-- **Objective:** Verify system handles many line items
-- **Test Steps:**
-  1. Create sales invoice
-  2. Add 50-100 line items
-  3. Save
-- **Expected Results:**
-  - System handles large number of line items
-  - Performance remains acceptable
-  - All items saved correctly
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-005: Special Characters in Remarks**
-- **Objective:** Verify special character handling
-- **Test Steps:**
-  1. Create transaction
-  2. Enter remarks with special characters: `@#$%^&*()[]{}|;:",.<>?`
-  3. Save
-- **Expected Results:**
-  - Special characters saved correctly
-  - No SQL injection or XSS issues
-  - Characters display correctly in view mode
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-006: Unicode Characters in Fields**
-- **Objective:** Verify Unicode support
-- **Test Steps:**
-  1. Create transaction
-  2. Enter remarks in Hindi/Tamil/other languages: "यह एक परीक्षण है"
-  3. Enter customer name with Unicode
-  4. Save and retrieve
-- **Expected Results:**
-  - Unicode characters saved and displayed correctly
-  - Database supports UTF-8 encoding
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-007: Backdated Transaction**
-- **Objective:** Verify backdated transactions are allowed
-- **Test Steps:**
-  1. Create transaction with date 6 months ago
-  2. Save
-- **Expected Results:**
-  - System allows backdated transactions OR
-  - Validation error if backdating not allowed
-  - Document behavior
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-008: Future Dated Transaction**
-- **Objective:** Verify future date handling
-- **Test Steps:**
-  1. Create transaction with date 1 month in future
-  2. Save
-- **Expected Results:**
-  - System allows future dates OR
-  - Validation error
-  - Document behavior
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-009: Transaction on Financial Year End Date**
-- **Objective:** Verify transactions on year boundary
-- **Test Steps:**
-  1. Create transaction on last day of financial year (e.g., March 31)
-  2. Create transaction on first day of next year (e.g., April 1)
-  3. Verify both saved in correct years
-- **Expected Results:**
-  - Financial year transition handled correctly
-  - Reports show transactions in correct years
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-010: Concurrent Edit Detection**
-- **Objective:** Verify handling of concurrent edits
-- **Test Steps:**
-  1. User A opens voucher for editing
-  2. User B opens same voucher
-  3. User A saves changes
-  4. User B tries to save changes
-- **Expected Results:**
-  - System detects concurrent edit OR
-  - Last save wins (document behavior)
-  - Ideally, user B sees warning about conflict
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-011: Network Interruption During Save**
-- **Objective:** Verify graceful handling of network issues
-- **Test Steps:**
-  1. Create transaction
-  2. Simulate network disconnection
-  3. Click save
-- **Expected Results:**
-  - Error message about network failure
-  - Data NOT saved (or saved locally for retry)
-  - No partial/corrupt data in database
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-012: Session Timeout During Transaction Entry**
-- **Objective:** Verify session handling
-- **Test Steps:**
-  1. Start creating transaction
-  2. Wait for session timeout (if applicable)
-  3. Try to save
-- **Expected Results:**
-  - Session expiration detected
-  - User redirected to login OR
-  - Data preserved and saved after re-authentication
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-013: Browser Refresh During Entry**
-- **Objective:** Verify data preservation on refresh
-- **Test Steps:**
-  1. Start creating transaction, enter half the data
-  2. Refresh browser
-  3. Check if data is preserved
-- **Expected Results:**
-  - Redux state preserves form data OR
-  - Data lost (document behavior)
-  - If preserved, verify data loads correctly
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-014: Delete Line Item Then Re-add**
-- **Objective:** Verify deletedIds handling
-- **Test Steps:**
-  1. Edit transaction with 3 line items
-  2. Delete line item #2 (ID 100)
-  3. Add a new line item
-  4. Save
-  5. Verify deletedIds includes 100
-  6. Verify new item gets new ID
-- **Expected Results:**
-  - Deleted item ID tracked in deletedIds array
-  - New item not reusing deleted ID
-  - Database properly deletes and inserts
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-015: GST State Detection Edge Cases**
-- **Objective:** Verify GSTIN state code extraction
-- **Test Steps:**
-  1. Create transaction with GSTIN: "29ABCDE1234F1Z5" (Karnataka)
-  2. Verify system extracts state code "29"
-  3. Test with GSTIN: "27XYZAB5678G2W9" (Maharashtra)
-  4. Verify system extracts "27"
-  5. Verify intrastate vs interstate detection
-- **Expected Results:**
-  - State code extracted correctly from GSTIN
-  - Intrastate/interstate logic works correctly
-  - CGST+SGST for same state, IGST for different state
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-016: Zero GST Rate Items**
-- **Objective:** Verify handling of 0% GST rate
-- **Test Steps:**
-  1. Create sales invoice
-  2. Add item with GST rate = 0%
-  3. Verify no GST calculated
-  4. Save
-- **Expected Results:**
-  - GST = 0 calculated and saved
-  - ExtGstTranD record may or may not be created (document behavior)
-  - No validation errors
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-017: Negative Amount Handling**
-- **Objective:** Verify system prevents negative amounts
-- **Test Steps:**
-  1. Try to enter negative quantity: -10
-  2. Try to enter negative rate: -100
-  3. Try to save
-- **Expected Results:**
-  - Validation error prevents negative values OR
-  - System allows (for adjustments/returns)
-  - Document behavior
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-018: Duplicate Auto Reference Number**
-- **Objective:** Verify uniqueness of auto reference numbers
-- **Test Steps:**
-  1. Create transaction, note auto reference number (e.g., "VOU/2024/0001")
-  2. Create another transaction
-  3. Verify auto reference increments (e.g., "VOU/2024/0002")
-  4. Verify no duplicates in database
-- **Expected Results:**
-  - Auto reference numbers are unique
-  - Sequential numbering maintained
-  - No collisions even with concurrent transactions
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-019: Missing Required Fields**
-- **Objective:** Verify validation of required fields
-- **Test Steps:**
-  1. Try to create transaction without customer/supplier
-  2. Try to submit without line items
-  3. Try to submit without payment account
-- **Expected Results:**
-  - Validation errors for each missing required field
-  - Error messages are clear and user-friendly
-  - Form highlights missing fields
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-**Test Case EDGE-020: Form Reset After Save**
-- **Objective:** Verify form behavior after successful save
-- **Test Steps:**
-  1. Create and save transaction
-  2. Verify form state after save
-  3. Check if form is reset or retains data
-- **Expected Results:**
-  - Form resets to default values OR
-  - Switches to view mode OR
-  - Retains data for next entry (document behavior)
-  - Redux state cleared appropriately
-- **Status:** [ ] Pass [ ] Fail [ ] Blocked
-- **Notes:**
-
----
-
-## Test Results Template
-
-### Test Execution Summary
-
-**Test Cycle:** [Test Cycle Name]
-**Test Date:** [Date Range]
-**Tester Name:** [Name]
-**Environment:** [Dev/Staging/Production]
-**Database:** [Database Name]
-**Application Version:** [Version Number]
-
-| Module | Total Cases | Passed | Failed | Blocked | Pass % |
-|--------|-------------|--------|--------|---------|--------|
-| Payment Voucher | 12 | - | - | - | - |
-| Receipt Voucher | 8 | - | - | - | - |
-| Contra Voucher | 5 | - | - | - | - |
-| Journal Voucher | 5 | - | - | - | - |
-| Sales Invoice | 16 | - | - | - | - |
-| Purchase Invoice | 12 | - | - | - | - |
-| Sales Return | 10 | - | - | - | - |
-| Purchase Return | 6 | - | - | - | - |
-| Debit Note | 4 | - | - | - | - |
-| Credit Note | 4 | - | - | - | - |
-| Integration Tests | 8 | - | - | - | - |
-| Edge Cases | 20 | - | - | - | - |
-| **TOTAL** | **110** | **-** | **-** | **-** | **-** |
-
----
-
-### Failed Test Cases Log
-
-| Test Case ID | Module | Issue Description | Steps to Reproduce | Severity | Status | Assigned To |
-|--------------|--------|-------------------|-------------------|----------|--------|-------------|
-| P-C-004 | Payment | Debit/Credit validation not working | Step 1-4 in test case | High | Open | - |
-| | | | | | | |
-| | | | | | | |
-
----
-
-### Blocked Test Cases Log
-
-| Test Case ID | Module | Blocking Reason | Expected Resolution Date |
-|--------------|--------|----------------|--------------------------|
-| | | | |
-| | | | |
-
----
-
-### Defects Found
-
-| Defect ID | Test Case | Severity | Description | Status |
-|-----------|-----------|----------|-------------|--------|
-| DEF-001 | S-C-009 | High | Amount mismatch validation allows save | Open |
-| | | | | |
-
----
-
-### Test Environment Issues
-
-| Issue | Impact | Resolution |
-|-------|--------|------------|
-| | | |
-| | | |
-
----
-
-## Testing Notes and Observations
-
-### General Observations
-- [Document any patterns, trends, or recurring issues]
-- [Note any areas requiring additional test coverage]
-- [Performance observations]
-
-### Positive Findings
-- [Features working particularly well]
-- [Good UX/UI elements]
-
-### Areas for Improvement
-- [Features needing refinement]
-- [User experience issues]
-- [Performance bottlenecks]
-
-### Recommendations
-- [Suggestions for enhancement]
-- [Additional testing needed]
-- [Automation opportunities]
-
----
-
-## Approval Sign-off
-
-| Role | Name | Signature | Date |
-|------|------|-----------|------|
-| Test Lead | | | |
-| QA Manager | | | |
-| Product Owner | | | |
-| Development Lead | | | |
-
----
-
-**Document Version:** 1.0
-**Last Updated:** [Date]
-**Next Review Date:** [Date]
-
----
-
-## Appendix A: Test Data Reference
-
-### Test Accounts
-| Account Name | Account Type | Account ID | Notes |
-|--------------|--------------|------------|-------|
-| Cash | Asset | 1001 | For cash transactions |
-| State Bank | Asset | 1002 | For bank transactions |
-| Sales Income | Income | 2001 | Revenue account |
-| Salary Expense | Expense | 3001 | Expense account |
-
-### Test Contacts
-| Contact Name | Contact Type | GSTIN | State | Notes |
-|--------------|--------------|-------|-------|-------|
-| Customer A | Customer | 29AAAA1111A1Z1 | Karnataka | Intrastate |
-| Customer B | Customer | 27BBBB2222B2Y2 | Maharashtra | Interstate |
-| Supplier C | Supplier | 29CCCC3333C3X3 | Karnataka | Intrastate |
-
-### Test Products
-| Product Name | HSN Code | GST Rate | Unit | Notes |
-|--------------|----------|----------|------|-------|
-| Product A | 1234 | 18% | Pcs | Standard product |
-| Service B | 9987 | 18% | Service | Service item |
-| Product C | 5678 | 12% | Kg | Lower GST rate |
-
----
-
-## Appendix B: Database Schema Reference
-
-### Key Tables
-- **TranH**: Transaction header table (id, tranDate, tranTypeId, contactsId, autoRefNo, userRefNo, etc.)
-- **TranD**: Transaction details/line items (id, tranHeaderId, accId, dc, amount, etc.)
-- **ExtGstTranD**: GST details (id, tranDetailsId, rate, cgst, sgst, igst, isInput, etc.)
-- **Contacts**: Customer/Supplier master data
-
----
-
-## Appendix C: Glossary
-
-| Term | Description |
-|------|-------------|
-| **TranH** | Transaction Header - master record for each transaction |
-| **TranD** | Transaction Details - line items for each transaction |
-| **ExtGstTranD** | Extended GST Transaction Details - GST breakup for each line |
-| **dc** | Debit/Credit indicator ('D' or 'C') |
-| **isInput** | Flag indicating input GST (true for purchases) or output GST (false for sales) |
-| **contactsId** | Foreign key reference to Contacts table |
-| **finYearId** | Financial year identifier |
-| **branchId** | Branch identifier for multi-branch setup |
-| **autoRefNo** | System-generated reference number |
-| **userRefNo** | User-entered reference/invoice number |
-| **CGST** | Central Goods and Services Tax (intrastate) |
-| **SGST** | State Goods and Services Tax (intrastate) |
-| **IGST** | Integrated Goods and Services Tax (interstate) |
-| **GSTIN** | Goods and Services Tax Identification Number |
-
----
-
-**END OF TESTING PLAN**
+                          **Test Case EDGE-001: Maximum Decimal Precision**
+                          - **Objective:** Verify system handles high decimal precision
+                          - **Test Steps:**
+                            1. Create sales invoice
+                            2. Enter quantity: 10.12345
+                            3. Enter rate: 123.456789
+                            4. Verify amount calculation
+                            5. Apply GST
+                            6. Verify all calculations maintain precision
+                          - **Expected Results:**
+                            - System handles precision correctly (typically 2 decimal places for currency)
+                            - Rounding is consistent
+                            - No precision loss in calculations
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-002: Very Large Amount Transaction**
+                          - **Objective:** Verify handling of large amounts
+                          - **Test Steps:**
+                            1. Create transaction with amount: 99,999,999.99
+                            2. Save
+                          - **Expected Results:**
+                            - System accepts large amounts
+                            - No overflow errors
+                            - Database field size adequate
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-003: Very Small Amount Transaction**
+                          - **Objective:** Verify handling of small amounts
+                          - **Test Steps:**
+                            1. Create transaction with amount: 0.01
+                            2. Save
+                          - **Expected Results:**
+                            - System accepts small amounts
+                            - No validation error (unless minimum amount enforced)
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-004: Maximum Line Items**
+                          - **Objective:** Verify system handles many line items
+                          - **Test Steps:**
+                            1. Create sales invoice
+                            2. Add 50-100 line items
+                            3. Save
+                          - **Expected Results:**
+                            - System handles large number of line items
+                            - Performance remains acceptable
+                            - All items saved correctly
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-005: Special Characters in Remarks**
+                          - **Objective:** Verify special character handling
+                          - **Test Steps:**
+                            1. Create transaction
+                            2. Enter remarks with special characters: `@#$%^&*()[]{}|;:",.<>?`
+                            3. Save
+                          - **Expected Results:**
+                            - Special characters saved correctly
+                            - No SQL injection or XSS issues
+                            - Characters display correctly in view mode
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-006: Unicode Characters in Fields**
+                          - **Objective:** Verify Unicode support
+                          - **Test Steps:**
+                            1. Create transaction
+                            2. Enter remarks in Hindi/Tamil/other languages: "यह एक परीक्षण है"
+                            3. Enter customer name with Unicode
+                            4. Save and retrieve
+                          - **Expected Results:**
+                            - Unicode characters saved and displayed correctly
+                            - Database supports UTF-8 encoding
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-007: Backdated Transaction**
+                          - **Objective:** Verify backdated transactions are allowed
+                          - **Test Steps:**
+                            1. Create transaction with date 6 months ago
+                            2. Save
+                          - **Expected Results:**
+                            - System allows backdated transactions OR
+                            - Validation error if backdating not allowed
+                            - Document behavior
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-008: Future Dated Transaction**
+                          - **Objective:** Verify future date handling
+                          - **Test Steps:**
+                            1. Create transaction with date 1 month in future
+                            2. Save
+                          - **Expected Results:**
+                            - System allows future dates OR
+                            - Validation error
+                            - Document behavior
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-009: Transaction on Financial Year End Date**
+                          - **Objective:** Verify transactions on year boundary
+                          - **Test Steps:**
+                            1. Create transaction on last day of financial year (e.g., March 31)
+                            2. Create transaction on first day of next year (e.g., April 1)
+                            3. Verify both saved in correct years
+                          - **Expected Results:**
+                            - Financial year transition handled correctly
+                            - Reports show transactions in correct years
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-010: Concurrent Edit Detection**
+                          - **Objective:** Verify handling of concurrent edits
+                          - **Test Steps:**
+                            1. User A opens voucher for editing
+                            2. User B opens same voucher
+                            3. User A saves changes
+                            4. User B tries to save changes
+                          - **Expected Results:**
+                            - System detects concurrent edit OR
+                            - Last save wins (document behavior)
+                            - Ideally, user B sees warning about conflict
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-011: Network Interruption During Save**
+                          - **Objective:** Verify graceful handling of network issues
+                          - **Test Steps:**
+                            1. Create transaction
+                            2. Simulate network disconnection
+                            3. Click save
+                          - **Expected Results:**
+                            - Error message about network failure
+                            - Data NOT saved (or saved locally for retry)
+                            - No partial/corrupt data in database
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-012: Session Timeout During Transaction Entry**
+                          - **Objective:** Verify session handling
+                          - **Test Steps:**
+                            1. Start creating transaction
+                            2. Wait for session timeout (if applicable)
+                            3. Try to save
+                          - **Expected Results:**
+                            - Session expiration detected
+                            - User redirected to login OR
+                            - Data preserved and saved after re-authentication
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-013: Browser Refresh During Entry**
+                          - **Objective:** Verify data preservation on refresh
+                          - **Test Steps:**
+                            1. Start creating transaction, enter half the data
+                            2. Refresh browser
+                            3. Check if data is preserved
+                          - **Expected Results:**
+                            - Redux state preserves form data OR
+                            - Data lost (document behavior)
+                            - If preserved, verify data loads correctly
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-014: Delete Line Item Then Re-add**
+                          - **Objective:** Verify deletedIds handling
+                          - **Test Steps:**
+                            1. Edit transaction with 3 line items
+                            2. Delete line item #2 (ID 100)
+                            3. Add a new line item
+                            4. Save
+                            5. Verify deletedIds includes 100
+                            6. Verify new item gets new ID
+                          - **Expected Results:**
+                            - Deleted item ID tracked in deletedIds array
+                            - New item not reusing deleted ID
+                            - Database properly deletes and inserts
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-015: GST State Detection Edge Cases**
+                          - **Objective:** Verify GSTIN state code extraction
+                          - **Test Steps:**
+                            1. Create transaction with GSTIN: "29ABCDE1234F1Z5" (Karnataka)
+                            2. Verify system extracts state code "29"
+                            3. Test with GSTIN: "27XYZAB5678G2W9" (Maharashtra)
+                            4. Verify system extracts "27"
+                            5. Verify intrastate vs interstate detection
+                          - **Expected Results:**
+                            - State code extracted correctly from GSTIN
+                            - Intrastate/interstate logic works correctly
+                            - CGST+SGST for same state, IGST for different state
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-016: Zero GST Rate Items**
+                          - **Objective:** Verify handling of 0% GST rate
+                          - **Test Steps:**
+                            1. Create sales invoice
+                            2. Add item with GST rate = 0%
+                            3. Verify no GST calculated
+                            4. Save
+                          - **Expected Results:**
+                            - GST = 0 calculated and saved
+                            - ExtGstTranD record may or may not be created (document behavior)
+                            - No validation errors
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-017: Negative Amount Handling**
+                          - **Objective:** Verify system prevents negative amounts
+                          - **Test Steps:**
+                            1. Try to enter negative quantity: -10
+                            2. Try to enter negative rate: -100
+                            3. Try to save
+                          - **Expected Results:**
+                            - Validation error prevents negative values OR
+                            - System allows (for adjustments/returns)
+                            - Document behavior
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-018: Duplicate Auto Reference Number**
+                          - **Objective:** Verify uniqueness of auto reference numbers
+                          - **Test Steps:**
+                            1. Create transaction, note auto reference number (e.g., "VOU/2024/0001")
+                            2. Create another transaction
+                            3. Verify auto reference increments (e.g., "VOU/2024/0002")
+                            4. Verify no duplicates in database
+                          - **Expected Results:**
+                            - Auto reference numbers are unique
+                            - Sequential numbering maintained
+                            - No collisions even with concurrent transactions
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-019: Missing Required Fields**
+                          - **Objective:** Verify validation of required fields
+                          - **Test Steps:**
+                            1. Try to create transaction without customer/supplier
+                            2. Try to submit without line items
+                            3. Try to submit without payment account
+                          - **Expected Results:**
+                            - Validation errors for each missing required field
+                            - Error messages are clear and user-friendly
+                            - Form highlights missing fields
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          **Test Case EDGE-020: Form Reset After Save**
+                          - **Objective:** Verify form behavior after successful save
+                          - **Test Steps:**
+                            1. Create and save transaction
+                            2. Verify form state after save
+                            3. Check if form is reset or retains data
+                          - **Expected Results:**
+                            - Form resets to default values OR
+                            - Switches to view mode OR
+                            - Retains data for next entry (document behavior)
+                            - Redux state cleared appropriately
+                          - **Status:** [ ] Pass [ ] Fail [ ] Blocked
+                          - **Notes:**
+
+                          ---
+
+                          ## Test Results Template
+
+                          ### Test Execution Summary
+
+                          **Test Cycle:** [Test Cycle Name]
+                          **Test Date:** [Date Range]
+                          **Tester Name:** [Name]
+                          **Environment:** [Dev/Staging/Production]
+                          **Database:** [Database Name]
+                          **Application Version:** [Version Number]
+
+                          | Module | Total Cases | Passed | Failed | Blocked | Pass % |
+                          |--------|-------------|--------|--------|---------|--------|
+                          | Payment Voucher | 12 | - | - | - | - |
+                          | Receipt Voucher | 8 | - | - | - | - |
+                          | Contra Voucher | 5 | - | - | - | - |
+                          | Journal Voucher | 5 | - | - | - | - |
+                          | Sales Invoice | 16 | - | - | - | - |
+                          | Purchase Invoice | 12 | - | - | - | - |
+                          | Sales Return | 10 | - | - | - | - |
+                          | Purchase Return | 6 | - | - | - | - |
+                          | Debit Note | 4 | - | - | - | - |
+                          | Credit Note | 4 | - | - | - | - |
+                          | Integration Tests | 8 | - | - | - | - |
+                          | Edge Cases | 20 | - | - | - | - |
+                          | **TOTAL** | **110** | **-** | **-** | **-** | **-** |
+
+                          ---
+
+                          ### Failed Test Cases Log
+
+                          | Test Case ID | Module | Issue Description | Steps to Reproduce | Severity | Status | Assigned To |
+                          |--------------|--------|-------------------|-------------------|----------|--------|-------------|
+                          | P-C-004 | Payment | Debit/Credit validation not working | Step 1-4 in test case | High | Open | - |
+                          | | | | | | | |
+                          | | | | | | | |
+
+                          ---
+
+                          ### Blocked Test Cases Log
+
+                          | Test Case ID | Module | Blocking Reason | Expected Resolution Date |
+                          |--------------|--------|----------------|--------------------------|
+                          | | | | |
+                          | | | | |
+
+                          ---
+
+                          ### Defects Found
+
+                          | Defect ID | Test Case | Severity | Description | Status |
+                          |-----------|-----------|----------|-------------|--------|
+                          | DEF-001 | S-C-009 | High | Amount mismatch validation allows save | Open |
+                          | | | | | |
+
+                          ---
+
+                          ### Test Environment Issues
+
+                          | Issue | Impact | Resolution |
+                          |-------|--------|------------|
+                          | | | |
+                          | | | |
+
+                          ---
+
+                          ## Testing Notes and Observations
+
+                          ### General Observations
+                          - [Document any patterns, trends, or recurring issues]
+                          - [Note any areas requiring additional test coverage]
+                          - [Performance observations]
+
+                          ### Positive Findings
+                          - [Features working particularly well]
+                          - [Good UX/UI elements]
+
+                          ### Areas for Improvement
+                          - [Features needing refinement]
+                          - [User experience issues]
+                          - [Performance bottlenecks]
+
+                          ### Recommendations
+                          - [Suggestions for enhancement]
+                          - [Additional testing needed]
+                          - [Automation opportunities]
+
+                          ---
+
+                          ## Approval Sign-off
+
+                          | Role | Name | Signature | Date |
+                          |------|------|-----------|------|
+                          | Test Lead | | | |
+                          | QA Manager | | | |
+                          | Product Owner | | | |
+                          | Development Lead | | | |
+
+                          ---
+
+                          **Document Version:** 1.0
+                          **Last Updated:** [Date]
+                          **Next Review Date:** [Date]
+
+                          ---
+
+                          ## Appendix A: Test Data Reference
+
+                          ### Test Accounts
+                          | Account Name | Account Type | Account ID | Notes |
+                          |--------------|--------------|------------|-------|
+                          | Cash | Asset | 1001 | For cash transactions |
+                          | State Bank | Asset | 1002 | For bank transactions |
+                          | Sales Income | Income | 2001 | Revenue account |
+                          | Salary Expense | Expense | 3001 | Expense account |
+
+                          ### Test Contacts
+                          | Contact Name | Contact Type | GSTIN | State | Notes |
+                          |--------------|--------------|-------|-------|-------|
+                          | Customer A | Customer | 29AAAA1111A1Z1 | Karnataka | Intrastate |
+                          | Customer B | Customer | 27BBBB2222B2Y2 | Maharashtra | Interstate |
+                          | Supplier C | Supplier | 29CCCC3333C3X3 | Karnataka | Intrastate |
+
+                          ### Test Products
+                          | Product Name | HSN Code | GST Rate | Unit | Notes |
+                          |--------------|----------|----------|------|-------|
+                          | Product A | 1234 | 18% | Pcs | Standard product |
+                          | Service B | 9987 | 18% | Service | Service item |
+                          | Product C | 5678 | 12% | Kg | Lower GST rate |
+
+                          ---
+
+                          ## Appendix B: Database Schema Reference
+
+                          ### Key Tables
+                          - **TranH**: Transaction header table (id, tranDate, tranTypeId, contactsId, autoRefNo, userRefNo, etc.)
+                          - **TranD**: Transaction details/line items (id, tranHeaderId, accId, dc, amount, etc.)
+                          - **ExtGstTranD**: GST details (id, tranDetailsId, rate, cgst, sgst, igst, isInput, etc.)
+                          - **Contacts**: Customer/Supplier master data
+
+                          ---
+
+                          ## Appendix C: Glossary
+
+                          | Term | Description |
+                          |------|-------------|
+                          | **TranH** | Transaction Header - master record for each transaction |
+                          | **TranD** | Transaction Details - line items for each transaction |
+                          | **ExtGstTranD** | Extended GST Transaction Details - GST breakup for each line |
+                          | **dc** | Debit/Credit indicator ('D' or 'C') |
+                          | **isInput** | Flag indicating input GST (true for purchases) or output GST (false for sales) |
+                          | **contactsId** | Foreign key reference to Contacts table |
+                          | **finYearId** | Financial year identifier |
+                          | **branchId** | Branch identifier for multi-branch setup |
+                          | **autoRefNo** | System-generated reference number |
+                          | **userRefNo** | User-entered reference/invoice number |
+                          | **CGST** | Central Goods and Services Tax (intrastate) |
+                          | **SGST** | State Goods and Services Tax (intrastate) |
+                          | **IGST** | Integrated Goods and Services Tax (interstate) |
+                          | **GSTIN** | Goods and Services Tax Identification Number |
+
+                          ---
+
+                          **END OF TESTING PLAN**

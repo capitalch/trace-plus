@@ -13,11 +13,13 @@ import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/
 import { FC } from "react"
 import { ModalDialogB } from "./modal-dialogB"
 import { SearchProduct } from "./search-product"
+import { menuItemSelectorFn } from "../layouts-slice"
 
 export function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
     const { isOpen, identifier, title, width } = useSelector(selectSlidingPaneStateFn) // for sliding pane
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
+    const menuItemSelector = useSelector(menuItemSelectorFn)
     const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleToggleSideBar } = useNavBar()
 
     const SlidingPaneChildComp: FC<any>  = SlidingPaneMap[identifier]?.content
@@ -32,7 +34,7 @@ export function NavBar() {
            </button>
            {getMenuButtons()}
            {getBuFyBranchInfo()}
-           <SearchProduct />
+           {menuItemSelector === 'accounts' && <SearchProduct />}
        </div>
        <LogoutMenuButton />
        <ModalDialogA />

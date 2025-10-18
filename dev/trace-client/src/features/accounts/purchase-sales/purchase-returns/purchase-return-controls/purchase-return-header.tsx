@@ -248,7 +248,9 @@ export function PurchaseReturnHeader() {
                 lineRemarks: item.remarks || null,
                 serialNumbers: item.serialNumbers || null
             }))
-        })
+        },{keepDirty: true})
+        // Force form to be dirty so submit button is enabled
+        // setValue('toggle', !getValues('toggle'), { shouldDirty: true })
         dispatch(triggerPurchaseReturn())
     }
 }
