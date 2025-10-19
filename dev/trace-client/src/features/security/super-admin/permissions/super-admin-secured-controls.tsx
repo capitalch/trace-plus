@@ -30,7 +30,6 @@ export function SuperAdminSecuredControls() {
             hasIndexColumn={true}
             height="calc(100vh - 260px)"
             instance={instance}
-            // rowHeight={40}
             sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
             sqlId={SqlIdsMap.allSecuredControls}
             onDelete={handleOnDelete}

@@ -2,7 +2,7 @@ import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/graphql-queries-map";
 import { Utils } from "../../../../utils/utils"
 import { SuperAdminNewEditSecuredControl } from "./super-admin-new-edit-secured-control"
-import jsonData from './secured-controls.json'
+import jsonData from '../../../../utils/secured-controls/secured-controls.json'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { useContext } from "react";
 

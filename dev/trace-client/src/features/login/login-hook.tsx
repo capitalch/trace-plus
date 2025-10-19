@@ -60,7 +60,7 @@ function useLogin(setValue: any) {
                     token: accessToken,
                     userBusinessUnits: payloadData.userBusinessUnits,
                     userDetails: payloadData.userDetails,
-                    userSecuredControls: payloadData.userSecuredControls
+                    userSecuredControls: testUserSecuredControls, // payloadData.userSecuredControls
                 }))
                 navigate('/', { replace: true })
             }
@@ -83,3 +83,55 @@ function useLogin(setValue: any) {
     return ({ handleForgotPassword, handleTestSignIn, onSubmit })
 }
 export { useLogin }
+
+const testUserSecuredControls = [
+    {
+        controlNo: 100,
+        controlName: 'vouchers.menu.view',
+        controlType: 'menu',
+        descr: 'Can view Vouchers menu',
+        module: 'vouchers'
+    },
+    {
+        controlNo: 101,
+        controlName: 'vouchers.view',
+        controlType: 'action',
+        descr: 'Can view voucher list',
+        module: 'vouchers'
+    },
+    {
+        controlNo: 102,
+        controlName: 'vouchers.create',
+        controlType: 'action',
+        descr: 'Can create new vouchers',
+        module: 'vouchers'
+    },
+    {
+        controlNo: 103,
+        controlName: 'vouchers.edit',
+        controlType: 'action',
+        descr: 'Can edit existing vouchers',
+        module: 'vouchers'
+    },
+    {
+        controlNo: 104,
+        controlName: 'vouchers.delete',
+        controlType: 'action',
+        descr: 'Can delete vouchers',
+        module: 'vouchers'
+    },
+    {
+        controlNo: 105,
+        controlName: 'vouchers.print',
+        controlType: 'action',
+        descr: 'Can print vouchers',
+        module: 'vouchers'
+    },
+    {
+        controlNo: 106,
+        controlName: 'vouchers.export',
+        controlType: 'action',
+        descr: 'Can export vouchers',
+        module: 'vouchers'
+    }
+]

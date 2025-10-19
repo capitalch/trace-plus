@@ -1,0 +1,104 @@
+[
+  {
+    "controlNo": 100,
+    "controlName": "vouchers.menu.all-vouchers.view",
+    "controlType": "menu",
+    "descr": "Can view 'All Vouchers' menu item in sidebar"
+  },
+  {
+    "controlNo": 101,
+    "controlName": "vouchers.list.view",
+    "controlType": "action",
+    "descr": "Can view vouchers in View tab (list/grid)"
+  },
+  {
+    "controlNo": 102,
+    "controlName": "vouchers.delete",
+    "controlType": "action",
+    "descr": "Can delete vouchers from grid"
+  },
+  {
+    "controlNo": 103,
+    "controlName": "vouchers.print",
+    "controlType": "action",
+    "descr": "Can print vouchers"
+  },
+  {
+    "controlNo": 104,
+    "controlName": "vouchers.export",
+    "controlType": "action",
+    "descr": "Can export vouchers to PDF/Excel"
+  },
+  {
+    "controlNo": 110,
+    "controlName": "vouchers.payment.view",
+    "controlType": "action",
+    "descr": "Can view Payment voucher type button and view Payment vouchers"
+  },
+  {
+    "controlNo": 111,
+    "controlName": "vouchers.payment.create",
+    "controlType": "action",
+    "descr": "Can create new Payment vouchers"
+  },
+  {
+    "controlNo": 112,
+    "controlName": "vouchers.payment.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Payment vouchers"
+  },
+  {
+    "controlNo": 120,
+    "controlName": "vouchers.receipt.view",
+    "controlType": "action",
+    "descr": "Can view Receipt voucher type button and view Receipt vouchers"
+  },
+  {
+    "controlNo": 121,
+    "controlName": "vouchers.receipt.create",
+    "controlType": "action",
+    "descr": "Can create new Receipt vouchers"
+  },
+  {
+    "controlNo": 122,
+    "controlName": "vouchers.receipt.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Receipt vouchers"
+  },
+  {
+    "controlNo": 130,
+    "controlName": "vouchers.contra.view",
+    "controlType": "action",
+    "descr": "Can view Contra voucher type button and view Contra vouchers"
+  },
+  {
+    "controlNo": 131,
+    "controlName": "vouchers.contra.create",
+    "controlType": "action",
+    "descr": "Can create new Contra vouchers"
+  },
+  {
+    "controlNo": 132,
+    "controlName": "vouchers.contra.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Contra vouchers"
+  },
+  {
+    "controlNo": 140,
+    "controlName": "vouchers.journal.view",
+    "controlType": "action",
+    "descr": "Can view Journal voucher type button and view Journal vouchers"
+  },
+  {
+    "controlNo": 141,
+    "controlName": "vouchers.journal.create",
+    "controlType": "action",
+    "descr": "Can create new Journal vouchers"
+  },
+  {
+    "controlNo": 142,
+    "controlName": "vouchers.journal.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Journal vouchers"
+  }
+]

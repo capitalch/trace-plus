@@ -4,6 +4,8 @@ import _ from "lodash";
 import { IconReset } from "../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../controls/icons/icon-submit";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
+// import { useSelector } from "react-redux";
+// import { RootStateType } from "../../../../app/store";
 
 export function FormActionButtons({ className }: FormActionButtonsType) {
     const {
@@ -15,6 +17,10 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
     } = useFormContext<VoucherFormDataType>();
     const { resetAll }: any = useFormContext();
 
+    // const userSecuredControls = useSelector((state: RootStateType) => state.login.userSecuredControls)
+    // const hasSubmitPermission = userSecuredControls?.some(
+    //     control => control.controlName === 'payment-save'
+    // )
     const debitEntries = useWatch({ control, name: "debitEntries" }) || [];
     const creditEntries = useWatch({ control, name: "creditEntries" }) || [];
     const totalDebits = debitEntries.reduce((sum: number, entry: any) => sum + (entry.amount || 0), 0);
@@ -34,13 +40,13 @@ export function FormActionButtons({ className }: FormActionButtonsType) {
                 Reset
             </button>
 
-            <button
+            {/*hasSubmitPermission && */<button
                 type="submit"
                 className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg transition hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
                 disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || !isBalanced}
             ><IconSubmit className="mr-2 w-6 h-6 text-white" />
                 {isSubmitting ? "Submitting..." : "Submit"}
-            </button>
+            </button>}
         </div>)
 }
 

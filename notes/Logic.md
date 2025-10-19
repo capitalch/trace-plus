@@ -1,3 +1,8 @@
+## Logic tesst for secured controls Vouchers
+    - login-hook.tsx
+        - Added testUserSecuredControls at end
+        - onSubmit method added testUserSecuredControls
+    - utils/secured-controls
 ## Logic for ExtGstTranD
 - currentValue = true: After click it becomes false
     - if gstId

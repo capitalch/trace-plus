@@ -8,7 +8,7 @@ import { Comp1 } from "../../features/pages/comp1";
 import { SuperAdminDashboard } from "../../features/security/super-admin/dashboard/super-admin-dashboard";
 import { SuperAdminClients } from "../../features/security/super-admin/clients/super-admin-clients";
 import { SuperAdminRoles } from "../../features/security/super-admin/roles/super-admin-roles";
-import { SuperAdminSecuredControls } from "../../features/security/super-admin/secured-controls/super-admin-secured-controls";
+import { SuperAdminSecuredControls } from "../../features/security/super-admin/permissions/super-admin-secured-controls";
 import { SuperAdminAdminUsers } from "../../features/security/super-admin/admin-users/super-admin-admin-users";
 import { AdminDashBoard } from "../../features/security/admin/dashboard/admin-dashboard";
 import { AdminBusinessUnits } from "../../features/security/admin/business-units/admin-business-units";
