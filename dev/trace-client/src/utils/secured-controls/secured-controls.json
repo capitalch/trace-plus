@@ -6,30 +6,6 @@
     "descr": "Can view 'All Vouchers' menu item in sidebar"
   },
   {
-    "controlNo": 101,
-    "controlName": "vouchers.list.view",
-    "controlType": "action",
-    "descr": "Can view vouchers in View tab (list/grid)"
-  },
-  {
-    "controlNo": 102,
-    "controlName": "vouchers.delete",
-    "controlType": "action",
-    "descr": "Can delete vouchers from grid"
-  },
-  {
-    "controlNo": 103,
-    "controlName": "vouchers.print",
-    "controlType": "action",
-    "descr": "Can print vouchers"
-  },
-  {
-    "controlNo": 104,
-    "controlName": "vouchers.export",
-    "controlType": "action",
-    "descr": "Can export vouchers to PDF/Excel"
-  },
-  {
     "controlNo": 110,
     "controlName": "vouchers.payment.view",
     "controlType": "action",
@@ -46,6 +22,24 @@
     "controlName": "vouchers.payment.edit",
     "controlType": "action",
     "descr": "Can edit existing Payment vouchers"
+  },
+  {
+    "controlNo": 113,
+    "controlName": "vouchers.payment.delete",
+    "controlType": "action",
+    "descr": "Can delete Payment vouchers"
+  },
+  {
+    "controlNo": 114,
+    "controlName": "vouchers.payment.preview",
+    "controlType": "action",
+    "descr": "Can preview Payment vouchers"
+  },
+  {
+    "controlNo": 115,
+    "controlName": "vouchers.payment.export",
+    "controlType": "action",
+    "descr": "Can export Payment vouchers to PDF/Excel"
   },
   {
     "controlNo": 120,
@@ -66,6 +60,24 @@
     "descr": "Can edit existing Receipt vouchers"
   },
   {
+    "controlNo": 123,
+    "controlName": "vouchers.receipt.delete",
+    "controlType": "action",
+    "descr": "Can delete Receipt vouchers"
+  },
+  {
+    "controlNo": 124,
+    "controlName": "vouchers.receipt.preview",
+    "controlType": "action",
+    "descr": "Can preview Receipt vouchers"
+  },
+  {
+    "controlNo": 125,
+    "controlName": "vouchers.receipt.export",
+    "controlType": "action",
+    "descr": "Can export Receipt vouchers to PDF/Excel"
+  },
+  {
     "controlNo": 130,
     "controlName": "vouchers.contra.view",
     "controlType": "action",
@@ -84,6 +96,24 @@
     "descr": "Can edit existing Contra vouchers"
   },
   {
+    "controlNo": 133,
+    "controlName": "vouchers.contra.delete",
+    "controlType": "action",
+    "descr": "Can delete Contra vouchers"
+  },
+  {
+    "controlNo": 134,
+    "controlName": "vouchers.contra.preview",
+    "controlType": "action",
+    "descr": "Can preview Contra vouchers"
+  },
+  {
+    "controlNo": 135,
+    "controlName": "vouchers.contra.export",
+    "controlType": "action",
+    "descr": "Can export Contra vouchers to PDF/Excel"
+  },
+  {
     "controlNo": 140,
     "controlName": "vouchers.journal.view",
     "controlType": "action",
@@ -100,5 +130,23 @@
     "controlName": "vouchers.journal.edit",
     "controlType": "action",
     "descr": "Can edit existing Journal vouchers"
+  },
+  {
+    "controlNo": 143,
+    "controlName": "vouchers.journal.delete",
+    "controlType": "action",
+    "descr": "Can delete Journal vouchers"
+  },
+  {
+    "controlNo": 144,
+    "controlName": "vouchers.journal.preview",
+    "controlType": "action",
+    "descr": "Can preview Journal vouchers"
+  },
+  {
+    "controlNo": 145,
+    "controlName": "vouchers.journal.export",
+    "controlType": "action",
+    "descr": "Can export Journal vouchers to PDF/Excel"
   }
 ]
