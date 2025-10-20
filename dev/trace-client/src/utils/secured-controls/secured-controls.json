@@ -13,30 +13,36 @@
   },
   {
     "controlNo": 111,
+    "controlName": "vouchers.payment.select",
+    "controlType": "action",
+    "descr": "Can select Payment vouchers from list"
+  },
+  {
+    "controlNo": 112,
     "controlName": "vouchers.payment.create",
     "controlType": "action",
     "descr": "Can create new Payment vouchers"
   },
   {
-    "controlNo": 112,
+    "controlNo": 113,
     "controlName": "vouchers.payment.edit",
     "controlType": "action",
     "descr": "Can edit existing Payment vouchers"
   },
   {
-    "controlNo": 113,
+    "controlNo": 114,
     "controlName": "vouchers.payment.delete",
     "controlType": "action",
     "descr": "Can delete Payment vouchers"
   },
   {
-    "controlNo": 114,
+    "controlNo": 115,
     "controlName": "vouchers.payment.preview",
     "controlType": "action",
     "descr": "Can preview Payment vouchers"
   },
   {
-    "controlNo": 115,
+    "controlNo": 116,
     "controlName": "vouchers.payment.export",
     "controlType": "action",
     "descr": "Can export Payment vouchers to PDF/Excel"
@@ -49,30 +55,36 @@
   },
   {
     "controlNo": 121,
+    "controlName": "vouchers.receipt.select",
+    "controlType": "action",
+    "descr": "Can select Receipt vouchers from list"
+  },
+  {
+    "controlNo": 122,
     "controlName": "vouchers.receipt.create",
     "controlType": "action",
     "descr": "Can create new Receipt vouchers"
   },
   {
-    "controlNo": 122,
+    "controlNo": 123,
     "controlName": "vouchers.receipt.edit",
     "controlType": "action",
     "descr": "Can edit existing Receipt vouchers"
   },
   {
-    "controlNo": 123,
+    "controlNo": 124,
     "controlName": "vouchers.receipt.delete",
     "controlType": "action",
     "descr": "Can delete Receipt vouchers"
   },
   {
-    "controlNo": 124,
+    "controlNo": 125,
     "controlName": "vouchers.receipt.preview",
     "controlType": "action",
     "descr": "Can preview Receipt vouchers"
   },
   {
-    "controlNo": 125,
+    "controlNo": 126,
     "controlName": "vouchers.receipt.export",
     "controlType": "action",
     "descr": "Can export Receipt vouchers to PDF/Excel"
@@ -85,30 +97,36 @@
   },
   {
     "controlNo": 131,
+    "controlName": "vouchers.contra.select",
+    "controlType": "action",
+    "descr": "Can select Contra vouchers from list"
+  },
+  {
+    "controlNo": 132,
     "controlName": "vouchers.contra.create",
     "controlType": "action",
     "descr": "Can create new Contra vouchers"
   },
   {
-    "controlNo": 132,
+    "controlNo": 133,
     "controlName": "vouchers.contra.edit",
     "controlType": "action",
     "descr": "Can edit existing Contra vouchers"
   },
   {
-    "controlNo": 133,
+    "controlNo": 134,
     "controlName": "vouchers.contra.delete",
     "controlType": "action",
     "descr": "Can delete Contra vouchers"
   },
   {
-    "controlNo": 134,
+    "controlNo": 135,
     "controlName": "vouchers.contra.preview",
     "controlType": "action",
     "descr": "Can preview Contra vouchers"
   },
   {
-    "controlNo": 135,
+    "controlNo": 136,
     "controlName": "vouchers.contra.export",
     "controlType": "action",
     "descr": "Can export Contra vouchers to PDF/Excel"
@@ -121,30 +139,36 @@
   },
   {
     "controlNo": 141,
+    "controlName": "vouchers.journal.select",
+    "controlType": "action",
+    "descr": "Can select Journal vouchers from list"
+  },
+  {
+    "controlNo": 142,
     "controlName": "vouchers.journal.create",
     "controlType": "action",
     "descr": "Can create new Journal vouchers"
   },
   {
-    "controlNo": 142,
+    "controlNo": 143,
     "controlName": "vouchers.journal.edit",
     "controlType": "action",
     "descr": "Can edit existing Journal vouchers"
   },
   {
-    "controlNo": 143,
+    "controlNo": 144,
     "controlName": "vouchers.journal.delete",
     "controlType": "action",
     "descr": "Can delete Journal vouchers"
   },
   {
-    "controlNo": 144,
+    "controlNo": 145,
     "controlName": "vouchers.journal.preview",
     "controlType": "action",
     "descr": "Can preview Journal vouchers"
   },
   {
-    "controlNo": 145,
+    "controlNo": 146,
     "controlName": "vouchers.journal.export",
     "controlType": "action",
     "descr": "Can export Journal vouchers to PDF/Excel"

@@ -62,7 +62,20 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
-	- When use is super admin don't show search products
+- secured controls
+	- vouchers
+		- Bugs
+			- Even after logout and then login, the old selected voucher is persisted
+		- Menu
+												- create
+												- edit
+		- view
+												- select
+		- preview
+			- Bug. In grid the preview button shows but not work
+		- delete
+		- export
+												- When use is super admin don't show search products
 												- Sales edit payment check
 													- Create new sales with retail
 													- Change retail to bill by clear

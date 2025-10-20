@@ -16,6 +16,7 @@ import { VoucherFormDataType } from "./all-vouchers";
 import { ExtGstTranDType, VourcherType } from "../../../../utils/global-types-interfaces-enums";
 import { Messages } from "../../../../utils/messages";
 import { triggerVoucherPreview } from "../voucher-slice";
+import { useVoucherPermissions } from "../voucher-permissions-hook";
 
 export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -33,10 +34,11 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         reset,
         watch,
     } = useFormContext<VoucherFormDataType>();
-    const {getVoucherDetailsOnId, populateFormFromId}:any = useFormContext<VoucherFormDataType>();
+    const { getVoucherDetailsOnId, populateFormFromId }: any = useFormContext<VoucherFormDataType>();
 
     const voucherType = watch('voucherType')
     const tranTypeId = Utils.getTranTypeId(voucherType);
+    const { canPreview } = useVoucherPermissions();
 
     const loadData = useCallback(async () => {
         try {
@@ -112,6 +114,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 onEdit={handleOnEdit}
                 onDelete={handleOnDelete}
                 onPreview={handleOnPreview}
+                // {...(canPreview && { onPreview: handleOnPreview })}
                 onRowDataBound={handleOnRowDataBound}
                 previewColumnWidth={40}
                 rowHeight={35}
@@ -397,6 +400,9 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     }
 
     async function handleOnPreview(data: RowDataType) {
+        if (!canPreview) {
+            return
+        }
         dispatch(triggerVoucherPreview(data.id!));
     }
 

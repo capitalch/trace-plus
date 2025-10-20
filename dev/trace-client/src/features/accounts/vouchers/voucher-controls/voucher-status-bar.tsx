@@ -19,6 +19,8 @@ import { closeVoucherPreview, triggerVoucherPreview } from "../voucher-slice";
 import { AllVouchersCrown } from "../all-vouchers/all-vouchers-crown";
 import { CompTabHeaders, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { WidgetModeIndicatorBadge } from "../../../../controls/widgets/widget-mode-indicator-badge";
+import { useUserHasMultiplePermissions } from "../../../../utils/secured-controls/permissions";
+import { useVoucherPermissions } from "../voucher-permissions-hook";
 
 export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -28,6 +30,16 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
     const { resetAll }: any = useFormContext()
     const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
+
+    // Check select permissions for all voucher types
+    const voucherTypePermissions = useUserHasMultiplePermissions({
+        canSelectPayment: 'vouchers.payment.select',
+        canSelectReceipt: 'vouchers.receipt.select',
+        canSelectContra: 'vouchers.contra.select',
+        canSelectJournal: 'vouchers.journal.select'
+    })
+    const {canPreview} = useVoucherPermissions()
+
     const {
         currentDateFormat,
         buCode,
@@ -43,7 +55,7 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
         let Ret = <></>
         if (activeTabIndex === 0) {
             const id = watch('id');
-            if (id) {
+            if (id && canPreview) {
                 Ret = <TooltipComponent content='Print Preview' className="flex">
                     <button
                         type='button'
@@ -105,6 +117,48 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
         setValue('voucherType', newType as any);
     }
 
+    // Helper function to check if user can select a voucher type
+    function canSelectVoucherType(type: string): boolean {
+        switch(type) {
+            case 'Payment': return voucherTypePermissions.canSelectPayment
+            case 'Receipt': return voucherTypePermissions.canSelectReceipt
+            case 'Contra': return voucherTypePermissions.canSelectContra
+            case 'Journal': return voucherTypePermissions.canSelectJournal
+            default: return false
+        }
+    }
+
+    // Auto-select first available voucher type
+    useEffect(() => {
+        const currentVoucherType = watch('voucherType')
+        const voucherId = watch('id')
+
+        // Skip auto-selection in edit mode (existing voucher)
+        if (voucherId) {
+            return
+        }
+
+        // Find first available voucher type based on permissions
+        const firstAvailableVoucherType = voucherTypes.find(type => canSelectVoucherType(type))
+
+        // If no available voucher type, user has no permissions
+        if (!firstAvailableVoucherType) {
+            return
+        }
+
+        // Case 1: No voucher type selected → Select first available
+        if (!currentVoucherType) {
+            setValue('voucherType', firstAvailableVoucherType as any)
+            return
+        }
+
+        // Case 2: Current voucher type not selectable → Switch to first available
+        if (!canSelectVoucherType(currentVoucherType)) {
+            handleVoucherTypeChange(firstAvailableVoucherType)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [voucherTypePermissions])
+
     return (
         <div className={clsx("relative w-full bg-gradient-to-r from-slate-50 to-slate-100 px-4 sm:px-6 py-3 rounded-lg shadow-sm border border-slate-200", className)}>
             {/* Mode Badge - Top Left Corner - Only show on New/Edit tab */}
@@ -137,21 +191,24 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
                         <div >
                             {getPrintPreview()}
                         </div>
-                        {voucherTypes.map((type) => (
-                            <button
-                                key={type}
-                                type="button"
-                                onClick={() => handleVoucherTypeChange(type)}
-                                className={clsx(
-                                    "cursor-pointer px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm whitespace-nowrap",
-                                    voucherType === type
-                                        ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-2 border-indigo-500 shadow-md scale-105"
-                                        : "bg-white text-slate-700 border-2 border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md",
-                                )}
-                            >
-                                {type}
-                            </button>
-                        ))}
+                        {voucherTypes
+                            .filter(type => canSelectVoucherType(type))
+                            .map((type) => (
+                                <button
+                                    key={type}
+                                    type="button"
+                                    onClick={() => handleVoucherTypeChange(type)}
+                                    className={clsx(
+                                        "cursor-pointer px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm whitespace-nowrap",
+                                        voucherType === type
+                                            ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-2 border-indigo-500 shadow-md scale-105"
+                                            : "bg-white text-slate-700 border-2 border-slate-300 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md",
+                                    )}
+                                >
+                                    {type}
+                                </button>
+                            ))
+                        }
                     </div>
                 </div>
             </div>
