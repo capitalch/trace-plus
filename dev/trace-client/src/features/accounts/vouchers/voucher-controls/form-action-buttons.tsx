@@ -4,7 +4,7 @@ import _ from "lodash";
 import { IconReset } from "../../../../controls/icons/icon-reset";
 import { IconSubmit } from "../../../../controls/icons/icon-submit";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
-import { useVoucherPermissions } from "../voucher-permissions-hook";
+import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function FormActionButtons({ className }: FormActionButtonsType) {
     const { canCreate, canEdit } = useVoucherPermissions()

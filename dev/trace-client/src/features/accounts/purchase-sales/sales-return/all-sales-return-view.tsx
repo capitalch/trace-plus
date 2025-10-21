@@ -15,6 +15,7 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { useFormContext } from "react-hook-form";
 import { SalesReturnFormDataType } from "./all-sales-return";
 import { generateSalesReturnInvoicePDF } from "./all-sales-return-invoice-jspdf";
+import { useSalesReturnPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 interface AllSalesReturnViewProps {
   className?: string;
@@ -23,6 +24,10 @@ interface AllSalesReturnViewProps {
 
 export function AllSalesReturnView({ className, onBack }: AllSalesReturnViewProps) {
   const instance = DataInstancesMap.allSalesReturn
+
+  // ✅ Get sales return permissions
+  const { canEdit, canDelete, canPreview, canExport } = useSalesReturnPermissions()
+
   const [rowsData, setRowsData] = useState<any[]>([]);
   const {
     currentDateFormat,
@@ -95,9 +100,9 @@ export function AllSalesReturnView({ className, onBack }: AllSalesReturnViewProp
         className="mr-4"
         minWidth="600px"
         title={``}
-        isPdfExport={true}
-        isExcelExport={true}
-        isCsvExport={true}
+        isPdfExport={canExport}
+        isExcelExport={canExport}
+        isCsvExport={canExport}
         instance={instance}
       />
       <CompSyncFusionGrid
@@ -117,9 +122,9 @@ export function AllSalesReturnView({ className, onBack }: AllSalesReturnViewProp
         isSmallerFont={true}
         loadData={loadData}
         minWidth="400px"
-        onEdit={handleOnEdit}
-        onDelete={handleOnDelete}
-        onPreview={handleOnPreview}
+        {...(canEdit && { onEdit: handleOnEdit })}
+        {...(canDelete && { onDelete: handleOnDelete })}
+        {...(canPreview && { onPreview: handleOnPreview })}
         onRowDataBound={handleOnRowDataBound}
         previewColumnWidth={40}
         rowHeight={35}

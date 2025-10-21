@@ -1,4 +1,4 @@
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm} from "react-hook-form";
 import _ from 'lodash'
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
@@ -19,6 +19,70 @@ import { Messages } from "../../../../../utils/messages";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { useLocation } from "react-router-dom";
+import { usePurchasePermissions } from "../../../../../utils/permissions/permissions-hooks";
+
+/**
+ * Child component that renders purchase tabs and content.
+ * Must be rendered inside FormProvider to access form context.
+ */
+function AllPurchasesContent({ instance }: { instance: string }) {
+    const dispatch: AppDispatchType = useDispatch()
+    const selectedTabIndex = useSelector((state: RootStateType) =>
+        state.reduxComp.compTabs[instance]?.activeTabIndex || 0
+    )
+
+    // ✅ Get purchase permissions
+    const { canView } = usePurchasePermissions()
+
+    // Utility function to generate purchase title
+    const getPurchaseTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Purchase View" : "Purchase";
+    }
+
+    // Build tabs array with conditional View tab
+    const visibleTabsInfo: CompTabsType = [
+        {
+            label: "New / Edit",
+            content: <AllPurchasesMain />
+        },
+        // ✅ Only include View tab if user has permission
+        ...(canView ? [{
+            label: "View",
+            content: <AllPurchasesView />
+        }] : [])
+    ]
+
+    // Update main title when active tab changes
+    useEffect(() => {
+        const isViewMode = selectedTabIndex === 1;
+        const title = getPurchaseTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [selectedTabIndex, dispatch]);
+
+    // Auto-switch to New/Edit tab if user loses View permission
+    useEffect(() => {
+        if (selectedTabIndex === 1 && !canView) {
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
+        }
+    }, [canView, selectedTabIndex, dispatch, instance])
+
+    return (
+        <>
+            <CompAccountsContainer
+                MiddleCustomControl={() => (
+                    <WidgetTabToggleButtons
+                        instance={instance}
+                        tabsInfo={visibleTabsInfo}
+                    />
+                )}
+            >
+                <div className="mt-4">
+                    {visibleTabsInfo[selectedTabIndex]?.content}
+                </div>
+            </CompAccountsContainer>
+        </>
+    )
+}
 
 export function AllPurchases() {
     const dispatch: AppDispatchType = useDispatch()
@@ -37,22 +101,6 @@ export function AllPurchases() {
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, checkPurchaseInvoiceExists, populateFormFromId, getPurchaseEditDataOnId }
     const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
 
-    // Utility function to generate purchase title
-    const getPurchaseTitle = (isViewMode: boolean): string => {
-        return isViewMode ? "Purchase View" : "Purchase";
-    }
-
-    const tabsInfo: CompTabsType = [
-        {
-            label: "New / Edit",
-            content: <AllPurchasesMain />
-        },
-        {
-            label: "View",
-            content: <AllPurchasesView />
-        }
-    ];
-
     useEffect(() => {
         if (savedFormData) {
             reset(_.cloneDeep(savedFormData),);
@@ -66,13 +114,6 @@ export function AllPurchases() {
             dispatch(savePurchaseFormData(data));
         })
     }, [dispatch, getValues])
-
-    // Update main title when active tab changes
-    useEffect(() => {
-        const isViewMode = selectedTabIndex === 1;
-        const title = getPurchaseTitle(isViewMode);
-        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
-    }, [selectedTabIndex, dispatch]);
 
     // Reset form when switches to View tab
     useEffect(() => {
@@ -91,18 +132,8 @@ export function AllPurchases() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer
-                    MiddleCustomControl={() => (
-                        <WidgetTabToggleButtons
-                            instance={instance}
-                            tabsInfo={tabsInfo}
-                        />
-                    )}
-                >
-                    <div className="mt-4">
-                        {tabsInfo[selectedTabIndex].content}
-                    </div>
-                </CompAccountsContainer>
+                {/* ✅ Render child component inside FormProvider */}
+                <AllPurchasesContent instance={instance} />
             </form>
         </FormProvider>
     );

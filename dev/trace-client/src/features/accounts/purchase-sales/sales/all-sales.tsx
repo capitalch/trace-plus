@@ -20,6 +20,7 @@ import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useLocation } from "react-router-dom";
 import { useScrollToTop } from "../../../../utils/use-scroll-to-top-hook";
+import { useSalesPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function AllSales() {
     const instance = DataInstancesMap.allSales

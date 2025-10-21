@@ -16,7 +16,7 @@ import { VoucherFormDataType } from "./all-vouchers";
 import { ExtGstTranDType, VourcherType } from "../../../../utils/global-types-interfaces-enums";
 import { Messages } from "../../../../utils/messages";
 import { triggerVoucherPreview } from "../voucher-slice";
-import { useVoucherPermissions } from "../voucher-permissions-hook";
+import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -38,7 +38,7 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
 
     const voucherType = watch('voucherType')
     const tranTypeId = Utils.getTranTypeId(voucherType);
-    const { canPreview } = useVoucherPermissions();
+    const { canEdit, canDelete, canPreview, canExport } = useVoucherPermissions();
 
     const loadData = useCallback(async () => {
         try {
@@ -87,13 +87,15 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 className="mr-4"
                 minWidth="600px"
                 title={`${voucherType} Vouchers View`}
-                isPdfExport={true}
-                isExcelExport={true}
-                isCsvExport={true}
+                isPdfExport={canExport ? true : false}
+                isExcelExport={canExport ? true : false}
+                isCsvExport={canExport ? true : false}
                 instance={instance}
             />
 
             <CompSyncFusionGrid
+                // When `voucherType` changes, React unmounts the old grid instance. React mounts a completely new grid instance with fresh props
+                key={voucherType} // This is necessary otherwise onPreview={canPreview ? handleOnPreview: undefined} line throws error when voucherType changes in view mode
                 aggregates={getAggregates()}
                 allowPaging={true}
                 allowTextWrap={false}
@@ -111,10 +113,9 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
                 loadData={loadData}
                 minWidth="400px"
                 onCopy={handleOnCopy}
-                onEdit={handleOnEdit}
-                onDelete={handleOnDelete}
-                onPreview={handleOnPreview}
-                // {...(canPreview && { onPreview: handleOnPreview })}
+                {...(canEdit && { onEdit: handleOnEdit })}
+                {...(canDelete && { onDelete: handleOnDelete })}
+                {...(canPreview && { onPreview: handleOnPreview })}
                 onRowDataBound={handleOnRowDataBound}
                 previewColumnWidth={40}
                 rowHeight={35}

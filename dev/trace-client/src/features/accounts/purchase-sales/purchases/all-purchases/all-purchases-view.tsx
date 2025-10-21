@@ -18,10 +18,14 @@ import { useDispatch } from "react-redux";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { generatePurchaseInvoicePDF } from "./purchase-invoice-jspdf";
 import { setInvoicExists } from "../purchase-slice";
+import { usePurchasePermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 export function AllPurchasesView({ className }: { className?: string }) {
   const dispatch: AppDispatchType = useDispatch()
   const instance = DataInstancesMap.allPurchases
+
+  // ✅ Get purchase permissions
+  const { canEdit, canDelete, canPreview, canExport } = usePurchasePermissions()
   const [rowsData, setRowsData] = useState<any[]>([]);
   const {
     currentDateFormat,
@@ -89,9 +93,9 @@ export function AllPurchasesView({ className }: { className?: string }) {
         className="mr-4"
         minWidth="600px"
         title={`Purchases View`}
-        isPdfExport={true}
-        isExcelExport={true}
-        isCsvExport={true}
+        isPdfExport={canExport}
+        isExcelExport={canExport}
+        isCsvExport={canExport}
         instance={instance}
       />
 
@@ -113,9 +117,9 @@ export function AllPurchasesView({ className }: { className?: string }) {
         loadData={loadData}
         minWidth="400px"
         onCopy={handleOnCopy}
-        onEdit={handleOnEdit}
-        onDelete={handleOnDelete}
-        onPreview={handleOnPreview}
+        {...(canEdit && { onEdit: handleOnEdit })}
+        {...(canDelete && { onDelete: handleOnDelete })}
+        {...(canPreview && { onPreview: handleOnPreview })}
         onRowDataBound={handleOnRowDataBound}
         previewColumnWidth={40}
         rowHeight={35}

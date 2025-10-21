@@ -19,8 +19,8 @@ import { closeVoucherPreview, triggerVoucherPreview } from "../voucher-slice";
 import { AllVouchersCrown } from "../all-vouchers/all-vouchers-crown";
 import { CompTabHeaders, CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { WidgetModeIndicatorBadge } from "../../../../controls/widgets/widget-mode-indicator-badge";
-import { useUserHasMultiplePermissions } from "../../../../utils/secured-controls/permissions";
-import { useVoucherPermissions } from "../voucher-permissions-hook";
+import { useUserHasMultiplePermissions } from "../../../../utils/permissions/permissions-hooks";
+import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) {
     const dispatch: AppDispatchType = useDispatch()

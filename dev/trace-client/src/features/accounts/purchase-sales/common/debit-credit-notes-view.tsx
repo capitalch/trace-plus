@@ -14,8 +14,19 @@ import { AllTables } from "../../../../app/maps/database-tables-map";
 import { DebitCreditNoteEditDataType } from "../../../../utils/global-types-interfaces-enums";
 import { generateDebitCreditNotePDF } from "./debit-credit-note-jspdf";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
+import { useDebitNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { useCreditNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function DebitCreditNotesView({ className, tranTypeId, instance }: { className?: string; tranTypeId: number; instance: string }) {
+    // ✅ Determine which permissions to use based on tranTypeId
+    const isDebitNote = tranTypeId === Utils.getTranTypeId('DebitNote')
+    const debitPermissions = useDebitNotesPermissions()
+    const creditPermissions = useCreditNotesPermissions()
+
+    const { canEdit, canDelete, canPreview, canExport } = isDebitNote
+        ? debitPermissions
+        : creditPermissions
+
     const [rowsData, setRowsData] = useState<any[]>([]);
     const {
         currentDateFormat,
@@ -78,10 +89,10 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
             <CompSyncFusionGridToolbar
                 className="mr-4"
                 minWidth="600px"
-                title={`Purchases View`}
-                isPdfExport={true}
-                isExcelExport={true}
-                isCsvExport={true}
+                title={`Debit/Credit Notes View`}
+                isPdfExport={canExport}
+                isExcelExport={canExport}
+                isCsvExport={canExport}
                 instance={instance}
             />
 
@@ -102,9 +113,9 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
                 isSmallerFont={true}
                 loadData={loadData}
                 minWidth="400px"
-                onEdit={handleOnEdit}
-                onDelete={handleOnDelete}
-                onPreview={handleOnPreview}
+                {...(canEdit && { onEdit: handleOnEdit })}
+                {...(canDelete && { onDelete: handleOnDelete })}
+                {...(canPreview && { onPreview: handleOnPreview })}
                 onRowDataBound={handleOnRowDataBound}
                 previewColumnWidth={40}
                 rowHeight={35}

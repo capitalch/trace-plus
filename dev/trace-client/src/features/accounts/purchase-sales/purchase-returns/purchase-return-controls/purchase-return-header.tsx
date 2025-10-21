@@ -23,6 +23,7 @@ import { ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditData
 import { useEffect } from "react";
 import { generatePurchaseReturnInvoicePDF } from "../all-purchase-returns/purchase-return-invoice-jspdf";
 import { triggerPurchaseReturn } from "../purchase-return-slice";
+import { usePurchaseReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 export function PurchaseReturnHeader() {
     const dispatch:AppDispatchType = useDispatch()
@@ -41,11 +42,18 @@ export function PurchaseReturnHeader() {
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll }: any = useFormContext();
 
+    // ✅ Get permissions
+    const { canCreate, canEdit, canPreview } = usePurchaseReturnPermissions()
+    const purchaseReturnId = watch("id")
+    const isEditMode = !!purchaseReturnId
+    const canSubmit = isEditMode ? canEdit : canCreate
+
     const getPrintPreview = () => {
         let Ret = <></>
         if (activeTabIndex === 0) {
             const id = watch('id');
-            if (id) {
+            // ✅ Only show if user has preview permission
+            if (id && canPreview) {
                 Ret = <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={() => handleOnPreview()}>
                         <IconPreview1 className="w-8 h-8 text-blue-500" />
@@ -166,14 +174,16 @@ export function PurchaseReturnHeader() {
                     Reset
                 </button>
 
-                {/* Submit */}
-                <button
-                    type="submit"
-                    disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
-                    className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
-                >
-                    <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
-                </button>
+                {/* Submit - Only show if user has permission */}
+                {canSubmit && (
+                    <button
+                        type="submit"
+                        disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
+                        className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
+                    >
+                        <IconSubmit className="mr-2 w-6 h-6 text-white" /> {isEditMode ? "Update" : "Submit"}
+                    </button>
+                )}
             </div>
         </div>
     );

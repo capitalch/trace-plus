@@ -17,9 +17,14 @@ import { DebitCreditNoteEditDataType } from "../../../../utils/global-types-inte
 import { generateDebitCreditNotePDF } from "../common/debit-credit-note-jspdf";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
+import { useDebitNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function DebitNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.debitNotes]?.activeTabIndex)
+
+    // ✅ Get debit notes permissions
+    const { canCreate, canEdit, canPreview } = useDebitNotesPermissions()
+
     const { checkAllowedDate } = useValidators();
     const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo()
     const {
@@ -30,6 +35,12 @@ export function DebitNotesHeader() {
         trigger,
         formState: { errors, isSubmitting, isDirty, isValid }
     } = useFormContext<DebitCreditNoteFormDataType>();
+
+    // Determine submit permission based on mode
+    const debitNoteId = watch("id")
+    const isEditMode = !!debitNoteId
+    const canSubmit = isEditMode ? canEdit : canCreate
+
     const isGstApplicable = watch('isGstApplicable')
     const { computeGst, resetAll }: any = useFormContext<DebitCreditNoteFormDataType>();
     const errorClass = 'border-red-500 bg-red-50';
@@ -163,14 +174,17 @@ export function DebitNotesHeader() {
                         <IconReset className="mr-2 w-5 h-5" />
                         Reset
                     </button>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || !isValid}
-                        className="flex items-center justify-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:bg-blue-300"
-                    >
-                        <IconSubmit className="mr-2 w-5 h-5" />
-                        Submit
-                    </button>
+                    {/* ✅ Submit button - Only show if user has permission */}
+                    {canSubmit && (
+                        <button
+                            type="submit"
+                            disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || !isValid}
+                            className="flex items-center justify-center px-4 py-2 font-medium text-white bg-blue-500 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:bg-blue-300"
+                        >
+                            <IconSubmit className="mr-2 w-5 h-5" />
+                            {isEditMode ? "Update" : "Submit"}
+                        </button>
+                    )}
                 </div>
 
                 {/* Edit / New label */}
@@ -188,7 +202,8 @@ export function DebitNotesHeader() {
         let Ret = <></>
         if (activeTabIndex === 0) {
             const id = watch('id');
-            if (id) {
+            // ✅ Only show if user has preview permission
+            if (id && canPreview) {
                 Ret = <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={() => handleOnPreview()}>
                         <IconPreview1 className="w-8 h-8 text-blue-500" />

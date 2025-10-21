@@ -13,6 +13,7 @@ import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { generateSalesReturnInvoicePDF } from '../all-sales-return-invoice-jspdf';
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
+import { useSalesReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 const SalesReturnStatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
@@ -20,6 +21,13 @@ const SalesReturnStatusBar: React.FC = () => {
     const { getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesReturnFormDataType>();
     const { populateFormOverId, resetAll }: any = useFormContext<SalesReturnFormDataType>();
     const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo();
+
+    // ✅ Get sales return permissions
+    const { canCreate, canEdit, canView, canPreview } = useSalesReturnPermissions()
+    const salesReturnId = getValues("id")
+    const isEditMode = !!salesReturnId
+    const canSubmit = isEditMode ? canEdit : canCreate
+
     const totalInvoiceAmount = getValues('totalInvoiceAmount') || new Decimal(0);
     const creditAccount = getValues('creditAccount') || {};
     const totalRefundAmount = new Decimal(creditAccount?.amount || 0);
@@ -50,8 +58,9 @@ const SalesReturnStatusBar: React.FC = () => {
         const id = getValues('id');
         const salesReturnEditData = getValues('salesReturnEditData');
 
+        // ✅ Only show if user has preview permission and we have data
         // Show preview if we have either current form data or last saved data
-        if (id || salesReturnEditData || lastSalesReturnEditData) {
+        if (canPreview && (id || salesReturnEditData || lastSalesReturnEditData)) {
             return (
                 <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={handleOnPreview}>
@@ -120,27 +129,31 @@ const SalesReturnStatusBar: React.FC = () => {
                         <RotateCcw size={16} className="flex-shrink-0" />
                         <span>RESET</span>
                     </button>
-                    {/* View */}
-                    <button
-                        onClick={handleView}
-                        type='button'
-                        className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-purple-500 rounded-md shadow-sm transition-colors hover:bg-purple-600 space-x-2"
-                    >
-                        <Eye size={16} className="flex-shrink-0" />
-                        <span>VIEW</span>
-                    </button>
-                    {/* Submit */}
-                    <button
-                        type='submit'
-                        disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid) || diff !== 0}
-                        className={`flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap rounded-md shadow-sm transition-colors space-x-2 ${isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid) || diff !== 0
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-green-500 hover:bg-green-600'
-                            }`}
-                    >
-                        <Send size={16} className="flex-shrink-0" />
-                        <span>SUBMIT</span>
-                    </button>
+                    {/* ✅ View button - Only show if user has permission */}
+                    {canView && (
+                        <button
+                            onClick={handleView}
+                            type='button'
+                            className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-purple-500 rounded-md shadow-sm transition-colors hover:bg-purple-600 space-x-2"
+                        >
+                            <Eye size={16} className="flex-shrink-0" />
+                            <span>VIEW</span>
+                        </button>
+                    )}
+                    {/* ✅ Submit button - Only show if user has permission */}
+                    {canSubmit && (
+                        <button
+                            type='submit'
+                            disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid) || diff !== 0}
+                            className={`flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap rounded-md shadow-sm transition-colors space-x-2 ${isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid) || diff !== 0
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-green-500 hover:bg-green-600'
+                                }`}
+                        >
+                            <Send size={16} className="flex-shrink-0" />
+                            <span>{isEditMode ? "UPDATE" : "SUBMIT"}</span>
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

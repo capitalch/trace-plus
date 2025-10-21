@@ -17,6 +17,7 @@ import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-jspdf";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
+import { usePurchasePermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 export function PurchaseCommonHeader() {
     const isInvoiceExists = useSelector((state: RootStateType) => state.purchase.isInvoiceExists)
@@ -35,6 +36,12 @@ export function PurchaseCommonHeader() {
     } = useFormContext<PurchaseFormDataType>();
     const { resetAll, checkPurchaseInvoiceExists }: any = useFormContext();
 
+    // ✅ Get permissions
+    const { canCreate, canEdit, canPreview } = usePurchasePermissions()
+    const purchaseId = watch("id")
+    const isEditMode = !!purchaseId
+    const canSubmit = isEditMode ? canEdit : canCreate
+
     const onChangeUserRefNo = useMemo(
         () =>
             _.debounce(() => {
@@ -46,7 +53,8 @@ export function PurchaseCommonHeader() {
         let Ret = <></>
         if (activeTabIndex === 0) {
             const id = watch('id');
-            if (id) {
+            // ✅ Only show if user has preview permission
+            if (id && canPreview) {
                 Ret = <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={() => handleOnPreview()}>
                         <IconPreview1 className="w-8 h-8 text-blue-500" />
@@ -164,14 +172,16 @@ export function PurchaseCommonHeader() {
                     Reset
                 </button>
 
-                {/* Submit */}
-                <button
-                    type="submit"
-                    disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
-                    className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
-                >
-                    <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
-                </button>
+                {/* Submit - Only show if user has permission */}
+                {canSubmit && (
+                    <button
+                        type="submit"
+                        disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
+                        className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
+                    >
+                        <IconSubmit className="mr-2 w-6 h-6 text-white" /> {isEditMode ? "Update" : "Submit"}
+                    </button>
+                )}
             </div>
 
             {/* Edit / New label */}

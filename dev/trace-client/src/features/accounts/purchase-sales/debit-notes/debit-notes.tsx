@@ -20,7 +20,69 @@ import { useDebitCreditNotesSubmit } from "../common/debit-credit-notes-submit-h
 import Decimal from "decimal.js";
 import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
 import { useLocation } from "react-router-dom";
+import { useDebitNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
 
+
+/**
+ * Child component that renders debit note tabs and content.
+ * Must be rendered inside FormProvider to access form context.
+ */
+function DebitNotesContent({ instance }: { instance: string }) {
+    const dispatch: AppDispatchType = useDispatch()
+    const selectedTabIndex = useSelector((state: RootStateType) =>
+        state.reduxComp.compTabs[instance]?.activeTabIndex || 0
+    )
+
+    // ✅ Get debit notes permissions
+    const { canView } = useDebitNotesPermissions()
+
+    // Utility function to generate debit note title
+    const getDebitNoteTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Debit Notes View" : "Debit Notes";
+    }
+
+    // Build tabs array with conditional View tab
+    const visibleTabsInfo: CompTabsType = [
+        {
+            label: "New / Edit",
+            content: <DebitNotesMain />
+        },
+        // ✅ Only include View tab if user has permission
+        ...(canView ? [{
+            label: "View",
+            content: <DebitCreditNotesView tranTypeId={Utils.getTranTypeId('DebitNote')} instance={DataInstancesMap.debitNotes} />
+        }] : [])
+    ]
+
+    // Update main title when active tab changes
+    useEffect(() => {
+        const isViewMode = selectedTabIndex === 1;
+        const title = getDebitNoteTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [selectedTabIndex, dispatch]);
+
+    // Auto-switch to New/Edit tab if user loses View permission
+    useEffect(() => {
+        if (selectedTabIndex === 1 && !canView) {
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
+        }
+    }, [canView, selectedTabIndex, dispatch, instance])
+
+    return (
+        <CompAccountsContainer
+            MiddleCustomControl={() => (
+                <WidgetTabToggleButtons
+                    instance={instance}
+                    tabsInfo={visibleTabsInfo}
+                />
+            )}
+        >
+            <div className="mt-4">
+                {visibleTabsInfo[selectedTabIndex]?.content}
+            </div>
+        </CompAccountsContainer>
+    )
+}
 
 export function DebitNotes() {
     const dispatch: AppDispatchType = useDispatch()
@@ -40,22 +102,6 @@ export function DebitNotes() {
 
     const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst, populateFormFromId, getDebitNoteEditDataOnId }
 
-    // Utility function to generate debit note title
-    const getDebitNoteTitle = (isViewMode: boolean): string => {
-        return isViewMode ? "Debit Notes View" : "Debit Notes";
-    }
-
-    const tabsInfo: CompTabsType = [
-        {
-            label: "New / Edit",
-            content: <DebitNotesMain />
-        },
-        {
-            label: "View",
-            content: <DebitCreditNotesView tranTypeId={Utils.getTranTypeId('DebitNote')} instance={DataInstancesMap.debitNotes} />
-        }
-    ];
-
     useEffect(() => {
         if (savedFormData) {
             reset(_.cloneDeep(savedFormData),);
@@ -69,13 +115,6 @@ export function DebitNotes() {
             dispatch(saveDebitNoteFormData(data));
         })
     }, [dispatch, getValues])
-
-    // Update main title when active tab changes
-    useEffect(() => {
-        const isViewMode = selectedTabIndex === 1;
-        const title = getDebitNoteTitle(isViewMode);
-        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
-    }, [selectedTabIndex, dispatch]);
 
     // Reset form when switches to View tab
     useEffect(() => {
@@ -94,18 +133,8 @@ export function DebitNotes() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer
-                    MiddleCustomControl={() => (
-                        <WidgetTabToggleButtons
-                            instance={instance}
-                            tabsInfo={tabsInfo}
-                        />
-                    )}
-                >
-                    <div className="mt-4">
-                        {tabsInfo[selectedTabIndex].content}
-                    </div>
-                </CompAccountsContainer>
+                {/* ✅ Render child component inside FormProvider */}
+                <DebitNotesContent instance={instance} />
             </form>
         </FormProvider>
     );

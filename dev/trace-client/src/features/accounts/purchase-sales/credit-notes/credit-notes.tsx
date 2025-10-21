@@ -21,6 +21,68 @@ import { CreditNotesMain } from "./credit-notes-main";
 import { clearCreditNoteFormData, saveCreditNoteFormData } from "./credit-notes-slice";
 import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
 import { useLocation } from "react-router-dom";
+import { useCreditNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
+
+/**
+ * Child component that renders credit note tabs and content.
+ * Must be rendered inside FormProvider to access form context.
+ */
+function CreditNotesContent({ instance }: { instance: string }) {
+    const dispatch: AppDispatchType = useDispatch()
+    const selectedTabIndex = useSelector((state: RootStateType) =>
+        state.reduxComp.compTabs[instance]?.activeTabIndex || 0
+    )
+
+    // ✅ Get credit notes permissions
+    const { canView } = useCreditNotesPermissions()
+
+    // Utility function to generate credit note title
+    const getCreditNoteTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Credit Notes View" : "Credit Notes";
+    }
+
+    // Build tabs array with conditional View tab
+    const visibleTabsInfo: CompTabsType = [
+        {
+            label: "New / Edit",
+            content: <CreditNotesMain />
+        },
+        // ✅ Only include View tab if user has permission
+        ...(canView ? [{
+            label: "View",
+            content: <DebitCreditNotesView tranTypeId={Utils.getTranTypeId('CreditNote')} instance={DataInstancesMap.creditNotes} />
+        }] : [])
+    ]
+
+    // Update main title when active tab changes
+    useEffect(() => {
+        const isViewMode = selectedTabIndex === 1;
+        const title = getCreditNoteTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [selectedTabIndex, dispatch]);
+
+    // Auto-switch to New/Edit tab if user loses View permission
+    useEffect(() => {
+        if (selectedTabIndex === 1 && !canView) {
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
+        }
+    }, [canView, selectedTabIndex, dispatch, instance])
+
+    return (
+        <CompAccountsContainer
+            MiddleCustomControl={() => (
+                <WidgetTabToggleButtons
+                    instance={instance}
+                    tabsInfo={visibleTabsInfo}
+                />
+            )}
+        >
+            <div className="mt-4">
+                {visibleTabsInfo[selectedTabIndex]?.content}
+            </div>
+        </CompAccountsContainer>
+    )
+}
 
 export function CreditNotes() {
     const dispatch: AppDispatchType = useDispatch()
@@ -40,22 +102,6 @@ export function CreditNotes() {
 
     const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst, populateFormFromId, getCreditNoteEditDataOnId }
 
-    // Utility function to generate credit note title
-    const getCreditNoteTitle = (isViewMode: boolean): string => {
-        return isViewMode ? "Credit Notes View" : "Credit Notes";
-    }
-
-    const tabsInfo: CompTabsType = [
-        {
-            label: "New / Edit",
-            content: <CreditNotesMain />
-        },
-        {
-            label: "View",
-            content: <DebitCreditNotesView tranTypeId={Utils.getTranTypeId('CreditNote')} instance={DataInstancesMap.creditNotes} />
-        }
-    ];
-
     useEffect(() => {
         if (savedFormData) {
             reset(_.cloneDeep(savedFormData),);
@@ -69,13 +115,6 @@ export function CreditNotes() {
             dispatch(saveCreditNoteFormData(data));
         })
     }, [dispatch, getValues])
-
-    // Update main title when active tab changes
-    useEffect(() => {
-        const isViewMode = selectedTabIndex === 1;
-        const title = getCreditNoteTitle(isViewMode);
-        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
-    }, [selectedTabIndex, dispatch]);
 
     // Reset form when switches to View tab
     useEffect(() => {
@@ -94,18 +133,8 @@ export function CreditNotes() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer
-                    MiddleCustomControl={() => (
-                        <WidgetTabToggleButtons
-                            instance={instance}
-                            tabsInfo={tabsInfo}
-                        />
-                    )}
-                >
-                    <div className="mt-4">
-                        {tabsInfo[selectedTabIndex].content}
-                    </div>
-                </CompAccountsContainer>
+                {/* ✅ Render child component inside FormProvider */}
+                <CreditNotesContent instance={instance} />
             </form>
         </FormProvider>
     );

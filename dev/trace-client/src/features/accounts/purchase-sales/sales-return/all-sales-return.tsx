@@ -20,6 +20,7 @@ import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { ContactDisplayDataType } from "../sales/all-sales";
 import { Messages } from "../../../../utils/messages";
 import { useLocation } from "react-router-dom";
+import { useSalesReturnPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function AllSalesReturn() {
     const instance = DataInstancesMap.allSalesReturn

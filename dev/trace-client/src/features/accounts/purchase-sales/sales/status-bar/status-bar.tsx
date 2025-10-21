@@ -13,6 +13,7 @@ import { IconPreview1 } from "../../../../../controls/icons/icon-preview1";
 import { generateSalesInvoicePDF } from '../all-sales-invoice-jspdf';
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
+import { useSalesPermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 const StatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
@@ -20,6 +21,12 @@ const StatusBar: React.FC = () => {
     const { control, getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
     const { getDebitCreditDifference, populateFormOverId, resetAll }: any = useFormContext<SalesFormDataType>();
     const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo();
+
+    // ✅ Get sales permissions
+    const { canCreate, canEdit, canView, canPreview } = useSalesPermissions()
+    const salesId = getValues("id")
+    const isEditMode = !!salesId
+    const canSubmit = isEditMode ? canEdit : canCreate
     // Using useWatch is more effecient
     const totalInvoiceAmount = useWatch({
         control,
@@ -59,10 +66,11 @@ const StatusBar: React.FC = () => {
         const id = getValues('id');
         const salesEditData = getValues('salesEditData');
 
+        // ✅ Only show if user has preview permission and we have data
         // Show preview if we have either:
         // 1. Current form data (id or salesEditData)
         // 2. Last saved sales data from Redux
-        if (id || salesEditData || lastSalesEditData) {
+        if (canPreview && (id || salesEditData || lastSalesEditData)) {
             return (
                 <TooltipComponent content='Print Preview' className="flex">
                     <button type='button' onClick={handleOnPreview}>
@@ -129,25 +137,31 @@ const StatusBar: React.FC = () => {
                         <RotateCcw size={16} className="flex-shrink-0" />
                         <span>RESET</span>
                     </button>
-                    <button
-                        onClick={handleView}
-                        type='button'
-                        className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-purple-500 rounded-md shadow-sm transition-colors hover:bg-purple-600 space-x-2"
-                    >
-                        <Eye size={16} className="flex-shrink-0" />
-                        <span>VIEW</span>
-                    </button>
-                    <button
-                        type='submit'
-                        disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
-                        className={`flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap rounded-md shadow-sm transition-colors space-x-2 ${isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-green-500 hover:bg-green-600'
-                            }`}
-                    >
-                        <Send size={16} className="flex-shrink-0" />
-                        <span>SUBMIT</span>
-                    </button>
+                    {/* ✅ View button - Only show if user has permission */}
+                    {canView && (
+                        <button
+                            onClick={handleView}
+                            type='button'
+                            className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-purple-500 rounded-md shadow-sm transition-colors hover:bg-purple-600 space-x-2"
+                        >
+                            <Eye size={16} className="flex-shrink-0" />
+                            <span>VIEW</span>
+                        </button>
+                    )}
+                    {/* ✅ Submit button - Only show if user has permission */}
+                    {canSubmit && (
+                        <button
+                            type='submit'
+                            disabled={isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)}
+                            className={`flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap rounded-md shadow-sm transition-colors space-x-2 ${isSubmitting || !_.isEmpty(errors) || !isDirty || (!isValid)
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-green-500 hover:bg-green-600'
+                                }`}
+                        >
+                            <Send size={16} className="flex-shrink-0" />
+                            <span>{isEditMode ? "UPDATE" : "SUBMIT"}</span>
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

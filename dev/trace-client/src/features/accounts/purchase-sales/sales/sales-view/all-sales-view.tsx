@@ -15,6 +15,7 @@ import { SalesFormDataType,} from "../all-sales";
 import { ArrowLeft } from "lucide-react";
 import { generateSalesInvoicePDF } from "../all-sales-invoice-jspdf";
 import { useFormContext } from "react-hook-form";
+import { useSalesPermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 interface AllSalesViewProps {
   className?: string;
@@ -23,6 +24,10 @@ interface AllSalesViewProps {
 
 export function AllSalesView({ className, onBack }: AllSalesViewProps) {
   const instance = DataInstancesMap.allSales
+
+  // ✅ Get sales permissions
+  const { canEdit, canDelete, canPreview, canExport } = useSalesPermissions()
+
   const [rowsData, setRowsData] = useState<any[]>([]);
   const {
     currentDateFormat,
@@ -95,9 +100,9 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         className="mr-4"
         minWidth="600px"
         title={``}
-        isPdfExport={true}
-        isExcelExport={true}
-        isCsvExport={true}
+        isPdfExport={canExport}
+        isExcelExport={canExport}
+        isCsvExport={canExport}
         instance={instance}
       />
 
@@ -118,9 +123,9 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         isSmallerFont={true}
         loadData={loadData}
         minWidth="400px"
-        onEdit={handleOnEdit}
-        onDelete={handleOnDelete}
-        onPreview={handleOnPreview}
+        {...(canEdit && { onEdit: handleOnEdit })}
+        {...(canDelete && { onDelete: handleOnDelete })}
+        {...(canPreview && { onPreview: handleOnPreview })}
         onRowDataBound={handleOnRowDataBound}
         previewColumnWidth={40}
         rowHeight={35}

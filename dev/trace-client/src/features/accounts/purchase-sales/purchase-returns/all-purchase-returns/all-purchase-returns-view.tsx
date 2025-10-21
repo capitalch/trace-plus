@@ -17,10 +17,14 @@ import { Messages } from "../../../../../utils/messages";
 import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { generatePurchaseReturnInvoicePDF } from "./purchase-return-invoice-jspdf";
+import { usePurchaseReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 export function AllPurchaseReturnsView({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
     const instance = DataInstancesMap.allPurchaseReturns
+
+    // ✅ Get purchase return permissions
+    const { canEdit, canDelete, canPreview, canExport } = usePurchaseReturnPermissions()
     const [rowsData, setRowsData] = useState<any[]>([]);
     const {
         currentDateFormat,
@@ -88,9 +92,9 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 className="mr-4"
                 minWidth="600px"
                 title={`Purchases View`}
-                isPdfExport={true}
-                isExcelExport={true}
-                isCsvExport={true}
+                isPdfExport={canExport}
+                isExcelExport={canExport}
+                isCsvExport={canExport}
                 instance={instance}
             />
 
@@ -112,9 +116,9 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 loadData={loadData}
                 minWidth="400px"
                 onCopy={handleOnCopy}
-                onEdit={handleOnEdit}
-                onDelete={handleOnDelete}
-                onPreview={handleOnPreview}
+                {...(canEdit && { onEdit: handleOnEdit })}
+                {...(canDelete && { onDelete: handleOnDelete })}
+                {...(canPreview && { onPreview: handleOnPreview })}
                 onRowDataBound={handleOnRowDataBound}
                 previewColumnWidth={40}
                 rowHeight={35}

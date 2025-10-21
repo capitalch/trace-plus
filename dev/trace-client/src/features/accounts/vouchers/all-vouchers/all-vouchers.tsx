@@ -4,7 +4,7 @@ import { CompAccountsContainer } from "../../../../controls/redux-components/com
 import { CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { AllVouchersMain } from "./all-vouchers-main";
 import { VoucherStatusBar } from "../voucher-controls/voucher-status-bar";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { TraceDataObjectType, VourcherType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
 import { Utils } from "../../../../utils/utils";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
@@ -20,49 +20,97 @@ import { clearVoucherFormData, saveVoucherFormData } from "../voucher-slice";
 import { useLocation } from "react-router-dom";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { VoucherEditDataType } from "./all-vouchers-view";
+import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
 
-export function AllVouchers() {
+/**
+ * Child component that renders voucher tabs and content.
+ * Must be rendered inside FormProvider to access form context.
+ */
+function AllVouchersContent({ instance }: { instance: string }) {
     const dispatch: AppDispatchType = useDispatch()
-    const location = useLocation()
-    const savedFormData = useSelector((state: RootStateType) => state.vouchers.savedFormData);
-    const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex || 0);
-    const instance = DataInstancesMap.allVouchers;
-    const meta = useRef<MetaType>({
-        totalDebits: 0,
-        totalCredits: 0
-    })
-    const { branchId, buCode, dbName, finYearId, hasGstin, decodedDbParamsObject } = useUtilsInfo();
-    const methods = useForm<VoucherFormDataType>(
-        {
-            mode: "onTouched",
-            criteriaMode: "all",
-            defaultValues: savedFormData ?? getDefaultVoucherFormValues()
-        });
-    const { watch, getValues, setValue, reset } = methods;
-    const extendedMethods = { ...methods, resetAll, getVoucherDetailsOnId, populateFormFromId };
+    const { watch } = useFormContext<VoucherFormDataType>()
     const voucherType = watch('voucherType')
-    const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
+    const activeTabIndex = useSelector((state: RootStateType) =>
+        state.reduxComp.compTabs[instance]?.activeTabIndex || 0
+    )
+
+    // ✅ Now inside FormProvider - hook can access form context
+    const { canView } = useVoucherPermissions()
 
     // Utility function to generate voucher title
     const getVoucherTitle = (type: VourcherType, isViewMode: boolean): string => {
         return isViewMode ? `${type} View` : type;
     }
 
+    // Build tabs array with conditional View tab
     const tabsInfo: CompTabsType = [
         {
             label: "New / Edit",
             content: <AllVouchersMain />
         },
-        {
+        // ✅ Only include View tab if user has permission
+        ...(canView ? [{
             label: "View",
             content: <AllVouchersView instance={instance} />
+        }] : [])
+    ]
+
+    // Update main title when voucher type or active tab changes
+    useEffect(() => {
+        const isViewMode = activeTabIndex === 1
+        const title = getVoucherTitle(voucherType, isViewMode)
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }))
+    }, [voucherType, activeTabIndex, dispatch])
+
+    // Auto-switch to New/Edit tab if user loses View permission
+    useEffect(() => {
+        if (activeTabIndex === 1 && !canView) {
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
         }
-    ];
+    }, [canView, activeTabIndex, dispatch, instance])
+
+    return (
+        <>
+            {/* Voucher Control Header with Tabs */}
+            <div className="mt-4 mb-2">
+                <VoucherStatusBar tabsInfo={tabsInfo} />
+            </div>
+
+            {/* Tab Content */}
+            <div className="mt-4">
+                {tabsInfo[activeTabIndex]?.content}
+            </div>
+        </>
+    )
+}
+
+export function AllVouchers() {
+    const dispatch: AppDispatchType = useDispatch()
+    const location = useLocation()
+    const savedFormData = useSelector((state: RootStateType) => state.vouchers.savedFormData);
+    const selectedTabIndex = useSelector((state: RootStateType) =>
+        state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex ?? 0
+    )
+    const instance = DataInstancesMap.allVouchers;
+    const meta = useRef<MetaType>({
+        totalDebits: 0,
+        totalCredits: 0
+    })
+    const { branchId, buCode, dbName, finYearId, hasGstin, decodedDbParamsObject } = useUtilsInfo();
+
+    const methods = useForm<VoucherFormDataType>({
+        mode: "onTouched",
+        criteriaMode: "all",
+        defaultValues: savedFormData ?? getDefaultVoucherFormValues()
+    });
+
+    const { getValues, setValue, reset, watch } = methods;
+    const extendedMethods = { ...methods, resetAll, getVoucherDetailsOnId, populateFormFromId };
 
     useEffect(() => {
         if (savedFormData) {
-            methods.reset(_.cloneDeep(savedFormData),);
-            setValue('toggle', !savedFormData.toggle, { shouldDirty: true }) // making forcefully dirty
+            methods.reset(_.cloneDeep(savedFormData));
+            setValue('toggle', !savedFormData.toggle, { shouldDirty: true })
         }
     }, [savedFormData, methods, setValue]);
 
@@ -72,13 +120,6 @@ export function AllVouchers() {
             dispatch(saveVoucherFormData(data));
         })
     }, [dispatch, getValues])
-
-    // Update main title when voucher type or active tab changes
-    useEffect(() => {
-        const isViewMode = activeTabIndex === 1;
-        const title = getVoucherTitle(voucherType, isViewMode);
-        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
-    }, [voucherType, activeTabIndex, dispatch]);
 
     // Reset form when switches to View tab
     useEffect(() => {
@@ -92,21 +133,14 @@ export function AllVouchers() {
         if (location.state?.id && location.state?.returnPath) {
             populateFormFromId(location.state.id)
         }
-    }, [location.state?.id, location.state?.returnPath, dispatch]);
+    }, [location.state?.id, location.state?.returnPath]);
 
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className="relative">
-                    {/* Voucher Control Header with Tabs */}
-                    <div className="mt-4 mb-2">
-                        <VoucherStatusBar tabsInfo={tabsInfo} />
-                    </div>
-
-                    {/* Tab Content */}
-                    <div className="mt-4">
-                        {tabsInfo[activeTabIndex].content}
-                    </div>
+                    {/* ✅ Render child component inside FormProvider */}
+                    <AllVouchersContent instance={instance} />
                 </CompAccountsContainer>
             </form>
         </FormProvider>
@@ -191,7 +225,7 @@ export function AllVouchers() {
             tranDate: getValues("tranDate"),
             userRefNo: getValues("userRefNo"),
             remarks: getValues("remarks"),
-            tranTypeId: Utils.getTranTypeId(voucherType),
+            tranTypeId: Utils.getTranTypeId(getValues("voucherType")),
             finYearId: finYearId,
             branchId: branchId,
             posId: 1,

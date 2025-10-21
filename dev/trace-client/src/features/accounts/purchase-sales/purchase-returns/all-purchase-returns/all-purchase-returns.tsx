@@ -20,6 +20,70 @@ import { useEffect } from "react";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import { useLocation } from "react-router-dom";
+import { usePurchaseReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
+
+/**
+ * Child component that renders purchase return tabs and content.
+ * Must be rendered inside FormProvider to access form context.
+ */
+function AllPurchaseReturnsContent({ instance }: { instance: string }) {
+    const dispatch: AppDispatchType = useDispatch()
+    const selectedTabIndex = useSelector((state: RootStateType) =>
+        state.reduxComp.compTabs[instance]?.activeTabIndex || 0
+    )
+
+    // ✅ Get purchase return permissions
+    const { canView } = usePurchaseReturnPermissions()
+
+    // Utility function to generate purchase return title
+    const getPurchaseReturnTitle = (isViewMode: boolean): string => {
+        return isViewMode ? "Purchase Return View" : "Purchase Return";
+    }
+
+    // Build tabs array with conditional View tab
+    const visibleTabsInfo: CompTabsType = [
+        {
+            label: "New / Edit",
+            content: <AllPurchaseReturnsMain />
+        },
+        // ✅ Only include View tab if user has permission
+        ...(canView ? [{
+            label: "View",
+            content: <AllPurchaseReturnsView />
+        }] : [])
+    ]
+
+    // Update main title when active tab changes
+    useEffect(() => {
+        const isViewMode = selectedTabIndex === 1;
+        const title = getPurchaseReturnTitle(isViewMode);
+        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
+    }, [selectedTabIndex, dispatch]);
+
+    // Auto-switch to New/Edit tab if user loses View permission
+    useEffect(() => {
+        if (selectedTabIndex === 1 && !canView) {
+            dispatch(setActiveTabIndex({ instance: instance, activeTabIndex: 0 }))
+        }
+    }, [canView, selectedTabIndex, dispatch, instance])
+
+    return (
+        <>
+            <CompAccountsContainer
+                MiddleCustomControl={() => (
+                    <WidgetTabToggleButtons
+                        instance={instance}
+                        tabsInfo={visibleTabsInfo}
+                    />
+                )}
+            >
+                <div className="mt-4">
+                    {visibleTabsInfo[selectedTabIndex]?.content}
+                </div>
+            </CompAccountsContainer>
+        </>
+    )
+}
 
 export function AllPurchaseReturns() {
     const dispatch: AppDispatchType = useDispatch()
@@ -38,22 +102,6 @@ export function AllPurchaseReturns() {
     const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, populateFormFromId, getPurchaseReturnEditDataOnId }
     const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
 
-    // Utility function to generate purchase return title
-    const getPurchaseReturnTitle = (isViewMode: boolean): string => {
-        return isViewMode ? "Purchase Return View" : "Purchase Return";
-    }
-
-    const tabsInfo: CompTabsType = [
-        {
-            label: "New / Edit",
-            content: <AllPurchaseReturnsMain />
-        },
-        {
-            label: "View",
-            content: <AllPurchaseReturnsView />
-        }
-    ];
-
     useEffect(() => {
         if (savedFormData) {
             reset(_.cloneDeep(savedFormData),);
@@ -68,13 +116,7 @@ export function AllPurchaseReturns() {
         })
     }, [dispatch, getValues])
 
-    // Update main title when active tab changes
-    useEffect(() => {
-        const isViewMode = selectedTabIndex === 1;
-        const title = getPurchaseReturnTitle(isViewMode);
-        dispatch(setCompAccountsContainerMainTitle({ mainTitle: title }));
-    }, [selectedTabIndex, dispatch]);
-
+    // Reset form when switches to View tab
     useEffect(() => {
         if (selectedTabIndex === 1) {
             resetAll();
@@ -91,18 +133,8 @@ export function AllPurchaseReturns() {
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer
-                    MiddleCustomControl={() => (
-                        <WidgetTabToggleButtons
-                            instance={instance}
-                            tabsInfo={tabsInfo}
-                        />
-                    )}
-                >
-                    <div className="mt-4">
-                        {tabsInfo[selectedTabIndex].content}
-                    </div>
-                </CompAccountsContainer>
+                {/* ✅ Render child component inside FormProvider */}
+                <AllPurchaseReturnsContent instance={instance} />
             </form>
         </FormProvider>
     );
