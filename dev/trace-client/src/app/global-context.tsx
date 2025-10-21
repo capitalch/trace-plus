@@ -12,6 +12,7 @@ export const GlobalContext =
 export function resetGlobalContext(globalContext: GlobalContextType) {
   globalContext.CompSyncFusionGrid = {};
   globalContext.CompSyncFusionTreeGrid = {};
+  // globalContext.DataInstances = {};
 }
 
 export type GlobalContextType = {

@@ -17,8 +17,10 @@ import { GlobalContext, GlobalContextType, resetGlobalContext } from "../../../a
 import { useContext } from "react";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { useMediaQuery } from "react-responsive";
+import { useNavigate } from "react-router-dom";
 
 export function LogoutMenuButton({ className }: { className?: string }) {
+    const navigate = useNavigate()
     const context: GlobalContextType = useContext(GlobalContext);
     const dispatch: AppDispatchType = useDispatch()
     const toShowNavBarDropDownSelector: boolean = useSelector(showNavBarDropDownFn)
@@ -113,6 +115,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
         handleOnClickAway() // Otherwise the menu remains open
         resetGlobalContext(context)
         dispatch(doLogout())
+        navigate('/login')
     }
     function handleShowDropdown() {
         dispatch(setShowNavBarDropDown({ toShowNavBarDropDown: !toShowNavBarDropDownSelector }))

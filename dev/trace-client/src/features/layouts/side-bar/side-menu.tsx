@@ -2,11 +2,12 @@ import clsx from "clsx"
 import { useDispatch, useSelector } from "react-redux"
 import { MenuItemType, menuItemSelectorFn, setIsSideBarOpen, setSideBarSelectedChildId, setSideBarSelectedParentChildIds, sideBarSelectedChildIdFn, sideBarSelectedParentIdFn } from "../layouts-slice"
 import { AppDispatchType } from "../../../app/store"
-import { ChildMenuItemType, MasterMenuData, MenuDataItemType } from "../master-menu-data"
+import { ChildMenuItemType, MenuDataItemType } from "../master-menu-data"
 import { useNavigate } from "react-router-dom"
 import { IconCheveronUp } from "../../../controls/icons/icon-cheveron-up"
 import { IconCheveronDown } from "../../../controls/icons/icon-cheveron-down"
 import { useMediaQuery } from "react-responsive"
+import { useFilteredMenu } from "../use-filtered-menu"
 
 function SideMenu() {
     const navigate = useNavigate()
@@ -16,11 +17,21 @@ function SideMenu() {
     const dispatch: AppDispatchType = useDispatch()
     const isXLScreen = useMediaQuery({ query: '(min-width: 1280px)' })
 
-    const menuData = MasterMenuData[menuItemSelector]
+    const menuData = useFilteredMenu(menuItemSelector)
     const rootClass = "flex flex-col p-2"
     const parentClass = "flex h-11 items-center gap-3 px-3 rounded-lg focus:outline-none transition-all duration-300 group font-semibold text-base whitespace-nowrap shadow-sm"
     const childClass = "flex h-10 w-full items-center pl-11 rounded-lg focus:outline-none transition-all duration-200 text-base whitespace-nowrap border-l-2 border-transparent"
     const transitionClass = 'flex flex-col gap-0.5 transition-all duration-300 ease-out mt-1'
+
+    // Empty state for accounts menu with no permissions
+    if (menuData.length === 0 && menuItemSelector === 'accounts') {
+        return (
+            <div className="p-4 text-center text-neutral-500">
+                <p>No menu items available.</p>
+                <p className="text-sm">Contact your administrator.</p>
+            </div>
+        )
+    }
 
     return (
         <div className={rootClass}>

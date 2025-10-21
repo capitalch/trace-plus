@@ -21,11 +21,13 @@ export const MasterMenuData: MenuDataType = {
       label: "Vouchers",
       icon: IconVoucher,
       iconColorClass: "text-primary-500",
+      controlName: "vouchers.menu.parent.view",
       children: [
         {
           id: "10",
           label: "All Vouchers",
           path: "/all-vouchers",
+          controlName: "vouchers.menu.all-vouchers.view",
         },
       ],
     },
@@ -34,36 +36,43 @@ export const MasterMenuData: MenuDataType = {
       label: "Purch / Sales",
       icon: IconPurchaseSales,
       iconColorClass: "text-secondary-500",
+      controlName: "purchase-sales.menu.parent.view",
       children: [
         {
           id: "21",
           label: "Purchase",
           path: "/all-purchases",
+          controlName: "purchase-sales.menu.purchase.view",
         },
         {
           id: "22",
           label: "Purchase Return",
           path: "/all-purchase-returns",
+          controlName: "purchase-sales.menu.purchase-return.view",
         },
         {
           id: "23",
           label: "Sales",
           path: "/all-sales",
+          controlName: "purchase-sales.menu.sales.view",
         },
         {
           id: "24",
           label: "Sales Return",
           path: "/all-sales-return",
+          controlName: "purchase-sales.menu.sales-return.view",
         },
         {
           id: "25",
           label: "Debit Notes",
           path: "/debit-notes",
+          controlName: "purchase-sales.menu.debit-notes.view",
         },
         {
           id: "26",
           label: "Credit Notes",
           path: "/credit-notes",
+          controlName: "purchase-sales.menu.credit-notes.view",
         },
       ],
     },
@@ -72,36 +81,43 @@ export const MasterMenuData: MenuDataType = {
       label: "Masters",
       icon: IconMasters,
       iconColorClass: "text-red-500",
+      controlName: "masters.menu.parent.view",
       children: [
         {
           id: "31",
           label: "Company Info",
           path: "/company-info",
+          controlName: "masters.menu.company-info.view",
         },
         {
           id: "32",
           label: "General Settings",
           path: "/general-settings",
+          controlName: "masters.menu.general-settings.view",
         },
         {
           id: "33",
           label: "Accounts Master",
           path: "/accounts-master",
+          controlName: "masters.menu.accounts-master.view",
         },
         {
           id: "34",
           label: "Opening Balances",
           path: "/opening-balance",
+          controlName: "masters.menu.opening-balances.view",
         },
         {
           id: "35",
           label: "Branches",
           path: "/branch-master",
+          controlName: "masters.menu.branches.view",
         },
         {
           id: "36",
           label: "Financial Years",
           path: "/fin-year-master",
+          controlName: "masters.menu.financial-years.view",
         },
       ],
     },
@@ -110,26 +126,31 @@ export const MasterMenuData: MenuDataType = {
       label: "Final Accounts",
       icon: IconFinalAccounts,
       iconColorClass: "text-orange-500",
+      controlName: "final-accounts.menu.parent.view",
       children: [
         {
           id: "41",
           label: "Trial Balance",
           path: "/trial-balance",
+          controlName: "final-accounts.menu.trial-balance.view",
         },
         {
           id: "42",
           label: "Balance Sheet",
           path: "/balance-sheet",
+          controlName: "final-accounts.menu.balance-sheet.view",
         },
         {
           id: "43",
           label: "PL Account",
           path: "/profit-loss",
+          controlName: "final-accounts.menu.pl-account.view",
         },
         {
           id: "44",
           label: "General Ledger",
           path: "/general-ledger",
+          controlName: "final-accounts.menu.general-ledger.view",
         },
       ],
     },
@@ -138,21 +159,25 @@ export const MasterMenuData: MenuDataType = {
       label: "Options",
       icon: IconOptions,
       iconColorClass: "text-amber-500",
+      controlName: "options.menu.parent.view",
       children: [
         {
           id: "51",
           label: "Bank Recon",
           path: "/bank-recon",
+          controlName: "options.menu.bank-recon.view",
         },
         {
           id: "52",
           label: "Common Utilities",
           path: "/common-utilities",
+          controlName: "options.menu.common-utilities.view",
         },
         {
           id: "53",
           label: "Exports",
           path: "/all-exports",
+          controlName: "options.menu.exports.view",
         },
       ],
     },
@@ -161,11 +186,13 @@ export const MasterMenuData: MenuDataType = {
       label: "Reports",
       icon: IconReports,
       iconColorClass: "text-yellow-500",
+      controlName: "reports.menu.parent.view",
       children: [
         {
           id: "61",
           label: "All Transactions",
           path: "/report-all-transactions",
+          controlName: "reports.menu.all-transactions.view",
         },
       ],
     },
@@ -174,41 +201,49 @@ export const MasterMenuData: MenuDataType = {
       label: "Inventory",
       icon: IconInventory,
       iconColorClass: "text-teal-500",
+      controlName: "inventory.menu.parent.view",
       children: [
         {
           id: "71",
           label: "Categories",
           path: "/product-categories",
+          controlName: "inventory.menu.categories.view",
         },
         {
           id: "72",
           label: "Brands",
           path: "/brand-master",
+          controlName: "inventory.menu.brands.view",
         },
         {
           id: "73",
           label: "Product Master",
           path: "/product-master",
+          controlName: "inventory.menu.product-master.view",
         },
         {
           id: "74",
           label: "Opening Stock",
           path: "/products-opening-balances",
+          controlName: "inventory.menu.opening-stock.view",
         },
         {
           id: "75",
           label: "Reports",
           path: "/inventory-reports-dashboard",
+          controlName: "inventory.menu.reports.view",
         },
         {
           id: "76",
           label: "Stock Journal",
           path: "/stock-journal",
+          controlName: "inventory.menu.stock-journal.view",
         },
         {
           id: "77",
           label: "Branch Transfer",
           path: "/products-branch-transfers",
+          controlName: "inventory.menu.branch-transfer.view",
         },
       ],
     },
@@ -248,7 +283,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "12",
-      label: "Link Users <-> Bu",
+      label: "Users ⇔ Bu",
       icon: IconAdminLinkUsers,
       iconColorClass: "text-secondary-400",
       children: [],
@@ -256,7 +291,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "18",
-      label: "Link Controls <-> Roles",
+      label: "Controls ⇔ Roles",
       icon: IconAdminLinkUsers,
       iconColorClass: "text-green-500",
       children: [],
@@ -306,7 +341,7 @@ export const MasterMenuData: MenuDataType = {
     },
     {
       id: "18",
-      label: "Link Controls <-> Roles",
+      label: "Controls ⇔ Roles",
       icon: IconAdminLinkUsers,
       iconColorClass: "text-green-500",
       children: [],
@@ -322,6 +357,7 @@ export type MenuDataItemType = {
   iconColorClass: string;
   children: Array<ChildMenuItemType>;
   path?: string;
+  controlName?: string;
 };
 
 export type MenuDataType = {
@@ -334,4 +370,5 @@ export type ChildMenuItemType = {
   id: string;
   label: string;
   path: string;
+  controlName?: string;
 };

@@ -62,11 +62,14 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+- Bugs
+	- Super admin menu
+		- left side bar overflow
+		- Display controls in meaningful way
 - secured controls
-	- vouchers
-		- Bugs
-			- Even after logout then login, the old select is persisted
-		- Menu
+										- vouchers
+											- Bugs
+												- Menu
 												- edit
 												- view
 								t

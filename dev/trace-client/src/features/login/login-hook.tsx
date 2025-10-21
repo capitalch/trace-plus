@@ -86,12 +86,6 @@ export { useLogin }
 
 const testUserSecuredControls = [
   {
-    "controlNo": 100,
-    "controlName": "vouchers.menu.all-vouchers.view",
-    "controlType": "menu",
-    "descr": "Can view 'All Vouchers' menu item in sidebar"
-  },
-  {
     "controlNo": 110,
     "controlName": "vouchers.payment.view",
     "controlType": "action",
@@ -259,13 +253,6 @@ const testUserSecuredControls = [
     "controlType": "action",
     "descr": "Can export Journal vouchers to PDF/Excel"
   },
-
-  {
-    "controlNo": 200,
-    "controlName": "purchase.menu.purchase.view",
-    "controlType": "menu",
-    "descr": "Can view 'Purchase' menu item in sidebar"
-  },
   {
     "controlNo": 201,
     "controlName": "purchase.view",
@@ -301,13 +288,6 @@ const testUserSecuredControls = [
     "controlName": "purchase.export",
     "controlType": "action",
     "descr": "Can export Purchase records to PDF/Excel"
-  },
-
-  {
-    "controlNo": 210,
-    "controlName": "purchase-return.menu.purchase-return.view",
-    "controlType": "menu",
-    "descr": "Can view 'Purchase Return' menu item in sidebar"
   },
   {
     "controlNo": 211,
@@ -345,13 +325,6 @@ const testUserSecuredControls = [
     "controlType": "action",
     "descr": "Can export Purchase Return records to PDF/Excel"
   },
-
-  {
-    "controlNo": 220,
-    "controlName": "sales.menu.sales.view",
-    "controlType": "menu",
-    "descr": "Can view 'Sales' menu item in sidebar"
-  },
   {
     "controlNo": 221,
     "controlName": "sales.view",
@@ -387,13 +360,6 @@ const testUserSecuredControls = [
     "controlName": "sales.export",
     "controlType": "action",
     "descr": "Can export Sales records to PDF/Excel"
-  },
-
-  {
-    "controlNo": 230,
-    "controlName": "sales-return.menu.sales-return.view",
-    "controlType": "menu",
-    "descr": "Can view 'Sales Return' menu item in sidebar"
   },
   {
     "controlNo": 231,
@@ -432,12 +398,6 @@ const testUserSecuredControls = [
     "descr": "Can export Sales Return records to PDF/Excel"
   },
   {
-    "controlNo": 240,
-    "controlName": "debit-notes.menu.debit-notes.view",
-    "controlType": "menu",
-    "descr": "Can view 'Debit Notes' menu item in sidebar"
-  },
-  {
     "controlNo": 241,
     "controlName": "debit-notes.view",
     "controlType": "action",
@@ -474,12 +434,6 @@ const testUserSecuredControls = [
     "descr": "Can export Debit Notes to PDF/Excel"
   },
   {
-    "controlNo": 250,
-    "controlName": "credit-notes.menu.credit-notes.view",
-    "controlType": "menu",
-    "descr": "Can view 'Credit Notes' menu item in sidebar"
-  },
-  {
     "controlNo": 251,
     "controlName": "credit-notes.view",
     "controlType": "action",
@@ -514,5 +468,320 @@ const testUserSecuredControls = [
     "controlName": "credit-notes.export",
     "controlType": "action",
     "descr": "Can export Credit Notes to PDF/Excel"
+  },
+  {
+    "controlNo": 1000,
+    "controlName": "vouchers.menu.parent.view",
+    "controlType": "menu",
+    "descr": "Can view 'Vouchers' parent menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "parent",
+    "menuId": "1"
+  },
+  {
+    "controlNo": 1100,
+    "controlName": "vouchers.menu.all-vouchers.view",
+    "controlType": "menu",
+    "descr": "Can view 'All Vouchers' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "10"
+  },
+  {
+    "controlNo": 1010,
+    "controlName": "purchase-sales.menu.parent.view",
+    "controlType": "menu",
+    "descr": "Can view 'Purch / Sales' parent menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "parent",
+    "menuId": "2"
+  },
+  {
+    "controlNo": 1110,
+    "controlName": "purchase-sales.menu.purchase.view",
+    "controlType": "menu",
+    "descr": "Can view 'Purchase' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "21"
+  },
+  {
+    "controlNo": 1111,
+    "controlName": "purchase-sales.menu.purchase-return.view",
+    "controlType": "menu",
+    "descr": "Can view 'Purchase Return' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "22"
+  },
+  {
+    "controlNo": 1112,
+    "controlName": "purchase-sales.menu.sales.view",
+    "controlType": "menu",
+    "descr": "Can view 'Sales' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "23"
+  },
+  {
+    "controlNo": 1113,
+    "controlName": "purchase-sales.menu.sales-return.view",
+    "controlType": "menu",
+    "descr": "Can view 'Sales Return' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "24"
+  },
+  {
+    "controlNo": 1114,
+    "controlName": "purchase-sales.menu.debit-notes.view",
+    "controlType": "menu",
+    "descr": "Can view 'Debit Notes' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "25"
+  },
+  {
+    "controlNo": 1115,
+    "controlName": "purchase-sales.menu.credit-notes.view",
+    "controlType": "menu",
+    "descr": "Can view 'Credit Notes' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "26"
+  },
+  {
+    "controlNo": 1020,
+    "controlName": "masters.menu.parent.view",
+    "controlType": "menu",
+    "descr": "Can view 'Masters' parent menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "parent",
+    "menuId": "3"
+  },
+  {
+    "controlNo": 1200,
+    "controlName": "masters.menu.company-info.view",
+    "controlType": "menu",
+    "descr": "Can view 'Company Info' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "31"
+  },
+  {
+    "controlNo": 1201,
+    "controlName": "masters.menu.general-settings.view",
+    "controlType": "menu",
+    "descr": "Can view 'General Settings' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "32"
+  },
+  {
+    "controlNo": 1202,
+    "controlName": "masters.menu.accounts-master.view",
+    "controlType": "menu",
+    "descr": "Can view 'Accounts Master' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "33"
+  },
+  {
+    "controlNo": 1203,
+    "controlName": "masters.menu.opening-balances.view",
+    "controlType": "menu",
+    "descr": "Can view 'Opening Balances' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "34"
+  },
+  {
+    "controlNo": 1204,
+    "controlName": "masters.menu.branches.view",
+    "controlType": "menu",
+    "descr": "Can view 'Branches' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "35"
+  },
+  {
+    "controlNo": 1205,
+    "controlName": "masters.menu.financial-years.view",
+    "controlType": "menu",
+    "descr": "Can view 'Financial Years' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "36"
+  },
+  {
+    "controlNo": 1030,
+    "controlName": "final-accounts.menu.parent.view",
+    "controlType": "menu",
+    "descr": "Can view 'Final Accounts' parent menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "parent",
+    "menuId": "4"
+  },
+  {
+    "controlNo": 1300,
+    "controlName": "final-accounts.menu.trial-balance.view",
+    "controlType": "menu",
+    "descr": "Can view 'Trial Balance' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "41"
+  },
+  {
+    "controlNo": 1301,
+    "controlName": "final-accounts.menu.balance-sheet.view",
+    "controlType": "menu",
+    "descr": "Can view 'Balance Sheet' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "42"
+  },
+  {
+    "controlNo": 1302,
+    "controlName": "final-accounts.menu.pl-account.view",
+    "controlType": "menu",
+    "descr": "Can view 'PL Account' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "43"
+  },
+  {
+    "controlNo": 1303,
+    "controlName": "final-accounts.menu.general-ledger.view",
+    "controlType": "menu",
+    "descr": "Can view 'General Ledger' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "44"
+  },
+  {
+    "controlNo": 1040,
+    "controlName": "options.menu.parent.view",
+    "controlType": "menu",
+    "descr": "Can view 'Options' parent menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "parent",
+    "menuId": "5"
+  },
+  {
+    "controlNo": 1350,
+    "controlName": "options.menu.bank-recon.view",
+    "controlType": "menu",
+    "descr": "Can view 'Bank Recon' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "51"
+  },
+  {
+    "controlNo": 1351,
+    "controlName": "options.menu.common-utilities.view",
+    "controlType": "menu",
+    "descr": "Can view 'Common Utilities' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "52"
+  },
+  {
+    "controlNo": 1352,
+    "controlName": "options.menu.exports.view",
+    "controlType": "menu",
+    "descr": "Can view 'Exports' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "53"
+  },
+  {
+    "controlNo": 1050,
+    "controlName": "reports.menu.parent.view",
+    "controlType": "menu",
+    "descr": "Can view 'Reports' parent menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "parent",
+    "menuId": "6"
+  },
+  {
+    "controlNo": 1370,
+    "controlName": "reports.menu.all-transactions.view",
+    "controlType": "menu",
+    "descr": "Can view 'All Transactions' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "61"
+  },
+  {
+    "controlNo": 1060,
+    "controlName": "inventory.menu.parent.view",
+    "controlType": "menu",
+    "descr": "Can view 'Inventory' parent menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "parent",
+    "menuId": "7"
+  },
+  {
+    "controlNo": 1380,
+    "controlName": "inventory.menu.categories.view",
+    "controlType": "menu",
+    "descr": "Can view 'Categories' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "71"
+  },
+  {
+    "controlNo": 1381,
+    "controlName": "inventory.menu.brands.view",
+    "controlType": "menu",
+    "descr": "Can view 'Brands' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "72"
+  },
+  {
+    "controlNo": 1382,
+    "controlName": "inventory.menu.product-master.view",
+    "controlType": "menu",
+    "descr": "Can view 'Product Master' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "73"
+  },
+  {
+    "controlNo": 1383,
+    "controlName": "inventory.menu.opening-stock.view",
+    "controlType": "menu",
+    "descr": "Can view 'Opening Stock' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "74"
+  },
+  {
+    "controlNo": 1384,
+    "controlName": "inventory.menu.reports.view",
+    "controlType": "menu",
+    "descr": "Can view 'Reports' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "75"
+  },
+  {
+    "controlNo": 1385,
+    "controlName": "inventory.menu.stock-journal.view",
+    "controlType": "menu",
+    "descr": "Can view 'Stock Journal' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "76"
+  },
+  {
+    "controlNo": 1386,
+    "controlName": "inventory.menu.branch-transfer.view",
+    "controlType": "menu",
+    "descr": "Can view 'Branch Transfer' child menu item in sidebar",
+    "menuType": "accounts",
+    "itemType": "child",
+    "menuId": "77"
   }
 ]
