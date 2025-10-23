@@ -1,3 +1,9 @@
+## Logic for secured controls
+    - Remove rank from RoleM
+    - Add parentId in RoleM
+    - When Admin creates a new role then it gives option to inherit from a built in role
+    - This builtIn roleId is posted as parentId
+    - At the time of linking secured controls against builtin id are copied on request
 ## Logic tesst for secured controls Vouchers
     - login-hook.tsx
         - Added testUserSecuredControls at end

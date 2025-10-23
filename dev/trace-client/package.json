@@ -15,9 +15,9 @@
     "@reduxjs/toolkit": "^2.9.1",
     "@syncfusion/ej2-base": "^31.2.2",
     "@syncfusion/ej2-pdf-export": "^31.2.2",
-    "@syncfusion/ej2-react-buttons": "^31.2.2",
-    "@syncfusion/ej2-react-dropdowns": "^31.2.2",
-    "@syncfusion/ej2-react-grids": "^31.2.2",
+    "@syncfusion/ej2-react-buttons": "^31.2.3",
+    "@syncfusion/ej2-react-dropdowns": "^31.2.3",
+    "@syncfusion/ej2-react-grids": "^31.2.3",
     "@syncfusion/ej2-react-inputs": "^31.2.2",
     "@syncfusion/ej2-react-popups": "^31.2.2",
     "@syncfusion/ej2-react-splitbuttons": "^31.2.2",
@@ -60,12 +60,12 @@
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",
-    "@tailwindcss/postcss": "^4.1.14",
+    "@tailwindcss/postcss": "^4.1.15",
     "@tailwindcss/typography": "^0.5.19",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
-    "@typescript-eslint/eslint-plugin": "^8.46.1",
-    "@typescript-eslint/parser": "^8.46.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
     "@vitejs/plugin-react-swc": "^4.1.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^8.56.0N",
@@ -75,9 +75,9 @@
     "npm": "^11.6.2",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.0",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^4.1.15",
     "terser": "^5.44.0",
     "typescript": "^5.9.3",
-    "vite": "^7.1.10"
+    "vite": "^7.1.11"
   }
 }
