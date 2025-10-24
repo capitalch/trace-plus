@@ -62,11 +62,16 @@ valid gstin: 24AAACC1206D1ZM
 													- ExtGstTranDetails
 														- new row with gst details
 ## features
+- Admin
+	- Role
+		- New role add inherited from
+		- Submit
+		- View inherited from in the grid
 - Bugs
-	- Super admin menu
-		- left side bar overflow
-		- Display controls in meaningful way
-- secured controls
+											- Super admin menu
+												- left side bar overflow
+												- Display controls in meaningful way
+									- secured controls
 										- vouchers
 											- Bugs
 												- Menu

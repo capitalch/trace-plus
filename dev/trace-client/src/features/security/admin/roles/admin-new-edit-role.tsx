@@ -17,19 +17,23 @@ import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { CompReactSelect } from "../../../../controls/components/comp-react-select";
+// import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 
 export function AdminNewEditRole({
     descr,
     roleName,
+    inheritedFrom,
     dataInstance,
     id,
 }: AdminNewEditRoleType) {
     const { checkNoSpecialChar } = useValidators();
-    const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors }, } = useForm<FormDataType>({
+    const { clearErrors, handleSubmit, register, setError, setValue, trigger, formState: { errors, isDirty, isValid }, } = useForm<FormDataType>({
         mode: "onTouched",
         criteriaMode: "firstError"
     });
     const context: GlobalContextType = useContext(GlobalContext);
+    // const {buCode, decodedDbParamsObject} = useUtilsInfo();
 
     const registerRoleName = register("roleName", {
         required: Messages.errRequired,
@@ -43,6 +47,10 @@ export function AdminNewEditRole({
 
     const registerDescr = register("descr");
 
+    const registerInheritedFrom = register("inheritedFrom", {
+        required: Messages.errRequired,
+    });
+
     useEffect(() => {
         const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-ROLE-NAME"], 1200).subscribe(async (d: any) => {
             const isValid = await trigger('roleName');
@@ -53,6 +61,7 @@ export function AdminNewEditRole({
         setValue("roleName", roleName || "");
         setValue("id", id);
         setValue("descr", descr || undefined);
+        setValue("inheritedFrom", inheritedFrom || "");
         return () => {
             subs1.unsubscribe();
         };
@@ -66,7 +75,7 @@ export function AdminNewEditRole({
                 <label className="flex flex-col font-medium text-primary-400">
                     <span className="font-bold">Role name <WidgetAstrix /></span>
                     <input type="text" placeholder="e.g. Administrator" autoComplete="off"
-                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
+                        className="mt-1 px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerRoleName}
                     />
                     <span className="flex justify-between">
@@ -79,18 +88,33 @@ export function AdminNewEditRole({
                     </span>
                 </label>
 
-                {/* Description */}
+                {/* Inherited From */}
                 <label className="flex flex-col font-medium text-primary-400">
+                    <span className="font-bold mb-1">Inherited from <WidgetAstrix /></span>
+                    <CompReactSelect
+                        getOptions={getBuiltinRoleOptions}
+                        optionLabelName="roleName"
+                        optionValueName="id"
+                        {...registerInheritedFrom}
+                        onChange={handleOnChangeInheritedFrom}
+                        ref={null}
+                        selectedValue={inheritedFrom}
+                    />
+                    {errors.inheritedFrom && <WidgetFormErrorMessage errorMessage={errors.inheritedFrom.message} />}
+                </label>
+
+                {/* Description */}
+                <label className="flex flex-col font-medium text-primary-400 mt-4">
                     <span className="font-bold">Role description</span>
                     <input type="text" placeholder="e.g. Has all powers to insert, modify and delete" autoComplete="off"
-                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
+                        className="mt-1 px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerDescr}
                     />
                 </label>
 
                 {/* Save */}
                 <div className="flex justify-start mt-4">
-                    <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors)} />
+                    <WidgetButtonSubmitFullWidth label="Save" disabled={!_.isEmpty(errors) || !isDirty || (!isValid)} />
                 </div>
                 <span>
                     {showServerValidationError()}
@@ -104,6 +128,7 @@ export function AdminNewEditRole({
             tableName: AllTables.RoleM.name,
             xData: {
                 ...data,
+                parentId: data.inheritedFrom || null,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0
             },
         };
@@ -137,7 +162,7 @@ export function AdminNewEditRole({
                 GLOBAL_SECURITY_DATABASE_NAME,
                 {
                     sqlId: SqlIdsMap.getAdminRoleOnRoleNameClientId,
-                    sqlArgs: { roleName: value?.roleName, clientId:Utils.getCurrentLoginInfo()?.userDetails?.clientId }
+                    sqlArgs: { roleName: value?.roleName, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId }
                 }),
             GraphQLQueriesMapNames.genericQuery);
         if (res?.data?.genericQuery[0]) {
@@ -149,11 +174,23 @@ export function AdminNewEditRole({
             clearErrors("root.roleName");
         }
     }
+
+    async function getBuiltinRoleOptions(setOptions: (args: any) => void) {
+        const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getBuiltinRoles });
+        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
+        setOptions(res.data.genericQuery);
+    }
+
+    function handleOnChangeInheritedFrom(selectedObject: any) {
+        setValue("inheritedFrom", selectedObject?.id);
+        clearErrors("inheritedFrom");
+    }
 }
 
 type FormDataType = {
     descr: string | undefined;
     roleName: string;
+    inheritedFrom: string;
     id?: string;
 };
 
@@ -161,6 +198,7 @@ type AdminNewEditRoleType = {
     dataInstance: string;
     descr?: string | undefined;
     roleName?: string;
+    inheritedFrom?: string;
     id?: string;
 };
 

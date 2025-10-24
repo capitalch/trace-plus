@@ -105,15 +105,15 @@ const StatusBar: React.FC = () => {
                 {/* Status Indicators */}
                 <div className="flex flex-wrap gap-6">
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-green-500 rounded-full shrink-0"></div>
                         <span className="text-md whitespace-nowrap">Debits: {debits.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0"></div>
                         <span className="text-md whitespace-nowrap">Credits: {credits.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 ${diff !== 0 ? 'bg-red-500' : 'bg-amber-500'} rounded-full flex-shrink-0`}></div>
+                        <div className={`w-2 h-2 ${diff !== 0 ? 'bg-red-500' : 'bg-amber-500'} rounded-full shrink-0`}></div>
                         <span className={`text-md whitespace-nowrap ${diff !== 0 ? 'text-red-600' : ''}`}>Diff (Credits - Debits): {Utils.toDecimalFormat(diff)}</span>
                     </div>
                 </div>
@@ -126,7 +126,7 @@ const StatusBar: React.FC = () => {
                         onClick={handleRefresh}
                         className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-cyan-500 rounded-md shadow-sm transition-colors hover:bg-cyan-600 space-x-2"
                     >
-                        <RefreshCw size={16} className="flex-shrink-0" />
+                        <RefreshCw size={16} className="shrink-0" />
                         <span>REFRESH</span>
                     </button>
                     <button
@@ -134,7 +134,7 @@ const StatusBar: React.FC = () => {
                         onClick={handleReset}
                         className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-orange-500 rounded-md shadow-sm transition-colors hover:bg-orange-600 space-x-2"
                     >
-                        <RotateCcw size={16} className="flex-shrink-0" />
+                        <RotateCcw size={16} className="shrink-0" />
                         <span>RESET</span>
                     </button>
                     {/* ✅ View button - Only show if user has permission */}
@@ -144,7 +144,7 @@ const StatusBar: React.FC = () => {
                             type='button'
                             className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-purple-500 rounded-md shadow-sm transition-colors hover:bg-purple-600 space-x-2"
                         >
-                            <Eye size={16} className="flex-shrink-0" />
+                            <Eye size={16} className="shrink-0" />
                             <span>VIEW</span>
                         </button>
                     )}
@@ -158,7 +158,7 @@ const StatusBar: React.FC = () => {
                                 : 'bg-green-500 hover:bg-green-600'
                                 }`}
                         >
-                            <Send size={16} className="flex-shrink-0" />
+                            <Send size={16} className="shrink-0" />
                             <span>{isEditMode ? "UPDATE" : "SUBMIT"}</span>
                         </button>
                     )}

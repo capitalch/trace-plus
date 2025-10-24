@@ -106,7 +106,7 @@ export function AdminNewEditBusinessUser({
                         type="text"
                         placeholder="e.g. John Doe"
                         autoComplete="off"
-                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
+                        className="mt-1 px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerUserName}
                     />
                     {errors.userName && <WidgetFormErrorMessage errorMessage={errors.userName.message} />}
@@ -119,7 +119,7 @@ export function AdminNewEditBusinessUser({
                         type="text"
                         placeholder="e.g. +1234567890"
                         autoComplete="off"
-                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
+                        className="mt-1 px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerMobileNo}
                     />
                     {errors.mobileNo && <WidgetFormErrorMessage errorMessage={errors.mobileNo.message} />}
@@ -132,7 +132,7 @@ export function AdminNewEditBusinessUser({
                         type="email"
                         placeholder="e.g. john@example.com"
                         autoComplete="off"
-                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
+                        className="mt-1 px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerUserEmail}
                     />
                     {errors.userEmail && <WidgetFormErrorMessage errorMessage={errors.userEmail.message} />}
@@ -145,7 +145,7 @@ export function AdminNewEditBusinessUser({
                         type="text"
                         placeholder="e.g. Important user"
                         autoComplete="off"
-                        className="mt-1 px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
+                        className="mt-1 px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                         {...registerDescr}
                     />
                 </label>
