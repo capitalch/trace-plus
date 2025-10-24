@@ -104,6 +104,7 @@ export function AdminRoles() {
                     descr={props.descr}
                     id={props.id}
                     roleName={props.roleName}
+                    parentId={props.parentId}
                 />
             ),
         });

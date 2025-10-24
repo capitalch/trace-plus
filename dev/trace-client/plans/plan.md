@@ -1,72 +1,123 @@
-# Plan: Add Inherited From Dropdown to Admin Role Form
+# Plan: Change "Inherited From" to "Parent" Terminology
 
-## Objective
-Add a new dropdown control showing builtin roles after the role name field in `admin-new-edit-role.tsx`, following the same implementation pattern used for capturing `roleId` in `admin-new-edit-business-user.tsx`.
+## Overview
+This plan outlines the steps to refactor the terminology from "Inherited From" to "Parent" throughout the roles management feature. This change affects UI labels, variable names, function names, and internal documentation.
+
+## Scope of Changes
+
+### Files Affected
+1. **src/features/security/admin/roles/admin-new-edit-role.tsx** (Primary file)
+   - UI labels and form fields
+   - Variable and function names
+   - Type definitions
+2. **plans/plan.md** (This file)
+   - Will be updated with this new plan
+
+## Detailed Refactoring Steps
+
+### 1. UI Label Changes in admin-new-edit-role.tsx
+
+**Location: Line 93**
+- Change: `<span className="font-bold mb-1">Inherited from <WidgetAstrix /></span>`
+- To: `<span className="font-bold mb-1">Parent <WidgetAstrix /></span>`
+
+### 2. Variable and Property Name Changes
+
+**Note:** The internal variable name `inheritedFrom` will be changed to `parent` throughout the file.
+
+#### Props Parameter (Line 26)
+- Change: `inheritedFrom,`
+- To: `parent,`
+
+#### Register Variable (Line 50-52)
+- Change: `const registerInheritedFrom = register("inheritedFrom", {`
+- To: `const registerParent = register("parent", {`
+
+#### setValue Call (Line 64)
+- Change: `setValue("inheritedFrom", inheritedFrom || "");`
+- To: `setValue("parent", parent || "");`
+
+#### Form Field Props (Lines 98-101)
+- Change: `{...registerInheritedFrom}`
+- To: `{...registerParent}`
+- Change: `onChange={handleOnChangeInheritedFrom}`
+- To: `onChange={handleOnChangeParent}`
+- Change: `selectedValue={inheritedFrom}`
+- To: `selectedValue={parent}`
+
+#### Error Display (Line 103)
+- Change: `{errors.inheritedFrom && <WidgetFormErrorMessage errorMessage={errors.inheritedFrom.message} />}`
+- To: `{errors.parent && <WidgetFormErrorMessage errorMessage={errors.parent.message} />}`
+
+#### Submit Handler (Line 131)
+- Change: `parentId: data.inheritedFrom || null,`
+- To: `parentId: data.parent || null,`
+- Note: The database field `parentId` remains unchanged as it's the actual database column name
+
+#### Handler Function Name (Lines 184-187)
+- Change: `function handleOnChangeInheritedFrom(selectedObject: any) {`
+- To: `function handleOnChangeParent(selectedObject: any) {`
+- Change: `setValue("inheritedFrom", selectedObject?.id);`
+- To: `setValue("parent", selectedObject?.id);`
+- Change: `clearErrors("inheritedFrom");`
+- To: `clearErrors("parent");`
+
+### 3. Type Definition Changes
+
+#### FormDataType Interface (Line 193)
+- Change: `inheritedFrom: string;`
+- To: `parent: string;`
+
+#### AdminNewEditRoleType Interface (Line 201)
+- Change: `inheritedFrom?: string;`
+- To: `parent?: string;`
 
 ## Implementation Steps
 
-### 1. Update Type Definitions
-- Add `inheritedFrom` field to `FormDataType` interface (line 154-158)
-- Add `inheritedFrom` optional parameter to `AdminNewEditRoleType` interface (line 160-165)
-- Make it a string type to store the selected builtin role ID
+1. **Update UI Label**
+   - Change the display label from "Inherited from" to "Parent" on line 93
 
-### 2. Add Form Registration
-- Create a new `register` call for `inheritedFrom` field after line 44
-- Add validation with `Messages.errRequired` if the field should be mandatory (confirm requirement first)
-- Pattern: `const registerInheritedFrom = register("inheritedFrom", { required: Messages.errRequired })`
+2. **Rename Variables and Properties**
+   - Update all occurrences of `inheritedFrom` to `parent` in:
+     - Function parameters
+     - Register variables
+     - setValue/clearErrors calls
+     - Form field props
+     - Error handling
+     - Type definitions
 
-### 3. Import Required Component
-- Add `CompReactSelect` import at the top (line 15) - already exists in business-user file
-- This component is used for dropdown controls
+3. **Rename Handler Function**
+   - Change `handleOnChangeInheritedFrom` to `handleOnChangeParent`
 
-### 4. Create Options Fetcher Function
-- Add a new async function `getBuiltinRoleOptions` similar to `getRoleOptions` in business-user file (line 168-172)
-- Use `Utils.doGenericQuery` to fetch builtin roles from database
-- Query pattern:
-  ```typescript
-  const res: any = await Utils.doGenericQuery({
-      sqlId: SqlIdsMap.[appropriate_sql_id],
-      sqlArgs: { clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId }
-  });
-  setOptions(res);
-  ```
-- Need to identify or create the appropriate SqlId for fetching builtin roles
-- `Utils.doGenericQuery` simplifies the GraphQL call by internally handling the query construction and execution
+4. **Update Type Definitions**
+   - Update both `FormDataType` and `AdminNewEditRoleType` interfaces
 
-### 5. Create Change Handler
-- Add `handleOnChangeInheritedFrom` function similar to `handleOnChangeRole` (line 174-178)
-- Set the value using `setValue("inheritedFrom", selectedObject?.id)`
-- Clear any errors using `clearErrors("inheritedFrom")`
+5. **Testing Checklist**
+   - Verify the form loads correctly with existing roles
+   - Test creating a new role with a parent selection
+   - Test editing an existing role and changing its parent
+   - Verify validation errors display correctly for the parent field
+   - Ensure the parent dropdown populates with builtin roles
+   - Verify the parent value is correctly saved to the database (parentId column)
+   - Check that all error messages display properly
 
-### 6. Add UI Component
-- Insert the dropdown control between "Role name" (line 66-80) and "Description" (line 82-89)
-- Use `CompReactSelect` component with the following props:
-  - `getOptions={getBuiltinRoleOptions}`
-  - `optionLabelName="roleName"` (or appropriate field name)
-  - `optionValueName="id"`
-  - `{...registerInheritedFrom}`
-  - `onChange={handleOnChangeInheritedFrom}`
-  - `ref={null}` (necessary for react-hook-form)
-  - `selectedValue={inheritedFrom}`
-- Add `<WidgetAstrix />` if required
-- Add error message display: `{errors.inheritedFrom && <WidgetFormErrorMessage errorMessage={errors.inheritedFrom.message} />}`
+## Database Considerations
 
-### 7. Initialize Form Value
-- Add `setValue("inheritedFrom", inheritedFrom || "")` in the `useEffect` hook (around line 53-55)
-- Include appropriate options: `{ shouldDirty: true, shouldTouch: true }` if needed
+- The database column name `parentId` in the `RoleM` table remains unchanged
+- Only the form field name and UI terminology changes from "inheritedFrom" to "parent"
+- The mapping between form field `parent` and database field `parentId` occurs in the submit handler (line 131)
 
-### 8. Update Form Submission
-- The `onSubmit` function (line 102-122) already spreads `...data`, so the new field will automatically be included in the submission
-- Verify that the database table `AllTables.RoleM.name` has an `inheritedFrom` column
+## Verification Steps
+
+1. Code review to ensure all instances are updated
+2. Check for any remaining references to "inherited" or "inheritedFrom" in the file
+3. Run TypeScript compiler to catch any type errors
+4. Test the functionality manually
+5. Verify no console errors appear when using the form
 
 ## Notes
-- Follow existing styling patterns (Tailwind CSS classes)
-- Maintain consistent spacing with `gap-2` in the flex container
-- Ensure the control does not use red color (per CLAUDE.md instructions)
-- The component uses react-hook-form for form state management
-- All form controls follow a consistent pattern with label, input/select, and error message
 
-## Dependencies to Verify
-- Check if `SqlIdsMap` has an appropriate query for builtin roles, or if one needs to be created
-- Verify database schema has `inheritedFrom` field in the roles table
-- Confirm if the field should be required or optional
+- This is purely a terminology change for better clarity
+- The underlying functionality remains the same
+- The database schema does not need to be modified
+- The change makes the code more intuitive as "parent" is a clearer term than "inherited from"

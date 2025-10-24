@@ -23,7 +23,7 @@ import { CompReactSelect } from "../../../../controls/components/comp-react-sele
 export function AdminNewEditRole({
     descr,
     roleName,
-    inheritedFrom,
+    parentId,
     dataInstance,
     id,
 }: AdminNewEditRoleType) {
@@ -47,7 +47,7 @@ export function AdminNewEditRole({
 
     const registerDescr = register("descr");
 
-    const registerInheritedFrom = register("inheritedFrom", {
+    const registerParentId = register("parentId", {
         required: Messages.errRequired,
     });
 
@@ -61,7 +61,7 @@ export function AdminNewEditRole({
         setValue("roleName", roleName || "");
         setValue("id", id);
         setValue("descr", descr || undefined);
-        setValue("inheritedFrom", inheritedFrom || "");
+        setValue("parentId", parentId || "");
         return () => {
             subs1.unsubscribe();
         };
@@ -88,19 +88,19 @@ export function AdminNewEditRole({
                     </span>
                 </label>
 
-                {/* Inherited From */}
+                {/* Parent */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold mb-1">Inherited from <WidgetAstrix /></span>
+                    <span className="font-bold mb-1">Parent <WidgetAstrix /></span>
                     <CompReactSelect
                         getOptions={getBuiltinRoleOptions}
                         optionLabelName="roleName"
                         optionValueName="id"
-                        {...registerInheritedFrom}
-                        onChange={handleOnChangeInheritedFrom}
+                        {...registerParentId}
+                        onChange={handleOnChangeParentId}
                         ref={null}
-                        selectedValue={inheritedFrom}
+                        selectedValue={parentId}
                     />
-                    {errors.inheritedFrom && <WidgetFormErrorMessage errorMessage={errors.inheritedFrom.message} />}
+                    {errors.parentId && <WidgetFormErrorMessage errorMessage={errors.parentId.message} />}
                 </label>
 
                 {/* Description */}
@@ -128,7 +128,6 @@ export function AdminNewEditRole({
             tableName: AllTables.RoleM.name,
             xData: {
                 ...data,
-                parentId: data.inheritedFrom || null,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0
             },
         };
@@ -181,16 +180,16 @@ export function AdminNewEditRole({
         setOptions(res.data.genericQuery);
     }
 
-    function handleOnChangeInheritedFrom(selectedObject: any) {
-        setValue("inheritedFrom", selectedObject?.id);
-        clearErrors("inheritedFrom");
+    function handleOnChangeParentId(selectedObject: any) {
+        setValue("parentId", selectedObject?.id);
+        clearErrors("parentId");
     }
 }
 
 type FormDataType = {
     descr: string | undefined;
     roleName: string;
-    inheritedFrom: string;
+    parentId: string;
     id?: string;
 };
 
@@ -198,7 +197,7 @@ type AdminNewEditRoleType = {
     dataInstance: string;
     descr?: string | undefined;
     roleName?: string;
-    inheritedFrom?: string;
+    parentId?: string;
     id?: string;
 };
 
