@@ -109,9 +109,16 @@ class SqlSecurity:
 
     get_all_admin_roles_onClientId = """
         with "noOfRows" as (values(%(noOfRows)s::int)), "clientId" as (values(%(clientId)s::int))
-        --with "noOfRows" as (values(null::int)), "clientId" as (values(51))
-            select * from "RoleM"
-                where "clientId" = (table "clientId")
+        --with "noOfRows" as (values(null::int)), "clientId" as (values(53))
+            select r.id,
+				r."clientId",
+				r."roleName",
+				r."descr",
+				r."parentId",
+				rc."roleName" as "parentRoleName"
+			from "RoleM" r
+				join "RoleM" rc on r."parentId" = rc."id" 
+                where r."clientId" = (table "clientId")
             order by "id" DESC
                 limit (table "noOfRows")
     """

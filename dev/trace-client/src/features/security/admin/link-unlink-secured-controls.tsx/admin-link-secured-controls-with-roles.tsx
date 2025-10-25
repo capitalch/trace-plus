@@ -25,7 +25,6 @@ export function AdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.adminSecuredControls
     const linksInstance: string = DataInstancesMap.securedControlsLinkRoles
     const context: GlobalContextType = useContext(GlobalContext);
-
     return (
         <div className='flex flex-col ml-8'>
             <div className='flex items-center justify-between mt-6'>
@@ -74,12 +73,14 @@ export function AdminLinkSecuredControlsWithRoles() {
                         className="mt-2"
                         childMapping="securedControls"
                         columns={getLinkColumns()}
+                        // dbName={GLOBAL_SECURITY_DATABASE_NAME}
+                        // dbParams={decodedDbParamsObject}
                         height="calc(100vh - 290px)"
                         instance={linksInstance}
                         minWidth='700px'
                         pageSize={11}
                         rowHeight={40}
-                        sqlArgs={{ clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
+                        sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME, clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0 }}
                         sqlId={SqlIdsMap.getAdminRolesSecuredControlsLink}
                         treeColumnIndex={0}
                     />
@@ -89,7 +90,7 @@ export function AdminLinkSecuredControlsWithRoles() {
 
     function getSecuredControlsAggregates(): SyncFusionGridAggregateType[] {
         return [{
-            columnName:'controlName',
+            columnName: 'controlName',
             field: 'controlName',
             type: "Count",
             format: "N0",
@@ -289,7 +290,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         const isVisible: boolean = (props?.securedControls?.length || 0) > 0
         if ((props.level === 0) && isVisible) {
             ret = <TooltipComponent content={Messages.messUnlinkAllSecuredControl}>
-                <button type ='button' title="unlink" onClick={() => handleOnClickUnlinkAll(props)}>
+                <button type='button' title="unlink" onClick={() => handleOnClickUnlinkAll(props)}>
                     <IconUnlink className="ml-2 w-5 h-5 text-red-500"></IconUnlink></button>
             </TooltipComponent>
         }

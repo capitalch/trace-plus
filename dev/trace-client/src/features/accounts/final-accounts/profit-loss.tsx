@@ -159,7 +159,7 @@ export function ProfitLoss() {
                     buCode={buCode}
                     childMapping="children"
                     className=""
-                    dataSource={expensesData}
+                    dataSource={expensesData || []}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     // isLoadOnInit={false}
@@ -188,7 +188,7 @@ export function ProfitLoss() {
                     buCode={buCode}
                     childMapping="children"
                     className=""
-                    dataSource={incomesData}
+                    dataSource={incomesData || []}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('A')}

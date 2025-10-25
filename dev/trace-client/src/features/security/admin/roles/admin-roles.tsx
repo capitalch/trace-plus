@@ -58,15 +58,15 @@ export function AdminRoles() {
                 width: 40,
             },
             {
+                field: 'parentRoleName',
+                headerText: 'Parent Role',
+                type: 'string',
+                width: 40,
+            },
+            {
                 field: 'descr',
                 headerText: 'Description',
                 type: 'string',
-            },
-            {
-                field: 'rank',
-                headerText: 'Rank',
-                type: 'number',
-                width: 40,
             },
         ];
     }

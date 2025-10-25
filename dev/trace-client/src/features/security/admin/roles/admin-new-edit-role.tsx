@@ -69,7 +69,7 @@ export function AdminNewEditRole({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col w-auto min-w-72 gap-2">
+            <div className="flex flex-col w-auto">
 
                 {/* Role name */}
                 <label className="flex flex-col font-medium text-primary-400">
@@ -90,7 +90,7 @@ export function AdminNewEditRole({
 
                 {/* Parent */}
                 <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold mb-1">Parent <WidgetAstrix /></span>
+                    <span className="font-bold mb-1">Parent Role <WidgetAstrix /></span>
                     <CompReactSelect
                         getOptions={getBuiltinRoleOptions}
                         optionLabelName="roleName"
@@ -128,6 +128,7 @@ export function AdminNewEditRole({
             tableName: AllTables.RoleM.name,
             xData: {
                 ...data,
+                parentId: +data.parentId,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0
             },
         };
@@ -181,7 +182,7 @@ export function AdminNewEditRole({
     }
 
     function handleOnChangeParentId(selectedObject: any) {
-        setValue("parentId", selectedObject?.id);
+        setValue("parentId", selectedObject?.id, {shouldDirty: true, shouldValidate: true});
         clearErrors("parentId");
     }
 }
@@ -197,7 +198,7 @@ type AdminNewEditRoleType = {
     dataInstance: string;
     descr?: string | undefined;
     roleName?: string;
-    parentId?: string;
+    parentId: string;
     id?: string;
 };
 

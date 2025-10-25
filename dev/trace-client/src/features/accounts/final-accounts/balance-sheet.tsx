@@ -172,18 +172,18 @@ export function BalanceSheet() {
                     title='Liabilities'
                 />
                 <CompSyncfusionTreeGrid
-                
                     addUniqueKeyToJson={true}
                     aggregates={getAggregates()}
                     buCode={buCode}
                     childMapping="children"
                     className=""
-                    dataSource={liabsData}
+                    dataSource={liabsData || []}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('L')}
                     height="calc(100vh - 245px)"
                     instance={liabsInstance}
+                    // loadData={loadData}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}
                     zoomInColumnWidth={30}
@@ -206,7 +206,7 @@ export function BalanceSheet() {
                     buCode={buCode}
                     childMapping="children"
                     className=""
-                    dataSource={assetsData}
+                    dataSource={assetsData || []}
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('A')}

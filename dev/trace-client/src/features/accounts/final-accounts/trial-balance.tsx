@@ -70,20 +70,20 @@ export function TrialBalance() {
                 buCode={buCode}
                 childMapping="children"
                 className="mr-6"
+                columns={getColumns()}
                 dbName={dbName}
                 dbParams={decodedDbParamsObject}
                 graphQlQueryFromMap={GraphQLQueriesMap.trialBalance}
                 graphQlQueryName={GraphQLQueriesMapNames.trialBalance}
+                height="calc(100vh - 227px)"
+                instance={instance}
+                minWidth='400px'
                 sqlArgs={{
                     branchId: isAllBranches ? null : branchId || 0,
                     finYearId: finYearId || 1900,
                 }}
-                columns={getColumns()}
-                height="calc(100vh - 227px)"
-                instance={instance}
-                minWidth='400px'
-                treeColumnIndex={0}
                 onZoomIn={handleOnZoomIn}
+                treeColumnIndex={0}
                 zoomInColumnWidth={30}
             />
         </CompAccountsContainer>

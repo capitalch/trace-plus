@@ -49,7 +49,7 @@ export function CompSyncfusionTreeGrid({
     zoomInColumnWidth
 }: CompSyncfusionTreeGridType) {
     const context: GlobalContextType = useContext(GlobalContext)
-    const { getAggregateColumnDirectives, getColumnDirectives, /*handleCommandClick,*/ loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, onZoomIn, sqlId, sqlArgs, treeColumnIndex, zoomInColumnWidth })
+    const { getAggregateColumnDirectives, getColumnDirectives, loading, loadData: loadDataLocal, selectedData } = useCompSyncfusionTreeGrid({ addUniqueKeyToJson, aggregates, buCode, childMapping, columns, dataPath, dbName, dbParams, hasCheckBoxSelection, graphQlQueryFromMap, graphQlQueryName, instance, onZoomIn, sqlId, sqlArgs, treeColumnIndex, zoomInColumnWidth })
     const gridRef: any = useRef({})
     const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
@@ -79,6 +79,13 @@ export function CompSyncfusionTreeGrid({
             }
         }
     }, [dataSource, selectedData])
+
+    useEffect(() => {
+    if (!(loadData || dataSource)) {
+      // For custom loadData the loading should be taken care of in the calling code
+      loadDataLocal();
+    }
+  }, [loadData, dataSource, loadDataLocal]);
 
     if (loading) {
         return (<WidgetLoadingIndicator />)
