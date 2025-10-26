@@ -122,7 +122,7 @@ export function CompSyncFusionTreeGridToolbar({
 }
 
 type CompSyncFusionTreeGridToolbarType = {
-    className: string
+    className?: string
     CustomControl?: FC
     instance: string
     isAllBranches?: boolean

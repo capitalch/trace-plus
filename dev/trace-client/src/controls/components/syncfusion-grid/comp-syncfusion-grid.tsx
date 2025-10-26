@@ -20,7 +20,9 @@ import {
   Edit,
   VirtualScroll,
   Page,
-  CommandColumn
+  CommandColumn,
+  Group,
+  GroupSettingsModel
 } from "@syncfusion/ej2-react-grids";
 import _ from 'lodash'
 import { FC, useContext, useEffect, useRef, } from "react";
@@ -38,6 +40,7 @@ export function CompSyncFusionGrid({
   actionBegin,
   actionComplete,
   aggregates,
+  allowGrouping = false,
   allowPaging = false,
   allowTextWrap = true,
   buCode,
@@ -51,6 +54,7 @@ export function CompSyncFusionGrid({
   editColumnWidth,
   editSettings,
   gridDragAndDropSettings,
+  groupSettings,
   hasCheckBoxSelection = false,
   hasIndexColumn = false,
   height,
@@ -162,6 +166,7 @@ export function CompSyncFusionGrid({
       style={{ maxWidth: maxWidth, minWidth: minWidth }}
       actionBegin={actionBegin}
       actionComplete={actionComplete}
+      allowGrouping={allowGrouping}
       allowRowDragAndDrop={gridDragAndDropSettings?.allowRowDragAndDrop}
       allowPdfExport={true}
       allowExcelExport={true}
@@ -178,6 +183,7 @@ export function CompSyncFusionGrid({
       editSettings={editSettings}
       enablePersistence={false}
       gridLines="Both"
+      groupSettings={groupSettings}
       height={height}
       id={instance}
       pageSettings={pageSettings ?? { pageSize: 100 }}
@@ -224,6 +230,7 @@ export function CompSyncFusionGrid({
           CommandColumn,
           Edit,
           ExcelExport,
+          Group,
           InfiniteScroll,
           Page,
           PdfExport,
@@ -265,6 +272,7 @@ export type CompSyncFusionGridType = {
   actionBegin?: (args: any) => void;
   actionComplete?: (args: any) => void;
   aggregates?: SyncFusionGridAggregateType[];
+  allowGrouping?: boolean;
   allowPaging?: boolean;
   allowTextWrap?: boolean;
   buCode?: string;
@@ -283,6 +291,7 @@ export type CompSyncFusionGridType = {
     showConfirmDialog?: boolean;
   };
   gridDragAndDropSettings?: GridDragAndDropSettingsType;
+  groupSettings?: GroupSettingsModel;
   hasCheckBoxSelection?: boolean;
   hasIndexColumn?: boolean;
   height?: string;

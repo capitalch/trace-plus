@@ -113,11 +113,8 @@ class SqlSecurity:
             select r.id,
 				r."clientId",
 				r."roleName",
-				r."descr",
-				r."parentId",
-				rc."roleName" as "parentRoleName"
-			from "RoleM" r
-				join "RoleM" rc on r."parentId" = rc."id" 
+				r."descr"
+			from "RoleM" r 
                 where r."clientId" = (table "clientId")
             order by "id" DESC
                 limit (table "noOfRows")
@@ -214,8 +211,10 @@ class SqlSecurity:
     get_all_secured_controls = """
         with "noOfRows" as (values(%(noOfRows)s::int))
             --with "noOfRows" as (values(null::int))
-                select * from "SecuredControlM"
-                    order by "id" DESC
+                select * 
+                , split_part("controlName", '.', 1) AS "controlPrefix" 
+                from "SecuredControlM"
+                    order by "controlType", "controlName"
                         limit (table "noOfRows")
     """
 

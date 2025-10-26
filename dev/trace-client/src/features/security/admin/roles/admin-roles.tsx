@@ -58,12 +58,6 @@ export function AdminRoles() {
                 width: 40,
             },
             {
-                field: 'parentRoleName',
-                headerText: 'Parent Role',
-                type: 'string',
-                width: 40,
-            },
-            {
                 field: 'descr',
                 headerText: 'Description',
                 type: 'string',
@@ -104,7 +98,6 @@ export function AdminRoles() {
                     descr={props.descr}
                     id={props.id}
                     roleName={props.roleName}
-                    parentId={props.parentId}
                 />
             ),
         });

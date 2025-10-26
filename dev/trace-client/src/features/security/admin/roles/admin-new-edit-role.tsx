@@ -17,13 +17,10 @@ import { IbukiMessages } from "../../../../utils/ibukiMessages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
-import { CompReactSelect } from "../../../../controls/components/comp-react-select";
-// import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 
 export function AdminNewEditRole({
     descr,
     roleName,
-    parentId,
     dataInstance,
     id,
 }: AdminNewEditRoleType) {
@@ -33,7 +30,6 @@ export function AdminNewEditRole({
         criteriaMode: "firstError"
     });
     const context: GlobalContextType = useContext(GlobalContext);
-    // const {buCode, decodedDbParamsObject} = useUtilsInfo();
 
     const registerRoleName = register("roleName", {
         required: Messages.errRequired,
@@ -44,12 +40,7 @@ export function AdminNewEditRole({
             ibukiDdebounceEmit(IbukiMessages["DEBOUNCE-ROLE-NAME"], { roleName: e.target.value });
         }
     });
-
     const registerDescr = register("descr");
-
-    const registerParentId = register("parentId", {
-        required: Messages.errRequired,
-    });
 
     useEffect(() => {
         const subs1 = ibukiDebounceFilterOn(IbukiMessages["DEBOUNCE-ROLE-NAME"], 1200).subscribe(async (d: any) => {
@@ -61,7 +52,6 @@ export function AdminNewEditRole({
         setValue("roleName", roleName || "");
         setValue("id", id);
         setValue("descr", descr || undefined);
-        setValue("parentId", parentId || "");
         return () => {
             subs1.unsubscribe();
         };
@@ -86,21 +76,6 @@ export function AdminNewEditRole({
                             <span className="ml-auto text-primary-400 text-xs hover:cursor-pointer">?</span>
                         </TooltipComponent>
                     </span>
-                </label>
-
-                {/* Parent */}
-                <label className="flex flex-col font-medium text-primary-400">
-                    <span className="font-bold mb-1">Parent Role <WidgetAstrix /></span>
-                    <CompReactSelect
-                        getOptions={getBuiltinRoleOptions}
-                        optionLabelName="roleName"
-                        optionValueName="id"
-                        {...registerParentId}
-                        onChange={handleOnChangeParentId}
-                        ref={null}
-                        selectedValue={parentId}
-                    />
-                    {errors.parentId && <WidgetFormErrorMessage errorMessage={errors.parentId.message} />}
                 </label>
 
                 {/* Description */}
@@ -128,7 +103,6 @@ export function AdminNewEditRole({
             tableName: AllTables.RoleM.name,
             xData: {
                 ...data,
-                parentId: +data.parentId,
                 clientId: Utils.getCurrentLoginInfo()?.userDetails?.clientId || 0
             },
         };
@@ -174,23 +148,11 @@ export function AdminNewEditRole({
             clearErrors("root.roleName");
         }
     }
-
-    async function getBuiltinRoleOptions(setOptions: (args: any) => void) {
-        const q = GraphQLQueriesMap.genericQuery(GLOBAL_SECURITY_DATABASE_NAME, { sqlId: SqlIdsMap.getBuiltinRoles });
-        const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
-        setOptions(res.data.genericQuery);
-    }
-
-    function handleOnChangeParentId(selectedObject: any) {
-        setValue("parentId", selectedObject?.id, {shouldDirty: true, shouldValidate: true});
-        clearErrors("parentId");
-    }
 }
 
 type FormDataType = {
     descr: string | undefined;
     roleName: string;
-    parentId: string;
     id?: string;
 };
 
@@ -198,7 +160,6 @@ type AdminNewEditRoleType = {
     dataInstance: string;
     descr?: string | undefined;
     roleName?: string;
-    parentId: string;
     id?: string;
 };
 

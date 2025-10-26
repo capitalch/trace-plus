@@ -120,8 +120,6 @@ const Messages = {
   messEnterValidAmount: 'Please enter a valid target amount',
   messExistingLinksDropHere:
     'Existing Bu`s with links (Drop the dragged row here)',
-  messExistingRolesWithLinksDropHere:
-    'Existing roles with links (Drop the dragged row here)',
   messFinYearSuccessfullySelected:
     'The financial year was successfully selected',
   messFinYearSuccessfullyChanged: 'The financial year was successfully changed',
@@ -154,7 +152,6 @@ const Messages = {
   messRequiredProductCode: 'Product code is required',
   messRequiredProductDetails: 'Product details is required',
   messRequiredHsn: 'HSN code is required or is invalid',
-  messSecuredControlsDragFrom: 'Available secured controls (Drag a row)',
   messSecuredControlExists: 'Secured control already exists in the role',
   messSecuredControlName:
     'Secured control name should be a string without any space or special character',

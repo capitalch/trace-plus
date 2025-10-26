@@ -1,3 +1,0 @@
-- Instructions to add a new field in admin-new-edit-role.tsx
-    - Add a new dropdown control after role name in admin-new-edit-role.tsx showing builtin roles
-    - Use the same process as in capturing roleId in admin-new-edit-business-user.tsx
