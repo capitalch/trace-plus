@@ -1,185 +1,472 @@
-# Plan: Add Fields to Right Side Tree Grid Similar to Left Side Grid
+# Plan: Implement 4-Level Hierarchy in Right Tree Grid
 
-## Current State Analysis
+## Requirements
+Based on `hier.md`:
+1. **4-Level Hierarchy**: Role → controlType → controlPrefix → controlName
+2. **No functional changes**: Drop, link, and unlink behavior remains the same
+3. **Display only changes**: Only visual tree structure changes
+4. **Reversible**: Ability to revert to original implementation
 
-### Left Side Grid (Secured Controls - CompSyncFusionGrid)
-Located at: `src/features/security/super-admin/link-unlink-secured-controls/super-admin-link-secured-controls-with-roles.tsx:138-164`
+## Current State
+- Right grid shows: Role → Secured Controls (2 levels)
+- Uses `childMapping="securedControls"`
+- Data from SQL: `SqlIdsMap.getRolesSecuredControlsLink`
+- Drag and drop works correctly
+- Link/unlink functionality works
 
-**Current Columns:**
-- `controlName` - Control name (width: 180)
-- `controlType` - Type (width: 60)
-- `descr` - Description (flexible width)
-- `controlPrefix` - Prefix (width: 60)
+## Strategy
 
-**Features:**
-- Grouping by controlType and controlPrefix
-- Drag and drop capability
-- Checkbox selection
-- Aggregates (count)
-- Multi-level group captions with badges
+### Approach: Data Transformation with Git Branch Safety
 
-### Right Side Tree Grid (Roles & Linked Controls - CompSyncfusionTreeGrid)
-Located at: `src/features/security/super-admin/link-unlink-secured-controls/super-admin-link-secured-controls-with-roles.tsx:187-202`
+**Branch Strategy**:
+1. Current working state is in `main` branch
+2. Create a new git commit of working state (backup point)
+3. Implement 4-level hierarchy
+4. If it doesn't work, can easily revert with `git reset --hard HEAD~1`
 
-**Current Columns:**
-- `name` - Role/Secured control name (with custom template)
-- `descr` - Description (with link/unlink buttons)
+## Implementation Steps
 
-**Structure:**
-- Level 0: Roles
-- Level 1: Secured controls linked to roles
-- Uses `childMapping="securedControls"` for tree structure
-- Data source: `SqlIdsMap.getRolesSecuredControlsLink`
+### Step 1: Create Backup Commit
+```bash
+git add .
+git commit -m "Working 2-level tree grid before 4-level hierarchy implementation"
+```
+This creates a restore point we can revert to if needed.
 
-## Feasibility Assessment
+### Step 2: Data Transformation Function
 
-### ✅ YES - It is possible to add fields to the right side tree grid
+Create a function to transform the 2-level data into 4-level hierarchy:
 
-**Reasons:**
-1. The right side tree grid displays secured controls at level 1, which are the same entity type as the left grid
-2. SyncFusion TreeGrid supports multiple columns just like the regular Grid
-3. The data source can include all necessary fields (controlType, controlPrefix, etc.)
-4. Column templates can be used to differentiate display based on tree level
-
-## Implementation Plan
-
-### Step 1: Verify Data Source
-**File:** Check SQL query configuration
-- Location: Verify `SqlIdsMap.getRolesSecuredControlsLink` returns all required fields
-- Required fields for secured controls (level 1):
-  - `controlName` (already has as `name`)
-  - `controlType`
-  - `controlPrefix`
-  - `descr` (already present)
-
-### Step 2: Update Column Definitions
-**File:** `super-admin-link-secured-controls-with-roles.tsx:683-698`
-**Function:** `getLinkColumns()`
-
-Add new columns to the tree grid:
 ```typescript
-{
-    field: 'controlType',
-    headerText: 'Type',
-    type: 'string',
-    width: 80,
-    template: controlTypeColumnTemplate  // Show only for level 1
+function transformTo4LevelHierarchy(roles: any[]): any[] {
+    if (!roles || !Array.isArray(roles)) return roles;
+
+    return roles.map(role => {
+        // If no secured controls, return role with empty children
+        if (!role.securedControls || !Array.isArray(role.securedControls) || role.securedControls.length === 0) {
+            return {
+                ...role,
+                level: 0,
+                type: "role",
+                children: []
+            };
+        }
+
+        // Group secured controls by controlType
+        const groupedByType = _.groupBy(role.securedControls, 'controlType');
+
+        const typeChildren = Object.entries(groupedByType).map(([controlType, controlsOfType]: [string, any[]]) => {
+            // Group by controlPrefix within each type
+            const groupedByPrefix = _.groupBy(controlsOfType, 'controlPrefix');
+
+            const prefixChildren = Object.entries(groupedByPrefix).map(([controlPrefix, controlsOfPrefix]: [string, any[]]) => {
+                // Level 3: Actual controls
+                const controlChildren = controlsOfPrefix.map(control => ({
+                    ...control,
+                    level: 3,
+                    type: "control",
+                    pkey: control.id || control.pkey,
+                    roleId: role.roleId,
+                    securedControlId: control.securedControlId,
+                    name: control.name,
+                    descr: control.descr
+                }));
+
+                // Level 2: Prefix group
+                return {
+                    level: 2,
+                    type: "prefixGroup",
+                    controlPrefix: controlPrefix,
+                    name: controlPrefix,
+                    roleId: role.roleId,
+                    pkey: `${role.roleId}_${controlType}_${controlPrefix}`,
+                    children: controlChildren,
+                    count: controlChildren.length
+                };
+            });
+
+            // Level 1: Type group
+            return {
+                level: 1,
+                type: "typeGroup",
+                controlType: controlType,
+                name: controlType,
+                roleId: role.roleId,
+                pkey: `${role.roleId}_${controlType}`,
+                children: prefixChildren,
+                count: controlsOfType.length
+            };
+        });
+
+        // Level 0: Role
+        return {
+            ...role,
+            level: 0,
+            type: "role",
+            children: typeChildren,
+            securedControls: role.securedControls // Keep for unlink all functionality
+        };
+    });
 }
-{
-    field: 'controlPrefix',
-    headerText: 'Prefix',
-    type: 'string',
-    width: 100,
-    template: controlPrefixColumnTemplate  // Show only for level 1
+```
+
+### Step 3: Apply Transformation
+
+**Option A: Transform in useMemo** (Recommended)
+```typescript
+// Get original data from Redux
+const originalData = useSelector((state: RootStateType) => {
+    return state.queryHelper[linksInstance]?.data?.[0]?.jsonResult;
+});
+
+// Transform data
+const transformedData = useMemo(() => {
+    if (!originalData || !Array.isArray(originalData)) return [];
+    return transformTo4LevelHierarchy(originalData);
+}, [originalData]);
+```
+
+**Option B: Transform in custom loadData**
+```typescript
+const customLoadData = useCallback(async () => {
+    const originalLoadData = context.CompSyncFusionTreeGrid[linksInstance].loadData;
+    await originalLoadData();
+
+    // Get and transform data
+    const treeGridRef = context.CompSyncFusionTreeGrid[linksInstance]?.gridRef;
+    if (treeGridRef?.current) {
+        const originalData = treeGridRef.current.dataSource;
+        const transformed = transformTo4LevelHierarchy(originalData);
+        treeGridRef.current.dataSource = transformed;
+        treeGridRef.current.refresh();
+    }
+}, []);
+```
+
+### Step 4: Update TreeGrid Configuration
+
+```typescript
+<CompSyncfusionTreeGrid
+    addUniqueKeyToJson={true}
+    className=''
+    childMapping="children"  // Changed from "securedControls"
+    columns={getLinkColumns()}
+    dataSource={transformedData}  // Use transformed data
+    height="calc(100vh - 335px)"
+    instance={linksInstance}
+    minWidth='400px'
+    pageSize={11}
+    rowHeight={40}
+    sqlArgs={{}}
+    sqlId={SqlIdsMap.getRolesSecuredControlsLink}
+    treeColumnIndex={0}
+/>
+```
+
+### Step 5: Update Template Functions
+
+#### nameColumnTemplate
+```typescript
+function nameColumnTemplate(props: any) {
+    // Level 0: Role
+    if (props.level === 0 || props.type === "role") {
+        return (
+            <div className="flex items-center">
+                <span className='font-semibold text-gray-900'>{props.name}</span>
+                {getChildCount(props)}
+            </div>
+        );
+    }
+
+    // Level 1: Type Group
+    if (props.level === 1 || props.type === "typeGroup") {
+        return (
+            <div className='flex items-center gap-2 py-1 px-2 bg-blue-50 rounded'>
+                <IconControls className='w-4 h-4 text-blue-600' />
+                <span className='text-xs font-medium text-gray-600'>Type:</span>
+                <span className='font-semibold text-blue-800'>{props.controlType || props.name}</span>
+                <span className='inline-flex items-center px-2 py-0.5 bg-blue-200 text-blue-900 rounded-full text-xs font-semibold'>
+                    {props.count || 0}
+                </span>
+            </div>
+        );
+    }
+
+    // Level 2: Prefix Group
+    if (props.level === 2 || props.type === "prefixGroup") {
+        return (
+            <div className='flex items-center gap-2 py-1 px-2 ml-4 bg-green-50 rounded'>
+                <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+                    <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
+                </svg>
+                <span className='text-xs font-medium text-gray-600'>Prefix:</span>
+                <span className='font-semibold text-green-800'>{props.controlPrefix || props.name}</span>
+                <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full text-xs font-semibold'>
+                    {props.count || 0}
+                </span>
+            </div>
+        );
+    }
+
+    // Level 3: Control
+    return (
+        <div className="flex items-center ml-8">
+            <div className='flex items-center justify-center w-6 h-6 bg-sky-100 rounded'>
+                <IconControls className="w-4 h-4 text-sky-600" />
+            </div>
+            <span className='ml-2 text-gray-700'>{props.name}</span>
+        </div>
+    );
 }
 ```
 
-### Step 3: Create Column Templates
-**File:** `super-admin-link-secured-controls-with-roles.tsx`
-**New Functions:** After line 726
+#### descrColumnTemplate
+```typescript
+function descrColumnTemplate(props: any) {
+    // Show description and buttons only for roles and actual controls
+    // Not for group headers (type and prefix groups)
 
-Create template functions that render content conditionally based on tree level:
+    if (props.type === "typeGroup" || props.type === "prefixGroup") {
+        return null; // No description for group headers
+    }
 
-**Template 1: `controlTypeColumnTemplate(props)`**
-- If `props.level === 1` (secured control): Display `props.controlType`
-- If `props.level === 0` (role): Display empty or placeholder
-
-**Template 2: `controlPrefixColumnTemplate(props)`**
-- If `props.level === 1` (secured control): Display `props.controlPrefix`
-- If `props.level === 0` (role): Display empty or placeholder
-
-### Step 4: Update Existing Templates (Optional Enhancement)
-**File:** `super-admin-link-secured-controls-with-roles.tsx:700-710, 718-726`
-
-Consider adjusting existing templates:
-- `nameColumnTemplate` - May need width adjustment
-- `descrColumnTemplate` - May need to account for additional columns
-
-### Step 5: Adjust Grid Width/Layout
-**File:** `super-admin-link-secured-controls-with-roles.tsx:187-202`
-
-Update CompSyncfusionTreeGrid props if needed:
-- Adjust `minWidth` if total column width increases
-- Consider adding horizontal scrolling if too many columns
-
-### Step 6: Testing
-Test the following scenarios:
-1. Roles (level 0) display correctly without control-specific fields
-2. Secured controls (level 1) display all fields properly
-3. Tree expansion/collapse works correctly
-4. Drag and drop functionality still works
-5. Link/unlink actions still function
-6. Layout responsive on different screen sizes
-7. Unlink all functionality works
-
-## Potential Challenges
-
-### Challenge 1: Data Availability
-**Issue:** SQL query may not return `controlType` and `controlPrefix` for child records
-**Solution:**
-- Verify/modify the SQL query at `SqlIdsMap.getRolesSecuredControlsLink`
-- Ensure JOIN includes secured controls table with all necessary fields
-
-### Challenge 2: Visual Clutter
-**Issue:** Too many columns may make the interface crowded
-**Solution:**
-- Use appropriate column widths
-- Consider making some columns optional/hideable
-- Use icons or abbreviations for type/prefix
-- Consider color coding instead of separate columns
-
-### Challenge 3: Role Rows (Level 0)
-**Issue:** Role rows don't have control-specific fields
-**Solution:**
-- Template functions should check `props.level` and render empty/null for level 0
-- Alternatively, show aggregate info (e.g., count by type)
-
-### Challenge 4: Responsive Design
-**Issue:** Additional columns may break layout on smaller screens
-**Solution:**
-- Test on various screen sizes
-- Consider using SyncFusion's column hiding feature for mobile
-- Adjust `min-w-[400px]` in the parent div if needed
-
-## Alternative Approaches
-
-### Option A: Badge/Chip Display (Recommended)
-Instead of separate columns, display type and prefix as badges within the name column:
+    return (
+        <div className="flex flex-row items-center">
+            <span>{props.descr}</span>
+            {getLinkOrUnlinkButton(props)}
+            {getUnlinkAllButton(props)}
+        </div>
+    );
+}
 ```
-[Icon] Control Name [Type Badge] [Prefix Badge]
+
+#### getLinkOrUnlinkButton
+```typescript
+function getLinkOrUnlinkButton(props: any) {
+    // Link button for roles (level 0)
+    if (props.level === 0 || props.type === "role") {
+        return (
+            <TooltipComponent content={Messages.messLinkSecuredControl}>
+                <button
+                    onClick={() => handleOnClickLink(props)}
+                    className="ml-2 p-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 hover:scale-110"
+                    aria-label="Link secured control to role"
+                >
+                    <IconLink className="w-6 h-6 text-blue-600 hover:text-blue-700" />
+                </button>
+            </TooltipComponent>
+        );
+    }
+
+    // Unlink button for actual controls (level 3)
+    if (props.level === 3 || props.type === "control") {
+        return (
+            <TooltipComponent content={Messages.messUnlinkSecuredControl}>
+                <button
+                    onClick={() => handleOnClickUnlink(props)}
+                    className="ml-2 p-1.5 rounded-md hover:bg-amber-50 transition-all duration-200 hover:scale-110"
+                    aria-label="Unlink secured control from role"
+                >
+                    <IconUnlink className="w-6 h-6 text-amber-600 hover:text-amber-700" />
+                </button>
+            </TooltipComponent>
+        );
+    }
+
+    return null;
+}
 ```
-**Pros:** Cleaner UI, less horizontal space
-**Cons:** Slightly more complex template
 
-### Option B: Tooltip on Hover
-Show additional fields in a tooltip when hovering over secured control names
-**Pros:** Minimal UI changes, cleaner interface
-**Cons:** Less discoverable, requires user interaction
+### Step 6: Update Drag & Drop Logic
 
-### Option C: Expandable Details Row
-Add an expand icon to show additional details below each secured control
-**Pros:** Very flexible, can show many fields
-**Cons:** More complex implementation, requires extra clicks
+The drag and drop needs to find the parent role regardless of which level is dropped on:
 
-## Recommendation
+```typescript
+function findParentRole(targetRowData: any, viewRecords: any[]): any {
+    // If dropped on role, return it
+    if (targetRowData.level === 0 || targetRowData.type === "role") {
+        return targetRowData;
+    }
 
-**Proceed with Step 2-3** (Adding columns with templates) BUT consider **Option A** (Badge display) for a better user experience:
+    // Walk up using roleId to find the role
+    const roleId = targetRowData.roleId;
+    return viewRecords.find((r: any) =>
+        (r.level === 0 || r.type === "role") && r.roleId === roleId
+    );
+}
 
-1. Keep the tree structure and existing columns
-2. Modify the `nameColumnTemplate` to include badges for `controlType` and `controlPrefix` when `level === 1`
-3. Use color-coded badges similar to the left grid's group captions
-4. This maintains consistency with the existing design language
+function onSecuredControlsRowDrop(args: any) {
+    args.cancel = true;
+    const targetGridRef = context.CompSyncFusionTreeGrid[linksInstance].gridRef;
 
-## Estimated Complexity
-- **SQL Query Update:** Low (if needed)
-- **Column Addition:** Low-Medium
-- **Template Creation:** Low
-- **Testing:** Medium
-- **Overall:** Medium complexity, high feasibility
+    // ... existing validation code ...
+
+    const rolesLinkViewRecords = targetGridRef.current.getCurrentViewRecords();
+    const targetRowData = rolesLinkViewRecords[args.dropIndex];
+
+    // Find the parent role
+    const parentRole = findParentRole(targetRowData, rolesLinkViewRecords);
+
+    if (!parentRole) {
+        console.error('Could not find parent role');
+        return;
+    }
+
+    // Get existing controls from the role
+    const existingControls = parentRole.securedControls || [];
+    const existingIds = existingControls.map((c: any) => c.securedControlId);
+
+    // Filter out already linked controls
+    const sourceIds: string[] = args.data?.map((x: any) => x.id) || [];
+    const newIds = sourceIds.filter(id => !existingIds.includes(id));
+
+    // Proceed with link operation using roleId
+    const roleId = parentRole.roleId;
+    // ... rest of link logic ...
+}
+```
+
+### Step 7: Update setExpandedKeys
+
+```typescript
+function setExpandedKeys() {
+    const expandedKeys: Set<number> = new Set();
+
+    // Expand the entire path to the dropped location
+    let current = targetRowData;
+    while (current) {
+        if (current.pkey) {
+            expandedKeys.add(current.pkey);
+        }
+
+        // Stop at role level
+        if (current.level === 0 || current.type === "role") {
+            break;
+        }
+
+        // Try to find parent
+        if (current.parentItem) {
+            current = rolesLinkViewRecords[current.parentItem.index];
+        } else {
+            break;
+        }
+    }
+
+    context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys;
+}
+```
+
+### Step 8: Add Expand/Collapse All Button
+
+```typescript
+function ExpandCollapseTreeButton() {
+    return (
+        <button
+            onClick={handleToggleAllTreeGroups}
+            className='w-8 h-8 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-md'
+            title={allTreeGroupsExpanded ? 'Collapse all' : 'Expand all'}
+        >
+            {allTreeGroupsExpanded ? <CollapseIcon /> : <ExpandIcon />}
+        </button>
+    );
+}
+
+function handleToggleAllTreeGroups() {
+    const treeGridRef = context.CompSyncFusionTreeGrid[linksInstance]?.gridRef;
+    if (!treeGridRef?.current) return;
+
+    if (allTreeGroupsExpanded) {
+        treeGridRef.current.collapseAll();
+        setAllTreeGroupsExpanded(false);
+    } else {
+        treeGridRef.current.expandAll();
+        setAllTreeGroupsExpanded(true);
+    }
+}
+```
+
+## Testing Checklist
+
+### Display Testing
+- [ ] Roles display at level 0
+- [ ] Type groups display at level 1 with proper styling
+- [ ] Prefix groups display at level 2 with proper styling
+- [ ] Controls display at level 3
+- [ ] Expand/collapse works at all levels
+- [ ] Expand/collapse all button works
+
+### Functionality Testing
+- [ ] Drag from left grid to role (level 0) - should link
+- [ ] Drag from left grid to type group (level 1) - should link to parent role
+- [ ] Drag from left grid to prefix group (level 2) - should link to parent role
+- [ ] Drag from left grid to control (level 3) - should link to parent role
+- [ ] Link button on role works
+- [ ] Unlink button on control (level 3) works
+- [ ] Unlink all button on role works
+- [ ] No duplicate links created
+- [ ] Controls disappear from left when linked
+- [ ] Tree refreshes correctly after link/unlink
+
+### Edge Cases
+- [ ] Role with no controls shows empty structure
+- [ ] Role with controls of single type
+- [ ] Role with controls of single prefix
+- [ ] Multiple controls with same name but different types
+- [ ] Data refresh after operations
+
+## Rollback Plan
+
+If implementation doesn't work:
+
+### Option 1: Git Reset (Recommended)
+```bash
+git reset --hard HEAD~1
+```
+This reverts to the commit before implementation.
+
+### Option 2: Manual Revert
+1. Change `childMapping` back to `"securedControls"`
+2. Remove `dataSource` prop or set to `undefined`
+3. Revert template functions to 2-level logic
+4. Remove transformation function and related code
+
+### Option 3: Git Stash
+Before starting:
+```bash
+git stash push -m "4-level hierarchy attempt"
+```
+To restore:
+```bash
+git stash pop
+```
 
 ## Success Criteria
-- Right side tree grid displays controlType and controlPrefix for secured controls (level 1)
-- Roles (level 0) display appropriately without these fields
-- All existing functionality (drag-drop, link/unlink) continues to work
-- UI remains clean and readable
-- Responsive design maintained
+
+1. ✅ 4-level hierarchy displays correctly
+2. ✅ All drag and drop scenarios work
+3. ✅ Link/unlink functionality unchanged
+4. ✅ No TypeScript errors
+5. ✅ Build succeeds
+6. ✅ UI is responsive and performs well
+7. ✅ Can revert to original state if needed
+
+## Implementation Order
+
+1. **Create backup commit** (safety first!)
+2. **Add transformation function**
+3. **Update TreeGrid to use transformed data**
+4. **Update template functions** (start with nameColumnTemplate)
+5. **Test display** (verify 4 levels show correctly)
+6. **Update drag & drop logic** (findParentRole function)
+7. **Test all link/unlink scenarios**
+8. **Add expand/collapse all button**
+9. **Final testing**
+10. **If issues, rollback using git reset**
+
+## Notes
+
+- Transformation preserves `securedControls` on role for unlink all functionality
+- Each node has `roleId` for tracing back to parent role
+- `pkey` is unique for each node for expand/collapse tracking
+- `type` field helps identify node type in templates
+- Display-only change means all SQL and backend logic unchanged

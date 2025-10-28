@@ -310,7 +310,8 @@ class SqlSecurity:
                         'descr', s."descr",
                         'roleId', r.id,
                         'securedControlId', s.id,
-                        'controlPrefix', split_part(s."controlName", '.', 1)
+                        'controlPrefix', split_part(s."controlName", '.', 1),
+                        'controlType', s."controlType"
                     )
                 ) FILTER (WHERE s."controlName" IS NOT NULL) AS "securedControls"
             FROM "RoleM" r
@@ -319,17 +320,17 @@ class SqlSecurity:
             WHERE r."clientId" IS NULL
             GROUP BY r.id, "roleName"
             ORDER BY "roleName"
-)
+            )
 
-SELECT json_agg(
-    json_build_object(
-        'name', "name",
-        'descr', "descr",
-        'roleId', "roleId",
-        'securedControls', COALESCE("securedControls", null::json)
-    )
-) AS "jsonResult"
-FROM cte1
+            SELECT json_agg(
+                json_build_object(
+                    'name', "name",
+                    'descr', "descr",
+                    'roleId', "roleId",
+                    'securedControls', COALESCE("securedControls", null::json)
+                )
+            ) AS "jsonResult"
+            FROM cte1
     """
 
     get_roles_securedControls_link1 = """

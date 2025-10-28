@@ -27,6 +27,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
     const context: GlobalContextType = useContext(GlobalContext);
     const [selectedCount, setSelectedCount] = useState<number>(0);
     const [allGroupsExpanded, setAllGroupsExpanded] = useState<boolean>(false);
+    const [allTreeGroupsExpanded, setAllTreeGroupsExpanded] = useState<boolean>(false);
 
     useEffect(() => {
         const loadDataLinks = context.CompSyncFusionTreeGrid[linksInstance].loadData
@@ -178,10 +179,15 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     </div>
 
                     <div className='px-4 pt-3'>
-                        <CompSyncFusionTreeGridToolbar
-                            instance={linksInstance}
-                            title=''
-                        />
+                        <div className='flex items-center justify-between gap-4'>
+                            <div className='flex-1'>
+                                <CompSyncFusionTreeGridToolbar
+                                    instance={linksInstance}
+                                    title=''
+                                />
+                            </div>
+                            <ExpandCollapseTreeButton />
+                        </div>
                     </div>
                     <div className='px-4'>
                         <CompSyncfusionTreeGrid
@@ -247,6 +253,26 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         );
     }
 
+    function ExpandCollapseTreeButton() {
+        return (
+            <button
+                onClick={handleToggleAllTreeGroups}
+                className='w-8 h-8 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 flex items-center justify-center'
+                title={allTreeGroupsExpanded ? 'Collapse all' : 'Expand all'}
+            >
+                {allTreeGroupsExpanded ? (
+                    <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 20 20'>
+                        <path fillRule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clipRule='evenodd' />
+                    </svg>
+                ) : (
+                    <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 20 20'>
+                        <path fillRule='evenodd' d='M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z' clipRule='evenodd' />
+                    </svg>
+                )}
+            </button>
+        );
+    }
+
     function handleClearSelection() {
         const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
         if (gridRef?.current) {
@@ -265,6 +291,19 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         } else {
             gridRef.current.groupExpandAll();
             setAllGroupsExpanded(true);
+        }
+    }
+
+    function handleToggleAllTreeGroups() {
+        const treeGridRef = context.CompSyncFusionTreeGrid[linksInstance]?.gridRef;
+        if (!treeGridRef?.current) return;
+
+        if (allTreeGroupsExpanded) {
+            treeGridRef.current.collapseAll();
+            setAllTreeGroupsExpanded(false);
+        } else {
+            treeGridRef.current.expandAll();
+            setAllTreeGroupsExpanded(true);
         }
     }
 
@@ -612,15 +651,49 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
 
         function getIdsToExclude() {
             let ctrls: any[] = []
-            if (targetRowData?.level === 0) { //dropped on role
-                ctrls = targetRowData?.securedControls || []
-            } else if (targetRowData?.level === 1) { //dropped on secured control
-                const parentIndex = targetRowData?.parentItem?.index
-                const parentRowData = rolesLinkViewRecords[parentIndex]
-                ctrls = parentRowData?.securedControls || []
+
+            // Find the role level data based on where the item was dropped
+            let roleData = null;
+
+            if (targetRowData?.level === 0 || targetRowData?.type === "role") {
+                // Dropped on role - use target data directly
+                roleData = targetRowData;
+            } else if (targetRowData?.level === 1 || targetRowData?.type === "controlTypeGroup") {
+                // Dropped on control type group - find parent role
+                roleData = findParentRole(targetRowData);
+            } else if (targetRowData?.level === 2 || targetRowData?.type === "controlPrefixGroup") {
+                // Dropped on control prefix group - find parent role
+                roleData = findParentRole(targetRowData);
+            } else if (targetRowData?.level === 3 || targetRowData?.type === "control") {
+                // Dropped on actual control - find parent role
+                roleData = findParentRole(targetRowData);
             }
+
+            if (roleData) {
+                ctrls = roleData?.securedControls || [];
+            }
+
             const ids: string[] = ctrls.map((ctrl: any) => ctrl.securedControlId)
             return (ids)
+        }
+
+        function findParentRole(rowData: any): any {
+            // Walk up the tree to find the role (level 0)
+            let current = rowData;
+            while (current && current.level !== 0 && current.type !== "role") {
+                if (current.parentItem) {
+                    const parentIndex = current.parentItem.index;
+                    current = rolesLinkViewRecords[parentIndex];
+                } else {
+                    // Try to find by roleId if parentItem is not available
+                    const roleId = current.roleId;
+                    current = rolesLinkViewRecords.find((r: any) =>
+                        (r.level === 0 || r.type === "role") && r.roleId === roleId
+                    );
+                    break;
+                }
+            }
+            return current;
         }
 
         async function proceedToLink() {
@@ -655,16 +728,36 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         }
 
         function setExpandedKeys() {
-            // Only expand the key where items are dropped
-            const expandedKeys: Set<number> = new Set()
-            if (targetRowData.level === 0) {
-                expandedKeys.add(targetRowData.pkey)
+            // Expand the entire path to where items are dropped
+            const expandedKeys: Set<number> = new Set();
+
+            if (targetRowData.level === 0 || targetRowData.type === "role") {
+                // Dropped on role - expand just the role
+                expandedKeys.add(targetRowData.pkey);
+            } else {
+                // Dropped on group or control - expand all parents up to and including the role
+                let current = targetRowData;
+
+                // Walk up the tree and collect all parent keys
+                while (current) {
+                    if (current.pkey) {
+                        expandedKeys.add(current.pkey);
+                    }
+
+                    if (current.level === 0 || current.type === "role") {
+                        break; // Reached the root
+                    }
+
+                    if (current.parentItem) {
+                        const parentIndex = current.parentItem.index;
+                        current = rolesLinkViewRecords[parentIndex];
+                    } else {
+                        break;
+                    }
+                }
             }
-            if (targetRowData.level === 1) {
-                const parentItem = targetRowData.parentItem
-                expandedKeys.add(parentItem.pkey)
-            }
-            context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys
+
+            context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys;
         }
 
     }
