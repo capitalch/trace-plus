@@ -209,13 +209,10 @@ class SqlSecurity:
     """
 
     get_all_secured_controls = """
-        with "noOfRows" as (values(%(noOfRows)s::int))
-            --with "noOfRows" as (values(null::int))
-                select * 
-                , split_part("controlName", '.', 1) AS "controlPrefix" 
-                from "SecuredControlM"
-                    order by "controlType", "controlName"
-                        limit (table "noOfRows")
+        select * 
+		, split_part("controlName", '.', 1) AS "controlPrefix" 
+		from "SecuredControlM"
+			order by "controlType", "controlName"
     """
 
     get_bu_on_buCode_and_clientId = """

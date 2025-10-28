@@ -28,12 +28,14 @@ export function AdminLinkSecuredControlsWithRoles() {
     const linksInstance: string = DataInstancesMap.securedControlsLinkRoles
     const context: GlobalContextType = useContext(GlobalContext);
     const [selectedCount, setSelectedCount] = useState<number>(0);
+    const [allGroupsExpanded, setAllGroupsExpanded] = useState<boolean>(false);
 
     useEffect(() => {
         const loadDataLinks = context.CompSyncFusionTreeGrid[linksInstance].loadData
         if (loadDataLinks) {
             loadDataLinks()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // ESC key listener to cancel drag operations
@@ -56,6 +58,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // Track selection changes
@@ -65,6 +68,9 @@ export function AdminLinkSecuredControlsWithRoles() {
             if (gridRef?.current) {
                 const selected = gridRef.current.getSelectedRecords();
                 setSelectedCount(selected.length);
+
+                // Update group caption badges via DOM manipulation
+                updateGroupCaptionBadges();
             }
         };
 
@@ -77,12 +83,13 @@ export function AdminLinkSecuredControlsWithRoles() {
         return () => {
             clearInterval(interval);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
-        <div className='flex flex-col px-8 py-6'>
+        <div className='flex flex-col px-8'>
             {/* Page Header */}
-            <div className='mb-8'>
+            <div className='mb-6 mt-6'>
                 <div className='flex items-center justify-between mb-2'>
                     <div className='flex items-center gap-3'>
                         <IconLink className='w-8 h-8 text-primary-400' />
@@ -108,7 +115,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 {/* Source Grid - Secured Controls */}
                 <div className='flex flex-col flex-1 min-w-[400px] bg-white rounded-lg border border-gray-200 shadow-sm'>
                     {/* Section Header */}
-                    <div className='flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-200 bg-gradient-to-r from-blue-50/50 to-transparent'>
+                    <div className='flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-200 bg-linear-to-r from-blue-50/50 to-transparent'>
                         <div className='flex items-center gap-2'>
                             <div className='p-1.5 bg-blue-100 rounded-md'>
                                 <IconSecuredControls className='w-5 h-5 text-blue-700' />
@@ -127,6 +134,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                                     title=''
                                     isLastNoOfRows={false}
                                     instance={securedControlsInstance}
+                                    CustomControl={ExpandCollapseButton}
                                 />
                             </div>
                         </div>
@@ -152,7 +160,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                                 captionTemplate: multiLevelGroupCaptionTemplate
                             }}
                             hasCheckBoxSelection={true}
-                            height="calc(100vh - 375px)"
+                            height="calc(100vh - 355px)"
                             instance={securedControlsInstance}
                             minWidth='400px'
                             rowHeight={40}
@@ -165,7 +173,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 {/* Target Grid - Roles with Links */}
                 <div className='flex flex-col flex-1 min-w-[400px] bg-white rounded-lg border border-gray-200 shadow-sm'>
                     {/* Section Header */}
-                    <div className='flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-200 bg-gradient-to-r from-amber-50/50 to-transparent'>
+                    <div className='flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-200 bg-linear-to-r from-amber-50/50 to-transparent'>
                         <div className='flex items-center gap-2'>
                             <div className='p-1.5 bg-amber-100 rounded-md'>
                                 <IconRoles className='w-5 h-5 text-amber-700' />
@@ -187,7 +195,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                             className=''
                             childMapping="securedControls"
                             columns={getLinkColumns()}
-                            height="calc(100vh - 350px)"
+                            height="calc(100vh - 335px)"
                             instance={linksInstance}
                             minWidth='400px'
                             pageSize={11}
@@ -225,11 +233,44 @@ export function AdminLinkSecuredControlsWithRoles() {
         );
     }
 
+    function ExpandCollapseButton() {
+        return (
+            <button
+                onClick={handleToggleAllGroups}
+                className='w-8 h-8 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 flex items-center justify-center'
+                title={allGroupsExpanded ? 'Collapse all groups' : 'Expand all groups'}
+            >
+                {allGroupsExpanded ? (
+                    <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 20 20'>
+                        <path fillRule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clipRule='evenodd' />
+                    </svg>
+                ) : (
+                    <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 20 20'>
+                        <path fillRule='evenodd' d='M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z' clipRule='evenodd' />
+                    </svg>
+                )}
+            </button>
+        );
+    }
+
     function handleClearSelection() {
         const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
         if (gridRef?.current) {
             gridRef.current.clearSelection();
             setSelectedCount(0);
+        }
+    }
+
+    function handleToggleAllGroups() {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return;
+
+        if (allGroupsExpanded) {
+            gridRef.current.groupCollapseAll();
+            setAllGroupsExpanded(false);
+        } else {
+            gridRef.current.groupExpandAll();
+            setAllGroupsExpanded(true);
         }
     }
 
@@ -244,6 +285,98 @@ export function AdminLinkSecuredControlsWithRoles() {
                 dragHelper.appendChild(hint);
             }
         }, 10);
+    }
+
+    function getSelectedCountInGroup(field: string, groupKey: string): number {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return 0;
+
+        const selectedRecords = gridRef.current.getSelectedRecords() as any[];
+
+        const selectedInGroup = selectedRecords.filter((record: any) => {
+            if (field === 'controlType') {
+                return record.controlType === groupKey;
+            } else if (field === 'controlPrefix') {
+                return record.controlPrefix === groupKey;
+            }
+            return false;
+        });
+
+        return selectedInGroup.length;
+    }
+
+    function updateGroupCaptionBadges() {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return;
+
+        const gridElement = gridRef.current.element;
+        if (!gridElement) return;
+
+        // Find all group caption cells
+        const groupCaptionCells = gridElement.querySelectorAll('.e-groupcaption');
+
+        groupCaptionCells.forEach((cell: Element) => {
+            // Try to extract group information from the cell content
+            const cellContent = cell.textContent || '';
+
+            // Find the parent div container that has our custom template
+            const customContainer = cell.querySelector('.flex.items-center');
+            if (!customContainer) return;
+
+            // Determine field and key by looking at the content
+            let field = '';
+            let key = '';
+
+            if (cellContent.includes('Type:')) {
+                field = 'controlType';
+                // Extract the type name (after "Type:" and before the count)
+                const match = cellContent.match(/Type:\s*([^\d]+)/);
+                if (match) key = match[1].trim();
+            } else if (cellContent.includes('Prefix:')) {
+                field = 'controlPrefix';
+                // Extract the prefix name
+                const match = cellContent.match(/Prefix:\s*([^\d]+)/);
+                if (match) key = match[1].trim();
+            }
+
+            if (!field || !key) return;
+
+            // Calculate selected count for this group
+            const selectedCount = getSelectedCountInGroup(field, key);
+
+            // Find existing badge
+            let badge = customContainer.querySelector('.group-selected-badge') as HTMLElement;
+
+            if (selectedCount > 0) {
+                // Create or update badge
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'group-selected-badge inline-flex items-center px-2 py-0.5 rounded-full font-semibold text-xs border';
+
+                    // Add color based on field type
+                    if (field === 'controlType') {
+                        badge.classList.add('bg-purple-200', 'text-purple-900', 'border-purple-400');
+                    } else {
+                        badge.classList.add('bg-purple-200', 'text-purple-800', 'border-purple-400');
+                    }
+
+                    // Insert after the count badge
+                    const countBadges = customContainer.querySelectorAll('span[class*="rounded-full"]');
+                    if (countBadges.length > 0) {
+                        const lastBadge = countBadges[countBadges.length - 1];
+                        lastBadge.parentElement?.insertBefore(badge, lastBadge.nextSibling);
+                    }
+                }
+
+                if (badge) {
+                    badge.textContent = `${selectedCount} sel`;
+                    badge.style.display = 'inline-flex';
+                }
+            } else if (badge) {
+                // Hide badge when no selections
+                badge.style.display = 'none';
+            }
+        });
     }
 
     function handleSelectAllInGroup(groupProps: any) {
@@ -343,13 +476,13 @@ export function AdminLinkSecuredControlsWithRoles() {
         if (isTypeGroup) {
             // Level 1: Type grouping (Blue theme)
             return (
-                <div className='flex items-center gap-3 py-2 px-3 bg-gradient-to-r from-blue-50 to-blue-100/50'>
+                <div className='flex items-center gap-3 py-2 px-3 bg-linear-to-r from-blue-50 to-blue-100/50'>
                     <div className='flex items-center gap-2'>
                         <IconControls className='w-5 h-5 text-blue-600' />
                         <span className='text-gray-600 text-xs font-medium uppercase tracking-wide'>Type:</span>
                         <span className='font-bold text-blue-800 text-base'>{typeName}</span>
                     </div>
-                    <span className='inline-flex items-center px-2.5 py-0.5 bg-gradient-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
+                    <span className='inline-flex items-center px-2.5 py-0.5 bg-linear-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
                         {count} {count === 1 ? 'control' : 'controls'}
                     </span>
                     {count > 0 && (
@@ -369,7 +502,7 @@ export function AdminLinkSecuredControlsWithRoles() {
         } else {
             // Level 2: Prefix grouping (Green theme)
             return (
-                <div className='flex items-center gap-2 py-1.5 px-3 ml-6 bg-gradient-to-r from-green-50 to-green-100/50 border-l-2 border-green-500'>
+                <div className='flex items-center gap-2 py-1.5 px-3 ml-6 bg-linear-to-r from-green-50 to-green-100/50 border-l-2 border-green-500'>
                     <div className='flex items-center gap-2'>
                         <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
                             <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
@@ -542,9 +675,9 @@ export function AdminLinkSecuredControlsWithRoles() {
 
     function securedControlsAggrTemplate(props: any) {
         return (
-            <div className='flex items-center gap-2 px-2'>
-                <span className="font-semibold text-gray-800 text-xs">Total:</span>
-                <span className="inline-flex items-center justify-center min-w-[24px] ">
+            <div className='flex items-center gap-2 px-3'>
+                <span className="font-semibold text-gray-800 text-sm">Total Controls:</span>
+                <span className="inline-flex items-center justify-center min-w-8 px-2.5">
                     {props.Count}
                 </span>
             </div>

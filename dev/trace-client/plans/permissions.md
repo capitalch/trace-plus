@@ -31,5 +31,5 @@
     - new entries not allowed
 - Everything else allowed
 
-# Admin
+# Manager
 - Can do everything
