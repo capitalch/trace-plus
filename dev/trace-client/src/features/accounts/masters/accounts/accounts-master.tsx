@@ -20,10 +20,12 @@ import { IconMinusCircle } from "../../../../controls/icons/icon-minus-circle"
 import { AllTables } from "../../../../app/maps/database-tables-map"
 import { AccountsAddChildModal } from "./accounts-add-child-modal"
 import { AccountsEditModal } from "./accounts-edit-modal"
+import { useAccountsMasterPermissions } from "../../../../utils/permissions/permissions-hooks"
 
 export function AccountsMaster() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.accountsMaster
+    const { canCreate, canEdit, canDelete } = useAccountsMasterPermissions()
 
     const {
         buCode
@@ -73,11 +75,13 @@ export function AccountsMaster() {
 
     function actionHeaderTemplate() {
         return (<div className="flex items-center justify-start h-full">
-            <button onClick={handleActionHeaderOnClick}
-                className="flex items-center justify-start w-full font-semibold text-blue-500 border-none rounded-md hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-500 e-btn">
-                <IconPlus className="mr-4 w-4 h-4" />
-                ADD GROUP
-            </button>
+            {canCreate && (
+                <button onClick={handleActionHeaderOnClick}
+                    className="flex items-center justify-start w-full font-semibold text-blue-500 border-none rounded-md hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-500 e-btn">
+                    <IconPlus className="mr-4 w-4 h-4" />
+                    ADD GROUP
+                </button>
+            )}
         </div>)
         function handleActionHeaderOnClick() {
             Utils.showHideModalDialogA({
@@ -89,9 +93,9 @@ export function AccountsMaster() {
     }
 
     function actionTemplate(props: AccountsMasterType) {
-        const isDelButtonVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) // Not visible for primary and those having children
-        const isEditButtonVisible: boolean = !props.isPrimary
-        const isAddChildButtonVisible: boolean = ['L', 'N'].includes(props.accLeaf)
+        const isDelButtonVisible: boolean = !((props.isPrimary) || (props.hasChildRecords)) && canDelete // Not visible for primary and those having children
+        const isEditButtonVisible: boolean = !props.isPrimary && canEdit
+        const isAddChildButtonVisible: boolean = ['L', 'N'].includes(props.accLeaf) && canCreate
 
         return (<div className="flex items-center justify-start w-full" style={{ minWidth: '250px' }}>
 

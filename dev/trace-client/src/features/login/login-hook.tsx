@@ -470,6 +470,198 @@ const testUserSecuredControls = [
     "descr": "Can export Credit Notes to PDF/Excel"
   },
   {
+    "controlNo": 301,
+    "controlName": "masters.company-info.edit",
+    "controlType": "action",
+    "descr": "Can edit Company Info"
+  },
+  {
+    "controlNo": 311,
+    "controlName": "masters.general-settings.edit",
+    "controlType": "action",
+    "descr": "Can edit General Settings"
+  },
+  {
+    "controlNo": 321,
+    "controlName": "masters.accounts-master.create",
+    "controlType": "action",
+    "descr": "Can create new Accounts"
+  },
+  {
+    "controlNo": 322,
+    "controlName": "masters.accounts-master.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Accounts"
+  },
+  {
+    "controlNo": 323,
+    "controlName": "masters.accounts-master.delete",
+    "controlType": "action",
+    "descr": "Can delete Accounts"
+  },
+  {
+    "controlNo": 331,
+    "controlName": "masters.opening-balances.edit",
+    "controlType": "action",
+    "descr": "Can edit Opening Balances"
+  },
+  {
+    "controlNo": 341,
+    "controlName": "masters.branches.create",
+    "controlType": "action",
+    "descr": "Can create new Branches"
+  },
+  {
+    "controlNo": 342,
+    "controlName": "masters.branches.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Branches"
+  },
+  {
+    "controlNo": 343,
+    "controlName": "masters.branches.delete",
+    "controlType": "action",
+    "descr": "Can delete Branches"
+  },
+  {
+    "controlNo": 351,
+    "controlName": "masters.financial-years.create",
+    "controlType": "action",
+    "descr": "Can create new Financial Years"
+  },
+  {
+    "controlNo": 352,
+    "controlName": "masters.financial-years.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Financial Years"
+  },
+  {
+    "controlNo": 353,
+    "controlName": "masters.financial-years.delete",
+    "controlType": "action",
+    "descr": "Can delete Financial Years"
+  },
+  {
+    "controlNo": 401,
+    "controlName": "inventory.categories.create",
+    "controlType": "action",
+    "descr": "Can create new Categories"
+  },
+  {
+    "controlNo": 402,
+    "controlName": "inventory.categories.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Categories"
+  },
+  {
+    "controlNo": 403,
+    "controlName": "inventory.categories.delete",
+    "controlType": "action",
+    "descr": "Can delete Categories"
+  },
+  {
+    "controlNo": 411,
+    "controlName": "inventory.brands.create",
+    "controlType": "action",
+    "descr": "Can create new Brands"
+  },
+  {
+    "controlNo": 412,
+    "controlName": "inventory.brands.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Brands"
+  },
+  {
+    "controlNo": 413,
+    "controlName": "inventory.brands.delete",
+    "controlType": "action",
+    "descr": "Can delete Brands"
+  },
+  {
+    "controlNo": 421,
+    "controlName": "inventory.product-master.create",
+    "controlType": "action",
+    "descr": "Can create new Products"
+  },
+  {
+    "controlNo": 422,
+    "controlName": "inventory.product-master.edit",
+    "controlType": "action",
+    "descr": "Can edit existing Products"
+  },
+  {
+    "controlNo": 423,
+    "controlName": "inventory.product-master.delete",
+    "controlType": "action",
+    "descr": "Can delete Products"
+  },
+  {
+    "controlNo": 431,
+    "controlName": "inventory.opening-stock.create",
+    "controlType": "action",
+    "descr": "Can create Opening Stock entries"
+  },
+  {
+    "controlNo": 432,
+    "controlName": "inventory.opening-stock.edit",
+    "controlType": "action",
+    "descr": "Can edit Opening Stock entries"
+  },
+  {
+    "controlNo": 433,
+    "controlName": "inventory.opening-stock.delete",
+    "controlType": "action",
+    "descr": "Can delete Opening Stock entries"
+  },
+  {
+    "controlNo": 441,
+    "controlName": "inventory.stock-journal.view",
+    "controlType": "action",
+    "descr": "Can view Stock Journal records"
+  },
+  {
+    "controlNo": 442,
+    "controlName": "inventory.stock-journal.create",
+    "controlType": "action",
+    "descr": "Can create Stock Journal entries"
+  },
+  {
+    "controlNo": 443,
+    "controlName": "inventory.stock-journal.edit",
+    "controlType": "action",
+    "descr": "Can edit Stock Journal entries"
+  },
+  {
+    "controlNo": 444,
+    "controlName": "inventory.stock-journal.delete",
+    "controlType": "action",
+    "descr": "Can delete Stock Journal entries"
+  },
+  {
+    "controlNo": 451,
+    "controlName": "inventory.branch-transfer.view",
+    "controlType": "action",
+    "descr": "Can view Branch Transfer records"
+  },
+  {
+    "controlNo": 452,
+    "controlName": "inventory.branch-transfer.create",
+    "controlType": "action",
+    "descr": "Can create Branch Transfer entries"
+  },
+  {
+    "controlNo": 453,
+    "controlName": "inventory.branch-transfer.edit",
+    "controlType": "action",
+    "descr": "Can edit Branch Transfer entries"
+  },
+  {
+    "controlNo": 454,
+    "controlName": "inventory.branch-transfer.delete",
+    "controlType": "action",
+    "descr": "Can delete Branch Transfer entries"
+  },
+  {
     "controlNo": 1000,
     "controlName": "vouchers.menu.parent.view",
     "controlType": "menu",

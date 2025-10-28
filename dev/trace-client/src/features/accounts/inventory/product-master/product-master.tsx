@@ -15,11 +15,13 @@ import { openSlidingPane, setCompAccountsContainerMainTitle } from "../../../../
 import { NewEditProductType } from "./new-edit-product";
 import { useEffect } from "react";
 import { clearCache } from "../../../layouts/nav-bar/search-product-slice";
+import { useProductMasterPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function ProductMaster() {
     const instance = DataInstancesMap.productMaster;
     const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const { canCreate, canEdit, canDelete } = useProductMasterPermissions();
 
     useEffect(() => {
         const loadData = context?.CompSyncFusionGrid[instance]?.loadData
@@ -37,7 +39,7 @@ export function ProductMaster() {
         <CompAccountsContainer>
             <CompSyncFusionGridToolbar
                 className='mt-2 mr-6'
-                CustomControl={() => <NewProductButton />}
+                CustomControl={canCreate ? () => <NewProductButton /> : undefined}
                 minWidth="400px"
                 title=''
                 isPdfExport={true}
@@ -59,8 +61,8 @@ export function ProductMaster() {
                 height="calc(100vh - 293px)"
                 instance={instance}
                 minWidth="400px"
-                onDelete={handleOnDelete}
-                onEdit={handleOnEdit}
+                onDelete={canDelete ? handleOnDelete : undefined}
+                onEdit={canEdit ? handleOnEdit : undefined}
                 sqlId={SqlIdsMap.getAllProducts}
                 sqlArgs={{
                     isActive: null

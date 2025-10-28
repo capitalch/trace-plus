@@ -20,11 +20,13 @@ import { ProductsStockTransfer } from "./products-stock-transfer-button";
 import { useEffect, useState } from "react";
 import { showCompAppLoader } from "../../../../controls/redux-components/comp-slice";
 import { CompInstances } from "../../../../controls/redux-components/comp-instances";
+import { useOpeningStockPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function ProductsOpeningBalancesGrid() {
   const [apiData, setApiData] = useState([])
   const instance = DataInstancesMap.productsOpeningBalances;
   const dispatch: AppDispatchType = useDispatch();
+  const { canCreate, canEdit, canDelete } = useOpeningStockPermissions();
   const {
     branchId,
     buCode,
@@ -42,7 +44,7 @@ export function ProductsOpeningBalancesGrid() {
   return (
     <div className="border-2 border-amber-100 rounded-lg">
       <CompSyncFusionGridToolbar
-        CustomControl={() => <ProductsStockTransfer instance={instance} />}
+        CustomControl={canCreate ? () => <ProductsStockTransfer instance={instance} /> : undefined}
         className="mt-2 mr-6"
         minWidth="400px"
         title={"Products opening balances"}
@@ -64,8 +66,8 @@ export function ProductsOpeningBalancesGrid() {
         instance={instance}
         loadData={loadData}
         minWidth="400px"
-        onDelete={handleOnDelete}
-        onEdit={handleOnEdit}
+        onDelete={canDelete ? handleOnDelete : undefined}
+        onEdit={canEdit ? handleOnEdit : undefined}
       />
     </div>
   );

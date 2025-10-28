@@ -14,11 +14,13 @@ import { SlidingPaneEnum, SlidingPaneMap } from "../../../../controls/redux-comp
 import { NewBranchButton } from "./new-branch-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { useEffect } from "react";
+import { useBranchesPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function BranchMaster() {
     const instance = DataInstancesMap.branchMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const { canCreate, canEdit, canDelete } = useBranchesPermissions()
 
     useEffect(() => {
         const loadData = context?.CompSyncFusionGrid[instance]?.loadData
@@ -34,7 +36,7 @@ export function BranchMaster() {
 
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
-            CustomControl={() => <NewBranchButton />}
+            CustomControl={canCreate ? () => <NewBranchButton /> : undefined}
             minWidth="400px"
             title=''
             isPdfExport={true}
@@ -56,8 +58,8 @@ export function BranchMaster() {
             height="calc(100vh - 240px)"
             instance={instance}
             minWidth="400px"
-            onDelete={handleOnDelete}
-            onEdit={handleOnEdit}
+            onDelete={canDelete ? handleOnDelete : undefined}
+            onEdit={canEdit ? handleOnEdit : undefined}
             sqlId={SqlIdsMap.getAllBranches}
             searchFields={['branchName', 'branchCode', 'remarks', 'addressSearch']}
         />

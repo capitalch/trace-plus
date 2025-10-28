@@ -297,7 +297,42 @@ class SqlSecurity:
         SELECT datname FROM pg_catalog.pg_database where datname = %(datname)s
     """
 
-    get_roles_securedControls_link = """
+    get_roles_securedControls_link ="""
+        WITH cte1 AS (
+            SELECT
+                r.id AS "roleId",
+                "roleName" AS "name",
+                r."descr",
+                json_agg(
+                    json_build_object(
+                        'id', x.id,
+                        'name', s."controlName",
+                        'descr', s."descr",
+                        'roleId', r.id,
+                        'securedControlId', s.id,
+                        'controlPrefix', split_part(s."controlName", '.', 1)
+                    )
+                ) FILTER (WHERE s."controlName" IS NOT NULL) AS "securedControls"
+            FROM "RoleM" r
+                LEFT JOIN "RoleSecuredControlX" x ON r.id = x."roleId"
+                LEFT JOIN "SecuredControlM" s ON s.id = x."securedControlId"
+            WHERE r."clientId" IS NULL
+            GROUP BY r.id, "roleName"
+            ORDER BY "roleName"
+)
+
+SELECT json_agg(
+    json_build_object(
+        'name', "name",
+        'descr', "descr",
+        'roleId', "roleId",
+        'securedControls', COALESCE("securedControls", null::json)
+    )
+) AS "jsonResult"
+FROM cte1
+    """
+
+    get_roles_securedControls_link1 = """
         with cte1 as (
             select r.id as "roleId", "roleName" as "name", r."descr"
                 , json_agg(

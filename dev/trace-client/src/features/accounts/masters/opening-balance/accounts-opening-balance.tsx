@@ -16,10 +16,12 @@ import { AllTables} from "../../../../app/maps/database-tables-map"
 import { AccountsOpeningBalanceSaveButton } from "./accounts-opening-balance-save-button"
 import { NumericEditTemplate } from "../../../../controls/components/numeric-edit-template"
 import { NumberFormatValues } from "react-number-format"
+import { useOpeningBalancesPermissions } from "../../../../utils/permissions/permissions-hooks"
 
 export function AccountsOpeningBalance() {
     const dispatch: AppDispatchType = useDispatch()
     const [, setRefresh] = useState({})
+    const { canEdit } = useOpeningBalancesPermissions()
 
     const instance: string = DataInstancesMap.accountsOpeningBalance
     const {
@@ -49,7 +51,7 @@ export function AccountsOpeningBalance() {
     }, [dispatch]);
 
     return (<CompAccountsContainer>
-        <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={() => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} />}
+        <CompSyncFusionTreeGridToolbar className="mt-2" CustomControl={canEdit ? () => <AccountsOpeningBalanceSaveButton onSave={handleOnSubmit} /> : undefined}
             title=''
             isLastNoOfRows={false}
             instance={instance}
@@ -68,7 +70,7 @@ export function AccountsOpeningBalance() {
             columns={getColumns()}
             dataSource={meta.current.rows}
             editSettings={{
-                allowEditing: true,
+                allowEditing: canEdit,
                 mode: 'Cell',
             }}
             height="calc(100vh - 227px)"

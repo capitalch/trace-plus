@@ -18,6 +18,7 @@ import { AppDispatchType } from "../../../../app/store";
 import { changeAccSettings } from "../../accounts-slice";
 import Select from "react-select";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { useCompanyInfoPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function CompanyInfo() {
     const dispatch: AppDispatchType = useDispatch()
@@ -25,6 +26,7 @@ export function CompanyInfo() {
     const instance: string = DataInstancesMap.companyInfo
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
+    const { canEdit } = useCompanyInfoPermissions()
 
     const {
         checkAddress
@@ -260,9 +262,11 @@ export function CompanyInfo() {
                 </label>
 
                 {/* Submit */}
-                <div className="flex justify-center mt-7">
-                    <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
-                </div>
+                {canEdit && (
+                    <div className="flex justify-center mt-7">
+                        <WidgetButtonSubmitFullWidth label="Submit" className="max-w-96" disabled={isSubmitting || (!_.isEmpty(errors))} />
+                    </div>
+                )}
             </form>
         </CompAccountsContainer>
     )

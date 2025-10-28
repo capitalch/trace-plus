@@ -22,10 +22,12 @@ import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { AppDispatchType } from "../../../../app/store"
 import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice"
+import { useCategoriesPermissions } from "../../../../utils/permissions/permissions-hooks"
 
 export function ProductCategories() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.productCategories
+    const { canCreate, canEdit, canDelete } = useCategoriesPermissions()
     const {
         buCode
         , context
@@ -76,11 +78,13 @@ export function ProductCategories() {
 
     function actionHeaderTemplate() {
         return (<div className="flex items-center justify-start h-full">
-            <button onClick={handleActionHeaderOnClick}
-                className="flex items-center justify-start w-full font-semibold text-blue-500 border-none rounded-md hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-500 e-btn">
-                <IconPlus className="mr-2 w-4 h-4" />
-                ADD ROOT CATEGORY
-            </button>
+            {canCreate && (
+                <button onClick={handleActionHeaderOnClick}
+                    className="flex items-center justify-start w-full font-semibold text-blue-500 border-none rounded-md hover:bg-blue-50 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-500 e-btn">
+                    <IconPlus className="mr-2 w-4 h-4" />
+                    ADD ROOT CATEGORY
+                </button>
+            )}
         </div>)
         function handleActionHeaderOnClick() {
             Utils.showHideModalDialogA({
@@ -92,8 +96,9 @@ export function ProductCategories() {
     }
 
     function actionTemplate(props: any) {
-        const isAddChildButtonVisible: boolean = !props.isLeaf
-        const isDelButtonVisible = _.isEmpty(props.children) && (!props.isUsed)
+        const isAddChildButtonVisible: boolean = !props.isLeaf && canCreate
+        const isEditButtonVisible: boolean = canEdit
+        const isDelButtonVisible = _.isEmpty(props.children) && (!props.isUsed) && canDelete
 
         return (<div className="flex items-center justify-start h-full">
 
@@ -104,19 +109,19 @@ export function ProductCategories() {
             </button>}
 
             {/* Edit self */}
-            {<button onClick={handeleOnClickEditSelf} className="flex items-center justify-center ml-4 font-medium text-green-700 text-xs">
+            {isEditButtonVisible && <button onClick={handeleOnClickEditSelf} className="flex items-center justify-center ml-4 font-medium text-green-700 text-xs">
                 <IconEdit1 className="mr-1.5 w-3 h-3" />
                 EDIT
             </button>}
 
             {/* Change parent */}
-            {<button onClick={handeleOnClickChangeParent} className="flex items-center justify-center ml-4 font-medium text-orange-500 text-xs">
+            {canEdit && <button onClick={handeleOnClickChangeParent} className="flex items-center justify-center ml-4 font-medium text-orange-500 text-xs">
                 <IconChangeArrow className="mr-1.5 w-3 h-3" />
                 CHANGE PARENT
             </button>}
 
             {/* Tag */}
-            {<button onClick={handleOnClickTag} className="flex items-center justify-center ml-4 font-medium text-blue-500 text-xs">
+            {canEdit && <button onClick={handleOnClickTag} className="flex items-center justify-center ml-4 font-medium text-blue-500 text-xs">
                 <IconTag className="mr-1.5 w-3 h-3" />
                 TAG
             </button>}

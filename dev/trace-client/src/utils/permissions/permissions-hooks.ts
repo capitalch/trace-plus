@@ -276,3 +276,259 @@ export function useCreditNotesPermissions() {
 
   return permissions
 }
+
+// ============================================================================
+// Masters Module Permission Hooks
+// ============================================================================
+
+/**
+ * Hook to check all permissions for Company Info
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canEdit } = useCompanyInfoPermissions()
+ *
+ * if (canEdit) {
+ *   // Show Edit button
+ * }
+ */
+export function useCompanyInfoPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canEdit: 'masters.company-info.edit'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for General Settings
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canEdit } = useGeneralSettingsPermissions()
+ *
+ * if (canEdit) {
+ *   // Show Edit button
+ * }
+ */
+export function useGeneralSettingsPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canEdit: 'masters.general-settings.edit'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Accounts Master
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canCreate, canEdit, canDelete } = useAccountsMasterPermissions()
+ *
+ * if (canCreate) {
+ *   // Show Create button
+ * }
+ */
+export function useAccountsMasterPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canCreate: 'masters.accounts-master.create',
+    canEdit: 'masters.accounts-master.edit',
+    canDelete: 'masters.accounts-master.delete'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Opening Balances
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canEdit } = useOpeningBalancesPermissions()
+ *
+ * if (canEdit) {
+ *   // Show Edit/Save button
+ * }
+ */
+export function useOpeningBalancesPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canEdit: 'masters.opening-balances.edit'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Branches
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canCreate, canEdit, canDelete } = useBranchesPermissions()
+ *
+ * if (canCreate) {
+ *   // Show Create button
+ * }
+ */
+export function useBranchesPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canCreate: 'masters.branches.create',
+    canEdit: 'masters.branches.edit',
+    canDelete: 'masters.branches.delete'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Financial Years
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canCreate, canEdit, canDelete } = useFinancialYearsPermissions()
+ *
+ * if (canCreate) {
+ *   // Show Create button
+ * }
+ */
+export function useFinancialYearsPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canCreate: 'masters.financial-years.create',
+    canEdit: 'masters.financial-years.edit',
+    canDelete: 'masters.financial-years.delete'
+  })
+  return permissions
+}
+
+// ============================================================================
+// Inventory Module Permission Hooks
+// ============================================================================
+
+/**
+ * Hook to check all permissions for Categories
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canCreate, canEdit, canDelete } = useCategoriesPermissions()
+ *
+ * if (canCreate) {
+ *   // Show Create button
+ * }
+ */
+export function useCategoriesPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canCreate: 'inventory.categories.create',
+    canEdit: 'inventory.categories.edit',
+    canDelete: 'inventory.categories.delete'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Brands
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canCreate, canEdit, canDelete } = useBrandsPermissions()
+ *
+ * if (canCreate) {
+ *   // Show Create button
+ * }
+ */
+export function useBrandsPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canCreate: 'inventory.brands.create',
+    canEdit: 'inventory.brands.edit',
+    canDelete: 'inventory.brands.delete'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Product Master
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canCreate, canEdit, canDelete } = useProductMasterPermissions()
+ *
+ * if (canCreate) {
+ *   // Show Create button
+ * }
+ */
+export function useProductMasterPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canCreate: 'inventory.product-master.create',
+    canEdit: 'inventory.product-master.edit',
+    canDelete: 'inventory.product-master.delete'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Opening Stock
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canCreate, canEdit, canDelete } = useOpeningStockPermissions()
+ *
+ * if (canCreate) {
+ *   // Show Create button
+ * }
+ */
+export function useOpeningStockPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canCreate: 'inventory.opening-stock.create',
+    canEdit: 'inventory.opening-stock.edit',
+    canDelete: 'inventory.opening-stock.delete'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Stock Journal
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canView, canCreate, canEdit, canDelete } = useStockJournalPermissions()
+ *
+ * if (canView) {
+ *   // Show view access
+ * }
+ */
+export function useStockJournalPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canView: 'inventory.stock-journal.view',
+    canCreate: 'inventory.stock-journal.create',
+    canEdit: 'inventory.stock-journal.edit',
+    canDelete: 'inventory.stock-journal.delete'
+  })
+  return permissions
+}
+
+/**
+ * Hook to check all permissions for Branch Transfer
+ *
+ * @returns Object with permission flags for all actions
+ *
+ * @example
+ * const { canView, canCreate, canEdit, canDelete } = useBranchTransferPermissions()
+ *
+ * if (canView) {
+ *   // Show view access
+ * }
+ */
+export function useBranchTransferPermissions() {
+  const permissions = useUserHasMultiplePermissions({
+    canView: 'inventory.branch-transfer.view',
+    canCreate: 'inventory.branch-transfer.create',
+    canEdit: 'inventory.branch-transfer.edit',
+    canDelete: 'inventory.branch-transfer.delete'
+  })
+  return permissions
+}

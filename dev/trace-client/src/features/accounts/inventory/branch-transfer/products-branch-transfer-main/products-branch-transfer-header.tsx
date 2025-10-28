@@ -16,9 +16,11 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { BranchTransferType } from "./products-branch-transfer-main";
 import _ from "lodash";
 import { Utils } from "../../../../../utils/utils";
+import { useBranchTransferPermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 export function ProductsBranchTransferHeader() {
   const { branchId } = useUtilsInfo();
+  const { canCreate, canEdit } = useBranchTransferPermissions();
   const allBranches: BranchType[] = useSelector(allBranchesSelectorFn) || [];
   const availableDestBranches = allBranches.filter(
     (branch: BranchType) => branch.branchId !== branchId
@@ -114,13 +116,15 @@ export function ProductsBranchTransferHeader() {
           Reset
         </button>
         {/* Submit */}
-        <button
-          type="submit"
-          disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
-          className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
-        >
-          <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
-        </button>
+        {(canCreate || canEdit) && (
+          <button
+            type="submit"
+            disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
+            className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
+          >
+            <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
+          </button>
+        )}
       </div>
     </div>
   );

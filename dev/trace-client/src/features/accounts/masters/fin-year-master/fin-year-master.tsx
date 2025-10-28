@@ -13,12 +13,14 @@ import { changeAccSettings } from "../../accounts-slice";
 import { NewEditFinYear } from "./new-edit-fin-year";
 import { NewFinYearButton } from "./new-fin-year-button";
 import { useEffect } from "react";
+import { useFinancialYearsPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function FinYearMaster() {
     const instance = DataInstancesMap.finYearMaster; // Grid instance for Business Units
     const dispatch: AppDispatchType = useDispatch()
     const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const dateFormat: string = Utils.getCurrentDateFormat()
+    const { canCreate, canEdit, canDelete } = useFinancialYearsPermissions()
 
     useEffect(() => {
         const loadData = context?.CompSyncFusionGrid[instance]?.loadData
@@ -34,7 +36,7 @@ export function FinYearMaster() {
 
     return (<CompAccountsContainer >
         <CompSyncFusionGridToolbar className='mt-2 mr-6'
-            CustomControl={() => <NewFinYearButton />}
+            CustomControl={canCreate ? () => <NewFinYearButton /> : undefined}
             minWidth="1000px"
             title=''
             isPdfExport={false}
@@ -55,8 +57,8 @@ export function FinYearMaster() {
             height="calc(100vh - 238px)"
             instance={instance}
             minWidth="400px"
-            onDelete={handleOnDelete}
-            onEdit={handleOnEdit}
+            onDelete={canDelete ? handleOnDelete : undefined}
+            onEdit={canEdit ? handleOnEdit : undefined}
             sqlId={SqlIdsMap.getFinYears}
         />
     </CompAccountsContainer>)

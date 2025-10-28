@@ -11,9 +11,11 @@ import _ from "lodash";
 import { IconView } from "../../../../../controls/icons/icon-view";
 import { Utils } from "../../../../../utils/utils";
 import { StockJournalView } from "../stock-journal-view";
+import { useStockJournalPermissions } from "../../../../../utils/permissions/permissions-hooks";
 
 export function StockJournalHeader({ instance }: { instance: string }) {
   const { checkAllowedDate } = useValidators();
+  const { canView, canCreate, canEdit } = useStockJournalPermissions();
   const {
     watch,
     register,
@@ -84,22 +86,26 @@ export function StockJournalHeader({ instance }: { instance: string }) {
         </button>
 
         {/* View */}
-        <button
-          type="button"
-          onClick={handleViewStockJournal}
-          className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-hidden focus:ring-4 focus:ring-blue-300 disabled:bg-blue-200 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700"
-        >
-          <IconView className="mr-2 w-6 h-6 text-white" /> View
-        </button>
+        {canView && (
+          <button
+            type="button"
+            onClick={handleViewStockJournal}
+            className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-hidden focus:ring-4 focus:ring-blue-300 disabled:bg-blue-200 dark:bg-blue-600 dark:focus:ring-blue-800 dark:hover:bg-blue-700"
+          >
+            <IconView className="mr-2 w-6 h-6 text-white" /> View
+          </button>
+        )}
 
         {/* Submit */}
-        <button
-          type="submit"
-          disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
-          className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
-        >
-          <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
-        </button>
+        {(canCreate || canEdit) && (
+          <button
+            type="submit"
+            disabled={isSubmitting || !_.isEmpty(errors) || !isDirty}
+            className="inline-flex items-center px-5 py-2 font-medium text-center text-white bg-teal-500 rounded-lg hover:bg-teal-800 focus:outline-hidden focus:ring-4 focus:ring-teal-300 disabled:bg-teal-200 dark:bg-teal-600 dark:focus:ring-teal-800 dark:hover:bg-teal-700"
+          >
+            <IconSubmit className="mr-2 w-6 h-6 text-white" /> Submit
+          </button>
+        )}
       </div>
     </div>
   );

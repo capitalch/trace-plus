@@ -1,141 +1,185 @@
-# Plan: Implement Access Controls from access-controls.md
+# Plan: Add Fields to Right Side Tree Grid Similar to Left Side Grid
 
-## Overview
-Add new access control entries to `access-controls.json` for various Masters and Inventory operations as specified in `access-controls.md`.
+## Current State Analysis
 
-## Current Structure Analysis
+### Left Side Grid (Secured Controls - CompSyncFusionGrid)
+Located at: `src/features/security/super-admin/link-unlink-secured-controls/super-admin-link-secured-controls-with-roles.tsx:138-164`
 
-The `access-controls.json` file follows this pattern:
-- **controlNo**: Unique number identifier
-- **controlName**: Dot-notation name (e.g., `masters.company-info.edit`)
-- **controlType**: Either `"action"` or `"menu"`
-- **descr**: Human-readable description
-- **menuType** (for menu items): `"accounts"`
-- **itemType** (for menu items): `"parent"` or `"child"`
-- **menuId** (for menu items): String ID
+**Current Columns:**
+- `controlName` - Control name (width: 180)
+- `controlType` - Type (width: 60)
+- `descr` - Description (flexible width)
+- `controlPrefix` - Prefix (width: 60)
 
-### Current Control Number Ranges:
-- 110-169: Voucher actions (Payment, Receipt, Contra, Journal)
-- 201-256: Purchase/Sales actions
-- 1000-1099: Menu items (vouchers parent)
-- 1100-1199: Menu items (all vouchers child)
-- 1010-1099: Menu items (purchase-sales parent)
-- 1110-1199: Menu items (purchase-sales children)
-- 1020-1099: Menu items (masters parent)
-- 1200-1299: Menu items (masters children)
-- 1300-1369: Menu items (final accounts children)
-- 1350-1369: Menu items (options children)
-- 1370-1379: Menu items (reports children)
-- 1380-1399: Menu items (inventory children)
+**Features:**
+- Grouping by controlType and controlPrefix
+- Drag and drop capability
+- Checkbox selection
+- Aggregates (count)
+- Multi-level group captions with badges
 
-## Required Additions
+### Right Side Tree Grid (Roles & Linked Controls - CompSyncfusionTreeGrid)
+Located at: `src/features/security/super-admin/link-unlink-secured-controls/super-admin-link-secured-controls-with-roles.tsx:187-202`
 
-### 1. Masters - Action Controls
+**Current Columns:**
+- `name` - Role/Secured control name (with custom template)
+- `descr` - Description (with link/unlink buttons)
 
-#### Company Info (Control No: 301-306)
-- `301`: `masters.company-info.edit` - Can edit Company Info
+**Structure:**
+- Level 0: Roles
+- Level 1: Secured controls linked to roles
+- Uses `childMapping="securedControls"` for tree structure
+- Data source: `SqlIdsMap.getRolesSecuredControlsLink`
 
-#### General Settings (Control No: 311-316)
-- `311`: `masters.general-settings.edit` - Can edit General Settings
+## Feasibility Assessment
 
-#### Accounts Master (Control No: 321-326)
-- `321`: `masters.accounts-master.create` - Can create new Accounts
-- `322`: `masters.accounts-master.edit` - Can edit existing Accounts
-- `323`: `masters.accounts-master.delete` - Can delete Accounts
+### ✅ YES - It is possible to add fields to the right side tree grid
 
-#### Opening Balances (Control No: 331-336)
-- `331`: `masters.opening-balances.edit` - Can edit Opening Balances
+**Reasons:**
+1. The right side tree grid displays secured controls at level 1, which are the same entity type as the left grid
+2. SyncFusion TreeGrid supports multiple columns just like the regular Grid
+3. The data source can include all necessary fields (controlType, controlPrefix, etc.)
+4. Column templates can be used to differentiate display based on tree level
 
-#### Branches (Control No: 341-346)
-- `341`: `masters.branches.create` - Can create new Branches
-- `342`: `masters.branches.edit` - Can edit existing Branches
-- `343`: `masters.branches.delete` - Can delete Branches
+## Implementation Plan
 
-#### Financial Years (Control No: 351-356)
-- `351`: `masters.financial-years.create` - Can create new Financial Years
-- `352`: `masters.financial-years.edit` - Can edit existing Financial Years
-- `353`: `masters.financial-years.delete` - Can delete Financial Years
+### Step 1: Verify Data Source
+**File:** Check SQL query configuration
+- Location: Verify `SqlIdsMap.getRolesSecuredControlsLink` returns all required fields
+- Required fields for secured controls (level 1):
+  - `controlName` (already has as `name`)
+  - `controlType`
+  - `controlPrefix`
+  - `descr` (already present)
 
-### 2. Inventory - Action Controls
+### Step 2: Update Column Definitions
+**File:** `super-admin-link-secured-controls-with-roles.tsx:683-698`
+**Function:** `getLinkColumns()`
 
-#### Categories (Control No: 401-406)
-- `401`: `inventory.categories.create` - Can create new Categories
-- `402`: `inventory.categories.edit` - Can edit existing Categories
-- `403`: `inventory.categories.delete` - Can delete Categories
-
-#### Brands (Control No: 411-416)
-- `411`: `inventory.brands.create` - Can create new Brands
-- `412`: `inventory.brands.edit` - Can edit existing Brands
-- `413`: `inventory.brands.delete` - Can delete Brands
-
-#### Product Master (Control No: 421-426)
-- `421`: `inventory.product-master.create` - Can create new Products
-- `422`: `inventory.product-master.edit` - Can edit existing Products
-- `423`: `inventory.product-master.delete` - Can delete Products
-
-#### Opening Stock (Control No: 431-436)
-- `431`: `inventory.opening-stock.create` - Can create Opening Stock entries
-- `432`: `inventory.opening-stock.edit` - Can edit Opening Stock entries
-- `433`: `inventory.opening-stock.delete` - Can delete Opening Stock entries
-
-#### Stock Journal (Control No: 441-446)
-- `441`: `inventory.stock-journal.view` - Can view Stock Journal records
-- `442`: `inventory.stock-journal.create` - Can create Stock Journal entries
-- `443`: `inventory.stock-journal.edit` - Can edit Stock Journal entries
-- `444`: `inventory.stock-journal.delete` - Can delete Stock Journal entries
-
-#### Branch Transfer (Control No: 451-456)
-- `451`: `inventory.branch-transfer.view` - Can view Branch Transfer records
-- `452`: `inventory.branch-transfer.create` - Can create Branch Transfer entries
-- `453`: `inventory.branch-transfer.edit` - Can edit Branch Transfer entries
-- `454`: `inventory.branch-transfer.delete` - Can delete Branch Transfer entries
-
-## Implementation Steps
-
-### Step 1: Add Masters Action Controls (301-353)
-Add 13 new control entries for Masters section actions:
-- Company Info: edit
-- General Settings: edit
-- Accounts Master: create, edit, delete
-- Opening Balances: edit
-- Branches: create, edit, delete
-- Financial Years: create, edit, delete
-
-### Step 2: Add Inventory Action Controls (401-454)
-Add 18 new control entries for Inventory section actions:
-- Categories: create, edit, delete
-- Brands: create, edit, delete
-- Product Master: create, edit, delete
-- Opening Stock: create, edit, delete
-- Stock Journal: view, create, edit, delete
-- Branch Transfer: view, create, edit, delete
-
-### Step 3: Update Corresponding React Components
-For each action control added, ensure the corresponding React component checks for permission using the control name. This will be done in a subsequent implementation phase.
-
-## JSON Structure Template
-
-```json
+Add new columns to the tree grid:
+```typescript
 {
-  "controlNo": <number>,
-  "controlName": "<module>.<feature>.<action>",
-  "controlType": "action",
-  "descr": "Can <action> <feature>"
+    field: 'controlType',
+    headerText: 'Type',
+    type: 'string',
+    width: 80,
+    template: controlTypeColumnTemplate  // Show only for level 1
+}
+{
+    field: 'controlPrefix',
+    headerText: 'Prefix',
+    type: 'string',
+    width: 100,
+    template: controlPrefixColumnTemplate  // Show only for level 1
 }
 ```
 
-## Notes
+### Step 3: Create Column Templates
+**File:** `super-admin-link-secured-controls-with-roles.tsx`
+**New Functions:** After line 726
 
-- All new controls are of type `"action"` (not `"menu"`)
-- Menu controls already exist for all these features (1200-1386)
-- Control numbers follow sequential pattern
-- Descriptions follow the pattern: "Can {action} {feature}"
-- After adding to JSON, these controls need to be:
-  1. Synced to database via super-admin interface
-  2. Checked in React components using permission hooks
-  3. Linked to appropriate roles
+Create template functions that render content conditionally based on tree level:
 
-## Total Additions
-- **Masters**: 13 action controls
-- **Inventory**: 18 action controls
-- **Grand Total**: 31 new access control entries
+**Template 1: `controlTypeColumnTemplate(props)`**
+- If `props.level === 1` (secured control): Display `props.controlType`
+- If `props.level === 0` (role): Display empty or placeholder
+
+**Template 2: `controlPrefixColumnTemplate(props)`**
+- If `props.level === 1` (secured control): Display `props.controlPrefix`
+- If `props.level === 0` (role): Display empty or placeholder
+
+### Step 4: Update Existing Templates (Optional Enhancement)
+**File:** `super-admin-link-secured-controls-with-roles.tsx:700-710, 718-726`
+
+Consider adjusting existing templates:
+- `nameColumnTemplate` - May need width adjustment
+- `descrColumnTemplate` - May need to account for additional columns
+
+### Step 5: Adjust Grid Width/Layout
+**File:** `super-admin-link-secured-controls-with-roles.tsx:187-202`
+
+Update CompSyncfusionTreeGrid props if needed:
+- Adjust `minWidth` if total column width increases
+- Consider adding horizontal scrolling if too many columns
+
+### Step 6: Testing
+Test the following scenarios:
+1. Roles (level 0) display correctly without control-specific fields
+2. Secured controls (level 1) display all fields properly
+3. Tree expansion/collapse works correctly
+4. Drag and drop functionality still works
+5. Link/unlink actions still function
+6. Layout responsive on different screen sizes
+7. Unlink all functionality works
+
+## Potential Challenges
+
+### Challenge 1: Data Availability
+**Issue:** SQL query may not return `controlType` and `controlPrefix` for child records
+**Solution:**
+- Verify/modify the SQL query at `SqlIdsMap.getRolesSecuredControlsLink`
+- Ensure JOIN includes secured controls table with all necessary fields
+
+### Challenge 2: Visual Clutter
+**Issue:** Too many columns may make the interface crowded
+**Solution:**
+- Use appropriate column widths
+- Consider making some columns optional/hideable
+- Use icons or abbreviations for type/prefix
+- Consider color coding instead of separate columns
+
+### Challenge 3: Role Rows (Level 0)
+**Issue:** Role rows don't have control-specific fields
+**Solution:**
+- Template functions should check `props.level` and render empty/null for level 0
+- Alternatively, show aggregate info (e.g., count by type)
+
+### Challenge 4: Responsive Design
+**Issue:** Additional columns may break layout on smaller screens
+**Solution:**
+- Test on various screen sizes
+- Consider using SyncFusion's column hiding feature for mobile
+- Adjust `min-w-[400px]` in the parent div if needed
+
+## Alternative Approaches
+
+### Option A: Badge/Chip Display (Recommended)
+Instead of separate columns, display type and prefix as badges within the name column:
+```
+[Icon] Control Name [Type Badge] [Prefix Badge]
+```
+**Pros:** Cleaner UI, less horizontal space
+**Cons:** Slightly more complex template
+
+### Option B: Tooltip on Hover
+Show additional fields in a tooltip when hovering over secured control names
+**Pros:** Minimal UI changes, cleaner interface
+**Cons:** Less discoverable, requires user interaction
+
+### Option C: Expandable Details Row
+Add an expand icon to show additional details below each secured control
+**Pros:** Very flexible, can show many fields
+**Cons:** More complex implementation, requires extra clicks
+
+## Recommendation
+
+**Proceed with Step 2-3** (Adding columns with templates) BUT consider **Option A** (Badge display) for a better user experience:
+
+1. Keep the tree structure and existing columns
+2. Modify the `nameColumnTemplate` to include badges for `controlType` and `controlPrefix` when `level === 1`
+3. Use color-coded badges similar to the left grid's group captions
+4. This maintains consistency with the existing design language
+
+## Estimated Complexity
+- **SQL Query Update:** Low (if needed)
+- **Column Addition:** Low-Medium
+- **Template Creation:** Low
+- **Testing:** Medium
+- **Overall:** Medium complexity, high feasibility
+
+## Success Criteria
+- Right side tree grid displays controlType and controlPrefix for secured controls (level 1)
+- Roles (level 0) display appropriately without these fields
+- All existing functionality (drag-drop, link/unlink) continues to work
+- UI remains clean and readable
+- Responsive design maintained

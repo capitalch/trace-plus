@@ -15,11 +15,13 @@ import { NewBrandButton } from "./new-brand-button";
 import { changeAccSettings } from "../../accounts-slice";
 import { Messages } from "../../../../utils/messages";
 import { useEffect } from "react";
+import { useBrandsPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function BrandMaster() {
     const instance = DataInstancesMap.brandMaster;
     const dispatch: AppDispatchType = useDispatch();
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
+    const { canCreate, canEdit, canDelete } = useBrandsPermissions();
 
     useEffect(() => {
         const loadData = context?.CompSyncFusionGrid[instance]?.loadData;
@@ -37,7 +39,7 @@ export function BrandMaster() {
         <CompAccountsContainer>
             <CompSyncFusionGridToolbar
                 className='mt-2 mr-6'
-                CustomControl={() => <NewBrandButton />}
+                CustomControl={canCreate ? () => <NewBrandButton /> : undefined}
                 minWidth="600px"
                 title=''
                 isPdfExport={true}
@@ -59,8 +61,8 @@ export function BrandMaster() {
                 instance={instance}
                 // isLoadOnInit={false}
                 minWidth="600px"
-                onDelete={handleOnDelete}
-                onEdit={handleOnEdit}
+                onDelete={canDelete ? handleOnDelete : undefined}
+                onEdit={canEdit ? handleOnEdit : undefined}
                 sqlId={SqlIdsMap.getAllBrands}
             />
         </CompAccountsContainer>

@@ -17,12 +17,14 @@ import Select from "react-select";
 import { NumericFormat } from 'react-number-format';
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useEffect } from "react";
+import { useGeneralSettingsPermissions } from "../../../utils/permissions/permissions-hooks";
 
 export function GeneralSettings() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalSettings
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const generalSettings: GeneralSettingsType = Utils.getGeneralSettings() || {}
+    const { canEdit } = useGeneralSettingsPermissions()
 
     const {
         register,
@@ -144,7 +146,9 @@ export function GeneralSettings() {
                 />
             </label>
 
-            <WidgetButtonSubmitFullWidth label="Submit" className="mt-4 max-w-96" disabled={(isSubmitting) || (!_.isEmpty(errors))} />
+            {canEdit && (
+                <WidgetButtonSubmitFullWidth label="Submit" className="mt-4 max-w-96" disabled={isSubmitting || (!_.isEmpty(errors))} />
+            )}
         </form>
     </CompAccountsContainer>)
 
