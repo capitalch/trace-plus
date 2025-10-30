@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { JSX, useContext, useEffect, useState } from "react";
 import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
@@ -28,7 +28,9 @@ export function AdminLinkSecuredControlsWithRoles() {
     const linksInstance: string = DataInstancesMap.securedControlsLinkRoles
     const context: GlobalContextType = useContext(GlobalContext);
     const [selectedCount, setSelectedCount] = useState<number>(0);
+    const [checkboxUpdateTrigger, setCheckboxUpdateTrigger] = useState<number>(0);
     const [allGroupsExpanded, setAllGroupsExpanded] = useState<boolean>(false);
+    const [allTreeGroupsExpanded, setAllTreeGroupsExpanded] = useState<boolean>(false);
 
     useEffect(() => {
         const loadDataLinks = context.CompSyncFusionTreeGrid[linksInstance].loadData
@@ -61,24 +63,39 @@ export function AdminLinkSecuredControlsWithRoles() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // Track selection changes
+    // Track selection changes with smart polling and guards to prevent infinite loops
     useEffect(() => {
+        let lastSelectionCount = 0;
+        let isUpdating = false;
+
         const updateSelectionCount = () => {
+            // Re-entrancy guard: prevent concurrent updates
+            if (isUpdating) return;
+
             const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
             if (gridRef?.current) {
                 const selected = gridRef.current.getSelectedRecords();
-                setSelectedCount(selected.length);
+                const currentCount = selected.length;
 
-                // Update group caption badges via DOM manipulation
-                updateGroupCaptionBadges();
+                // Only update if count actually changed (change detection)
+                if (currentCount !== lastSelectionCount) {
+                    isUpdating = true;
+                    lastSelectionCount = currentCount;
+
+                    setSelectedCount(currentCount);
+                    setCheckboxUpdateTrigger(Date.now());
+                    updateGroupCaptionBadges();
+
+                    // Reset flag after state updates complete (50ms cooldown)
+                    setTimeout(() => {
+                        isUpdating = false;
+                    }, 50);
+                }
             }
         };
 
-        // Update immediately
-        updateSelectionCount();
-
-        // Poll for changes (SyncFusion doesn't always fire events reliably)
-        const interval = setInterval(updateSelectionCount, 300);
+        // Poll with 100ms interval for responsive checkbox updates
+        const interval = setInterval(updateSelectionCount, 100);
 
         return () => {
             clearInterval(interval);
@@ -186,7 +203,9 @@ export function AdminLinkSecuredControlsWithRoles() {
                     <div className='px-4 pt-3'>
                         <CompSyncFusionTreeGridToolbar
                             instance={linksInstance}
+                            isExpandCollapseSwitch={false}
                             title=''
+                            CustomControl={ExpandCollapseTreeButton}
                         />
                     </div>
                     <div className='px-4'>
@@ -208,6 +227,10 @@ export function AdminLinkSecuredControlsWithRoles() {
                 </div>
             </div>
         </div>)
+
+    // ============================================
+    // UI Component Functions
+    // ============================================
 
     function SelectionIndicator() {
         if (selectedCount === 0) {
@@ -253,6 +276,30 @@ export function AdminLinkSecuredControlsWithRoles() {
         );
     }
 
+    function ExpandCollapseTreeButton() {
+        return (
+            <button
+                onClick={handleToggleAllTreeGroups}
+                className='w-8 h-8 mb-1 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-md transition-colors duration-200 flex items-center justify-center'
+                title={allTreeGroupsExpanded ? 'Collapse all' : 'Expand all'}
+            >
+                {allTreeGroupsExpanded ? (
+                    <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 20 20'>
+                        <path fillRule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clipRule='evenodd' />
+                    </svg>
+                ) : (
+                    <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 20 20'>
+                        <path fillRule='evenodd' d='M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z' clipRule='evenodd' />
+                    </svg>
+                )}
+            </button>
+        );
+    }
+
+    // ============================================
+    // Event Handlers
+    // ============================================
+
     function handleClearSelection() {
         const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
         if (gridRef?.current) {
@@ -274,6 +321,19 @@ export function AdminLinkSecuredControlsWithRoles() {
         }
     }
 
+    function handleToggleAllTreeGroups() {
+        const treeGridRef = context.CompSyncFusionTreeGrid[linksInstance]?.gridRef;
+        if (!treeGridRef?.current) return;
+
+        if (allTreeGroupsExpanded) {
+            treeGridRef.current.collapseAll();
+            setAllTreeGroupsExpanded(false);
+        } else {
+            treeGridRef.current.expandAll();
+            setAllTreeGroupsExpanded(true);
+        }
+    }
+
     function onRowDragStart() {
         // Add visual hint that ESC can cancel the drag operation
         setTimeout(() => {
@@ -286,6 +346,10 @@ export function AdminLinkSecuredControlsWithRoles() {
             }
         }, 10);
     }
+
+    // ============================================
+    // Group Selection Helper Functions
+    // ============================================
 
     function getSelectedCountInGroup(field: string, groupKey: string): number {
         const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
@@ -369,7 +433,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 }
 
                 if (badge) {
-                    badge.textContent = `${selectedCount} sel`;
+                    badge.textContent = `${selectedCount} selected`;
                     badge.style.display = 'inline-flex';
                 }
             } else if (badge) {
@@ -466,6 +530,170 @@ export function AdminLinkSecuredControlsWithRoles() {
         }
     }
 
+    /**
+     * Gets all control IDs from records that belong to a specific group
+     */
+    function getAllControlIdsFromGroup(groupProps: any): string[] {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return [];
+
+        const grid = gridRef.current;
+        const field = groupProps.field;
+        const groupKey = groupProps.groupKey || groupProps.key;
+        const dataSource = grid.dataSource as any[];
+
+        if (!dataSource || !Array.isArray(dataSource)) return [];
+
+        // Filter records that belong to this group
+        const recordsInGroup = dataSource.filter((record: any) => {
+            if (field === 'controlType') {
+                return record.controlType === groupKey;
+            } else if (field === 'controlPrefix') {
+                return record.controlPrefix === groupKey;
+            }
+            return false;
+        });
+
+        return recordsInGroup.map((r: any) => r.id).filter((id: any) => id != null);
+    }
+
+    /**
+     * Gets the checkbox state for a group
+     * Returns 'checked', 'unchecked', or 'indeterminate'
+     */
+    function getGroupCheckboxState(groupProps: any): 'checked' | 'unchecked' | 'indeterminate' {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return 'unchecked';
+
+        const grid = gridRef.current;
+        const controlIds = getAllControlIdsFromGroup(groupProps);
+
+        if (controlIds.length === 0) return 'unchecked';
+
+        // Get selected records
+        const selectedRecords = grid.getSelectedRecords() as any[];
+        const selectedIds = new Set(selectedRecords.map((r: any) => r.id));
+
+        const selectedCount = controlIds.filter(id => selectedIds.has(id)).length;
+
+        if (selectedCount === 0) return 'unchecked';
+        if (selectedCount === controlIds.length) return 'checked';
+        return 'indeterminate';
+    }
+
+    /**
+     * Gets badge showing selected count in a group
+     */
+    function getSelectedCountBadge(groupProps: any): JSX.Element | null {
+        const field = groupProps.field;
+        const groupKey = groupProps.groupKey || groupProps.key;
+
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return null;
+
+        const dataSource = gridRef.current.dataSource as any[];
+        if (!dataSource) return null;
+
+        // Get all records in this group
+        const recordsInGroup = dataSource.filter((record: any) => {
+            if (field === 'controlType') {
+                return record.controlType === groupKey;
+            } else if (field === 'controlPrefix') {
+                return record.controlPrefix === groupKey;
+            }
+            return false;
+        });
+
+        // Get selected records
+        const selectedRecords = gridRef.current.getSelectedRecords() as any[];
+        const selectedIds = new Set(selectedRecords.map((r: any) => r.id));
+
+        // Count how many in this group are selected
+        const selectedInGroup = recordsInGroup.filter(r => selectedIds.has(r.id)).length;
+
+        if (selectedInGroup === 0) return null;
+
+        return (
+            <span className='inline-flex items-center px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-xs font-semibold border border-purple-400'>
+                {selectedInGroup} selected
+            </span>
+        );
+    }
+
+    /**
+     * Checkbox component for group selection with 3 states
+     */
+    function GroupCheckbox({ groupProps }: { groupProps: any }) {
+        const [state, setState] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
+
+        // Extract stable values from groupProps to avoid infinite loop
+        const groupKey = groupProps.groupKey || groupProps.key;
+        const field = groupProps.field;
+
+        useEffect(() => {
+            const newState = getGroupCheckboxState(groupProps);
+            if (newState !== state) {
+                setState(newState);
+            }
+        }, [selectedCount, checkboxUpdateTrigger, groupKey, field]); // eslint-disable-line react-hooks/exhaustive-deps
+
+        const handleClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+
+            // Immediately update checkbox state for instant visual feedback
+            const currentState = state;
+            const expectedNewState = currentState === 'checked' ? 'unchecked' : 'checked';
+            setState(expectedNewState);
+
+            // Then perform actual grid selection
+            handleSelectAllInGroup(groupProps);
+
+            // Polling will sync the state afterwards to ensure correctness
+        };
+
+        return (
+            <div
+                role="checkbox"
+                aria-checked={state === 'checked' ? 'true' : state === 'indeterminate' ? 'mixed' : 'false'}
+                aria-label={`${state === 'checked' ? 'Unselect' : 'Select'} all controls in ${groupKey}`}
+                tabIndex={0}
+                title={`${state === 'checked' ? 'Unselect' : 'Select'} all ${groupKey} controls`}
+                onKeyDown={(e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSelectAllInGroup(groupProps);
+                    }
+                }}
+                className="inline-flex items-center justify-center w-6 h-6 mr-2 border-2 rounded cursor-pointer bg-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 hover:scale-110 active:scale-95"
+                onClick={handleClick}
+            >
+                {state === 'checked' && (
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <rect x="2" y="2" width="16" height="16" rx="2" fill="currentColor" />
+                        <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                            fill="white"
+                            strokeWidth="0.5"
+                        />
+                    </svg>
+                )}
+                {state === 'unchecked' && (
+                    <svg className="w-5 h-5 text-gray-400 hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 20 20">
+                        <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="2.5" />
+                    </svg>
+                )}
+                {state === 'indeterminate' && (
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <rect x="2" y="2" width="16" height="16" rx="2" fill="currentColor" />
+                        <line x1="6" y1="10" x2="14" y2="10" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                )}
+            </div>
+        );
+    }
+
     function multiLevelGroupCaptionTemplate(props: any) {
         const typeName = props.groupKey || props.key || props.headerText || props.value || 'Unknown';
         const count = props.count || 0;
@@ -474,9 +702,9 @@ export function AdminLinkSecuredControlsWithRoles() {
         const isTypeGroup = (props.field || '') === 'controlType';
 
         if (isTypeGroup) {
-            // Level 1: Type grouping (Blue theme)
+            // Level 1: Type grouping (Blue theme) - header only, no checkbox
             return (
-                <div className='flex items-center gap-3 py-2 px-3 bg-linear-to-r from-blue-50 to-blue-100/50'>
+                <div className='flex items-center gap-3 py-2 px-3 bg-linear-to-r from-blue-50 to-blue-100/50 border-l-4 border-blue-400'>
                     <div className='flex items-center gap-2'>
                         <IconControls className='w-5 h-5 text-blue-600' />
                         <span className='text-gray-600 text-xs font-medium uppercase tracking-wide'>Type:</span>
@@ -485,24 +713,16 @@ export function AdminLinkSecuredControlsWithRoles() {
                     <span className='inline-flex items-center px-2.5 py-0.5 bg-linear-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
                         {count} {count === 1 ? 'control' : 'controls'}
                     </span>
-                    {count > 0 && (
-                        <button
-                            onClick={() => handleSelectAllInGroup(props)}
-                            className='ml-auto px-2.5 py-1 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded transition-colors duration-200 flex items-center gap-1 border border-blue-300 hover:border-blue-400 shadow-sm'
-                            title='Click to select/deselect all controls in this type'
-                        >
-                            <svg className='w-3.5 h-3.5' fill='currentColor' viewBox='0 0 20 20'>
-                                <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                            </svg>
-                            Toggle Select
-                        </button>
-                    )}
+                    {getSelectedCountBadge(props)}
                 </div>
             );
         } else {
-            // Level 2: Prefix grouping (Green theme)
+            // Level 2: Prefix grouping (Green theme) with checkbox
             return (
-                <div className='flex items-center gap-2 py-1.5 px-3 ml-6 bg-linear-to-r from-green-50 to-green-100/50 border-l-2 border-green-500'>
+                <div className='flex items-center gap-2 py-1.5 px-3 -ml-3.5 bg-linear-to-r from-green-50 to-green-100/50'>
+                    <div className='border-l-2 border-green-500 pl-2 -ml-3'>
+                        {count > 0 && <GroupCheckbox groupProps={props} />}
+                    </div>
                     <div className='flex items-center gap-2'>
                         <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
                             <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
@@ -513,22 +733,15 @@ export function AdminLinkSecuredControlsWithRoles() {
                     <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full font-semibold text-xs border border-green-400'>
                         {count}
                     </span>
-                    {count > 0 && (
-                        <button
-                            onClick={() => handleSelectAllInGroup(props)}
-                            className='ml-auto px-2.5 py-1 text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 rounded transition-colors duration-200 flex items-center gap-1 border border-green-300 hover:border-green-400 shadow-sm'
-                            title='Click to select/deselect all controls in this prefix'
-                        >
-                            <svg className='w-3.5 h-3.5' fill='currentColor' viewBox='0 0 20 20'>
-                                <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                            </svg>
-                            Toggle Select
-                        </button>
-                    )}
+                    {getSelectedCountBadge(props)}
                 </div>
             );
         }
     }
+
+    // ============================================
+    // Grid Configuration Functions
+    // ============================================
 
     function getSecuredControlsAggregates(): SyncFusionGridAggregateType[] {
         return [{
@@ -567,6 +780,10 @@ export function AdminLinkSecuredControlsWithRoles() {
             },
         ]
     }
+
+    // ============================================
+    // Drag & Drop Functions
+    // ============================================
 
     function onSecuredControlsRowDrop(args: any) {
         args.cancel = true
@@ -684,6 +901,10 @@ export function AdminLinkSecuredControlsWithRoles() {
         );
     }
 
+    // ============================================
+    // Tree Grid Configuration & Template Functions
+    // ============================================
+
     function getLinkColumns(): SyncFusionTreeGridColumnType[] {
         return ([
             {
@@ -702,21 +923,51 @@ export function AdminLinkSecuredControlsWithRoles() {
     }
 
     function nameColumnTemplate(props: any) {
-        return (<div className="flex items-center">
-            {(props.level === 1) && (
+        const childData = props.children || props.childRecords || [];
+        const childCount = childData.length;
+
+        // Level 0: Role
+        if (props.level === 0) {
+            return (
+                <div className="flex items-center gap-2">
+                    <span className='font-semibold text-gray-900'>
+                        {props.name}
+                        {getChildrenCount(props)}
+                    </span>
+                    {childCount > 0 && (
+                        <>
+                            <span className='inline-flex items-center px-2 py-0.5 bg-gray-200 text-gray-800 rounded-full text-xs font-semibold'>
+                                {childCount}
+                            </span>
+                            <span className='text-gray-800 text-xs'>
+                                {childCount === 1 ? 'control' : 'controls'}
+                            </span>
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        // Level 1: Control (child of role)
+        return (
+            <div className="flex items-center gap-2">
                 <div className='flex items-center justify-center w-6 h-6 bg-sky-100 rounded'>
                     <IconControls className="w-4 h-4 text-sky-600" />
                 </div>
-            )}
-            <span className={`ml-2 ${props.level === 0 ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>{props.name}</span>
-            {getChildCount(props)}
-        </div>)
+                <span className='ml-2 text-gray-700'>{props.name}</span>
+            </div>
+        );
     }
 
-    function getChildCount(props: any) {
+    function getChildrenCount(props: any) {
+        const childData = props.children || props.childRecords || [];
+        if (childData.length === 0) return null;
+
         return (
-            <span className='mt-2 ml-2 text-gray-600 text-xs font-medium'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
-        )
+            <span className='relative top-1 ml-1 text-xs font-medium opacity-75'>
+                ({childData.length})
+            </span>
+        );
     }
 
     function descrColumnTemplate(props: any) {
@@ -791,6 +1042,10 @@ export function AdminLinkSecuredControlsWithRoles() {
         }
         return (ret)
     }
+
+    // ============================================
+    // Link/Unlink Action Handlers
+    // ============================================
 
     function handleOnClickLink(props: any) {
         Utils.showHideModalDialogA({

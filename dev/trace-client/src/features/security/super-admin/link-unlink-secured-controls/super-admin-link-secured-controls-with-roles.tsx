@@ -1,7 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { JSX, useContext, useEffect, useMemo, useState } from "react";
 import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map"
+import { useSelector } from "react-redux";
+import { RootStateType } from "../../../../app/store";
 import { CompSyncFusionGridToolbar } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid-toolbar";
 import { Messages } from "../../../../utils/messages";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
@@ -21,13 +23,163 @@ import { IconControls } from "../../../../controls/icons/icon-controls";
 import { SuperAdminLinkSecuredControlWithRoleModal } from "./super-admin-link-secured-control-with-role-modal";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 
+/**
+ * SuperAdminLinkSecuredControlsWithRoles
+ *
+ * Manages the linking and unlinking of secured controls with roles in a 4-level tree hierarchy:
+ * - Level 0: Roles
+ * - Level 1: Control Types (action, page, etc.)
+ * - Level 2: Control Prefixes (grouped by naming convention)
+ * - Level 3: Individual Controls
+ *
+ * CRITICAL DATA STRUCTURE REQUIREMENT:
+ * =====================================
+ * DO NOT use "level" as a field name in your data structure.
+ * CompSyncfusionTreeGrid reserves "level" internally for hierarchy management.
+ * Using "level" in your data will cause hierarchy display failures.
+ *
+ * SAFE field names to use:
+ * - id, name, descr, parentId, pkey, children
+ * - roleId, securedControlId, controlType, controlPrefix
+ * - Any custom fields except "level"
+ *
+ * Level identification is done via:
+ * - Level 0: parentId === null
+ * - Level 1: name starts with "Type:"
+ * - Level 2: name starts with "Prefix:"
+ * - Level 3: all other nodes (leaf controls)
+ *
+ * Features:
+ * - Link/Unlink controls at all hierarchy levels
+ * - Drag & drop to link controls
+ * - Count badges showing control totals
+ * - Recursive unlink for groups
+ */
 export function SuperAdminLinkSecuredControlsWithRoles() {
     const securedControlsInstance: string = DataInstancesMap.securedControls
     const linksInstance: string = DataInstancesMap.securedControlsLinkRoles
     const context: GlobalContextType = useContext(GlobalContext);
     const [selectedCount, setSelectedCount] = useState<number>(0);
+    const [checkboxUpdateTrigger, setCheckboxUpdateTrigger] = useState<number>(0);
     const [allGroupsExpanded, setAllGroupsExpanded] = useState<boolean>(false);
     const [allTreeGroupsExpanded, setAllTreeGroupsExpanded] = useState<boolean>(false);
+
+    // Get original data from Redux
+    const originalTreeData: any = useSelector((state: RootStateType) => {
+        return state.queryHelper[linksInstance]?.data?.[0]?.jsonResult
+    })
+
+    // Transform data to 4-level hierarchy
+    const transformedTreeData = useMemo(() => {
+        if (!originalTreeData || !Array.isArray(originalTreeData)) {
+            return [];
+        }
+        return transformTo4LevelHierarchy(originalTreeData);
+    }, [originalTreeData]);
+
+    /**
+     * Transforms role data from server into a 4-level tree hierarchy.
+     *
+     * CRITICAL: This function generates data WITHOUT a "level" field, as CompSyncfusionTreeGrid
+     * uses "level" internally. Using "level" as a data field will break hierarchy display.
+     *
+     * Hierarchy structure:
+     * - Level 0: Role (identified by parentId === null)
+     * - Level 1: Type Group (identified by name starting with "Type:")
+     * - Level 2: Prefix Group (identified by name starting with "Prefix:")
+     * - Level 3: Control (leaf nodes with securedControlId)
+     *
+     * @param roles - Array of role objects from server containing securedControls
+     * @returns Array of tree-structured role objects with 4-level hierarchy
+     */
+    function transformTo4LevelHierarchy(roles: any[]): any[] {
+        if (!roles || !Array.isArray(roles)) return roles;
+
+        let pkeyCounter = 10000; // Start counter for generated pkeys
+
+        return roles.map((role, roleIndex) => {
+            const rolePkey = roleIndex + 1;
+
+            // If no secured controls, return role with empty children
+            if (!role.securedControls || !Array.isArray(role.securedControls) || role.securedControls.length === 0) {
+                return {
+                    id: role.roleId,
+                    name: role.name,
+                    descr: role.descr || '',
+                    parentId: null,
+                    pkey: rolePkey,
+                    roleId: role.roleId,
+                    type: "role",
+                    children: [],
+                    securedControls: [] // Keep for unlink all functionality
+                };
+            }
+
+            // Group secured controls by controlType
+            const groupedByType = _.groupBy(role.securedControls, 'controlType');
+
+            const typeChildren = Object.entries(groupedByType).map(([controlType, controlsOfType]: [string, any[]]) => {
+                const typePkey = pkeyCounter++;
+
+                // Group by controlPrefix within each type
+                const groupedByPrefix = _.groupBy(controlsOfType, 'controlPrefix');
+
+                const prefixChildren = Object.entries(groupedByPrefix).map(([controlPrefix, controlsOfPrefix]: [string, any[]]) => {
+                    const prefixPkey = pkeyCounter++;
+
+                    // Level 3: Actual controls
+                    const controlChildren = controlsOfPrefix.map(control => {
+                        const controlPkey = pkeyCounter++;
+                        return {
+                            id: control.id,
+                            name: control.name,
+                            descr: control.descr || '',
+                            parentId: prefixPkey,
+                            pkey: controlPkey,
+                            roleId: role.roleId,
+                            securedControlId: control.securedControlId,
+                            children: []
+                        };
+                    });
+
+                    // Level 2: Prefix group
+                    return {
+                        id: prefixPkey,
+                        name: `Prefix: ${controlPrefix}`,
+                        descr: `${controlsOfPrefix.length} controls`,
+                        parentId: typePkey,
+                        pkey: prefixPkey,
+                        roleId: role.roleId,
+                        children: controlChildren
+                    };
+                });
+
+                // Level 1: Type group
+                return {
+                    id: typePkey,
+                    name: `Type: ${controlType}`,
+                    descr: `${controlType} controls`,
+                    parentId: rolePkey,
+                    pkey: typePkey,
+                    roleId: role.roleId,
+                    children: prefixChildren
+                };
+            });
+
+            // Level 0: Role
+            return {
+                id: role.roleId,
+                name: role.name,
+                descr: role.descr || '',
+                parentId: null,
+                pkey: rolePkey,
+                roleId: role.roleId,
+                type: "role",
+                children: typeChildren,
+                securedControls: role.securedControls // Keep for unlink all functionality
+            };
+        });
+    }
 
     useEffect(() => {
         const loadDataLinks = context.CompSyncFusionTreeGrid[linksInstance].loadData
@@ -36,6 +188,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
 
     // ESC key listener to cancel drag operations
     useEffect(() => {
@@ -60,24 +213,39 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // Track selection changes
+    // Track selection changes with debounced polling to prevent infinite loop
     useEffect(() => {
+        let lastSelectionCount = 0;
+        let isUpdating = false;
+
         const updateSelectionCount = () => {
+            // Prevent re-entrant calls
+            if (isUpdating) return;
+
             const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
             if (gridRef?.current) {
                 const selected = gridRef.current.getSelectedRecords();
-                setSelectedCount(selected.length);
+                const currentCount = selected.length;
 
-                // Update group caption badges via DOM manipulation
-                updateGroupCaptionBadges();
+                // Only update if count actually changed
+                if (currentCount !== lastSelectionCount) {
+                    isUpdating = true;
+                    lastSelectionCount = currentCount;
+
+                    setSelectedCount(currentCount);
+                    setCheckboxUpdateTrigger(Date.now());
+                    updateGroupCaptionBadges();
+
+                    // Reset flag after state updates complete
+                    setTimeout(() => {
+                        isUpdating = false;
+                    }, 50);
+                }
             }
         };
 
-        // Update immediately
-        updateSelectionCount();
-
-        // Poll for changes (SyncFusion doesn't always fire events reliably)
-        const interval = setInterval(updateSelectionCount, 300);
+        // Poll with 100ms interval for responsive checkbox updates
+        const interval = setInterval(updateSelectionCount, 100);
 
         return () => {
             clearInterval(interval);
@@ -183,18 +351,20 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                             <div className='flex-1'>
                                 <CompSyncFusionTreeGridToolbar
                                     instance={linksInstance}
+                                    isExpandCollapseSwitch={false}
                                     title=''
+                                    CustomControl={ExpandCollapseTreeButton}
                                 />
                             </div>
-                            <ExpandCollapseTreeButton />
                         </div>
                     </div>
                     <div className='px-4'>
                         <CompSyncfusionTreeGrid
                             addUniqueKeyToJson={true}
                             className=''
-                            childMapping="securedControls"
+                            childMapping="children"
                             columns={getLinkColumns()}
+                            dataSource={transformedTreeData}
                             height="calc(100vh - 335px)"
                             instance={linksInstance}
                             minWidth='400px'
@@ -208,6 +378,10 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 </div>
             </div>
         </div>)
+
+    // ============================================
+    // UI Component Functions
+    // ============================================
 
     function SelectionIndicator() {
         if (selectedCount === 0) {
@@ -273,6 +447,10 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         );
     }
 
+    // ============================================
+    // Event Handlers
+    // ============================================
+
     function handleClearSelection() {
         const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
         if (gridRef?.current) {
@@ -319,6 +497,10 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
             }
         }, 10);
     }
+
+    // ============================================
+    // Group Selection Helper Functions
+    // ============================================
 
     function getSelectedCountInGroup(field: string, groupKey: string): number {
         const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
@@ -403,7 +585,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 }
 
                 if (badge) {
-                    badge.textContent = `${selectedCount} sel`;
+                    badge.textContent = `${selectedCount} selected`;
                     badge.style.display = 'inline-flex';
                 }
             } else if (badge) {
@@ -411,6 +593,60 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 badge.style.display = 'none';
             }
         });
+    }
+
+    /**
+     * Gets all control IDs from records that belong to a specific group
+     */
+    function getAllControlIdsFromGroup(groupProps: any): string[] {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return [];
+
+        const grid = gridRef.current;
+        const field = groupProps.field;
+        const groupKey = groupProps.groupKey || groupProps.key;
+        const dataSource = grid.dataSource as any[];
+
+        if (!dataSource || !Array.isArray(dataSource)) return [];
+
+        // Filter records that belong to this group
+        const recordsInGroup = dataSource.filter((record: any) => {
+            if (field === 'controlType') {
+                return record.controlType === groupKey;
+            } else if (field === 'controlPrefix') {
+                return record.controlPrefix === groupKey;
+            } else if (field === 'controlName') {
+                const prefix = record.controlName?.split('.')[0];
+                return prefix === groupKey;
+            }
+            return false;
+        });
+
+        return recordsInGroup.map((r: any) => r.id).filter((id: any) => id != null);
+    }
+
+    /**
+     * Gets the checkbox state for a group
+     * Returns 'checked', 'unchecked', or 'indeterminate'
+     */
+    function getGroupCheckboxState(groupProps: any): 'checked' | 'unchecked' | 'indeterminate' {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return 'unchecked';
+
+        const grid = gridRef.current;
+        const controlIds = getAllControlIdsFromGroup(groupProps);
+
+        if (controlIds.length === 0) return 'unchecked';
+
+        // Get selected records
+        const selectedRecords = grid.getSelectedRecords() as any[];
+        const selectedIds = new Set(selectedRecords.map((r: any) => r.id));
+
+        const selectedCount = controlIds.filter(id => selectedIds.has(id)).length;
+
+        if (selectedCount === 0) return 'unchecked';
+        if (selectedCount === controlIds.length) return 'checked';
+        return 'indeterminate';
     }
 
     function handleSelectAllInGroup(groupProps: any) {
@@ -500,18 +736,158 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         }
     }
 
+    /**
+     * Checkbox component for group selection
+     */
+    function GroupCheckbox({ groupProps }: { groupProps: any }) {
+        const [state, setState] = useState<'checked' | 'unchecked' | 'indeterminate'>('unchecked');
+
+        // Extract stable values from groupProps to avoid infinite loop
+        const groupKey = groupProps.groupKey || groupProps.key;
+        const field = groupProps.field;
+
+        useEffect(() => {
+            const newState = getGroupCheckboxState(groupProps);
+            if (newState !== state) {
+                setState(newState);
+            }
+        }, [selectedCount, checkboxUpdateTrigger, groupKey, field]); // eslint-disable-line react-hooks/exhaustive-deps
+
+        const handleClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+
+            // Immediately update checkbox state for instant visual feedback
+            const currentState = state;
+            const expectedNewState = currentState === 'checked' ? 'unchecked' : 'checked';
+            setState(expectedNewState);
+
+            // Then perform actual grid selection
+            handleSelectAllInGroup(groupProps);
+
+            // Polling will sync the state afterwards to ensure correctness
+        };
+
+        return (
+            <div
+                role="checkbox"
+                aria-checked={state === 'checked' ? 'true' : state === 'indeterminate' ? 'mixed' : 'false'}
+                aria-label={`${state === 'checked' ? 'Unselect' : 'Select'} all controls in ${groupKey}`}
+                tabIndex={0}
+                title={`${state === 'checked' ? 'Unselect' : 'Select'} all ${groupKey} controls`}
+                onKeyDown={(e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSelectAllInGroup(groupProps);
+                    }
+                }}
+                className="inline-flex items-center justify-center w-6 h-6 mr-2 border-2 rounded cursor-pointer bg-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 hover:scale-110 active:scale-95"
+                onClick={handleClick}
+            >
+                {state === 'checked' && (
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <rect x="2" y="2" width="16" height="16" rx="2" fill="currentColor" />
+                        <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                            fill="white"
+                            strokeWidth="0.5"
+                        />
+                    </svg>
+                )}
+                {state === 'unchecked' && (
+                    <svg className="w-5 h-5 text-gray-400 hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 20 20">
+                        <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="2.5" />
+                    </svg>
+                )}
+                {state === 'indeterminate' && (
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <rect x="2" y="2" width="16" height="16" rx="2" fill="currentColor" />
+                        <line x1="6" y1="10" x2="14" y2="10" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                )}
+            </div>
+        );
+    }
+
+    /**
+     * Gets badge showing selected count in a group
+     */
+    function getSelectedCountBadge(groupProps: any): JSX.Element | null {
+        const field = groupProps.field;
+        const groupKey = groupProps.groupKey || groupProps.key;
+
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return null;
+
+        const dataSource = gridRef.current.dataSource as any[];
+        if (!dataSource) return null;
+
+        // Get all records in this group
+        const recordsInGroup = dataSource.filter((record: any) => {
+            if (field === 'controlType') {
+                return record.controlType === groupKey;
+            } else if (field === 'controlPrefix') {
+                return record.controlPrefix === groupKey;
+            }
+            return false;
+        });
+
+        // Get selected records
+        const selectedRecords = gridRef.current.getSelectedRecords() as any[];
+        const selectedIds = new Set(selectedRecords.map((r: any) => r.id));
+
+        // Count how many in this group are selected
+        const selectedInGroup = recordsInGroup.filter(r => selectedIds.has(r.id)).length;
+
+        if (selectedInGroup === 0) return null;
+
+        return (
+            <span className='inline-flex items-center px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-xs font-semibold border border-purple-400'>
+                {selectedInGroup} selected
+            </span>
+        );
+    }
+
+    /**
+     * Gets the total count of controls in a Type group (sum of all controls in all prefixes)
+     */
+    function getTotalControlCountForTypeGroup(groupProps: any): number {
+        const field = groupProps.field;
+        const groupKey = groupProps.groupKey || groupProps.key;
+
+        if (field !== 'controlType') {
+            return groupProps.count || 0;
+        }
+
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return 0;
+
+        const dataSource = gridRef.current.dataSource as any[];
+        if (!dataSource) return 0;
+
+        // Count all records with this controlType
+        const controlsInType = dataSource.filter((record: any) => {
+            return record.controlType === groupKey;
+        });
+
+        return controlsInType.length;
+    }
+
     function multiLevelGroupCaptionTemplate(props: any) {
         const typeName = props.groupKey || props.key || props.headerText || props.value || 'Unknown';
-        const count = props.count || 0;
         const field = props.field || '';
 
         // Determine if this is Type or Prefix grouping based on field
         const isTypeGroup = field === 'controlType';
 
+        // For Type groups, count all controls; for Prefix groups, use provided count
+        const count = isTypeGroup ? getTotalControlCountForTypeGroup(props) : (props.count || 0);
+
         if (isTypeGroup) {
-            // Level 1: Type grouping (Blue theme)
+            // Level 1: Type grouping (Blue theme) - header only, no checkbox
             return (
-                <div className='flex items-center gap-3 py-2 px-3 bg-linear-to-r from-blue-50 to-blue-100/50'>
+                <div className='flex items-center gap-3 py-2 px-3 bg-linear-to-r from-blue-50 to-blue-100/50 border-l-4 border-blue-400'>
                     <div className='flex items-center gap-2'>
                         <IconControls className='w-5 h-5 text-blue-600' />
                         <span className='text-gray-600 text-xs font-medium uppercase tracking-wide'>Type:</span>
@@ -520,24 +896,16 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     <span className='inline-flex items-center px-2.5 py-0.5 bg-linear-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
                         {count} {count === 1 ? 'control' : 'controls'}
                     </span>
-                    {count > 0 && (
-                        <button
-                            onClick={() => handleSelectAllInGroup(props)}
-                            className='ml-auto px-2.5 py-1 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded transition-colors duration-200 flex items-center gap-1 border border-blue-300 hover:border-blue-400 shadow-sm'
-                            title='Click to select/deselect all controls in this type'
-                        >
-                            <svg className='w-3.5 h-3.5' fill='currentColor' viewBox='0 0 20 20'>
-                                <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                            </svg>
-                            Toggle Select
-                        </button>
-                    )}
+                    {getSelectedCountBadge(props)}
                 </div>
             );
         } else {
-            // Level 2: Prefix grouping (Green theme)
+            // Level 2: Prefix grouping (Green theme) with checkbox and border on the left
             return (
-                <div className='flex items-center gap-2 py-1.5 px-3 ml-6 bg-linear-to-r from-green-50 to-green-100/50 border-l-2 border-green-500'>
+                <div className='flex items-center gap-2 py-1.5 px-3 -ml-3.5 bg-linear-to-r from-green-50 to-green-100/50'>
+                    <div className='border-l-2 border-green-500 pl-2 -ml-3'>
+                        {count > 0 && <GroupCheckbox groupProps={props} />}
+                    </div>
                     <div className='flex items-center gap-2'>
                         <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
                             <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
@@ -548,22 +916,15 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full font-semibold text-xs border border-green-400'>
                         {count}
                     </span>
-                    {count > 0 && (
-                        <button
-                            onClick={() => handleSelectAllInGroup(props)}
-                            className='ml-auto px-2.5 py-1 text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 rounded transition-colors duration-200 flex items-center gap-1 border border-green-300 hover:border-green-400 shadow-sm'
-                            title='Click to select/deselect all controls in this prefix'
-                        >
-                            <svg className='w-3.5 h-3.5' fill='currentColor' viewBox='0 0 20 20'>
-                                <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                            </svg>
-                            Toggle Select
-                        </button>
-                    )}
+                    {getSelectedCountBadge(props)}
                 </div>
             );
         }
     }
+
+    // ============================================
+    // Grid Configuration Functions
+    // ============================================
 
     function getSecuredControlsAggregates(): SyncFusionGridAggregateType[] {
         return [{
@@ -602,6 +963,10 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
             },
         ]
     }
+
+    // ============================================
+    // Drag & Drop Functions
+    // ============================================
 
     function onSecuredControlsRowDrop(args: any) {
         args.cancel = true
@@ -697,7 +1062,12 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         }
 
         async function proceedToLink() {
-            const roleId = targetRowData.roleId
+            // Get roleId from target or find parent role
+            let roleId = targetRowData.roleId;
+            if (!roleId) {
+                const roleData = findParentRole(targetRowData);
+                roleId = roleData?.roleId;
+            }
             const xData: any[] = sourceIds
                 .filter((id: string) => !idsToExclude.includes(id))
                 .map(x => ({
@@ -773,6 +1143,10 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         );
     }
 
+    // ============================================
+    // Tree Grid Configuration & Template Functions
+    // ============================================
+
     function getLinkColumns(): SyncFusionTreeGridColumnType[] {
         return ([
             {
@@ -790,76 +1164,248 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         ])
     }
 
+    /**
+     * Determines the hierarchy level of a tree node.
+     *
+     * Since CompSyncfusionTreeGrid reserves the "level" field internally, we identify
+     * levels using parentId and name patterns instead.
+     *
+     * @param props - Node properties from the tree grid
+     * @returns 0=Role, 1=Type Group, 2=Prefix Group, 3=Control
+     */
+    function getNodeLevel(props: any): number {
+        // Check if it's a role (has no parentId or parentId is null)
+        if (!props.parentId) return 0;
+
+        // Check name pattern to determine level
+        if (props.name?.startsWith('Type:')) return 1;
+        if (props.name?.startsWith('Prefix:')) return 2;
+
+        // Otherwise it's a control
+        return 3;
+    }
+
+    /**
+     * Recursively counts all control nodes (level 3) under a given node.
+     * Used to display total control count badges at parent levels.
+     *
+     * @param node - Tree node to count controls under
+     * @returns Total number of control nodes (leaf nodes at level 3)
+     */
+    function getTotalControlCount(node: any): number {
+        // Recursively count all control nodes (level 3) under this node
+        const childData = node.children || node.childRecords || [];
+
+        if (childData.length === 0) {
+            // This is a leaf node - check if it's a control
+            const level = getNodeLevel(node);
+            return level === 3 ? 1 : 0;
+        }
+
+        // Sum up controls from all children
+        return childData.reduce((total: number, child: any) => {
+            return total + getTotalControlCount(child);
+        }, 0);
+    }
+
+    function getChildrenCount(props: any) {
+        const childData = props.children || props.childRecords || [];
+        if (childData.length === 0) return null;
+
+        return (
+            <span className='relative top-1 ml-1 text-xs font-medium opacity-75'>
+                ({childData.length})
+            </span>
+        );
+    }
+
     function nameColumnTemplate(props: any) {
-        return (<div className="flex items-center">
-            {(props.level === 1) && (
+        const level = getNodeLevel(props);
+
+        // Level 0: Role
+        if (level === 0) {
+            // Calculate total number of controls (recursively count all leaf nodes)
+            const totalControls = getTotalControlCount(props);
+
+            return (
+                <div className="flex items-center gap-2">
+                    <span className='font-semibold text-gray-900'>
+                        {props.name}
+                        {getChildrenCount(props)}
+                    </span>
+                    {totalControls > 0 && (
+                        <>
+                            <span className='inline-flex items-center px-2 py-0.5 bg-gray-200 text-gray-800 rounded-full text-xs font-semibold'>
+                                {totalControls}
+                            </span>
+                            <span className='text-gray-800 text-xs'>
+                                {totalControls === 1 ? 'control' : 'controls'}
+                            </span>
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        // Level 1: Type Group
+        if (level === 1) {
+            // Calculate total controls using helper function
+            const totalControls = getTotalControlCount(props);
+
+            return (
+                <div className='flex items-center gap-2 py-1 px-2 bg-blue-50 rounded'>
+                    <IconControls className='w-4 h-4 text-blue-600' />
+                    <span className='font-semibold text-blue-800'>
+                        {props.name}
+                        {getChildrenCount(props)}
+                    </span>
+                    {totalControls > 0 && (
+                        <>
+                            <span className='inline-flex items-center px-2 py-0.5 bg-blue-200 text-blue-900 rounded-full text-xs font-semibold'>
+                                {totalControls}
+                            </span>
+                            <span className='text-blue-800 text-xs'>
+                                {totalControls === 1 ? 'control' : 'controls'}
+                            </span>
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        // Level 2: Prefix Group
+        if (level === 2) {
+            // Count direct children (controls)
+            const childData = props.children || props.childRecords || [];
+            const count = childData.length;
+
+            return (
+                <div className='flex items-center gap-2 py-1 px-2 ml-4 bg-green-50 rounded'>
+                    <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+                        <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
+                    </svg>
+                    <span className='font-semibold text-green-800'>{props.name}</span>
+                    {count > 0 && (
+                        <>
+                            <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full text-xs font-semibold'>
+                                {count}
+                            </span>
+                            <span className='text-green-800 text-xs'>
+                                {count === 1 ? 'control' : 'controls'}
+                            </span>
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        // Level 3: Control
+        return (
+            <div className="flex items-center ml-8">
                 <div className='flex items-center justify-center w-6 h-6 bg-sky-100 rounded'>
                     <IconControls className="w-4 h-4 text-sky-600" />
                 </div>
-            )}
-            <span className={`ml-2 ${props.level === 0 ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>{props.name}</span>
-            {getChildCount(props)}
-        </div>)
-    }
-
-    function getChildCount(props: any) {
-        return (
-            <span className='mt-2 ml-2 text-gray-600 text-xs font-medium'> {props?.childRecords ? `(${props.childRecords.length})` : ''} </span>
-        )
+                <span className='ml-2 text-gray-700'>{props.name}</span>
+            </div>
+        );
     }
 
     function descrColumnTemplate(props: any) {
+        const level = getNodeLevel(props);
+
+        // For Type and Prefix groups (level 1 and 2), show only the Unlink button
+        if (level === 1 || level === 2) {
+            return (
+                <div className="flex flex-row items-center">
+                    {getLinkOrUnlinkButton(props)}
+                </div>
+            );
+        }
+
+        // For roles and controls, show description and buttons
         return (
             <div className="flex flex-row items-center">
                 <span>{props.descr}</span>
                 {getLinkOrUnlinkButton(props)}
                 {getUnlinkAllButton(props)}
             </div>
-        )
+        );
     }
 
     function getLinkOrUnlinkButton(props: any) {
-        let ret = null
-        if (props.level === 0) {
-            ret = <TooltipComponent content={Messages.messLinkSecuredControl}>
-                <button
-                    onClick={() => handleOnClickLink(props)}
-                    className="ml-2 p-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-                    aria-label="Link secured control to role"
-                >
-                    <IconLink className="w-6 h-6 text-blue-600 hover:text-blue-700 transition-colors duration-200"></IconLink>
-                </button>
-            </TooltipComponent>
-        } else {
-            ret = <TooltipComponent content={Messages.messUnlinkSecuredControl}>
-                <button
-                    onClick={() => handleOnClickUnlink(props)}
-                    className="ml-2 p-1.5 rounded-md hover:bg-amber-50 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1"
-                    aria-label="Unlink secured control from role"
-                >
-                    <IconUnlink className="w-6 h-6 text-amber-600 hover:text-amber-700 transition-colors duration-200"></IconUnlink>
-                </button>
-            </TooltipComponent>
+        const level = getNodeLevel(props);
+
+        // For roles (level 0), show only Link button
+        // Unlink All button is handled separately by getUnlinkAllButton()
+        if (level === 0) {
+            return (
+                <TooltipComponent content={Messages.messLinkSecuredControl}>
+                    <button
+                        onClick={() => handleOnClickLink(props)}
+                        className="ml-2 p-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                        aria-label="Link secured control to role"
+                    >
+                        <IconLink className="w-6 h-6 text-blue-600 hover:text-blue-700 transition-colors duration-200"></IconLink>
+                    </button>
+                </TooltipComponent>
+            );
         }
-        return (ret)
+
+        // Unlink button for Type groups (level 1), Prefix groups (level 2), and individual controls (level 3)
+        if (level === 1 || level === 2 || level === 3) {
+            // For groups (level 1 and 2), check if they have children to unlink
+            const hasChildren = level === 1 || level === 2
+                ? (props.children?.length > 0 || props.childRecords?.length > 0)
+                : true;
+
+            if (!hasChildren && level !== 3) {
+                return null; // Don't show button for empty groups
+            }
+
+            const tooltipText = level === 3
+                ? Messages.messUnlinkSecuredControl
+                : `Unlink all controls under this ${level === 1 ? 'type' : 'prefix'} group`;
+
+            return (
+                <TooltipComponent content={tooltipText}>
+                    <button
+                        onClick={() => level === 3 ? handleOnClickUnlink(props) : handleOnClickUnlinkGroup(props)}
+                        className="ml-2 p-1.5 rounded-md hover:bg-amber-50 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1"
+                        aria-label={level === 3 ? "Unlink secured control from role" : `Unlink all controls in this group`}
+                    >
+                        <IconUnlink className="w-6 h-6 text-amber-600 hover:text-amber-700 transition-colors duration-200"></IconUnlink>
+                    </button>
+                </TooltipComponent>
+            );
+        }
+
+        return null;
     }
 
     function getUnlinkAllButton(props: any) {
-        let ret = <></>
+        const level = getNodeLevel(props);
         const isVisible: boolean = (props?.securedControls?.length || 0) > 0
-        if ((props.level === 0) && isVisible) {
-            ret = <TooltipComponent content={Messages.messUnlinkAllSecuredControl}>
-                <button
-                    onClick={() => handleOnClickUnlinkAll(props)}
-                    className="ml-2 p-1.5 rounded-md hover:bg-amber-50 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1"
-                    aria-label={`Unlink all secured controls from role ${props.name}`}
-                >
-                    <IconUnlink className="w-6 h-6 text-amber-600 hover:text-amber-700 transition-colors duration-200"></IconUnlink>
-                </button>
-            </TooltipComponent>
+
+        if (level === 0 && isVisible) {
+            return (
+                <TooltipComponent content={Messages.messUnlinkAllSecuredControl}>
+                    <button
+                        onClick={() => handleOnClickUnlinkAll(props)}
+                        className="ml-2 p-1.5 rounded-md hover:bg-amber-50 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1"
+                        aria-label={`Unlink all secured controls from role ${props.name}`}
+                    >
+                        <IconUnlink className="w-6 h-6 text-amber-600 hover:text-amber-700 transition-colors duration-200"></IconUnlink>
+                    </button>
+                </TooltipComponent>
+            );
         }
-        return (ret)
+
+        return null;
     }
+
+    // ============================================
+    // Link/Unlink Action Handlers
+    // ============================================
 
     function handleOnClickLink(props: any) {
         Utils.showHideModalDialogA({
@@ -889,6 +1435,72 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 }
             }
         )
+    }
+
+    function handleOnClickUnlinkGroup(props: any) {
+        const level = getNodeLevel(props);
+        const groupType = level === 0 ? 'role' : level === 1 ? 'type group' : 'prefix group';
+        const groupName = props.name;
+
+        // Collect all control IDs under this group/role
+        const controlIds = getAllControlIdsFromNode(props);
+
+        if (controlIds.length === 0) {
+            Utils.showAlertMessage('No Controls', `This ${groupType} has no controls to unlink.`);
+            return;
+        }
+
+        const dialogTitle = level === 0
+            ? `Unlink all ${controlIds.length} control${controlIds.length > 1 ? 's' : ''}?`
+            : `Unlink ${controlIds.length} control${controlIds.length > 1 ? 's' : ''}?`;
+
+        const dialogBody = level === 0
+            ? `Are you sure you want to unlink all ${controlIds.length} control(s) from the role "${groupName}"?`
+            : `Are you sure you want to unlink all ${controlIds.length} control(s) from the ${groupType} "${groupName}"?`;
+
+        Utils.showConfirmDialog(
+            dialogTitle,
+            dialogBody,
+            async () => {
+                const traceDataObject: TraceDataObjectType = {
+                    tableName: AllTables.RoleSecuredControlX.name,
+                    deletedIds: controlIds,
+                };
+                try {
+                    const q: any = GraphQLQueriesMap.genericUpdate(GLOBAL_SECURITY_DATABASE_NAME, traceDataObject);
+                    const queryName: string = GraphQLQueriesMapNames.genericUpdate;
+                    await Utils.mutateGraphQL(q, queryName);
+                    await context.CompSyncFusionTreeGrid[linksInstance].loadData();
+                    Utils.showCustomMessage(Messages.messSecuredControlsUnlinkSuccess);
+                } catch (e: any) {
+                    console.log(e)
+                }
+            }
+        )
+    }
+
+    function getAllControlIdsFromNode(node: any): string[] {
+        const ids: string[] = [];
+
+        // Helper function to recursively collect control IDs
+        function collectIds(currentNode: any) {
+            const nodeLevel = getNodeLevel(currentNode);
+
+            // If this is a control (level 3), add its ID
+            if (nodeLevel === 3 && currentNode.id) {
+                ids.push(currentNode.id);
+                return;
+            }
+
+            // Otherwise, process children
+            const children = currentNode.children || currentNode.childRecords || [];
+            children.forEach((child: any) => {
+                collectIds(child);
+            });
+        }
+
+        collectIds(node);
+        return ids;
     }
 
     function handleOnClickUnlinkAll(props: any) {

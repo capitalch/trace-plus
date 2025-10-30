@@ -19,6 +19,7 @@ export function CompSyncFusionTreeGridToolbar({
     , isAllBranches = false
     , isCsvExport = true
     , isExcelExport = true
+    , isExpandCollapseSwitch = true
     , isPdfExport = true
     , isPdfExportAsLandscape = false
     , isRefresh = true
@@ -96,7 +97,7 @@ export function CompSyncFusionTreeGridToolbar({
             /> */}
 
             {/* Expand / Collapse redux switch */}
-            <CompSwitch className="mr-2" instance={instance} leftLabel="Expand" />
+            {isExpandCollapseSwitch && <CompSwitch className="mr-2" instance={instance} leftLabel="Expand" />}
 
             {/* Search */}
             {isSearch && <CompSyncFusionTreeGridSearchBox instance={instance} />}
@@ -128,6 +129,7 @@ type CompSyncFusionTreeGridToolbarType = {
     isAllBranches?: boolean
     isCsvExport?: boolean
     isExcelExport?: boolean
+    isExpandCollapseSwitch?: boolean
     isLastNoOfRows?: boolean
     isPdfExport?: boolean
     isPdfExportAsLandscape?: boolean

@@ -84,7 +84,9 @@ class SqlSecurity:
                             'name', s."controlName",
                             'descr', s."descr",
 							'roleId', r.id,
-							'securedControlId', s.id
+							'securedControlId', s.id,
+                            'controlPrefix', split_part(s."controlName", '.', 1),
+							'controlType', s."controlType"
                         )
                 ) FILTER (WHERE s."controlName" IS NOT NULL) AS "securedControls"
             from "RoleM" r

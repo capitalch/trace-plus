@@ -1,472 +1,491 @@
-# Plan: Implement 4-Level Hierarchy in Right Tree Grid
+# Plan: Upgrade Admin Link Secured Controls with Roles Using Super-Admin Patterns
 
-## Requirements
-Based on `hier.md`:
-1. **4-Level Hierarchy**: Role → controlType → controlPrefix → controlName
-2. **No functional changes**: Drop, link, and unlink behavior remains the same
-3. **Display only changes**: Only visual tree structure changes
-4. **Reversible**: Ability to revert to original implementation
+## Overview
+Upgrade `admin-link-secured-controls-with-roles.tsx` by applying modern patterns, optimizations, and features from the super-admin version while preserving admin-specific functionality.
 
-## Current State
-- Right grid shows: Role → Secured Controls (2 levels)
-- Uses `childMapping="securedControls"`
-- Data from SQL: `SqlIdsMap.getRolesSecuredControlsLink`
-- Drag and drop works correctly
-- Link/unlink functionality works
+---
 
-## Strategy
+## Current State Analysis
 
-### Approach: Data Transformation with Git Branch Safety
+### Admin File (Current - 851 lines)
+**Structure**: 2-level tree hierarchy
+- Level 0: Roles
+- Level 1: Secured Controls (flat list under each role)
 
-**Branch Strategy**:
-1. Current working state is in `main` branch
-2. Create a new git commit of working state (backup point)
-3. Implement 4-level hierarchy
-4. If it doesn't work, can easily revert with `git reset --hard HEAD~1`
+**Key Features**:
+- ✅ Drag & drop linking
+- ✅ Selection indicator with clear button
+- ✅ Group selection buttons (Toggle Select buttons in captions)
+- ✅ ESC to cancel drag
+- ❌ No group checkboxes (uses buttons instead)
+- ❌ Simple polling (300ms, no guards)
+- ❌ No code organization sections
+- ❌ Missing `useMemo` optimization
+- ❌ Missing `checkboxUpdateTrigger` state
+- ✅ Auto-link from built-in roles (admin-specific)
+- ✅ Client name display (admin-specific)
+
+### Super-Admin File (Reference - 1501 lines)
+**Structure**: 4-level tree hierarchy with transform function
+- Level 0: Roles
+- Level 1: Type Groups
+- Level 2: Prefix Groups
+- Level 3: Individual Controls
+
+**Key Features**:
+- ✅ Advanced group checkboxes with 3 states (checked/unchecked/indeterminate)
+- ✅ Smart polling with guards (100ms, change detection, re-entrancy protection)
+- ✅ Optimistic UI updates
+- ✅ `useMemo` for data transformation
+- ✅ `checkboxUpdateTrigger` for forcing checkbox updates
+- ✅ Well-organized code sections with headers
+- ✅ Comprehensive documentation
+- ✅ Helper functions for counting and state management
+- ✅ Expand/collapse button in toolbar
+
+---
+
+## Features to Add/Upgrade
+
+### 1. **Smart Polling with Guards** ⭐ HIGH PRIORITY
+**Why**: Prevents infinite loops and improves performance
+
+**Current Admin Code (Lines 65-87)**:
+```typescript
+useEffect(() => {
+    const updateSelectionCount = () => {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (gridRef?.current) {
+            const selected = gridRef.current.getSelectedRecords();
+            setSelectedCount(selected.length);
+            updateGroupCaptionBadges();
+        }
+    };
+    updateSelectionCount();
+    const interval = setInterval(updateSelectionCount, 300);
+    return () => clearInterval(interval);
+}, [])
+```
+
+**Super-Admin Pattern (Lines 216-254)**:
+```typescript
+useEffect(() => {
+    let lastSelectionCount = 0;
+    let isUpdating = false;
+
+    const updateSelectionCount = () => {
+        if (isUpdating) return; // Re-entrancy guard
+
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (gridRef?.current) {
+            const selected = gridRef.current.getSelectedRecords();
+            const currentCount = selected.length;
+
+            // Only update if count actually changed
+            if (currentCount !== lastSelectionCount) {
+                isUpdating = true;
+                lastSelectionCount = currentCount;
+
+                setSelectedCount(currentCount);
+                setCheckboxUpdateTrigger(Date.now());
+                updateGroupCaptionBadges();
+
+                setTimeout(() => {
+                    isUpdating = false;
+                }, 50); // 50ms cooldown
+            }
+        }
+    };
+
+    const interval = setInterval(updateSelectionCount, 100); // 100ms polling
+    return () => clearInterval(interval);
+}, [])
+```
+
+**Changes**:
+- Add `lastSelectionCount` tracking
+- Add `isUpdating` re-entrancy guard
+- Add change detection (only update if different)
+- Reduce interval from 300ms to 100ms
+- Add 50ms cooldown after updates
+- Add `checkboxUpdateTrigger` state
+
+---
+
+### 2. **Replace Toggle Buttons with Group Checkboxes** ⭐ HIGH PRIORITY
+**Why**: More intuitive UX, shows state visually, consistent with super-admin
+
+**Current**: "Toggle Select" buttons in group captions (Lines 488-498, 516-527)
+
+**Upgrade To**: GroupCheckbox component with 3 states
+
+**Implementation**:
+1. Add `checkboxUpdateTrigger` state (Line 30)
+2. Create `GroupCheckbox` component (from super-admin lines 730-799)
+3. Add helper functions:
+   - `getAllControlIdsFromGroup()` (super-admin 589-614)
+   - `getGroupCheckboxState()` (super-admin 620-638)
+   - `getSelectedCountBadge()` (super-admin 804-838)
+4. Update `multiLevelGroupCaptionTemplate()` to use checkboxes instead of buttons
+5. Update `handleSelectAllInGroup()` for immediate state feedback (super-admin 640-725)
+
+**Visual Change**:
+```
+BEFORE: [Type: action] [45 controls] [Toggle Select button]
+AFTER:  [☑️] [Type: action] [45 controls] [2 selected badge]
+```
+
+---
+
+### 3. **Add Code Organization Sections** ⭐ MEDIUM PRIORITY
+**Why**: Improves maintainability and navigation
+
+**Sections to Add** (from super-admin):
+```typescript
+// ============================================
+// UI Component Functions
+// ============================================
+
+// ============================================
+// Event Handlers
+// ============================================
+
+// ============================================
+// Group Selection Helper Functions
+// ============================================
+
+// ============================================
+// Grid Configuration Functions
+// ============================================
+
+// ============================================
+// Drag & Drop Functions
+// ============================================
+
+// ============================================
+// Tree Grid Configuration & Template Functions
+// ============================================
+
+// ============================================
+// Link/Unlink Action Handlers
+// ============================================
+```
+
+---
+
+### 4. **Add Missing Imports** ⭐ LOW PRIORITY
+**Current**: Missing `useMemo`
+**Add**: `import { useContext, useEffect, useMemo, useState } from "react";`
+
+---
+
+### 5. **Improve Group Caption Template** ⭐ MEDIUM PRIORITY
+**Current Admin (Lines 469-531)**: Has toggle buttons
+
+**Upgrade To**: Checkbox-based with better styling
+
+**Type Group (Level 1)**:
+```typescript
+// Current: Blue theme with toggle button
+return (
+    <div className='flex items-center gap-3 py-2 px-3 bg-linear-to-r from-blue-50 to-blue-100/50 border-l-4 border-blue-400'>
+        <div className='border-l-2 border-blue-500 pl-2 -ml-3'>
+            {count > 0 && <GroupCheckbox groupProps={props} />}
+        </div>
+        <div className='flex items-center gap-2'>
+            <IconControls className='w-5 h-5 text-blue-600' />
+            <span className='text-gray-600 text-xs font-medium uppercase tracking-wide'>Type:</span>
+            <span className='font-bold text-blue-800 text-base'>{typeName}</span>
+        </div>
+        <span className='inline-flex items-center px-2.5 py-0.5 bg-linear-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
+            {count} {count === 1 ? 'control' : 'controls'}
+        </span>
+        {getSelectedCountBadge(props)}
+    </div>
+);
+```
+
+**Prefix Group (Level 2)**:
+```typescript
+// Current: Green theme with toggle button
+return (
+    <div className='flex items-center gap-2 py-1.5 px-3 -ml-3.5 bg-linear-to-r from-green-50 to-green-100/50'>
+        <div className='border-l-2 border-green-500 pl-2 -ml-3'>
+            {count > 0 && <GroupCheckbox groupProps={props} />}
+        </div>
+        <div className='flex items-center gap-2'>
+            <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+                <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
+            </svg>
+            <span className='text-gray-600 text-xs font-medium'>Prefix:</span>
+            <span className='font-semibold text-green-800 text-sm'>{typeName}</span>
+        </div>
+        <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full font-semibold text-xs border border-green-400'>
+            {count}
+        </span>
+        {getSelectedCountBadge(props)}
+    </div>
+);
+```
+
+---
+
+### 6. **Add Helper Functions** ⭐ MEDIUM PRIORITY
+
+**Functions to Add**:
+
+1. **`getAllControlIdsFromGroup(groupProps)`** (super-admin 589-614)
+   - Returns all control IDs in a group
+   - Used by checkbox state calculation
+
+2. **`getGroupCheckboxState(groupProps)`** (super-admin 620-638)
+   - Returns 'checked', 'unchecked', or 'indeterminate'
+   - Based on selection state of controls in group
+
+3. **`getSelectedCountBadge(groupProps)`** (super-admin 804-838)
+   - Returns badge showing "X selected"
+   - Replaces DOM manipulation approach
+
+4. **`getTotalControlCountForTypeGroup(groupProps)`** (super-admin 843-862)
+   - Admin doesn't need this (2-level vs 4-level)
+   - ⚠️ **SKIP THIS ONE** for admin
+
+---
+
+### 7. **Improve updateGroupCaptionBadges()** ⭐ LOW PRIORITY
+**Current** (Lines 308-380): Uses DOM manipulation to add "X sel" badges
+
+**Keep As-Is**: This works fine for admin's simpler 2-level structure. The super-admin version uses `getSelectedCountBadge()` because it has 4 levels, but admin's approach is adequate.
+
+**Minor Improvement**: Change "sel" to "selected" for clarity (Line 372)
+
+---
+
+### 8. **Preserve Admin-Specific Features** ⚠️ CRITICAL
+
+**DO NOT REMOVE**:
+1. ✅ Client name display (Line 100)
+2. ✅ `getAutoLinkButton()` (Lines 733-742)
+3. ✅ `handleOnClickAutoLinkFromBuiltinRoles()` (Lines 744-750)
+4. ✅ Auto-link icon in description template (Line 728)
+5. ✅ `clientId` in sqlArgs (Line 203)
+6. ✅ 2-level tree structure (don't transform to 4-level)
+
+---
 
 ## Implementation Steps
 
-### Step 1: Create Backup Commit
-```bash
-git add .
-git commit -m "Working 2-level tree grid before 4-level hierarchy implementation"
-```
-This creates a restore point we can revert to if needed.
+### Step 1: Add State Variables
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Line**: 30 (after `const [selectedCount, setSelectedCount] = useState<number>(0);`)
 
-### Step 2: Data Transformation Function
-
-Create a function to transform the 2-level data into 4-level hierarchy:
-
+**Add**:
 ```typescript
-function transformTo4LevelHierarchy(roles: any[]): any[] {
-    if (!roles || !Array.isArray(roles)) return roles;
-
-    return roles.map(role => {
-        // If no secured controls, return role with empty children
-        if (!role.securedControls || !Array.isArray(role.securedControls) || role.securedControls.length === 0) {
-            return {
-                ...role,
-                level: 0,
-                type: "role",
-                children: []
-            };
-        }
-
-        // Group secured controls by controlType
-        const groupedByType = _.groupBy(role.securedControls, 'controlType');
-
-        const typeChildren = Object.entries(groupedByType).map(([controlType, controlsOfType]: [string, any[]]) => {
-            // Group by controlPrefix within each type
-            const groupedByPrefix = _.groupBy(controlsOfType, 'controlPrefix');
-
-            const prefixChildren = Object.entries(groupedByPrefix).map(([controlPrefix, controlsOfPrefix]: [string, any[]]) => {
-                // Level 3: Actual controls
-                const controlChildren = controlsOfPrefix.map(control => ({
-                    ...control,
-                    level: 3,
-                    type: "control",
-                    pkey: control.id || control.pkey,
-                    roleId: role.roleId,
-                    securedControlId: control.securedControlId,
-                    name: control.name,
-                    descr: control.descr
-                }));
-
-                // Level 2: Prefix group
-                return {
-                    level: 2,
-                    type: "prefixGroup",
-                    controlPrefix: controlPrefix,
-                    name: controlPrefix,
-                    roleId: role.roleId,
-                    pkey: `${role.roleId}_${controlType}_${controlPrefix}`,
-                    children: controlChildren,
-                    count: controlChildren.length
-                };
-            });
-
-            // Level 1: Type group
-            return {
-                level: 1,
-                type: "typeGroup",
-                controlType: controlType,
-                name: controlType,
-                roleId: role.roleId,
-                pkey: `${role.roleId}_${controlType}`,
-                children: prefixChildren,
-                count: controlsOfType.length
-            };
-        });
-
-        // Level 0: Role
-        return {
-            ...role,
-            level: 0,
-            type: "role",
-            children: typeChildren,
-            securedControls: role.securedControls // Keep for unlink all functionality
-        };
-    });
-}
+const [checkboxUpdateTrigger, setCheckboxUpdateTrigger] = useState<number>(0);
 ```
 
-### Step 3: Apply Transformation
+---
 
-**Option A: Transform in useMemo** (Recommended)
+### Step 2: Update Imports
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Line**: 1
+
+**Change**:
 ```typescript
-// Get original data from Redux
-const originalData = useSelector((state: RootStateType) => {
-    return state.queryHelper[linksInstance]?.data?.[0]?.jsonResult;
-});
-
-// Transform data
-const transformedData = useMemo(() => {
-    if (!originalData || !Array.isArray(originalData)) return [];
-    return transformTo4LevelHierarchy(originalData);
-}, [originalData]);
+import { useContext, useEffect, useState } from "react";
 ```
 
-**Option B: Transform in custom loadData**
+**To**:
 ```typescript
-const customLoadData = useCallback(async () => {
-    const originalLoadData = context.CompSyncFusionTreeGrid[linksInstance].loadData;
-    await originalLoadData();
-
-    // Get and transform data
-    const treeGridRef = context.CompSyncFusionTreeGrid[linksInstance]?.gridRef;
-    if (treeGridRef?.current) {
-        const originalData = treeGridRef.current.dataSource;
-        const transformed = transformTo4LevelHierarchy(originalData);
-        treeGridRef.current.dataSource = transformed;
-        treeGridRef.current.refresh();
-    }
-}, []);
+import { useContext, useEffect, useMemo, useState } from "react";
 ```
 
-### Step 4: Update TreeGrid Configuration
+---
 
+### Step 3: Upgrade Polling Logic
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Lines**: 65-87
+
+**Replace entire useEffect with smart polling pattern from super-admin**
+
+---
+
+### Step 4: Add Code Organization Sections
+**File**: `admin-link-secured-controls-with-roles.tsx`
+
+**Add section headers before**:
+- Line 212: `// ============================================\n// UI Component Functions\n// ============================================`
+- Line 256: `// ============================================\n// Event Handlers\n// ============================================`
+- Line 290: `// ============================================\n// Group Selection Helper Functions\n// ============================================`
+- Line 533: `// ============================================\n// Grid Configuration Functions\n// ============================================`
+- Line 571: `// ============================================\n// Drag & Drop Functions\n// ============================================`
+- Line 687: `// ============================================\n// Tree Grid Configuration & Template Functions\n// ============================================`
+- Line 795: `// ============================================\n// Link/Unlink Action Handlers\n// ============================================`
+
+---
+
+### Step 5: Add Helper Functions
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Location**: After "Group Selection Helper Functions" section (after Line 307)
+
+**Add**:
+1. `getAllControlIdsFromGroup()` (adapt from super-admin)
+2. `getGroupCheckboxState()` (adapt from super-admin)
+3. `getSelectedCountBadge()` (adapt from super-admin)
+
+**Note**: Adapt for 2-level structure (remove Type/Prefix/Control level checks, just use field === 'controlType' or 'controlPrefix')
+
+---
+
+### Step 6: Create GroupCheckbox Component
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Location**: After helper functions (after Step 5)
+
+**Add**: GroupCheckbox component from super-admin (lines 730-799)
+
+**Adaptations**:
+- Keep 3-state logic (checked/unchecked/indeterminate)
+- Keep optimistic state update
+- Keep ARIA attributes
+- Simplify since only 2 levels
+
+---
+
+### Step 7: Update multiLevelGroupCaptionTemplate
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Lines**: 469-531
+
+**Replace**:
+- Remove toggle button elements
+- Add `<GroupCheckbox groupProps={props} />` on the left
+- Add green vertical border for visual hierarchy
+- Add `{getSelectedCountBadge(props)}` at the end
+
+---
+
+### Step 8: Update handleSelectAllInGroup
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Lines**: 382-467
+
+**Add optimistic state update pattern**:
+- Component will call this function
+- Function updates grid selection
+- Polling syncs state afterward
+
+**Note**: This function is already correct, just ensure it works with new checkbox component
+
+---
+
+### Step 9: Minor Badge Text Improvement
+**File**: `admin-link-secured-controls-with-roles.tsx`
+**Line**: 372
+
+**Change**:
 ```typescript
-<CompSyncfusionTreeGrid
-    addUniqueKeyToJson={true}
-    className=''
-    childMapping="children"  // Changed from "securedControls"
-    columns={getLinkColumns()}
-    dataSource={transformedData}  // Use transformed data
-    height="calc(100vh - 335px)"
-    instance={linksInstance}
-    minWidth='400px'
-    pageSize={11}
-    rowHeight={40}
-    sqlArgs={{}}
-    sqlId={SqlIdsMap.getRolesSecuredControlsLink}
-    treeColumnIndex={0}
-/>
+badge.textContent = `${selectedCount} sel`;
 ```
 
-### Step 5: Update Template Functions
-
-#### nameColumnTemplate
+**To**:
 ```typescript
-function nameColumnTemplate(props: any) {
-    // Level 0: Role
-    if (props.level === 0 || props.type === "role") {
-        return (
-            <div className="flex items-center">
-                <span className='font-semibold text-gray-900'>{props.name}</span>
-                {getChildCount(props)}
-            </div>
-        );
-    }
-
-    // Level 1: Type Group
-    if (props.level === 1 || props.type === "typeGroup") {
-        return (
-            <div className='flex items-center gap-2 py-1 px-2 bg-blue-50 rounded'>
-                <IconControls className='w-4 h-4 text-blue-600' />
-                <span className='text-xs font-medium text-gray-600'>Type:</span>
-                <span className='font-semibold text-blue-800'>{props.controlType || props.name}</span>
-                <span className='inline-flex items-center px-2 py-0.5 bg-blue-200 text-blue-900 rounded-full text-xs font-semibold'>
-                    {props.count || 0}
-                </span>
-            </div>
-        );
-    }
-
-    // Level 2: Prefix Group
-    if (props.level === 2 || props.type === "prefixGroup") {
-        return (
-            <div className='flex items-center gap-2 py-1 px-2 ml-4 bg-green-50 rounded'>
-                <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
-                    <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
-                </svg>
-                <span className='text-xs font-medium text-gray-600'>Prefix:</span>
-                <span className='font-semibold text-green-800'>{props.controlPrefix || props.name}</span>
-                <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full text-xs font-semibold'>
-                    {props.count || 0}
-                </span>
-            </div>
-        );
-    }
-
-    // Level 3: Control
-    return (
-        <div className="flex items-center ml-8">
-            <div className='flex items-center justify-center w-6 h-6 bg-sky-100 rounded'>
-                <IconControls className="w-4 h-4 text-sky-600" />
-            </div>
-            <span className='ml-2 text-gray-700'>{props.name}</span>
-        </div>
-    );
-}
+badge.textContent = `${selectedCount} selected`;
 ```
 
-#### descrColumnTemplate
-```typescript
-function descrColumnTemplate(props: any) {
-    // Show description and buttons only for roles and actual controls
-    // Not for group headers (type and prefix groups)
-
-    if (props.type === "typeGroup" || props.type === "prefixGroup") {
-        return null; // No description for group headers
-    }
-
-    return (
-        <div className="flex flex-row items-center">
-            <span>{props.descr}</span>
-            {getLinkOrUnlinkButton(props)}
-            {getUnlinkAllButton(props)}
-        </div>
-    );
-}
-```
-
-#### getLinkOrUnlinkButton
-```typescript
-function getLinkOrUnlinkButton(props: any) {
-    // Link button for roles (level 0)
-    if (props.level === 0 || props.type === "role") {
-        return (
-            <TooltipComponent content={Messages.messLinkSecuredControl}>
-                <button
-                    onClick={() => handleOnClickLink(props)}
-                    className="ml-2 p-1.5 rounded-md hover:bg-blue-50 transition-all duration-200 hover:scale-110"
-                    aria-label="Link secured control to role"
-                >
-                    <IconLink className="w-6 h-6 text-blue-600 hover:text-blue-700" />
-                </button>
-            </TooltipComponent>
-        );
-    }
-
-    // Unlink button for actual controls (level 3)
-    if (props.level === 3 || props.type === "control") {
-        return (
-            <TooltipComponent content={Messages.messUnlinkSecuredControl}>
-                <button
-                    onClick={() => handleOnClickUnlink(props)}
-                    className="ml-2 p-1.5 rounded-md hover:bg-amber-50 transition-all duration-200 hover:scale-110"
-                    aria-label="Unlink secured control from role"
-                >
-                    <IconUnlink className="w-6 h-6 text-amber-600 hover:text-amber-700" />
-                </button>
-            </TooltipComponent>
-        );
-    }
-
-    return null;
-}
-```
-
-### Step 6: Update Drag & Drop Logic
-
-The drag and drop needs to find the parent role regardless of which level is dropped on:
-
-```typescript
-function findParentRole(targetRowData: any, viewRecords: any[]): any {
-    // If dropped on role, return it
-    if (targetRowData.level === 0 || targetRowData.type === "role") {
-        return targetRowData;
-    }
-
-    // Walk up using roleId to find the role
-    const roleId = targetRowData.roleId;
-    return viewRecords.find((r: any) =>
-        (r.level === 0 || r.type === "role") && r.roleId === roleId
-    );
-}
-
-function onSecuredControlsRowDrop(args: any) {
-    args.cancel = true;
-    const targetGridRef = context.CompSyncFusionTreeGrid[linksInstance].gridRef;
-
-    // ... existing validation code ...
-
-    const rolesLinkViewRecords = targetGridRef.current.getCurrentViewRecords();
-    const targetRowData = rolesLinkViewRecords[args.dropIndex];
-
-    // Find the parent role
-    const parentRole = findParentRole(targetRowData, rolesLinkViewRecords);
-
-    if (!parentRole) {
-        console.error('Could not find parent role');
-        return;
-    }
-
-    // Get existing controls from the role
-    const existingControls = parentRole.securedControls || [];
-    const existingIds = existingControls.map((c: any) => c.securedControlId);
-
-    // Filter out already linked controls
-    const sourceIds: string[] = args.data?.map((x: any) => x.id) || [];
-    const newIds = sourceIds.filter(id => !existingIds.includes(id));
-
-    // Proceed with link operation using roleId
-    const roleId = parentRole.roleId;
-    // ... rest of link logic ...
-}
-```
-
-### Step 7: Update setExpandedKeys
-
-```typescript
-function setExpandedKeys() {
-    const expandedKeys: Set<number> = new Set();
-
-    // Expand the entire path to the dropped location
-    let current = targetRowData;
-    while (current) {
-        if (current.pkey) {
-            expandedKeys.add(current.pkey);
-        }
-
-        // Stop at role level
-        if (current.level === 0 || current.type === "role") {
-            break;
-        }
-
-        // Try to find parent
-        if (current.parentItem) {
-            current = rolesLinkViewRecords[current.parentItem.index];
-        } else {
-            break;
-        }
-    }
-
-    context.CompSyncFusionTreeGrid[linksInstance].expandedKeys = expandedKeys;
-}
-```
-
-### Step 8: Add Expand/Collapse All Button
-
-```typescript
-function ExpandCollapseTreeButton() {
-    return (
-        <button
-            onClick={handleToggleAllTreeGroups}
-            className='w-8 h-8 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-md'
-            title={allTreeGroupsExpanded ? 'Collapse all' : 'Expand all'}
-        >
-            {allTreeGroupsExpanded ? <CollapseIcon /> : <ExpandIcon />}
-        </button>
-    );
-}
-
-function handleToggleAllTreeGroups() {
-    const treeGridRef = context.CompSyncFusionTreeGrid[linksInstance]?.gridRef;
-    if (!treeGridRef?.current) return;
-
-    if (allTreeGroupsExpanded) {
-        treeGridRef.current.collapseAll();
-        setAllTreeGroupsExpanded(false);
-    } else {
-        treeGridRef.current.expandAll();
-        setAllTreeGroupsExpanded(true);
-    }
-}
-```
+---
 
 ## Testing Checklist
 
-### Display Testing
-- [ ] Roles display at level 0
-- [ ] Type groups display at level 1 with proper styling
-- [ ] Prefix groups display at level 2 with proper styling
-- [ ] Controls display at level 3
-- [ ] Expand/collapse works at all levels
-- [ ] Expand/collapse all button works
+### Visual Layout
+1. ✅ Group checkboxes appear at the left of group captions
+2. ✅ Checkboxes show correct state (checked/unchecked/indeterminate)
+3. ✅ Green vertical border shows on prefix groups
+4. ✅ "X selected" badge appears when items selected
+5. ✅ Client name still displays in header
+6. ✅ Auto-link button still visible on roles
 
-### Functionality Testing
-- [ ] Drag from left grid to role (level 0) - should link
-- [ ] Drag from left grid to type group (level 1) - should link to parent role
-- [ ] Drag from left grid to prefix group (level 2) - should link to parent role
-- [ ] Drag from left grid to control (level 3) - should link to parent role
-- [ ] Link button on role works
-- [ ] Unlink button on control (level 3) works
-- [ ] Unlink all button on role works
-- [ ] No duplicate links created
-- [ ] Controls disappear from left when linked
-- [ ] Tree refreshes correctly after link/unlink
+### Functionality
+1. ✅ Clicking checkbox selects/deselects all controls in group
+2. ✅ Checkbox updates immediately on click
+3. ✅ Indeterminate state shows when some controls selected
+4. ✅ Drag and drop still works
+5. ✅ ESC cancels drag
+6. ✅ Selection indicator shows correct count
+7. ✅ Auto-link from built-in roles works
+8. ✅ Link/unlink buttons work
+9. ✅ No infinite loops or flickering
 
-### Edge Cases
-- [ ] Role with no controls shows empty structure
-- [ ] Role with controls of single type
-- [ ] Role with controls of single prefix
-- [ ] Multiple controls with same name but different types
-- [ ] Data refresh after operations
+### Performance
+1. ✅ No console errors
+2. ✅ Polling doesn't cause performance issues
+3. ✅ Checkboxes respond instantly
+4. ✅ No lag when selecting large groups
 
-## Rollback Plan
+---
 
-If implementation doesn't work:
+## Code Comparison Summary
 
-### Option 1: Git Reset (Recommended)
-```bash
-git reset --hard HEAD~1
-```
-This reverts to the commit before implementation.
+| Feature | Admin (Current) | Admin (After Upgrade) | Super-Admin |
+|---------|----------------|----------------------|-------------|
+| Tree Levels | 2 (Role → Controls) | 2 (Role → Controls) | 4 (Role → Type → Prefix → Controls) |
+| Group Selection | Toggle buttons | Checkboxes ✅ | Checkboxes |
+| Polling | Simple 300ms | Smart 100ms with guards ✅ | Smart 100ms with guards |
+| Code Sections | None | Organized ✅ | Organized |
+| Checkbox States | N/A | 3 states ✅ | 3 states |
+| Auto-Link | Yes (keep) ✅ | Yes (keep) ✅ | No |
+| Client Display | Yes (keep) ✅ | Yes (keep) ✅ | No |
+| Data Transform | None | None | useMemo to 4-level |
 
-### Option 2: Manual Revert
-1. Change `childMapping` back to `"securedControls"`
-2. Remove `dataSource` prop or set to `undefined`
-3. Revert template functions to 2-level logic
-4. Remove transformation function and related code
+---
 
-### Option 3: Git Stash
-Before starting:
-```bash
-git stash push -m "4-level hierarchy attempt"
-```
-To restore:
-```bash
-git stash pop
-```
+## Benefits of Upgrade
 
-## Success Criteria
+✅ **Better UX** - Checkboxes are more intuitive than buttons for selection
+✅ **Better Performance** - Smart polling prevents infinite loops and unnecessary updates
+✅ **Better Maintainability** - Organized code sections make navigation easier
+✅ **Better Feedback** - Immediate checkbox updates provide instant visual confirmation
+✅ **Better State Indication** - 3-state checkboxes show partial selection clearly
+✅ **Consistency** - Matches super-admin patterns while preserving admin-specific features
 
-1. ✅ 4-level hierarchy displays correctly
-2. ✅ All drag and drop scenarios work
-3. ✅ Link/unlink functionality unchanged
-4. ✅ No TypeScript errors
-5. ✅ Build succeeds
-6. ✅ UI is responsive and performs well
-7. ✅ Can revert to original state if needed
+---
 
-## Implementation Order
+## Risk Mitigation
 
-1. **Create backup commit** (safety first!)
-2. **Add transformation function**
-3. **Update TreeGrid to use transformed data**
-4. **Update template functions** (start with nameColumnTemplate)
-5. **Test display** (verify 4 levels show correctly)
-6. **Update drag & drop logic** (findParentRole function)
-7. **Test all link/unlink scenarios**
-8. **Add expand/collapse all button**
-9. **Final testing**
-10. **If issues, rollback using git reset**
+⚠️ **Preserve Admin Features**:
+- Client name display
+- Auto-link from built-in roles
+- 2-level tree structure
+- Admin-specific SQL queries
 
-## Notes
+⚠️ **Don't Over-Complicate**:
+- Don't add 4-level transform (admin uses simple 2-level)
+- Don't remove toggle buttons from tree grid toolbar (keep as-is)
+- Keep existing drag & drop logic (it works)
 
-- Transformation preserves `securedControls` on role for unlink all functionality
-- Each node has `roleId` for tracing back to parent role
-- `pkey` is unique for each node for expand/collapse tracking
-- `type` field helps identify node type in templates
-- Display-only change means all SQL and backend logic unchanged
+---
+
+## File Size Estimate
+
+**Current**: 851 lines
+**After Upgrade**: ~950-1000 lines (+100-150 lines)
+
+**Added**:
+- GroupCheckbox component: ~70 lines
+- Helper functions: ~80 lines
+- Section headers: ~30 lines
+- Updated polling logic: ~20 lines
+
+---
+
+## Next Steps
+
+1. ✅ Review this plan
+2. ⏭️ Implement Step 1 (Add state variables)
+3. ⏭️ Implement Step 2 (Update imports)
+4. ⏭️ Implement Step 3 (Upgrade polling)
+5. ⏭️ Implement Step 4 (Add sections)
+6. ⏭️ Implement Step 5 (Add helper functions)
+7. ⏭️ Implement Step 6 (Create GroupCheckbox)
+8. ⏭️ Implement Step 7 (Update caption template)
+9. ⏭️ Implement Step 8 (Verify handleSelectAllInGroup)
+10. ⏭️ Implement Step 9 (Update badge text)
+11. ⏭️ Test all functionality
+12. ⏭️ Done! 🎉
