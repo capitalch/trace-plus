@@ -17,6 +17,8 @@
 	- QA and release		: 30-08-2025
 
 ## History
+# 30-10-2025
+	- Completed access level security
 # 18-10-2025
 	- Completed bug fixes
 	- release

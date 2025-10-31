@@ -189,6 +189,46 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // Add computed typePrefix field to all data for unique grouping
+    useEffect(() => {
+        // Set up an interval to check and process data when it arrives
+        const intervalId = setInterval(() => {
+            const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+            if (!gridRef?.current) return;
+
+            const dataSource = gridRef.current.dataSource as any[];
+            if (!dataSource || !Array.isArray(dataSource) || dataSource.length === 0) return;
+
+            // Check if typePrefix already exists (avoid reprocessing)
+            if (dataSource[0]?.typePrefix) {
+                clearInterval(intervalId);
+                return;
+            }
+
+            // Add typePrefix field to each record (combines type and prefix)
+            const enhancedData = dataSource.map(record => ({
+                ...record,
+                typePrefix: `${record.controlType}|${record.controlPrefix}`
+            }));
+
+            // Update grid data source and refresh to apply grouping
+            gridRef.current.dataSource = enhancedData;
+            gridRef.current.refresh();
+
+            // Collapse all groups after data is loaded (only if not already expanded by user)
+            setTimeout(() => {
+                if (gridRef.current && !allGroupsExpanded) {
+                    gridRef.current.groupModule?.collapseAll();
+                }
+            }, 100);
+
+            // Clear interval after successful processing
+            clearInterval(intervalId);
+        }, 200);
+
+        // Cleanup
+        return () => clearInterval(intervalId);
+    }, [context.CompSyncFusionGrid, securedControlsInstance, allGroupsExpanded])
 
     // ESC key listener to cancel drag operations
     useEffect(() => {
@@ -317,7 +357,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                                     targetId: linksInstance
                                 }}
                             groupSettings={{
-                                columns: ['controlType', 'controlPrefix'],
+                                columns: ['controlType', 'typePrefix'],
                                 showDropArea: false,
                                 showGroupedColumn: false,
                                 captionTemplate: multiLevelGroupCaptionTemplate
@@ -511,8 +551,8 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         const selectedInGroup = selectedRecords.filter((record: any) => {
             if (field === 'controlType') {
                 return record.controlType === groupKey;
-            } else if (field === 'controlPrefix') {
-                return record.controlPrefix === groupKey;
+            } else if (field === 'typePrefix') {
+                return record.typePrefix === groupKey;
             }
             return false;
         });
@@ -549,10 +589,31 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 const match = cellContent.match(/Type:\s*([^\d]+)/);
                 if (match) key = match[1].trim();
             } else if (cellContent.includes('Prefix:')) {
-                field = 'controlPrefix';
+                field = 'typePrefix';
                 // Extract the prefix name
                 const match = cellContent.match(/Prefix:\s*([^\d]+)/);
-                if (match) key = match[1].trim();
+                if (match) {
+                    const prefixName = match[1].trim();
+
+                    // Find the parent Type group to construct composite key
+                    let parentRow = (cell as HTMLElement).closest('tr')?.previousElementSibling;
+                    let parentType = '';
+
+                    while (parentRow) {
+                        const parentCell = parentRow.querySelector('.e-groupcaption');
+                        if (parentCell && parentCell.textContent?.includes('Type:')) {
+                            const typeMatch = parentCell.textContent.match(/Type:\s*([^\d]+)/);
+                            if (typeMatch) {
+                                parentType = typeMatch[1].trim();
+                                break;
+                            }
+                        }
+                        parentRow = parentRow.previousElementSibling;
+                    }
+
+                    // Construct composite key: "type|prefix"
+                    key = parentType ? `${parentType}|${prefixName}` : prefixName;
+                }
             }
 
             if (!field || !key) return;
@@ -609,12 +670,12 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
 
         if (!dataSource || !Array.isArray(dataSource)) return [];
 
-        // Filter records that belong to this group
+        // Filter records that belong to this group - now using typePrefix for unique identification
         const recordsInGroup = dataSource.filter((record: any) => {
             if (field === 'controlType') {
                 return record.controlType === groupKey;
-            } else if (field === 'controlPrefix') {
-                return record.controlPrefix === groupKey;
+            } else if (field === 'typePrefix') {
+                return record.typePrefix === groupKey;
             } else if (field === 'controlName') {
                 const prefix = record.controlName?.split('.')[0];
                 return prefix === groupKey;
@@ -669,12 +730,12 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
             return;
         }
 
-        // Filter records that belong to this group
+        // Filter records that belong to this group - now using typePrefix for unique identification
         const recordsInGroup = dataSource.filter((record: any) => {
             if (field === 'controlType') {
                 return record.controlType === groupKey;
-            } else if (field === 'controlPrefix') {
-                return record.controlPrefix === groupKey;
+            } else if (field === 'typePrefix') {
+                return record.typePrefix === groupKey;
             } else if (field === 'controlName') {
                 // If grouping by controlName, match the prefix extracted from the name
                 const prefix = record.controlName?.split('.')[0];
@@ -756,15 +817,14 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         const handleClick = (e: React.MouseEvent) => {
             e.stopPropagation();
 
-            // Immediately update checkbox state for instant visual feedback
-            const currentState = state;
-            const expectedNewState = currentState === 'checked' ? 'unchecked' : 'checked';
-            setState(expectedNewState);
-
-            // Then perform actual grid selection
+            // Perform actual grid selection first
             handleSelectAllInGroup(groupProps);
 
-            // Polling will sync the state afterwards to ensure correctness
+            // Trigger immediate state update
+            setTimeout(() => {
+                const newState = getGroupCheckboxState(groupProps);
+                setState(newState);
+            }, 10);
         };
 
         return (
@@ -823,12 +883,12 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         const dataSource = gridRef.current.dataSource as any[];
         if (!dataSource) return null;
 
-        // Get all records in this group
+        // Get all records in this group - now using typePrefix for unique identification
         const recordsInGroup = dataSource.filter((record: any) => {
             if (field === 'controlType') {
                 return record.controlType === groupKey;
-            } else if (field === 'controlPrefix') {
-                return record.controlPrefix === groupKey;
+            } else if (field === 'typePrefix') {
+                return record.typePrefix === groupKey;
             }
             return false;
         });
@@ -875,7 +935,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
     }
 
     function multiLevelGroupCaptionTemplate(props: any) {
-        const typeName = props.groupKey || props.key || props.headerText || props.value || 'Unknown';
+        const rawTypeName = props.groupKey || props.key || props.headerText || props.value || 'Unknown';
         const field = props.field || '';
 
         // Determine if this is Type or Prefix grouping based on field
@@ -891,7 +951,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     <div className='flex items-center gap-2'>
                         <IconControls className='w-5 h-5 text-blue-600' />
                         <span className='text-gray-600 text-xs font-medium uppercase tracking-wide'>Type:</span>
-                        <span className='font-bold text-blue-800 text-base'>{typeName}</span>
+                        <span className='font-bold text-blue-800 text-base'>{rawTypeName}</span>
                     </div>
                     <span className='inline-flex items-center px-2.5 py-0.5 bg-linear-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
                         {count} {count === 1 ? 'control' : 'controls'}
@@ -900,6 +960,12 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 </div>
             );
         } else {
+            // Level 2: Prefix grouping (typePrefix like "menu|vouchers")
+            // Extract just the prefix part for display
+            const displayName = (rawTypeName && typeof rawTypeName === 'string' && rawTypeName.includes('|'))
+                ? rawTypeName.split('|')[1] || rawTypeName
+                : rawTypeName;
+
             // Level 2: Prefix grouping (Green theme) with checkbox and border on the left
             return (
                 <div className='flex items-center gap-2 py-1.5 px-3 -ml-3.5 bg-linear-to-r from-green-50 to-green-100/50'>
@@ -911,7 +977,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                             <path d='M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z' />
                         </svg>
                         <span className='text-gray-600 text-xs font-medium'>Prefix:</span>
-                        <span className='font-semibold text-green-800 text-sm'>{typeName}</span>
+                        <span className='font-semibold text-green-800 text-sm'>{displayName}</span>
                     </div>
                     <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full font-semibold text-xs border border-green-400'>
                         {count}
@@ -959,7 +1025,15 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                 field: "controlPrefix",
                 headerText: "",
                 type: "string",
+                visible: false,
                 width: 60,
+            },
+            {
+                field: "typePrefix",
+                headerText: "ABCD",
+                type: "string",
+                visible: false,
+                width: 0,
             },
         ]
     }
