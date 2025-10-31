@@ -1,352 +1,412 @@
-# Plan: Fix "Selected" Badge Issue - Root Cause Analysis & Final Solution
+# Plan: Fix Text Selection During Custom Drag Operation
 
 ## Problem Description
 
-**Issue**: When controls are selected in a prefix group under one Type (e.g., "menu" → "vouchers"), the "X selected" badge also appears in prefix groups with the same name under different Types (e.g., "action" → "vouchers").
+**Current Behavior**:
+- When dragging selected controls from anywhere in the grid, the grid control text (names, descriptions) gets selected along the drag path
+- As the mouse moves during drag, text elements are highlighted/selected, creating visual clutter
+- This is a standard browser behavior when clicking and dragging on text content
 
-**Example**:
-```
-Type: menu
-├─ Prefix: vouchers (2 controls)
-│   ├─ MENU.VOUCHERS.VIEW ✓ (selected)
-│   └─ MENU.VOUCHERS.EDIT ✓ (selected)
-│   Badge: "2 selected" ✅ CORRECT
+**Expected Behavior**:
+- During drag operation, text should not be selected
+- Only the custom drag helper should be visible
+- Clean drag experience without text selection artifacts
 
-Type: action
-└─ Prefix: vouchers (5 controls)
-    ├─ ACTION.VOUCHERS.CREATE ☐ (not selected)
-    ├─ ACTION.VOUCHERS.DELETE ☐ (not selected)
-    Badge: "2 selected" ❌ WRONG! Should show nothing
-```
+**Root Cause**:
+- When `mousedown` happens on text content and mouse moves, the browser's default behavior is to select text
+- Our custom drag handler doesn't prevent this default text selection behavior
+- We need to call `preventDefault()` and add CSS to disable text selection during drag
 
 ---
 
-## Root Cause Analysis
+## Solution Design
 
-### Why Previous Fixes Failed
+### Approach 1: Prevent Default on MouseDown (Simple)
 
-**Attempt 1**: Added `parentType` parameter to filtering functions
-- **Result**: Still failed
-- **Reason**: The template function is called during React render, and SyncFusion may batch-render multiple group instances with the same prefix name
+Call `preventDefault()` on the mousedown event when starting a drag.
 
-**Attempt 2**: Used `groupProps.items` array
-- **Result**: Still failed
-- **Reason**: The `items` property might not exist, or SyncFusion doesn't provide it in the group caption template context
-
-### The Real Problem
-
-SyncFusion's grouping setup:
+**Implementation**:
 ```typescript
-groupSettings={{
-    columns: ['controlType', 'controlPrefix'],
-    ...
-}}
-```
+const handleMouseDown = (e: MouseEvent) => {
+    const selectedRecords = gridRef.current?.getSelectedRecords();
+    if (!selectedRecords || selectedRecords.length === 0) return;
 
-This creates hierarchical grouping: Type → Prefix. However:
-
-1. When the `multiLevelGroupCaptionTemplate` is called for a **Prefix group**, the `groupProps` object contains:
-   - `field: 'controlPrefix'`
-   - `groupKey: 'vouchers'`
-   - **BUT NO REFERENCE to which Type parent it belongs to!**
-
-2. When `getSelectedCountBadge(groupProps)` is called, it only knows `field='controlPrefix'` and `key='vouchers'`
-
-3. The function then filters ALL records where `controlPrefix === 'vouchers'` (across all types)
-
-4. React renders all group captions, and they ALL show the same count because they're all calling with the same parameters
-
----
-
-## The Real Solution: Add Type Context to Group Key
-
-### Approach: Modify Data to Include Type in Prefix
-
-Instead of trying to detect the parent type at render time, we should **include the type information in the prefix itself** when the data is structured for grouping.
-
-### Option 1: Composite Grouping Key (Recommended)
-
-Add a computed field to the data that combines type and prefix:
-
-```typescript
-// Before grouping, add a composite field to each record
-const enhancedDataSource = dataSource.map(record => ({
-    ...record,
-    typePrefix: `${record.controlType}|${record.controlPrefix}` // e.g., "menu|vouchers"
-}));
-```
-
-Then group by this composite key:
-```typescript
-groupSettings={{
-    columns: ['controlType', 'typePrefix'], // Use composite key instead of controlPrefix
-    ...
-}}
-```
-
-**Benefits**:
-- ✅ Each prefix group is now unique: "menu|vouchers" vs "action|vouchers"
-- ✅ No ambiguity in template rendering
-- ✅ Simple filtering logic
-- ✅ No complex parent detection needed
-
-**Display**:
-Update the template to strip the type prefix when displaying:
-```typescript
-const displayName = typeName.includes('|')
-    ? typeName.split('|')[1]  // Show "vouchers"
-    : typeName;
-```
-
-### Option 2: Use Group Data Manager Context
-
-SyncFusion provides a `DataManager` in the group context. We can access parent group information through it.
-
-```typescript
-function getSelectedCountBadge(groupProps: any): JSX.Element | null {
-    const field = groupProps.field;
-    const groupKey = groupProps.groupKey || groupProps.key;
-
-    // For prefix groups, find parent type from groupProps
-    let parentType: string | undefined = undefined;
-
-    if (field === 'controlPrefix' && groupProps.level === 1) {
-        // groupProps should have parent info at level 1 (nested under type)
-        // Access through groupProps.parentGKey or similar
-        parentType = groupProps.parentGKey;
+    // Check for interactive elements...
+    if (target.closest('.e-checkbox-wrapper') || ...) {
+        return;
     }
 
-    // ... rest of logic
+    // Prevent text selection during drag
+    e.preventDefault(); // ✅ Add this
+
+    // Store start position...
+    dragStartPos = { x: e.clientX, y: e.clientY };
+    // ... rest of code
+};
+```
+
+**Pros**:
+- Simple one-line fix
+- Prevents text selection at the source
+
+**Cons**:
+- Might prevent other default behaviors we want to keep
+- Need to be careful not to break checkbox/button clicks
+
+---
+
+### Approach 2: Add User-Select CSS (Recommended)
+
+Add CSS to prevent text selection only during active drag operations.
+
+**Implementation**:
+
+#### Step 1: Add CSS for No-Select State
+
+```css
+/* In index.css */
+.dragging-active {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
+
+.dragging-active * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }
 ```
 
-**Note**: This requires investigating the exact structure of `groupProps` to find where parent information is stored.
+#### Step 2: Toggle Class During Drag
+
+```typescript
+function startCustomDrag(event: MouseEvent, selectedRecords: any[]) {
+    // Add class to prevent text selection
+    document.body.classList.add('dragging-active');
+
+    // ... existing drag helper creation code ...
+
+    const handleDragEnd = (e: MouseEvent) => {
+        // Remove drag helper
+        dragHelper.remove();
+
+        // Remove no-select class
+        document.body.classList.remove('dragging-active');
+
+        // ... rest of cleanup code ...
+    };
+}
+```
+
+**Pros**:
+- Clean separation of concerns
+- Only affects drag operations
+- Doesn't interfere with normal interactions
+- Works across all browsers
+
+**Cons**:
+- Slightly more code than approach 1
 
 ---
 
-## Recommended Implementation Plan
+### Approach 3: Combination (Best)
 
-### Phase 1: Add Composite Key (Cleanest Solution)
+Combine both approaches for maximum effectiveness.
 
-#### Step 1: Add Computed Field in useEffect
+**Implementation**:
+1. Call `preventDefault()` on mousedown (but only after checking for interactive elements)
+2. Add CSS class during active drag
+3. Remove class on drag end
 
-**File**: `admin-link-secured-controls-with-roles.tsx`
-**Location**: Before the grid component
+This ensures:
+- No text selection starts on mousedown
+- No text selection during drag movement
+- Normal behavior restored after drag
 
-```typescript
-// After getting data from Redux, enhance it
-useEffect(() => {
-    if (!gridRef?.current) return;
+---
 
-    const originalData = gridRef.current.dataSource as any[];
-    if (!originalData) return;
+## Recommended Implementation
 
-    // Add composite typePrefix field
-    const enhancedData = originalData.map(record => ({
-        ...record,
-        typePrefix: `${record.controlType}|${record.controlPrefix}`
-    }));
+Use **Approach 3 (Combination)** for the most robust solution.
 
-    // Update grid data source
-    gridRef.current.dataSource = enhancedData;
-    gridRef.current.refresh();
-}, [/* appropriate dependencies */]);
-```
+### Changes Required
 
-#### Step 2: Update Group Settings
+#### File 1: `super-admin-link-secured-controls-with-roles.tsx`
 
-**File**: `admin-link-secured-controls-with-roles.tsx`
-**Location**: Line 361-366
+**Location**: Line ~307 in `handleMouseDown` function
 
 **Change**:
 ```typescript
-groupSettings={{
-    columns: ['controlType', 'typePrefix'],  // ✅ Use composite key
-    showDropArea: false,
-    showGroupedColumn: false,
-    captionTemplate: multiLevelGroupCaptionTemplate
-}}
-```
+const handleMouseDown = (e: MouseEvent) => {
+    // Get selected records
+    const selectedRecords = gridRef.current?.getSelectedRecords();
+    if (!selectedRecords || selectedRecords.length === 0) return;
 
-#### Step 3: Update Template Display Logic
+    // Ignore clicks on interactive elements
+    const target = e.target as HTMLElement;
 
-**File**: `admin-link-secured-controls-with-roles.tsx`
-**Location**: Line 992 (multiLevelGroupCaptionTemplate)
-
-```typescript
-function multiLevelGroupCaptionTemplate(props: any) {
-    const typeName = props.groupKey || props.key || props.headerText || props.value || 'Unknown';
-    const count = props.count || 0;
-
-    const isTypeGroup = (props.field || '') === 'controlType';
-
-    if (!isTypeGroup) {
-        // This is a typePrefix group (composite key like "menu|vouchers")
-        // Extract just the prefix part for display
-        const displayName = typeName.includes('|')
-            ? typeName.split('|')[1]
-            : typeName;
-
-        return (
-            <div className='flex items-center gap-2 py-1.5 px-3 -ml-3.5 bg-linear-to-r from-green-50 to-green-100/50'>
-                {/* ... */}
-                <span className='font-semibold text-green-800 text-sm'>{displayName}</span>
-                {/* ... */}
-            </div>
-        );
+    // Don't interfere with checkboxes
+    if (target.closest('.e-checkbox-wrapper') || target.closest('.e-checkselect')) {
+        return;
     }
 
-    // ... type group rendering
-}
+    // Don't interfere with group expand/collapse
+    if (target.closest('.e-recordplusexpand') || target.closest('.e-recordpluscollapse')) {
+        return;
+    }
+
+    // Don't interfere with scrollbars
+    if (target.closest('.e-scrollbar')) {
+        return;
+    }
+
+    // Don't interfere with toolbar buttons
+    if (target.closest('.e-toolbar')) {
+        return;
+    }
+
+    // ✅ ADD THIS: Prevent default text selection
+    e.preventDefault();
+
+    // Store start position for drag threshold
+    dragStartPos = { x: e.clientX, y: e.clientY };
+    // ... rest of code
+};
 ```
 
-#### Step 4: Update Column Definition
+#### File 2: `super-admin-link-secured-controls-with-roles.tsx`
 
-Add the new column to the grid:
+**Location**: Line ~504 in `startCustomDrag` function
 
+**Changes**:
 ```typescript
-function getSecuredControlsColumns(): SyncFusionGridColumnType[] {
-    return [
-        {
-            field: "controlName",
-            headerText: "Control",
-            type: "string",
-            width: 180,
-        },
-        {
-            field: "controlType",
-            headerText: "Type",
-            type: "string",
-            width: 60,
-        },
-        {
-            field: "descr",
-            headerText: "Description",
-            type: "string",
-        },
-        {
-            field: "controlPrefix",
-            headerText: "",
-            type: "string",
-            width: 60,
-        },
-        {
-            field: "typePrefix",       // ✅ Add this
-            headerText: "",            // Hidden column
-            type: "string",
-            visible: false,            // Don't display
-            width: 0,
-        },
-    ]
-}
-```
+function startCustomDrag(event: MouseEvent, selectedRecords: any[]) {
+    // ✅ ADD THIS: Prevent text selection during drag
+    document.body.classList.add('dragging-active');
 
-#### Step 5: Simplify Filtering Functions
+    // Create drag helper element
+    const dragHelper = document.createElement('div');
+    // ... existing drag helper code ...
 
-Now all filtering functions become simple because `typePrefix` is unique:
+    const handleDragEnd = (e: MouseEvent) => {
+        // Remove drag helper
+        dragHelper.remove();
 
-```typescript
-function getSelectedCountBadge(groupProps: any): JSX.Element | null {
-    const field = groupProps.field;
-    const groupKey = groupProps.groupKey || groupProps.key;
+        // ✅ ADD THIS: Restore text selection
+        document.body.classList.remove('dragging-active');
 
-    const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
-    if (!gridRef?.current) return null;
-
-    const dataSource = gridRef.current.dataSource as any[];
-    if (!dataSource) return null;
-
-    // Simple filtering - no need for parent type logic!
-    const recordsInGroup = dataSource.filter((record: any) => {
-        if (field === 'controlType') {
-            return record.controlType === groupKey;
-        } else if (field === 'typePrefix') {  // ✅ Use composite key
-            return record.typePrefix === groupKey;
+        // Remove highlight
+        if (currentDropTarget) {
+            currentDropTarget.classList.remove('e-dragstartrow');
         }
-        return false;
-    });
 
-    const selectedRecords = gridRef.current.getSelectedRecords() as any[];
-    const selectedIds = new Set(selectedRecords.map((r: any) => r.id));
+        // ... rest of cleanup code ...
+    };
 
-    const selectedInGroup = recordsInGroup.filter(r => selectedIds.has(r.id)).length;
-
-    if (selectedInGroup === 0) return null;
-
-    return (
-        <span className='inline-flex items-center px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-xs font-semibold border border-purple-400'>
-            {selectedInGroup} selected
-        </span>
-    );
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
 }
 ```
 
-**Update ALL filtering functions**:
-- `getSelectedCountInGroup` - Replace `controlPrefix` with `typePrefix`
-- `getAllControlIdsFromGroup` - Replace `controlPrefix` with `typePrefix`
-- `handleSelectAllInGroup` - Replace `controlPrefix` with `typePrefix`
-- Remove all the parent type detection logic (no longer needed!)
+#### File 3: `index.css`
 
----
+**Location**: After the existing `.has-selection` styles
 
-## Alternative: Debug groupProps Structure
+**Add**:
+```css
+/* Prevent text selection during active drag operations */
+.dragging-active {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
 
-Before implementing the composite key solution, we should log what's actually in `groupProps`:
-
-```typescript
-function multiLevelGroupCaptionTemplate(props: any) {
-    // Temporary debug logging
-    if (props.field === 'controlPrefix') {
-        console.log('Prefix Group Props:', {
-            field: props.field,
-            key: props.key,
-            groupKey: props.groupKey,
-            level: props.level,
-            parentGKey: props.parentGKey,
-            parentPrimaryKey: props.parentPrimaryKey,
-            allKeys: Object.keys(props),
-            items: props.items?.length,
-            data: props.data,
-        });
-    }
-
-    // ... rest of function
+.dragging-active * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }
 ```
 
-This will help us understand if there's a simpler way to access parent context.
+#### File 4: `admin-link-secured-controls-with-roles.tsx`
+
+Apply the exact same changes as File 1 and File 2 to the admin variant.
 
 ---
 
 ## Implementation Steps
 
-1. ✅ Add debug logging to understand groupProps structure
-2. ⏭️ If parent info exists in groupProps, use it
-3. ⏭️ Otherwise, implement composite key solution (recommended)
-4. ⏭️ Update all filtering functions to use typePrefix
-5. ⏭️ Update template to display prefix name correctly
-6. ⏭️ Remove unnecessary parent detection logic
-7. ⏭️ Test thoroughly
+### Step 1: Add CSS for No-Select
+- Add `.dragging-active` class to `index.css`
+- Include all vendor prefixes for browser compatibility
+
+### Step 2: Update Super-Admin File
+- Add `e.preventDefault()` in `handleMouseDown` (after interactive element checks)
+- Add `document.body.classList.add('dragging-active')` at start of `startCustomDrag`
+- Add `document.body.classList.remove('dragging-active')` in `handleDragEnd`
+
+### Step 3: Update Admin File
+- Apply same changes as Step 2 to admin variant file
+
+### Step 4: Test
+- Test drag operations don't select text
+- Test checkboxes still work
+- Test group expand/collapse still works
+- Test drag and drop still works correctly
 
 ---
 
-## Why This Will Work
+## Testing Plan
 
-1. **Unique Keys**: Each prefix group now has a unique identifier: "menu|vouchers" ≠ "action|vouchers"
-2. **No Ambiguity**: React renders each group with a distinct key
-3. **Simple Logic**: Filtering just checks `typePrefix === groupKey`
-4. **Clean Code**: Removes all complex parent detection logic
-5. **Maintainable**: Easy to understand and debug
+### Test Case 1: Drag Without Text Selection
+1. Select 3 controls
+2. Click anywhere in grid and drag to role
+3. **Expected**: No text selection occurs during drag
+4. **Expected**: Only drag helper visible
+
+### Test Case 2: Long Drag Path
+1. Select controls
+2. Drag from top of grid to bottom of tree grid
+3. Move mouse in circular pattern
+4. **Expected**: No text selected anywhere along path
+
+### Test Case 3: Checkboxes Still Work
+1. Click checkbox to select/deselect
+2. **Expected**: Checkbox toggles, no drag starts
+3. **Expected**: Text can still be selected when NOT dragging
+
+### Test Case 4: Group Controls Still Work
+1. Click expand/collapse icon
+2. **Expected**: Group expands/collapses
+3. **Expected**: No drag starts
+
+### Test Case 5: Text Selection Works When Not Dragging
+1. Without selecting any controls
+2. Try to select text in a control name
+3. **Expected**: Text can be selected normally
+4. **Expected**: No drag interference
+
+### Test Case 6: Cancelled Drag Restores Selection
+1. Start drag operation
+2. Release outside grid (cancel)
+3. Try to select text normally
+4. **Expected**: Text selection works again
 
 ---
 
-## Testing Checklist
+## Code Changes Summary
 
-1. ⏭️ Select controls in "menu → vouchers"
-   - Verify badge shows only in that group
-2. ⏭️ Select controls in "action → vouchers"
-   - Verify badge shows only in that group
-3. ⏭️ Verify prefix names display correctly (without type prefix)
-4. ⏭️ Verify checkbox selection works correctly
-5. ⏭️ Verify select-all works for individual prefix groups
-6. ⏭️ Verify Type-level count shows total across all prefixes
+### Files to Modify
+
+1. **index.css**
+   - Add `.dragging-active` class with `user-select: none`
+
+2. **super-admin-link-secured-controls-with-roles.tsx**
+   - Line ~335: Add `e.preventDefault()` in `handleMouseDown`
+   - Line ~505: Add `document.body.classList.add('dragging-active')`
+   - Line ~580: Add `document.body.classList.remove('dragging-active')`
+
+3. **admin-link-secured-controls-with-roles.tsx**
+   - Line ~343: Add `e.preventDefault()` in `handleMouseDown`
+   - Line ~516: Add `document.body.classList.add('dragging-active')`
+   - Line ~591: Add `document.body.classList.remove('dragging-active')`
+
+---
+
+## Alternative: More Targeted Approach
+
+If adding class to `document.body` is too broad, we can target only the grids:
+
+```typescript
+// Instead of document.body
+const gridElement = gridRef.current?.element;
+if (gridElement) {
+    gridElement.classList.add('dragging-active');
+}
+
+// And in cleanup
+if (gridElement) {
+    gridElement.classList.remove('dragging-active');
+}
+```
+
+This limits the no-select behavior to just the grid areas, allowing text selection elsewhere in the page.
+
+**Pros**:
+- More targeted, less side effects
+- Other page elements unaffected
+
+**Cons**:
+- Slightly more complex
+- Need to track gridElement reference
+
+---
+
+## Success Criteria
+
+After implementation:
+1. ✅ No text selection during drag operations
+2. ✅ Drag helper is the only visual feedback
+3. ✅ Checkboxes work normally (no drag when clicking checkbox)
+4. ✅ Group expand/collapse works normally
+5. ✅ Text selection works normally when NOT dragging
+6. ✅ Drag and drop functionality unchanged
+7. ✅ Clean visual experience during drag
+
+---
+
+## Risk Assessment
+
+**Very Low Risk**:
+- Simple CSS + JavaScript changes
+- Easy to revert if issues occur
+- Doesn't modify core drag logic
+- Only affects visual behavior during drag
+
+**Potential Issues**:
+- None expected - standard approach for custom drag operations
+
+---
+
+## Timeline Estimate
+
+- **CSS Changes**: 2 minutes
+- **Super-Admin File**: 5 minutes
+- **Admin File**: 5 minutes
+- **Testing**: 10 minutes
+- **Total**: ~20 minutes
+
+---
+
+## Browser Compatibility
+
+The `user-select` property with vendor prefixes works in:
+- ✅ Chrome/Edge (modern)
+- ✅ Firefox
+- ✅ Safari
+- ✅ Opera
+- ✅ IE 10+ (with -ms- prefix)
+
+The `preventDefault()` approach works in all browsers.
+
+---
+
+## Summary
+
+**Problem**: Text gets selected during custom drag operations, creating visual clutter.
+
+**Solution**:
+1. Add `e.preventDefault()` on mousedown (after interactive element checks)
+2. Add `user-select: none` CSS class during active drag
+3. Remove class on drag end
+
+**Impact**: Clean drag experience with no text selection artifacts.
+
+**Effort**: ~20 minutes including testing.
+
+**Files**: 3 files to modify (index.css + 2 TypeScript files)

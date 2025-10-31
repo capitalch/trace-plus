@@ -276,6 +276,16 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                     setCheckboxUpdateTrigger(Date.now());
                     updateGroupCaptionBadges();
 
+                    // Add/remove draggable cursor styling
+                    const gridElement = gridRef.current.element;
+                    if (gridElement) {
+                        if (currentCount > 0) {
+                            gridElement.classList.add('has-selection');
+                        } else {
+                            gridElement.classList.remove('has-selection');
+                        }
+                    }
+
                     // Reset flag after state updates complete
                     setTimeout(() => {
                         isUpdating = false;
@@ -292,6 +302,99 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    // Enable drag from anywhere in grid when items are selected
+    useEffect(() => {
+        // Delay setup to ensure grid is fully rendered
+        const setupTimeout = setTimeout(() => {
+            const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+            if (!gridRef?.current) return;
+
+            const gridContent = gridRef.current.element?.querySelector('.e-content');
+            if (!gridContent) return;
+
+            let isDragging = false;
+            let dragStartPos = { x: 0, y: 0 };
+
+            const handleMouseDown = (e: MouseEvent) => {
+                // Get selected records
+                const selectedRecords = gridRef.current?.getSelectedRecords();
+                if (!selectedRecords || selectedRecords.length === 0) return;
+
+                // Ignore clicks on interactive elements
+                const target = e.target as HTMLElement;
+
+                // Don't interfere with data rows (let Syncfusion's default drag work)
+                if (target.closest('.e-row:not(.e-groupcaptionrow)')) {
+                    return;
+                }
+
+                // Don't interfere with checkboxes
+                if (target.closest('.e-checkbox-wrapper') || target.closest('.e-checkselect')) {
+                    return;
+                }
+
+                // Don't interfere with group expand/collapse
+                if (target.closest('.e-recordplusexpand') || target.closest('.e-recordpluscollapse')) {
+                    return;
+                }
+
+                // Don't interfere with scrollbars
+                if (target.closest('.e-scrollbar')) {
+                    return;
+                }
+
+                // Don't interfere with toolbar buttons
+                if (target.closest('.e-toolbar')) {
+                    return;
+                }
+
+                // Prevent default text selection
+                e.preventDefault();
+
+            // Store start position for drag threshold
+            dragStartPos = { x: e.clientX, y: e.clientY };
+            isDragging = false;
+
+            // Add mousemove listener to detect drag intent
+            const handleMouseMove = (moveEvent: MouseEvent) => {
+                const dx = moveEvent.clientX - dragStartPos.x;
+                const dy = moveEvent.clientY - dragStartPos.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Require 5px movement to start drag (avoids accidental drags)
+                if (distance > 5 && !isDragging) {
+                    isDragging = true;
+                    startCustomDrag(moveEvent, selectedRecords);
+                    cleanup();
+                }
+            };
+
+            const handleMouseUp = () => {
+                cleanup();
+            };
+
+            const cleanup = () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        };
+
+            gridContent.addEventListener('mousedown', handleMouseDown);
+
+            return () => {
+                gridContent.removeEventListener('mousedown', handleMouseDown);
+            };
+        }, 500); // Wait 500ms for grid to be fully rendered
+
+        return () => {
+            clearTimeout(setupTimeout);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [context.CompSyncFusionGrid, securedControlsInstance])
 
     return (
         <div className='flex flex-col px-8'>
@@ -420,6 +523,144 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         </div>)
 
     // ============================================
+    // Custom Drag Handler
+    // ============================================
+
+    function startCustomDrag(event: MouseEvent, selectedRecords: any[]) {
+        // Prevent text selection during drag
+        document.body.classList.add('dragging-active');
+
+        // Create drag helper element
+        const dragHelper = document.createElement('div');
+        dragHelper.className = 'custom-drag-helper';
+        dragHelper.style.position = 'absolute';
+        dragHelper.style.zIndex = '10000';
+        dragHelper.style.pointerEvents = 'none';
+
+        // Style the drag helper to show what's being dragged
+        dragHelper.innerHTML = `
+            <div style="
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            ">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+                <span>Dragging ${selectedRecords.length} ${selectedRecords.length === 1 ? 'control' : 'controls'}</span>
+            </div>
+        `;
+
+        document.body.appendChild(dragHelper);
+
+        // Position drag helper at cursor
+        const updateDragHelperPosition = (e: MouseEvent) => {
+            dragHelper.style.left = `${e.clientX + 10}px`;
+            dragHelper.style.top = `${e.clientY + 10}px`;
+        };
+
+        updateDragHelperPosition(event);
+
+        // Track current drop target
+        let currentDropTarget: Element | null = null;
+
+        const handleDragMove = (e: MouseEvent) => {
+            updateDragHelperPosition(e);
+
+            // Find element under cursor (excluding drag helper)
+            dragHelper.style.pointerEvents = 'none';
+            const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
+
+            // Check if we're over the target tree grid
+            const targetGridId = linksInstance;
+            const targetGrid = document.getElementById(targetGridId);
+
+            if (targetGrid && targetGrid.contains(elementUnderCursor)) {
+                // Highlight valid drop target
+                const row = elementUnderCursor?.closest('tr');
+                if (row && row !== currentDropTarget) {
+                    // Remove highlight from previous target
+                    if (currentDropTarget) {
+                        currentDropTarget.classList.remove('e-dragstartrow');
+                    }
+                    // Add highlight to new target
+                    row.classList.add('e-dragstartrow');
+                    currentDropTarget = row;
+                }
+            } else {
+                // Remove highlight when not over target
+                if (currentDropTarget) {
+                    currentDropTarget.classList.remove('e-dragstartrow');
+                    currentDropTarget = null;
+                }
+            }
+        };
+
+        const handleDragEnd = (e: MouseEvent) => {
+            // Remove drag helper
+            dragHelper.remove();
+
+            // Restore text selection
+            document.body.classList.remove('dragging-active');
+
+            // Remove highlight
+            if (currentDropTarget) {
+                currentDropTarget.classList.remove('e-dragstartrow');
+            }
+
+            // Find drop target
+            const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
+            const targetRow = elementUnderCursor?.closest('tr');
+
+            if (targetRow) {
+                // Get the target tree grid
+                const targetGridRef = context.CompSyncFusionTreeGrid[linksInstance]?.gridRef;
+                if (targetGridRef?.current) {
+                    // Find the row index in the tree grid
+                    const rows = targetGridRef.current.grid.getRows();
+                    const rowIndex = Array.from(rows).indexOf(targetRow as any);
+
+                    if (rowIndex >= 0) {
+                        // Call the existing drop handler with mock args
+                        const mockArgs = {
+                            cancel: true,
+                            data: selectedRecords,
+                            dropIndex: rowIndex,
+                            target: targetRow
+                        };
+
+                        onSecuredControlsRowDrop(mockArgs);
+                    }
+                }
+            } else {
+                // Dropped outside valid target - clean up text selection
+                setTimeout(() => {
+                    if (window.getSelection) {
+                        const selection = window.getSelection();
+                        if (selection) {
+                            selection.removeAllRanges();
+                        }
+                    }
+                }, 0);
+            }
+
+            // Remove event listeners
+            document.removeEventListener('mousemove', handleDragMove);
+            document.removeEventListener('mouseup', handleDragEnd);
+        };
+
+        document.addEventListener('mousemove', handleDragMove);
+        document.addEventListener('mouseup', handleDragEnd);
+    }
+
+    // ============================================
     // UI Component Functions
     // ============================================
 
@@ -526,6 +767,26 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
     }
 
     function onRowDragStart() {
+        // Preserve existing selection when dragging from a non-selected row
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (gridRef?.current) {
+            const selectedRecords = gridRef.current.getSelectedRecords();
+
+            // If there are already selected records, preserve them
+            if (selectedRecords && selectedRecords.length > 0) {
+                // Prevent Syncfusion from changing selection
+                setTimeout(() => {
+                    // Reselect the original records
+                    gridRef.current.selectRows(
+                        selectedRecords.map((r: any) => {
+                            const dataSource = gridRef.current.dataSource as any[];
+                            return dataSource.findIndex((item: any) => item.id === r.id);
+                        }).filter((index: number) => index >= 0)
+                    );
+                }, 0);
+            }
+        }
+
         // Add visual hint that ESC can cancel the drag operation
         setTimeout(() => {
             const dragHelper = document.querySelector('.e-cloneproperties');
@@ -953,9 +1214,14 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                         <span className='text-gray-600 text-xs font-medium uppercase tracking-wide'>Type:</span>
                         <span className='font-bold text-blue-800 text-base'>{rawTypeName}</span>
                     </div>
-                    <span className='inline-flex items-center px-2.5 py-0.5 bg-linear-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
-                        {count} {count === 1 ? 'control' : 'controls'}
-                    </span>
+                    <div className='flex items-center gap-1.5'>
+                        <span className='inline-flex items-center px-2.5 py-0.5 bg-linear-to-r from-blue-200 to-blue-300 text-blue-900 rounded-full font-bold text-xs shadow-sm border border-blue-400'>
+                            {count}
+                        </span>
+                        <span className='text-gray-600 text-xs font-medium'>
+                            {count === 1 ? 'control' : 'controls'}
+                        </span>
+                    </div>
                     {getSelectedCountBadge(props)}
                 </div>
             );
@@ -979,9 +1245,14 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
                         <span className='text-gray-600 text-xs font-medium'>Prefix:</span>
                         <span className='font-semibold text-green-800 text-sm'>{displayName}</span>
                     </div>
-                    <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full font-semibold text-xs border border-green-400'>
-                        {count}
-                    </span>
+                    <div className='flex items-center gap-1.5'>
+                        <span className='inline-flex items-center px-2 py-0.5 bg-green-200 text-green-800 rounded-full font-semibold text-xs border border-green-400'>
+                            {count}
+                        </span>
+                        <span className='text-gray-600 text-xs font-medium'>
+                            {count === 1 ? 'control' : 'controls'}
+                        </span>
+                    </div>
                     {getSelectedCountBadge(props)}
                 </div>
             );
@@ -1030,7 +1301,7 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
             },
             {
                 field: "typePrefix",
-                headerText: "ABCD",
+                headerText: "",
                 type: "string",
                 visible: false,
                 width: 0,
@@ -1047,32 +1318,42 @@ export function SuperAdminLinkSecuredControlsWithRoles() {
         const targetGridRef = context.CompSyncFusionTreeGrid[linksInstance].gridRef
         const sourceGridRef = context.CompSyncFusionGrid[securedControlsInstance].gridRef
 
-        if (sourceGridRef?.current) {
-            sourceGridRef.current.refresh()
-        }
+        // Helper function to clean up drag artifacts without clearing checkbox selection
+        const cleanupDragState = () => {
+            // Clear text selection that occurs during drag
+            // Use setTimeout to allow Syncfusion to complete its drag cleanup first
+            setTimeout(() => {
+                if (window.getSelection) {
+                    const selection = window.getSelection();
+                    if (selection) {
+                        selection.removeAllRanges();
+                    }
+                }
+            }, 0);
+        };
 
         // CANCELLATION 1: Dropped back on source grid - silent cancel
+        // Selection is preserved to allow users to retry the drag operation
         if (args.target.closest(`#${securedControlsInstance}`)) {
-            if (sourceGridRef?.current) {
-                sourceGridRef.current.clearSelection()
-            }
+            // Clean up drag artifacts, keep checkbox selection intact
+            cleanupDragState();
             return
         }
 
         // CANCELLATION 2: Dropped in empty area - silent cancel
+        // Selection is preserved to allow users to retry the drag operation
         const targetRow = args?.target.closest('tr');
         if (!targetRow) {
-            if (sourceGridRef?.current) {
-                sourceGridRef.current.clearSelection()
-            }
+            // Clean up drag artifacts, keep checkbox selection intact
+            cleanupDragState();
             return
         }
 
         // CANCELLATION 3: Dropped on wrong grid
+        // Selection is preserved to allow users to retry the drag operation
         if (targetGridRef.current?.id === securedControlsInstance) {
-            if (sourceGridRef?.current) {
-                sourceGridRef.current.clearSelection()
-            }
+            // Clean up drag artifacts, keep checkbox selection intact
+            cleanupDragState();
             return
         }
 

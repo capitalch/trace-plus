@@ -66,3 +66,36 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+
+/* Custom drag styles for grid with selected items */
+.has-selection .e-content {
+    cursor: grab !important;
+}
+
+.has-selection .e-content:active {
+    cursor: grabbing !important;
+}
+
+/* Prevent cursor change over interactive elements */
+.has-selection .e-checkbox-wrapper,
+.has-selection .e-checkselect,
+.has-selection .e-recordplusexpand,
+.has-selection .e-recordpluscollapse,
+.has-selection .e-toolbar {
+    cursor: pointer !important;
+}
+
+/* Prevent text selection during active drag operations */
+.dragging-active {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
+
+.dragging-active * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
