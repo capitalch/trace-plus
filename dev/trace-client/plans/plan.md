@@ -1,144 +1,32 @@
-# Plan: Fix Text Selection During Custom Drag Operation
+# Plan: Fix Text Selection During Drag and Drop
 
 ## Problem Description
 
 **Current Behavior**:
-- When dragging selected controls from anywhere in the grid, the grid control text (names, descriptions) gets selected along the drag path
-- As the mouse moves during drag, text elements are highlighted/selected, creating visual clutter
-- This is a standard browser behavior when clicking and dragging on text content
+1. User selects multiple controls in the source grid
+2. User drags the controls to the target grid
+3. During or after the drag operation, text within some controls gets selected (highlighted)
+4. This text selection is visually distracting and unintended
 
 **Expected Behavior**:
-- During drag operation, text should not be selected
-- Only the custom drag helper should be visible
-- Clean drag experience without text selection artifacts
+1. User selects multiple controls
+2. User drags controls to target
+3. No text selection occurs during or after the drag operation
+4. Only the intended drag-and-drop happens
 
 **Root Cause**:
-- When `mousedown` happens on text content and mouse moves, the browser's default behavior is to select text
-- Our custom drag handler doesn't prevent this default text selection behavior
-- We need to call `preventDefault()` and add CSS to disable text selection during drag
+- During drag operations, mouse movements can trigger browser's default text selection behavior
+- The `mousedown` and `mousemove` events may not be properly preventing text selection
+- Text selection can occur in either the source or target grid during the drag operation
 
 ---
 
-## Solution Design
+## Current Code Analysis
 
-### Approach 1: Prevent Default on MouseDown (Simple)
+### File: `super-admin-link-secured-controls-with-roles.tsx`
 
-Call `preventDefault()` on the mousedown event when starting a drag.
+#### Current handleMouseDown (Lines ~319-384):
 
-**Implementation**:
-```typescript
-const handleMouseDown = (e: MouseEvent) => {
-    const selectedRecords = gridRef.current?.getSelectedRecords();
-    if (!selectedRecords || selectedRecords.length === 0) return;
-
-    // Check for interactive elements...
-    if (target.closest('.e-checkbox-wrapper') || ...) {
-        return;
-    }
-
-    // Prevent text selection during drag
-    e.preventDefault(); // ✅ Add this
-
-    // Store start position...
-    dragStartPos = { x: e.clientX, y: e.clientY };
-    // ... rest of code
-};
-```
-
-**Pros**:
-- Simple one-line fix
-- Prevents text selection at the source
-
-**Cons**:
-- Might prevent other default behaviors we want to keep
-- Need to be careful not to break checkbox/button clicks
-
----
-
-### Approach 2: Add User-Select CSS (Recommended)
-
-Add CSS to prevent text selection only during active drag operations.
-
-**Implementation**:
-
-#### Step 1: Add CSS for No-Select State
-
-```css
-/* In index.css */
-.dragging-active {
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-}
-
-.dragging-active * {
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-}
-```
-
-#### Step 2: Toggle Class During Drag
-
-```typescript
-function startCustomDrag(event: MouseEvent, selectedRecords: any[]) {
-    // Add class to prevent text selection
-    document.body.classList.add('dragging-active');
-
-    // ... existing drag helper creation code ...
-
-    const handleDragEnd = (e: MouseEvent) => {
-        // Remove drag helper
-        dragHelper.remove();
-
-        // Remove no-select class
-        document.body.classList.remove('dragging-active');
-
-        // ... rest of cleanup code ...
-    };
-}
-```
-
-**Pros**:
-- Clean separation of concerns
-- Only affects drag operations
-- Doesn't interfere with normal interactions
-- Works across all browsers
-
-**Cons**:
-- Slightly more code than approach 1
-
----
-
-### Approach 3: Combination (Best)
-
-Combine both approaches for maximum effectiveness.
-
-**Implementation**:
-1. Call `preventDefault()` on mousedown (but only after checking for interactive elements)
-2. Add CSS class during active drag
-3. Remove class on drag end
-
-This ensures:
-- No text selection starts on mousedown
-- No text selection during drag movement
-- Normal behavior restored after drag
-
----
-
-## Recommended Implementation
-
-Use **Approach 3 (Combination)** for the most robust solution.
-
-### Changes Required
-
-#### File 1: `super-admin-link-secured-controls-with-roles.tsx`
-
-**Location**: Line ~307 in `handleMouseDown` function
-
-**Change**:
 ```typescript
 const handleMouseDown = (e: MouseEvent) => {
     // Get selected records
@@ -148,154 +36,363 @@ const handleMouseDown = (e: MouseEvent) => {
     // Ignore clicks on interactive elements
     const target = e.target as HTMLElement;
 
-    // Don't interfere with checkboxes
-    if (target.closest('.e-checkbox-wrapper') || target.closest('.e-checkselect')) {
+    // Don't interfere with data rows (let Syncfusion's default drag work)
+    if (target.closest('.e-row:not(.e-groupcaptionrow)')) {
         return;
     }
 
-    // Don't interfere with group expand/collapse
-    if (target.closest('.e-recordplusexpand') || target.closest('.e-recordpluscollapse')) {
-        return;
-    }
+    // ... other interactive element checks ...
 
-    // Don't interfere with scrollbars
-    if (target.closest('.e-scrollbar')) {
-        return;
-    }
-
-    // Don't interfere with toolbar buttons
-    if (target.closest('.e-toolbar')) {
-        return;
-    }
-
-    // ✅ ADD THIS: Prevent default text selection
+    // Prevent default text selection
     e.preventDefault();
 
     // Store start position for drag threshold
     dragStartPos = { x: e.clientX, y: e.clientY };
-    // ... rest of code
+    isDragging = false;
+
+    // Add mousemove listener to detect drag intent
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+        const dx = moveEvent.clientX - dragStartPos.x;
+        const dy = moveEvent.clientY - dragStartPos.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Require 5px movement to start drag (avoids accidental drags)
+        if (distance > 5 && !isDragging) {
+            isDragging = true;
+            startCustomDrag(moveEvent, selectedRecords);
+            cleanup();
+        }
+    };
+
+    // ... cleanup handlers ...
 };
 ```
 
-#### File 2: `super-admin-link-secured-controls-with-roles.tsx`
-
-**Location**: Line ~504 in `startCustomDrag` function
-
-**Changes**:
-```typescript
-function startCustomDrag(event: MouseEvent, selectedRecords: any[]) {
-    // ✅ ADD THIS: Prevent text selection during drag
-    document.body.classList.add('dragging-active');
-
-    // Create drag helper element
-    const dragHelper = document.createElement('div');
-    // ... existing drag helper code ...
-
-    const handleDragEnd = (e: MouseEvent) => {
-        // Remove drag helper
-        dragHelper.remove();
-
-        // ✅ ADD THIS: Restore text selection
-        document.body.classList.remove('dragging-active');
-
-        // Remove highlight
-        if (currentDropTarget) {
-            currentDropTarget.classList.remove('e-dragstartrow');
-        }
-
-        // ... rest of cleanup code ...
-    };
-
-    document.addEventListener('mousemove', handleDragMove);
-    document.addEventListener('mouseup', handleDragEnd);
-}
-```
-
-#### File 3: `index.css`
-
-**Location**: After the existing `.has-selection` styles
-
-**Add**:
-```css
-/* Prevent text selection during active drag operations */
-.dragging-active {
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-}
-
-.dragging-active * {
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-}
-```
-
-#### File 4: `admin-link-secured-controls-with-roles.tsx`
-
-Apply the exact same changes as File 1 and File 2 to the admin variant.
+**Problems Identified**:
+1. **Only prevents default on group caption rows**: The code only calls `e.preventDefault()` when clicking group caption rows (line 353), but returns early for data rows (line 328-330)
+2. **No text selection prevention on data rows**: When clicking data rows, the function returns early, so no prevention happens
+3. **No user-select CSS**: There's no CSS to disable text selection globally during drag
+4. **mousemove doesn't prevent default**: The `handleMouseMove` function doesn't call `preventDefault()`
 
 ---
 
-## Implementation Steps
+## Solution Design
 
-### Step 1: Add CSS for No-Select
-- Add `.dragging-active` class to `index.css`
-- Include all vendor prefixes for browser compatibility
+### Approach 1: Prevent Default on All Mousedown Events
 
-### Step 2: Update Super-Admin File
-- Add `e.preventDefault()` in `handleMouseDown` (after interactive element checks)
-- Add `document.body.classList.add('dragging-active')` at start of `startCustomDrag`
-- Add `document.body.classList.remove('dragging-active')` in `handleDragEnd`
+Add `e.preventDefault()` for all row clicks, not just group caption rows.
 
-### Step 3: Update Admin File
-- Apply same changes as Step 2 to admin variant file
+**Pros**:
+- Simple fix
+- Prevents text selection at the source
 
-### Step 4: Test
-- Test drag operations don't select text
-- Test checkboxes still work
-- Test group expand/collapse still works
-- Test drag and drop still works correctly
+**Cons**:
+- May interfere with normal click behavior on data rows
+- Doesn't address text selection during mousemove
+
+---
+
+### Approach 2: Add CSS user-select: none During Drag
+
+Apply `user-select: none` CSS to the grid content while dragging.
+
+**Pros**:
+- Prevents text selection across entire grid
+- Non-invasive to event handlers
+- Works during entire drag operation
+
+**Cons**:
+- Need to manage CSS class addition/removal
+- May affect nested elements
+
+---
+
+### Approach 3: Comprehensive Event Prevention
+
+Combine multiple strategies:
+1. Call `preventDefault()` on mousedown for all rows
+2. Call `preventDefault()` on mousemove during drag
+3. Add CSS `user-select: none` to grid during drag
+4. Clear any existing text selection before starting drag
+
+**Pros**:
+- Most robust solution
+- Handles all edge cases
+- Works across different browsers
+
+**Cons**:
+- More complex implementation
+- Multiple points of intervention
+
+---
+
+## Recommended Solution
+
+**Hybrid Approach**: Use a combination of event prevention and CSS control.
+
+### Implementation Steps:
+
+1. **Add preventDefault on data row clicks** (for consistency)
+2. **Add preventDefault on mousemove during drag**
+3. **Apply user-select CSS to grid content during drag**
+4. **Clear any existing text selection when drag starts**
+5. **Remove user-select CSS when drag ends**
+
+---
+
+## Implementation Plan
+
+### Step 1: Update handleMouseDown Function
+
+**File**: `super-admin-link-secured-controls-with-roles.tsx`
+**Location**: Lines ~319-384
+
+**Changes**:
+
+```typescript
+const handleMouseDown = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+
+    // Ignore clicks on interactive elements
+    if (target.closest('.e-checkbox-wrapper') || target.closest('.e-checkselect')) {
+        return;
+    }
+    if (target.closest('.e-recordplusexpand') || target.closest('.e-recordpluscollapse')) {
+        return;
+    }
+    if (target.closest('.e-scrollbar')) {
+        return;
+    }
+    if (target.closest('.e-toolbar')) {
+        return;
+    }
+
+    // Get selected records
+    const selectedRecords = gridRef.current?.getSelectedRecords();
+    if (!selectedRecords || selectedRecords.length === 0) return;
+
+    // Find the clicked row
+    const clickedRow = target.closest('.e-row');
+    if (!clickedRow) return;
+
+    // Don't process if it's a group caption row (let default behavior work)
+    if (clickedRow.classList.contains('e-groupcaptionrow')) {
+        // For group captions, prevent text selection
+        e.preventDefault();
+
+        // Store start position for drag threshold
+        dragStartPos = { x: e.clientX, y: e.clientY };
+        isDragging = false;
+
+        // Add mousemove listener
+        const handleMouseMove = (moveEvent: MouseEvent) => {
+            // Prevent text selection during move
+            moveEvent.preventDefault();
+
+            const dx = moveEvent.clientX - dragStartPos.x;
+            const dy = moveEvent.clientY - dragStartPos.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 5 && !isDragging) {
+                isDragging = true;
+
+                // Clear any existing text selection
+                clearTextSelection();
+
+                // Add no-select class to grid content
+                if (gridContent) {
+                    gridContent.classList.add('no-text-select');
+                }
+
+                startCustomDrag(moveEvent, selectedRecords);
+                cleanup();
+            }
+        };
+
+        const handleMouseUp = () => {
+            cleanup();
+        };
+
+        const cleanup = () => {
+            // Remove no-select class
+            if (gridContent) {
+                gridContent.classList.remove('no-text-select');
+            }
+
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    // For data rows, let SyncFusion's built-in drag handle it
+    // but still prevent text selection
+    if (!clickedRow.classList.contains('e-groupcaptionrow')) {
+        e.preventDefault();
+    }
+};
+
+// Helper function to clear text selection
+function clearTextSelection() {
+    if (window.getSelection) {
+        const selection = window.getSelection();
+        if (selection) {
+            selection.removeAllRanges();
+        }
+    }
+}
+```
+
+### Step 2: Add CSS for no-text-select
+
+**Location**: Add to the component's style section or CSS file
+
+```css
+.no-text-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+```
+
+**OR** add inline style in the useEffect:
+
+```typescript
+// In the useEffect setup
+const gridContent = gridRef.current.element?.querySelector('.e-content');
+if (gridContent) {
+    // Add style element for no-text-select
+    const style = document.createElement('style');
+    style.textContent = `
+        .no-text-select {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+```
+
+---
+
+## Alternative Simpler Approach
+
+If the comprehensive approach is too complex, we can try a simpler fix:
+
+### Simple Fix: Just Prevent Default Everywhere
+
+```typescript
+const handleMouseDown = (e: MouseEvent) => {
+    // Get selected records
+    const selectedRecords = gridRef.current?.getSelectedRecords();
+    if (!selectedRecords || selectedRecords.length === 0) return;
+
+    // Ignore clicks on interactive elements
+    const target = e.target as HTMLElement;
+
+    // ... interactive element checks ...
+
+    // ALWAYS prevent default to stop text selection
+    e.preventDefault();
+
+    // Don't interfere with data rows (let Syncfusion's default drag work)
+    if (target.closest('.e-row:not(.e-groupcaptionrow)')) {
+        return;
+    }
+
+    // ... rest of the logic ...
+};
+```
+
+**Just move `e.preventDefault()` BEFORE the early return for data rows.**
 
 ---
 
 ## Testing Plan
 
-### Test Case 1: Drag Without Text Selection
+### Test Case 1: Drag from Group Caption Area
+**Steps**:
 1. Select 3 controls
-2. Click anywhere in grid and drag to role
-3. **Expected**: No text selection occurs during drag
-4. **Expected**: Only drag helper visible
+2. Click and drag from group caption area
+3. Drop in target grid
 
-### Test Case 2: Long Drag Path
+**Expected**:
+- No text selection occurs
+- Drag operation works normally
+
+### Test Case 2: Drag Multiple Selected Rows
+**Steps**:
+1. Select 5 controls using checkboxes
+2. Click on one selected row and drag
+3. Drop in target grid
+
+**Expected**:
+- No text selection in source grid
+- No text selection in target grid
+- All 5 controls are moved
+
+### Test Case 3: Fast Drag Movement
+**Steps**:
 1. Select controls
-2. Drag from top of grid to bottom of tree grid
-3. Move mouse in circular pattern
-4. **Expected**: No text selected anywhere along path
+2. Quickly drag across the grid with fast mouse movement
+3. Drop in target
 
-### Test Case 3: Checkboxes Still Work
-1. Click checkbox to select/deselect
-2. **Expected**: Checkbox toggles, no drag starts
-3. **Expected**: Text can still be selected when NOT dragging
+**Expected**:
+- No text selection even with fast movement
+- Drag helper follows cursor smoothly
 
-### Test Case 4: Group Controls Still Work
-1. Click expand/collapse icon
-2. **Expected**: Group expands/collapses
-3. **Expected**: No drag starts
+### Test Case 4: Click Without Drag
+**Steps**:
+1. Select controls
+2. Click on a row but don't drag (no movement)
+3. Release mouse
 
-### Test Case 5: Text Selection Works When Not Dragging
-1. Without selecting any controls
-2. Try to select text in a control name
-3. **Expected**: Text can be selected normally
-4. **Expected**: No drag interference
+**Expected**:
+- No drag occurs (since no 5px threshold met)
+- No text selection occurs
+- Selection remains unchanged
 
-### Test Case 6: Cancelled Drag Restores Selection
-1. Start drag operation
-2. Release outside grid (cancel)
-3. Try to select text normally
-4. **Expected**: Text selection works again
+### Test Case 5: Text Selection Before Drag
+**Steps**:
+1. Manually select some text in the grid (before any drag)
+2. Then select controls
+3. Start drag operation
+
+**Expected**:
+- Previous text selection is cleared when drag starts
+- No text selection remains after drag
+
+---
+
+## Implementation Steps Summary
+
+### ✅ Step 1: Analyze Current Code
+- Identified that `e.preventDefault()` only happens for group caption rows
+- Data rows return early without prevention
+
+### ✅ Step 2: Choose Approach
+- Decided on Simpler Approach first (move preventDefault before early return)
+- If that doesn't work, implement comprehensive approach
+
+### Step 3: Update Super-Admin File
+- Move `e.preventDefault()` before the data row check
+- Add `moveEvent.preventDefault()` in handleMouseMove
+- Add `clearTextSelection()` helper function
+- Add CSS class management for user-select
+
+### Step 4: Update Admin File
+- Apply same changes as super-admin file
+
+### Step 5: Test All Scenarios
+- Test drag from group caption
+- Test drag from data rows
+- Test fast movements
+- Test text selection clearing
 
 ---
 
@@ -303,110 +400,86 @@ Apply the exact same changes as File 1 and File 2 to the admin variant.
 
 ### Files to Modify
 
-1. **index.css**
-   - Add `.dragging-active` class with `user-select: none`
+1. **super-admin-link-secured-controls-with-roles.tsx**
+   - Lines ~319-384: Update `handleMouseDown` function
+   - Add `clearTextSelection()` helper function
+   - Add CSS class management or inline styles
 
-2. **super-admin-link-secured-controls-with-roles.tsx**
-   - Line ~335: Add `e.preventDefault()` in `handleMouseDown`
-   - Line ~505: Add `document.body.classList.add('dragging-active')`
-   - Line ~580: Add `document.body.classList.remove('dragging-active')`
-
-3. **admin-link-secured-controls-with-roles.tsx**
-   - Line ~343: Add `e.preventDefault()` in `handleMouseDown`
-   - Line ~516: Add `document.body.classList.add('dragging-active')`
-   - Line ~591: Add `document.body.classList.remove('dragging-active')`
-
----
-
-## Alternative: More Targeted Approach
-
-If adding class to `document.body` is too broad, we can target only the grids:
-
-```typescript
-// Instead of document.body
-const gridElement = gridRef.current?.element;
-if (gridElement) {
-    gridElement.classList.add('dragging-active');
-}
-
-// And in cleanup
-if (gridElement) {
-    gridElement.classList.remove('dragging-active');
-}
-```
-
-This limits the no-select behavior to just the grid areas, allowing text selection elsewhere in the page.
-
-**Pros**:
-- More targeted, less side effects
-- Other page elements unaffected
-
-**Cons**:
-- Slightly more complex
-- Need to track gridElement reference
+2. **admin-link-secured-controls-with-roles.tsx**
+   - Lines ~317-382: Apply same changes as super-admin
 
 ---
 
 ## Success Criteria
 
 After implementation:
-1. ✅ No text selection during drag operations
-2. ✅ Drag helper is the only visual feedback
-3. ✅ Checkboxes work normally (no drag when clicking checkbox)
-4. ✅ Group expand/collapse works normally
-5. ✅ Text selection works normally when NOT dragging
-6. ✅ Drag and drop functionality unchanged
-7. ✅ Clean visual experience during drag
+1. ✅ No text selection when dragging from group caption area
+2. ✅ No text selection when dragging data rows (via SyncFusion)
+3. ✅ No text selection during fast mouse movements
+4. ✅ Existing text selection cleared when drag starts
+5. ✅ Normal click behavior still works (checkboxes, expand/collapse)
+6. ✅ Drag and drop functionality remains intact
 
 ---
 
 ## Risk Assessment
 
-**Very Low Risk**:
-- Simple CSS + JavaScript changes
-- Easy to revert if issues occur
-- Doesn't modify core drag logic
-- Only affects visual behavior during drag
+**Low Risk**:
+- Moving `preventDefault()` is a small change
+- Doesn't affect core drag logic
+- Easy to test and verify
 
 **Potential Issues**:
-- None expected - standard approach for custom drag operations
+- May need to test on different browsers (Chrome, Firefox, Edge)
+- Touch devices may behave differently (though this is mouse-focused)
+
+**Mitigation**:
+- Start with simplest approach
+- Test thoroughly before moving to complex approach
+- Keep both grids (left and right) in mind
 
 ---
 
 ## Timeline Estimate
 
-- **CSS Changes**: 2 minutes
-- **Super-Admin File**: 5 minutes
-- **Admin File**: 5 minutes
-- **Testing**: 10 minutes
-- **Total**: ~20 minutes
+- **Simple Fix (move preventDefault)**: 5 minutes
+- **Test Simple Fix**: 5 minutes
+- **If needed - Comprehensive Fix**: 15 minutes
+- **Test Comprehensive Fix**: 10 minutes
+- **Apply to Admin File**: 5 minutes
+- **Total**: 20-40 minutes (depending on which approach is needed)
 
 ---
 
-## Browser Compatibility
+## Recommended Implementation Order
 
-The `user-select` property with vendor prefixes works in:
-- ✅ Chrome/Edge (modern)
-- ✅ Firefox
-- ✅ Safari
-- ✅ Opera
-- ✅ IE 10+ (with -ms- prefix)
+1. **Try Simple Fix First**:
+   - Move `e.preventDefault()` before data row check (line 328)
+   - Test if this alone solves the problem
 
-The `preventDefault()` approach works in all browsers.
+2. **If Simple Fix Insufficient**:
+   - Add `moveEvent.preventDefault()` in mousemove handler
+   - Test again
+
+3. **If Still Issues**:
+   - Implement full comprehensive approach with CSS classes
+   - Add `clearTextSelection()` helper
+   - Test thoroughly
 
 ---
 
 ## Summary
 
-**Problem**: Text gets selected during custom drag operations, creating visual clutter.
+**Problem**: Text gets selected when dragging controls
+
+**Root Cause**: `preventDefault()` only called for group caption rows, not data rows
 
 **Solution**:
-1. Add `e.preventDefault()` on mousedown (after interactive element checks)
-2. Add `user-select: none` CSS class during active drag
-3. Remove class on drag end
+1. Simple: Move `preventDefault()` before early return for data rows
+2. Comprehensive: Add CSS user-select control and text selection clearing
 
-**Impact**: Clean drag experience with no text selection artifacts.
+**Impact**: Users can drag controls without unwanted text selection
 
-**Effort**: ~20 minutes including testing.
+**Effort**: 20-40 minutes including testing
 
-**Files**: 3 files to modify (index.css + 2 TypeScript files)
+**Files**: 2 TypeScript files (super-admin + admin variants)
