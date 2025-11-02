@@ -4,6 +4,7 @@ import { AppDispatchType } from "../../../app/store"
 import { isSideBarOpenSelectorFn, setIsSideBarOpen } from "../layouts-slice"
 import { SideMenu } from "./side-menu"
 import { IconMenuFold } from "../../../controls/icons/icon-menu-fold"
+import { IconUser } from "../../../controls/icons/icon-user"
 import { UserDetailsType } from "../../login/login-slice"
 import { Utils } from "../../../utils/utils"
 import logo from '../../../assets/trace-logo.png'
@@ -40,11 +41,31 @@ function SideBar() {
                 <SideMenu />
             </div>
 
-            {/* User Type Badge */}
+            {/* User Info Card */}
             <div className="p-3 border-t border-neutral-200 bg-white">
-                <span className="inline-block px-3 py-1 text-xs font-medium text-primary-700 bg-primary-50 rounded-full">
-                    {getUserType()}
-                </span>
+                <div className="bg-gradient-to-br from-primary-50 to-purple-50 rounded-lg p-3 border border-primary-100">
+                    <div className="flex items-start gap-2">
+                        {/* User Icon */}
+                        <div className="flex-shrink-0 mt-0.5">
+                            <IconUser className="h-4 w-4 text-primary-600" />
+                        </div>
+
+                        {/* User Info */}
+                        <div className="flex-1 min-w-0">
+                            {/* User Type */}
+                            <div className="text-xs font-semibold text-primary-700 leading-tight">
+                                {getUserType()}
+                            </div>
+
+                            {/* User ID */}
+                            {getUserId() && (
+                                <div className="text-[10px] text-neutral-600 mt-1 truncate font-mono" title={getUserId()}>
+                                    {getUserId()}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
         </aside>
     )
@@ -58,6 +79,11 @@ function SideBar() {
             A: 'Admin user'
         }
         return logic[uType] || 'Unknown'
+    }
+
+    function getUserId(): string {
+        const userDetails: UserDetailsType | undefined = Utils.getUserDetails()
+        return userDetails?.uid || ''
     }
 }
 export { SideBar }

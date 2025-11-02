@@ -29,6 +29,7 @@ export function LogoutMenuButton({ className }: { className?: string }) {
     const isNotSuperAdmin = !(userType === UserTypesEnum.SuperAdmin)
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
     const email: string | undefined = loginInfo.userDetails?.userEmail
+    const uid: string | undefined = loginInfo.userDetails?.uid
     const isMobile = useMediaQuery({ query: '(max-width: 639px)' })
     const isTablet = useMediaQuery({ query: '(min-width: 640px) and (max-width: 1023px)' })
 
@@ -37,12 +38,22 @@ export function LogoutMenuButton({ className }: { className?: string }) {
             <div className="flex relative items-center ml-auto h-12 text-white bg-primary-500">
                 <TooltipComponent content={getLogoutTooltipContent()} position="LeftCenter">
                     <button onClick={handleShowDropdown} type="button"
-                        className={clsx(className, 'flex gap-1 sm:gap-2 md:gap-3 py-2 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400', isMobile ? 'px-2' : 'px-3 sm:px-4')}>
-                        {/* Email - hide on mobile, truncate on tablet */}
+                        className={clsx(className, 'flex items-center gap-1 sm:gap-2 md:gap-3 py-1.5 text-gray-200 hover:text-white hover:bg-primary-700 hover:cursor-pointer active:bg-primary-400', isMobile ? 'px-2' : 'px-3 sm:px-4')}>
+                        {/* User Info - hide on mobile, truncate on tablet */}
                         {!isMobile && (
-                            <span className={`text-xs sm:text-sm ${isTablet ? 'max-w-[80px] truncate' : ''}`}>
-                                {email}
-                            </span>
+                            <div className="flex flex-col items-start leading-tight">
+                                {/* Email */}
+                                <span className={`text-xs sm:text-sm ${isTablet ? 'max-w-[80px] truncate' : ''}`} title={email}>
+                                    {email}
+                                </span>
+
+                                {/* UID */}
+                                {uid && (
+                                    <span className={`text-[10px] text-gray-300 font-mono ${isTablet ? 'max-w-[80px] truncate' : ''}`} title={uid}>
+                                        {uid}
+                                    </span>
+                                )}
+                            </div>
                         )}
                         <IconUser1 className='w-4 h-4 sm:w-5 sm:h-5 text-secondary-200' />
                         <IconCheveronDown className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -77,8 +88,10 @@ export function LogoutMenuButton({ className }: { className?: string }) {
         const clientName: string = userDetails?.clientName || ''
         const userName: string = userDetails?.userName || ''
         const userType: string = userDetails?.userType || ''
+        const uid: string = userDetails?.uid || ''
 
-        return(`Client: ${clientName}, User: ${userName}, User type: ${getUserTypeName()}`)
+        const uidPart = uid ? `, UID: ${uid}` : ''
+        return(`Client: ${clientName}, User: ${userName}, User type: ${getUserTypeName()}${uidPart}`)
 
         function getUserTypeName(){
             let ret = ''

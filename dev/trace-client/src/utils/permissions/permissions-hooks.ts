@@ -20,10 +20,10 @@ import { VoucherFormDataType } from "../../features/accounts/vouchers/all-vouche
  * }
  */
 export const useUserHasControlPermission = (controlName: string): boolean => {
-  // const userType = useSelector((state: RootStateType) => state.login.userDetails?.userType)
+  const userType = useSelector((state: RootStateType) => state.login.userDetails?.userType)
   const userSecuredControls = useSelector((state: RootStateType) => state.login.userSecuredControls)
 
-  // if (userType === 'A' || userType === 'S') return true
+  if (userType === 'A' || userType === 'S') return true
   return userSecuredControls?.some(control => control.controlName === controlName) ?? false
 }
 
@@ -35,10 +35,10 @@ export const useUserHasControlPermission = (controlName: string): boolean => {
  * @returns boolean - true if user has the permission
  */
 export const hasControlPermission = (state: RootStateType, controlName: string): boolean => {
-  // const userType = state.login.userDetails?.userType
+  const userType = state.login.userDetails?.userType
   const userSecuredControls = state.login.userSecuredControls
 
-  // if (userType === 'A' || userType === 'S') return true
+  if (userType === 'A' || userType === 'S') return true
   return userSecuredControls?.some(control => control.controlName === controlName) ?? false
 }
 
@@ -58,15 +58,15 @@ export const hasControlPermission = (state: RootStateType, controlName: string):
 export const useUserHasMultiplePermissions = <T extends Record<string, string>>(
   permissions: T
 ): Record<keyof T, boolean> => {
-  // const userType = useSelector((state: RootStateType) => state.login.userDetails?.userType)
+  const userType = useSelector((state: RootStateType) => state.login.userDetails?.userType)
   const userSecuredControls = useSelector((state: RootStateType) => state.login.userSecuredControls)
 
-  // if (userType === 'A' || userType === 'S') {
-  //   return Object.keys(permissions).reduce((acc, key) => {
-  //     acc[key as keyof T] = true
-  //     return acc
-  //   }, {} as Record<keyof T, boolean>)
-  // }
+  if (userType === 'A' || userType === 'S') {
+    return Object.keys(permissions).reduce((acc, key) => {
+      acc[key as keyof T] = true
+      return acc
+    }, {} as Record<keyof T, boolean>)
+  }
 
   return Object.entries(permissions).reduce((acc, [key, controlName]) => {
     acc[key as keyof T] = userSecuredControls?.some(

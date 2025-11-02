@@ -1,9 +1,12 @@
 # Permissions on Role basis
-# There are 4 roles
+# There are roles
     - built-in-user
     - built-in-sales-person
-    - built-in-accountant
+    - built-in-accountant: removed
     - built-in-manager
+    - built-in-reviewer
+    - built-in-viewer
+    - built-in-purchase-entry-operator
 # built-in-user
 - Has view only permissions. Cannot save data.
 - Vouchers: View all vouchers
@@ -23,13 +26,22 @@
     - Inventory
         - reports
 
-# Built-in-accountant
+# Built-in-accountant: removed
 - Vouchers
-    - All vouchers
-    - New entry not allowed
+    - Everything except delete
 - Purchase sales
-    - new entries not allowed
+    - All entries excepting delete
 - Everything else allowed
 
-# Manager
+# Built-in-Manager
 - Can do everything
+
+# built-in-reviewer
+- Can only view
+    - Final accounts
+    - Reports -> All Transactions
+    - Inventory reports
+    - 
+
+# built-in-viewer
+    - Can view all but cannot enter or edit

@@ -20,7 +20,6 @@ import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useLocation } from "react-router-dom";
 import { useScrollToTop } from "../../../../utils/use-scroll-to-top-hook";
-import { useSalesPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function AllSales() {
     const instance = DataInstancesMap.allSales
@@ -29,7 +28,7 @@ export function AllSales() {
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
 
-    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
+    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject,branchId, finYearId } = useUtilsInfo();
     const { scrollToTop } = useScrollToTop();
 
     const methods = useForm<SalesFormDataType>(
@@ -103,6 +102,10 @@ export function AllSales() {
             populateFormOverId(location.state.id)
         }
     }, [location.state?.id, location.state?.returnPath]);
+
+    useEffect(() => {
+        resetAll();
+    },[buCode, finYearId, branchId]);
 
     const handleBackToForm = () => {
         dispatch(setSalesViewMode(false));

@@ -22,7 +22,7 @@ import {
   Page,
   CommandColumn,
   Group,
-  GroupSettingsModel
+  GroupSettingsModel,
 } from "@syncfusion/ej2-react-grids";
 import _ from 'lodash'
 import { FC, useContext, useEffect, useRef, } from "react";
@@ -77,6 +77,7 @@ export function CompSyncFusionGrid({
   removeButtonWidth = 40,
   rowHeight,
   rowSelected,
+  rowDeselected,
   searchFields,
   sqlArgs,
   sqlId,
@@ -198,6 +199,7 @@ export function CompSyncFusionGrid({
       }}
       rowHeight={rowHeight}
       searchSettings={searchOptions}
+      rowDeselected={rowDeselected}
       rowSelected={rowSelected}
       selectionSettings={{
         type: gridDragAndDropSettings?.selectionType || "Single"
@@ -314,6 +316,7 @@ export type CompSyncFusionGridType = {
   removeButtonWidth?: number;
   rowHeight?: number;
   rowSelected?: (args: any) => void;
+  rowDeselected?: (args: any) => void;
   searchFields?: string[];
   // setRefresh?: (value: any) => void; // For refresh button
   sqlArgs?: GraphQLQueryArgsType; // SqlArgsType

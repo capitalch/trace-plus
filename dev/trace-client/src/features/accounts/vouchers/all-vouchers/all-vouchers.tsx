@@ -128,6 +128,10 @@ export function AllVouchers() {
         }
     }, [selectedTabIndex]);
 
+    useEffect(() => {
+        resetAll();
+    },[buCode, finYearId, branchId]);
+
     // Handle navigation from report - auto-populate form with ID from location state
     useEffect(() => {
         if (location.state?.id && location.state?.returnPath) {

@@ -1,485 +1,605 @@
-# Plan: Fix Text Selection During Drag and Drop
+# Plan: Reset Purchases, Sales, and Returns When Business Unit, Financial Year, or Branch Changes
 
-## Problem Description
+## Problem Statement
 
-**Current Behavior**:
-1. User selects multiple controls in the source grid
-2. User drags the controls to the target grid
-3. During or after the drag operation, text within some controls gets selected (highlighted)
-4. This text selection is visually distracting and unintended
+Similar to vouchers, purchase, sales, and return forms do not automatically reset when the user changes the Business Unit (BU), Financial Year (FY), or Branch in the status bar. This can lead to data inconsistencies where:
+- A purchase/sale is being edited for one BU/FY/Branch
+- User switches to different BU/FY/Branch in the status bar
+- The form retains old data that belongs to the previous context
+- Saving could create invalid or inconsistent data
 
-**Expected Behavior**:
-1. User selects multiple controls
-2. User drags controls to target
-3. No text selection occurs during or after the drag operation
-4. Only the intended drag-and-drop happens
+**Requirement**: Automatically reset the following forms when any of these status bar values change:
+1. Business Unit (BU)
+2. Financial Year (FY)
+3. Branch
 
-**Root Cause**:
-- During drag operations, mouse movements can trigger browser's default text selection behavior
-- The `mousedown` and `mousemove` events may not be properly preventing text selection
-- Text selection can occur in either the source or target grid during the drag operation
+**Affected Forms**:
+- Purchases (`all-purchases.tsx`)
+- Sales (`all-sales.tsx`)
+- Purchase Returns (`all-purchase-returns.tsx`)
+- Sales Returns (`all-sales-return.tsx`)
 
 ---
 
-## Current Code Analysis
+## Current Implementation
 
-### File: `super-admin-link-secured-controls-with-roles.tsx`
+### File: `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
 
-#### Current handleMouseDown (Lines ~319-384):
+**Lines 92-98**: Current useUtilsInfo Hook
 
 ```typescript
-const handleMouseDown = (e: MouseEvent) => {
-    // Get selected records
-    const selectedRecords = gridRef.current?.getSelectedRecords();
-    if (!selectedRecords || selectedRecords.length === 0) return;
-
-    // Ignore clicks on interactive elements
-    const target = e.target as HTMLElement;
-
-    // Don't interfere with data rows (let Syncfusion's default drag work)
-    if (target.closest('.e-row:not(.e-groupcaptionrow)')) {
-        return;
-    }
-
-    // ... other interactive element checks ...
-
-    // Prevent default text selection
-    e.preventDefault();
-
-    // Store start position for drag threshold
-    dragStartPos = { x: e.clientX, y: e.clientY };
-    isDragging = false;
-
-    // Add mousemove listener to detect drag intent
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-        const dx = moveEvent.clientX - dragStartPos.x;
-        const dy = moveEvent.clientY - dragStartPos.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        // Require 5px movement to start drag (avoids accidental drags)
-        if (distance > 5 && !isDragging) {
-            isDragging = true;
-            startCustomDrag(moveEvent, selectedRecords);
-            cleanup();
-        }
-    };
-
-    // ... cleanup handlers ...
-};
+const { branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
+const methods = useForm<PurchaseFormDataType>(
+    {
+        mode: "all",
+        criteriaMode: "all",
+        defaultValues: _.isEmpty(savedFormData) ? getDefaultPurchaseFormValues() : savedFormData
+    });
 ```
 
-**Problems Identified**:
-1. **Only prevents default on group caption rows**: The code only calls `e.preventDefault()` when clicking group caption rows (line 353), but returns early for data rows (line 328-330)
-2. **No text selection prevention on data rows**: When clicking data rows, the function returns early, so no prevention happens
-3. **No user-select CSS**: There's no CSS to disable text selection globally during drag
-4. **mousemove doesn't prevent default**: The `handleMouseMove` function doesn't call `preventDefault()`
+**Lines 202-230**: getDefaultPurchaseFormValues Function
+
+```typescript
+function getDefaultPurchaseFormValues(): PurchaseFormDataType {
+    return ({
+        id: undefined,
+        autoRefNo: "",
+        tranDate: '',
+        userRefNo: null,
+        remarks: null,
+        tranTypeId: 5,
+        isGstInvoice: hasGstin,
+        isIgst: false,
+
+        debitAccId: null,
+        creditAccId: null,
+        gstin: null,
+
+        purchaseLineItems: [],
+
+        totalInvoiceAmount: 0,
+        totalQty: 0,
+        totalCgst: 0,
+        totalSgst: 0,
+        totalIgst: 0,
+
+        branchId: branchId || 1,        // ← Uses current branchId
+        deletedIds: [],
+        finYearId: finYearId || 0,      // ← Uses current finYearId
+        toggle: true
+    });
+}
+```
+
+**Lines 336-341**: Existing resetAll Function
+
+```typescript
+function resetAll() {
+    clearErrors()
+    reset(getDefaultPurchaseFormValues());
+    dispatch(clearPurchaseFormData());
+    dispatch(setInvoicExists(false))
+}
+```
+
+**Existing Reset Triggers**:
+- Line 120: Reset when switching to View tab
+- Line 194: Reset after successful save (if not coming from report)
+
+---
+
+## Issue Analysis
+
+### The Problem
+
+The purchase, sales, and return forms do **NOT** automatically reset when:
+- User changes Business Unit in status bar
+- User changes Financial Year in status bar
+- User changes Branch in status bar
+
+### Why This Is Problematic
+
+**Scenario**:
+1. User creates a purchase for BU "Wholesale", FY "2023-24", Branch "Delhi"
+2. Adds products, sets supplier account, enters invoice details
+3. User switches BU to "Retail" in status bar
+4. Purchase form still shows line items meant for "Wholesale" BU
+5. If user saves, data goes to wrong BU context
+
+**Data Consistency Risk**:
+- Purchases could be saved with incorrect finYearId
+- Purchases could be saved with incorrect branchId
+- Account selections might be invalid for the new BU
+- Product associations might be wrong for different BU
+- Invoice numbering could become inconsistent
+- Historical data could become corrupted
+
+---
+
+## Available Redux Selectors
+
+From `login-slice.ts:256-279`:
+
+```typescript
+export const currentBusinessUnitSelectorFn = (state: RootStateType) =>
+  state.login.currentBusinessUnit
+
+export const currentFinYearSelectorFn = (state: RootStateType) =>
+  state.login.currentFinYear
+
+export const currentBranchSelectorFn = (state: RootStateType) =>
+  state.login.currentBranch
+```
+
+These selectors return:
+- `currentBusinessUnit`: `BusinessUnitType` with `buId`, `buCode`, `buName`
+- `currentFinYear`: `FinYearType` with `finYearId`, `startDate`, `endDate`
+- `currentBranch`: `BranchType` with `branchId`, `branchName`, `branchCode`
 
 ---
 
 ## Solution Design
 
-### Approach 1: Prevent Default on All Mousedown Events
+### Approach: useEffect with Dependency Array
 
-Add `e.preventDefault()` for all row clicks, not just group caption rows.
+Add a `useEffect` hook that watches for changes in:
+1. `currentBusinessUnit?.buId`
+2. `currentFinYear?.finYearId`
+3. `currentBranch?.branchId`
 
-**Pros**:
-- Simple fix
-- Prevents text selection at the source
+When any of these change, call `resetAll()` to clear the form.
 
-**Cons**:
-- May interfere with normal click behavior on data rows
-- Doesn't address text selection during mousemove
-
----
-
-### Approach 2: Add CSS user-select: none During Drag
-
-Apply `user-select: none` CSS to the grid content while dragging.
-
-**Pros**:
-- Prevents text selection across entire grid
-- Non-invasive to event handlers
-- Works during entire drag operation
-
-**Cons**:
-- Need to manage CSS class addition/removal
-- May affect nested elements
+This is the **exact same approach** as vouchers for consistency.
 
 ---
 
-### Approach 3: Comprehensive Event Prevention
+## Implementation for Each Form
 
-Combine multiple strategies:
-1. Call `preventDefault()` on mousedown for all rows
-2. Call `preventDefault()` on mousemove during drag
-3. Add CSS `user-select: none` to grid during drag
-4. Clear any existing text selection before starting drag
+### Form 1: All Purchases
 
-**Pros**:
-- Most robust solution
-- Handles all edge cases
-- Works across different browsers
+**File**: `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
 
-**Cons**:
-- More complex implementation
-- Multiple points of intervention
-
----
-
-## Recommended Solution
-
-**Hybrid Approach**: Use a combination of event prevention and CSS control.
-
-### Implementation Steps:
-
-1. **Add preventDefault on data row clicks** (for consistency)
-2. **Add preventDefault on mousemove during drag**
-3. **Apply user-select CSS to grid content during drag**
-4. **Clear any existing text selection when drag starts**
-5. **Remove user-select CSS when drag ends**
-
----
-
-## Implementation Plan
-
-### Step 1: Update handleMouseDown Function
-
-**File**: `super-admin-link-secured-controls-with-roles.tsx`
-**Location**: Lines ~319-384
-
-**Changes**:
+#### Change 1: Import Selectors (After line 22)
 
 ```typescript
-const handleMouseDown = (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
+import {
+    currentBusinessUnitSelectorFn,
+    currentFinYearSelectorFn,
+    currentBranchSelectorFn
+} from "../../../../login/login-slice";
+```
 
-    // Ignore clicks on interactive elements
-    if (target.closest('.e-checkbox-wrapper') || target.closest('.e-checkselect')) {
+#### Change 2: Select Current Values (After line 92)
+
+```typescript
+// Watch for changes in BU, FY, Branch for automatic reset
+const currentBusinessUnit = useSelector(currentBusinessUnitSelectorFn);
+const currentFinYear = useSelector(currentFinYearSelectorFn);
+const currentBranch = useSelector(currentBranchSelectorFn);
+```
+
+#### Change 3: Add Reset Effect (After line 130)
+
+```typescript
+// Reset form when BU, Financial Year, or Branch changes in status bar
+useEffect(() => {
+    // Skip reset on initial mount (when all values are undefined)
+    if (!currentBusinessUnit || !currentFinYear || !currentBranch) {
         return;
     }
-    if (target.closest('.e-recordplusexpand') || target.closest('.e-recordpluscollapse')) {
-        return;
-    }
-    if (target.closest('.e-scrollbar')) {
-        return;
-    }
-    if (target.closest('.e-toolbar')) {
-        return;
-    }
 
-    // Get selected records
-    const selectedRecords = gridRef.current?.getSelectedRecords();
-    if (!selectedRecords || selectedRecords.length === 0) return;
+    // Reset the form to clear any stale data from previous context
+    resetAll();
+}, [currentBusinessUnit?.buId, currentFinYear?.finYearId, currentBranch?.branchId]);
+```
 
-    // Find the clicked row
-    const clickedRow = target.closest('.e-row');
-    if (!clickedRow) return;
+---
 
-    // Don't process if it's a group caption row (let default behavior work)
-    if (clickedRow.classList.contains('e-groupcaptionrow')) {
-        // For group captions, prevent text selection
-        e.preventDefault();
+### Form 2: All Sales
 
-        // Store start position for drag threshold
-        dragStartPos = { x: e.clientX, y: e.clientY };
-        isDragging = false;
+**File**: `src/features/accounts/purchase-sales/sales/all-sales.tsx`
 
-        // Add mousemove listener
-        const handleMouseMove = (moveEvent: MouseEvent) => {
-            // Prevent text selection during move
-            moveEvent.preventDefault();
+**Apply the exact same pattern**:
+1. Import selectors
+2. Add useSelector calls
+3. Add useEffect with reset logic
 
-            const dx = moveEvent.clientX - dragStartPos.x;
-            const dy = moveEvent.clientY - dragStartPos.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+**Note**: Sales form structure should be similar to purchases.
 
-            if (distance > 5 && !isDragging) {
-                isDragging = true;
+---
 
-                // Clear any existing text selection
-                clearTextSelection();
+### Form 3: All Purchase Returns
 
-                // Add no-select class to grid content
-                if (gridContent) {
-                    gridContent.classList.add('no-text-select');
-                }
+**File**: `src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`
 
-                startCustomDrag(moveEvent, selectedRecords);
-                cleanup();
-            }
-        };
+**Apply the exact same pattern**:
+1. Import selectors
+2. Add useSelector calls
+3. Add useEffect with reset logic
 
-        const handleMouseUp = () => {
-            cleanup();
-        };
+---
 
-        const cleanup = () => {
-            // Remove no-select class
-            if (gridContent) {
-                gridContent.classList.remove('no-text-select');
-            }
+### Form 4: All Sales Returns
 
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
+**File**: `src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`
 
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-    }
+**Apply the exact same pattern**:
+1. Import selectors
+2. Add useSelector calls
+3. Add useEffect with reset logic
 
-    // For data rows, let SyncFusion's built-in drag handle it
-    // but still prevent text selection
-    if (!clickedRow.classList.contains('e-groupcaptionrow')) {
-        e.preventDefault();
-    }
-};
+---
 
-// Helper function to clear text selection
-function clearTextSelection() {
-    if (window.getSelection) {
-        const selection = window.getSelection();
-        if (selection) {
-            selection.removeAllRanges();
+## Why This Solution Works
+
+### 1. Dependency Array
+
+```typescript
+[currentBusinessUnit?.buId, currentFinYear?.finYearId, currentBranch?.branchId]
+```
+
+- Watches only the ID fields (primitive values)
+- React detects changes using `Object.is()` comparison
+- Triggers effect when any ID changes
+
+### 2. Initial Mount Guard
+
+```typescript
+if (!currentBusinessUnit || !currentFinYear || !currentBranch) {
+    return;
+}
+```
+
+- Prevents reset on component mount when values are loading
+- Only resets on actual changes after initial load
+
+### 3. Reuses Existing resetAll()
+
+```typescript
+resetAll();
+```
+
+For **Purchases**:
+- Clears form errors (line 337)
+- Resets to default values with updated finYearId/branchId (line 338)
+- Clears Redux saved form data (line 339)
+- Clears invoice exists flag (line 340)
+
+**Other forms** should have similar resetAll() logic.
+
+### 4. Safe Reset Logic
+
+The `resetAll()` function:
+- Gets fresh default values with updated finYearId/branchId
+- Clears all line items (purchases/sales details)
+- Clears all form errors
+- Clears saved form data from Redux
+- Resets form-specific flags (like invoiceExists)
+
+---
+
+## Edge Cases
+
+### Edge Case 1: User Has Unsaved Line Items
+
+**Scenario**: User added multiple purchase/sale line items, then changes BU/FY/Branch
+
+**Behavior**: Form resets immediately, losing all unsaved line items
+
+**Options**:
+
+#### Option A: Silent Reset (Recommended)
+- Reset without warning
+- User expects context switch to reset form
+- Status bar changes are explicit user actions
+- Matches vouchers behavior
+
+#### Option B: Confirm Before Reset
+- Show confirmation dialog
+- "You have unsaved changes. Switching will reset the form. Continue?"
+- Better UX but adds complexity
+- Inconsistent with vouchers
+
+**Recommendation**: **Option A (Silent Reset)**
+- Consistency across all transaction forms
+- Status bar changes are deliberate
+- Users learn the behavior quickly
+
+---
+
+### Edge Case 2: Invoice Exists Check
+
+**Scenario** (Purchases): User enters invoice number, invoice exists check runs, then user changes BU
+
+**Behavior**: Form resets, clearing invoice exists error
+
+**Result**: ✅ Correct - different BU = different invoice namespace
+
+---
+
+### Edge Case 3: Product Line Items
+
+**Scenario**: User adds 10 products to purchase, then changes FY
+
+**Behavior**: All line items cleared
+
+**Result**: ✅ Correct - products might have different pricing/availability in different FY/BU
+
+---
+
+### Edge Case 4: GST Invoice Flag
+
+**Scenario**: User checks "GST Invoice", enters GSTIN, then changes BU
+
+**Behavior**: Form resets, GST invoice flag reset to default based on new BU's hasGstin
+
+**Result**: ✅ Correct - new BU might have different GST configuration
+
+---
+
+### Edge Case 5: Edit Mode
+
+**Scenario**: User editing existing purchase (has id), then changes BU
+
+**Behavior**: Form resets, id cleared
+
+**Result**: ✅ Correct - cannot edit purchase from different BU context
+
+---
+
+## Testing Checklist
+
+### For Each Form (Purchases, Sales, Purchase Returns, Sales Returns)
+
+**Functional Testing**
+
+- [ ] **BU Change**: Create entry, change BU, verify reset
+- [ ] **FY Change**: Create entry, change FY, verify reset
+- [ ] **Branch Change**: Create entry, change Branch, verify reset
+- [ ] **Multiple Changes**: Create entry, change BU → FY → Branch, verify resets
+- [ ] **Line Items**: Add line items, change context, verify cleared
+- [ ] **Edit Mode**: Edit existing entry, change context, verify reset
+- [ ] **Initial Mount**: Navigate to form, verify no unwanted reset
+- [ ] **Saved Form Data**: Fill form, navigate away, navigate back, change context, verify reset
+
+**Purchase-Specific Testing**
+
+- [ ] Invoice exists check cleared after reset
+- [ ] Invoice number field error cleared
+- [ ] Credit/debit account cleared
+- [ ] GSTIN field cleared
+
+**Sales-Specific Testing**
+
+- [ ] Customer account cleared
+- [ ] Sales line items cleared
+- [ ] Sales-specific flags reset
+
+**Returns-Specific Testing**
+
+- [ ] Original invoice reference cleared
+- [ ] Return line items cleared
+- [ ] Return-specific calculations reset
+
+---
+
+## Files to Modify
+
+### Priority 1: Core Transaction Forms
+
+1. **`src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`**
+   - Main purchase entry form
+   - ~395 lines
+   - Has resetAll() function (line 336)
+
+2. **`src/features/accounts/purchase-sales/sales/all-sales.tsx`**
+   - Main sales entry form
+   - Should have similar structure
+   - Need to verify resetAll() exists
+
+3. **`src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`**
+   - Purchase return form
+   - Should have resetAll() function
+
+4. **`src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`**
+   - Sales return form
+   - Should have resetAll() function
+
+---
+
+## Implementation Steps
+
+### Step 1: All Purchases (20 minutes)
+
+**File**: `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
+
+**Location 1** (After line 22): Add import
+**Location 2** (After line 92): Add selectors
+**Location 3** (After line 130): Add effect
+
+**Test**: Create purchase, change BU/FY/Branch, verify reset
+
+---
+
+### Step 2: All Sales (15 minutes)
+
+**File**: `src/features/accounts/purchase-sales/sales/all-sales.tsx`
+
+**Actions**: Apply same 3 changes
+**Test**: Create sale, change BU/FY/Branch, verify reset
+
+---
+
+### Step 3: All Purchase Returns (15 minutes)
+
+**File**: `src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`
+
+**Actions**: Apply same 3 changes
+**Test**: Create return, change BU/FY/Branch, verify reset
+
+---
+
+### Step 4: All Sales Returns (15 minutes)
+
+**File**: `src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`
+
+**Actions**: Apply same 3 changes
+**Test**: Create return, change BU/FY/Branch, verify reset
+
+---
+
+### Step 5: Regression Testing (20 minutes)
+
+**Actions**:
+- Test all forms together
+- Test context switching between forms
+- Verify no side effects
+
+**Total Time**: ~85 minutes (~1.5 hours)
+
+---
+
+## Code Template
+
+For consistency, use this template for each form:
+
+```typescript
+// === IMPORTS ===
+import {
+    currentBusinessUnitSelectorFn,
+    currentFinYearSelectorFn,
+    currentBranchSelectorFn
+} from "../../../../login/login-slice";
+
+// === INSIDE COMPONENT ===
+export function FormComponent() {
+    // ... existing code ...
+
+    const { branchId, finYearId, buCode, /* ... */ } = useUtilsInfo();
+
+    // Watch for changes in BU, FY, Branch for automatic reset
+    const currentBusinessUnit = useSelector(currentBusinessUnitSelectorFn);
+    const currentFinYear = useSelector(currentFinYearSelectorFn);
+    const currentBranch = useSelector(currentBranchSelectorFn);
+
+    // ... other hooks ...
+
+    // Reset form when BU, Financial Year, or Branch changes in status bar
+    useEffect(() => {
+        // Skip reset on initial mount (when all values are undefined)
+        if (!currentBusinessUnit || !currentFinYear || !currentBranch) {
+            return;
         }
-    }
+
+        // Reset the form to clear any stale data from previous context
+        resetAll();
+    }, [currentBusinessUnit?.buId, currentFinYear?.finYearId, currentBranch?.branchId]);
+
+    // ... rest of component ...
 }
 ```
-
-### Step 2: Add CSS for no-text-select
-
-**Location**: Add to the component's style section or CSS file
-
-```css
-.no-text-select {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-```
-
-**OR** add inline style in the useEffect:
-
-```typescript
-// In the useEffect setup
-const gridContent = gridRef.current.element?.querySelector('.e-content');
-if (gridContent) {
-    // Add style element for no-text-select
-    const style = document.createElement('style');
-    style.textContent = `
-        .no-text-select {
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
-        }
-    `;
-    document.head.appendChild(style);
-}
-```
-
----
-
-## Alternative Simpler Approach
-
-If the comprehensive approach is too complex, we can try a simpler fix:
-
-### Simple Fix: Just Prevent Default Everywhere
-
-```typescript
-const handleMouseDown = (e: MouseEvent) => {
-    // Get selected records
-    const selectedRecords = gridRef.current?.getSelectedRecords();
-    if (!selectedRecords || selectedRecords.length === 0) return;
-
-    // Ignore clicks on interactive elements
-    const target = e.target as HTMLElement;
-
-    // ... interactive element checks ...
-
-    // ALWAYS prevent default to stop text selection
-    e.preventDefault();
-
-    // Don't interfere with data rows (let Syncfusion's default drag work)
-    if (target.closest('.e-row:not(.e-groupcaptionrow)')) {
-        return;
-    }
-
-    // ... rest of the logic ...
-};
-```
-
-**Just move `e.preventDefault()` BEFORE the early return for data rows.**
-
----
-
-## Testing Plan
-
-### Test Case 1: Drag from Group Caption Area
-**Steps**:
-1. Select 3 controls
-2. Click and drag from group caption area
-3. Drop in target grid
-
-**Expected**:
-- No text selection occurs
-- Drag operation works normally
-
-### Test Case 2: Drag Multiple Selected Rows
-**Steps**:
-1. Select 5 controls using checkboxes
-2. Click on one selected row and drag
-3. Drop in target grid
-
-**Expected**:
-- No text selection in source grid
-- No text selection in target grid
-- All 5 controls are moved
-
-### Test Case 3: Fast Drag Movement
-**Steps**:
-1. Select controls
-2. Quickly drag across the grid with fast mouse movement
-3. Drop in target
-
-**Expected**:
-- No text selection even with fast movement
-- Drag helper follows cursor smoothly
-
-### Test Case 4: Click Without Drag
-**Steps**:
-1. Select controls
-2. Click on a row but don't drag (no movement)
-3. Release mouse
-
-**Expected**:
-- No drag occurs (since no 5px threshold met)
-- No text selection occurs
-- Selection remains unchanged
-
-### Test Case 5: Text Selection Before Drag
-**Steps**:
-1. Manually select some text in the grid (before any drag)
-2. Then select controls
-3. Start drag operation
-
-**Expected**:
-- Previous text selection is cleared when drag starts
-- No text selection remains after drag
-
----
-
-## Implementation Steps Summary
-
-### ✅ Step 1: Analyze Current Code
-- Identified that `e.preventDefault()` only happens for group caption rows
-- Data rows return early without prevention
-
-### ✅ Step 2: Choose Approach
-- Decided on Simpler Approach first (move preventDefault before early return)
-- If that doesn't work, implement comprehensive approach
-
-### Step 3: Update Super-Admin File
-- Move `e.preventDefault()` before the data row check
-- Add `moveEvent.preventDefault()` in handleMouseMove
-- Add `clearTextSelection()` helper function
-- Add CSS class management for user-select
-
-### Step 4: Update Admin File
-- Apply same changes as super-admin file
-
-### Step 5: Test All Scenarios
-- Test drag from group caption
-- Test drag from data rows
-- Test fast movements
-- Test text selection clearing
-
----
-
-## Code Changes Summary
-
-### Files to Modify
-
-1. **super-admin-link-secured-controls-with-roles.tsx**
-   - Lines ~319-384: Update `handleMouseDown` function
-   - Add `clearTextSelection()` helper function
-   - Add CSS class management or inline styles
-
-2. **admin-link-secured-controls-with-roles.tsx**
-   - Lines ~317-382: Apply same changes as super-admin
-
----
-
-## Success Criteria
-
-After implementation:
-1. ✅ No text selection when dragging from group caption area
-2. ✅ No text selection when dragging data rows (via SyncFusion)
-3. ✅ No text selection during fast mouse movements
-4. ✅ Existing text selection cleared when drag starts
-5. ✅ Normal click behavior still works (checkboxes, expand/collapse)
-6. ✅ Drag and drop functionality remains intact
 
 ---
 
 ## Risk Assessment
 
-**Low Risk**:
-- Moving `preventDefault()` is a small change
-- Doesn't affect core drag logic
-- Easy to test and verify
+### Low Risk
 
-**Potential Issues**:
-- May need to test on different browsers (Chrome, Firefox, Edge)
-- Touch devices may behave differently (though this is mouse-focused)
+- ✅ Small, isolated changes (~15 lines per file)
+- ✅ Reuses existing `resetAll()` functions
+- ✅ No logic changes to reset behavior
+- ✅ Guard clause prevents unwanted resets
+- ✅ Easy to rollback
+- ✅ Same pattern as vouchers (already proven)
 
-**Mitigation**:
-- Start with simplest approach
-- Test thoroughly before moving to complex approach
-- Keep both grids (left and right) in mind
+### No Breaking Changes
 
----
-
-## Timeline Estimate
-
-- **Simple Fix (move preventDefault)**: 5 minutes
-- **Test Simple Fix**: 5 minutes
-- **If needed - Comprehensive Fix**: 15 minutes
-- **Test Comprehensive Fix**: 10 minutes
-- **Apply to Admin File**: 5 minutes
-- **Total**: 20-40 minutes (depending on which approach is needed)
+- ✅ Existing reset triggers unchanged
+- ✅ Form behavior unchanged (except for new automatic reset)
+- ✅ No API changes
+- ✅ No database changes
+- ✅ No changes to save logic
 
 ---
 
-## Recommended Implementation Order
+## Success Criteria
 
-1. **Try Simple Fix First**:
-   - Move `e.preventDefault()` before data row check (line 328)
-   - Test if this alone solves the problem
+### Definition of Done
 
-2. **If Simple Fix Insufficient**:
-   - Add `moveEvent.preventDefault()` in mousemove handler
-   - Test again
+**For Each Form**:
+1. ✅ Form resets when Business Unit changes
+2. ✅ Form resets when Financial Year changes
+3. ✅ Form resets when Branch changes
+4. ✅ No reset on initial component mount
+5. ✅ Line items cleared after reset
+6. ✅ Form errors cleared after reset
+7. ✅ Saved form data cleared after reset
+8. ✅ No console errors
+9. ✅ No TypeScript errors
+10. ✅ All test cases pass
 
-3. **If Still Issues**:
-   - Implement full comprehensive approach with CSS classes
-   - Add `clearTextSelection()` helper
-   - Test thoroughly
+---
+
+## Comparison with Vouchers
+
+### Similarities
+
+✅ Same Redux selectors used
+✅ Same useEffect pattern
+✅ Same dependency array
+✅ Same guard clause
+✅ Same resetAll() approach
+✅ Same edge cases
+
+### Differences
+
+⚠️ Vouchers: Single file (`all-vouchers.tsx`)
+⚠️ Purchases/Sales: 4 separate files
+
+⚠️ Vouchers: Simpler line items (debit/credit entries)
+⚠️ Purchases/Sales: Complex line items (products, GST, quantities)
+
+⚠️ Vouchers: No invoice exists check
+⚠️ Purchases: Invoice exists validation needs clearing
+
+### Why Same Pattern Works
+
+- All are transaction forms
+- All tied to BU/FY/Branch context
+- All have resetAll() functions
+- All use React Hook Form
+- All store saved data in Redux
+- All need same context consistency
 
 ---
 
 ## Summary
 
-**Problem**: Text gets selected when dragging controls
+**Problem**: Purchase, sales, and return forms don't reset when BU/FY/Branch changes in status bar
 
-**Root Cause**: `preventDefault()` only called for group caption rows, not data rows
+**Root Cause**: No automatic reset mechanism watching for context changes
 
-**Solution**:
-1. Simple: Move `preventDefault()` before early return for data rows
-2. Comprehensive: Add CSS user-select control and text selection clearing
+**Solution**: Add `useEffect` hook that watches Redux state for currentBusinessUnit, currentFinYear, and currentBranch changes, and calls `resetAll()` when detected
 
-**Impact**: Users can drag controls without unwanted text selection
+**Files to Modify** (4 files):
+1. `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
+2. `src/features/accounts/purchase-sales/sales/all-sales.tsx`
+3. `src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`
+4. `src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`
 
-**Effort**: 20-40 minutes including testing
+**Changes Per File**:
+- Import 3 Redux selectors
+- Add 3 `useSelector` calls
+- Add 1 `useEffect` with reset logic
 
-**Files**: 2 TypeScript files (super-admin + admin variants)
+**Lines Changed**: ~15 lines per file (~60 lines total)
+
+**Risk**: Low (same proven pattern as vouchers)
+
+**Time Estimate**: 85 minutes (20 + 15 + 15 + 15 + 20 for testing)
+
+**Consistency**: Exact same pattern as vouchers for predictable behavior
+
+---
+
+Ready to implement ✅

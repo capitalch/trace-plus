@@ -26,6 +26,7 @@ export function CompSyncFusionTreeGridToolbar({
     , isSearch = true
     , isTitleVisible = true
     , minWidth
+    // , onRefresh
     , title
     , width
 }: CompSyncFusionTreeGridToolbarType) {
@@ -110,6 +111,9 @@ export function CompSyncFusionTreeGridToolbar({
                     if (loadData) {
                         await loadData()
                     }
+                    // if(onRefresh){
+                    //     onRefresh()
+                    // }
                     const state: RootStateType = Utils.getReduxState()
                     const searchString = state.queryHelper?.[instance]?.searchString
                     const gridRef: any = context.CompSyncFusionTreeGrid[instance].gridRef
@@ -137,6 +141,7 @@ type CompSyncFusionTreeGridToolbarType = {
     isTitleVisible?: boolean
     isSearch?: boolean
     minWidth?: string
+    // onRefresh?: () => void
     title: string,
     width?: string
 }

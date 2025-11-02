@@ -20,7 +20,6 @@ import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { ContactDisplayDataType } from "../sales/all-sales";
 import { Messages } from "../../../../utils/messages";
 import { useLocation } from "react-router-dom";
-import { useSalesReturnPermissions } from "../../../../utils/permissions/permissions-hooks";
 
 export function AllSalesReturn() {
     const instance = DataInstancesMap.allSalesReturn
@@ -29,7 +28,7 @@ export function AllSalesReturn() {
     const savedFormData = useSelector((state: RootStateType) => state.salesReturn.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.salesReturn.isViewMode);
 
-    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
+    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject,branchId, finYearId } = useUtilsInfo();
 
     const methods = useForm<SalesReturnFormDataType>(
         {
@@ -90,6 +89,10 @@ export function AllSalesReturn() {
             populateFormOverId(location.state.id)
         }
     }, [location.state?.id, location.state?.returnPath]);
+
+    useEffect(() => {
+        resetAll();
+    },[buCode, finYearId, branchId]);
 
     const handleBackToForm = () => {
         dispatch(setSalesReturnViewMode(false));

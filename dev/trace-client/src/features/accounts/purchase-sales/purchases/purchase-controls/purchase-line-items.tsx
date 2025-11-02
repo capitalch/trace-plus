@@ -13,7 +13,7 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../../../utils/validators-hook";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { PurchaseFormDataType } from "../all-purchases/all-purchases";
 import { Utils } from "../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
@@ -51,14 +51,37 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         return lineItem;
     }, [defaultGstRate, getDefaultPurchaseLineItem]);
 
-    const onChangeProductCode = useMemo(
-        () =>
-            _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
-                populateProductOnProductCode(e.target.value, index);
-            }, 2000), []
+    const populateProductOnProductCode = useCallback(async (productCode: string, index: number) => {
+        if (!productCode) {
+            handleClearLineItem(index);
+            return;
+        }
+        const products: ProductInfoType[] = await Utils.doGenericQuery({
+            buCode: buCode || "",
+            dbName: dbName || "",
+            dbParams: decodedDbParamsObject,
+            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
+            sqlArgs: {
+                branchId: branchId || 1,
+                productCodeOrUpc: productCode,
+                finYearId: finYearId || 0
+            }
+        });
+        const product = products?.[0];
+        if (_.isEmpty(product)) {
+            handleClearLineItem(index);
+            return;
+        }
+        setLineItem(product, index);
+    }, [buCode, dbName, decodedDbParamsObject, branchId, finYearId, handleClearLineItem, setLineItem]);
+
+    const onChangeProductCode = useCallback(
+        _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
+            populateProductOnProductCode(e.target.value, index);
+        }, 2000), [populateProductOnProductCode]
     );
 
-    function computeLineItemValues(index: number) {
+    const computeLineItemValues = useCallback((index: number) => {
         const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
         const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
         const discount = new Decimal(watch(`purchaseLineItems.${index}.discount`) || 0);
@@ -84,7 +107,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setValue(`purchaseLineItems.${index}.amount`, amount.toNumber())
         setPriceGst(index)
         trigger()
-    }
+    }, [watch, isIgst, setValue, trigger, setPriceGst])
 
     function getSnError(index: number) {
         const serialNumbers = watch(`purchaseLineItems.${index}.serialNumbers`);
@@ -136,7 +159,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         });
     }
 
-    function setPriceGst(index: number) {
+    const setPriceGst = useCallback((index: number) => {
         const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
         const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
 
@@ -147,7 +170,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
             shouldDirty: true,
             shouldValidate: true
         });
-    }
+    }, [watch, setValue]);
 
     // Event handlers
     const handleAddRow = (index: number) => {
@@ -173,7 +196,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setTimeout(() => setCurrentRowIndex(0), 0);
     };
 
-    function handleClearLineItem(index: number) {
+    const handleClearLineItem = useCallback((index: number) => {
         setValue(`purchaseLineItems.${index}.productId`, null, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.productCode`, '', { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.upcCode`, null, { shouldDirty: true })
@@ -185,39 +208,9 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setValue(`purchaseLineItems.${index}.discount`, 0, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
-    }
+    }, [setValue]);
 
-    function handleProductSearch(index: number) {
-        Utils.showProductSearch((product) => {
-            setLineItem(product, index);
-        });
-    }
-
-    async function populateProductOnProductCode(productCode: string, index: number) {
-        if (!productCode) {
-            handleClearLineItem(index);
-            return;
-        }
-        const products: ProductInfoType[] = await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.getProductOnProductCodeUpc,
-            sqlArgs: {
-                branchId: branchId || 1,
-                productCodeOrUpc: productCode,
-                finYearId: finYearId || 0
-            }
-        });
-        const product = products?.[0];
-        if (_.isEmpty(product)) {
-            handleClearLineItem(index);
-            return;
-        }
-        setLineItem(product, index);
-    }
-
-    function setLineItem(product: ProductInfoType, index: number) {
+    const setLineItem = useCallback((product: ProductInfoType, index: number) => {
         setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
         setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
@@ -228,6 +221,12 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setTimeout(() => {
             trigger()
         }, 0);
+    }, [setValue, trigger]);
+
+    function handleProductSearch(index: number) {
+        Utils.showProductSearch((product) => {
+            setLineItem(product, index);
+        });
     }
 
     // Effects
@@ -245,7 +244,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         fields.forEach((_, index) => {
             computeLineItemValues(index)
         })
-    }, [fields, isIgst])
+    }, [fields, isIgst, computeLineItemValues])
 
     // Render helpers
     function getSummaryMarkup() {

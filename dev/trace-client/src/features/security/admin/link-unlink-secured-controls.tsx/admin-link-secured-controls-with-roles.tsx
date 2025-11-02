@@ -1,4 +1,4 @@
-import { JSX, useContext, useEffect, useMemo, useState } from "react";
+import { JSX, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import _ from 'lodash'
 import { GlobalContext, GlobalContextType } from "../../../../app/global-context";
@@ -31,6 +31,7 @@ export function AdminLinkSecuredControlsWithRoles() {
     const context: GlobalContextType = useContext(GlobalContext);
     const [selectedCount, setSelectedCount] = useState<number>(0);
     const [checkboxUpdateTrigger, setCheckboxUpdateTrigger] = useState<number>(0);
+    const [gridRefreshTrigger, setGridRefreshTrigger] = useState<number>(0);
     const [allGroupsExpanded, setAllGroupsExpanded] = useState<boolean>(false);
     const [allTreeGroupsExpanded, setAllTreeGroupsExpanded] = useState<boolean>(false);
 
@@ -251,58 +252,25 @@ export function AdminLinkSecuredControlsWithRoles() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // Track selection changes with smart polling and guards to prevent infinite loops
-    useEffect(() => {
-        let lastSelectionCount = 0;
-        let isUpdating = false;
-
-        const updateSelectionCount = () => {
-            // Re-entrancy guard: prevent concurrent updates
-            if (isUpdating) return;
-
-            const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
-            if (gridRef?.current) {
-                const selected = gridRef.current.getSelectedRecords();
-                const currentCount = selected.length;
-
-                // Only update if count actually changed (change detection)
-                if (currentCount !== lastSelectionCount) {
-                    isUpdating = true;
-                    lastSelectionCount = currentCount;
-
-                    setSelectedCount(currentCount);
-                    setCheckboxUpdateTrigger(Date.now());
-                    updateGroupCaptionBadges();
-
-                    // Add/remove draggable cursor styling
-                    const gridElement = gridRef.current.element;
-                    if (gridElement) {
-                        if (currentCount > 0) {
-                            gridElement.classList.add('has-selection');
-                        } else {
-                            gridElement.classList.remove('has-selection');
-                        }
-                    }
-
-                    // Reset flag after state updates complete (50ms cooldown)
-                    setTimeout(() => {
-                        isUpdating = false;
-                    }, 50);
-                }
-            }
-        };
-
-        // Poll with 100ms interval for responsive checkbox updates
-        const interval = setInterval(updateSelectionCount, 100);
-
-        return () => {
-            clearInterval(interval);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
 
     // Enable drag from anywhere in grid when items are selected
     useEffect(() => {
+        // Add CSS for preventing text selection during drag
+        const styleId = 'no-text-select-style';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                .no-text-select {
+                    -webkit-user-select: none !important;
+                    -moz-user-select: none !important;
+                    -ms-user-select: none !important;
+                    user-select: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
         // Delay setup to ensure grid is fully rendered
         const setupTimeout = setTimeout(() => {
             const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
@@ -321,11 +289,6 @@ export function AdminLinkSecuredControlsWithRoles() {
 
                 // Ignore clicks on interactive elements
                 const target = e.target as HTMLElement;
-
-                // Don't interfere with data rows (let Syncfusion's default drag work)
-                if (target.closest('.e-row:not(.e-groupcaptionrow)')) {
-                    return;
-                }
 
                 // Don't interfere with checkboxes
                 if (target.closest('.e-checkbox-wrapper') || target.closest('.e-checkselect')) {
@@ -347,39 +310,72 @@ export function AdminLinkSecuredControlsWithRoles() {
                     return;
                 }
 
-                // Prevent default text selection
+                // CRITICAL: Prevent default text selection BEFORE any early returns
+                // This ensures text won't be selected during drag on ANY row type
                 e.preventDefault();
 
-            // Store start position for drag threshold
-            dragStartPos = { x: e.clientX, y: e.clientY };
-            isDragging = false;
-
-            // Add mousemove listener to detect drag intent
-            const handleMouseMove = (moveEvent: MouseEvent) => {
-                const dx = moveEvent.clientX - dragStartPos.x;
-                const dy = moveEvent.clientY - dragStartPos.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                // Require 5px movement to start drag (avoids accidental drags)
-                if (distance > 5 && !isDragging) {
-                    isDragging = true;
-                    startCustomDrag(moveEvent, selectedRecords);
-                    cleanup();
+                // Don't interfere with data rows (let Syncfusion's default drag work)
+                if (target.closest('.e-row:not(.e-groupcaptionrow)')) {
+                    return;
                 }
-            };
 
-            const handleMouseUp = () => {
-                cleanup();
-            };
+                // Store start position for drag threshold
+                dragStartPos = { x: e.clientX, y: e.clientY };
+                isDragging = false;
 
-            const cleanup = () => {
-                document.removeEventListener('mousemove', handleMouseMove);
-                document.removeEventListener('mouseup', handleMouseUp);
-            };
+                // Helper function to clear any existing text selection
+                const clearTextSelection = () => {
+                    if (window.getSelection) {
+                        const selection = window.getSelection();
+                        if (selection) {
+                            selection.removeAllRanges();
+                        }
+                    }
+                };
 
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-        };
+                // Add mousemove listener to detect drag intent
+                const handleMouseMove = (moveEvent: MouseEvent) => {
+                    // Prevent text selection during mouse movement
+                    moveEvent.preventDefault();
+
+                    const dx = moveEvent.clientX - dragStartPos.x;
+                    const dy = moveEvent.clientY - dragStartPos.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    // Require 5px movement to start drag (avoids accidental drags)
+                    if (distance > 5 && !isDragging) {
+                        isDragging = true;
+
+                        // Clear any existing text selection before starting drag
+                        clearTextSelection();
+
+                        // Add no-select class to grid content during drag
+                        if (gridContent) {
+                            gridContent.classList.add('no-text-select');
+                        }
+
+                        startCustomDrag(moveEvent, selectedRecords);
+                        cleanup();
+                    }
+                };
+
+                const handleMouseUp = () => {
+                    cleanup();
+                };
+
+                const cleanup = () => {
+                    // Remove no-select class when drag ends
+                    if (gridContent) {
+                        gridContent.classList.remove('no-text-select');
+                    }
+
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                };
+
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+            };
 
             gridContent.addEventListener('mousedown', handleMouseDown);
 
@@ -392,7 +388,81 @@ export function AdminLinkSecuredControlsWithRoles() {
             clearTimeout(setupTimeout);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [context.CompSyncFusionGrid, securedControlsInstance])
+    }, [context.CompSyncFusionGrid, securedControlsInstance, gridRefreshTrigger])
+
+    // Handle selection changes via events (replaces polling)
+    const handleSelectionChange = useCallback(() => {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return;
+
+        const selected = gridRef.current.getSelectedRecords();
+        const currentCount = selected.length;
+
+        // Update selection count state
+        setSelectedCount(currentCount);
+
+        // Trigger checkbox update for group checkboxes
+        setCheckboxUpdateTrigger(Date.now());
+
+        // Update group caption badges
+        updateGroupCaptionBadges();
+
+        // Add/remove draggable cursor styling
+        const gridElement = gridRef.current.element;
+        if (gridElement) {
+            if (currentCount > 0) {
+                gridElement.classList.add('has-selection');
+            } else {
+                gridElement.classList.remove('has-selection');
+            }
+        }
+    }, [context.CompSyncFusionGrid, securedControlsInstance]);
+
+    // Event handler for row selection
+    const handleRowSelected = useCallback(() => {
+        handleSelectionChange();
+    }, [handleSelectionChange]);
+
+    // Event handler for row deselection
+    const handleRowDeselected = useCallback(() => {
+        handleSelectionChange();
+    }, [handleSelectionChange]);
+
+    const handleControlsRefresh = () => {
+        const loadData = context.CompSyncFusionGrid[securedControlsInstance].loadData
+        if (loadData) {
+            loadData()
+            setSelectedCount(0)
+            // Trigger re-attachment of drag event listeners after grid refresh
+            setTimeout(() => {
+                setGridRefreshTrigger(Date.now())
+            }, 100) // Small delay to ensure grid has started refresh
+        }
+    }
+
+    // const handleGridActionComplete = useCallback(() => {
+    //     const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+    //     if (!gridRef?.current) return;
+
+    //     // Get current actual selection from grid
+    //     const selected = gridRef.current.getSelectedRecords();
+    //     const actualCount = selected.length;
+
+    //     // Update our state to match grid's actual state
+    //     setSelectedCount(actualCount);
+    //     setCheckboxUpdateTrigger(Date.now());
+    //     updateGroupCaptionBadges();
+
+    //     // Update cursor styling
+    //     const gridElement = gridRef.current.element;
+    //     if (gridElement) {
+    //         if (actualCount > 0) {
+    //             gridElement.classList.add('has-selection');
+    //         } else {
+    //             gridElement.classList.remove('has-selection');
+    //         }
+    //     }
+    // }, [context.CompSyncFusionGrid, securedControlsInstance]);
 
     return (
         <div className='flex flex-col px-8'>
@@ -443,6 +513,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                                     isLastNoOfRows={false}
                                     instance={securedControlsInstance}
                                     CustomControl={ExpandCollapseButton}
+                                    onRefresh={handleControlsRefresh}
                                 />
                             </div>
                         </div>
@@ -472,6 +543,9 @@ export function AdminLinkSecuredControlsWithRoles() {
                             instance={securedControlsInstance}
                             minWidth='400px'
                             rowHeight={40}
+                            // actionComplete={handleGridActionComplete}
+                            rowSelected={handleRowSelected}
+                            rowDeselected={handleRowDeselected}
                             sqlArgs={{ dbName: GLOBAL_SECURITY_DATABASE_NAME }}
                             sqlId={SqlIdsMap.allSecuredControls}
                         />

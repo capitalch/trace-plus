@@ -15,15 +15,24 @@ export const useFilteredMenu = (
   const userSecuredControls = useSelector(
     (state: RootStateType) => state.login.userSecuredControls
   );
+  const userType = useSelector(
+    (state: RootStateType) => state.login.userDetails?.userType
+  );
 
   const menuData = MasterMenuData[menuType];
 
-  // IMPORTANT: No filtering for admin/superAdmin
+  // IMPORTANT: No filtering for admin/superAdmin menu types
   if (menuType === 'admin' || menuType === 'superAdmin') {
     return menuData;
   }
 
-  // Filter Accounts menu based on permissions
+  // IMPORTANT: No filtering for Admin (A) and SuperAdmin (S) user types
+  // These users should see all menu items regardless of permissions
+  if (userType === 'A' || userType === 'S') {
+    return menuData;
+  }
+
+  // Filter Accounts menu based on permissions for Business (B) users
   return menuData
     .map(parent => filterParentItem(parent, userSecuredControls))
     .filter(parent => parent !== null) as MenuDataItemType[];

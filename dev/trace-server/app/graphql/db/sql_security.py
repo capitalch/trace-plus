@@ -211,8 +211,9 @@ class SqlSecurity:
     """
 
     get_all_secured_controls = """
-        select * 
-		, split_part("controlName", '.', 1) AS "controlPrefix" 
+        select *
+		, split_part("controlName", '.', 1) AS "controlPrefix"
+		, "controlType" || '|' || split_part("controlName", '.', 1) AS "typePrefix"
 		from "SecuredControlM"
 			order by "controlType", "controlName"
     """

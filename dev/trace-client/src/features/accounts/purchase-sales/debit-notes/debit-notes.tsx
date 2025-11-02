@@ -130,6 +130,10 @@ export function DebitNotes() {
         }
     }, [location.state?.id, location.state?.returnPath]);
 
+    useEffect(() => {
+        resetAll();
+    },[buCode, finYearId, branchId]);
+
     return (
         <FormProvider {...extendedMethods}>
             <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
