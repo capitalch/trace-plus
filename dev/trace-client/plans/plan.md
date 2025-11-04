@@ -1,605 +1,204 @@
-# Plan: Reset Purchases, Sales, and Returns When Business Unit, Financial Year, or Branch Changes
+# Plan: Resolve Large Bundle Chunk Size Warning
 
-## Problem Statement
+## Problem
+Build warning: "Some chunks are larger than 500 kB after minification"
 
-Similar to vouchers, purchase, sales, and return forms do not automatically reset when the user changes the Business Unit (BU), Financial Year (FY), or Branch in the status bar. This can lead to data inconsistencies where:
-- A purchase/sale is being edited for one BU/FY/Branch
-- User switches to different BU/FY/Branch in the status bar
-- The form retains old data that belongs to the previous context
-- Saving could create invalid or inconsistent data
+This warning indicates that the application bundle is too large, which can lead to:
+- Slow initial page load times
+- Poor user experience, especially on slower networks
+- Increased bandwidth costs
+- Reduced performance scores (Lighthouse, PageSpeed Insights)
 
-**Requirement**: Automatically reset the following forms when any of these status bar values change:
-1. Business Unit (BU)
-2. Financial Year (FY)
-3. Branch
+## Current Analysis
 
-**Affected Forms**:
-- Purchases (`all-purchases.tsx`)
-- Sales (`all-sales.tsx`)
-- Purchase Returns (`all-purchase-returns.tsx`)
-- Sales Returns (`all-sales-return.tsx`)
+### Application Structure
+- **Entry Point**: `src/main.tsx`
+- **Router**: `src/app/router/app-router.tsx` with 30+ routes
+- **Build Tool**: Vite with Terser minification
+- **Major Dependencies** (that contribute to bundle size):
+  - Syncfusion components (@syncfusion/ej2-*)
+  - PrimeReact (primereact)
+  - Framer Motion
+  - Apollo Client
+  - Redux Toolkit
+  - React Hook Form
+  - jsPDF + jsPDF-autotable
+  - React Router v7
+  - Various utilities (lodash, decimal.js, dayjs, etc.)
 
----
+### Root Causes
+1. **No code splitting**: All 30+ routes are loaded synchronously
+2. **Large vendor dependencies**: Heavy UI libraries loaded upfront
+3. **No lazy loading**: All components imported with static imports
+4. **Syncfusion library**: Large component library loaded entirely
 
-## Current Implementation
+## Solution Strategy
 
-### File: `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
+### Phase 1: Implement Route-Based Code Splitting (High Priority)
+Convert all route components to lazy-loaded components using `React.lazy()` and dynamic imports.
 
-**Lines 92-98**: Current useUtilsInfo Hook
+**Impact**: This will have the LARGEST impact on reducing initial bundle size.
 
-```typescript
-const { branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
-const methods = useForm<PurchaseFormDataType>(
-    {
-        mode: "all",
-        criteriaMode: "all",
-        defaultValues: _.isEmpty(savedFormData) ? getDefaultPurchaseFormValues() : savedFormData
-    });
+**Implementation Steps**:
+1. Update `app-router.tsx` to use lazy loading for all route components
+2. Add `Suspense` boundaries with loading indicators
+3. Group related routes for better chunk organization
+
+**Example Transformation**:
+```tsx
+// Before
+import { AllPurchases } from "../../features/accounts/purchase-sales/purchases/all-purchases/all-purchases";
+
+// After
+const AllPurchases = lazy(() => import("../../features/accounts/purchase-sales/purchases/all-purchases/all-purchases").then(m => ({ default: m.AllPurchases })));
 ```
 
-**Lines 202-230**: getDefaultPurchaseFormValues Function
+### Phase 2: Configure Manual Chunking (Medium Priority)
+Use Vite's `manualChunks` option to intelligently split vendor libraries.
 
-```typescript
-function getDefaultPurchaseFormValues(): PurchaseFormDataType {
-    return ({
-        id: undefined,
-        autoRefNo: "",
-        tranDate: '',
-        userRefNo: null,
-        remarks: null,
-        tranTypeId: 5,
-        isGstInvoice: hasGstin,
-        isIgst: false,
+**Implementation Steps**:
+1. Update `vite.config.ts` with `rollupOptions.output.manualChunks`
+2. Create separate chunks for:
+   - **syncfusion**: All @syncfusion/* packages (largest vendor)
+   - **primereact**: PrimeReact components
+   - **vendor-large**: Large utilities (lodash, decimal.js, framer-motion)
+   - **vendor-ui**: UI libraries (react-hook-form, react-select, sweetalert2)
+   - **vendor-data**: Data management (apollo, redux)
+   - **vendor-pdf**: PDF generation (jspdf, react-pdf)
+   - **react-vendor**: React core and react-dom
 
-        debitAccId: null,
-        creditAccId: null,
-        gstin: null,
-
-        purchaseLineItems: [],
-
-        totalInvoiceAmount: 0,
-        totalQty: 0,
-        totalCgst: 0,
-        totalSgst: 0,
-        totalIgst: 0,
-
-        branchId: branchId || 1,        // ← Uses current branchId
-        deletedIds: [],
-        finYearId: finYearId || 0,      // ← Uses current finYearId
-        toggle: true
-    });
-}
-```
-
-**Lines 336-341**: Existing resetAll Function
-
-```typescript
-function resetAll() {
-    clearErrors()
-    reset(getDefaultPurchaseFormValues());
-    dispatch(clearPurchaseFormData());
-    dispatch(setInvoicExists(false))
-}
-```
-
-**Existing Reset Triggers**:
-- Line 120: Reset when switching to View tab
-- Line 194: Reset after successful save (if not coming from report)
-
----
-
-## Issue Analysis
-
-### The Problem
-
-The purchase, sales, and return forms do **NOT** automatically reset when:
-- User changes Business Unit in status bar
-- User changes Financial Year in status bar
-- User changes Branch in status bar
-
-### Why This Is Problematic
-
-**Scenario**:
-1. User creates a purchase for BU "Wholesale", FY "2023-24", Branch "Delhi"
-2. Adds products, sets supplier account, enters invoice details
-3. User switches BU to "Retail" in status bar
-4. Purchase form still shows line items meant for "Wholesale" BU
-5. If user saves, data goes to wrong BU context
-
-**Data Consistency Risk**:
-- Purchases could be saved with incorrect finYearId
-- Purchases could be saved with incorrect branchId
-- Account selections might be invalid for the new BU
-- Product associations might be wrong for different BU
-- Invoice numbering could become inconsistent
-- Historical data could become corrupted
-
----
-
-## Available Redux Selectors
-
-From `login-slice.ts:256-279`:
-
-```typescript
-export const currentBusinessUnitSelectorFn = (state: RootStateType) =>
-  state.login.currentBusinessUnit
-
-export const currentFinYearSelectorFn = (state: RootStateType) =>
-  state.login.currentFinYear
-
-export const currentBranchSelectorFn = (state: RootStateType) =>
-  state.login.currentBranch
-```
-
-These selectors return:
-- `currentBusinessUnit`: `BusinessUnitType` with `buId`, `buCode`, `buName`
-- `currentFinYear`: `FinYearType` with `finYearId`, `startDate`, `endDate`
-- `currentBranch`: `BranchType` with `branchId`, `branchName`, `branchCode`
-
----
-
-## Solution Design
-
-### Approach: useEffect with Dependency Array
-
-Add a `useEffect` hook that watches for changes in:
-1. `currentBusinessUnit?.buId`
-2. `currentFinYear?.finYearId`
-3. `currentBranch?.branchId`
-
-When any of these change, call `resetAll()` to clear the form.
-
-This is the **exact same approach** as vouchers for consistency.
-
----
-
-## Implementation for Each Form
-
-### Form 1: All Purchases
-
-**File**: `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
-
-#### Change 1: Import Selectors (After line 22)
-
-```typescript
-import {
-    currentBusinessUnitSelectorFn,
-    currentFinYearSelectorFn,
-    currentBranchSelectorFn
-} from "../../../../login/login-slice";
-```
-
-#### Change 2: Select Current Values (After line 92)
-
-```typescript
-// Watch for changes in BU, FY, Branch for automatic reset
-const currentBusinessUnit = useSelector(currentBusinessUnitSelectorFn);
-const currentFinYear = useSelector(currentFinYearSelectorFn);
-const currentBranch = useSelector(currentBranchSelectorFn);
-```
-
-#### Change 3: Add Reset Effect (After line 130)
-
-```typescript
-// Reset form when BU, Financial Year, or Branch changes in status bar
-useEffect(() => {
-    // Skip reset on initial mount (when all values are undefined)
-    if (!currentBusinessUnit || !currentFinYear || !currentBranch) {
-        return;
+**Configuration Example**:
+```ts
+build: {
+  rollupOptions: {
+    output: {
+      manualChunks: {
+        'syncfusion': [/node_modules\/@syncfusion/],
+        'primereact': ['primereact'],
+        'vendor-large': ['lodash', 'decimal.js', 'framer-motion'],
+        'vendor-ui': ['react-hook-form', 'react-select', 'sweetalert2'],
+        'vendor-data': ['@apollo/client', '@reduxjs/toolkit', 'react-redux'],
+        'vendor-pdf': ['jspdf', 'jspdf-autotable', '@react-pdf/renderer'],
+        'react-vendor': ['react', 'react-dom', 'react-router-dom']
+      }
     }
-
-    // Reset the form to clear any stale data from previous context
-    resetAll();
-}, [currentBusinessUnit?.buId, currentFinYear?.finYearId, currentBranch?.branchId]);
-```
-
----
-
-### Form 2: All Sales
-
-**File**: `src/features/accounts/purchase-sales/sales/all-sales.tsx`
-
-**Apply the exact same pattern**:
-1. Import selectors
-2. Add useSelector calls
-3. Add useEffect with reset logic
-
-**Note**: Sales form structure should be similar to purchases.
-
----
-
-### Form 3: All Purchase Returns
-
-**File**: `src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`
-
-**Apply the exact same pattern**:
-1. Import selectors
-2. Add useSelector calls
-3. Add useEffect with reset logic
-
----
-
-### Form 4: All Sales Returns
-
-**File**: `src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`
-
-**Apply the exact same pattern**:
-1. Import selectors
-2. Add useSelector calls
-3. Add useEffect with reset logic
-
----
-
-## Why This Solution Works
-
-### 1. Dependency Array
-
-```typescript
-[currentBusinessUnit?.buId, currentFinYear?.finYearId, currentBranch?.branchId]
-```
-
-- Watches only the ID fields (primitive values)
-- React detects changes using `Object.is()` comparison
-- Triggers effect when any ID changes
-
-### 2. Initial Mount Guard
-
-```typescript
-if (!currentBusinessUnit || !currentFinYear || !currentBranch) {
-    return;
+  }
 }
 ```
 
-- Prevents reset on component mount when values are loading
-- Only resets on actual changes after initial load
+### Phase 3: Optimize Syncfusion Imports (High Priority)
+Syncfusion is likely the largest contributor. Ensure tree-shaking works properly.
 
-### 3. Reuses Existing resetAll()
+**Implementation Steps**:
+1. Audit all Syncfusion imports across the codebase
+2. Replace wildcard imports with specific component imports
+3. Consider Syncfusion's modular approach
 
-```typescript
-resetAll();
+**Example**:
+```tsx
+// Bad - imports everything
+import * as Syncfusion from '@syncfusion/ej2-react-grids';
+
+// Good - imports only what's needed
+import { GridComponent, ColumnsDirective, ColumnDirective } from '@syncfusion/ej2-react-grids';
 ```
 
-For **Purchases**:
-- Clears form errors (line 337)
-- Resets to default values with updated finYearId/branchId (line 338)
-- Clears Redux saved form data (line 339)
-- Clears invoice exists flag (line 340)
+### Phase 4: Lazy Load Heavy Features (Medium Priority)
+Identify and lazy load heavy features that aren't needed immediately.
 
-**Other forms** should have similar resetAll() logic.
+**Candidates for Lazy Loading**:
+1. PDF generation utilities (only load when printing/exporting)
+2. Chart/visualization libraries (if used)
+3. Complex form validation logic
+4. Report generation components
 
-### 4. Safe Reset Logic
+### Phase 5: Optimize Dependencies (Low Priority)
+Replace or optimize heavy dependencies.
 
-The `resetAll()` function:
-- Gets fresh default values with updated finYearId/branchId
-- Clears all line items (purchases/sales details)
-- Clears all form errors
-- Clears saved form data from Redux
-- Resets form-specific flags (like invoiceExists)
+**Optimization Opportunities**:
+1. **lodash**: Use `lodash-es` for better tree-shaking, or replace with native JS
+2. **date-fns vs dayjs**: Choose one (currently using both)
+3. **decimal.js**: Consider lighter alternatives if precision isn't critical everywhere
+4. **framer-motion**: Use CSS animations for simple cases
 
----
+### Phase 6: Increase Warning Limit (Short-term Workaround)
+If optimizations aren't sufficient, temporarily increase the warning threshold.
 
-## Edge Cases
+```ts
+build: {
+  chunkSizeWarningLimit: 1000, // Increase from 500 to 1000 kB
+}
+```
 
-### Edge Case 1: User Has Unsaved Line Items
+**Note**: This is a workaround, not a solution. Should be used only after other optimizations.
 
-**Scenario**: User added multiple purchase/sale line items, then changes BU/FY/Branch
+## Implementation Priority Order
 
-**Behavior**: Form resets immediately, losing all unsaved line items
+1. **Phase 1** (Route-based code splitting) - MUST DO FIRST
+2. **Phase 2** (Manual chunking) - DO SECOND
+3. **Phase 3** (Syncfusion optimization) - DO THIRD
+4. **Phase 4** (Lazy load features) - Optional, based on results
+5. **Phase 5** (Dependency optimization) - Optional, longer-term effort
+6. **Phase 6** (Increase limit) - Only if needed after Phase 1-3
 
-**Options**:
+## Success Metrics
 
-#### Option A: Silent Reset (Recommended)
-- Reset without warning
-- User expects context switch to reset form
-- Status bar changes are explicit user actions
-- Matches vouchers behavior
+### Target Goals
+- Initial bundle size < 500 KB (currently > 500 KB)
+- First Contentful Paint (FCP) < 1.5s
+- Time to Interactive (TTI) < 3.5s
+- Each chunk < 500 KB
 
-#### Option B: Confirm Before Reset
-- Show confirmation dialog
-- "You have unsaved changes. Switching will reset the form. Continue?"
-- Better UX but adds complexity
-- Inconsistent with vouchers
+### How to Measure
+```bash
+# After build, check chunk sizes
+npm run build
 
-**Recommendation**: **Option A (Silent Reset)**
-- Consistency across all transaction forms
-- Status bar changes are deliberate
-- Users learn the behavior quickly
-
----
-
-### Edge Case 2: Invoice Exists Check
-
-**Scenario** (Purchases): User enters invoice number, invoice exists check runs, then user changes BU
-
-**Behavior**: Form resets, clearing invoice exists error
-
-**Result**: ✅ Correct - different BU = different invoice namespace
-
----
-
-### Edge Case 3: Product Line Items
-
-**Scenario**: User adds 10 products to purchase, then changes FY
-
-**Behavior**: All line items cleared
-
-**Result**: ✅ Correct - products might have different pricing/availability in different FY/BU
-
----
-
-### Edge Case 4: GST Invoice Flag
-
-**Scenario**: User checks "GST Invoice", enters GSTIN, then changes BU
-
-**Behavior**: Form resets, GST invoice flag reset to default based on new BU's hasGstin
-
-**Result**: ✅ Correct - new BU might have different GST configuration
-
----
-
-### Edge Case 5: Edit Mode
-
-**Scenario**: User editing existing purchase (has id), then changes BU
-
-**Behavior**: Form resets, id cleared
-
-**Result**: ✅ Correct - cannot edit purchase from different BU context
-
----
-
-## Testing Checklist
-
-### For Each Form (Purchases, Sales, Purchase Returns, Sales Returns)
-
-**Functional Testing**
-
-- [ ] **BU Change**: Create entry, change BU, verify reset
-- [ ] **FY Change**: Create entry, change FY, verify reset
-- [ ] **Branch Change**: Create entry, change Branch, verify reset
-- [ ] **Multiple Changes**: Create entry, change BU → FY → Branch, verify resets
-- [ ] **Line Items**: Add line items, change context, verify cleared
-- [ ] **Edit Mode**: Edit existing entry, change context, verify reset
-- [ ] **Initial Mount**: Navigate to form, verify no unwanted reset
-- [ ] **Saved Form Data**: Fill form, navigate away, navigate back, change context, verify reset
-
-**Purchase-Specific Testing**
-
-- [ ] Invoice exists check cleared after reset
-- [ ] Invoice number field error cleared
-- [ ] Credit/debit account cleared
-- [ ] GSTIN field cleared
-
-**Sales-Specific Testing**
-
-- [ ] Customer account cleared
-- [ ] Sales line items cleared
-- [ ] Sales-specific flags reset
-
-**Returns-Specific Testing**
-
-- [ ] Original invoice reference cleared
-- [ ] Return line items cleared
-- [ ] Return-specific calculations reset
-
----
+# Analyze bundle
+npm install -D rollup-plugin-visualizer
+# Add to vite.config.ts and generate report
+```
 
 ## Files to Modify
 
-### Priority 1: Core Transaction Forms
+### Phase 1 - Code Splitting
+- `src/app/router/app-router.tsx` - Convert to lazy loading
 
-1. **`src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`**
-   - Main purchase entry form
-   - ~395 lines
-   - Has resetAll() function (line 336)
+### Phase 2 - Manual Chunking
+- `vite.config.ts` - Add manualChunks configuration
 
-2. **`src/features/accounts/purchase-sales/sales/all-sales.tsx`**
-   - Main sales entry form
-   - Should have similar structure
-   - Need to verify resetAll() exists
+### Phase 3 - Syncfusion Optimization
+- Search all files with `@syncfusion` imports
+- Review and optimize imports
 
-3. **`src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`**
-   - Purchase return form
-   - Should have resetAll() function
+## Testing Considerations
 
-4. **`src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`**
-   - Sales return form
-   - Should have resetAll() function
+1. **Functionality**: Ensure all routes still work after lazy loading
+2. **Loading States**: Verify Suspense fallbacks display correctly
+3. **Error Boundaries**: Add error boundaries for lazy-loaded components
+4. **Network Tab**: Test with throttled network (Slow 3G) to verify load times
+5. **Build Output**: Review build output to confirm chunk sizes reduced
 
----
+## Estimated Impact
 
-## Implementation Steps
+**Phase 1 (Route Splitting)**:
+- Expected reduction: 40-60% in initial bundle size
+- Routes loaded on-demand instead of upfront
 
-### Step 1: All Purchases (20 minutes)
+**Phase 2 (Manual Chunking)**:
+- Expected reduction: Better caching, parallel downloads
+- Vendor code cached separately from app code
 
-**File**: `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
+**Phase 3 (Syncfusion Optimization)**:
+- Expected reduction: 10-30% if imports are inefficient
+- Highly dependent on current usage patterns
 
-**Location 1** (After line 22): Add import
-**Location 2** (After line 92): Add selectors
-**Location 3** (After line 130): Add effect
+**Combined**: Should easily bring initial bundle below 500 KB threshold.
 
-**Test**: Create purchase, change BU/FY/Branch, verify reset
+## Notes
 
----
-
-### Step 2: All Sales (15 minutes)
-
-**File**: `src/features/accounts/purchase-sales/sales/all-sales.tsx`
-
-**Actions**: Apply same 3 changes
-**Test**: Create sale, change BU/FY/Branch, verify reset
-
----
-
-### Step 3: All Purchase Returns (15 minutes)
-
-**File**: `src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`
-
-**Actions**: Apply same 3 changes
-**Test**: Create return, change BU/FY/Branch, verify reset
-
----
-
-### Step 4: All Sales Returns (15 minutes)
-
-**File**: `src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`
-
-**Actions**: Apply same 3 changes
-**Test**: Create return, change BU/FY/Branch, verify reset
-
----
-
-### Step 5: Regression Testing (20 minutes)
-
-**Actions**:
-- Test all forms together
-- Test context switching between forms
-- Verify no side effects
-
-**Total Time**: ~85 minutes (~1.5 hours)
-
----
-
-## Code Template
-
-For consistency, use this template for each form:
-
-```typescript
-// === IMPORTS ===
-import {
-    currentBusinessUnitSelectorFn,
-    currentFinYearSelectorFn,
-    currentBranchSelectorFn
-} from "../../../../login/login-slice";
-
-// === INSIDE COMPONENT ===
-export function FormComponent() {
-    // ... existing code ...
-
-    const { branchId, finYearId, buCode, /* ... */ } = useUtilsInfo();
-
-    // Watch for changes in BU, FY, Branch for automatic reset
-    const currentBusinessUnit = useSelector(currentBusinessUnitSelectorFn);
-    const currentFinYear = useSelector(currentFinYearSelectorFn);
-    const currentBranch = useSelector(currentBranchSelectorFn);
-
-    // ... other hooks ...
-
-    // Reset form when BU, Financial Year, or Branch changes in status bar
-    useEffect(() => {
-        // Skip reset on initial mount (when all values are undefined)
-        if (!currentBusinessUnit || !currentFinYear || !currentBranch) {
-            return;
-        }
-
-        // Reset the form to clear any stale data from previous context
-        resetAll();
-    }, [currentBusinessUnit?.buId, currentFinYear?.finYearId, currentBranch?.branchId]);
-
-    // ... rest of component ...
-}
-```
-
----
-
-## Risk Assessment
-
-### Low Risk
-
-- ✅ Small, isolated changes (~15 lines per file)
-- ✅ Reuses existing `resetAll()` functions
-- ✅ No logic changes to reset behavior
-- ✅ Guard clause prevents unwanted resets
-- ✅ Easy to rollback
-- ✅ Same pattern as vouchers (already proven)
-
-### No Breaking Changes
-
-- ✅ Existing reset triggers unchanged
-- ✅ Form behavior unchanged (except for new automatic reset)
-- ✅ No API changes
-- ✅ No database changes
-- ✅ No changes to save logic
-
----
-
-## Success Criteria
-
-### Definition of Done
-
-**For Each Form**:
-1. ✅ Form resets when Business Unit changes
-2. ✅ Form resets when Financial Year changes
-3. ✅ Form resets when Branch changes
-4. ✅ No reset on initial component mount
-5. ✅ Line items cleared after reset
-6. ✅ Form errors cleared after reset
-7. ✅ Saved form data cleared after reset
-8. ✅ No console errors
-9. ✅ No TypeScript errors
-10. ✅ All test cases pass
-
----
-
-## Comparison with Vouchers
-
-### Similarities
-
-✅ Same Redux selectors used
-✅ Same useEffect pattern
-✅ Same dependency array
-✅ Same guard clause
-✅ Same resetAll() approach
-✅ Same edge cases
-
-### Differences
-
-⚠️ Vouchers: Single file (`all-vouchers.tsx`)
-⚠️ Purchases/Sales: 4 separate files
-
-⚠️ Vouchers: Simpler line items (debit/credit entries)
-⚠️ Purchases/Sales: Complex line items (products, GST, quantities)
-
-⚠️ Vouchers: No invoice exists check
-⚠️ Purchases: Invoice exists validation needs clearing
-
-### Why Same Pattern Works
-
-- All are transaction forms
-- All tied to BU/FY/Branch context
-- All have resetAll() functions
-- All use React Hook Form
-- All store saved data in Redux
-- All need same context consistency
-
----
-
-## Summary
-
-**Problem**: Purchase, sales, and return forms don't reset when BU/FY/Branch changes in status bar
-
-**Root Cause**: No automatic reset mechanism watching for context changes
-
-**Solution**: Add `useEffect` hook that watches Redux state for currentBusinessUnit, currentFinYear, and currentBranch changes, and calls `resetAll()` when detected
-
-**Files to Modify** (4 files):
-1. `src/features/accounts/purchase-sales/purchases/all-purchases/all-purchases.tsx`
-2. `src/features/accounts/purchase-sales/sales/all-sales.tsx`
-3. `src/features/accounts/purchase-sales/purchase-returns/all-purchase-returns/all-purchase-returns.tsx`
-4. `src/features/accounts/purchase-sales/sales-return/all-sales-return.tsx`
-
-**Changes Per File**:
-- Import 3 Redux selectors
-- Add 3 `useSelector` calls
-- Add 1 `useEffect` with reset logic
-
-**Lines Changed**: ~15 lines per file (~60 lines total)
-
-**Risk**: Low (same proven pattern as vouchers)
-
-**Time Estimate**: 85 minutes (20 + 15 + 15 + 15 + 20 for testing)
-
-**Consistency**: Exact same pattern as vouchers for predictable behavior
-
----
-
-Ready to implement ✅
+- Implement incrementally: Phase 1 first, measure, then proceed
+- Monitor build output after each phase
+- Consider using `vite-plugin-inspect` to visualize chunks
+- Document any breaking changes or required loading states
+- Update documentation for developers about new lazy loading patterns

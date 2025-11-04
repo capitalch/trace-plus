@@ -46,11 +46,15 @@ export function StockJournalMain({ instance }: { instance: string }) {
     };
   }, [dispatch, instance]);
 
+  useEffect(() => {
+        xReset();
+    },[buCode, finYearId, branchId]);
+
   return (
     <div className="relative h-[calc(100vh-240px)] mt-8">
       <FormProvider {...extendedMethods}>
         <form
-          className="flex flex-col mr-6 min-w-[85rem] gap-4"
+          className="flex flex-col mr-6 min-w-340 gap-4"
           onSubmit={methods.handleSubmit(onSubmit)}
         >
           <StockJournalCrown className="absolute -top-5.5 right-6" />

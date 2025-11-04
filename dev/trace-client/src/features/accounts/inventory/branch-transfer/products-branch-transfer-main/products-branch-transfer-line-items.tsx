@@ -44,6 +44,7 @@ export function ProductsBranchTransferLineItems({
       _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
         populateProductOnProductCode(e.target.value, index);
       }, 2000),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
   useEffect(() => {
@@ -53,9 +54,11 @@ export function ProductsBranchTransferLineItems({
   useEffect(() => {
     return () => {
       if (context.DataInstances?.[instance]) {
+        // eslint-disable-next-line react-hooks/immutability
         context.DataInstances[instance].deletedIds = [];
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

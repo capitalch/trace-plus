@@ -18,7 +18,7 @@ export function useProductsBranchTransferLineItems(instance: string) {
   const [productIdTooltipIndex, setProductIdTooltipIndex] = useState<
     number | null
   >(null);
-  const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo();
+  const { buCode, context, dbName, decodedDbParamsObject, branchId, finYearId } = useUtilsInfo();
   const {
     clearErrors,
     watch,
@@ -154,8 +154,10 @@ export function useProductsBranchTransferLineItems(instance: string) {
     }
     if (id) {
       if (!context.DataInstances?.[instance]) {
+        // eslint-disable-next-line react-hooks/immutability
         context.DataInstances[instance] = { deletedIds: []};
       }
+      // eslint-disable-next-line react-hooks/immutability
       context.DataInstances[instance].deletedIds.push(id);
     }
     remove(index);
@@ -213,7 +215,9 @@ export function useProductsBranchTransferLineItems(instance: string) {
       dbParams: decodedDbParamsObject,
       sqlId: SqlIdsMap.getProductOnProductCodeUpc,
       sqlArgs: {
-        productCodeOrUpc: productCode
+        productCodeOrUpc: productCode,
+        branchId: branchId || 0,
+        finYearId: finYearId || 0
       }
     });
     if (_.isEmpty(product)) {

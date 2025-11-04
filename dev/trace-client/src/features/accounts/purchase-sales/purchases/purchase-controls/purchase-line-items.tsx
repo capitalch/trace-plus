@@ -13,7 +13,7 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconSearch } from "../../../../../controls/icons/icon-search";
 import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import { useValidators } from "../../../../../utils/validators-hook";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { PurchaseFormDataType } from "../all-purchases/all-purchases";
 import { Utils } from "../../../../../utils/utils";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
@@ -51,6 +51,46 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         return lineItem;
     }, [defaultGstRate, getDefaultPurchaseLineItem]);
 
+    const handleClearLineItem = useCallback((index: number) => {
+        setValue(`purchaseLineItems.${index}.productId`, null, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productCode`, '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.upcCode`, null, { shouldDirty: true })
+        setValue(`purchaseLineItems.${index}.productDetails`, '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.hsn`, '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.gstRate`, 0, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.qty`, 1, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.price`, 0, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.discount`, 0, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
+    }, [setValue]);
+
+    const setLineItem = useCallback((product: ProductInfoType, index: number) => {
+        setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
+        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
+        setTimeout(() => {
+            trigger()
+        }, 0);
+    }, [setValue, trigger]);
+
+    const setPriceGst = useCallback((index: number) => {
+        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
+        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
+
+        const multiplier = gstRate.dividedBy(100).plus(1);
+        const priceGst = multiplier.times(price);
+
+        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    }, [watch, setValue]);
+
     const populateProductOnProductCode = useCallback(async (productCode: string, index: number) => {
         if (!productCode) {
             handleClearLineItem(index);
@@ -75,11 +115,16 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setLineItem(product, index);
     }, [buCode, dbName, decodedDbParamsObject, branchId, finYearId, handleClearLineItem, setLineItem]);
 
-    const onChangeProductCode = useCallback(
-        _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
-            populateProductOnProductCode(e.target.value, index);
-        }, 2000), [populateProductOnProductCode]
+    const debouncedPopulateProduct = useMemo(
+        () => _.debounce((productCode: string, index: number) => {
+            populateProductOnProductCode(productCode, index);
+        }, 2000),
+        [populateProductOnProductCode]
     );
+
+    const onChangeProductCode = useCallback((e: ChangeEvent<HTMLInputElement>, index: number) => {
+        debouncedPopulateProduct(e.target.value, index);
+    }, [debouncedPopulateProduct]);
 
     const computeLineItemValues = useCallback((index: number) => {
         const qty = new Decimal(watch(`purchaseLineItems.${index}.qty`) || 0);
@@ -159,19 +204,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         });
     }
 
-    const setPriceGst = useCallback((index: number) => {
-        const price = new Decimal(watch(`purchaseLineItems.${index}.price`) || 0);
-        const gstRate = new Decimal(watch(`purchaseLineItems.${index}.gstRate`) || 0);
-
-        const multiplier = gstRate.dividedBy(100).plus(1);
-        const priceGst = multiplier.times(price);
-
-        setValue(`purchaseLineItems.${index}.priceGst`, priceGst.toDecimalPlaces(2).toNumber(), {
-            shouldDirty: true,
-            shouldValidate: true
-        });
-    }, [watch, setValue]);
-
     // Event handlers
     const handleAddRow = (index: number) => {
         insert(index + 1,
@@ -196,33 +228,6 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         setTimeout(() => setCurrentRowIndex(0), 0);
     };
 
-    const handleClearLineItem = useCallback((index: number) => {
-        setValue(`purchaseLineItems.${index}.productId`, null, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.productCode`, '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.upcCode`, null, { shouldDirty: true })
-        setValue(`purchaseLineItems.${index}.productDetails`, '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.hsn`, '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.gstRate`, 0, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.qty`, 1, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.price`, 0, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.discount`, 0, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.lineRemarks`, null, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.serialNumbers`, null, { shouldDirty: true });
-    }, [setValue]);
-
-    const setLineItem = useCallback((product: ProductInfoType, index: number) => {
-        setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
-        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });
-        setValue(`purchaseLineItems.${index}.upcCode`, product.upcCode, { shouldDirty: true });
-        setTimeout(() => {
-            trigger()
-        }, 0);
-    }, [setValue, trigger]);
-
     function handleProductSearch(index: number) {
         Utils.showProductSearch((product) => {
             setLineItem(product, index);
@@ -231,8 +236,10 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
 
     // Effects
     useEffect(() => {
-        return () => onChangeProductCode.cancel();
-    }, [onChangeProductCode]);
+        return () => {
+            debouncedPopulateProduct.cancel();
+        };
+    }, [debouncedPopulateProduct]);
 
     useEffect(() => {
         if (lineItems.length === 0) {

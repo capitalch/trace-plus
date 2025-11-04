@@ -12,7 +12,7 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import _ from "lodash";
 import { setActiveTabIndex } from "../../../../../controls/redux-components/comp-slice";
 import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
-import { AllTables} from "../../../../../app/maps/database-tables-map";
+import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { ProductLineItem } from "../../shared-definitions";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
@@ -55,6 +55,7 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   const { reset } = methods;
 
   const extendedMethods = { ...methods, xReset };
+
   useEffect(() => {
     if (selectedTranHeaderId) {
       loadProductOnTranHeaderId();
@@ -75,11 +76,15 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
     };
   }, [dispatch, instance]);
 
+  useEffect(() => {
+    xReset();
+  }, [buCode, finYearId, branchId]);
+
   return (
     <div className="h-[calc(100vh-240px)]">
       <FormProvider {...extendedMethods}>
         <form
-          className="flex flex-col mr-6 min-w-[85rem] gap-6"
+          className="flex flex-col mr-6 min-w-340 gap-6"
           onSubmit={methods.handleSubmit(onSubmit)}
         >
           <ProductsBranchTransferHeader />
@@ -150,9 +155,9 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
         xData: data.productLineItems.map((item: ProductLineItem) => {
           const formattedSerialNumbers = item.serialNumbers
             ? item.serialNumbers
-                .split(/[,;]\s*/) // Split by ',' or ';' with or without spaces
-                .filter((sn) => sn.trim() !== "") // Remove empty entries
-                .join(", ") // Join with ', '
+              .split(/[,;]\s*/) // Split by ',' or ';' with or without spaces
+              .filter((sn) => sn.trim() !== "") // Remove empty entries
+              .join(", ") // Join with ', '
             : null;
           return {
             id: item.id || undefined,
@@ -192,9 +197,8 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
           lineRemarks: branchTransfer.lineRemarks,
           price: branchTransfer.price,
           productCode: branchTransfer.productCode,
-          productDetails: `${branchTransfer.brandName} ${
-            branchTransfer.catName
-          } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
+          productDetails: `${branchTransfer.brandName} ${branchTransfer.catName
+            } ${branchTransfer.label} ${branchTransfer.info ?? ""}`,
           productId: branchTransfer.productId,
           qty: branchTransfer.qty,
           serialNumbers: branchTransfer.serialNumbers,

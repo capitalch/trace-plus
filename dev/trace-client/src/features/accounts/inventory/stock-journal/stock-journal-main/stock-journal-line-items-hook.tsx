@@ -20,14 +20,23 @@ export function useStockJournalLineItems(
     watch: UseFormWatch<StockJournalType>
 ) {
     const [srNoTooltipIndex, setSrNoTooltipIndex] = useState<number | null>(null);
-    const { buCode, context, dbName, decodedDbParamsObject, } = useUtilsInfo();
+    const { buCode, context, dbName, decodedDbParamsObject,branchId, finYearId } = useUtilsInfo();
+
+    const clearDeletedIds = () => {
+        if (context.DataInstances?.[instance]) {
+            // eslint-disable-next-line react-hooks/immutability
+            context.DataInstances[instance].deletedIds = [];
+        }
+    };
 
     const onChangeProductCode = useMemo(
         // For debounce
         () =>
             _.debounce((e: ChangeEvent<HTMLInputElement>, index: number) => {
                 populateProductOnProductCode(e.target.value, index);
-            }, 2000), [name]
+            }, 2000),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [name]
     );
     useEffect(() => {
         return () => onChangeProductCode.cancel();
@@ -37,13 +46,8 @@ export function useStockJournalLineItems(
         return () => {
             clearDeletedIds()
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    function clearDeletedIds() {
-        if (context.DataInstances?.[instance]) {
-            context.DataInstances[instance].deletedIds = [];
-        }
-    }
 
     function errorIndicatorAndTooltipForSerialNumber(index: number) {
         const snError = getSnError(index);
@@ -95,8 +99,10 @@ export function useStockJournalLineItems(
             const id = watch(`${name}.${index}.id`);
             if (id) {
                 if (!context.DataInstances[instance]) {
+                    // eslint-disable-next-line react-hooks/immutability
                     context.DataInstances[instance] = { deletedIds: [] }
                 }
+                // eslint-disable-next-line react-hooks/immutability
                 context.DataInstances[instance].deletedIds.push(id)
             }
             return (index)
@@ -108,8 +114,10 @@ export function useStockJournalLineItems(
         const id = watch(`${name}.${index}.id`);
         if (id) {
             if (!context.DataInstances?.[instance]) {
+                // eslint-disable-next-line react-hooks/immutability
                 context.DataInstances[instance] = { deletedIds: [] };
             }
+            // eslint-disable-next-line react-hooks/immutability
             context.DataInstances[instance].deletedIds.push(id);
         }
         remove(index);
@@ -167,7 +175,9 @@ export function useStockJournalLineItems(
             dbParams: decodedDbParamsObject,
             sqlId: SqlIdsMap.getProductOnProductCodeUpc,
             sqlArgs: {
-                productCodeOrUpc: productCode
+                productCodeOrUpc: productCode,
+                branchId: branchId || 0,
+                finYearId: finYearId || 0
             }
         });
         if (_.isEmpty(product)) {

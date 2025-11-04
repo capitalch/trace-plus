@@ -9,7 +9,7 @@ import { Messages } from "../../../../../utils/messages";
 import { IconDelete } from "../../../../../controls/icons/icon-delete";
 import { WidgetAstrix } from "../../../../../controls/widgets/widget-astrix";
 import { IconPlus } from "../../../../../controls/icons/icon-plus";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Decimal from "decimal.js";
 import { useStockJournalLineItems } from "./stock-journal-line-items-hook";
 import { IconClear1 } from "../../../../../controls/icons/icon-clear1";
@@ -19,12 +19,7 @@ export function StockJournalLineItems({
   instance,
   title
 }: StockJournalLineItemsType) {
-  const [, setRefresh] = useState({});
-
-  const meta = useRef<MetaType>({
-    inputLineItems: 0,
-    outputLineItems: 0
-  });
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const { clearErrors, control, watch, register, setValue, trigger, formState: { errors } } =
     useFormContext<StockJournalType>();
@@ -87,11 +82,10 @@ export function StockJournalLineItems({
                 key={index}
                 className={clsx(
                   "hover:bg-gray-50 cursor-pointer",
-                  index === meta.current[name] && "outline outline-teal-500"
+                  index === selectedIndex && "outline outline-teal-500"
                 )}
                 onClick={() => {
-                  meta.current[name] = index;
-                  setRefresh({});
+                  setSelectedIndex(index);
                 }}
               >
 
@@ -308,8 +302,7 @@ export function StockJournalLineItems({
                     serialNumbers: "",
                     upcCode: ""
                   });
-                  meta.current[name] = fields.length;
-                  setRefresh({});
+                  setSelectedIndex(fields.length);
                 }}
                 className="flex items-center my-2 px-2 py-2 w-36 text-white bg-blue-500 rounded hover:bg-blue-700 gap-2"
               >
@@ -383,8 +376,4 @@ type StockJournalLineItemsType = {
   instance: string;
   name: "inputLineItems" | "outputLineItems";
   title: string;
-};
-
-type MetaType = {
-  [key: string]: number;
 };

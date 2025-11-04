@@ -12,7 +12,7 @@ valid gstin: 24AAACC1206D1ZM
 
 
 ## General requirement
-- When bu, finYearId or branch changes, behavior of existing screen to be checked
+														- When bu, finYearId or branch changes, behavior of existing screen to be checked
 - Checkup price - discount in all reports as actual price
 - Supplier name and its due in summary report of inventory
 - Check why age of en-el25 on22-08-2025 sale showing 5702
