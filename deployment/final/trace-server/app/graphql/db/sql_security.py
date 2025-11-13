@@ -84,7 +84,9 @@ class SqlSecurity:
                             'name', s."controlName",
                             'descr', s."descr",
 							'roleId', r.id,
-							'securedControlId', s.id
+							'securedControlId', s.id,
+                            'controlPrefix', split_part(s."controlName", '.', 1),
+							'controlType', s."controlType"
                         )
                 ) FILTER (WHERE s."controlName" IS NOT NULL) AS "securedControls"
             from "RoleM" r
@@ -109,9 +111,13 @@ class SqlSecurity:
 
     get_all_admin_roles_onClientId = """
         with "noOfRows" as (values(%(noOfRows)s::int)), "clientId" as (values(%(clientId)s::int))
-        --with "noOfRows" as (values(null::int)), "clientId" as (values(51))
-            select * from "RoleM"
-                where "clientId" = (table "clientId")
+        --with "noOfRows" as (values(null::int)), "clientId" as (values(53))
+            select r.id,
+				r."clientId",
+				r."roleName",
+				r."descr"
+			from "RoleM" r 
+                where r."clientId" = (table "clientId")
             order by "id" DESC
                 limit (table "noOfRows")
     """
@@ -205,11 +211,11 @@ class SqlSecurity:
     """
 
     get_all_secured_controls = """
-        with "noOfRows" as (values(%(noOfRows)s::int))
-            --with "noOfRows" as (values(null::int))
-                select * from "SecuredControlM"
-                    order by "id" DESC
-                        limit (table "noOfRows")
+        select *
+		, split_part("controlName", '.', 1) AS "controlPrefix"
+		, "controlType" || '|' || split_part("controlName", '.', 1) AS "typePrefix"
+		from "SecuredControlM"
+			order by "controlType", "controlName"
     """
 
     get_bu_on_buCode_and_clientId = """
@@ -294,7 +300,43 @@ class SqlSecurity:
         SELECT datname FROM pg_catalog.pg_database where datname = %(datname)s
     """
 
-    get_roles_securedControls_link = """
+    get_roles_securedControls_link ="""
+        WITH cte1 AS (
+            SELECT
+                r.id AS "roleId",
+                "roleName" AS "name",
+                r."descr",
+                json_agg(
+                    json_build_object(
+                        'id', x.id,
+                        'name', s."controlName",
+                        'descr', s."descr",
+                        'roleId', r.id,
+                        'securedControlId', s.id,
+                        'controlPrefix', split_part(s."controlName", '.', 1),
+                        'controlType', s."controlType"
+                    )
+                ) FILTER (WHERE s."controlName" IS NOT NULL) AS "securedControls"
+            FROM "RoleM" r
+                LEFT JOIN "RoleSecuredControlX" x ON r.id = x."roleId"
+                LEFT JOIN "SecuredControlM" s ON s.id = x."securedControlId"
+            WHERE r."clientId" IS NULL
+            GROUP BY r.id, "roleName"
+            ORDER BY "roleName"
+            )
+
+            SELECT json_agg(
+                json_build_object(
+                    'name', "name",
+                    'descr', "descr",
+                    'roleId', "roleId",
+                    'securedControls', COALESCE("securedControls", null::json)
+                )
+            ) AS "jsonResult"
+            FROM cte1
+    """
+
+    get_roles_securedControls_link1 = """
         with cte1 as (
             select r.id as "roleId", "roleName" as "name", r."descr"
                 , json_agg(

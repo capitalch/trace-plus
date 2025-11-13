@@ -155,7 +155,7 @@ export function BalanceSheet() {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Balance Sheet" }));
     }, [dispatch]);
 
-    return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
+    return (<CompAccountsContainer className="mr-6 min-w-[1200px]" MiddleCustomControl={CustomControl} >
         {/* Header */}
 
         {/* Two horizontal grids */}
@@ -249,8 +249,8 @@ export function BalanceSheet() {
     }
 
     function CustomControl() {
-
-        return (<div className="flex items-center justify-between">
+        return (
+        <div className="flex items-center justify-between">
             {/* All branches */}
             <CompSwitch className="mt-1 mr-4 ml-4" instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
 
@@ -269,7 +269,6 @@ export function BalanceSheet() {
             <TooltipComponent content='Refresh' className="">
                 <WidgetButtonRefresh handleRefresh={doRefresh} />
             </TooltipComponent>
-
         </div>)
     }
 
