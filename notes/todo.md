@@ -50,7 +50,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Stock summary remove pagination
 
 ## security
-	- Change databaseTablesMap to tables schema type variables
+										- Change databaseTablesMap to tables schema type variables
 										- QA for vouchers
 											- Check: When voucher deleted the gst entry in ext table should also delete
 											- new voucher entry
@@ -74,7 +74,6 @@ valid gstin: 24AAACC1206D1ZM
 												- Menu
 												- edit
 												- view
-								t
 												- preview
 													- Bug. In grid tbutton shows but not lete
 												- export

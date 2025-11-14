@@ -6,7 +6,7 @@ import { Protected } from "../../features/layouts/protected";
 import { Layouts } from "../../features/layouts/layouts";
 
 // Login
-import { Login } from "../../features/login/login-prod";
+import { Login } from "../../features/login/login";
 
 // Pages
 import { Blogs } from "../../features/pages/blogs";
