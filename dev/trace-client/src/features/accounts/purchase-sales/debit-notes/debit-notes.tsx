@@ -165,7 +165,7 @@ export function DebitNotes() {
         }
         try {
             const xData: XDataObjectType = getTranHData();
-            console.log(JSON.stringify(xData))
+            // console.log(JSON.stringify(xData))
             await Utils.doGenericUpdate({
                 buCode: buCode || "",
                 dbName: dbName || "",

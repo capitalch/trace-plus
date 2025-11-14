@@ -181,9 +181,8 @@ export function BalanceSheet() {
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('L')}
-                    height="calc(100vh - 245px)"
+                    height="calc(100vh - 255px)"
                     instance={liabsInstance}
-                    // loadData={loadData}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}
                     zoomInColumnWidth={30}
@@ -210,7 +209,7 @@ export function BalanceSheet() {
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('A')}
-                    height="calc(100vh - 245px)"
+                    height="calc(100vh - 255px)"
                     instance={assetsInstance}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}

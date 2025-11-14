@@ -164,7 +164,7 @@ export function ProfitLoss() {
                     dbParams={decodedDbParamsObject}
                     // isLoadOnInit={false}
                     columns={getColumns('L')}
-                    height="calc(100vh - 245px)"
+                    height="calc(100vh - 275px)"
                     instance={expensesInstance}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}
@@ -192,7 +192,7 @@ export function ProfitLoss() {
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('A')}
-                    height="calc(100vh - 245px)"
+                    height="calc(100vh - 275px)"
                     instance={incomesInstance}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}

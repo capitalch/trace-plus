@@ -343,7 +343,6 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
     }
 
     async function handleOnPreview(data: DebitCreditNoteFormDataType) {
-        console.log(data)
         const editData: any = await getDebitCreditNoteDetailsOnId(data.id)
         const dcEditData: DebitCreditNoteEditDataType = editData?.[0]?.jsonResult
         generateDebitCreditNotePDF({

@@ -116,7 +116,7 @@ export function AllSalesReturn() {
     async function finalizeAndSubmit() {
         try {
             const xData: XDataObjectType = getTranHData();
-            console.log(JSON.stringify(xData))
+            // console.log(JSON.stringify(xData))
 
             const ret = await Utils.doGenericUpdate({
                 buCode: buCode || "",

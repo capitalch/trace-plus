@@ -660,7 +660,7 @@ const CustomerNewEditModal: React.FC<CustomerNewEditModalProps> = ({ contactsDat
                 dateOfBirth: getValues('dateOfBirth') || null,
                 stateCode: getValues('stateCode') || null,
             }
-            console.log("Submitting customer data:", xData);
+            // console.log("Submitting customer data:", xData);
             const result = await Utils.doGenericUpdate({
                 buCode: buCode || '',
                 dbName: dbName || '',

@@ -134,7 +134,7 @@ export function AllSales() {
                 return
             }
             const xData: XDataObjectType = getTranHData();
-            console.log(JSON.stringify(xData))
+            // console.log(JSON.stringify(xData))
 
             const debitAccounts = getValues('debitAccounts') || [];
             const salesType = getValues('salesType')
