@@ -38,7 +38,7 @@ function useValidators() {
     if (!input) {
       return error;
     }
-    if (input.search(/^[A-Za-z0-9 *&.@$#+:(),_-]+$/) < 0) {
+    if (input.search(/^[A-Za-z0-9 *&.@$#+:(),_/-]+$/) < 0) {
       error = Messages.errForbiddenChar;
     }
     return error;
@@ -362,7 +362,7 @@ function useValidators() {
   }
 
   function isValidHsn(input: string) {
-    const ret = input.match(
+    const ret = !!input.match(
       /^\d+$/
     ) && input.length >= 4 && input.length <= 8;
     return ret;

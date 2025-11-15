@@ -189,7 +189,7 @@ export function NewEditProduct({ props }: any) {
                                 onValueChange={(values) => setValue('hsn', values.floatValue || null)}
                                 onFocus={(e) => setTimeout(() => e.target.select(), 0)}
                                 {...register('hsn', {
-                                    validate: (value) => ((value ?? 0) < (10000000)) || Messages.errHsnTooHigh
+                                    validate: (value) => ((value ?? 0) < (100000000)) || Messages.errHsnTooHigh
                                 })}
                                 placeholder="00000000"
                                 value={watch('hsn')}
