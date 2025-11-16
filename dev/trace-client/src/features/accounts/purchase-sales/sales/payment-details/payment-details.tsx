@@ -14,7 +14,8 @@ import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
 import Decimal from 'decimal.js';
 import { Utils } from '../../../../../utils/utils';
 import useDeepCompareEffect from 'use-deep-compare-effect';
-import { TranDExtraType } from '../../../../../utils/global-types-interfaces-enums';
+import { ContactsType, ExtBusinessContactsAccMType, TranDExtraType } from '../../../../../utils/global-types-interfaces-enums';
+import { useUtilsInfo } from '../../../../../utils/utils-info-hook';
 
 type SalesType = 'retail' | 'bill' | 'institution';
 
@@ -30,6 +31,7 @@ const PaymentDetails: React.FC = () => {
         formState: { errors }, } = useFormContext<SalesFormDataType>();
     const { getDefaultDebitAccount }: any = useFormContext<SalesFormDataType>();
     const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
+    const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const { fields, remove, append } = useFieldArray({
         control,
         name: 'debitAccounts'
@@ -39,6 +41,7 @@ const PaymentDetails: React.FC = () => {
     const debitAccounts: TranDExtraType[] = watch('debitAccounts')
     const totalInvoiceAmount = watch('totalInvoiceAmount')
     const salesType = watch('salesType') as SalesType
+    const firstAccId = watch('debitAccounts.0.accId')
 
     // Calculate total amount from all payment methods
     const setTotalDebitAmount = () => {
@@ -67,14 +70,14 @@ const PaymentDetails: React.FC = () => {
 
     }, [isEditMode, debitAccounts, setValue])
 
-    useEffect(() => {
-        const firstRowId = getValues('debitAccounts.0.id');
-        if (firstRowId) {
-            // const deletedIds = getValues('tranDDeletedIds') || [];
-            // setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
-            // setValue('debitAccounts.0.id', undefined);
-        }
-    }, [salesType, setValue, getValues])
+    // useEffect(() => {
+    //     const firstRowId = getValues('debitAccounts.0.id');
+    //     if (firstRowId) {
+    //         // const deletedIds = getValues('tranDDeletedIds') || [];
+    //         // setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
+    //         // setValue('debitAccounts.0.id', undefined);
+    //     }
+    // }, [salesType, setValue, getValues])
 
     // Auto-set amount when totalInvoiceAmount changes and there's only one debit account
     useEffect(() => {
@@ -93,6 +96,13 @@ const PaymentDetails: React.FC = () => {
             }
         }
     }, [totalInvoiceAmount, debitAccounts?.length, setValue, getValues])
+
+    // Auto-populate customer details when institution account is selected
+    useEffect(() => {
+        if (salesType === 'institution' && firstAccId) {
+            fetchAndPopulateContact(firstAccId as number);
+        }
+    }, [salesType, firstAccId]);
 
     const handleAddPaymentMethod = () => {
         if (getDefaultDebitAccount) {
@@ -143,24 +153,19 @@ const PaymentDetails: React.FC = () => {
 
     const handleSalesTypeChange = (newSalesType: SalesType) => {
         setValue('salesType', newSalesType)
-        // setValue(`debitAccounts.${0}.accId`, null, { shouldValidate: true })
-        // clearFirstRowId()
         setValue(`debitAccounts.${0}.isParentAutoSubledger`, null)
         setValue(`debitAccounts.${0}.accClass`, '')
         setValue(`debitAccounts.${0}.accName`, '')
         setValue(`debitAccounts.${0}.accId`, null)
         trigger(`debitAccounts.${0}.accId`)
-    }
 
-    // const clearFirstRowId = () => {
-    //     const firstRowId = getValues('debitAccounts.0.id');
-    //     if (firstRowId) {
-    //         const deletedIds = getValues('tranDDeletedIds') || [];
-    //         setValue('tranDDeletedIds', [...deletedIds, firstRowId]);
-    //         setValue('debitAccounts.0.id', undefined);
-    //         setValue('remarks', undefined);
-    //     }
-    // };
+        // Clear customer details when switching away from institution
+        if (newSalesType !== 'institution') {
+            setValue('contactsData', null, { shouldDirty: true });
+            setValue('contactDisplayData', null, { shouldDirty: true });
+            setValue('gstin', null, { shouldDirty: true });
+        }
+    }
 
     const getAccClassNames = (salesType: SalesType, index: number): AccClassName[] => {
         if (index !== 0) {
@@ -202,7 +207,7 @@ const PaymentDetails: React.FC = () => {
             {/* Header section */}
             <div className="flex items-center justify-between mb-2 flex-wrap gap-y-4">
                 <div className="flex items-center">
-                    <div className="mr-3 p-2 text-white bg-violet-100 rounded-lg flex-shrink-0">
+                    <div className="mr-3 p-2 text-white bg-violet-100 rounded-lg shrink-0">
                         <Banknote className='w-5 h-5 text-violet-600' />
                     </div>
                     <h2 className="font-semibold text-gray-800 text-lg">Payment Details <span className="text-sm text-gray-500 font-normal">({fields.length} rows)</span></h2>
@@ -428,7 +433,7 @@ const PaymentDetails: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleRemove(index)}
-                                                    className="mb-2 p-1.5 text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-md transition-all duration-200 hover:from-orange-600 hover:to-amber-600 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                                    className="mb-2 p-1.5 text-white bg-linear-to-r from-orange-500 to-amber-500 rounded-full shadow-md transition-all duration-200 hover:from-orange-600 hover:to-amber-600 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-300"
                                                     title="Remove payment method"
                                                     aria-label="Remove payment method"
                                                 >
@@ -447,6 +452,56 @@ const PaymentDetails: React.FC = () => {
             </div>
         </div>
     );
+
+    async function fetchAndPopulateContact(accId: number) {
+        try {
+            const res: ExtBusinessContactsAccMType[] = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getExtBusinessContactsAccMOnAccId,
+                sqlArgs: { accId: accId }
+            });
+
+            if (res && res.length > 0) {
+                const contactData = res[0];
+                const transformedContact = transformContactData(contactData);
+                setValue('contactsData', transformedContact, { shouldDirty: true, shouldValidate: true });
+            } else {
+                setValue('contactsData', null, { shouldDirty: true });
+                setValue('contactDisplayData', null, { shouldDirty: true });
+                setValue('gstin', null, { shouldDirty: true });
+                Utils.showAlertMessage('Warning', Messages.messNoContactInfoFound);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function transformContactData(data: ExtBusinessContactsAccMType): ContactsType {
+        const address:any = data.jAddress?.[0] || {};
+
+        return {
+            id: data.id,
+            contactName: data.contactName,
+            mobileNumber: data.mobileNumber,
+            otherMobileNumber: data.otherMobileNumber,
+            landPhone: data.landPhone,
+            email: data.email || '',
+            descr: data.descr,
+            jData: data.jData,
+            address1: address.address1 || '',
+            address2: address.address2 || null,
+            country: address.country || '',
+            state: address.state || null,
+            city: address.city || null,
+            gstin: data.gstin || '',
+            pin: address.pin || '',
+            stateCode: data.stateCode,
+            anniversaryDate: null,
+            dateOfBirth: null,
+        };
+    }
 };
 
 export default PaymentDetails;

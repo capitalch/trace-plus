@@ -34,6 +34,8 @@ const CustomerDetails: React.FC = () => {
     });
     const isGstInvoice = watch("isGstInvoice");
     const hasCustomerGstin = watch("hasCustomerGstin");
+    const salesType = watch('salesType');
+    const isInstitutionMode = salesType === 'institution';
 
     // Clear GSTIN when hasCustomerGstin or isGstInvoice is false
     useEffect(() => {
@@ -66,7 +68,7 @@ const CustomerDetails: React.FC = () => {
         <div className="relative px-4 py-4 bg-white border-blue-400 border-l-4 rounded-lg shadow-sm">
             <div className="flex items-center justify-between mb-4" >
                 <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                    <div className="p-2 bg-blue-100 rounded-lg shrink-0">
                         <User className="w-5 h-5 text-blue-600" />
                     </div>
                     <h2 className="font-semibold text-gray-900 text-lg">Customer Details</h2>
@@ -77,54 +79,68 @@ const CustomerDetails: React.FC = () => {
                 {/* Left Column - Customer Fields (vertically stacked) */}
                 <div className="space-y-4">
                     {/* Customer Search */}
-                    <div>
-                        <div className="flex items-center space-x-2 mb-1">
-                            <User className="w-4 h-4 text-blue-600" />
-                            <label className="block font-semibold text-gray-700 text-sm">
-                                Customer
-                            </label>
-                        </div>
-                        <div className="relative" tabIndex={0}>
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault(); // prevent default behavior of form submission
-                                        handleCustomerSearch(searchQuery);
-                                    }
-                                }}
-                                className={clsx(
-                                    "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-                                    searchQuery ? "pr-20" : "pr-12"
-                                )}
-                                placeholder="Search customer..."
-                            />
+                    {!isInstitutionMode ? (
+                        <div>
+                            <div className="flex items-center space-x-2 mb-1">
+                                <User className="w-4 h-4 text-blue-600" />
+                                <label className="block font-semibold text-gray-700 text-sm">
+                                    Customer
+                                </label>
+                            </div>
+                            <div className="relative" tabIndex={0}>
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault(); // prevent default behavior of form submission
+                                            handleCustomerSearch(searchQuery);
+                                        }
+                                    }}
+                                    className={clsx(
+                                        "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                                        searchQuery ? "pr-20" : "pr-12"
+                                    )}
+                                    placeholder="Search customer..."
+                                />
 
-                            {/* Clear button - only show when there's text */}
-                            {searchQuery && (
+                                {/* Clear button - only show when there's text */}
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        className="absolute p-1.5 text-gray-400 rounded-full transition-colors duration-200 hover:text-gray-600 right-14 top-1.5"
+                                        onClick={() => dispatch(setSearchQuery(''))}
+                                        title="Clear search"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
+
+                                {/* Search button */}
                                 <button
                                     type="button"
-                                    className="absolute p-1.5 text-gray-400 rounded-full transition-colors duration-200 hover:text-gray-600 right-14 top-1.5"
-                                    onClick={() => dispatch(setSearchQuery(''))}
-                                    title="Clear search"
+                                    className="absolute p-1.5 text-white bg-blue-400 rounded-md transition-colors duration-200 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 right-2 top-1.5"
+                                    onClick={() => handleCustomerSearch(searchQuery)}
+                                    title="Search customer"
                                 >
-                                    <X className="w-4 h-4" />
+                                    <Search className="w-4 h-4" />
                                 </button>
-                            )}
-
-                            {/* Search button */}
-                            <button
-                                type="button"
-                                className="absolute p-1.5 text-white bg-blue-400 rounded-md transition-colors duration-200 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 right-2 top-1.5"
-                                onClick={() => handleCustomerSearch(searchQuery)}
-                                title="Search customer"
-                            >
-                                <Search className="w-4 h-4" />
-                            </button>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                            <div className="flex items-center space-x-2 mb-1">
+                                <User className="w-4 h-4 text-blue-600" />
+                                <label className="block font-semibold text-blue-700 text-sm">
+                                    Party Details (Auto-populated)
+                                </label>
+                            </div>
+                            <p className="text-xs text-gray-600 mt-1">
+                                {Messages.messCustDetailsAutoPopulated}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Customer has GSTIN Toggle */}
                     <div className="flex items-center space-x-3">
@@ -217,7 +233,15 @@ const CustomerDetails: React.FC = () => {
                         <button
                             type='button'
                             onClick={handleNewEditCustomer}
-                            className="flex items-center justify-center px-2 py-1 text-blue-700 text-md bg-blue-100 rounded-md transition-colors hover:bg-blue-200 space-x-1">
+                            disabled={isInstitutionMode}
+                            className={clsx(
+                                "flex items-center justify-center px-2 py-1 text-md rounded-md transition-colors space-x-1",
+                                isInstitutionMode
+                                    ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                                    : "text-blue-700 bg-blue-100 hover:bg-blue-200"
+                            )}
+                            title={isInstitutionMode ? "Cannot edit in Institution mode" : "New / Edit customer"}
+                        >
                             <Edit size={14} className="flex-shrink-0" />
                             <span>New / Edit</span>
                         </button>
@@ -225,7 +249,15 @@ const CustomerDetails: React.FC = () => {
                         <button
                             type='button'
                             onClick={handleClearCustomer}
-                            className="flex items-center justify-center px-2 py-1 text-amber-700 text-md bg-amber-100 rounded-md transition-colors hover:bg-amber-200 space-x-1">
+                            disabled={isInstitutionMode}
+                            className={clsx(
+                                "flex items-center justify-center px-2 py-1 text-md rounded-md transition-colors space-x-1",
+                                isInstitutionMode
+                                    ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                                    : "text-amber-700 bg-amber-100 hover:bg-amber-200"
+                            )}
+                            title={isInstitutionMode ? "Cannot clear in Institution mode" : "Clear customer"}
+                        >
                             <Trash2 size={14} className="flex-shrink-0" />
                             <span>Clear</span>
                         </button>

@@ -12,12 +12,14 @@ export function AllSalesForm() {
     const { scrollToTop } = useScrollToTop();
 
     useEffect(() => {
-        scrollToTop();
+        setTimeout(() => {
+            scrollToTop();
+        }, 100);
     }, [scrollToTop]);
 
     return (
         <div className="m-4 ml-0 min-h-screen bg-gray-50">
-            <StatusBar />            
+            <StatusBar />
             {/* Invoice and Customer Details - Separate Components */}
             <div className="grid py-6 gap-6 grid-cols-1 lg:grid-cols-2">
                 <InvoiceDetails />

@@ -54,7 +54,6 @@ export function AllSales() {
         return isViewMode ? "Sales View" : "Sales";
     }
 
-
     // Watch for changes in amounts and trigger validation
     const totalInvoiceAmount = watch('totalInvoiceAmount');
     const totalDebitAmount = watch('totalDebitAmount');

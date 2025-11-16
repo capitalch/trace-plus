@@ -12,7 +12,8 @@ export function useAllSalesSubmit(methods: UseFormReturn<SalesFormDataType>, tra
   const salesEditData = getValues('salesEditData')
   const contactsData: ContactsType | null = getValues('contactsData')
   const shippingInfo: ShippingInfoType | null = getValues('shippingInfo')
-  
+  const salesType = getValues('salesType')
+
   function getTranHData(): XDataObjectType {
     return {
       id: getValues("id") || undefined,
@@ -24,7 +25,7 @@ export function useAllSalesSubmit(methods: UseFormReturn<SalesFormDataType>, tra
       branchId,
       posId: 1,
       autoRefNo: getValues("autoRefNo") || undefined,
-      contactsId: contactsData?.id,
+      contactsId: salesType === 'institution' ? null : contactsData?.id,
       jData: shippingInfo ? JSON.stringify({
         shipTo: shippingInfo
       }) : null,

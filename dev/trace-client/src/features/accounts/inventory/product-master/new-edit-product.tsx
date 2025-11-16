@@ -84,7 +84,7 @@ export function NewEditProduct({ props }: any) {
             subs2.unsubscribe()
             dispatch(resetQueryHelperData({ instance: DataInstancesMap.productOnId }))
         })
-    }, [])
+    }, [dispatch, setValue])
 
     useEffect(() => {
         if (!_.isEmpty(allBrandsCategoriesUnits)) {
@@ -500,9 +500,10 @@ export function NewEditProduct({ props }: any) {
             buCode: buCode || '',
             dbName: dbName || '',
             dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.doesUpcCodeExist,
+            sqlId: id ? SqlIdsMap.doesOtherUpcCodeExist : SqlIdsMap.doesUpcCodeExist,
             sqlArgs: {
-                upcCode: upcCode
+                upcCode: upcCode,
+                id: id
             }
         })
         if (res?.[0]?.exists) {

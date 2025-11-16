@@ -107,6 +107,7 @@ const Messages = {
     'Client code should be between 6 characters and 30 characters',
   messClientName:
     'Client name should be between 6 characters and 50 characters',
+  messCustDetailsAutoPopulated: 'Customer details are automatically populated if available',
   messDbConnFailure: 'Database connection was failed',
   messDbConnSuccessful: 'Database connection was successful',
   messDebitCreditNotTogether:
@@ -137,6 +138,7 @@ const Messages = {
   messNotAllowed: 'This operation is not allowed',
   messNoBusinessUnitsDefined:
     'No business units are defined for this client. Admin must define at least one business unit',
+  messNoContactInfoFound: "No contact information found for selected account",
   messOpeningBalancesMismatch: "There was error in opening balances of accounts. Sum of debits and credits do not match",
   messOpBalClearDateChangeNotAllowed:
     'Opening balance clear date cannot be changed',

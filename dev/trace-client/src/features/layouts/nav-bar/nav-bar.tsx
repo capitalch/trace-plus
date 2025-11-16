@@ -10,10 +10,11 @@ import { AppDispatchType, RootStateType } from "../../../app/store"
 import { useDispatch, useSelector } from "react-redux"
 import ReactSlidingPane from "react-sliding-pane"
 import { SlidingPaneMap } from "../../../controls/redux-components/sliding-pane/sliding-pane-map"
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import { ModalDialogB } from "./modal-dialogB"
 import { SearchProduct } from "./search-product"
 import { menuItemSelectorFn } from "../layouts-slice"
+import { useLocation } from "react-router-dom"
 
 export function NavBar() {
     const dispatch: AppDispatchType = useDispatch()
@@ -21,9 +22,17 @@ export function NavBar() {
     const isVisibleAppLoader: boolean = useSelector((state: RootStateType) => compAppLoaderVisibilityFn(state, CompInstances.compAppLoader))
     const menuItemSelector = useSelector(menuItemSelectorFn)
     const { getBuFyBranchInfo, getMenuButtons, getMenuShowHideClass, handleToggleSideBar } = useNavBar()
+    const location = useLocation()
 
     const SlidingPaneChildComp: FC<any>  = SlidingPaneMap[identifier]?.content
     const slidingPaneChildCompProps: any = SlidingPaneMap[identifier]?.props
+
+    // Close sliding pane when route changes
+    useEffect(() => {
+        if (isOpen) {
+            dispatch(closeSlidingPane())
+        }
+    }, [location.pathname, dispatch])
 
     return (
        // Top Nav bar - height matches sidebar logo height (h-12)

@@ -12,11 +12,16 @@ valid gstin: 24AAACC1206D1ZM
 
 
 ## General requirement
-- Check impact of Stock journal on overall inventory value
-	- create purchase of a complex product and record stock value
-	- Stock Journal the product to its components with part product price being less
-	- Check the stock value. It should be same
-		- if reduced then check (5,11) in get_stock_summary_report; remove 11 and recheck
+- Bugs
+	- Persistance of transactions not working
+														- Product master modify: upc code already exists
+														- institution sales party name not coming
+
+												- Check impact of Stock journal on overall inventory value
+													- create purchase of a complex product and record stock value
+													- Stock Journal the product to its components with part product price being less
+													- Check the stock value. It should be same
+														- if reduced then check (5,11) in get_stock_summary_report; remove 11 and recheck
 														- When bu, finYearId or branch changes, behavior of existing screen to be checked
 - Checkup price - discount in all reports as actual price
 - Supplier name and its due in summary report of inventory
