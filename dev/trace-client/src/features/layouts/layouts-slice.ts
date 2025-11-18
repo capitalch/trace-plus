@@ -10,7 +10,8 @@ const initialState: InitialStateType = {
   navBar: {
     menuItem: 'accounts',
     toShowNavBarDropDown: false,
-  }
+  },
+  businessContextToggle: false,
 }
 
 export const layoutsSlice = createSlice({
@@ -64,6 +65,10 @@ export const layoutsSlice = createSlice({
       state.sideBar.selectedChildId = action.payload.childId
     },
 
+    toggleBusinessContext: (state: InitialStateType) => {
+      state.businessContextToggle = !state.businessContextToggle
+    },
+
   }
 })
 
@@ -75,6 +80,7 @@ export const {
   setSideBarSelectedChildId,
   setSideBarSelectedParentId,
   setSideBarSelectedParentChildIds,
+  toggleBusinessContext,
 } = layoutsSlice.actions
 
 type IsSideBarOpenActionType = {
@@ -113,6 +119,7 @@ type InitialStateType = {
     menuItem: MenuItemType
     toShowNavBarDropDown: boolean
   }
+  businessContextToggle: boolean
 }
 
 // Selector functions
@@ -130,3 +137,6 @@ export const sideBarSelectedChildIdFn = (state: RootStateType) =>
 
 export const showNavBarDropDownFn = (state: RootStateType) =>
   state.layouts.navBar.toShowNavBarDropDown
+
+export const businessContextToggleSelectorFn = (state: RootStateType) =>
+  state.layouts.businessContextToggle

@@ -8,7 +8,7 @@ import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 import { useDebitCreditNotesSubmit } from "../common/debit-credit-notes-submit-hook";
 import { CompTabsType } from "../../../../controls/redux-components/comp-tabs";
 import { WidgetTabToggleButtons } from "../../../../controls/widgets/widget-tab-toggle-buttons";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { Utils } from "../../../../utils/utils";
 import { Messages } from "../../../../utils/messages";
@@ -22,6 +22,7 @@ import { clearCreditNoteFormData, saveCreditNoteFormData } from "./credit-notes-
 import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
 import { useLocation } from "react-router-dom";
 import { useCreditNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
 
 /**
  * Child component that renders credit note tabs and content.
@@ -88,7 +89,9 @@ export function CreditNotes() {
     const dispatch: AppDispatchType = useDispatch()
     const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.creditNotes.savedFormData);
+    const toggleBusinessContextState = useSelector(businessContextToggleSelectorFn);
     const instance = DataInstancesMap.creditNotes;
+    const isInitialMount = useRef(true);
     const { branchId, finYearId, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
     const methods = useForm<DebitCreditNoteFormDataType>(
         {
@@ -131,8 +134,13 @@ export function CreditNotes() {
     }, [location.state?.id, location.state?.returnPath]);
 
     useEffect(() => {
+        // Skip execution on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         resetAll();
-    },[buCode, finYearId, branchId]);
+    }, [toggleBusinessContextState]);
 
     return (
         <FormProvider {...extendedMethods}>

@@ -13,6 +13,7 @@ import { GLOBAL_SECURITY_DATABASE_NAME } from "../../../../app/global-constants"
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { useMediaQuery } from "react-responsive";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import { toggleBusinessContext } from "../../layouts-slice";
 
 export function FinYearsOptions() {
     const currentFinYear: FinYearType | undefined = useSelector(currentFinYearSelectorFn)
@@ -74,6 +75,7 @@ export function FinYearsOptions() {
         if (newFinYear) {
             dispatch(setCurrentFinYear(newFinYear))
             saveLastUsedFinYearId(newFinYear.finYearId)
+            dispatch(toggleBusinessContext()) // inform other modules about business context change
         } else {
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errIncrementedFinYearNotExists })
         }
@@ -89,6 +91,7 @@ export function FinYearsOptions() {
         if (newFinYear) {
             dispatch(setCurrentFinYear(newFinYear))
             saveLastUsedFinYearId(newFinYear.finYearId)
+            dispatch(toggleBusinessContext()) // inform other modules about business context change
         } else {
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.errIncrementedFinYearNotExists })
         }

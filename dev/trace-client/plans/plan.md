@@ -1,411 +1,469 @@
-# Plan: Fix Sales Form Data Persistence
+# Plan: Fix Redux Store and Global Context Cleanup on Logout
 
 ## Problem
-Sales form data is lost when navigating away and coming back. The form should persist data temporarily so users can navigate to other pages and return without losing their work.
+After logout, Redux store and Global Context still contain values from the previous session. Although there's existing cleanup logic in `store.ts` and `resetGlobalContext()` is being called, the cleanup may not be complete or working correctly.
+
+## Current Implementation Analysis
+
+### What's Already in Place (store.ts:40-45):
+```typescript
+const reducerWithReset = (state: any, action: any) => {
+  if (action.type === doLogout.type) {
+    state = undefined; // this resets all slices
+  }
+  return rootReducer(state, action);
+};
+```
+
+**This SHOULD reset the entire Redux store when `doLogout` action is dispatched.**
+
+### Logout Flow (logout-menu-button.tsx:127-132):
+```typescript
+function handleOnLogout() {
+    handleOnClickAway() // Otherwise the menu remains open
+    resetGlobalContext(context)
+    dispatch(doLogout())
+    navigate('/login')
+}
+```
+
+**Current sequence:**
+1. Close dropdown menu
+2. Reset global context (React Context API) ✅ Already implemented
+3. Dispatch `doLogout()` action
+4. Navigate to login page
+
+### Global Context Reset (global-context.tsx:12-16):
+```typescript
+export function resetGlobalContext(globalContext: GlobalContextType) {
+  globalContext.CompSyncFusionGrid = {};
+  globalContext.CompSyncFusionTreeGrid = {};
+  // globalContext.DataInstances = {};
+}
+```
+
+**Issue:** `DataInstances` is commented out and NOT being cleared! This could leave residual data.
+
+### doLogout Action (login-slice.ts:32-47):
+```typescript
+doLogout: (state: LoginType) => {
+  state.accSettings = undefined
+  state.allBranches = undefined
+  state.allBusinessUnits = undefined
+  state.allFinYears = undefined
+  state.allSecuredControls = undefined
+  state.currentBranch = undefined
+  state.currentBusinessUnit = undefined
+  state.currentFinYear = undefined
+  state.isLoggedIn = false
+  state.role = undefined
+  state.token = undefined
+  state.userBusinessUnits = undefined
+  state.userDetails = undefined
+  state.userSecuredControls = undefined
+},
+```
+
+**This manually clears only the `login` slice, but the `reducerWithReset` in store.ts should clear ALL slices.**
 
 ## Root Cause Analysis
 
-### Issue 1: Cleanup Function Missing Dependencies (CRITICAL)
-**Location:** `all-sales.tsx` lines 72-77
+The issue is that **both mechanisms are conflicting**:
 
+1. **login-slice.ts** manually clears only login state fields
+2. **store.ts** tries to reset the entire state to `undefined`
+
+**Problem:** When `doLogout` action runs:
+- First, it goes through `reducerWithReset` which sets `state = undefined`
+- Then, it passes to `rootReducer` with `undefined` state
+- `rootReducer` initializes ALL slices to their `initialState`
+- BUT, the `doLogout` reducer in login-slice also runs
+- This might interfere with the full reset
+
+## Potential Issues
+
+### Issue 1: Reducer Execution Order
+The `doLogout` reducer in login-slice might be executing, but since state is already `undefined`, it might not properly clear values.
+
+### Issue 2: Persisted State
+If using Redux Persist or similar, state might be persisted and restored after logout.
+
+### Issue 3: Async Operations
+If there are pending async operations (thunks, API calls), they might restore data after logout.
+
+### Issue 4: React Component State
+Some values might be in React component state (useState, useRef) rather than Redux.
+
+### Issue 5: Global Context Not Fully Cleared
+The `resetGlobalContext()` function has `DataInstances` cleanup commented out. This means deleted IDs and other data in `DataInstances` will persist across logout/login sessions.
+
+## Solution
+
+### Recommended Fix: Complete Cleanup of Both Redux and Global Context
+
+1. Remove redundant manual clearing from `login-slice.ts` and rely solely on the `reducerWithReset` in `store.ts`
+2. Enable complete Global Context reset by uncommenting `DataInstances` cleanup
+
+## Implementation Steps
+
+### Step 1: Fix Global Context Reset - Enable DataInstances Cleanup
+**File:** `src/app/global-context.tsx`
+**Lines:** 12-16
+
+**Action:** Uncomment the `DataInstances` reset to ensure complete cleanup
+
+**Before:**
 ```typescript
-useEffect(() => {
-    return (() => {
-        const data = getSerializedFormData()
-        dispatch(saveSalesFormData(data));
-    })
-}, [dispatch, getValues])  // ❌ Has getValues but doesn't use it correctly
-```
-
-**Problem:**
-- The cleanup function captures `getSerializedFormData` which internally calls `getValues()`
-- But `getValues` in the dependency array doesn't trigger the effect to re-register
-- This creates a stale closure - the cleanup might save OLD data, not current data
-- The cleanup function should directly access current form values
-
-### Issue 2: resetAll() Clears Saved Data Prematurely
-**Location:** `all-sales.tsx` lines 105-107, 380-386
-
-```typescript
-// Line 105-107: Triggers on business context change
-useEffect(() => {
-    resetAll();
-}, [buCode, finYearId, branchId]);
-
-// Line 380-386: resetAll implementation
-function resetAll() {
-    clearErrors()
-    reset(getDefaultSalesFormValues());
-    dispatch(clearSalesFormData());  // ❌ Clears saved data immediately
-    dispatch(clearSearchQuery());
-    scrollToTop();
+export function resetGlobalContext(globalContext: GlobalContextType) {
+  globalContext.CompSyncFusionGrid = {};
+  globalContext.CompSyncFusionTreeGrid = {};
+  // globalContext.DataInstances = {};
 }
 ```
 
-**Problem:**
-- When business context (buCode/finYearId/branchId) changes, resetAll() is called
-- This calls `clearSalesFormData()` which deletes the Redux saved data
-- This is correct behavior - changing business context should clear the form
-- However, if this happens while navigating, it clears data before it's saved
-
-### Issue 3: Race Condition on Navigation
-**Timeline of events when navigating away:**
-1. User navigates away from sales form
-2. Component starts unmounting
-3. Cleanup function tries to save data (line 72-77)
-4. **BUT** if buCode/finYearId/branchId changed, resetAll() runs first
-5. resetAll() clears saved data (line 383)
-6. Cleanup function saves data to Redux
-7. User navigates back
-8. **RESULT:** Saved data might be from the wrong business context OR might be cleared
-
-### Issue 4: No Check for Empty/Default Data
-**Location:** `all-sales.tsx` line 74
-
+**After:**
 ```typescript
-const data = getSerializedFormData()
-dispatch(saveSalesFormData(data));
-```
-
-**Problem:**
-- Saves data even if it's just default values (empty form)
-- No validation that there's actual user data worth saving
-- Wastes Redux state with empty forms
-
----
-
-## Solution Approach
-
-### Fix 1: Improve Cleanup Function with Proper Closure
-**Goal:** Ensure cleanup always saves the LATEST form data
-
-**Change:**
-```typescript
-useEffect(() => {
-    return () => {
-        // Direct access to current values via getValues() at cleanup time
-        const currentFormData = getValues();
-        const serializedData = {
-            ...currentFormData,
-            totalInvoiceAmount: String(currentFormData.totalInvoiceAmount),
-            totalQty: String(currentFormData.totalQty),
-            totalCgst: String(currentFormData.totalCgst),
-            totalSgst: String(currentFormData.totalSgst),
-            totalIgst: String(currentFormData.totalIgst),
-            totalSubTotal: String(currentFormData.totalSubTotal),
-            totalDebitAmount: String(currentFormData.totalDebitAmount)
-        };
-
-        // Only save if form has meaningful data (not just defaults)
-        const hasData = currentFormData.id ||
-                       currentFormData.salesLineItems?.length > 0 ||
-                       currentFormData.contactsData !== null;
-
-        if (hasData) {
-            dispatch(saveSalesFormData(serializedData));
-        }
-    };
-}, [dispatch, getValues]);
-```
-
-### Fix 2: Conditional Clear in resetAll()
-**Goal:** Only clear saved data when explicitly resetting, not on every business context change
-
-**Option A: Don't clear on business context change (Recommended)**
-```typescript
-// Remove line 383 from resetAll()
-function resetAll() {
-    clearErrors()
-    reset(getDefaultSalesFormValues());
-    // dispatch(clearSalesFormData());  // ❌ REMOVE THIS
-    dispatch(clearSearchQuery());
-    scrollToTop();
-}
-
-// Only clear saved data after successful save or explicit clear
-function finalizeAndSubmit() {
-    // ... existing save logic ...
-
-    if (!location.state?.id) {
-        resetAll();
-        dispatch(clearSalesFormData());  // ✅ Clear AFTER reset
-    }
+export function resetGlobalContext(globalContext: GlobalContextType) {
+  globalContext.CompSyncFusionGrid = {};
+  globalContext.CompSyncFusionTreeGrid = {};
+  globalContext.DataInstances = {}; // ✅ Uncommented - clear deleted IDs and data
 }
 ```
 
-**Option B: Add parameter to resetAll() for conditional clear**
-```typescript
-function resetAll(clearSaved: boolean = false) {
-    clearErrors()
-    reset(getDefaultSalesFormValues());
-    if (clearSaved) {
-        dispatch(clearSalesFormData());
-    }
-    dispatch(clearSearchQuery());
-    scrollToTop();
-}
+**Why this matters:**
+- `DataInstances` stores deleted IDs and other transient data
+- Without clearing, deleted items from previous session persist
+- Could cause data inconsistencies between different user sessions
+- Essential for clean logout
 
-// Call with parameter when needed
-useEffect(() => {
-    resetAll(true);  // Clear saved data on business context change
-}, [buCode, finYearId, branchId]);
+### Step 2: Remove Manual Clearing from doLogout (Optional but Cleaner)
+**File:** `src/features/login/login-slice.ts`
+**Lines:** 32-47
+
+**Action:** Simplify the `doLogout` reducer since `reducerWithReset` handles full reset
+
+**Before:**
+```typescript
+doLogout: (state: LoginType) => {
+  state.accSettings = undefined
+  state.allBranches = undefined
+  // ... many lines of manual clearing
+},
 ```
 
-### Fix 3: Validate Business Context on Load
-**Goal:** Don't load saved data if business context has changed
-
+**After:**
 ```typescript
-// Add business context to saved form data
-function getSerializedFormData() {
-    const formData = getValues()
-    const serFormData = {
-        ...formData,
-        totalInvoiceAmount: String(formData.totalInvoiceAmount),
-        totalQty: String(formData.totalQty),
-        totalCgst: String(formData.totalCgst),
-        totalSgst: String(formData.totalSgst),
-        totalIgst: String(formData.totalIgst),
-        totalSubTotal: String(formData.totalSubTotal),
-        totalDebitAmount: String(formData.totalDebitAmount),
-        // Add context
-        _savedBuCode: buCode,
-        _savedFinYearId: finYearId,
-        _savedBranchId: branchId
-    }
-    return (serFormData)
-}
-
-// Check context before loading
-useEffect(() => {
-    if (savedFormData) {
-        // Validate business context matches
-        const contextMatches =
-            savedFormData._savedBuCode === buCode &&
-            savedFormData._savedFinYearId === finYearId &&
-            savedFormData._savedBranchId === branchId;
-
-        if (contextMatches) {
-            reset(_.cloneDeep(getDeserializedFormData(savedFormData)));
-            setTimeout(() => {
-                setValue('toggle', !savedFormData.toggle, { shouldDirty: true });
-            }, 0);
-        } else {
-            // Context changed, clear invalid saved data
-            dispatch(clearSalesFormData());
-        }
-    }
-}, [savedFormData, reset, setValue, buCode, finYearId, branchId, dispatch]);
+doLogout: (state: LoginType) => {
+  // No need to manually clear - reducerWithReset handles this
+  // Just set isLoggedIn to false as a marker
+  state.isLoggedIn = false
+},
 ```
 
----
-
-## Recommended Implementation
-
-### Step 1: Fix Cleanup Function (PRIORITY 1)
-**File:** `src/features/accounts/purchase-sales/sales/all-sales.tsx`
-**Lines:** 72-77
-
-**Replace:**
+**Alternative (More Explicit):**
 ```typescript
-useEffect(() => {
-    return (() => {
-        const data = getSerializedFormData()
-        dispatch(saveSalesFormData(data));
-    })
-}, [dispatch, getValues])
+doLogout: (state: LoginType) => {
+  // Return initialState to ensure clean reset
+  return initialState;
+},
 ```
 
-**With:**
+### Step 3: Verify Redux DevTools After Logout
+**Action:** Test the logout and check Redux DevTools
+
+**Steps:**
+1. Login to application
+2. Navigate around and populate Redux state
+3. Open Redux DevTools
+4. Note the current state values
+5. Click Logout
+6. Check Redux DevTools - ALL slices should be reset to initialState
+
+### Step 4: Add Debugging to Verify Reset (Temporary)
+**File:** `src/app/store.ts`
+**Lines:** 40-45
+
+**Action:** Add console logs to verify the reset is working
+
 ```typescript
-useEffect(() => {
-    return () => {
-        // Get current form values at cleanup time
-        const currentFormData = getValues();
-
-        // Only save if form has meaningful data
-        const hasData = currentFormData.id ||
-                       currentFormData.salesLineItems?.length > 0 ||
-                       currentFormData.contactsData !== null ||
-                       currentFormData.debitAccounts?.some(acc => acc.accId);
-
-        if (hasData) {
-            const serializedData = {
-                ...currentFormData,
-                totalInvoiceAmount: String(currentFormData.totalInvoiceAmount),
-                totalQty: String(currentFormData.totalQty),
-                totalCgst: String(currentFormData.totalCgst),
-                totalSgst: String(currentFormData.totalSgst),
-                totalIgst: String(currentFormData.totalIgst),
-                totalSubTotal: String(currentFormData.totalSubTotal),
-                totalDebitAmount: String(currentFormData.totalDebitAmount),
-                // Save business context for validation
-                _savedBuCode: buCode,
-                _savedFinYearId: finYearId,
-                _savedBranchId: branchId
-            };
-            dispatch(saveSalesFormData(serializedData));
-        }
-    };
-}, [dispatch, getValues, buCode, finYearId, branchId]);
+const reducerWithReset = (state: any, action: any) => {
+  if (action.type === doLogout.type) {
+    console.log('🔴 LOGOUT: Resetting Redux state');
+    console.log('State before reset:', state);
+    state = undefined; // this resets all slices
+    console.log('State after reset:', state);
+  }
+  return rootReducer(state, action);
+};
 ```
 
-### Step 2: Add Business Context Validation (PRIORITY 1)
-**File:** `src/features/accounts/purchase-sales/sales/all-sales.tsx`
-**Lines:** 62-70
+**Remove these logs after verification**
 
-**Replace:**
+### Step 5: Add Global Context Verification Logs (Temporary)
+**File:** `src/app/global-context.tsx`
+**Lines:** 12-16
+
+**Action:** Add console logs to verify global context is being reset
+
 ```typescript
-useEffect(() => {
-    if (savedFormData) {
-        reset(_.cloneDeep(getDeserializedFormData(savedFormData)));
-        setTimeout(() => {
-            setValue('toggle', !savedFormData.toggle, { shouldDirty: true });
-        }, 0);
-    }
-}, [savedFormData, reset, setValue]);
-```
+export function resetGlobalContext(globalContext: GlobalContextType) {
+  console.log('🔵 LOGOUT: Resetting Global Context');
+  console.log('Global Context before reset:', globalContext);
 
-**With:**
-```typescript
-useEffect(() => {
-    if (savedFormData) {
-        // Validate business context matches saved data
-        const contextMatches =
-            savedFormData._savedBuCode === buCode &&
-            savedFormData._savedFinYearId === finYearId &&
-            savedFormData._savedBranchId === branchId;
+  globalContext.CompSyncFusionGrid = {};
+  globalContext.CompSyncFusionTreeGrid = {};
+  globalContext.DataInstances = {};
 
-        if (contextMatches) {
-            reset(_.cloneDeep(getDeserializedFormData(savedFormData)));
-            setTimeout(() => {
-                setValue('toggle', !savedFormData.toggle, { shouldDirty: true });
-            }, 0);
-        } else {
-            // Context changed, clear invalid saved data
-            console.warn('Business context changed, clearing stale saved data');
-            dispatch(clearSalesFormData());
-        }
-    }
-}, [savedFormData, reset, setValue, buCode, finYearId, branchId, dispatch]);
-```
-
-### Step 3: Remove clearSalesFormData from resetAll (PRIORITY 2)
-**File:** `src/features/accounts/purchase-sales/sales/all-sales.tsx`
-**Lines:** 380-386
-
-**Replace:**
-```typescript
-function resetAll() {
-    clearErrors()
-    reset(getDefaultSalesFormValues());
-    dispatch(clearSalesFormData());
-    dispatch(clearSearchQuery());
-    scrollToTop();
+  console.log('Global Context after reset:', globalContext);
 }
 ```
 
-**With:**
+**Remove these logs after verification**
+
+### Step 6: Check for Redux Persist (If Applicable)
+**File:** `src/app/store.ts`
+
+**Action:** Search for any persistence middleware
+
 ```typescript
-function resetAll() {
-    clearErrors()
-    reset(getDefaultSalesFormValues());
-    // Don't clear saved data here - let cleanup handle it
-    // dispatch(clearSalesFormData());
-    dispatch(clearSearchQuery());
-    scrollToTop();
+// Look for patterns like:
+import { persistStore, persistReducer } from 'redux-persist';
+```
+
+**If found:** Need to clear persisted storage on logout:
+```typescript
+function handleOnLogout() {
+    handleOnClickAway()
+    resetGlobalContext(context)
+    dispatch(doLogout())
+
+    // Clear persisted state if using redux-persist
+    persistor.purge();
+
+    navigate('/login')
 }
 ```
 
-### Step 4: Clear Saved Data After Successful Submit (PRIORITY 2)
-**File:** `src/features/accounts/purchase-sales/sales/all-sales.tsx`
-**Lines:** 161-163
+### Step 7: Clear Any Browser Storage on Logout
+**File:** `src/features/layouts/nav-bar/logout-menu-button.tsx`
+**Lines:** 127-132
 
-**Replace:**
+**Action:** Add browser storage cleanup (if needed)
+
+**Before:**
 ```typescript
-if (!location.state?.id) {
-    resetAll();
+function handleOnLogout() {
+    handleOnClickAway()
+    resetGlobalContext(context)
+    dispatch(doLogout())
+    navigate('/login')
 }
 ```
 
-**With:**
+**After:**
 ```typescript
-if (!location.state?.id) {
-    resetAll();
-    dispatch(clearSalesFormData());  // Clear saved data after reset
+function handleOnLogout() {
+    handleOnClickAway()
+    resetGlobalContext(context)
+
+    // Clear any browser storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    dispatch(doLogout())
+    navigate('/login')
 }
 ```
 
----
+**⚠️ Warning:** Only use `localStorage.clear()` if you're sure no other data needs to be preserved. Better approach:
 
-## Testing Checklist
+```typescript
+function handleOnLogout() {
+    handleOnClickAway()
+    resetGlobalContext(context)
 
-### Test 1: Basic Persistence
-- [ ] Fill out sales form partially
-- [ ] Navigate to a different page (e.g., Reports)
-- [ ] Navigate back to Sales
-- [ ] **Verify:** Form data is restored
+    // Clear specific items only
+    const keysToRemove = ['reduxState', 'token', 'userSession']; // adjust keys
+    keysToRemove.forEach(key => localStorage.removeItem(key));
 
-### Test 2: Empty Form Not Saved
-- [ ] Open fresh sales form (no data entered)
-- [ ] Navigate away
-- [ ] Navigate back
-- [ ] **Verify:** Form is still empty (no unnecessary save)
+    dispatch(doLogout())
+    navigate('/login')
+}
+```
 
-### Test 3: Business Context Change
-- [ ] Fill out sales form
-- [ ] Navigate away (data saved)
-- [ ] Change Business Unit or Branch
-- [ ] Navigate to Sales
-- [ ] **Verify:** Form is reset (old data not loaded because context changed)
+### Step 8: Ensure Navigation Cleanup
+**File:** `src/features/layouts/nav-bar/logout-menu-button.tsx`
+**Lines:** 127-132
 
-### Test 4: After Successful Save
-- [ ] Fill out complete sales form
-- [ ] Submit successfully
-- [ ] Navigate away
-- [ ] Navigate back to Sales
-- [ ] **Verify:** Form is empty (saved data was cleared after submit)
+**Action:** Use `navigate` with `replace` option to prevent back navigation
 
-### Test 5: Navigation from Report (Edit Mode)
-- [ ] Navigate from report to edit a sale
-- [ ] Sales form loads with data
-- [ ] Make changes
-- [ ] Navigate away WITHOUT saving
-- [ ] Navigate back to Sales
-- [ ] **Verify:** Form shows NEW sale (not the edited one, because edit mode shouldn't persist)
+**Current:**
+```typescript
+navigate('/login')
+```
 
-### Test 6: Multiple Business Contexts
-- [ ] Fill sales form in BU1
-- [ ] Navigate away (data saved for BU1)
-- [ ] Switch to BU2
-- [ ] Go to Sales
-- [ ] **Verify:** Form is empty (BU1 data not loaded)
-- [ ] Fill form in BU2
-- [ ] Navigate away
-- [ ] Switch back to BU1
-- [ ] Go to Sales
-- [ ] **Verify:** Form is empty (BU2 data not loaded, BU1 data was cleared)
+**Better:**
+```typescript
+navigate('/login', { replace: true })
+```
 
----
+This prevents users from pressing "Back" button and returning to authenticated pages.
+
+## Testing Plan
+
+### Test 1: Basic Logout Redux Reset
+1. Login to application
+2. Navigate to Sales page and fill form
+3. Navigate to Reports and generate a report
+4. Open Redux DevTools → check all slices have data
+5. Open Browser Console → check Global Context has data
+6. Click Logout
+7. **Expected:** All Redux slices reset to initialState
+8. **Expected:** Global Context is cleared
+9. **Verify in Redux DevTools:**
+   - `login.isLoggedIn = false`
+   - `sales.savedFormData = undefined` (or initial value)
+   - `layouts.businessContextToggle = false`
+   - All other slices at initial state
+10. **Verify in Console Logs:**
+   - "🔴 LOGOUT: Resetting Redux state"
+   - "🔵 LOGOUT: Resetting Global Context"
+   - Global Context shows empty objects after reset
+
+### Test 2: Cannot Access Authenticated Pages After Logout
+1. Login and navigate to dashboard
+2. Logout
+3. Try to navigate back using browser back button
+4. **Expected:** Redirected to login page
+
+### Test 3: Fresh Login After Logout
+1. Login as User A
+2. Navigate around, create some data
+3. Delete some items (to populate DataInstances)
+4. Logout
+5. Login as User B
+6. **Expected:** No data from User A visible
+7. **Expected:** Redux state is completely fresh
+8. **Expected:** Global Context is completely fresh
+9. **Expected:** Deleted IDs from User A don't appear for User B
+
+### Test 4: Multiple Logout Attempts
+1. Login
+2. Logout
+3. Try to logout again (if possible)
+4. **Expected:** No errors, clean navigation
+
+### Test 5: Logout with Pending Operations
+1. Login
+2. Trigger a slow API call (e.g., large report)
+3. Immediately logout before it completes
+4. **Expected:** No errors, state is cleared
+5. **Expected:** API response doesn't update Redux after logout
 
 ## Files to Modify
 
-- ✅ `src/features/accounts/purchase-sales/sales/all-sales.tsx` (lines 62-77, 161-163, 380-386)
+### Primary Changes (MUST DO):
+- **`src/app/global-context.tsx`** (lines 12-16) - Uncomment DataInstances cleanup ⚠️ CRITICAL
+- `src/features/login/login-slice.ts` (lines 32-47) - Simplify doLogout reducer
+- `src/features/layouts/nav-bar/logout-menu-button.tsx` (lines 127-132) - Add storage cleanup and navigation options
 
----
+### Optional/Debugging:
+- `src/app/store.ts` (lines 40-45) - Add temporary logging to verify Redux reset
+- `src/app/global-context.tsx` (lines 12-16) - Add temporary logging to verify Global Context reset
 
-## Benefits
+## Risk Assessment
 
-✅ **Reliable persistence** - Form data saved at unmount time with current values
-✅ **Context-aware** - Doesn't load data from different business context
-✅ **Efficient** - Only saves when there's meaningful data
-✅ **Clean state** - Clears data after successful save
-✅ **No race conditions** - Proper cleanup timing
+**Risk Level:** Low-Medium
+- Changes are isolated to logout flow
+- Existing reset mechanism in store.ts should work
+- Main risk: if using Redux Persist or other middleware, need to handle that
+- Worst case: User data persists between sessions (security issue)
 
----
+## Expected Behavior After Fix
+
+✅ **Complete Redux reset** - All slices return to initialState
+✅ **Complete Global Context reset** - All context data cleared including DataInstances
+✅ **Clean session** - No data leakage between users
+✅ **No residual state** - Fresh application state on next login
+✅ **Proper navigation** - Cannot go back to authenticated pages
+✅ **Storage cleanup** - Browser storage cleared (if applicable)
+✅ **No deleted ID leakage** - DataInstances cleared prevents deleted items from persisting
+
+## Alternative Solutions
+
+### Solution A: Keep Manual Clearing in doLogout
+If `reducerWithReset` isn't working for some reason, keep the manual clearing but ensure ALL slices are covered:
+
+```typescript
+// In store.ts - export action types from each slice
+// In login-slice.ts doLogout reducer
+doLogout: (state: LoginType) => {
+  // Manually clear all login state
+  return initialState;
+},
+
+// AND dispatch clear actions for other slices in logout handler
+function handleOnLogout() {
+    dispatch(clearSalesFormData());
+    dispatch(clearAccountsData());
+    dispatch(clearAllReports());
+    // ... clear all slices
+    dispatch(doLogout());
+    navigate('/login', { replace: true });
+}
+```
+
+**❌ Not recommended:** Too much maintenance overhead
+
+### Solution B: Reset Store on Navigation
+Instead of resetting on `doLogout` action, reset when navigating to login:
+
+```typescript
+// In login component
+useEffect(() => {
+    // Clear store when login page mounts
+    dispatch({ type: 'RESET_STORE' });
+}, []);
+```
+
+**❌ Not recommended:** Less secure, delays the reset
+
+## Recommended Implementation Priority
+
+1. **Priority 1 (MUST):** ⚠️ **CRITICAL** - Uncomment `DataInstances` cleanup in `global-context.tsx`
+2. **Priority 2 (MUST):** Verify `reducerWithReset` is working with Redux DevTools
+3. **Priority 3 (MUST):** Simplify `doLogout` reducer to return `initialState`
+4. **Priority 4 (SHOULD):** Add `navigate('/login', { replace: true })`
+5. **Priority 5 (OPTIONAL):** Clear browser storage if needed
+6. **Priority 6 (OPTIONAL):** Add temporary debug logs to verify both Redux and Global Context
 
 ## Notes
 
-- The cleanup function in useEffect runs when component unmounts OR when dependencies change
-- Using `getValues()` directly in cleanup ensures we get the LATEST form values
-- Adding business context to saved data prevents loading stale data
-- Not clearing in resetAll() allows natural cleanup to handle persistence
+- The existing `reducerWithReset` pattern is a standard Redux technique
+- Setting `state = undefined` causes Redux to initialize all slices with their `initialState`
+- The issue might not be with the reset logic, but with verification - use Redux DevTools
+- If state is persisting, look for Redux Persist, localStorage, or sessionStorage usage
+- Global context is already being reset via `resetGlobalContext(context)` ✓
+- **⚠️ IMPORTANT:** `DataInstances` cleanup is currently commented out - this MUST be enabled
+- `DataInstances` stores `deletedIds` which can cause data inconsistencies if not cleared
+- Global Context is passed by reference, so mutations directly affect the context
+
+## Debug Checklist
+
+If Redux store or Global Context is still not clearing:
+
+### Redux Store:
+- [ ] Check Redux DevTools after logout - is state actually populated?
+- [ ] Check if Redux Persist is being used
+- [ ] Check if localStorage/sessionStorage is being used
+- [ ] Check if any components are holding state in useState/useRef
+- [ ] Check browser Network tab - are API calls restoring state after logout?
+- [ ] Check if any useEffect dependencies are triggering data fetches after logout
+- [ ] Verify `doLogout.type` string matches in store.ts
+
+### Global Context:
+- [ ] Check if `DataInstances` cleanup is uncommented in `global-context.tsx`
+- [ ] Verify `resetGlobalContext(context)` is called before `dispatch(doLogout())`
+- [ ] Check console logs to see if reset function is executing
+- [ ] Inspect `globalContext.DataInstances` in browser console after logout
+- [ ] Verify no components are storing references to old context values

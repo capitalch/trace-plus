@@ -10,6 +10,7 @@ import { GraphQLQueriesMap, GraphQLQueriesMapNames } from '../../../../app/maps/
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants';
 import { Messages } from '../../../../utils/messages';
 import { AllTables } from '../../../../app/maps/database-tables-map';
+import { toggleBusinessContext } from '../../layouts-slice';
 
 export function FinYearsListModal() {
     const allFinYears: FinYearType[] = useSelector(allFinYearsSelectorFn) || [];
@@ -45,6 +46,7 @@ export function FinYearsListModal() {
         dispatch(setCurrentFinYear(selectedFinYear));
         if (currentFinYear.finYearId !== selectedFinYearId) {
             saveLastUsedFinYearId(selectedFinYearId);
+            dispatch(toggleBusinessContext()) // inform other modules about business context change
         }
     }
 

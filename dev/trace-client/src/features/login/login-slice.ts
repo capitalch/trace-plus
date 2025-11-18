@@ -44,6 +44,7 @@ export const loginSlice = createSlice({
       state.userBusinessUnits = undefined
       state.userDetails = undefined
       state.userSecuredControls = undefined
+      // state = undefined
     },
 
     setCurrentBranch: (
@@ -244,6 +245,7 @@ export type LoginType = {
   userBusinessUnits?: BusinessUnitType[]
   userDetails?: UserDetailsType
   userSecuredControls?: SecuredControlType[]
+  [key: string]: any
 }
 
 // selectors

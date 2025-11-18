@@ -9,7 +9,7 @@ import { WidgetTabToggleButtons } from "../../../../controls/widgets/widget-tab-
 import { DebitNotesMain } from "./debit-notes-main";
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { Utils } from "../../../../utils/utils";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { clearDebitNoteFormData, saveDebitNoteFormData } from "./debit-notes-slice";
 import { Messages } from "../../../../utils/messages";
 import { DebitCreditNoteEditDataType, ExtGstTranDType, TranDType, TranHType, XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
@@ -21,6 +21,7 @@ import Decimal from "decimal.js";
 import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
 import { useLocation } from "react-router-dom";
 import { useDebitNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
 
 
 /**
@@ -88,7 +89,9 @@ export function DebitNotes() {
     const dispatch: AppDispatchType = useDispatch()
     const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.debitNotes.savedFormData);
+    const toggleBusinessContextState = useSelector(businessContextToggleSelectorFn);
     const instance = DataInstancesMap.debitNotes;
+    const isInitialMount = useRef(true);
     const { branchId, finYearId, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
     const methods = useForm<DebitCreditNoteFormDataType>(
         {
@@ -131,8 +134,13 @@ export function DebitNotes() {
     }, [location.state?.id, location.state?.returnPath]);
 
     useEffect(() => {
+        // Skip execution on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         resetAll();
-    },[buCode, finYearId, branchId]);
+    }, [toggleBusinessContextState]);
 
     return (
         <FormProvider {...extendedMethods}>

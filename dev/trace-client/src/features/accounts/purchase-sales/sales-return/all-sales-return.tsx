@@ -14,12 +14,13 @@ import Decimal from "decimal.js";
 import { useAllSalesReturnSubmit } from "./all-sales-return-submit-hook";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { ContactDisplayDataType } from "../sales/all-sales";
 import { Messages } from "../../../../utils/messages";
 import { useLocation } from "react-router-dom";
+import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
 
 export function AllSalesReturn() {
     const instance = DataInstancesMap.allSalesReturn
@@ -27,8 +28,10 @@ export function AllSalesReturn() {
     const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.salesReturn.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.salesReturn.isViewMode);
+    const toggleBusinessContextState = useSelector(businessContextToggleSelectorFn);
+    const isInitialMount = useRef(true);
 
-    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject,branchId, finYearId } = useUtilsInfo();
+    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
 
     const methods = useForm<SalesReturnFormDataType>(
         {
@@ -91,8 +94,13 @@ export function AllSalesReturn() {
     }, [location.state?.id, location.state?.returnPath]);
 
     useEffect(() => {
+        // Skip execution on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         resetAll();
-    },[buCode, finYearId, branchId]);
+    }, [toggleBusinessContextState]);
 
     const handleBackToForm = () => {
         dispatch(setSalesReturnViewMode(false));

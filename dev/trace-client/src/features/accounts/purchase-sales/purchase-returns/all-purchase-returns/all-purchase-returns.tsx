@@ -16,11 +16,12 @@ import { Utils } from "../../../../../utils/utils";
 import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../../../controls/redux-components/comp-slice";
 import { useAllPurchasesSubmit } from "../../purchases/all-purchases/all-purchases-submit-hook";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import { useLocation } from "react-router-dom";
 import { usePurchaseReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { businessContextToggleSelectorFn } from "../../../../layouts/layouts-slice";
 
 /**
  * Child component that renders purchase return tabs and content.
@@ -89,7 +90,9 @@ export function AllPurchaseReturns() {
     const dispatch: AppDispatchType = useDispatch()
     const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.purchaseReturn.savedFormData);
+    const toggleBusinessContextState = useSelector(businessContextToggleSelectorFn);
     const instance = DataInstancesMap.allPurchaseReturns;
+    const isInitialMount = useRef(true);
     const { branchId, finYearId, hasGstin, dbName, buCode, decodedDbParamsObject } = useUtilsInfo();
     const methods = useForm<PurchaseFormDataType>(
         {
@@ -131,8 +134,13 @@ export function AllPurchaseReturns() {
     }, [location.state?.id, location.state?.returnPath]);
 
     useEffect(() => {
+        // Skip execution on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         resetAll();
-    },[buCode, finYearId, branchId]);
+    }, [toggleBusinessContextState]);
 
     return (
         <FormProvider {...extendedMethods}>

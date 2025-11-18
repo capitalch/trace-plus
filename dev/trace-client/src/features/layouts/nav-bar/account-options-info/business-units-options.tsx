@@ -41,7 +41,7 @@ export function BusinessUnitsOptions() {
                 </div>
                 {/* Text section - hide on mobile */}
                 {!isMobile && (
-                    <span className="ml-1 font-medium text-ellipsis text-xs sm:text-sm whitespace-nowrap overflow-hidden max-w-[60px] sm:max-w-[80px] md:max-w-none">
+                    <span className="ml-1 font-medium text-ellipsis text-xs sm:text-sm whitespace-nowrap overflow-hidden max-w-[60px] sm:max-w-20 md:max-w-none">
                         {currentBusinessUnitSelector?.buCode || ''}
                     </span>
                 )}

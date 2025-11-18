@@ -14,7 +14,7 @@ import Decimal from "decimal.js";
 import { useAllSalesSubmit } from "./all-sales-submit-hook";
 import { AllTables } from "../../../../app/maps/database-tables-map";
 import { XDataObjectType } from "../../../../utils/global-types-interfaces-enums";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { Messages } from "../../../../utils/messages";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
@@ -27,9 +27,10 @@ export function AllSales() {
     const location = useLocation()
     const savedFormData = useSelector((state: RootStateType) => state.sales.savedFormData);
     const isViewMode = useSelector((state: RootStateType) => state.sales.isViewMode);
-
-    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject,branchId, finYearId } = useUtilsInfo();
+    const toggleBusinessContextState = useSelector((state: RootStateType) => state.layouts.businessContextToggle);
+    const { hasGstin, defaultGstRate, dbName, buCode, decodedDbParamsObject, /*branchId, finYearId*/ } = useUtilsInfo();
     const { scrollToTop } = useScrollToTop();
+    const isInitialMount = useRef(true);
 
     const methods = useForm<SalesFormDataType>(
         {
@@ -103,8 +104,13 @@ export function AllSales() {
     }, [location.state?.id, location.state?.returnPath]);
 
     useEffect(() => {
+        // Skip execution on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         resetAll();
-    },[buCode, finYearId, branchId]);
+    }, [toggleBusinessContextState]);
 
     const handleBackToForm = () => {
         dispatch(setSalesViewMode(false));

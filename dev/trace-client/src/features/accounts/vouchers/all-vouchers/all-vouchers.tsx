@@ -21,6 +21,7 @@ import { useLocation } from "react-router-dom";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { VoucherEditDataType } from "./all-vouchers-view";
 import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
 
 /**
  * Child component that renders voucher tabs and content.
@@ -91,7 +92,9 @@ export function AllVouchers() {
     const selectedTabIndex = useSelector((state: RootStateType) =>
         state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex ?? 0
     )
+    const toggleBusinessContextState = useSelector(businessContextToggleSelectorFn);
     const instance = DataInstancesMap.allVouchers;
+    const isInitialMount = useRef(true);
     const meta = useRef<MetaType>({
         totalDebits: 0,
         totalCredits: 0
@@ -129,8 +132,13 @@ export function AllVouchers() {
     }, [selectedTabIndex]);
 
     useEffect(() => {
+        // Skip execution on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
         resetAll();
-    },[buCode, finYearId, branchId]);
+    }, [toggleBusinessContextState]);
 
     // Handle navigation from report - auto-populate form with ID from location state
     useEffect(() => {
