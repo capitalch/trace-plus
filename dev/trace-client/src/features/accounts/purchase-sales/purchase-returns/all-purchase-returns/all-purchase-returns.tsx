@@ -114,8 +114,11 @@ export function AllPurchaseReturns() {
 
     useEffect(() => {
         return (() => {
-            const data = getValues()
-            dispatch(savePurchaseReturnFormData(data));
+            const reduxState = Utils.getReduxState();
+            if (reduxState.login.isLoggedIn) {
+                const data = getValues()
+                dispatch(savePurchaseReturnFormData(data));
+            }
         })
     }, [dispatch, getValues])
 

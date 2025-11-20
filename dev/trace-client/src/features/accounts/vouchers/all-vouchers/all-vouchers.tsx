@@ -119,8 +119,11 @@ export function AllVouchers() {
 
     useEffect(() => {
         return (() => {
-            const data = getValues()
-            dispatch(saveVoucherFormData(data));
+            const reduxState = Utils.getReduxState();
+            if (reduxState.login.isLoggedIn) {
+                const data = getValues()
+                dispatch(saveVoucherFormData(data));
+            }
         })
     }, [dispatch, getValues])
 

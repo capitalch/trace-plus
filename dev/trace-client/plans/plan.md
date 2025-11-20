@@ -1,469 +1,263 @@
-# Plan: Fix Redux Store and Global Context Cleanup on Logout
+# Plan: Fix Redux State Persistence Issues on Logout
 
-## Problem
-After logout, Redux store and Global Context still contain values from the previous session. Although there's existing cleanup logic in `store.ts` and `resetGlobalContext()` is being called, the cleanup may not be complete or working correctly.
+## Problem 1: Redux State Not Resetting on Logout
 
-## Current Implementation Analysis
-
-### What's Already in Place (store.ts:40-45):
-```typescript
+### Root Cause
+In `src/app/store.ts:40-44`, the `reducerWithReset` function attempts to reset state by assigning `state = undefined`:
+```javascript
 const reducerWithReset = (state: any, action: any) => {
   if (action.type === doLogout.type) {
-    state = undefined; // this resets all slices
+    state = undefined; // ❌ This doesn't work!
   }
   return rootReducer(state, action);
 };
 ```
 
-**This SHOULD reset the entire Redux store when `doLogout` action is dispatched.**
+**Why this fails**: Reassigning the `state` parameter only changes the local variable reference, not the actual Redux state.
 
-### Logout Flow (logout-menu-button.tsx:127-132):
-```typescript
-function handleOnLogout() {
-    handleOnClickAway() // Otherwise the menu remains open
-    resetGlobalContext(context)
-    dispatch(doLogout())
-    navigate('/login')
-}
-```
+---
 
-**Current sequence:**
-1. Close dropdown menu
-2. Reset global context (React Context API) ✅ Already implemented
-3. Dispatch `doLogout()` action
-4. Navigate to login page
+## Problem 2: Form Data Persists After Logout (Race Condition)
 
-### Global Context Reset (global-context.tsx:12-16):
-```typescript
-export function resetGlobalContext(globalContext: GlobalContextType) {
-  globalContext.CompSyncFusionGrid = {};
-  globalContext.CompSyncFusionTreeGrid = {};
-  // globalContext.DataInstances = {};
-}
-```
+### Root Cause
+Even after fixing Problem 1, there's a **timing issue** where form data is saved AFTER the logout action:
 
-**Issue:** `DataInstances` is commented out and NOT being cleared! This could leave residual data.
+**Order of operations when user logs out**:
+1. User clicks logout button (`logout-menu-button.tsx:127-132`)
+2. `dispatch(doLogout())` is called → Redux state is reset
+3. `navigate('/login')` is called → React Router changes route
+4. Current route components unmount (e.g., AllSales, AllPurchases, etc.)
+5. **Component cleanup functions run** (`all-sales.tsx:73-78`)
+6. `dispatch(saveSalesFormData(data))` executes → **Form data is saved BACK to Redux!**
+7. Result: savedFormData has values again despite logout
 
-### doLogout Action (login-slice.ts:32-47):
-```typescript
-doLogout: (state: LoginType) => {
-  state.accSettings = undefined
-  state.allBranches = undefined
-  state.allBusinessUnits = undefined
-  state.allFinYears = undefined
-  state.allSecuredControls = undefined
-  state.currentBranch = undefined
-  state.currentBusinessUnit = undefined
-  state.currentFinYear = undefined
-  state.isLoggedIn = false
-  state.role = undefined
-  state.token = undefined
-  state.userBusinessUnits = undefined
-  state.userDetails = undefined
-  state.userSecuredControls = undefined
-},
-```
-
-**This manually clears only the `login` slice, but the `reducerWithReset` in store.ts should clear ALL slices.**
-
-## Root Cause Analysis
-
-The issue is that **both mechanisms are conflicting**:
-
-1. **login-slice.ts** manually clears only login state fields
-2. **store.ts** tries to reset the entire state to `undefined`
-
-**Problem:** When `doLogout` action runs:
-- First, it goes through `reducerWithReset` which sets `state = undefined`
-- Then, it passes to `rootReducer` with `undefined` state
-- `rootReducer` initializes ALL slices to their `initialState`
-- BUT, the `doLogout` reducer in login-slice also runs
-- This might interfere with the full reset
-
-## Potential Issues
-
-### Issue 1: Reducer Execution Order
-The `doLogout` reducer in login-slice might be executing, but since state is already `undefined`, it might not properly clear values.
-
-### Issue 2: Persisted State
-If using Redux Persist or similar, state might be persisted and restored after logout.
-
-### Issue 3: Async Operations
-If there are pending async operations (thunks, API calls), they might restore data after logout.
-
-### Issue 4: React Component State
-Some values might be in React component state (useState, useRef) rather than Redux.
-
-### Issue 5: Global Context Not Fully Cleared
-The `resetGlobalContext()` function has `DataInstances` cleanup commented out. This means deleted IDs and other data in `DataInstances` will persist across logout/login sessions.
-
-## Solution
-
-### Recommended Fix: Complete Cleanup of Both Redux and Global Context
-
-1. Remove redundant manual clearing from `login-slice.ts` and rely solely on the `reducerWithReset` in `store.ts`
-2. Enable complete Global Context reset by uncommenting `DataInstances` cleanup
-
-## Implementation Steps
-
-### Step 1: Fix Global Context Reset - Enable DataInstances Cleanup
-**File:** `src/app/global-context.tsx`
-**Lines:** 12-16
-
-**Action:** Uncomment the `DataInstances` reset to ensure complete cleanup
-
-**Before:**
-```typescript
-export function resetGlobalContext(globalContext: GlobalContextType) {
-  globalContext.CompSyncFusionGrid = {};
-  globalContext.CompSyncFusionTreeGrid = {};
-  // globalContext.DataInstances = {};
-}
-```
-
-**After:**
-```typescript
-export function resetGlobalContext(globalContext: GlobalContextType) {
-  globalContext.CompSyncFusionGrid = {};
-  globalContext.CompSyncFusionTreeGrid = {};
-  globalContext.DataInstances = {}; // ✅ Uncommented - clear deleted IDs and data
-}
-```
-
-**Why this matters:**
-- `DataInstances` stores deleted IDs and other transient data
-- Without clearing, deleted items from previous session persist
-- Could cause data inconsistencies between different user sessions
-- Essential for clean logout
-
-### Step 2: Remove Manual Clearing from doLogout (Optional but Cleaner)
-**File:** `src/features/login/login-slice.ts`
-**Lines:** 32-47
-
-**Action:** Simplify the `doLogout` reducer since `reducerWithReset` handles full reset
-
-**Before:**
-```typescript
-doLogout: (state: LoginType) => {
-  state.accSettings = undefined
-  state.allBranches = undefined
-  // ... many lines of manual clearing
-},
-```
-
-**After:**
-```typescript
-doLogout: (state: LoginType) => {
-  // No need to manually clear - reducerWithReset handles this
-  // Just set isLoggedIn to false as a marker
-  state.isLoggedIn = false
-},
-```
-
-**Alternative (More Explicit):**
-```typescript
-doLogout: (state: LoginType) => {
-  // Return initialState to ensure clean reset
-  return initialState;
-},
-```
-
-### Step 3: Verify Redux DevTools After Logout
-**Action:** Test the logout and check Redux DevTools
-
-**Steps:**
-1. Login to application
-2. Navigate around and populate Redux state
-3. Open Redux DevTools
-4. Note the current state values
-5. Click Logout
-6. Check Redux DevTools - ALL slices should be reset to initialState
-
-### Step 4: Add Debugging to Verify Reset (Temporary)
-**File:** `src/app/store.ts`
-**Lines:** 40-45
-
-**Action:** Add console logs to verify the reset is working
-
-```typescript
-const reducerWithReset = (state: any, action: any) => {
-  if (action.type === doLogout.type) {
-    console.log('🔴 LOGOUT: Resetting Redux state');
-    console.log('State before reset:', state);
-    state = undefined; // this resets all slices
-    console.log('State after reset:', state);
-  }
-  return rootReducer(state, action);
-};
-```
-
-**Remove these logs after verification**
-
-### Step 5: Add Global Context Verification Logs (Temporary)
-**File:** `src/app/global-context.tsx`
-**Lines:** 12-16
-
-**Action:** Add console logs to verify global context is being reset
-
-```typescript
-export function resetGlobalContext(globalContext: GlobalContextType) {
-  console.log('🔵 LOGOUT: Resetting Global Context');
-  console.log('Global Context before reset:', globalContext);
-
-  globalContext.CompSyncFusionGrid = {};
-  globalContext.CompSyncFusionTreeGrid = {};
-  globalContext.DataInstances = {};
-
-  console.log('Global Context after reset:', globalContext);
-}
-```
-
-**Remove these logs after verification**
-
-### Step 6: Check for Redux Persist (If Applicable)
-**File:** `src/app/store.ts`
-
-**Action:** Search for any persistence middleware
-
-```typescript
-// Look for patterns like:
-import { persistStore, persistReducer } from 'redux-persist';
-```
-
-**If found:** Need to clear persisted storage on logout:
-```typescript
-function handleOnLogout() {
-    handleOnClickAway()
-    resetGlobalContext(context)
-    dispatch(doLogout())
-
-    // Clear persisted state if using redux-persist
-    persistor.purge();
-
-    navigate('/login')
-}
-```
-
-### Step 7: Clear Any Browser Storage on Logout
-**File:** `src/features/layouts/nav-bar/logout-menu-button.tsx`
-**Lines:** 127-132
-
-**Action:** Add browser storage cleanup (if needed)
-
-**Before:**
-```typescript
-function handleOnLogout() {
-    handleOnClickAway()
-    resetGlobalContext(context)
-    dispatch(doLogout())
-    navigate('/login')
-}
-```
-
-**After:**
-```typescript
-function handleOnLogout() {
-    handleOnClickAway()
-    resetGlobalContext(context)
-
-    // Clear any browser storage
-    localStorage.clear();
-    sessionStorage.clear();
-
-    dispatch(doLogout())
-    navigate('/login')
-}
-```
-
-**⚠️ Warning:** Only use `localStorage.clear()` if you're sure no other data needs to be preserved. Better approach:
-
-```typescript
-function handleOnLogout() {
-    handleOnClickAway()
-    resetGlobalContext(context)
-
-    // Clear specific items only
-    const keysToRemove = ['reduxState', 'token', 'userSession']; // adjust keys
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-
-    dispatch(doLogout())
-    navigate('/login')
-}
-```
-
-### Step 8: Ensure Navigation Cleanup
-**File:** `src/features/layouts/nav-bar/logout-menu-button.tsx`
-**Lines:** 127-132
-
-**Action:** Use `navigate` with `replace` option to prevent back navigation
-
-**Current:**
-```typescript
-navigate('/login')
-```
-
-**Better:**
-```typescript
-navigate('/login', { replace: true })
-```
-
-This prevents users from pressing "Back" button and returning to authenticated pages.
-
-## Testing Plan
-
-### Test 1: Basic Logout Redux Reset
-1. Login to application
-2. Navigate to Sales page and fill form
-3. Navigate to Reports and generate a report
-4. Open Redux DevTools → check all slices have data
-5. Open Browser Console → check Global Context has data
-6. Click Logout
-7. **Expected:** All Redux slices reset to initialState
-8. **Expected:** Global Context is cleared
-9. **Verify in Redux DevTools:**
-   - `login.isLoggedIn = false`
-   - `sales.savedFormData = undefined` (or initial value)
-   - `layouts.businessContextToggle = false`
-   - All other slices at initial state
-10. **Verify in Console Logs:**
-   - "🔴 LOGOUT: Resetting Redux state"
-   - "🔵 LOGOUT: Resetting Global Context"
-   - Global Context shows empty objects after reset
-
-### Test 2: Cannot Access Authenticated Pages After Logout
-1. Login and navigate to dashboard
-2. Logout
-3. Try to navigate back using browser back button
-4. **Expected:** Redirected to login page
-
-### Test 3: Fresh Login After Logout
-1. Login as User A
-2. Navigate around, create some data
-3. Delete some items (to populate DataInstances)
-4. Logout
-5. Login as User B
-6. **Expected:** No data from User A visible
-7. **Expected:** Redux state is completely fresh
-8. **Expected:** Global Context is completely fresh
-9. **Expected:** Deleted IDs from User A don't appear for User B
-
-### Test 4: Multiple Logout Attempts
-1. Login
-2. Logout
-3. Try to logout again (if possible)
-4. **Expected:** No errors, clean navigation
-
-### Test 5: Logout with Pending Operations
-1. Login
-2. Trigger a slow API call (e.g., large report)
-3. Immediately logout before it completes
-4. **Expected:** No errors, state is cleared
-5. **Expected:** API response doesn't update Redux after logout
-
-## Files to Modify
-
-### Primary Changes (MUST DO):
-- **`src/app/global-context.tsx`** (lines 12-16) - Uncomment DataInstances cleanup ⚠️ CRITICAL
-- `src/features/login/login-slice.ts` (lines 32-47) - Simplify doLogout reducer
-- `src/features/layouts/nav-bar/logout-menu-button.tsx` (lines 127-132) - Add storage cleanup and navigation options
-
-### Optional/Debugging:
-- `src/app/store.ts` (lines 40-45) - Add temporary logging to verify Redux reset
-- `src/app/global-context.tsx` (lines 12-16) - Add temporary logging to verify Global Context reset
-
-## Risk Assessment
-
-**Risk Level:** Low-Medium
-- Changes are isolated to logout flow
-- Existing reset mechanism in store.ts should work
-- Main risk: if using Redux Persist or other middleware, need to handle that
-- Worst case: User data persists between sessions (security issue)
-
-## Expected Behavior After Fix
-
-✅ **Complete Redux reset** - All slices return to initialState
-✅ **Complete Global Context reset** - All context data cleared including DataInstances
-✅ **Clean session** - No data leakage between users
-✅ **No residual state** - Fresh application state on next login
-✅ **Proper navigation** - Cannot go back to authenticated pages
-✅ **Storage cleanup** - Browser storage cleared (if applicable)
-✅ **No deleted ID leakage** - DataInstances cleared prevents deleted items from persisting
-
-## Alternative Solutions
-
-### Solution A: Keep Manual Clearing in doLogout
-If `reducerWithReset` isn't working for some reason, keep the manual clearing but ensure ALL slices are covered:
-
-```typescript
-// In store.ts - export action types from each slice
-// In login-slice.ts doLogout reducer
-doLogout: (state: LoginType) => {
-  // Manually clear all login state
-  return initialState;
-},
-
-// AND dispatch clear actions for other slices in logout handler
-function handleOnLogout() {
-    dispatch(clearSalesFormData());
-    dispatch(clearAccountsData());
-    dispatch(clearAllReports());
-    // ... clear all slices
-    dispatch(doLogout());
-    navigate('/login', { replace: true });
-}
-```
-
-**❌ Not recommended:** Too much maintenance overhead
-
-### Solution B: Reset Store on Navigation
-Instead of resetting on `doLogout` action, reset when navigating to login:
-
-```typescript
-// In login component
+### Example from all-sales.tsx (lines 73-78):
+```javascript
 useEffect(() => {
-    // Clear store when login page mounts
-    dispatch({ type: 'RESET_STORE' });
-}, []);
+    return (() => {
+        const data = getSerializedFormData()
+        dispatch(saveSalesFormData(data));  // ⚠️ Runs on unmount, AFTER logout
+    })
+}, [dispatch, getValues])
 ```
 
-**❌ Not recommended:** Less secure, delays the reset
+### Affected Slices
+All slices with `savedFormData` property:
+1. `sales` (sales-slice.ts)
+2. `purchase` (purchase-slice.ts)
+3. `purchaseReturn` (purchase-return-slice.ts)
+4. `salesReturn` (sales-return-slice.ts)
+5. `debitNotes` (debit-notes-slice.ts)
+6. `creditNotes` (credit-notes-slice.ts)
+7. `vouchers` (voucher-slice.ts)
 
-## Recommended Implementation Priority
+---
 
-1. **Priority 1 (MUST):** ⚠️ **CRITICAL** - Uncomment `DataInstances` cleanup in `global-context.tsx`
-2. **Priority 2 (MUST):** Verify `reducerWithReset` is working with Redux DevTools
-3. **Priority 3 (MUST):** Simplify `doLogout` reducer to return `initialState`
-4. **Priority 4 (SHOULD):** Add `navigate('/login', { replace: true })`
-5. **Priority 5 (OPTIONAL):** Clear browser storage if needed
-6. **Priority 6 (OPTIONAL):** Add temporary debug logs to verify both Redux and Global Context
+## Solution Strategy
 
-## Notes
+### Fix 1: Correct the `reducerWithReset` Function ✅
+**File**: `src/app/store.ts` (line 40-45)
 
-- The existing `reducerWithReset` pattern is a standard Redux technique
-- Setting `state = undefined` causes Redux to initialize all slices with their `initialState`
-- The issue might not be with the reset logic, but with verification - use Redux DevTools
-- If state is persisting, look for Redux Persist, localStorage, or sessionStorage usage
-- Global context is already being reset via `resetGlobalContext(context)` ✓
-- **⚠️ IMPORTANT:** `DataInstances` cleanup is currently commented out - this MUST be enabled
-- `DataInstances` stores `deletedIds` which can cause data inconsistencies if not cleared
-- Global Context is passed by reference, so mutations directly affect the context
+**Change from**:
+```javascript
+const reducerWithReset = (state: any, action: any) => {
+  if (action.type === doLogout.type) {
+    state = undefined; // ❌ Doesn't work
+  }
+  return rootReducer(state, action);
+};
+```
 
-## Debug Checklist
+**Change to**:
+```javascript
+const reducerWithReset = (state: any, action: any) => {
+  if (action.type === doLogout.type) {
+    return rootReducer(undefined, action); // ✅ Correct - passes undefined to all reducers
+  }
+  return rootReducer(state, action);
+};
+```
 
-If Redux store or Global Context is still not clearing:
+**Why this works**: Passes `undefined` to `rootReducer`, which distributes it to all slice reducers. Each reducer sees `undefined` state and returns its `initialState`.
 
-### Redux Store:
-- [ ] Check Redux DevTools after logout - is state actually populated?
-- [ ] Check if Redux Persist is being used
-- [ ] Check if localStorage/sessionStorage is being used
-- [ ] Check if any components are holding state in useState/useRef
-- [ ] Check browser Network tab - are API calls restoring state after logout?
-- [ ] Check if any useEffect dependencies are triggering data fetches after logout
-- [ ] Verify `doLogout.type` string matches in store.ts
+---
 
-### Global Context:
-- [ ] Check if `DataInstances` cleanup is uncommented in `global-context.tsx`
-- [ ] Verify `resetGlobalContext(context)` is called before `dispatch(doLogout())`
-- [ ] Check console logs to see if reset function is executing
-- [ ] Inspect `globalContext.DataInstances` in browser console after logout
-- [ ] Verify no components are storing references to old context values
+### Fix 2: Prevent Form Data from Being Saved After Logout ✅
+
+We have **3 options** to prevent the race condition:
+
+#### **Option A: Add extraReducers to Each Slice (Recommended)**
+Add `extraReducers` to each slice that listens for `doLogout` action and resets `savedFormData`:
+
+**Example for sales-slice.ts**:
+```javascript
+import { doLogout } from "../../login/login-slice";
+
+const salesSlice = createSlice({
+    name: 'sales',
+    initialState: initialState,
+    reducers: {
+        // ... existing reducers
+    },
+    extraReducers: (builder) => {
+        builder.addCase(doLogout, (state) => {
+            return initialState; // Reset entire state to initial values
+        });
+    }
+})
+```
+
+**Pros**:
+- Centralized in the slice definition
+- Works regardless of component unmount timing
+- Explicitly handles logout at the reducer level
+
+**Cons**:
+- Requires changes to 7 different slice files
+
+---
+
+#### **Option B: Check isLoggedIn Before Saving in Cleanup**
+Modify cleanup functions to check if user is still logged in before saving:
+
+**Example for all-sales.tsx** (lines 73-78):
+```javascript
+useEffect(() => {
+    return (() => {
+        const reduxState = Utils.getReduxState();
+        if (reduxState.login.isLoggedIn) {  // ✅ Only save if still logged in
+            const data = getSerializedFormData();
+            dispatch(saveSalesFormData(data));
+        }
+    })
+}, [dispatch, getValues])
+```
+
+**Pros**:
+- Simple logic
+- Fixes the root cause (don't save when logging out)
+
+**Cons**:
+- Requires changes to multiple component files (7+ files)
+- Relies on checking Redux state in cleanup function
+- State might already be reset by the time cleanup runs
+
+---
+
+#### **Option C: Combined Approach (Most Robust)**
+Implement both Fix 1 and Option A:
+1. Fix `reducerWithReset` to properly reset state
+2. Add `extraReducers` to all slices to explicitly handle `doLogout`
+
+**Pros**:
+- Double protection against state persistence
+- Most reliable solution
+- State reset happens at reducer level, immune to timing issues
+
+**Cons**:
+- More code changes
+
+---
+
+## Recommended Implementation Plan
+
+### Step 1: Fix `reducerWithReset` (Critical)
+**File**: `src/app/store.ts:40-45`
+
+```javascript
+const reducerWithReset = (state: any, action: any) => {
+  if (action.type === doLogout.type) {
+    return rootReducer(undefined, action);
+  }
+  return rootReducer(state, action);
+};
+```
+
+### Step 2: Add `extraReducers` to All Slices (Recommended)
+Add to these 7 files:
+
+1. **sales-slice.ts**
+2. **purchase-slice.ts**
+3. **purchase-return-slice.ts**
+4. **sales-return-slice.ts**
+5. **debit-notes-slice.ts**
+6. **credit-notes-slice.ts**
+7. **voucher-slice.ts**
+
+**Pattern to add**:
+```javascript
+import { doLogout } from "../../login/login-slice"; // Add import
+
+const XxxSlice = createSlice({
+    name: 'xxx',
+    initialState: initialState,
+    reducers: {
+        // existing reducers...
+    },
+    extraReducers: (builder) => {
+        builder.addCase(doLogout, () => {
+            return initialState; // Reset to initial state on logout
+        });
+    }
+})
+```
+
+### Step 3: Test the Fix
+1. Log in to the application
+2. Navigate to Sales/Purchase/Voucher forms
+3. Fill in some form data
+4. Click logout button
+5. **Verify**: Redux state is completely reset (use Redux DevTools)
+6. **Verify**: `savedFormData` is `null` for all slices
+7. **Verify**: User is redirected to `/login`
+8. Log in again
+9. **Verify**: Forms start with default/empty values
+
+---
+
+## Alternative: Simpler Approach (If Time Constrained)
+
+If implementing extraReducers in 7 files is too time-consuming, we can use **Option B** as a quick fix:
+
+### Modify Cleanup Functions to Check Login State
+
+**Pattern for all form components**:
+```javascript
+useEffect(() => {
+    return (() => {
+        const reduxState = Utils.getReduxState();
+        if (reduxState.login.isLoggedIn) {
+            const data = getSerializedFormData();
+            dispatch(saveXxxFormData(data));
+        }
+    })
+}, [dispatch, getValues])
+```
+
+**Files to modify** (7+ files):
+- `src/features/accounts/purchase-sales/sales/all-sales.tsx`
+- `src/features/accounts/purchase-sales/purchases/*.tsx`
+- `src/features/accounts/purchase-sales/purchase-returns/*.tsx`
+- `src/features/accounts/purchase-sales/sales-return/*.tsx`
+- `src/features/accounts/purchase-sales/debit-notes/*.tsx`
+- `src/features/accounts/purchase-sales/credit-notes/*.tsx`
+- `src/features/accounts/vouchers/*.tsx`
+
+---
+
+## Summary
+
+### Required Changes:
+1. **Fix `reducerWithReset`** in `store.ts` (1 file) - **CRITICAL**
+
+### Recommended Additional Changes:
+2. **Add `extraReducers`** to all 7 slice files - **RECOMMENDED**
+
+### Optional Cleanup:
+3. Remove commented line `// state = undefined` from `login-slice.ts:47`
+4. Remove manual property resets in `doLogout` reducer (lines 33-46) since state reset now happens at store level
+
+### Expected Result:
+- All Redux state (including `savedFormData`) properly resets to `undefined`/`initialState` on logout
+- No form data persists after logout
+- Clean slate when user logs in again

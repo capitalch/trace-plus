@@ -113,8 +113,11 @@ export function AllPurchases() {
 
     useEffect(() => {
         return (() => {
-            const data = getValues()
-            dispatch(savePurchaseFormData(data));
+            const reduxState = Utils.getReduxState();
+            if (reduxState.login.isLoggedIn) {
+                const data = getValues()
+                dispatch(savePurchaseFormData(data));
+            }
         })
     }, [dispatch, getValues])
 

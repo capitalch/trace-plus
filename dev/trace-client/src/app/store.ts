@@ -39,7 +39,7 @@ const rootReducer = combineReducers({
 
 const reducerWithReset = (state: any, action: any) => {
   if (action.type === doLogout.type) {
-    state = undefined; // this resets all slices
+    return rootReducer(undefined, action); // this resets all slices
   }
   return rootReducer(state, action);
 };

@@ -114,8 +114,11 @@ export function DebitNotes() {
 
     useEffect(() => {
         return (() => {
-            const data = getValues()
-            dispatch(saveDebitNoteFormData(data));
+            const reduxState = Utils.getReduxState();
+            if (reduxState.login.isLoggedIn) {
+                const data = getValues()
+                dispatch(saveDebitNoteFormData(data));
+            }
         })
     }, [dispatch, getValues])
 

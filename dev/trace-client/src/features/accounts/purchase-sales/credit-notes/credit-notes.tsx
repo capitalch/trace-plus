@@ -114,8 +114,11 @@ export function CreditNotes() {
 
     useEffect(() => {
         return (() => {
-            const data = getValues()
-            dispatch(saveCreditNoteFormData(data));
+            const reduxState = Utils.getReduxState();
+            if (reduxState.login.isLoggedIn) {
+                const data = getValues()
+                dispatch(saveCreditNoteFormData(data));
+            }
         })
     }, [dispatch, getValues])
 

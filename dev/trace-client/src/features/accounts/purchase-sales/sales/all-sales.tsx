@@ -72,8 +72,11 @@ export function AllSales() {
 
     useEffect(() => {
         return (() => {
-            const data = getSerializedFormData()
-            dispatch(saveSalesFormData(data));
+            const reduxState = Utils.getReduxState();
+            if (reduxState.login.isLoggedIn) {
+                const data = getSerializedFormData()
+                dispatch(saveSalesFormData(data));
+            }
         })
     }, [dispatch, getValues])
 

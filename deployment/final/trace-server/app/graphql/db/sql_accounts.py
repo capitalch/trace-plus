@@ -108,6 +108,16 @@ class SqlAccounts:
                 WHERE ("upcCode" = (table "upcCode")))
     """
 
+    does_other_upc_code_exist = """
+        with "upcCode" as (values (%(upcCode)s::text)), id as (values (%(id)s::int))
+        --with "upcCode" AS (VALUES (1::text)), "id" as (values (9::int))
+    SELECT EXISTS (
+                SELECT 1
+                    FROM "ProductM"
+                WHERE ("upcCode" = (table "upcCode"))
+					and (id <> (table "id")))
+    """
+
     execute_stock_transfer = """
     --with "branchId" as (values (1)), "finYearId" as (values (2022)), "closingDate" as (values ('2023-03-31')),
         with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "closingDate" as (values (%(closingDate)s)),
@@ -1806,6 +1816,12 @@ class SqlAccounts:
                 where "accId" = %(accId)s
     """
 
+    get_extBusinessContactsAccM_on_accId = """
+        select * 
+	    from "ExtBusinessContactsAccM"
+		    where "accId" = %(accId)s
+    """
+
     get_fin_years = """
         select "id", "startDate", "endDate"
                 from "FinYearM" order by "id" DESC
@@ -3151,7 +3167,8 @@ class SqlAccounts:
                     SUM(CASE WHEN "tranTypeId" = 12 AND "dc" = 'D' THEN "qty" ELSE 0 END) AS "branchTransferDebits",
                     SUM(CASE WHEN "tranTypeId" = 12 AND "dc" = 'C' THEN "qty" ELSE 0 END) AS "branchTransferCredits",
                     MAX(CASE WHEN "tranTypeId" = 4 THEN "tranDate" END) AS "lastSaleDate",
-                    SUM( "grossProfit") AS "grossProfit"
+                    SUM( "grossProfit") AS "grossProfit",
+                    MAX("lastTranPurchasePrice") AS "lastTranPurchasePrice"
                 FROM cte000
                 GROUP BY "productId", "tranTypeId"
             ),
@@ -3181,7 +3198,8 @@ class SqlAccounts:
                     COALESCE(SUM("branchTransferCredits"), 0) AS "branchTransferCredits",
                     COALESCE(SUM("grossProfit"), 0) AS "grossProfit",
                     MAX("lastSaleDate") AS "lastSaleDate",
-                    MAX("lastPurchaseDate") AS "lastPurchaseDate"
+                    MAX("lastPurchaseDate") AS "lastPurchaseDate",
+                    MAX("lastTranPurchasePrice") AS "lastTranPurchasePrice"
                 FROM cte2
                 GROUP BY "productId"
             ),
@@ -3201,6 +3219,7 @@ class SqlAccounts:
                     COALESCE("branchTransferCredits", 0) AS "branchTransferCredits",
                     COALESCE(c3."lastPurchaseDate", c1."lastPurchaseDate") AS "lastPurchaseDate",
                     COALESCE("grossProfit", 0) AS "grossProfit",
+                    "lastTranPurchasePrice",
                     "openingPrice", "lastSaleDate"
                 FROM cte1 c1
                 FULL JOIN cte3 c3 ON c1."productId" = c3."productId"
@@ -3225,7 +3244,12 @@ class SqlAccounts:
                     "sale", "purchase", "saleRet", "purchaseRet",
                     "stockJournalDebits", "stockJournalCredits",
                     "branchTransferDebits", "branchTransferCredits",
-                    COALESCE("lastPurchasePrice", "openingPrice", "purPrice") AS "lastPurchasePrice",
+                    CASE
+                        WHEN COALESCE("lastPurchasePrice", 0) > 0 THEN "lastPurchasePrice"
+                        WHEN COALESCE("openingPrice", 0) > 0 THEN "openingPrice"
+                        WHEN COALESCE("lastTranPurchasePrice", 0) > 0 THEN "lastTranPurchasePrice"                        
+                        ELSE "purPrice"
+                    END AS "lastPurchasePrice",
                     "lastPurchaseDate", "lastSaleDate",
                     COALESCE(
                         "op" + "purchase" - "purchaseRet" - "sale" + "saleRet" + 
