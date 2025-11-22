@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash'
 import { Eye, Send, RefreshCw, RotateCcw } from 'lucide-react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -14,6 +14,7 @@ import { generateSalesInvoicePDF } from '../all-sales-invoice-jspdf';
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
 import { useSalesPermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { PDFViewerModal } from "../pdf-viewer-modal";
 
 const StatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
@@ -21,6 +22,9 @@ const StatusBar: React.FC = () => {
     const { control, getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
     const { getDebitCreditDifference, populateFormOverId, resetAll }: any = useFormContext<SalesFormDataType>();
     const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo();
+
+    const [pdfModalOpen, setPdfModalOpen] = useState(false);
+    const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
 
     // ✅ Get sales permissions
     const { canCreate, canEdit, canView, canPreview } = useSalesPermissions()
@@ -91,8 +95,18 @@ const StatusBar: React.FC = () => {
         }
 
         if (_.isEmpty(salesEditData)) return;
-        generateSalesInvoicePDF(salesEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat);
+        const blobUrl = generateSalesInvoicePDF(salesEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat);
+        setPdfBlobUrl(blobUrl);
+        setPdfModalOpen(true);
     };
+
+    useEffect(() => {
+        return () => {
+            if (pdfBlobUrl) {
+                URL.revokeObjectURL(pdfBlobUrl);
+            }
+        };
+    }, [pdfBlobUrl]);
 
     return (
         <div className="relative mr- px-4 py-3 text-gray-800 bg-gray-100 border rounded-lg">
@@ -164,6 +178,13 @@ const StatusBar: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            <PDFViewerModal
+                isOpen={pdfModalOpen}
+                onClose={() => setPdfModalOpen(false)}
+                pdfBlobUrl={pdfBlobUrl}
+                title="Sales Invoice"
+            />
         </div>
     );
 };

@@ -14,7 +14,7 @@ export function generateSalesInvoicePDF(
   branchAddress: BranchAddressType | undefined,
   branchGstin: string | undefined,
   currentDateFormat: string
-) {
+): string {
   // const doc = new jsPDF({ unit: 'pt', format: [595, 420], orientation: 'landscape' }); // Always takes higher number as height
   const doc = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' }); // Half A4 width
   const marginLeft = 25;
@@ -549,5 +549,5 @@ export function generateSalesInvoicePDF(
 
   const blob = doc.output('blob');
   const blobURL = URL.createObjectURL(blob);
-  window.open(blobURL);
+  return blobURL;
 }

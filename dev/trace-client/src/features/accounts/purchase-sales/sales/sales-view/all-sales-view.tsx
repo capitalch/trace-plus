@@ -16,6 +16,7 @@ import { ArrowLeft } from "lucide-react";
 import { generateSalesInvoicePDF } from "../all-sales-invoice-jspdf";
 import { useFormContext } from "react-hook-form";
 import { useSalesPermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { PDFViewerModal } from "../pdf-viewer-modal";
 
 interface AllSalesViewProps {
   className?: string;
@@ -29,6 +30,8 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
   const { canEdit, canDelete, canPreview, canExport } = useSalesPermissions()
 
   const [rowsData, setRowsData] = useState<any[]>([]);
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
+  const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const {
     currentDateFormat,
     buCode,
@@ -83,6 +86,14 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     loadData();
   }, [loadData, finYearId, buCode, branchId]);
 
+  useEffect(() => {
+    return () => {
+      if (pdfBlobUrl) {
+        URL.revokeObjectURL(pdfBlobUrl);
+      }
+    };
+  }, [pdfBlobUrl]);
+
   return (
     <div className={clsx("flex flex-col w-full", className)}>
       <CompSyncFusionGridToolbar
@@ -130,6 +141,13 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         previewColumnWidth={40}
         rowHeight={35}
         searchFields={['autoRefNo', 'userRefNo', 'productDetails', 'contactDetails', 'accounts', 'amount', 'serialNumbers', 'productCodes', 'hsns', 'remarks', 'lineRemarks']}
+      />
+
+      <PDFViewerModal
+        isOpen={pdfModalOpen}
+        onClose={() => setPdfModalOpen(false)}
+        pdfBlobUrl={pdfBlobUrl}
+        title="Sales Invoice"
       />
     </div>
   );
@@ -373,7 +391,9 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
         Utils.showErrorMessage(Messages.errNoDataFound)
         return
       }
-      generateSalesInvoicePDF(salesEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat)
+      const blobUrl = generateSalesInvoicePDF(salesEditData, branchId, branchName || '', branchAddress, branchGstin, currentDateFormat)
+      setPdfBlobUrl(blobUrl)
+      setPdfModalOpen(true)
     } catch (error) {
       console.error('Error generating PDF:', error)
       Utils.showErrorMessage(Messages.errGeneratingPdf)
