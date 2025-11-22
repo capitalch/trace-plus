@@ -20,38 +20,8 @@ export function generateSalesInvoicePDF(
   const marginLeft = 25;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const { tranH, billTo, salePurchaseDetails, tranD, extGstTranD, shippingInfo, businessContacts } = invoiceData;
+  const { tranH, billTo, salePurchaseDetails, tranD, extGstTranD, shippingInfo } = invoiceData;
   const companyInfo: UnitInfoType = Utils.getUnitInfo() || {};
-
-  // Helper function to transform businessContacts to ContactsType structure for institution sales
-  // Institution sales have billTo as null, but businessContacts contains full customer information
-  function transformBusinessContactsToContactType(data: any): any {
-    if (!data || !data.contactName) {
-      return null;
-    }
-
-    const address: any = data.jAddress?.[0] || {};
-
-    return {
-      contactName: data.contactName,
-      mobileNumber: data.mobileNumber,
-      otherMobileNumber: data.otherMobileNumber,
-      landPhone: data.landPhone,
-      email: data.email || '',
-      address1: address.address1 || '',
-      address2: address.address2 || null,
-      country: address.country || '',
-      state: address.state || null,
-      city: address.city || null,
-      gstin: data.gstin || '',
-      pin: address.pin || '',
-      stateCode: data.stateCode,
-    };
-  }
-
-  // Determine effective billTo for PDF display
-  // For institution sales, billTo will be null, so use businessContacts
-  const effectiveBillTo = billTo || transformBusinessContactsToContactType(businessContacts);
 
   // Determine if this is head office (branchId === 1)
   const isHeadOffice = branchId === 1;
@@ -269,24 +239,24 @@ export function generateSalesInvoicePDF(
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
-  doc.text(effectiveBillTo?.contactName || '', leftColumnX, leftY);
+  doc.text(billTo?.contactName || '', leftColumnX, leftY);
   leftY += 10;
 
   doc.setFont('helvetica', 'normal');
-  if (effectiveBillTo?.gstin) {
-    doc.text(`GSTIN: ${effectiveBillTo.gstin}`, leftColumnX, leftY);
+  if (billTo?.gstin) {
+    doc.text(`GSTIN: ${billTo.gstin}`, leftColumnX, leftY);
     leftY += 10;
   }
 
-  const billToAddress = [effectiveBillTo?.address1,
-  effectiveBillTo?.address2,
-  effectiveBillTo?.pin ? `Pin: ${effectiveBillTo?.pin}` : '',
-  effectiveBillTo?.city,
-  effectiveBillTo?.state,
-  effectiveBillTo?.country,
-  effectiveBillTo?.mobileNumber ? `Ph: ${effectiveBillTo?.mobileNumber}` : '',
-  effectiveBillTo?.otherMobileNumber ? `, ${effectiveBillTo?.otherMobileNumber}` : '',
-  effectiveBillTo?.email ? `Email: ${effectiveBillTo?.email}` : ''
+  const billToAddress = [billTo?.address1,
+  billTo?.address2,
+  billTo?.pin ? `Pin: ${billTo?.pin}` : '',
+  billTo?.city,
+  billTo?.state,
+  billTo?.country,
+  billTo?.mobileNumber ? `Ph: ${billTo?.mobileNumber}` : '',
+  billTo?.otherMobileNumber ? `, ${billTo?.otherMobileNumber}` : '',
+  billTo?.email ? `Email: ${billTo?.email}` : ''
   ]
     .filter(part => part && part.trim() !== '')
     .join(', ');
@@ -304,9 +274,7 @@ export function generateSalesInvoicePDF(
   }
   // Shipping Address (right side)
   const shipTo: ShippingInfoType | undefined | null = shippingInfo;
-  // Use shipTo if available, otherwise fall back to effectiveBillTo (Customer Details)
-  const effectiveShipTo = !_.isEmpty(shipTo) ? shipTo : effectiveBillTo;
-  if (effectiveShipTo) {
+  if (!_.isEmpty(shipTo)) {
     // Ensure shipping address starts after invoice details
     rightY = Math.max(rightY, rightSectionY + 15);
 
@@ -317,16 +285,15 @@ export function generateSalesInvoicePDF(
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
 
-    const shipToAddress = [
-    effectiveShipTo?.contactName || effectiveShipTo?.name,
-    effectiveShipTo?.address1,
-    effectiveShipTo?.address2,
-    effectiveShipTo?.pin ? `Pin: ${effectiveShipTo?.pin}` : '',
-    effectiveShipTo?.city,
-    effectiveShipTo?.state,
-    effectiveShipTo?.country,
-    effectiveShipTo?.mobileNumber ? `Ph: ${effectiveShipTo?.mobileNumber}` : '',
-    effectiveShipTo?.email ? `Email: ${effectiveShipTo?.email}` : ''
+    const shipToAddress = [shipTo?.name,
+    shipTo?.address1,
+    shipTo?.address2,
+    shipTo?.pin ? `Pin: ${shipTo?.pin}` : '',
+    shipTo?.city,
+    shipTo?.state,
+    shipTo?.country,
+    shipTo?.mobileNumber ? `Ph: ${shipTo?.mobileNumber}` : '',
+    shipTo?.email ? `Email: ${shipTo?.email}` : ''
     ]
       .filter(part => part && part.trim() !== '')
       .join(', ');
