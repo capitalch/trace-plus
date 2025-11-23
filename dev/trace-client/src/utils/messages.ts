@@ -25,6 +25,7 @@ const Messages = {
   errCurrentAndNewPwdCannotBeSame: 'Current and new passwords cannot be same',
   errCurrentFinYear: 'There was some error in current financial year',
   errCustGstinRequired: 'Customer GSTIN is required',
+  errDateBeyondRange: 'Date beyond valid range',
   errDateFieldRequired: 'Date field is required',
   errDateOfBirthInFuture: 'Date of birth cannot be in the future',
   errDebitCreditMismatch: 'Total debits do not match total credits or value is 0',

@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react"
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/maps/data-instances-map"
 import { LoginType } from "../../login/login-slice"
@@ -38,6 +38,8 @@ export function BalanceSheet() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [maxNestLevel, setMaxNestLeval] = useState(3);
 
+    const dateInputRef = useRef<HTMLInputElement>(null)
+
     const {
         branchId
         , buCode
@@ -51,7 +53,11 @@ export function BalanceSheet() {
         , branchName
     } = useUtilsInfo()
 
-    const lastDateOfYear = format(parseISO(currentFinYear?.endDate || ''), "do MMMM yyyy")
+    const [appliedDate, setAppliedDate] = useState<string | null>(currentFinYear ? format(currentFinYear?.endDate, 'yyyy-MM-dd') : null)
+
+    const lastDateOfYear = appliedDate
+        ? format(parseISO(appliedDate), "do MMMM yyyy")
+        : format(parseISO(currentFinYear?.endDate || ''), "do MMMM yyyy")
     const formattedBranchName = `${isAllBranches ? '' : 'Branch: '} ${isAllBranches ? '' : branchName}`
 
     const liabsData: any = useSelector((state: RootStateType) => {
@@ -64,6 +70,14 @@ export function BalanceSheet() {
         return (ret)
     })
 
+    useEffect(() => {
+        const formattedDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')
+        setAppliedDate(formattedDate)
+        if (dateInputRef.current) {
+            dateInputRef.current.value = formattedDate
+        }
+    }, [buCode, finYearId, branchId, isAllBranches, currentFinYear])
+
     const loadData = useCallback(async () => {
         const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss;
         const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
@@ -74,6 +88,7 @@ export function BalanceSheet() {
                 sqlArgs: {
                     branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
                     finYearId: loginInfo.currentFinYear?.finYearId,
+                    toDate: appliedDate
                 },
             }
         );
@@ -131,7 +146,8 @@ export function BalanceSheet() {
         isAllBranches,
         liabsInstance,
         assetsInstance,
-        dispatch
+        dispatch,
+        appliedDate
     ]);
 
     useEffect(() => {
@@ -155,14 +171,14 @@ export function BalanceSheet() {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Balance Sheet" }));
     }, [dispatch]);
 
-    return (<CompAccountsContainer className="mr-6 min-w-[1200px]" MiddleCustomControl={CustomControl} >
+    return (<CompAccountsContainer className="mr-6 lg:min-w-[1200px]" >
         {/* Header */}
-
-        {/* Two horizontal grids */}
-        <div className="flex items-center mt-2 gap-8" >
+        <CustomControl  />
+        {/* Two grids - vertical on small/medium, horizontal on large */}
+        <div className="flex flex-col lg:flex-row lg:items-center mt-2 gap-4 lg:gap-8" >
 
             {/* Liabilities */}
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full lg:w-1/2">
                 <CompSyncFusionTreeGridToolbar className='mt-2'
                     isAllBranches={isAllBranches}
                     isLastNoOfRows={false}
@@ -181,7 +197,7 @@ export function BalanceSheet() {
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('L')}
-                    height="calc(100vh - 255px)"
+                    height="calc(100vh - 280px)"
                     instance={liabsInstance}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}
@@ -190,7 +206,7 @@ export function BalanceSheet() {
             </div>
 
             {/* Assets */}
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full lg:w-1/2">
                 <CompSyncFusionTreeGridToolbar className='mt-2'
                     isAllBranches={isAllBranches}
                     isLastNoOfRows={false}
@@ -209,7 +225,7 @@ export function BalanceSheet() {
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('A')}
-                    height="calc(100vh - 255px)"
+                    height="calc(100vh - 280px)"
                     instance={assetsInstance}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}
@@ -249,25 +265,72 @@ export function BalanceSheet() {
 
     function CustomControl() {
         return (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 lg:gap-3 mt-2 justify-end">
             {/* All branches */}
-            <CompSwitch className="mt-1 mr-4 ml-4" instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
+            <div className="whitespace-nowrap">
+                <CompSwitch instance={CompInstances.compSwitchBalanceSheet} leftLabel="All branches" />
+            </div>
 
-            <CompSyncFusionTreeGridSearchBox instance={balanceSheetInstance} handleOnChange={handleOnChangeSearchText} />
+            {/* Date input with Apply button */}
+            <div className="flex items-center gap-1.5">
+                <label className="font-medium text-sm whitespace-nowrap">
+                    Date:
+                </label>
+                <input
+                    ref={dateInputRef}
+                    type="date"
+                    defaultValue={appliedDate || ''}
+                    min={format(currentFinYear?.startDate || '', 'yyyy-MM-dd')}
+                    max={format(currentFinYear?.endDate || '', 'yyyy-MM-dd')}
+                    className="px-2 py-1 text-sm border rounded-md cursor-pointer"
+                />
+                <button
+                    onClick={() => {
+                        if (dateInputRef.current) {
+                            const dateValue = dateInputRef.current.value
+                            if (!dateValue) {
+                                Utils.showAlertMessage('Error', Messages.errInvalidDate)
+                                return
+                            }
 
-            {/* Preview Pdf balance sheet */}
-            <TooltipComponent content='Preview' className="flex items-center ml-4">
-                <button onClick={async () => {
-                    setIsDialogOpen(true)
-                }}>
-                    <IconPreview1 className="w-8 h-8 text-blue-500" />
+                            // Validate date is within financial year range
+                            const minDate = format(currentFinYear?.startDate || '', 'yyyy-MM-dd')
+                            const maxDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')
+                            if (dateValue < minDate || dateValue > maxDate) {
+                                Utils.showAlertMessage('Error', Messages.errDateBeyondRange)
+                                return
+                            }
+
+                            setAppliedDate(dateValue)
+                        }
+                    }}
+                    className="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 whitespace-nowrap"
+                >
+                    Apply
                 </button>
-            </TooltipComponent>
+            </div>
 
-            {/* Refresh */}
-            <TooltipComponent content='Refresh' className="">
-                <WidgetButtonRefresh handleRefresh={doRefresh} />
-            </TooltipComponent>
+            {/* Search box */}
+            <div>
+                <CompSyncFusionTreeGridSearchBox instance={balanceSheetInstance} handleOnChange={handleOnChangeSearchText} />
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-3">
+                {/* Preview Pdf balance sheet */}
+                <TooltipComponent content='Preview' className="flex items-center">
+                    <button onClick={async () => {
+                        setIsDialogOpen(true)
+                    }}>
+                        <IconPreview1 className="w-8 h-8 text-blue-500" />
+                    </button>
+                </TooltipComponent>
+
+                {/* Refresh */}
+                <TooltipComponent content='Refresh' className="">
+                    <WidgetButtonRefresh handleRefresh={doRefresh} />
+                </TooltipComponent>
+            </div>
         </div>)
     }
 

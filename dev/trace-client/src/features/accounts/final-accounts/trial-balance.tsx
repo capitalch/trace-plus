@@ -4,7 +4,7 @@ import { DataInstancesMap } from "../../../app/maps/data-instances-map";
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar";
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid";
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/maps/graphql-queries-map";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CompSwitch } from "../../../controls/redux-components/comp-switch";
 import { CompInstances } from "../../../controls/redux-components/comp-instances";
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
@@ -13,6 +13,8 @@ import { AppDispatchType, RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from '../../../controls/redux-components/comp-slice';
 import { Utils } from '../../../utils/utils';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import { Messages } from '../../../utils/messages';
 
 export function TrialBalance() {
     const dispatch: AppDispatchType = useDispatch()
@@ -31,15 +33,25 @@ export function TrialBalance() {
         , decodedDbParamsObject
         , decFormatter
         , finYearId
-        , intFormatter
+        , intFormatter, currentFinYear
     } = useUtilsInfo()
+    const [appliedDate, setAppliedDate] = useState<string | null>(currentFinYear ? format(currentFinYear?.endDate, 'yyyy-MM-dd') : null)
+    const dateInputRef = useRef<HTMLInputElement>(null)
+
+    useEffect(() => {
+        const formattedDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')
+        setAppliedDate(formattedDate)
+        if (dateInputRef.current) {
+            dateInputRef.current.value = formattedDate
+        }
+    }, [buCode, finYearId, branchId, isAllBranches, currentFinYear])
 
     useEffect(() => {
         const loadData = context.CompSyncFusionTreeGrid[instance]?.loadData
         if (loadData) {
             loadData()
         }
-    }, [buCode, finYearId, branchId, isAllBranches])
+    }, [buCode, finYearId, branchId, isAllBranches, appliedDate])
 
     // Restore scroll position after data loads
     useEffect(() => {
@@ -60,9 +72,54 @@ export function TrialBalance() {
     return (
         <CompAccountsContainer>
             <CompSyncFusionTreeGridToolbar className='mt-2'
-                CustomControl={() => <CompSwitch instance={CompInstances.compSwitchTrialBalance} className="" leftLabel="All branches" rightLabel="" />}
+                CustomControl={() => (
+                    <div className="flex items-center gap-4">
+                        <CompSwitch
+                            instance={CompInstances.compSwitchTrialBalance}
+                            className=""
+                            leftLabel="All branches"
+                            rightLabel=""
+                        />
+                        <div className="flex items-center gap-2">
+                            <label className="font-medium text-sm">
+                                As on Date:
+                            </label>
+                            <input
+                                ref={dateInputRef}
+                                type="date"
+                                defaultValue={appliedDate || ''}
+                                min={format(currentFinYear?.startDate || '', 'yyyy-MM-dd')}
+                                max={format(currentFinYear?.endDate || '', 'yyyy-MM-dd')}
+                                className="px-3 py-1 text-sm border rounded-md cursor-pointer"
+                            />
+                            <button
+                                onClick={() => {
+                                    if (dateInputRef.current) {
+                                        const dateValue = dateInputRef.current.value
+                                        if (!dateValue) {
+                                            Utils.showAlertMessage('Error', Messages.errInvalidDate)
+                                            return
+                                        }
+
+                                        // Validate date is within financial year range
+                                        const minDate = format(currentFinYear?.startDate || '', 'yyyy-MM-dd')
+                                        const maxDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')
+                                        if (dateValue < minDate || dateValue > maxDate) {
+                                            Utils.showAlertMessage('Error', Messages.errDateBeyondRange)
+                                            return
+                                        }
+
+                                        setAppliedDate(dateValue)
+                                    }
+                                }}
+                                className="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                )}
                 title=''
-                isAllBranches={isAllBranches}
                 isLastNoOfRows={false}
                 instance={instance}
                 minWidth="400px"
@@ -84,6 +141,7 @@ export function TrialBalance() {
                 sqlArgs={{
                     branchId: isAllBranches ? null : branchId || 0,
                     finYearId: finYearId || 1900,
+                    toDate: appliedDate
                 }}
                 onZoomIn={handleOnZoomIn}
                 treeColumnIndex={0}
@@ -208,8 +266,8 @@ export function TrialBalance() {
         }
         navigate('/general-ledger', {
             state: {
-                accountId:rowData.id,
-                returnPath:'/trial-balance',
+                accountId: rowData.id,
+                returnPath: '/trial-balance',
                 reportName: 'Trial Balance'
             }
         })

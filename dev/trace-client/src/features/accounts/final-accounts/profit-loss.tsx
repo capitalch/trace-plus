@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react"
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react"
 import { Decimal } from 'decimal.js'
 import { DataInstancesMap } from "../../../app/maps/data-instances-map"
 import { LoginType } from "../../login/login-slice"
@@ -7,15 +7,11 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux"
 import { selectCompSwitchStateFn, setCompAccountsContainerMainTitle } from "../../../controls/redux-components/comp-slice"
 import { AppDispatchType, RootStateType } from "../../../app/store"
 import { CompAccountsContainer } from "../../../controls/redux-components/comp-accounts-container"
-import { CompSwitch } from "../../../controls/redux-components/comp-switch"
-import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
 import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../app/maps/graphql-queries-map"
 import { setQueryHelperData } from "../../../app/graphql/query-helper-slice"
 import { CompSyncFusionTreeGridToolbar } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-toolbar"
 import { CompSyncfusionTreeGrid, SyncFusionTreeGridAggregateColumnType, SyncFusionTreeGridColumnType } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid"
 import { CompInstances } from "../../../controls/redux-components/comp-instances"
-import { TooltipComponent } from "@syncfusion/ej2-react-popups"
-import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
 import { useUtilsInfo } from "../../../utils/utils-info-hook"
 import { Messages } from "../../../utils/messages"
 import { CustomModalDialog } from "../../../controls/components/custom-modal-dialog"
@@ -24,8 +20,12 @@ import { BalanceSheetProfitLossPdf } from "./BalanceSheetProfitLossPdf"
 import { format, parseISO } from "date-fns"
 import Swal from "sweetalert2"
 import { IconSettings } from "../../../controls/icons/icon-settings"
-import { IconPreview1 } from "../../../controls/icons/icon-preview1"
+import { TooltipComponent } from "@syncfusion/ej2-react-popups"
 import { useNavigate } from "react-router-dom"
+import { CompSwitch } from "../../../controls/redux-components/comp-switch"
+import { CompSyncFusionTreeGridSearchBox } from "../../../controls/components/syncfusion-tree-grid.tsx/comp-syncfusion-tree-grid-search-box"
+import { IconPreview1 } from "../../../controls/icons/icon-preview1"
+import { WidgetButtonRefresh } from "../../../controls/widgets/widget-button-refresh"
 
 export function ProfitLoss() {
     const loginInfo: LoginType = Utils.getCurrentLoginInfo()
@@ -37,6 +37,8 @@ export function ProfitLoss() {
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchProfitLoss), shallowEqual) || false
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [maxNestLevel, setMaxNestLeval] = useState(3);
+    
+    const dateInputRef = useRef<HTMLInputElement>(null)
 
     const {
         branchId
@@ -50,8 +52,11 @@ export function ProfitLoss() {
         , currentFinYear
         , branchName
     } = useUtilsInfo()
+    const [appliedDate, setAppliedDate] = useState<string | null>(currentFinYear ? format(currentFinYear?.endDate, 'yyyy-MM-dd') : null)
     const formattedBranchName = `${isAllBranches ? '' : 'Branch: '} ${isAllBranches ? '' : branchName}`
-    const lastDateOfYear = format(parseISO(currentFinYear?.endDate || ''), "do MMMM yyyy")
+    const lastDateOfYear = appliedDate
+        ? format(parseISO(appliedDate), "do MMMM yyyy")
+        : format(parseISO(currentFinYear?.endDate || ''), "do MMMM yyyy")
 
     const expensesData: any = useSelector((state: RootStateType) => {
         const ret: any = state.queryHelper[expensesInstance]?.data
@@ -63,6 +68,14 @@ export function ProfitLoss() {
         return (ret)
     })
 
+    useEffect(() => {
+        const formattedDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')
+        setAppliedDate(formattedDate)
+        if (dateInputRef.current) {
+            dateInputRef.current.value = formattedDate
+        }
+    }, [buCode, finYearId, branchId, isAllBranches, currentFinYear])
+
     const loadData = useCallback(async () => {
         const queryName: string = GraphQLQueriesMapNames.balanceSheetProfitLoss
         const q: any = GraphQLQueriesMap.balanceSheetProfitLoss(
@@ -72,7 +85,8 @@ export function ProfitLoss() {
                 dbParams: decodedDbParamsObject,
                 sqlArgs: {
                     branchId: isAllBranches ? null : loginInfo.currentBranch?.branchId,
-                    finYearId: loginInfo.currentFinYear?.finYearId
+                    finYearId: loginInfo.currentFinYear?.finYearId,
+                    toDate: appliedDate
                 },
             }
         )
@@ -114,7 +128,8 @@ export function ProfitLoss() {
         isAllBranches,
         expensesInstance,
         incomesInstance,
-        dispatch
+        dispatch,
+        appliedDate
     ])
 
     useEffect(() => {
@@ -138,13 +153,15 @@ export function ProfitLoss() {
         dispatch(setCompAccountsContainerMainTitle({ mainTitle: "Profit & Loss" }));
     }, [dispatch]);
 
-    return (<CompAccountsContainer className="mr-6 min-w-[1200px]" CustomControl={CustomControl}>
+    return (<CompAccountsContainer className="mr-6 lg:min-w-[1200px]" >
+        {/* Header */}
+        <CustomControl />
 
-        {/* Two horizontal grids */}
-        <div className="flex items-center mt-2 gap-8" >
+        {/* Two grids - vertical on small/medium, horizontal on large */}
+        <div className="flex flex-col lg:flex-row lg:items-center mt-2 gap-4 lg:gap-8" >
 
             {/* Expenses */}
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full lg:w-1/2">
                 <CompSyncFusionTreeGridToolbar className='mt-2'
                     isAllBranches={isAllBranches}
                     isLastNoOfRows={false}
@@ -164,7 +181,7 @@ export function ProfitLoss() {
                     dbParams={decodedDbParamsObject}
                     // isLoadOnInit={false}
                     columns={getColumns('L')}
-                    height="calc(100vh - 275px)"
+                    height="calc(100vh - 280px)"
                     instance={expensesInstance}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}
@@ -173,7 +190,7 @@ export function ProfitLoss() {
             </div>
 
             {/* Income */}
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full lg:w-1/2">
                 <CompSyncFusionTreeGridToolbar className='mt-2'
                     isAllBranches={isAllBranches}
                     isLastNoOfRows={false}
@@ -192,7 +209,7 @@ export function ProfitLoss() {
                     dbName={dbName}
                     dbParams={decodedDbParamsObject}
                     columns={getColumns('A')}
-                    height="calc(100vh - 275px)"
+                    height="calc(100vh - 280px)"
                     instance={incomesInstance}
                     treeColumnIndex={0}
                     onZoomIn={handleOnZoomIn}
@@ -222,33 +239,84 @@ export function ProfitLoss() {
         />
     </CompAccountsContainer>)
 
+    function CustomControl() {
+        const handleApplyDate = () => {
+            if (dateInputRef.current) {
+                const dateValue = dateInputRef.current.value
+                if (!dateValue) {
+                    Utils.showAlertMessage('Error', Messages.errInvalidDate)
+                    return
+                }
+
+                // Validate date is within financial year range
+                const minDate = format(currentFinYear?.startDate || '', 'yyyy-MM-dd')
+                const maxDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')
+                if (dateValue < minDate || dateValue > maxDate) {
+                    Utils.showAlertMessage('Error', Messages.errDateBeyondRange)
+                    return
+                }
+
+                setAppliedDate(dateValue)
+            }
+        }
+
+        return (
+            <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 lg:gap-3 mt-2 justify-end">
+                {/* All branches */}
+                <div className="whitespace-nowrap">
+                    <CompSwitch instance={CompInstances.compSwitchProfitLoss} leftLabel="All branches" />
+                </div>
+
+                {/* Date input with Apply button */}
+                <div className="flex items-center gap-1.5">
+                    <label className="font-medium text-sm whitespace-nowrap">
+                        Date:
+                    </label>
+                    <input
+                        ref={dateInputRef}
+                        type="date"
+                        defaultValue={appliedDate || ''}
+                        min={format(currentFinYear?.startDate || '', 'yyyy-MM-dd')}
+                        max={format(currentFinYear?.endDate || '', 'yyyy-MM-dd')}
+                        className="px-2 py-1 text-sm border rounded-md cursor-pointer"
+                    />
+                    <button
+                        onClick={handleApplyDate}
+                        className="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 whitespace-nowrap"
+                    >
+                        Apply
+                    </button>
+                </div>
+
+                {/* Search box */}
+                <div>
+                    <CompSyncFusionTreeGridSearchBox instance={profitLossInstance} handleOnChange={handleOnChangeSearchText} />
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-3">
+                    {/* Preview Pdf */}
+                    <TooltipComponent content='Preview' className="flex items-center">
+                        <button onClick={() => setIsDialogOpen(true)}>
+                            <IconPreview1 className="w-8 h-8 text-blue-500" />
+                        </button>
+                    </TooltipComponent>
+
+                    {/* Refresh */}
+                    <TooltipComponent content='Refresh' className="">
+                        <WidgetButtonRefresh handleRefresh={doRefresh} />
+                    </TooltipComponent>
+                </div>
+            </div>
+        )
+    }
+
     function incomesClosingColumnTemplate(props: any) {
         const ret = <div>
             <span>{props.closing_dc === 'D' ? '-' : ''}</span>
             <span>{decFormatter.format(props.closing)}</span>
         </div>
         return (ret)
-    }
-
-    function CustomControl() {
-        return (<div className="flex items-center justify-between">
-            {/* All branches */}
-            <CompSwitch className="mt-1 mr-4 ml-4" instance={CompInstances.compSwitchProfitLoss} leftLabel="All branches" />
-
-            <CompSyncFusionTreeGridSearchBox instance={profitLossInstance} handleOnChange={handleOnChangeSearchText} />
-
-            {/* Pdf profit and loss */}
-            <TooltipComponent content='Preview' className="flex items-center ml-4">
-                <button onClick={() => { setIsDialogOpen(true) }}>
-                    <IconPreview1 className="w-8 h-8 text-blue-500" />
-                </button>
-            </TooltipComponent>
-
-            {/* Refresh */}
-            <TooltipComponent content='Refresh' className="">
-                <WidgetButtonRefresh handleRefresh={doRefresh} />
-            </TooltipComponent>
-        </div>)
     }
 
     function NestingLevelSetupButton() {
