@@ -12,30 +12,34 @@ valid gstin: 24AAACC1206D1ZM
 
 
 ## General requirement
-- Setup access control
-	- Business units user
-			- Ali: skali
-				- Nav technology
-					- manager
-			- Swapan
-				- all BU's
-					manager
-			- Subrata
-				- CE, CC, SSPL
-					manager
-			- Sonu
-				- CC, SSPL
-					- Sales, Purchase
-			- Abhishek
-				- CC, SSPL
-					- purchase
-			- Samar
-				- cc,sspl
-					- sales
-			- Kamal
-				- All
-					- manager
+											- Setup access control
+												- Business units user
+														- Ali: skali
+															- Nav technology
+																- manager
+														- Swapan
+															- all BU's
+																manager
+														- Subrata
+															- CE, CC, SSPL
+																manager
+														- Sonu
+															- CC, SSPL
+																- Sales, Purchase
+														- Abhishek
+															- CC, SSPL
+																- purchase
+														- Samar
+															- cc,sspl
+																- sales
+														- Kamal
+															- All
+																- manager
 - Bugs
+												- Admin
+													- controls <-> roles
+														- Left side default is expanded tree. It should be collapsed
+			
 														- Persistance of transactions not working
 														- Product master modify: upc code already exists
 														- institution sales party name not coming

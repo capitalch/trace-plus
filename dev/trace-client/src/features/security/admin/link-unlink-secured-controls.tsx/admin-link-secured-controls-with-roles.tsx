@@ -34,6 +34,7 @@ export function AdminLinkSecuredControlsWithRoles() {
     const [gridRefreshTrigger, setGridRefreshTrigger] = useState<number>(0);
     const [allGroupsExpanded, setAllGroupsExpanded] = useState<boolean>(false);
     const [allTreeGroupsExpanded, setAllTreeGroupsExpanded] = useState<boolean>(false);
+    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
     // Get original data from Redux
     const originalTreeData: any = useSelector((state: RootStateType) => {
@@ -440,6 +441,23 @@ export function AdminLinkSecuredControlsWithRoles() {
         }
     }
 
+    const handleSecuredControlsDataBound = useCallback(() => {
+        const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
+        if (!gridRef?.current) return;
+
+        // On initial load, collapse all groups
+        if (isInitialLoad) {
+            // Add a small delay to ensure grid is fully initialized
+            setTimeout(() => {
+                if (gridRef?.current && typeof gridRef.current.groupCollapseAll === 'function') {
+                    gridRef.current.groupCollapseAll();
+                    setAllGroupsExpanded(false);
+                }
+            }, 50);
+            setIsInitialLoad(false);
+        }
+    }, [isInitialLoad, context.CompSyncFusionGrid, securedControlsInstance]);
+
     // const handleGridActionComplete = useCallback(() => {
     //     const gridRef = context.CompSyncFusionGrid[securedControlsInstance]?.gridRef;
     //     if (!gridRef?.current) return;
@@ -524,6 +542,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                             allowGrouping={true}
                             // className=''
                             columns={getSecuredControlsColumns()}
+                            dataBound={handleSecuredControlsDataBound}
                             gridDragAndDropSettings={
                                 {
                                     allowRowDragAndDrop: true,
@@ -1027,6 +1046,7 @@ export function AdminLinkSecuredControlsWithRoles() {
             if (field === 'controlPrefix') {
                 const currentViewRecords = grid.getCurrentViewRecords() as any[];
                 const prefixGroupIndex = currentViewRecords.findIndex((record: any) =>
+                    record &&
                     record.isCaptionRow &&
                     record.field === 'controlPrefix' &&
                     (record.key === groupKey || record.groupKey === groupKey)
@@ -1035,7 +1055,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 if (prefixGroupIndex !== -1) {
                     for (let i = prefixGroupIndex - 1; i >= 0; i--) {
                         const record = currentViewRecords[i];
-                        if (record.isCaptionRow && record.field === 'controlType') {
+                        if (record && record.isCaptionRow && record.field === 'controlType') {
                             parentType = record.key || record.groupKey;
                             break;
                         }
@@ -1076,7 +1096,7 @@ export function AdminLinkSecuredControlsWithRoles() {
 
         currentViewRecords.forEach((viewRecord: any, index: number) => {
             // Skip group header rows (they don't have data row properties)
-            if (viewRecord.isCaptionRow || viewRecord.isDataRow === false) {
+            if (!viewRecord || viewRecord.isCaptionRow || viewRecord.isDataRow === false) {
                 return;
             }
 
@@ -1144,6 +1164,7 @@ export function AdminLinkSecuredControlsWithRoles() {
             if (field === 'controlPrefix') {
                 const currentViewRecords = grid.getCurrentViewRecords() as any[];
                 const prefixGroupIndex = currentViewRecords.findIndex((record: any) =>
+                    record &&
                     record.isCaptionRow &&
                     record.field === 'controlPrefix' &&
                     (record.key === groupKey || record.groupKey === groupKey)
@@ -1152,7 +1173,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                 if (prefixGroupIndex !== -1) {
                     for (let i = prefixGroupIndex - 1; i >= 0; i--) {
                         const record = currentViewRecords[i];
-                        if (record.isCaptionRow && record.field === 'controlType') {
+                        if (record && record.isCaptionRow && record.field === 'controlType') {
                             parentType = record.key || record.groupKey;
                             break;
                         }
@@ -1233,6 +1254,7 @@ export function AdminLinkSecuredControlsWithRoles() {
 
                 // Find this prefix group in the view
                 const prefixGroupIndex = currentViewRecords.findIndex((record: any) =>
+                    record &&
                     record.isCaptionRow &&
                     record.field === 'controlPrefix' &&
                     (record.key === groupKey || record.groupKey === groupKey)
@@ -1242,7 +1264,7 @@ export function AdminLinkSecuredControlsWithRoles() {
                     // Walk backwards to find the parent Type group
                     for (let i = prefixGroupIndex - 1; i >= 0; i--) {
                         const record = currentViewRecords[i];
-                        if (record.isCaptionRow && record.field === 'controlType') {
+                        if (record && record.isCaptionRow && record.field === 'controlType') {
                             parentType = record.key || record.groupKey;
                             break;
                         }

@@ -46,6 +46,7 @@ export function CompSyncFusionGrid({
   buCode,
   className = "",
   columns,
+  dataBound,
   dbName,
   dbParams,
   dataSource,
@@ -180,6 +181,7 @@ export function CompSyncFusionGrid({
       className={clsx(className, isSmallerFont ? "smaller-font" : "")}
       commandClick={handleCommandClick}
       created={onCreated}
+      dataBound={dataBound}
       dataSource={dataSource || selectedData || []}
       editSettings={editSettings}
       enablePersistence={false}
@@ -280,6 +282,7 @@ export type CompSyncFusionGridType = {
   buCode?: string;
   className?: string;
   columns: SyncFusionGridColumnType[];
+  dataBound?: (args: any) => void;
   dataSource?: any;
   dbName?: string;
   dbParams?: { [key: string]: string | undefined };

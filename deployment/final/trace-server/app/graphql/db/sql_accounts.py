@@ -1352,8 +1352,8 @@ class SqlAccounts:
             JOIN "AccM" a ON h."parentId" = a."id"
         ),
         -- Constants for branch and financial year
-        "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+        "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "toDate" as (values (%(toDate)s::date)),
+        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)), "toDate" AS (VALUES ('2024-12-31'::date)),
         -- Base data preparation
         cte1 AS (
             SELECT 
@@ -1368,6 +1368,7 @@ class SqlAccounts:
             JOIN "AccM" a ON a.id = d."accId"
             WHERE h."finYearId" = (TABLE "finYearId")
 			AND (SELECT COALESCE((TABLE "branchId"), h."branchId") = h."branchId")
+			AND (CASE WHEN (TABLE "toDate") IS NULL THEN TRUE ELSE h."tranDate" <= (TABLE "toDate") END)
             UNION ALL
             SELECT 
                 b.id, 
@@ -3582,8 +3583,8 @@ class SqlAccounts:
             JOIN "AccM" a ON h."parentId" = a."id"
         ),
         -- Constants for branch and financial year
-        "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
-        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)),
+        "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)), "toDate" as (values (%(toDate)s::date)),
+        -- "branchId" AS (VALUES (1::int)), "finYearId" AS (VALUES (2024)), "toDate" AS (VALUES ('2024-12-31'::date)),
 
         -- Base data preparation
         cte1 AS (
@@ -3599,6 +3600,7 @@ class SqlAccounts:
             JOIN "AccM" a ON a.id = d."accId"
             WHERE h."finYearId" = (TABLE "finYearId")
 			AND (SELECT COALESCE((TABLE "branchId"), h."branchId") = h."branchId")
+			AND (CASE WHEN (TABLE "toDate") IS NULL THEN TRUE ELSE h."tranDate" <= (TABLE "toDate") END)
             UNION ALL
 
             SELECT 

@@ -270,7 +270,7 @@ export function ProfitLoss() {
                 {/* Date input with Apply button */}
                 <div className="flex items-center gap-1.5">
                     <label className="font-medium text-sm whitespace-nowrap">
-                        Date:
+                        As on Date:
                     </label>
                     <input
                         ref={dateInputRef}
