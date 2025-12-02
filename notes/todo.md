@@ -10,6 +10,14 @@ valid gstin: 24AAACC1206D1ZM
 -  5 sales bills
 - In capichow check prices
 
+## mobile
+	- Brush up
+	- Update old
+		- New url's
+		- Fix bugs
+		- New end points
+	- Deploy
+
 
 ## General requirement
 											- Setup access control
