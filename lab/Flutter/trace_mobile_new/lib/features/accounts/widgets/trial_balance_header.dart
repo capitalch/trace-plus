@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 
 class TrialBalanceHeader extends StatelessWidget {
-  const TrialBalanceHeader({Key? key}) : super(key: key);
+  const TrialBalanceHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

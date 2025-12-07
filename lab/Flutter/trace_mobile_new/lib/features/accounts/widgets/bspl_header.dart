@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/accounts/classes/accounts_bs_pl_state.dart';
 
 class BsplHeader extends StatelessWidget {
-  const BsplHeader({Key? key}) : super(key: key);
+  const BsplHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

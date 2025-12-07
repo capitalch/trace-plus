@@ -9,7 +9,7 @@ import 'package:trace_mobile/features/sales/widgets/sales_list_view_data.dart';
 import 'package:tuple/tuple.dart';
 
 class SalesReportBody extends StatelessWidget {
-  const SalesReportBody({Key? key}) : super(key: key);
+  const SalesReportBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class SalesReportBody extends StatelessWidget {
         });
   }
 
-  setEmptyDataState(BuildContext context) {
+  void setEmptyDataState(BuildContext context) {
     Future.delayed(Duration.zero, () {
       context.read<SalesState>().summaryMap = {
         'rows': 0,

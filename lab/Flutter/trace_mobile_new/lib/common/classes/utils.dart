@@ -11,7 +11,7 @@ class Utils {
     return (format.currencySymbol);
   }
 
-  static execDataCache(
+  static Future<void> execDataCache(
     GlobalSettings globalSettings,
   ) async {
     var result = await GraphQLQueries.genericView(

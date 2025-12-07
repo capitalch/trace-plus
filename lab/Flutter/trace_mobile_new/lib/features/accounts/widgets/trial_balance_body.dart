@@ -9,7 +9,7 @@ import 'package:trace_mobile/features/accounts/classes/accounts_trial_balance_st
 import 'package:trace_mobile/features/accounts/widgets/custom_expansion_tile.dart';
 
 class TrialBalanceBody extends StatelessWidget {
-  const TrialBalanceBody({Key? key}) : super(key: key);
+  const TrialBalanceBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class TrialBalanceBody extends StatelessWidget {
     );
   }
 
-  getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
+  List<Widget> getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
     List<Widget> childListOfWidgets = [];
     var theme = Theme.of(context).textTheme;
     for (dynamic child in childList) {
@@ -138,10 +138,10 @@ class TrialBalanceBody extends StatelessWidget {
                     FormattedNumber(amount: data.closing, drcr: data.closingDC),
                   ],
                 ))),
+        hasChildren: (child['children'] == null) ? false : true,
         children: (child['children'] == null)
             ? [const SizedBox.shrink()]
             : getChildListOfWidgets(context, child['children']),
-        hasChildren: (child['children'] == null) ? false : true,
       );
       childListOfWidgets.add(childWidget);
     }
@@ -150,8 +150,7 @@ class TrialBalanceBody extends StatelessWidget {
 }
 
 class FormattedNumber extends StatelessWidget {
-  const FormattedNumber({Key? key, required this.amount, required this.drcr})
-      : super(key: key);
+  const FormattedNumber({super.key, required this.amount, required this.drcr});
   final String? drcr;
   final double amount;
 
@@ -189,11 +188,10 @@ class FormattedNumber extends StatelessWidget {
 
 class TextOrButtonWidget extends StatelessWidget {
   const TextOrButtonWidget(
-      {Key? key,
+      {super.key,
       required this.hasChildren,
       required this.accId,
-      required this.label})
-      : super(key: key);
+      required this.label});
   final bool hasChildren;
   final int accId;
   final String label;

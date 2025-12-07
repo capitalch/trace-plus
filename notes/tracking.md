@@ -16,7 +16,10 @@
 - Bug fixes etc.
 	- QA and release		: 30-08-2025
 
+
 ## History
+# 07-12-2025
+	- Started mobile app alteration
 # 30-10-2025
 	- Completed access level security
 # 18-10-2025

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/transactions/classes/transactions_state.dart';
 
 class TransactionsHeader extends StatelessWidget{
-  const TransactionsHeader({Key? key}) : super(key: key);
+  const TransactionsHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

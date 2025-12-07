@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/sales/classes/sales_state.dart';
 
 class SalesReportSummary extends StatelessWidget {
-  const SalesReportSummary({Key? key}) : super(key: key);
+  const SalesReportSummary({super.key});
 
   @override
   Widget build(BuildContext context) {

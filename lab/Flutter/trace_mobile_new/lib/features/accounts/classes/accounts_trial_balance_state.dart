@@ -7,7 +7,7 @@ class AccountsTrialBalanceState with ChangeNotifier {
     init();
   }
 
-  init() {
+  void init() {
     summary = Summary(
         opening: 0,
         debits: 0,
@@ -17,7 +17,7 @@ class AccountsTrialBalanceState with ChangeNotifier {
         closingDC: 'Dr');
   }
 
-  notify() {
+  void notify() {
     notifyListeners();
   }
 }

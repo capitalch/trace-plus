@@ -4,7 +4,7 @@ import 'package:trace_mobile/features/dashboard/widgets/dashboard_bottom_navigat
 import 'package:trace_mobile/features/dashboard/widgets/dashboard_subheader.dart';
 
 class DashBoardPage extends StatelessWidget {
-  const DashBoardPage({Key? key}) : super(key: key);
+  const DashBoardPage({super.key});
 
   @override
   Widget build(BuildContext context) {

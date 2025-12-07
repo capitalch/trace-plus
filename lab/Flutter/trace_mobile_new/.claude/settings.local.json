@@ -6,7 +6,11 @@
       "mcp__ide__getDiagnostics",
       "Bash(mkdir:*)",
       "Bash(del \"C:\\projects\\trace-plus\\lab\\Flutter\\trace_mobile_new\\fix_deprecations.ps1\")",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(flutter devices:*)",
+      "Bash(flutter doctor:*)",
+      "Bash(flutter run:*)",
+      "Bash(dir /s /b \"C:\\projects\\trace-plus\\dev\\trace-client\\src\\features\\login\")"
     ],
     "deny": [],
     "ask": []

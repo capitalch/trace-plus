@@ -16,7 +16,7 @@ class SalesState with ChangeNotifier {
     notifyListeners();
   }
 
-  notify() {
+  void notify() {
     notifyToggle = !notifyToggle;
     notifyListeners();
   }

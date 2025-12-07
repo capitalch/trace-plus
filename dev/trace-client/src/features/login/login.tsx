@@ -43,7 +43,7 @@ function Login() {
     return (
         <div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex h-screen">
-                <div className="flex flex-col m-auto p-5 w-96 border-[2px] border-primary-200 rounded-md shadow-xl gap-3">
+                <div className="flex flex-col m-auto p-5 w-96 border-2 border-primary-200 rounded-md shadow-xl gap-3">
                     <span className="flex justify-end text-primary-300 text-xs -mr-4 -my-4">{GLOBAL_APP_NAME} {GLOBAL_APP_VERSION}</span>
                     <h2 className="m-2 mx-auto font-bold text-2xl text-primary-400"> Login </h2>
 
@@ -72,7 +72,7 @@ function Login() {
                         <input autoComplete="username"
                             placeholder="accounts@gmail.com"
                             type="text"
-                            className="px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
+                            className="px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs"
                             {...registerUserName} />
                         {(errors.username)
                             ? <WidgetFormErrorMessage errorMessage={Messages.errInvalidUserNameOrEmail} />
@@ -83,7 +83,7 @@ function Login() {
                     {/* Password */}
                     <label className="flex flex-col font-medium text-primary-400">
                         <span className="font-bold">Password <WidgetAstrix /></span>
-                        <input placeholder="*****" type="password" className="px-2 border-[1px] border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs" {...registerPassword} />
+                        <input placeholder="*****" type="password" className="px-2 border border-primary-200 rounded-md placeholder-slate-400 placeholder:italic placeholder:text-xs" {...registerPassword} />
                         {(errors.password
                             ? <WidgetFormErrorMessage errorMessage={errors.password.message} />
                             : <WidgetFormHelperText helperText='&nbsp;' />)}

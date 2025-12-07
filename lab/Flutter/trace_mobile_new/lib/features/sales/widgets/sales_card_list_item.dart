@@ -4,8 +4,7 @@ import 'package:trace_mobile/features/sales/classes/sales_item_model.dart';
 
 class SalesCardListItem extends StatelessWidget {
   const SalesCardListItem(
-      {Key? key, required this.index, required this.indexedItem})
-      : super(key: key);
+      {super.key, required this.index, required this.indexedItem});
 
   final int index;
   final SalesItemModel indexedItem;

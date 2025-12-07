@@ -93,7 +93,7 @@
     },
     {
       "name": "flutter_hooks",
-      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_hooks-0.18.6",
+      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_hooks-0.21.3+1",
       "packageUri": "lib/",
       "languageVersion": "2.17"
     },
@@ -153,9 +153,9 @@
     },
     {
       "name": "google_fonts",
-      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/google_fonts-6.3.2",
+      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/google_fonts-6.3.3",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "3.9"
     },
     {
       "name": "gql",
@@ -423,13 +423,13 @@
     },
     {
       "name": "syncfusion_flutter_core",
-      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/syncfusion_flutter_core-31.2.15",
+      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/syncfusion_flutter_core-31.2.16",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
     {
       "name": "syncfusion_flutter_datagrid",
-      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/syncfusion_flutter_datagrid-31.2.15",
+      "rootUri": "file:///C:/Users/capit/AppData/Local/Pub/Cache/hosted/pub.dev/syncfusion_flutter_datagrid-31.2.16",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -525,8 +525,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.10.1",
+  "generatorVersion": "3.10.3",
   "flutterRoot": "file:///C:/flutter",
-  "flutterVersion": "3.38.3",
+  "flutterVersion": "3.38.4",
   "pubCache": "file:///C:/Users/capit/AppData/Local/Pub/Cache"
 }

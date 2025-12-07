@@ -14,7 +14,9 @@ class SalesListViewData extends StatelessWidget {
     var salesState = context.read<SalesState>();
     return RefreshIndicator(
       onRefresh: () {
-        return Future.delayed(Duration.zero, salesState.notify());
+        return Future.delayed(Duration.zero, () {
+          salesState.notify();
+        });
       },
       child: ListView.builder(
         itemCount: dataList.length,

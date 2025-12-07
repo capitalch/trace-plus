@@ -3,8 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:trace_mobile/features/products/classes/indexed_item.dart';
 
 class ProductsCardItem extends StatelessWidget {
-  const ProductsCardItem({Key? key, required this.indexedItem, required this.index})
-      : super(key: key);
+  const ProductsCardItem({super.key, required this.indexedItem, required this.index});
   final IndexedItem indexedItem;
   final int index;
 

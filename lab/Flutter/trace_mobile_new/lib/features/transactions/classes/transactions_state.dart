@@ -4,14 +4,14 @@ class TransactionsState with ChangeNotifier {
   String queryKey = '100';
   int rowCount = 0, debits = 0, credits = 0;
 
-  init() {
+  void init() {
     queryKey = '100';
     rowCount = 0;
     debits = 0;
     credits = 0;
   }
 
-  initSummary() {
+  void initSummary() {
     rowCount = 0;
     debits = 0;
     credits = 0;
@@ -40,12 +40,12 @@ class TransactionsState with ChangeNotifier {
   //   }).toList();
   // }
 
-  setQueryKey(String val) {
+  void setQueryKey(String val) {
     queryKey = val;
     notifyListeners();
   }
 
-  setRowCount(int count) {
+  void setRowCount(int count) {
     rowCount = count;
     notifyListeners();
   }

@@ -16,7 +16,7 @@ class AccountsGeneralLedgerState with ChangeNotifier {
   //   notify();
   // }
 
-  notify() {
+  void notify() {
     notifyListeners();
   }
 }

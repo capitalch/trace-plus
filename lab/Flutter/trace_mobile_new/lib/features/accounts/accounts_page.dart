@@ -3,7 +3,7 @@ import 'package:trace_mobile/common/classes/routes.dart';
 import 'package:trace_mobile/common/widgets/bu_code_branch_header.dart';
 
 class AccountsPage extends StatelessWidget {
-  const AccountsPage({Key? key}) : super(key: key);
+  const AccountsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

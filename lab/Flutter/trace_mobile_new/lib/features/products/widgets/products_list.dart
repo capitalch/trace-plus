@@ -8,7 +8,7 @@ import 'package:trace_mobile/features/products/classes/products_tags_state.dart'
 import 'package:trace_mobile/features/products/widgets/products_card_item.dart';
 
 class ProductsList extends StatefulWidget {
-  const ProductsList({Key? key, required this.dataList}) : super(key: key);
+  const ProductsList({super.key, required this.dataList});
   final List<dynamic> dataList;
 
   @override

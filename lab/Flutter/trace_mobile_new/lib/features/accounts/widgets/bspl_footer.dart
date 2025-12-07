@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/accounts/classes/accounts_bs_pl_state.dart';
 
 class BsplFooter extends StatelessWidget {
-  const BsplFooter({Key? key}) : super(key: key);
+  const BsplFooter({super.key});
 
   @override
   Widget build(BuildContext context) {

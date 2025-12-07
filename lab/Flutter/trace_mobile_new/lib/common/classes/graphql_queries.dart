@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:gql/src/ast/ast.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:trace_mobile/common/classes/global_settings.dart';
 
 class GraphQLQueries {
-  static login(String credentials) {
+  static DocumentNode login(String credentials) {
     return gql('''query login {
          authentication {
          doLogin(credentials:"$credentials")

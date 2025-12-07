@@ -7,7 +7,7 @@ import 'package:trace_mobile/features/accounts/widgets/bspl_footer.dart';
 import 'package:trace_mobile/features/accounts/widgets/bspl_header.dart';
 
 class AccountsBsPl extends StatelessWidget {
-  const AccountsBsPl({Key? key}) : super(key: key);
+  const AccountsBsPl({super.key});
 
   @override
   Widget build(BuildContext context) {

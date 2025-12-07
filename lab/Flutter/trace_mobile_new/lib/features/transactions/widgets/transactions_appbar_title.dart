@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/transactions/classes/transactions_state.dart';
 
 class TransactionsAppBarTitle extends StatelessWidget {
-  const TransactionsAppBarTitle({Key? key}) : super(key: key);
+  const TransactionsAppBarTitle({super.key});
 
   @override
   Widget build(BuildContext context) {

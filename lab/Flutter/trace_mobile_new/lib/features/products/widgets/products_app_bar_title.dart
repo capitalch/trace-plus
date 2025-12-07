@@ -8,7 +8,7 @@ import 'package:trace_mobile/features/products/classes/products_search_state.dar
 import 'package:trace_mobile/features/products/classes/products_tags_state.dart';
 
 class ProductsAppBarTitle extends StatelessWidget {
-  const ProductsAppBarTitle({Key? key}) : super(key: key);
+  const ProductsAppBarTitle({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -90,7 +90,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-changeBuCode(BuildContext context, GlobalSettings globalSettings) async {
+Future<void> changeBuCode(BuildContext context, GlobalSettings globalSettings) async {
   var result = await showDialog(
     barrierDismissible: false,
     context: context,

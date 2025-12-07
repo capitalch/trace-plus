@@ -8,7 +8,7 @@ import 'package:trace_mobile/features/products/classes/products_search_state.dar
 import 'package:trace_mobile/features/products/classes/products_summary_state.dart';
 
 class ProductsSummary extends StatelessWidget {
-  const ProductsSummary({Key? key}) : super(key: key);
+  const ProductsSummary({super.key});
 
   @override
   Widget build(BuildContext context) {

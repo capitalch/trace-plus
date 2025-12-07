@@ -7,7 +7,7 @@ import 'package:trace_mobile/features/accounts/classes/accounts_general_ledger_d
 import 'package:trace_mobile/features/accounts/classes/accounts_general_ledger_state.dart';
 
 class GeneralLedgerBody extends StatelessWidget {
-  const GeneralLedgerBody({Key? key, required this.accId}) : super(key: key);
+  const GeneralLedgerBody({super.key, required this.accId});
   final int accId;
   @override
   Widget build(BuildContext context) {
@@ -48,8 +48,7 @@ class GeneralLedgerBody extends StatelessWidget {
 }
 
 class GeneralLedgerBodyItems extends StatelessWidget {
-  const GeneralLedgerBodyItems({Key? key, required this.generalLedger})
-      : super(key: key);
+  const GeneralLedgerBodyItems({super.key, required this.generalLedger});
   final GeneralLedgerModel generalLedger;
   @override
   Widget build(BuildContext context) {
@@ -111,8 +110,7 @@ class GeneralLedgerBodyItems extends StatelessWidget {
 
 class GeneralLedgerBodyItem extends StatelessWidget {
   const GeneralLedgerBodyItem(
-      {Key? key, required this.transaction, required this.index})
-      : super(key: key);
+      {super.key, required this.transaction, required this.index});
   final TransactionModel transaction;
   final int index;
   @override

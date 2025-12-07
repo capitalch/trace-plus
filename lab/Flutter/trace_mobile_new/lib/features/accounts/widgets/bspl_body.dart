@@ -9,7 +9,7 @@ import 'package:trace_mobile/features/accounts/classes/accounts_bs_pl_state.dart
 import 'package:trace_mobile/features/accounts/widgets/custom_expansion_tile.dart';
 
 class BsplBody extends StatelessWidget {
-  const BsplBody({Key? key}) : super(key: key);
+  const BsplBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class BsplBody extends StatelessWidget {
     );
   }
 
-  getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
+  List<Widget> getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
     List<Widget> childListOfWidgets = [];
     NumberFormat formatter = NumberFormat('###,###.00');
     var theme = Theme.of(context).textTheme;
@@ -134,17 +134,17 @@ class BsplBody extends StatelessWidget {
           Text(formatter
               .format(('LI'.contains(data.accType) && data.amount !=0) ? -data.amount : data.amount))
         ]),
+        hasChildren: (child['children'] == null) ? false : true,
         children: (child['children'] == null)
             ? [const SizedBox.shrink()]
             : getChildListOfWidgets(context, child['children']),
-        hasChildren: (child['children'] == null) ? false : true,
       );
       childListOfWidgets.add(childWidget);
     }
     return childListOfWidgets;
   }
 
-  setAggregateStateForProfitLoss(
+  void setAggregateStateForProfitLoss(
       {required BuildContext context,
       required List<dynamic> aggregates,
       required double profitOrLoss}) {

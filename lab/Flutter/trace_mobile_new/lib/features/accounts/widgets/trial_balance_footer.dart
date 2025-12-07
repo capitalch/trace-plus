@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/accounts/classes/accounts_trial_balance_state.dart';
 
 class TrialBalanceFooter extends StatelessWidget {
-  const TrialBalanceFooter({Key? key}) : super(key: key);
+  const TrialBalanceFooter({super.key});
 
   @override
   Widget build(BuildContext context) {

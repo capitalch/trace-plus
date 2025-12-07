@@ -6,7 +6,7 @@ import 'package:trace_mobile/features/products/widgets/products_summary.dart';
 import 'package:trace_mobile/features/products/widgets/products_tags.dart';
 
 class ProductsPage extends StatelessWidget {
-  const ProductsPage({Key? key}) : super(key: key);
+  const ProductsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

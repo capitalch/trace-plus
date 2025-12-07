@@ -4,7 +4,7 @@ import 'package:trace_mobile/common/classes/utils.dart';
 import 'package:trace_mobile/features/accounts/classes/accounts_general_ledger_state.dart';
 
 class GeneralLedgerFooter extends StatelessWidget {
-  const GeneralLedgerFooter({Key? key}) : super(key: key);
+  const GeneralLedgerFooter({super.key});
 
   @override
   Widget build(BuildContext context) {
