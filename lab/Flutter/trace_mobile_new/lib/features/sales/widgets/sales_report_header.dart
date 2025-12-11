@@ -5,7 +5,7 @@ import 'package:trace_mobile/features/sales/classes/sales_query_props.dart';
 import 'package:trace_mobile/features/sales/classes/sales_state.dart';
 
 class SalesReportHeader extends StatelessWidget {
-  const SalesReportHeader({super.key});
+  const SalesReportHeader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class SalesReportHeader extends StatelessWidget {
                 'Sale ${props.labelName} (${Utils.toLocalDateString(props.startDate)} to ${Utils.toLocalDateString(props.endDate)})',
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .subtitle2
                     ?.copyWith(fontWeight: FontWeight.bold),
               )));
         });

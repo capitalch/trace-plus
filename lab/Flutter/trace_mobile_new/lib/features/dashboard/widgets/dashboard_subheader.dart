@@ -5,7 +5,7 @@ import 'package:trace_mobile/common/classes/utils.dart';
 import 'package:trace_mobile/features/dashboard/widgets/subheader_fin_year.dart';
 
 class DashboardSubheader extends StatelessWidget {
-  const DashboardSubheader({super.key});
+  const DashboardSubheader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class DashboardSubheader extends StatelessWidget {
               width: 200,
               child: Text(globalSettings.unitInfo['unitName'] ?? '',
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium
+                  style: Theme.of(context).textTheme.bodyText2
                   // ?.copyWith(color: Colors.indigo),
                   ),
             )),

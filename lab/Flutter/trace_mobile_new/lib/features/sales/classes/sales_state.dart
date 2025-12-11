@@ -7,7 +7,7 @@ class SalesState with ChangeNotifier {
 
   String get salesQueryKey => _salesQueryKey;
 
-  void init() {
+  init() {
     _salesQueryKey = 'today';
   }
 
@@ -16,7 +16,7 @@ class SalesState with ChangeNotifier {
     notifyListeners();
   }
 
-  void notify() {
+  notify() {
     notifyToggle = !notifyToggle;
     notifyListeners();
   }

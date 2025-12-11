@@ -34,7 +34,7 @@ void main() {
 }
 
 class TraceApp extends StatelessWidget {
-  const TraceApp({super.key});
+  const TraceApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return (
@@ -97,7 +97,10 @@ class TraceApp extends StatelessWidget {
   }
 
   ThemeData getThemeData() {
+    const textStyle =
+        TextStyle(color: Colors.indigo, fontWeight: FontWeight.w600);
     return ThemeData(
+        backgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0.0,
@@ -106,10 +109,10 @@ class TraceApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
-          textStyle: const WidgetStatePropertyAll(TextStyle(
+          textStyle: const MaterialStatePropertyAll(TextStyle(
             fontSize: 18,
           )),
-          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
           )),
@@ -117,21 +120,21 @@ class TraceApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         scaffoldBackgroundColor: Colors.white,
         textTheme: const TextTheme(
-            displayLarge: TextStyle(
+            headline1: TextStyle(
                 fontSize: 28, fontWeight: FontWeight.w600, color: Colors.black),
-            displayMedium: TextStyle(
+            headline2: TextStyle(
                 fontSize: 26, fontWeight: FontWeight.w600, color: Colors.black),
-            displaySmall: TextStyle(
+            headline3: TextStyle(
                 fontSize: 24, fontWeight: FontWeight.w600, color: Colors.black),
-            headlineMedium: TextStyle(
+            headline4: TextStyle(
                 fontSize: 22, fontWeight: FontWeight.w600, color: Colors.black),
-            headlineSmall: TextStyle(
+            headline5: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black),
-            titleLarge: TextStyle(
+            headline6: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-            titleMedium: TextStyle(fontWeight: FontWeight.bold),
-            titleSmall: TextStyle(fontWeight: FontWeight.bold),
-            bodyLarge: TextStyle(fontWeight: FontWeight.bold),
-            bodyMedium: TextStyle(fontWeight: FontWeight.bold)));
+            subtitle1: TextStyle(fontWeight: FontWeight.bold),
+            subtitle2: TextStyle(fontWeight: FontWeight.bold),
+            bodyText1: TextStyle(fontWeight: FontWeight.bold),
+            bodyText2: TextStyle(fontWeight: FontWeight.bold)));
   }
 }

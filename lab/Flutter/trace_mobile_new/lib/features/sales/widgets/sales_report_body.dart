@@ -9,7 +9,7 @@ import 'package:trace_mobile/features/sales/widgets/sales_list_view_data.dart';
 import 'package:tuple/tuple.dart';
 
 class SalesReportBody extends StatelessWidget {
-  const SalesReportBody({super.key});
+  const SalesReportBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class SalesReportBody extends StatelessWidget {
               dynamic widget = const Text('');
               if (snapshot.connectionState == ConnectionState.waiting) {
                 widget = Text('Loading...',
-                    style: Theme.of(context).textTheme.titleLarge);
+                    style: Theme.of(context).textTheme.headline6);
               } else {
                 if (snapshot.hasError) {
                   widget = const Text('Data error');
@@ -53,7 +53,7 @@ class SalesReportBody extends StatelessWidget {
                     widget = Center(
                       child: Text(
                         'No data',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     );
                   } else {
@@ -75,7 +75,7 @@ class SalesReportBody extends StatelessWidget {
         });
   }
 
-  void setEmptyDataState(BuildContext context) {
+  setEmptyDataState(BuildContext context) {
     Future.delayed(Duration.zero, () {
       context.read<SalesState>().summaryMap = {
         'rows': 0,

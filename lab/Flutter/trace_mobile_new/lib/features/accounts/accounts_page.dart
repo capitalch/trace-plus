@@ -3,7 +3,7 @@ import 'package:trace_mobile/common/classes/routes.dart';
 import 'package:trace_mobile/common/widgets/bu_code_branch_header.dart';
 
 class AccountsPage extends StatelessWidget {
-  const AccountsPage({super.key});
+  const AccountsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class AccountsPage extends StatelessWidget {
                       ),
                       Text(
                         'Accounts',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ],
                   ),
@@ -47,7 +47,7 @@ class AccountsPage extends StatelessWidget {
             tileColor: Colors.grey.shade200,
             title: Text(
               'Trial balance',
-              style: themeStyle.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: themeStyle.subtitle1?.copyWith(fontWeight: FontWeight.bold),
             ),
             onTap: () {
               Navigator.pushNamed(context, Routes.trialBalance);
@@ -60,7 +60,7 @@ class AccountsPage extends StatelessWidget {
             tileColor: Colors.grey.shade200,
             title: Text(
               'Balance sheet',
-              style: themeStyle.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: themeStyle.subtitle1?.copyWith(fontWeight: FontWeight.bold),
             ),
             onTap: () {
               Navigator.pushNamed(context, Routes.bspl, arguments: 'bs');
@@ -73,7 +73,7 @@ class AccountsPage extends StatelessWidget {
             tileColor: Colors.grey.shade200,
             title: Text(
               'Profit and loss account',
-              style: themeStyle.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: themeStyle.subtitle1?.copyWith(fontWeight: FontWeight.bold),
             ),
             onTap: () {
               Navigator.pushNamed(context, Routes.bspl, arguments: 'pl');

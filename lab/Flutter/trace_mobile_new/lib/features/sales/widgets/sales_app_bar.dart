@@ -4,7 +4,7 @@ import 'package:trace_mobile/features/sales/classes/sales_query_props.dart';
 import 'package:trace_mobile/features/sales/classes/sales_state.dart';
 
 class SalesAppBar extends StatelessWidget {
-  const SalesAppBar({super.key});
+  const SalesAppBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class SalesAppBar extends StatelessWidget {
                   ),
                   Text(
                     'Sales',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.headline6,
                   ),
                 ],
               ),
@@ -40,7 +40,7 @@ class SalesAppBar extends StatelessWidget {
         ));
   }
 
-  Iterable<Container> getLabelsLayout(BuildContext context) {
+  getLabelsLayout(BuildContext context) {
     // SalesState salesState = Provider.of<SalesState>(cntext, listen: false);
     List<SalesQueryProps> queryPropsList =
         QueryProps().getSalesQueryPropsList();

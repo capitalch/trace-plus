@@ -1,6 +1,6 @@
-# trace_mobile_new
+# trace_mobile
 
-A new Flutter project.
+Trace mobile project
 
 ## Getting Started
 

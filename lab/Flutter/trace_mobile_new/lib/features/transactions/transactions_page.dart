@@ -7,7 +7,7 @@ import 'package:trace_mobile/features/transactions/widgets/transactions_header.d
 import 'package:trace_mobile/features/transactions/widgets/transactions_summary.dart';
 
 class TransactionsPage extends StatelessWidget {
-  const TransactionsPage({super.key});
+  const TransactionsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

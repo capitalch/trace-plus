@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,7 @@ import 'package:trace_mobile/features/accounts/classes/accounts_bs_pl_state.dart
 import 'package:trace_mobile/features/accounts/widgets/custom_expansion_tile.dart';
 
 class BsplBody extends StatelessWidget {
-  const BsplBody({super.key});
+  const BsplBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class BsplBody extends StatelessWidget {
     return FutureBuilder(
       future: bsplFuture,
       builder: (context, snapshot) {
-        var messageTheme = Theme.of(context).textTheme.titleLarge;
+        var messageTheme = Theme.of(context).textTheme.headline6;
         dynamic widget = const Text('');
         if (snapshot.connectionState == ConnectionState.waiting) {
           widget = Text('Loading...', style: messageTheme);
@@ -101,7 +102,7 @@ class BsplBody extends StatelessWidget {
     );
   }
 
-  List<Widget> getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
+  getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
     List<Widget> childListOfWidgets = [];
     NumberFormat formatter = NumberFormat('###,###.00');
     var theme = Theme.of(context).textTheme;
@@ -124,7 +125,7 @@ class BsplBody extends StatelessWidget {
           Expanded(
             child: Text(
               data.accName,
-              style: theme.titleMedium?.copyWith(
+              style: theme.subtitle1?.copyWith(
                   fontWeight: FontWeight.bold,
                   color:
                       child['children'] == null ? Colors.blue : Colors.black),
@@ -134,17 +135,17 @@ class BsplBody extends StatelessWidget {
           Text(formatter
               .format(('LI'.contains(data.accType) && data.amount !=0) ? -data.amount : data.amount))
         ]),
-        hasChildren: (child['children'] == null) ? false : true,
         children: (child['children'] == null)
             ? [const SizedBox.shrink()]
             : getChildListOfWidgets(context, child['children']),
+        hasChildren: (child['children'] == null) ? false : true,
       );
       childListOfWidgets.add(childWidget);
     }
     return childListOfWidgets;
   }
 
-  void setAggregateStateForProfitLoss(
+  setAggregateStateForProfitLoss(
       {required BuildContext context,
       required List<dynamic> aggregates,
       required double profitOrLoss}) {

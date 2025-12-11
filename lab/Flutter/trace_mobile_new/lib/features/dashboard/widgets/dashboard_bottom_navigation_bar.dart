@@ -5,7 +5,7 @@ import 'package:trace_mobile/common/classes/graphql_queries.dart';
 import 'package:trace_mobile/common/classes/routes.dart';
 
 class DashboardBottomNavigationBar extends StatelessWidget {
-  const DashboardBottomNavigationBar({super.key});
+  const DashboardBottomNavigationBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class DashboardBottomNavigationBar extends StatelessWidget {
       },
       selectedItemColor: Colors.indigo.shade700,
       iconSize: 30,
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.backgroundColor,
       type: BottomNavigationBarType.fixed,
     );
   }

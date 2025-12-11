@@ -6,7 +6,7 @@ import 'package:trace_mobile/features/products/widgets/products_summary.dart';
 import 'package:trace_mobile/features/products/widgets/products_tags.dart';
 
 class ProductsPage extends StatelessWidget {
-  const ProductsPage({super.key});
+  const ProductsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class ProductsPage extends StatelessWidget {
                       return Center(
                         child: Text(
                           'Loading....',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: Theme.of(context).textTheme.headline6,
                         ),
                       );
                     default:
@@ -42,7 +42,7 @@ class ProductsPage extends StatelessWidget {
                           child: Text(
                             'Error: ${snapshot.error}',
                             style:
-                                TextStyle(color: Theme.of(context).colorScheme.error),
+                                TextStyle(color: Theme.of(context).errorColor),
                           ),
                         );
                       } else if (snapshot.hasData) {
@@ -53,7 +53,7 @@ class ProductsPage extends StatelessWidget {
                           return Center(
                             child: Text(
                               'No data',
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.headline6,
                             ),
                           );
                         } else {
@@ -65,7 +65,7 @@ class ProductsPage extends StatelessWidget {
                         return Center(
                           child: Text(
                             'No data',
-                            style: Theme.of(context).textTheme.titleLarge,
+                            style: Theme.of(context).textTheme.headline6,
                           ),
                         );
                       }

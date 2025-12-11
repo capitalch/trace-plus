@@ -7,7 +7,7 @@ import 'package:trace_mobile/common/widgets/bu_code_branch_header.dart';
 import 'package:trace_mobile/features/health/business_health_model.dart';
 
 class BusinessHealth extends StatelessWidget {
-  const BusinessHealth({super.key});
+  const BusinessHealth({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class BusinessHealth extends StatelessWidget {
                       ),
                       Text(
                         'Business health',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ],
                   ),
@@ -49,7 +49,7 @@ class BusinessHealth extends StatelessWidget {
 }
 
 class BusinessHealthBody extends StatelessWidget {
-  const BusinessHealthBody({super.key});
+  const BusinessHealthBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class BusinessHealthBody extends StatelessWidget {
     return FutureBuilder(
       future: businessHealthFuture,
       builder: (context, snapshot) {
-        var messageTheme = Theme.of(context).textTheme.titleLarge;
+        var messageTheme = Theme.of(context).textTheme.headline6;
         dynamic widget = const Text('');
         if (snapshot.connectionState == ConnectionState.waiting) {
           widget = Text('Loading...', style: messageTheme);
@@ -90,7 +90,8 @@ class BusinessHealthBody extends StatelessWidget {
 }
 
 class BusinessHealthBodyContent extends StatelessWidget {
-  const BusinessHealthBodyContent({super.key, required this.businessHealth});
+  const BusinessHealthBodyContent({Key? key, required this.businessHealth})
+      : super(key: key);
   final BusinessHealthModel businessHealth;
   @override
   Widget build(BuildContext context) {
@@ -107,7 +108,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               getAccName(trialBalanceMap, 9, 'accName'),
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 -getClosing(trialBalanceMap, 9, 'closing').toDouble()))
@@ -123,7 +124,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               getAccName(trialBalanceMap, 22, 'accName'),
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 getClosing(trialBalanceMap, 22, 'closing').toDouble()))
@@ -139,7 +140,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               getAccName(trialBalanceMap, 16, 'accName'),
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 getClosing(trialBalanceMap, 16, 'closing').toDouble()))
@@ -155,7 +156,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               getAccName(trialBalanceMap, 17, 'accName'),
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 getClosing(trialBalanceMap, 17, 'closing').toDouble()))
@@ -171,7 +172,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               getAccName(trialBalanceMap, 26, 'accName'),
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 getClosing(trialBalanceMap, 26, 'closing').toDouble()))
@@ -187,7 +188,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               getAccName(trialBalanceMap, 30, 'accName'),
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 -getClosing(trialBalanceMap, 30, 'closing').toDouble()))
@@ -203,7 +204,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               'Opening stock:',
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 businessHealth.openingClosingStock.openingValue.toDouble()))
@@ -218,7 +219,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               'Opening stock(Gst):',
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(businessHealth
                 .openingClosingStock.openingValueWithGst
@@ -234,7 +235,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               'Closing stock:',
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 businessHealth.openingClosingStock.closingValue.toDouble()))
@@ -249,7 +250,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               'Closing stock(Gst):',
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(businessHealth
                 .openingClosingStock.closingValueWithGst
@@ -265,7 +266,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               '(a) Profit or loss as per balance sheet:',
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             Text(Utils.toFormattedNumberInLaks(
                 businessHealth.profitLoss.toDouble()))
@@ -304,13 +305,13 @@ class BusinessHealthBodyContent extends StatelessWidget {
           children: [
             Text(
               'Business index (a + b):',
-              style: theme.titleLarge,
+              style: theme.headline6,
             ),
             Text(
               Utils.toFormattedNumberInLaks(
                   businessHealth.profitLoss.toDouble() +
                       businessHealth.stockDiff.diffGst.toDouble()),
-              style: theme.titleLarge,
+              style: theme.headline6,
             )
           ],
         )
@@ -334,7 +335,7 @@ class BusinessHealthBodyContent extends StatelessWidget {
     return closing;
   }
 
-  Map<int, dynamic> getTrialBalanceMap(List<dynamic> trialBalanceList) {
+  getTrialBalanceMap(List<dynamic> trialBalanceList) {
     Map<int, dynamic> map = {};
     for (var item in trialBalanceList) {
       map[item['id']] = {

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/transactions/classes/transactions_state.dart';
 
 class TransactionsHeader extends StatelessWidget{
-  const TransactionsHeader({super.key});
+  const TransactionsHeader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class TransactionsHeader extends StatelessWidget{
             'Transactions last ${value.queryKey} rows',
             style: Theme.of(context)
                 .textTheme
-                .titleMedium
+                .subtitle1
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
         );

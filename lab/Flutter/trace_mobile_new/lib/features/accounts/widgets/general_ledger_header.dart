@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class GeneralLedgerHeader extends StatelessWidget {
-  const GeneralLedgerHeader({super.key, required this.accName});
+  const GeneralLedgerHeader({Key? key, required this.accName})
+      : super(key: key);
   final String accName;
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class GeneralLedgerHeader extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Text(
         accName,
-        style: theme.titleMedium,
+        style: theme.subtitle1,
       ),
     );
   }

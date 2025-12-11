@@ -3,7 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:trace_mobile/features/products/classes/indexed_item.dart';
 
 class ProductsCardItem extends StatelessWidget {
-  const ProductsCardItem({super.key, required this.indexedItem, required this.index});
+  const ProductsCardItem({Key? key, required this.indexedItem, required this.index})
+      : super(key: key);
   final IndexedItem indexedItem;
   final int index;
 
@@ -53,7 +54,7 @@ class ProductsCardItem extends StatelessWidget {
               ListTile(
                   leading: Text(
                     index.toString(),
-                    style: theme.textTheme.titleMedium
+                    style: theme.textTheme.subtitle1
                         ?.copyWith(color: Colors.brown),
                   ),
                   title: Text(
@@ -65,7 +66,7 @@ class ProductsCardItem extends StatelessWidget {
                   ),
                   subtitle: Text(
                     subTitle ?? '',
-                    style: theme.textTheme.bodyLarge,
+                    style: theme.textTheme.bodyText1,
                   ),
                   dense: true,
                   trailing: CircleAvatar(
@@ -75,7 +76,7 @@ class ProductsCardItem extends StatelessWidget {
                           : Colors.grey.shade800,
                       child: Text(
                         close.toStringAsFixed(0),
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: theme.textTheme.subtitle2?.copyWith(
                             color: (indexedItem.clos == 0)
                                 ? Colors.black
                                 : Colors.white),

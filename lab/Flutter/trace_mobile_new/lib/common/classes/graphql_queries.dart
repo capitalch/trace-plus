@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:gql/src/ast/ast.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:trace_mobile/common/classes/global_settings.dart';
 
 class GraphQLQueries {
-  static DocumentNode login(String credentials) {
+  static login(String credentials) {
     return gql('''query login {
          authentication {
          doLogin(credentials:"$credentials")
@@ -27,7 +26,7 @@ class GraphQLQueries {
           }
         }
     ''');
-    return globalSettings.getGraphQLMainClient().query(
+    return globalSettings.getGraphQLMainClient()?.query(
         QueryOptions(document: gq, operationName: 'genericUpdateMaster'));
   }
 
@@ -50,7 +49,7 @@ class GraphQLQueries {
         }
       }
     ''');
-    return globalSettings.getGraphQLMainClient().query(
+    return globalSettings.getGraphQLMainClient()?.query(
       QueryOptions(document: gq, operationName: 'genericView'),
     );
   }

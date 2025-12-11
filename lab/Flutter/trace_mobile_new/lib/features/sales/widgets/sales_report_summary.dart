@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/sales/classes/sales_state.dart';
 
 class SalesReportSummary extends StatelessWidget {
-  const SalesReportSummary({super.key});
+  const SalesReportSummary({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var formatter = NumberFormat('#,##,000');
     var theme = Theme.of(context)
         .textTheme
-        .titleSmall
+        .subtitle2
         ?.copyWith(fontWeight: FontWeight.bold);
     return Selector<SalesState, Map<String, double>>(
       selector: (p0, p1) => p1.summaryMap,

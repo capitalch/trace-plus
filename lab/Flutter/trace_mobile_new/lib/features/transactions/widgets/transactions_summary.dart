@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/transactions/classes/transactions_state.dart';
 
 class TransactionsSummary extends StatelessWidget {
-  const TransactionsSummary({super.key});
+  const TransactionsSummary({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var formatter = NumberFormat('#,##,000');
     var theme = Theme.of(context)
         .textTheme
-        .titleSmall
+        .subtitle2
         ?.copyWith(fontWeight: FontWeight.bold);
     TransactionsState transactionsState = context.read<TransactionsState>();
     return Selector<TransactionsState, int>(

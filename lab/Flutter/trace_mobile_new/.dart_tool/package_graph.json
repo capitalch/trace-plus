@@ -26,7 +26,7 @@
     },
     {
       "name": "flutter_lints",
-      "version": "6.0.0",
+      "version": "2.0.1",
       "dependencies": [
         "lints"
       ]
@@ -51,46 +51,46 @@
     },
     {
       "name": "tuple",
-      "version": "2.0.2",
-      "dependencies": []
+      "version": "2.0.0",
+      "dependencies": [
+        "quiver"
+      ]
     },
     {
       "name": "intl",
-      "version": "0.20.2",
+      "version": "0.17.0",
       "dependencies": [
         "clock",
-        "meta",
         "path"
       ]
     },
     {
       "name": "rxdart",
-      "version": "0.28.0",
+      "version": "0.27.4",
       "dependencies": []
     },
     {
       "name": "syncfusion_flutter_datagrid",
-      "version": "31.2.16",
+      "version": "20.1.60",
       "dependencies": [
         "collection",
         "flutter",
-        "intl",
         "syncfusion_flutter_core"
       ]
     },
     {
       "name": "http",
-      "version": "1.6.0",
+      "version": "0.13.4",
       "dependencies": [
         "async",
         "http_parser",
         "meta",
-        "web"
+        "path"
       ]
     },
     {
       "name": "google_fonts",
-      "version": "6.3.3",
+      "version": "3.0.1",
       "dependencies": [
         "crypto",
         "flutter",
@@ -100,7 +100,7 @@
     },
     {
       "name": "flutter_secure_storage",
-      "version": "9.2.4",
+      "version": "5.0.2",
       "dependencies": [
         "flutter",
         "flutter_secure_storage_linux",
@@ -113,7 +113,7 @@
     },
     {
       "name": "graphql_flutter",
-      "version": "5.2.1",
+      "version": "5.1.0",
       "dependencies": [
         "connectivity_plus",
         "flutter",
@@ -129,7 +129,7 @@
     },
     {
       "name": "provider",
-      "version": "6.1.5+1",
+      "version": "6.0.3",
       "dependencies": [
         "collection",
         "flutter",
@@ -138,7 +138,7 @@
     },
     {
       "name": "cupertino_icons",
-      "version": "1.0.8",
+      "version": "1.0.5",
       "dependencies": []
     },
     {
@@ -155,7 +155,7 @@
     },
     {
       "name": "lints",
-      "version": "6.0.0",
+      "version": "2.0.0",
       "dependencies": []
     },
     {
@@ -243,21 +243,23 @@
       ]
     },
     {
+      "name": "quiver",
+      "version": "3.1.0",
+      "dependencies": [
+        "matcher"
+      ]
+    },
+    {
       "name": "syncfusion_flutter_core",
-      "version": "31.2.16",
+      "version": "20.1.60",
       "dependencies": [
         "flutter",
         "vector_math"
       ]
     },
     {
-      "name": "web",
-      "version": "1.1.1",
-      "dependencies": []
-    },
-    {
       "name": "http_parser",
-      "version": "4.1.2",
+      "version": "4.0.1",
       "dependencies": [
         "collection",
         "source_span",
@@ -266,47 +268,36 @@
       ]
     },
     {
-      "name": "async",
-      "version": "2.13.0",
-      "dependencies": [
-        "collection",
-        "meta"
-      ]
-    },
-    {
-      "name": "path_provider",
-      "version": "2.1.5",
-      "dependencies": [
-        "flutter",
-        "path_provider_android",
-        "path_provider_foundation",
-        "path_provider_linux",
-        "path_provider_platform_interface",
-        "path_provider_windows"
-      ]
-    },
-    {
       "name": "crypto",
-      "version": "3.0.7",
+      "version": "3.0.2",
       "dependencies": [
         "typed_data"
       ]
     },
     {
-      "name": "flutter_secure_storage_windows",
-      "version": "3.1.2",
+      "name": "path_provider",
+      "version": "2.0.11",
       "dependencies": [
-        "ffi",
         "flutter",
-        "flutter_secure_storage_platform_interface",
-        "path",
-        "path_provider",
-        "win32"
+        "path_provider_android",
+        "path_provider_ios",
+        "path_provider_linux",
+        "path_provider_macos",
+        "path_provider_platform_interface",
+        "path_provider_windows"
+      ]
+    },
+    {
+      "name": "flutter_secure_storage_windows",
+      "version": "1.1.2",
+      "dependencies": [
+        "flutter",
+        "flutter_secure_storage_platform_interface"
       ]
     },
     {
       "name": "flutter_secure_storage_web",
-      "version": "1.2.1",
+      "version": "1.0.2",
       "dependencies": [
         "flutter",
         "flutter_secure_storage_platform_interface",
@@ -316,7 +307,7 @@
     },
     {
       "name": "flutter_secure_storage_platform_interface",
-      "version": "1.1.2",
+      "version": "1.0.0",
       "dependencies": [
         "flutter",
         "plugin_platform_interface"
@@ -324,7 +315,7 @@
     },
     {
       "name": "flutter_secure_storage_macos",
-      "version": "3.1.3",
+      "version": "1.1.0",
       "dependencies": [
         "flutter",
         "flutter_secure_storage_platform_interface"
@@ -332,7 +323,7 @@
     },
     {
       "name": "flutter_secure_storage_linux",
-      "version": "1.2.3",
+      "version": "1.1.0",
       "dependencies": [
         "flutter",
         "flutter_secure_storage_platform_interface"
@@ -340,21 +331,21 @@
     },
     {
       "name": "flutter_hooks",
-      "version": "0.21.3+1",
+      "version": "0.18.5",
       "dependencies": [
         "flutter"
       ]
     },
     {
       "name": "plugin_platform_interface",
-      "version": "2.1.8",
+      "version": "2.1.2",
       "dependencies": [
         "meta"
       ]
     },
     {
       "name": "hive",
-      "version": "2.2.3",
+      "version": "2.2.2",
       "dependencies": [
         "crypto",
         "meta"
@@ -362,20 +353,19 @@
     },
     {
       "name": "connectivity_plus",
-      "version": "6.1.5",
+      "version": "2.3.4",
       "dependencies": [
-        "collection",
+        "connectivity_plus_linux",
+        "connectivity_plus_macos",
         "connectivity_plus_platform_interface",
-        "flutter",
-        "flutter_web_plugins",
-        "meta",
-        "nm",
-        "web"
+        "connectivity_plus_web",
+        "connectivity_plus_windows",
+        "flutter"
       ]
     },
     {
       "name": "gql_exec",
-      "version": "1.1.1-alpha+1699813812660",
+      "version": "0.4.0",
       "dependencies": [
         "collection",
         "gql",
@@ -384,7 +374,7 @@
     },
     {
       "name": "graphql",
-      "version": "5.2.3",
+      "version": "5.1.1",
       "dependencies": [
         "collection",
         "gql",
@@ -394,7 +384,7 @@
         "gql_http_link",
         "gql_link",
         "gql_transform_link",
-        "hive_ce",
+        "hive",
         "http",
         "meta",
         "normalize",
@@ -430,6 +420,316 @@
       "dependencies": []
     },
     {
+      "name": "term_glyph",
+      "version": "1.2.1",
+      "dependencies": []
+    },
+    {
+      "name": "string_scanner",
+      "version": "1.1.1",
+      "dependencies": [
+        "source_span"
+      ]
+    },
+    {
+      "name": "source_span",
+      "version": "1.9.0",
+      "dependencies": [
+        "collection",
+        "path",
+        "term_glyph"
+      ]
+    },
+    {
+      "name": "boolean_selector",
+      "version": "2.1.0",
+      "dependencies": [
+        "source_span",
+        "string_scanner"
+      ]
+    },
+    {
+      "name": "typed_data",
+      "version": "1.3.1",
+      "dependencies": [
+        "collection"
+      ]
+    },
+    {
+      "name": "path_provider_windows",
+      "version": "2.1.0",
+      "dependencies": [
+        "ffi",
+        "flutter",
+        "path",
+        "path_provider_platform_interface",
+        "win32"
+      ]
+    },
+    {
+      "name": "path_provider_platform_interface",
+      "version": "2.0.4",
+      "dependencies": [
+        "flutter",
+        "platform",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "path_provider_macos",
+      "version": "2.0.6",
+      "dependencies": [
+        "flutter",
+        "path_provider_platform_interface"
+      ]
+    },
+    {
+      "name": "path_provider_linux",
+      "version": "2.1.7",
+      "dependencies": [
+        "ffi",
+        "flutter",
+        "path",
+        "path_provider_platform_interface",
+        "xdg_directories"
+      ]
+    },
+    {
+      "name": "path_provider_ios",
+      "version": "2.0.10",
+      "dependencies": [
+        "flutter",
+        "path_provider_platform_interface"
+      ]
+    },
+    {
+      "name": "path_provider_android",
+      "version": "2.0.15",
+      "dependencies": [
+        "flutter",
+        "path_provider_platform_interface"
+      ]
+    },
+    {
+      "name": "js",
+      "version": "0.6.4",
+      "dependencies": []
+    },
+    {
+      "name": "flutter_web_plugins",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "connectivity_plus_windows",
+      "version": "1.2.2",
+      "dependencies": [
+        "connectivity_plus_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "connectivity_plus_web",
+      "version": "1.2.2",
+      "dependencies": [
+        "connectivity_plus_platform_interface",
+        "flutter",
+        "flutter_web_plugins"
+      ]
+    },
+    {
+      "name": "connectivity_plus_macos",
+      "version": "1.2.3",
+      "dependencies": [
+        "connectivity_plus_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "connectivity_plus_linux",
+      "version": "1.3.1",
+      "dependencies": [
+        "connectivity_plus_platform_interface",
+        "flutter",
+        "meta",
+        "nm"
+      ]
+    },
+    {
+      "name": "connectivity_plus_platform_interface",
+      "version": "1.2.1",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "gql",
+      "version": "0.13.1",
+      "dependencies": [
+        "collection",
+        "meta",
+        "source_span"
+      ]
+    },
+    {
+      "name": "uuid",
+      "version": "3.0.6",
+      "dependencies": [
+        "crypto"
+      ]
+    },
+    {
+      "name": "web_socket_channel",
+      "version": "2.2.0",
+      "dependencies": [
+        "async",
+        "crypto",
+        "stream_channel"
+      ]
+    },
+    {
+      "name": "normalize",
+      "version": "0.6.0+1",
+      "dependencies": [
+        "collection",
+        "gql"
+      ]
+    },
+    {
+      "name": "gql_dedupe_link",
+      "version": "2.0.2",
+      "dependencies": [
+        "async",
+        "gql_exec",
+        "gql_link",
+        "meta"
+      ]
+    },
+    {
+      "name": "gql_error_link",
+      "version": "0.2.2",
+      "dependencies": [
+        "async",
+        "gql_exec",
+        "gql_link",
+        "meta"
+      ]
+    },
+    {
+      "name": "gql_transform_link",
+      "version": "0.2.2",
+      "dependencies": [
+        "gql_exec",
+        "gql_link"
+      ]
+    },
+    {
+      "name": "gql_http_link",
+      "version": "0.4.2",
+      "dependencies": [
+        "gql",
+        "gql_exec",
+        "gql_link",
+        "http",
+        "http_parser",
+        "meta"
+      ]
+    },
+    {
+      "name": "gql_link",
+      "version": "0.4.2",
+      "dependencies": [
+        "gql",
+        "gql_exec",
+        "meta"
+      ]
+    },
+    {
+      "name": "win32",
+      "version": "2.7.0",
+      "dependencies": [
+        "ffi"
+      ]
+    },
+    {
+      "name": "ffi",
+      "version": "2.0.0",
+      "dependencies": []
+    },
+    {
+      "name": "platform",
+      "version": "3.1.0",
+      "dependencies": []
+    },
+    {
+      "name": "xdg_directories",
+      "version": "0.2.0+1",
+      "dependencies": [
+        "meta",
+        "path",
+        "process"
+      ]
+    },
+    {
+      "name": "nm",
+      "version": "0.5.0",
+      "dependencies": [
+        "dbus"
+      ]
+    },
+    {
+      "name": "process",
+      "version": "4.2.4",
+      "dependencies": [
+        "file",
+        "path",
+        "platform"
+      ]
+    },
+    {
+      "name": "dbus",
+      "version": "0.7.5",
+      "dependencies": [
+        "args",
+        "ffi",
+        "meta",
+        "xml"
+      ]
+    },
+    {
+      "name": "file",
+      "version": "6.1.2",
+      "dependencies": [
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "xml",
+      "version": "6.1.0",
+      "dependencies": [
+        "collection",
+        "meta",
+        "petitparser"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.3.1",
+      "dependencies": []
+    },
+    {
+      "name": "petitparser",
+      "version": "5.0.0",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
       "name": "leak_tracker_testing",
       "version": "3.0.2",
       "dependencies": [
@@ -450,224 +750,10 @@
       ]
     },
     {
-      "name": "term_glyph",
-      "version": "1.2.2",
-      "dependencies": []
-    },
-    {
-      "name": "string_scanner",
-      "version": "1.4.1",
-      "dependencies": [
-        "source_span"
-      ]
-    },
-    {
-      "name": "source_span",
-      "version": "1.10.1",
+      "name": "async",
+      "version": "2.13.0",
       "dependencies": [
         "collection",
-        "path",
-        "term_glyph"
-      ]
-    },
-    {
-      "name": "boolean_selector",
-      "version": "2.1.2",
-      "dependencies": [
-        "source_span",
-        "string_scanner"
-      ]
-    },
-    {
-      "name": "typed_data",
-      "version": "1.4.0",
-      "dependencies": [
-        "collection"
-      ]
-    },
-    {
-      "name": "path_provider_windows",
-      "version": "2.3.0",
-      "dependencies": [
-        "ffi",
-        "flutter",
-        "path",
-        "path_provider_platform_interface"
-      ]
-    },
-    {
-      "name": "path_provider_platform_interface",
-      "version": "2.1.2",
-      "dependencies": [
-        "flutter",
-        "platform",
-        "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "path_provider_linux",
-      "version": "2.2.1",
-      "dependencies": [
-        "ffi",
-        "flutter",
-        "path",
-        "path_provider_platform_interface",
-        "xdg_directories"
-      ]
-    },
-    {
-      "name": "path_provider_foundation",
-      "version": "2.5.1",
-      "dependencies": [
-        "flutter",
-        "path_provider_platform_interface"
-      ]
-    },
-    {
-      "name": "path_provider_android",
-      "version": "2.2.22",
-      "dependencies": [
-        "flutter",
-        "path_provider_platform_interface"
-      ]
-    },
-    {
-      "name": "win32",
-      "version": "5.15.0",
-      "dependencies": [
-        "ffi"
-      ]
-    },
-    {
-      "name": "ffi",
-      "version": "2.1.4",
-      "dependencies": []
-    },
-    {
-      "name": "js",
-      "version": "0.6.7",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
-      "name": "flutter_web_plugins",
-      "version": "0.0.0",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
-      "name": "nm",
-      "version": "0.5.0",
-      "dependencies": [
-        "dbus"
-      ]
-    },
-    {
-      "name": "connectivity_plus_platform_interface",
-      "version": "2.0.1",
-      "dependencies": [
-        "flutter",
-        "meta",
-        "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "gql",
-      "version": "1.0.1",
-      "dependencies": [
-        "collection",
-        "meta",
-        "source_span",
-        "yaml"
-      ]
-    },
-    {
-      "name": "uuid",
-      "version": "4.5.2",
-      "dependencies": [
-        "crypto",
-        "fixnum",
-        "meta"
-      ]
-    },
-    {
-      "name": "web_socket_channel",
-      "version": "3.0.3",
-      "dependencies": [
-        "async",
-        "crypto",
-        "stream_channel",
-        "web",
-        "web_socket"
-      ]
-    },
-    {
-      "name": "normalize",
-      "version": "0.9.1",
-      "dependencies": [
-        "collection",
-        "gql"
-      ]
-    },
-    {
-      "name": "hive_ce",
-      "version": "2.15.1",
-      "dependencies": [
-        "crypto",
-        "isolate_channel",
-        "json_annotation",
-        "meta",
-        "web"
-      ]
-    },
-    {
-      "name": "gql_dedupe_link",
-      "version": "2.0.4-alpha+1715521079596",
-      "dependencies": [
-        "async",
-        "gql_exec",
-        "gql_link",
-        "meta"
-      ]
-    },
-    {
-      "name": "gql_error_link",
-      "version": "1.0.1",
-      "dependencies": [
-        "async",
-        "gql_exec",
-        "gql_link",
-        "meta"
-      ]
-    },
-    {
-      "name": "gql_transform_link",
-      "version": "1.0.1",
-      "dependencies": [
-        "gql_exec",
-        "gql_link"
-      ]
-    },
-    {
-      "name": "gql_http_link",
-      "version": "1.2.0",
-      "dependencies": [
-        "gql",
-        "gql_exec",
-        "gql_link",
-        "http",
-        "http_parser",
-        "meta"
-      ]
-    },
-    {
-      "name": "gql_link",
-      "version": "1.1.0",
-      "dependencies": [
-        "gql",
-        "gql_exec",
         "meta"
       ]
     },
@@ -675,84 +761,6 @@
       "name": "vm_service",
       "version": "15.0.2",
       "dependencies": []
-    },
-    {
-      "name": "platform",
-      "version": "3.1.6",
-      "dependencies": []
-    },
-    {
-      "name": "xdg_directories",
-      "version": "1.1.0",
-      "dependencies": [
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "dbus",
-      "version": "0.7.11",
-      "dependencies": [
-        "args",
-        "ffi",
-        "meta",
-        "xml"
-      ]
-    },
-    {
-      "name": "yaml",
-      "version": "3.1.3",
-      "dependencies": [
-        "collection",
-        "source_span",
-        "string_scanner"
-      ]
-    },
-    {
-      "name": "fixnum",
-      "version": "1.1.1",
-      "dependencies": []
-    },
-    {
-      "name": "web_socket",
-      "version": "1.0.1",
-      "dependencies": [
-        "web"
-      ]
-    },
-    {
-      "name": "json_annotation",
-      "version": "4.9.0",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
-      "name": "isolate_channel",
-      "version": "0.2.2+1",
-      "dependencies": []
-    },
-    {
-      "name": "xml",
-      "version": "6.6.1",
-      "dependencies": [
-        "collection",
-        "meta",
-        "petitparser"
-      ]
-    },
-    {
-      "name": "args",
-      "version": "2.7.0",
-      "dependencies": []
-    },
-    {
-      "name": "petitparser",
-      "version": "7.0.1",
-      "dependencies": [
-        "collection",
-        "meta"
-      ]
     }
   ],
   "configVersion": 1

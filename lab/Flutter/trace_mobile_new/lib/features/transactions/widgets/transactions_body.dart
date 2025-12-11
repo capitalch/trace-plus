@@ -8,7 +8,7 @@ import 'package:trace_mobile/features/transactions/classes/transactions_state.da
 import 'package:trace_mobile/features/transactions/classes/transaction_types.dart';
 
 class TransactionsBody extends StatelessWidget {
-  const TransactionsBody({super.key});
+  const TransactionsBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class TransactionsBody extends StatelessWidget {
         return FutureBuilder(
           future: transactionsFuture,
           builder: (context, snapshot) {
-            var messageTheme = Theme.of(context).textTheme.titleLarge;
+            var messageTheme = Theme.of(context).textTheme.headline6;
             dynamic widget = const Text('');
             if (snapshot.connectionState == ConnectionState.waiting) {
               widget = Text('Loading...', style: messageTheme);
@@ -72,7 +72,8 @@ class TransactionsBody extends StatelessWidget {
 }
 
 class TransactionsListViewData extends StatelessWidget {
-  const TransactionsListViewData({super.key, required this.transactionsDataListModel});
+  const TransactionsListViewData({Key? key, required this.transactionsDataListModel})
+      : super(key: key);
 
   final List<TransactionsDataModel> transactionsDataListModel;
 
@@ -90,7 +91,8 @@ class TransactionsListViewData extends StatelessWidget {
 }
 
 class TransactionsCardListItem extends StatelessWidget {
-  const TransactionsCardListItem({super.key, required this.itemModel});
+  const TransactionsCardListItem({Key? key, required this.itemModel})
+      : super(key: key);
 
   final TransactionsDataModel itemModel;
 
@@ -109,7 +111,7 @@ class TransactionsCardListItem extends StatelessWidget {
     );
   }
 
-  Container getRowOne(BuildContext context) {
+  getRowOne(BuildContext context) {
     var formatter = NumberFormat('#,##,###');
     var dateFormatter = DateFormat('dd/MM/yyyy');
     var labelLarge = Theme.of(context).textTheme.labelLarge;
@@ -154,7 +156,7 @@ class TransactionsCardListItem extends StatelessWidget {
     return ret;
   }
 
-  Container getRowTwo(BuildContext context) {
+  getRowTwo(BuildContext context) {
     var textTheme = Theme.of(context).textTheme;
     var indexWidget = Container(
         padding: const EdgeInsets.only(right: 20),

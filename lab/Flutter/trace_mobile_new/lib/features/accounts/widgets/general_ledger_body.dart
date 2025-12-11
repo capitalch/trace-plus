@@ -7,7 +7,7 @@ import 'package:trace_mobile/features/accounts/classes/accounts_general_ledger_d
 import 'package:trace_mobile/features/accounts/classes/accounts_general_ledger_state.dart';
 
 class GeneralLedgerBody extends StatelessWidget {
-  const GeneralLedgerBody({super.key, required this.accId});
+  const GeneralLedgerBody({Key? key, required this.accId}) : super(key: key);
   final int accId;
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class GeneralLedgerBody extends StatelessWidget {
     return FutureBuilder(
       future: generalLedgerFuture,
       builder: (context, snapshot) {
-        var messageTheme = Theme.of(context).textTheme.titleLarge;
+        var messageTheme = Theme.of(context).textTheme.headline6;
         dynamic widget = const Text('');
         if (snapshot.connectionState == ConnectionState.waiting) {
           widget = Text('Loading...', style: messageTheme);
@@ -48,7 +48,8 @@ class GeneralLedgerBody extends StatelessWidget {
 }
 
 class GeneralLedgerBodyItems extends StatelessWidget {
-  const GeneralLedgerBodyItems({super.key, required this.generalLedger});
+  const GeneralLedgerBodyItems({Key? key, required this.generalLedger})
+      : super(key: key);
   final GeneralLedgerModel generalLedger;
   @override
   Widget build(BuildContext context) {
@@ -74,16 +75,16 @@ class GeneralLedgerBodyItems extends StatelessWidget {
         ListTile(
             title: Text(
               'Opening balance',
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             trailing: (opBalanceDC == 'D')
                 ? Text(
                     '${Utils.toFormattedNumber(opBalance)} Dr',
-                    style: theme.bodyLarge?.copyWith(color: Colors.lightBlue),
+                    style: theme.bodyText1?.copyWith(color: Colors.lightBlue),
                   )
                 : Text(
                     '${Utils.toFormattedNumber(opBalance)} Cr',
-                    style: theme.bodyLarge?.copyWith(color: Colors.red),
+                    style: theme.bodyText1?.copyWith(color: Colors.red),
                   )),
         ...transactions.map((
           e,
@@ -92,16 +93,16 @@ class GeneralLedgerBodyItems extends StatelessWidget {
         ListTile(
             title: Text(
               'Closing balance',
-              style: theme.bodyLarge,
+              style: theme.bodyText1,
             ),
             trailing: (closBalance >= 0)
                 ? Text(
                     '${Utils.toFormattedNumber(closBalance)} Dr',
-                    style: theme.bodyLarge?.copyWith(color: Colors.lightBlue),
+                    style: theme.bodyText1?.copyWith(color: Colors.lightBlue),
                   )
                 : Text(
                     '${Utils.toFormattedNumber(closBalance.abs())} Cr',
-                    style: theme.bodyLarge?.copyWith(color: Colors.red),
+                    style: theme.bodyText1?.copyWith(color: Colors.red),
                   ))
       ],
     );
@@ -110,7 +111,8 @@ class GeneralLedgerBodyItems extends StatelessWidget {
 
 class GeneralLedgerBodyItem extends StatelessWidget {
   const GeneralLedgerBodyItem(
-      {super.key, required this.transaction, required this.index});
+      {Key? key, required this.transaction, required this.index})
+      : super(key: key);
   final TransactionModel transaction;
   final int index;
   @override
@@ -136,10 +138,10 @@ class GeneralLedgerBodyItem extends StatelessWidget {
                   (transaction.debit == 0)
                       ? Text(
                           '${Utils.toFormattedNumber(transaction.credit)} Cr',
-                          style: theme.bodyLarge?.copyWith(color: Colors.red))
+                          style: theme.bodyText1?.copyWith(color: Colors.red))
                       : Text(
                           '${Utils.toFormattedNumber(transaction.debit)} Dr',
-                          style: theme.bodyLarge
+                          style: theme.bodyText1
                               ?.copyWith(color: Colors.lightBlue),
                         )
                 ],

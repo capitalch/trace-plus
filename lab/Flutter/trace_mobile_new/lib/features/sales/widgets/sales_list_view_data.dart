@@ -5,7 +5,7 @@ import 'package:trace_mobile/features/sales/classes/sales_state.dart';
 import 'package:trace_mobile/features/sales/widgets/sales_card_list_item.dart';
 
 class SalesListViewData extends StatelessWidget {
-  const SalesListViewData({super.key, required this.dataList});
+  const SalesListViewData({Key? key, required this.dataList}) : super(key: key);
 
   final List<dynamic> dataList;
   @override
@@ -14,9 +14,7 @@ class SalesListViewData extends StatelessWidget {
     var salesState = context.read<SalesState>();
     return RefreshIndicator(
       onRefresh: () {
-        return Future.delayed(Duration.zero, () {
-          salesState.notify();
-        });
+        return Future.delayed(Duration.zero, salesState.notify());
       },
       child: ListView.builder(
         itemCount: dataList.length,
@@ -29,7 +27,7 @@ class SalesListViewData extends StatelessWidget {
     );
   }
 
-  void resolveSalesSummary(BuildContext context, List<dynamic> dataList) {
+  resolveSalesSummary(BuildContext context, List<dynamic> dataList) {
     double rows = dataList.length.toDouble(),
         qty = 0,
         sale = 0,

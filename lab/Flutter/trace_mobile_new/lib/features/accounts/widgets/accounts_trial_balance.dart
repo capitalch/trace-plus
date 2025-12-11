@@ -5,7 +5,7 @@ import 'package:trace_mobile/features/accounts/widgets/trial_balance_footer.dart
 import 'package:trace_mobile/features/accounts/widgets/trial_balance_header.dart';
 
 class AccountsTrialBalance extends StatelessWidget {
-  const AccountsTrialBalance({super.key});
+  const AccountsTrialBalance({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class AccountsTrialBalance extends StatelessWidget {
                       ),
                       Text(
                         'Trial balance',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     ],
                   ),

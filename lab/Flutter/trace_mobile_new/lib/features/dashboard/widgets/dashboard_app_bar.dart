@@ -4,8 +4,8 @@ import 'package:trace_mobile/common/classes/global_settings.dart';
 import 'package:trace_mobile/common/classes/graphql_queries.dart';
 import 'package:trace_mobile/common/classes/utils.dart';
 
-class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DashboardAppBar({super.key});
+class DashboardAppBar extends StatelessWidget with PreferredSizeWidget {
+  const DashboardAppBar({Key? key}) : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(40);
@@ -40,7 +40,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                   padding: const EdgeInsets.only(left: 5),
                   child: Text(
                     'Dashboard',
-                    style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context).textTheme.headline6,
                   ),
                 ),
               ],
@@ -54,7 +54,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                     child: Text(
                       '${globalSettings.lastUsedBuCode}',
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: Theme.of(context).textTheme.bodyText2?.copyWith(
                             color: Colors.indigo,
                             // decoration: TextDecoration.underline
                           ),
@@ -77,7 +77,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Text('Logout',
                       style: Theme.of(context)
                           .textTheme
-                          .bodySmall
+                          .caption
                           ?.copyWith(color: Colors.orange))
                 ]),
               ),
@@ -90,7 +90,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-Future<void> changeBuCode(BuildContext context, GlobalSettings globalSettings) async {
+changeBuCode(BuildContext context, GlobalSettings globalSettings) async {
   var result = await showDialog(
     barrierDismissible: false,
     context: context,

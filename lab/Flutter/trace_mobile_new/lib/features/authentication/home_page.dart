@@ -5,13 +5,13 @@ import 'package:trace_mobile/common/classes/utils.dart';
 import '../../common/classes/routes.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var globalSettings = Provider.of<GlobalSettings>(context, listen: false);
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).backgroundColor,
         body: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -22,17 +22,17 @@ class HomePage extends StatelessWidget {
                   'Trace',
                   style: Theme.of(context)
                       .textTheme
-                      .displayLarge
+                      .headline1
                       ?.copyWith(color: Colors.indigo),
                 ),
                 Text(
                   'Accounts on cloud',
                   style: Theme.of(context)
                       .textTheme
-                      .displaySmall
+                      .headline3
                       ?.copyWith(color: Colors.indigo),
                 ),
-                // Text('This line is in Lato font', style: GoogleFonts.lato(textStyle: Theme.of(context).textTheme.headlineSmall),),
+                // Text('This line is in Lato font', style: GoogleFonts.lato(textStyle: Theme.of(context).textTheme.headline5),),
                 Image.asset(
                   'assets/images/reports1.jpg',
                 ),
@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
 }
 
 class NextButton extends StatelessWidget {
-  const NextButton({super.key});
+  const NextButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

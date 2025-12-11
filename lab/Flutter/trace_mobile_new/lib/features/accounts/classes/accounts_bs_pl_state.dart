@@ -43,7 +43,7 @@ class AccountsBsplState with ChangeNotifier {
     notifyListeners();
   }
 
-  void init() {
+  init() {
     _isSelectedLeftLabel = true;
   }
 

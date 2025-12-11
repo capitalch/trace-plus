@@ -9,7 +9,7 @@ Initiallly I started with Consumer widget. Since there are two states in SalesSt
 for performance optimization. Selector widget can select to rebuild when a particular value changes
 */
 class SalesPage extends StatelessWidget {
-  const SalesPage({super.key});
+  const SalesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

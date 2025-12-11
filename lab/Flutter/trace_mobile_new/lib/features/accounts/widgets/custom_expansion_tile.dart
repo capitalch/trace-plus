@@ -71,7 +71,9 @@ class CustomExpansionTile extends StatefulWidget {
     this.collapsedIconColor,
     this.controlAffinity,
     this.onTap,
-  })  : assert(
+  })  : assert(initiallyExpanded != null),
+        assert(maintainState != null),
+        assert(
           expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
           'CrossAxisAlignment.baseline is not supported since the expanded children '
           'are aligned in a column, not a row. Try to use another constant.',
@@ -301,7 +303,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
     _backgroundColor =
         _controller.drive(_backgroundColorTween.chain(_easeOutTween));
 
-    _isExpanded = PageStorage.of(context).readState(context) as bool? ??
+    _isExpanded = PageStorage.of(context)?.readState(context) as bool? ??
         widget.initiallyExpanded;
     if (_isExpanded) {
       _controller.value = 1.0;
@@ -329,7 +331,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
           });
         });
       }
-      PageStorage.of(context).writeState(context, _isExpanded);
+      PageStorage.of(context)?.writeState(context, _isExpanded);
     });
     widget.onExpansionChanged?.call(_isExpanded);
     if (widget.onTap != null) {
@@ -431,7 +433,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
     _headerColorTween
       ..begin = widget.collapsedTextColor ??
           expansionTileTheme.collapsedTextColor ??
-          theme.textTheme.titleMedium!.color
+          theme.textTheme.subtitle1!.color
       ..end = widget.textColor ??
           expansionTileTheme.textColor ??
           colorScheme.primary;

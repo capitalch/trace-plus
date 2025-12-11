@@ -4,7 +4,7 @@ import 'package:trace_mobile/features/dashboard/widgets/dashboard_bottom_navigat
 import 'package:trace_mobile/features/dashboard/widgets/dashboard_subheader.dart';
 
 class DashBoardPage extends StatelessWidget {
-  const DashBoardPage({super.key});
+  const DashBoardPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class DashBoardPage extends StatelessWidget {
             widget = Center(
               child: Text(
                 'Loading...',
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: Theme.of(context).textTheme.headline5,
               ),
             );
           } else {
@@ -27,7 +27,7 @@ class DashBoardPage extends StatelessWidget {
               widget = Center(
                 child: Text(
                   'Error: ${snapshot.error}',
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  style: TextStyle(color: Theme.of(context).errorColor),
                 ),
               );
             } else {
@@ -46,7 +46,7 @@ class DashBoardPage extends StatelessWidget {
                         child: DrawerHeader(
                             child: Text(
                           'Trace menu',
-                          style: theme.displaySmall?.copyWith(color: Colors.brown.shade800, fontWeight: FontWeight.bold),
+                          style: theme.headline3?.copyWith(color: Colors.brown.shade800, fontWeight: FontWeight.bold),
                         )),
                       ),
                       Padding(
@@ -56,7 +56,7 @@ class DashBoardPage extends StatelessWidget {
                           tileColor: Colors.grey.shade300,
                           title: Text(
                             'Bank reconcillation',
-                            style: theme.titleMedium,
+                            style: theme.subtitle1,
                           ),
                           onTap: () {
                             Navigator.pop(context);
@@ -70,7 +70,7 @@ class DashBoardPage extends StatelessWidget {
                           tileColor: Colors.grey.shade300,
                           title: Text(
                             'Stock orders',
-                            style: theme.titleMedium,
+                            style: theme.subtitle1,
                           ),
                           onTap: () {
                             Navigator.pop(context);
@@ -84,7 +84,7 @@ class DashBoardPage extends StatelessWidget {
                           tileColor: Colors.grey.shade300,
                           title: Text(
                             'Stock tally',
-                            style: theme.titleMedium,
+                            style: theme.subtitle1,
                           ),
                           onTap: () {
                             Navigator.pop(context);
@@ -98,7 +98,7 @@ class DashBoardPage extends StatelessWidget {
                           tileColor: Colors.grey.shade300,
                           title: Text(
                             'Accounts ledger',
-                            style: theme.titleMedium,
+                            style: theme.subtitle1,
                           ),
                           onTap: () {
                             Navigator.pop(context);

@@ -8,7 +8,7 @@ import 'package:trace_mobile/features/products/classes/products_search_state.dar
 import 'package:trace_mobile/features/products/classes/products_summary_state.dart';
 
 class ProductsSummary extends StatelessWidget {
-  const ProductsSummary({super.key});
+  const ProductsSummary({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,43 +54,43 @@ class ProductsSummary extends StatelessWidget {
               ),
               Text(
                   'Rows: ${formatter.format(productsSummaryState.summaryCount)}', //
-                  style: theme.textTheme.bodyMedium),
+                  style: theme.textTheme.bodyText2),
               const SizedBox(
                 width: 15,
               ),
               Text(
                   'Qty: ${formatter.format(productsSummaryState.summaryClos)}', //
-                  style: theme.textTheme.bodyMedium),
+                  style: theme.textTheme.bodyText2),
               const SizedBox(
                 width: 15,
               ),
               Text(
                   'Value: ${formatter.format(productsSummaryState.summarySum)}', //
-                  style: theme.textTheme.bodyMedium),
+                  style: theme.textTheme.bodyText2),
               const SizedBox(
                 width: 15,
               ),
               Text(
                   'Value(Gst): ${formatter.format(productsSummaryState.summarySumGst)}', //
-                  style: theme.textTheme.bodyMedium),
+                  style: theme.textTheme.bodyText2),
               const SizedBox(
                 width: 15,
               ),
               Text(
                   'Age360 qty: ${formatter.format(productsSummaryState.summaryAge360Qty)}', //
-                  style: theme.textTheme.bodyMedium),
+                  style: theme.textTheme.bodyText2),
               const SizedBox(
                 width: 15,
               ),
               Text(
                   'Age360 value: ${formatter.format(productsSummaryState.summaryAge360Value)}', //
-                  style: theme.textTheme.bodyMedium),
+                  style: theme.textTheme.bodyText2),
               const SizedBox(
                 width: 15,
               ),
               Text(
                 'Age360 value(Gst): ${formatter.format(productsSummaryState.summaryAge360ValueGst)}', //
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodyText2,
               ),
               const SizedBox(
                 width: 15,

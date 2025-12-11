@@ -4,7 +4,8 @@ import 'package:trace_mobile/features/sales/classes/sales_item_model.dart';
 
 class SalesCardListItem extends StatelessWidget {
   const SalesCardListItem(
-      {super.key, required this.index, required this.indexedItem});
+      {Key? key, required this.index, required this.indexedItem})
+      : super(key: key);
 
   final int index;
   final SalesItemModel indexedItem;
@@ -65,7 +66,7 @@ class SalesCardListItem extends StatelessWidget {
               ListTile(
                   leading: Text(
                     index.toString(),
-                    style: theme.textTheme.titleMedium
+                    style: theme.textTheme.subtitle1
                         ?.copyWith(color: Colors.brown),
                   ),
                   title: Text(
@@ -77,7 +78,7 @@ class SalesCardListItem extends StatelessWidget {
                   ),
                   subtitle: Text(
                     subTitle,
-                    style: theme.textTheme.bodyLarge,
+                    style: theme.textTheme.bodyText1,
                   ),
                   dense: true,
                   trailing: CircleAvatar(
@@ -87,7 +88,7 @@ class SalesCardListItem extends StatelessWidget {
                           : Colors.grey.shade800,
                       child: Text(
                         stock.toStringAsFixed(0),
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: theme.textTheme.subtitle2?.copyWith(
                             color: (indexedItem.stock == 0)
                                 ? Colors.black
                                 : Colors.white),

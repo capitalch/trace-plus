@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/features/accounts/classes/accounts_bs_pl_state.dart';
 
 class BsplFooter extends StatelessWidget {
-  const BsplFooter({super.key});
+  const BsplFooter({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +23,11 @@ class BsplFooter extends StatelessWidget {
               children: [
                 Text(
                   'Total',
-                  style: theme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.subtitle1?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text(formatter.format(bsplState.aggregate),
                     style:
-                        theme.titleMedium?.copyWith(fontWeight: FontWeight.bold))
+                        theme.subtitle1?.copyWith(fontWeight: FontWeight.bold))
               ],
             ));
       },

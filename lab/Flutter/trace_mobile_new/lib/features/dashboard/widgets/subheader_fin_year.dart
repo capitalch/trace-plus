@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/common/classes/global_settings.dart';
 
 class SubheaderFinYear extends StatelessWidget {
-  const SubheaderFinYear({super.key});
+  const SubheaderFinYear({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

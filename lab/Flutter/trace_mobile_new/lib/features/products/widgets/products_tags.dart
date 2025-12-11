@@ -7,7 +7,7 @@ import 'package:trace_mobile/features/products/classes/products_tags_state.dart'
 
 // Used stateless widget beacuse loading of tags data from data store is to be done only once, which is possible in initState of stateless widget
 class ProductsTags extends StatefulWidget {
-  const ProductsTags({super.key});
+  const ProductsTags({Key? key}) : super(key: key);
 
   @override
   State<ProductsTags> createState() => _ProductsTagsState();
@@ -85,7 +85,7 @@ Widget getTagWidget(BuildContext context, String tag) {
   );
 }
 
-Future<void> getTagsDataFromStore(BuildContext context) async {
+getTagsDataFromStore(BuildContext context) async {
   ProductsTagsState productsTagsState =
       Provider.of<ProductsTagsState>(context, listen: false);
   if (productsTagsState.productsTags.isEmpty) {

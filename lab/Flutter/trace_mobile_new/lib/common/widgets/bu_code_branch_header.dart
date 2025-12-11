@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile/common/classes/global_settings.dart';
 
 class BuCodeBranchCodeHeader extends StatelessWidget {
-  const BuCodeBranchCodeHeader({super.key});
+  const BuCodeBranchCodeHeader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,21 +16,21 @@ class BuCodeBranchCodeHeader extends StatelessWidget {
         Text(
           buCode ?? '',
           overflow: TextOverflow.ellipsis,
-          style: theme.titleSmall,
+          style: theme.subtitle2,
         ),
         const SizedBox(
           width: 5,
         ),
         Text(
           branchMap['branchName'],
-          style: theme.titleSmall,
+          style: theme.subtitle2,
         ),
         const SizedBox(
           width: 5,
         ),
         Text(
           finYearMap['finYearId'].toString(),
-          style: theme.titleSmall,
+          style: theme.subtitle2,
         )
       ],
     );

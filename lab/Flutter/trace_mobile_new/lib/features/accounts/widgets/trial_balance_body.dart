@@ -9,7 +9,7 @@ import 'package:trace_mobile/features/accounts/classes/accounts_trial_balance_st
 import 'package:trace_mobile/features/accounts/widgets/custom_expansion_tile.dart';
 
 class TrialBalanceBody extends StatelessWidget {
-  const TrialBalanceBody({super.key});
+  const TrialBalanceBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class TrialBalanceBody extends StatelessWidget {
     return FutureBuilder(
       future: trialBalanceFuture,
       builder: (context, snapshot) {
-        var messageTheme = Theme.of(context).textTheme.titleLarge;
+        var messageTheme = Theme.of(context).textTheme.headline6;
         dynamic widget = const Text('');
         if (snapshot.connectionState == ConnectionState.waiting) {
           widget = Text('Loading...', style: messageTheme);
@@ -75,7 +75,7 @@ class TrialBalanceBody extends StatelessWidget {
     );
   }
 
-  List<Widget> getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
+  getChildListOfWidgets(BuildContext context, List<dynamic> childList) {
     List<Widget> childListOfWidgets = [];
     var theme = Theme.of(context).textTheme;
     for (dynamic child in childList) {
@@ -109,7 +109,7 @@ class TrialBalanceBody extends StatelessWidget {
                   children: [
                     Text(
                       data.accType,
-                      style: theme.titleMedium
+                      style: theme.subtitle1
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
@@ -138,10 +138,10 @@ class TrialBalanceBody extends StatelessWidget {
                     FormattedNumber(amount: data.closing, drcr: data.closingDC),
                   ],
                 ))),
-        hasChildren: (child['children'] == null) ? false : true,
         children: (child['children'] == null)
             ? [const SizedBox.shrink()]
             : getChildListOfWidgets(context, child['children']),
+        hasChildren: (child['children'] == null) ? false : true,
       );
       childListOfWidgets.add(childWidget);
     }
@@ -150,7 +150,8 @@ class TrialBalanceBody extends StatelessWidget {
 }
 
 class FormattedNumber extends StatelessWidget {
-  const FormattedNumber({super.key, required this.amount, required this.drcr});
+  const FormattedNumber({Key? key, required this.amount, required this.drcr})
+      : super(key: key);
   final String? drcr;
   final double amount;
 
@@ -159,7 +160,7 @@ class FormattedNumber extends StatelessWidget {
     NumberFormat formatter = NumberFormat('###,###.00');
     var theme = Theme.of(context).textTheme;
     var formattedAmountWidget = Text(formatter.format(amount),
-        style: theme.bodyLarge); //?.copyWith(fontWeight: FontWeight.bold));
+        style: theme.bodyText1); //?.copyWith(fontWeight: FontWeight.bold));
     var drcrWidget = const Text('');
     if (drcr != null) {
       drcrWidget = (drcr == 'D')
@@ -188,10 +189,11 @@ class FormattedNumber extends StatelessWidget {
 
 class TextOrButtonWidget extends StatelessWidget {
   const TextOrButtonWidget(
-      {super.key,
+      {Key? key,
       required this.hasChildren,
       required this.accId,
-      required this.label});
+      required this.label})
+      : super(key: key);
   final bool hasChildren;
   final int accId;
   final String label;
@@ -202,12 +204,12 @@ class TextOrButtonWidget extends StatelessWidget {
     if (hasChildren) {
       return Text(
         label,
-        style: theme.titleMedium,
+        style: theme.subtitle1,
       );
     } else {
       return Text(
         label,
-        style: theme.titleMedium?.copyWith(color: Colors.blue),
+        style: theme.subtitle1?.copyWith(color: Colors.blue),
       );
     }
   }
