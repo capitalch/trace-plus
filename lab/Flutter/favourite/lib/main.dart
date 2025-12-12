@@ -26,7 +26,10 @@ class MyApp extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Hello, World!', style: TextStyle(color: Colors.redAccent)),
+              const Text(
+                'Hello, World!',
+                style: TextStyle(color: Colors.redAccent),
+              ),
               const SizedBox(height: 16),
               const Text('Welcome to the Startup Project.'),
               const SizedBox(height: 16),
@@ -46,6 +49,7 @@ class MyApp extends StatelessWidget {
               ),
               const CounterWidget(),
               const SizeWidget(),
+              const StatelessCounter(count: 5),
             ],
           ),
         ),
@@ -112,11 +116,7 @@ class BorderedImage extends StatelessWidget {
   final double? width;
   final double? height;
 
-  const BorderedImage({
-    super.key,
-    this.width,
-    this.height,
-  });
+  const BorderedImage({super.key, this.width, this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -127,3 +127,15 @@ class BorderedImage extends StatelessWidget {
     );
   }
 }
+
+class StatelessCounter extends StatelessWidget {
+  final int count;
+  const StatelessCounter({super.key, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Count: $count');
+  }
+}
+
+
