@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
+import 'package:favourite/pages/home.dart';
+import 'package:favourite/router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
       title: 'Startup Project',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
@@ -20,122 +23,133 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.lightBlue[50],
       ),
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Startup Project1')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Hello, World!',
-                style: TextStyle(color: Colors.redAccent),
-              ),
-              const SizedBox(height: 16),
-              const Text('Welcome to the Startup Project.'),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: ElevatedButton.icon(
-                  onPressed: onPressed,
-                  icon: const Icon(Icons.thumb_up_alt, size: 24),
-                  label: const Text('Press Me'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                  ),
-                ),
-              ),
-              const CounterWidget(),
-              const SizeWidget(),
-              const StatelessCounter(count: 5),
-            ],
-          ),
-        ),
-      ),
+      // home: HomePage(),
     );
   }
 
-  static void onPressed() {
-    print('Button Pressed');
-  }
+  // static void onPressed() {
+  //   print('Button Pressed');
+  // }
 }
 
-class CounterWidget extends StatefulWidget {
-  const CounterWidget({super.key});
+// class HomePage extends StatelessWidget {
+//   const HomePage({super.key});
 
-  @override
-  State<CounterWidget> createState() => _CounterWidgetState();
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Startup Project1')),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             const Text(
+//               'Hello, World!',
+//               style: TextStyle(color: Colors.redAccent),
+//             ),
+//             const SizedBox(height: 16),
+//             const Text('Welcome to the Startup Project.'),
+//             const SizedBox(height: 16),
+//             Padding(
+//               padding: const EdgeInsets.all(8),
+//               child: ElevatedButton.icon(
+//                 onPressed: onPressed,
+//                 icon: const Icon(Icons.thumb_up_alt, size: 24),
+//                 label: const Text('Press Me'),
+//                 style: ElevatedButton.styleFrom(
+//                   padding: const EdgeInsets.symmetric(
+//                     horizontal: 20,
+//                     vertical: 8,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             const CounterWidget(),
+//             const SizeWidget(),
+//             const StatelessCounter(count: 5),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 
-class _CounterWidgetState extends State<CounterWidget> {
-  int _counter = 0;
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+//   static void onPressed() {
+//     print('Button Pressed');
+//   }
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('Counter: $_counter'),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: _incrementCounter,
-          child: const Text('Increment Counter'),
-        ),
-      ],
-    );
-  }
-}
+// class CounterWidget extends StatefulWidget {
+//   const CounterWidget({super.key});
 
-class SizeWidget extends StatelessWidget {
-  const SizeWidget({super.key});
+//   @override
+//   State<CounterWidget> createState() => _CounterWidgetState();
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(child: BorderedImage()),
-        Expanded(child: BorderedImage()),
-        Expanded(child: BorderedImage()),
-        Expanded(child: BorderedImage()),
-        // BorderedImage(),
-        // BorderedImage(),
-      ],
-    );
-  }
-}
+// class _CounterWidgetState extends State<CounterWidget> {
+//   int _counter = 0;
+//   void _incrementCounter() {
+//     setState(() {
+//       _counter++;
+//     });
+//   }
 
-class BorderedImage extends StatelessWidget {
-  final double? width;
-  final double? height;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: [
+//         Text('Counter: $_counter'),
+//         const SizedBox(height: 16),
+//         ElevatedButton(
+//           onPressed: _incrementCounter,
+//           child: const Text('Increment Counter'),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
-  const BorderedImage({super.key, this.width, this.height});
+// class SizeWidget extends StatelessWidget {
+//   const SizeWidget({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Image(
-      image: const AssetImage('assets/sample1.png'),
-      width: width,
-      height: height,
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: [
+//         Expanded(child: BorderedImage()),
+//         Expanded(child: BorderedImage()),
+//         Expanded(child: BorderedImage()),
+//         Expanded(child: BorderedImage()),
+//         // BorderedImage(),
+//         // BorderedImage(),
+//       ],
+//     );
+//   }
+// }
 
-class StatelessCounter extends StatelessWidget {
-  final int count;
-  const StatelessCounter({super.key, required this.count});
+// class BorderedImage extends StatelessWidget {
+//   final double? width;
+//   final double? height;
 
-  @override
-  Widget build(BuildContext context) {
-    return Text('Count: $count');
-  }
-}
+//   const BorderedImage({super.key, this.width, this.height});
 
+//   @override
+//   Widget build(BuildContext context) {
+//     return Image(
+//       image: const AssetImage('assets/sample1.png'),
+//       width: width,
+//       height: height,
+//     );
+//   }
+// }
 
+// class StatelessCounter extends StatelessWidget {
+//   final int count;
+//   const StatelessCounter({super.key, required this.count});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Text('Count: $count');
+//   }
+// }
