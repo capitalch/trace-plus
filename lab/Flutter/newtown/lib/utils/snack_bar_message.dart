@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SnackBarMessage {
-  static const _displayDuration = const Duration(seconds: 4);
+  static const _displayDuration = Duration(seconds: 4);
 
   static void show(
     BuildContext context,

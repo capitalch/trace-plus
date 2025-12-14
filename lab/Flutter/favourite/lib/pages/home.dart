@@ -7,20 +7,35 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Page'), actions: [
-        IconButton(
-          icon: const Icon(Icons.settings),
-          onPressed: () {
-            context.push('/settings');
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.account_circle),
-          onPressed: () {
-            context.push('/provider_sample');
-          },
-        ),
-      ],),
+      appBar: AppBar(
+        title: const Text('Home Page'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              context.push('/settings');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {
+              context.push('/provider_sample');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.http),
+            onPressed: () {
+              context.push('/http_dio_test');
+            },
+          ),
+          IconButton(
+            onPressed: () {
+              context.push('/login_form');
+            },
+            icon: const Icon(Icons.login),
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

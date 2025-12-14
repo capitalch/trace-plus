@@ -1,7 +1,7 @@
 import 'dart:async' show Future, StreamController;
 
 class Ibuki {
-  static StreamController<Map<String, dynamic>> _streamController =
+  static final StreamController<Map<String, dynamic>> _streamController =
       StreamController.broadcast();
 
   static void emit(dynamic id, dynamic data) {
