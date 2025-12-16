@@ -18,6 +18,8 @@ valid gstin: 24AAACC1206D1ZM
 		- New end points
 		- Port SQL's to new Trace server
 	- Deploy
+- Fix trace_mobile
+	- 
 
 
 ## General requirement
