@@ -23,6 +23,7 @@ valid gstin: 24AAACC1206D1ZM
 
 
 ## General requirement
+- Making a product inactive and do filtration in inventory
 											- Setup access control
 												- Business units user
 														- Ali: skali
