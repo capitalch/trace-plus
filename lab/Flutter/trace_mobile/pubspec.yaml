@@ -39,6 +39,8 @@ dependencies:
   rxdart: ^0.28.0
   intl: ^0.20.2
   tuple: ^2.0.2
+  flutter_typeahead: ^5.0.0
+  json_annotation: ^4.8.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,6 +66,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  build_runner: ^2.4.0
+  json_serializable: ^6.7.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
