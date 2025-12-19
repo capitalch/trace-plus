@@ -1,13 +1,20 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:trace_mobile/common/classes/data_store.dart';
 import 'package:trace_mobile/common/classes/utils.dart';
+import '../../features/authentication/models/login_response.dart';
+import '../../features/authentication/models/user_payload.dart';
 
 class GlobalSettings extends ChangeNotifier {
   static const webUrl = 'https://develop.cloudjiffy.net/graphql';
   static const localUrl = 'https://develop.cloudjiffy.net/graphql';
   // static const localUrl = 'http://10.0.2.2:5000/graphql';
+
+  // For REST API - remove /graphql
+  static const restApiLocalUrl = 'http://localhost:8000';  // For web/desktop
+  // static const restApiLocalUrl = 'http://10.0.2.2:8000';  // For Android emulator
   GlobalSettings() {
     // constructor loads loginData from secured storage
     loadLoginDataFromSecuredStorage();
@@ -25,6 +32,15 @@ class GlobalSettings extends ChangeNotifier {
   List<Map<String, dynamic>> allFinYears = [];
   Map<String, dynamic> currentFinYearMap = {};
   Map<String, dynamic> currentBranchMap = {};
+
+  // New properties for REST API login
+  String? _accessToken;
+  UserPayload? _userPayload;
+  bool _isLoggedIn = false;
+
+  String? get accessToken => _accessToken;
+  UserPayload? get userPayload => _userPayload;
+  bool get isLoggedIn => _isLoggedIn;
 
   GraphQLClient? get graphQLLoginClient {
     _graphQLLoginClient?.resetStore();
@@ -183,5 +199,74 @@ class GlobalSettings extends ChangeNotifier {
     currentFinYearMap = Map<String, dynamic>.from(currentFinYearObject);
     setCurrentBranchMap(lastUsedBranchId);
     // notifyListeners();
+  }
+
+  /// Store login response data
+  Future<void> setLoginDataRest(LoginResponse response) async {
+    _accessToken = response.accessToken;
+    _userPayload = response.payload;
+    _isLoggedIn = true;
+
+    // Store to secure storage
+    await DataStore.saveLoginDataInSecuredStorage(
+      jsonEncode({
+        'accessToken': _accessToken,
+        'payload': _userPayload!.toJson(),
+      }),
+    );
+
+    notifyListeners();
+  }
+
+  /// Load login data from secure storage
+  Future<void> loadLoginData() async {
+    final loginDataJson = await DataStore.getLoginDataFromSecuredStorage();
+    if (loginDataJson != null && loginDataJson.isNotEmpty) {
+      try {
+        final data = jsonDecode(loginDataJson);
+        if (data.containsKey('accessToken') && data.containsKey('payload')) {
+          _accessToken = data['accessToken'];
+          _userPayload = UserPayload.fromJson(data['payload']);
+          _isLoggedIn = true;
+          notifyListeners();
+        }
+      } catch (e) {
+        // If parsing fails, it might be old format, ignore
+      }
+    }
+  }
+
+  /// Clear login data (logout)
+  Future<void> clearLoginData() async {
+    _accessToken = null;
+    _userPayload = null;
+    _isLoggedIn = false;
+    await DataStore.saveLoginDataInSecuredStorage('');
+    notifyListeners();
+  }
+
+  /// Get authorization headers for authenticated requests
+  Map<String, String> getAuthHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
+    };
+  }
+
+  /// Make authenticated HTTP GET request
+  Future<http.Response> get(String endpoint) async {
+    final uri = Uri.parse('$restApiLocalUrl$endpoint');
+    return await http.get(uri, headers: getAuthHeaders())
+        .timeout(const Duration(seconds: 10));
+  }
+
+  /// Make authenticated HTTP POST request
+  Future<http.Response> post(String endpoint, {Object? body}) async {
+    final uri = Uri.parse('$restApiLocalUrl$endpoint');
+    return await http.post(
+      uri,
+      headers: getAuthHeaders(),
+      body: body != null ? jsonEncode(body) : null,
+    ).timeout(const Duration(seconds: 10));
   }
 }
