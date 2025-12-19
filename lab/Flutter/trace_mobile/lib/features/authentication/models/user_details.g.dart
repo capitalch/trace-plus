@@ -21,7 +21,7 @@ UserDetails _$UserDetailsFromJson(Map<String, dynamic> json) => UserDetails(
   isClientActive: json['isClientActive'] as bool?,
   dbName: json['dbName'] as String?,
   isExternalDb: json['isExternalDb'] as bool?,
-  dbParams: json['dbParams'] as Map<String, dynamic>?,
+  dbParams: json['dbParams'] as String?,
   branchIds: json['branchIds'] as String?,
   lastUsedBuId: (json['lastUsedBuId'] as num?)?.toInt(),
   lastUsedBranchId: (json['lastUsedBranchId'] as num?)?.toInt(),

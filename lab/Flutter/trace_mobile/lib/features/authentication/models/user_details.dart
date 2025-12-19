@@ -18,7 +18,7 @@ class UserDetails {
   final bool? isClientActive;
   final String? dbName;
   final bool? isExternalDb;
-  final Map<String, dynamic>? dbParams;
+  final String? dbParams;
   final String? branchIds;
   final int? lastUsedBuId;
   final int? lastUsedBranchId;
