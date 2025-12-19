@@ -34,7 +34,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 1: Project Setup & Dependencies
+#### STEP 1: Project Setup & Dependencies
 
 **Goal:** Set up the project branch and install required packages
 
@@ -70,7 +70,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 2: Create Model Files (Part 1 - Basic Models)
+#### STEP 2: Create Model Files (Part 1 - Basic Models)
 
 **Goal:** Create the data model files for login request/response
 
@@ -135,7 +135,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 3: Create Model Files (Part 2 - JSON Serializable Models)
+#### STEP 3: Create Model Files (Part 2 - JSON Serializable Models)
 
 **Goal:** Create models with JSON serialization for API response
 
@@ -270,7 +270,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 4: Create Composite Models & Generate Code
+#### STEP 4: Create Composite Models & Generate Code
 
 **Goal:** Create composite models and generate serialization code
 
@@ -343,7 +343,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 5: Create Authentication Service
+#### STEP 5: Create Authentication Service
 
 **Goal:** Create the API service for login and client fetching
 
@@ -460,7 +460,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 6: Update GlobalSettings (State Management)
+#### STEP 6: Update GlobalSettings (State Management)
 
 **Goal:** Add new login methods to GlobalSettings
 
@@ -575,7 +575,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 7: Create New Login Page
+#### STEP 7: Create New Login Page
 
 **Goal:** Create the new login page with client selection
 

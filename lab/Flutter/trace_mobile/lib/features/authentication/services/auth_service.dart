@@ -63,13 +63,15 @@ class AuthService {
     try {
       final uri = Uri.parse('$baseUrl/api/login-clients');
 
-      // Create form-encoded body
-      final body = 'searchTerm=${Uri.encodeComponent(searchTerm)}';
+      // Create JSON body
+      final body = jsonEncode({
+        'criteria': searchTerm,
+      });
 
       final response = await http.post(
         uri,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
         body: body,
       ).timeout(const Duration(seconds: 10));
