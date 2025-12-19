@@ -16,15 +16,18 @@ UserPayload _$UserPayloadFromJson(Map<String, dynamic> json) => UserPayload(
   allBusinessUnits: (json['allBusinessUnits'] as List<dynamic>)
       .map((e) => BusinessUnit.fromJson(e as Map<String, dynamic>))
       .toList(),
-  userBusinessUnits: (json['userBusinessUnits'] as List<dynamic>)
-      .map((e) => BusinessUnit.fromJson(e as Map<String, dynamic>))
+  userBusinessUnits: (json['userBusinessUnits'] as List<dynamic>?)
+      ?.map((e) => BusinessUnit.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
-Map<String, dynamic> _$UserPayloadToJson(UserPayload instance) =>
-    <String, dynamic>{
-      'userDetails': instance.userDetails,
-      'role': instance.role,
-      'allBusinessUnits': instance.allBusinessUnits,
-      'userBusinessUnits': instance.userBusinessUnits,
-    };
+Map<String, dynamic> _$UserPayloadToJson(
+  UserPayload instance,
+) => <String, dynamic>{
+  'userDetails': instance.userDetails.toJson(),
+  'role': instance.role?.toJson(),
+  'allBusinessUnits': instance.allBusinessUnits.map((e) => e.toJson()).toList(),
+  'userBusinessUnits': instance.userBusinessUnits
+      ?.map((e) => e.toJson())
+      .toList(),
+};

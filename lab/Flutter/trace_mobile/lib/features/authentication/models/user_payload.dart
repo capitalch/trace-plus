@@ -5,18 +5,18 @@ import 'business_unit.dart';
 
 part 'user_payload.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class UserPayload {
   final UserDetails userDetails;
   final Role? role;
   final List<BusinessUnit> allBusinessUnits;
-  final List<BusinessUnit> userBusinessUnits;
+  final List<BusinessUnit>? userBusinessUnits;
 
   UserPayload({
     required this.userDetails,
     this.role,
     required this.allBusinessUnits,
-    required this.userBusinessUnits,
+    this.userBusinessUnits,
   });
 
   factory UserPayload.fromJson(Map<String, dynamic> json) =>

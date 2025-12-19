@@ -37,6 +37,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
+        print('Login response: $jsonData');
         return LoginResponse.fromJson(jsonData);
       } else if (response.statusCode == 401 || response.statusCode == 400) {
         final jsonData = jsonDecode(response.body);
