@@ -51,6 +51,7 @@ class AuthService {
       if (e is LoginError) {
         rethrow;
       }
+      print('Login error: $e');
       throw LoginError(
         errorCode: 'NETWORK_ERROR',
         message: e.toString(),

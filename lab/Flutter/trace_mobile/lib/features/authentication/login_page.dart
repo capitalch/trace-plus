@@ -166,12 +166,6 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       }
                     },
-                    validator: (value) {
-                      if (_selectedClient == null) {
-                        return 'Please select a client';
-                      }
-                      return null;
-                    },
                   ),
                   if (_showSuggestions)
                     Container(
@@ -224,15 +218,6 @@ class _LoginPageState extends State<LoginPage> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Username is required';
-                  }
-                  if (value.length < 4) {
-                    return 'Username must be at least 4 characters';
-                  }
-                  return null;
-                },
               ),
 
               const SizedBox(height: 16),
@@ -246,15 +231,6 @@ class _LoginPageState extends State<LoginPage> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Password is required';
-                  }
-                  if (value.length < 8) {
-                    return 'Password must be at least 8 characters';
-                  }
-                  return null;
-                },
               ),
 
               const SizedBox(height: 24),
