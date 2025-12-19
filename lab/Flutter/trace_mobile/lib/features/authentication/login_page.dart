@@ -1,142 +1,285 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:trace_mobile/common/classes/global_settings.dart';
-import 'package:trace_mobile/common/classes/graphql_queries.dart';
-import 'dart:convert' show utf8, base64;
-import 'dart:convert';
-import 'package:trace_mobile/common/classes/messages.dart';
-import 'package:trace_mobile/common/classes/routes.dart';
-import 'package:trace_mobile/common/classes/utils.dart';
+import '../../common/classes/global_settings.dart';
+import '../../common/classes/routes.dart';
+import 'models/login_request.dart';
+import 'models/client_item.dart';
+import 'services/auth_service.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
+  State<LoginPage> createState() => _LoginPageState();
+}
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView(children: <Widget>[
-          Container(
-              alignment: Alignment.center,
-              child: Text(
-                'Trace',
-                style: Theme.of(context)
-                    .textTheme
-                    .displayMedium
-                    ?.copyWith(color: Colors.indigo),
-              )),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.only(top: 30),
-            child: Text(
-              'Login',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(color: Colors.indigo),
-            ),
-          ),
-          Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(top: 20),
-              child: TextField(
-                  autocorrect: false,
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), labelText: 'User name'),
-                  style: const TextStyle(fontSize: 20))),
-          Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(top: 20),
-              child: TextField(
-                  obscureText: true,
-                  controller: passwordController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                  ),
-                  style: const TextStyle(fontSize: 20))),
-          Container(
-              height: 50,
-              margin: const EdgeInsets.only(top: 50),
-              child: ElevatedButton(
-                  child: const Text('Login'),
-                  onPressed: () => onLoginPressed(
-                      context, nameController, passwordController))),
-        ]),
-      ),
-    );
-    // );
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _authService = AuthService();
+
+  // Controllers
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _clientController = TextEditingController();
+
+  // Selected client
+  ClientItem? _selectedClient;
+
+  // Loading state
+  bool _isLoading = false;
+
+  // Client suggestions
+  List<ClientItem> _clientSuggestions = [];
+  bool _isLoadingClients = false;
+  bool _showSuggestions = false;
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _clientController.dispose();
+    super.dispose();
   }
 
-  void onLoginPressed(context, nameController, passwordController) async {
+  Future<void> _searchClients(String searchTerm) async {
+    if (searchTerm.length < 2) {
+      setState(() {
+        _clientSuggestions = [];
+        _showSuggestions = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoadingClients = true;
+      _showSuggestions = true;
+    });
+
     try {
-      var globalSettings = Provider.of<GlobalSettings>(context, listen: false);
-      String? uid = nameController.value.text;
-      String? pwd = passwordController.value.text;
-      if ((uid == null) || (uid.isEmpty) || (pwd == null) || (pwd.isEmpty)) {
-        Utils.showAlert(
-            context: context, message: Messages.errEmpty, title: 'Error');
-        return;
+      final clients = await _authService.fetchClients(searchTerm);
+      if (mounted) {
+        setState(() {
+          _clientSuggestions = clients;
+          _isLoadingClients = false;
+        });
       }
-      var creds = [uid, ':', pwd];
-      var credentials = base64.encode(utf8.encode(creds.join()));
-
-      var result = await globalSettings.graphQLLoginClient
-          ?.query(QueryOptions(
-              document: GraphQLQueries.login(credentials),
-              operationName: 'login'))
-          .timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception('Timeout error');
-        },
-      );
-
-      var loginData = result?.data?['authentication']['doLogin'];
-
-      if (loginData == null) {
-        globalSettings.resetLoginData();
-        Utils.showAlert(
-            context: context, title: 'Error', message: Messages.errLogin);
-        showSnackBar(context);
-        return;
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _clientSuggestions = [];
+          _isLoadingClients = false;
+        });
       }
-
-      List<dynamic>? buCodesWithPermissionsTemp =
-          loginData['buCodesWithPermissions'];
-      List<Map<String, dynamic>>? buCodesWithPermissions =
-          buCodesWithPermissionsTemp?.cast<Map<String, dynamic>>().toList();
-      Iterable? bues = buCodesWithPermissions?.map((e) => e['buCode']);
-      List<dynamic>? buCodes = bues?.cast<dynamic>().toList();
-      loginData['buCodes'] = buCodes;
-      loginData['buCodesWithPermissions'] = buCodesWithPermissionsTemp;
-      globalSettings.setLoginData(loginData);
-      Navigator.pushReplacementNamed(context, Routes.dashBoard, arguments: Utils.execDataCache(globalSettings));
-      
-    } catch (error) {
-      Utils.showAlert(context: context, message: Messages.errInternetLogin);
     }
   }
 
-  void showSnackBar(context) {
-    final snackBar = SnackBar(
-      content: const Text('Invalid login'),
-      backgroundColor: Theme.of(context).colorScheme.error,
-      duration: const Duration(seconds: 5),
-      action: SnackBarAction(
-        label: 'dismiss',
-        onPressed: () {
-          Navigator.pop(context);
-        },
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_selectedClient == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a client')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final request = LoginRequest(
+        clientId: _selectedClient!.id.toString(),
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      final response = await _authService.login(request);
+
+      if (!mounted) return;
+
+      // Store login data
+      final globalSettings = Provider.of<GlobalSettings>(
+        context,
+        listen: false,
+      );
+      await globalSettings.setLoginDataRest(response);
+
+      // Navigate to dashboard
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, Routes.dashBoard);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Client Selection with Autocomplete
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    controller: _clientController,
+                    decoration: const InputDecoration(
+                      labelText: 'Client Name',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.business),
+                      hintText: 'Type to search...',
+                    ),
+                    onChanged: (value) {
+                      _searchClients(value);
+                    },
+                    onTap: () {
+                      if (_clientController.text.length >= 2) {
+                        setState(() {
+                          _showSuggestions = true;
+                        });
+                      }
+                    },
+                    validator: (value) {
+                      if (_selectedClient == null) {
+                        return 'Please select a client';
+                      }
+                      return null;
+                    },
+                  ),
+                  if (_showSuggestions)
+                    Container(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: _isLoadingClients
+                          ? const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : _clientSuggestions.isEmpty
+                              ? const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text('No clients found'),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: _clientSuggestions.length,
+                                  itemBuilder: (context, index) {
+                                    final client = _clientSuggestions[index];
+                                    return ListTile(
+                                      title: Text(client.clientName),
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedClient = client;
+                                          _clientController.text =
+                                              client.clientName;
+                                          _showSuggestions = false;
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                    ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // Username field
+              TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'UID / Email',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Username is required';
+                  }
+                  if (value.length < 4) {
+                    return 'Username must be at least 4 characters';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Password field
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.lock),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Password is required';
+                  }
+                  if (value.length < 8) {
+                    return 'Password must be at least 8 characters';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              // Login button
+              ElevatedButton(
+                onPressed: _isLoading ? null : _handleLogin,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text(
+                        'Login',
+                        style: TextStyle(fontSize: 16),
+                      ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
