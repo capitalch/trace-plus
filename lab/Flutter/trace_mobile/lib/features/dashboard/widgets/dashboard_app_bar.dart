@@ -13,6 +13,16 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     var globalSettings = Provider.of<GlobalSettings>(context, listen: true);
+    final userPayload = globalSettings.userPayload;
+
+    // Get BU code from new REST API login or fall back to old GraphQL login
+    String buCode = 'N/A';
+    if (userPayload?.allBusinessUnits.isNotEmpty == true) {
+      buCode = userPayload!.allBusinessUnits[0].buCode;
+    } else if (globalSettings.lastUsedBuCode != null) {
+      buCode = globalSettings.lastUsedBuCode!;
+    }
+
     return AppBar(
         automaticallyImplyLeading: false,
         title: Row(
@@ -52,7 +62,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
                   child: SizedBox(
                     width: 150,
                     child: Text(
-                      '${globalSettings.lastUsedBuCode}',
+                      buCode,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.indigo,
@@ -146,7 +156,21 @@ List<SimpleDialogOption>? getBusinessUnitOptions(
   return buCodesList;
 }
 
-void logout(BuildContext context) {
-  Provider.of<GlobalSettings>(context, listen: false).resetLoginData();
-  Navigator.pop(context);
+void logout(BuildContext context) async {
+  final globalSettings = Provider.of<GlobalSettings>(
+    context,
+    listen: false,
+  );
+
+  // Clear both REST API and old GraphQL login data
+  await globalSettings.clearLoginData();
+  globalSettings.resetLoginData();
+
+  if (context.mounted) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/login',
+      (route) => false,
+    );
+  }
 }
