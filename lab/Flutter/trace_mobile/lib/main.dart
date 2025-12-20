@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:trace_mobile/common/classes/global_settings.dart';
+import 'package:trace_mobile/common/widgets/protected_route.dart';
 import 'package:trace_mobile/features/accounts/accounts_page.dart';
 import 'package:trace_mobile/features/accounts/classes/accounts_bs_pl_state.dart';
 import 'package:trace_mobile/features/accounts/classes/accounts_general_ledger_state.dart';
@@ -59,20 +60,36 @@ class TraceApp extends StatelessWidget {
         theme: getThemeData(),
         home: const HomePage(),
         routes: {
-          'accounts': (BuildContext context) => const AccountsPage(),
-          'bspl': (BuildContext context) => const AccountsBsPl(),
-          'businessHealth': (BuildContext context) => const BusinessHealth(),
-          'dashboard': (BuildContext context) => const DashBoardPage(),
-          'generalLedger': (BuildContext context) =>
-              const AccountsGeneralLedger(),
+          'accounts': (BuildContext context) => const ProtectedRoute(
+                child: AccountsPage(),
+              ),
+          'bspl': (BuildContext context) => const ProtectedRoute(
+                child: AccountsBsPl(),
+              ),
+          'businessHealth': (BuildContext context) => const ProtectedRoute(
+                child: BusinessHealth(),
+              ),
+          'dashboard': (BuildContext context) => const ProtectedRoute(
+                child: DashBoardPage(),
+              ),
+          'generalLedger': (BuildContext context) => const ProtectedRoute(
+                child: AccountsGeneralLedger(),
+              ),
           'login': (BuildContext context) {
             return const LoginPage();
           },
-          'products': (BuildContext context) => const ProductsPage(),
-          'sales': (BuildContext context) => const SalesPage(),
-          'transactions': (BuildContext context) => const TransactionsPage(),
-          'trialBalance': (BuildContext context) =>
-              const AccountsTrialBalance(),
+          'products': (BuildContext context) => const ProtectedRoute(
+                child: ProductsPage(),
+              ),
+          'sales': (BuildContext context) => const ProtectedRoute(
+                child: SalesPage(),
+              ),
+          'transactions': (BuildContext context) => const ProtectedRoute(
+                child: TransactionsPage(),
+              ),
+          'trialBalance': (BuildContext context) => const ProtectedRoute(
+                child: AccountsTrialBalance(),
+              ),
         },
       ),
     );
