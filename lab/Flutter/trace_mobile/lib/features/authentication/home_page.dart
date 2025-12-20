@@ -9,8 +9,19 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var globalSettings = Provider.of<GlobalSettings>(context, listen: false);
-    return Scaffold(
+    return Consumer<GlobalSettings>(
+      builder: (context, globalSettings, _) {
+        // Auto-redirect to dashboard if already logged in with REST API
+        if (globalSettings.isLoggedIn) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, Routes.dashBoard);
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: Padding(
           padding: const EdgeInsets.all(20),
@@ -59,7 +70,10 @@ class HomePage extends StatelessWidget {
                       const NextButton()
                     ])
               ]),
-        ));
+        ),
+      );
+      },
+    );
   }
 }
 

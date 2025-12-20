@@ -18,6 +18,7 @@ class GlobalSettings extends ChangeNotifier {
   GlobalSettings() {
     // constructor loads loginData from secured storage
     loadLoginDataFromSecuredStorage();
+    loadLoginData(); // Load REST API login data
     _initGraphQLLoginClient();
   }
 
