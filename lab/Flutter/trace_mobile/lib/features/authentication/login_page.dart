@@ -74,9 +74,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
-    // if (!_formKey.currentState!.validate()) {
-    //   return;
-    // }
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
     if (_selectedClient == null) {
       if (!mounted) return;

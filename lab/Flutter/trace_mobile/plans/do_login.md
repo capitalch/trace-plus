@@ -823,7 +823,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 8: Test Basic Login Flow
+#### STEP 8: Test Basic Login Flow
 
 **Goal:** Test the login functionality with the backend
 
@@ -854,7 +854,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 9: Create Protected Route Widget
+#### STEP 9: Create Protected Route Widget
 
 **Goal:** Create a widget to protect routes that require authentication
 
@@ -911,7 +911,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 10: Update Dashboard to Use New Login Data
+#### STEP 10: Update Dashboard to Use New Login Data
 
 **Goal:** Update dashboard to read from new UserPayload structure
 
@@ -954,7 +954,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 11: Update Dashboard App Bar (User Info & Logout)
+#### STEP 11: Update Dashboard App Bar (User Info & Logout)
 
 **Goal:** Update app bar to show user info and implement logout
 
@@ -1004,7 +1004,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 12: Wrap Protected Routes
+#### STEP 12: Wrap Protected Routes
 
 **Goal:** Apply ProtectedRoute wrapper to all protected pages
 
@@ -1047,7 +1047,7 @@ Follow these steps in order. Each step is self-contained and can be completed in
 
 ---
 
-### STEP 13: Load Persisted Login on App Start
+#### STEP 13: Load Persisted Login on App Start
 
 **Goal:** Load saved login data when app starts
 
