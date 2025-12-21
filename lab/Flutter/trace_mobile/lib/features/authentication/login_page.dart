@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../common/classes/global_settings.dart';
@@ -106,6 +108,8 @@ class _LoginPageState extends State<LoginPage> {
         context,
         listen: false,
       );
+      // To be removed
+      // print(jsonEncode(response));
       await globalSettings.setLoginDataRest(response);
 
       // Navigate to dashboard

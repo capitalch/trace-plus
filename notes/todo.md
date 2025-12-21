@@ -11,15 +11,19 @@ valid gstin: 24AAACC1206D1ZM
 - In capichow check prices
 
 ## mobile
-	- Brush up
-	- Update old
-		- New url's
-		- Fix bugs
-		- New end points
-		- Port SQL's to new Trace server
-	- Deploy
-- Fix trace_mobile
-	- 
+- Make it working
+			- Login
+	- Dashboard
+		- Company name
+		- Select from Bu's dropdown
+		- Fin year
+		- Branch change
+	- Sales
+	- Products
+	- Accounts
+														- Brush up
+														- Update to new libs
+		
 
 
 ## General requirement

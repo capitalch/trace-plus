@@ -56,6 +56,7 @@ class TraceApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Trace',
         theme: getThemeData(),
         home: const HomePage(),

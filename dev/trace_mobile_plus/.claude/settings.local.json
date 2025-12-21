@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze:*)",
+      "Bash(if not exist \"plans\" mkdir plans)",
+      "Bash(flutter pub get:*)"
+    ]
+  }
+}

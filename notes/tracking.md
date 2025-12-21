@@ -18,6 +18,8 @@
 
 
 ## History
+# 21-12-2025
+	- Working on mobile app
 # 07-12-2025
 	- Started mobile app alteration
 # 30-10-2025
