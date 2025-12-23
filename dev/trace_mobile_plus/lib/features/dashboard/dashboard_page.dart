@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../config/routes.dart';
+import 'package:trace_mobile_plus/core/app_settings.dart';
+import '../../core/routes.dart';
 import '../../services/auth_service.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -17,9 +18,9 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = AuthService();
-    final userData = authService.userData;
-    final username = userData?['username'] ?? 'User';
+    // final authService = AuthService();
+    // final userData = authService.userData;
+    final username = AppSettings.userName ?? 'User';
 
     return Scaffold(
       appBar: AppBar(

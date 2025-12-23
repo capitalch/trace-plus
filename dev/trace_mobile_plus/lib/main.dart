@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'config/routes.dart';
+import 'package:provider/provider.dart';
+import 'core/routes.dart';
 import 'theme/app_theme.dart';
 import 'services/graphql_service.dart';
+import 'providers/global_provider.dart';
 
 void main() async {
   // Initialize GraphQL client storage
@@ -49,13 +51,18 @@ class TraceMobilePlusApp extends StatelessWidget {
         // GraphQL client notifier is ready
         final clientNotifier = snapshot.data!;
 
-        return GraphQLProvider(
-          client: clientNotifier,
-          child: MaterialApp.router(
-            title: 'Trace+ Mobile',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            routerConfig: router,
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => GlobalProvider()),
+          ],
+          child: GraphQLProvider(
+            client: clientNotifier,
+            child: MaterialApp.router(
+              title: 'Trace+ Mobile',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              routerConfig: router,
+            ),
           ),
         );
       },

@@ -5,12 +5,14 @@ import 'graphql_service.dart';
 import '../models/client_model.dart';
 import '../models/login_request_model.dart';
 import '../models/login_response_model.dart';
-import '../core/app_constants.dart'
+import '../models/business_unit_model.dart';
+import '../core/app_settings.dart';
+// import '../core/app_constants.dart';
 
 class AuthService {
   // Singleton pattern
   static final AuthService _instance = AuthService._internal();
-  static const String baseUrl = 'http://localhost:8000';
+  static const String baseUrl = AppSettings.baseUrl;
   factory AuthService() => _instance;
   AuthService._internal();
 
@@ -54,6 +56,16 @@ class AuthService {
       if (token != null && token.isNotEmpty) {
         _accessToken = token;
         _isLoggedIn = true;
+
+        // Load AppSettings from secure storage
+        try {
+          final appSettingsData = await _tokenStorage.getAppSettings();
+          if (appSettingsData != null) {
+            _loadAppSettingsFromMap(appSettingsData);
+          }
+        } catch (e) {
+          print('Error loading AppSettings from storage: $e');
+        }
       }
     } catch (e) {
       print('Error loading stored token: $e');
@@ -98,6 +110,9 @@ class AuthService {
         // Save token to secure storage
         await _tokenStorage.saveToken(loginResponse.accessToken);
 
+        // Set AppSettings from login response
+        await _setAppSettingsFromLoginResponse(loginResponse);
+
         // Refresh GraphQL client to include new token in headers
         await _graphqlService.refreshClient();
       } else if (response.statusCode == 401) {
@@ -122,15 +137,174 @@ class AuthService {
     // Clear token from secure storage
     await _tokenStorage.deleteToken();
 
+    // Clear AppSettings
+    await _clearAppSettings();
+
     // Refresh GraphQL client to remove token from headers
     await _graphqlService.refreshClient();
   }
 
   /// Clear all auth data
-  void clear() {
+  Future<void> clear() async {
     _isLoggedIn = false;
     _accessToken = null;
     _userData = null;
+
+    // Clear AppSettings
+    await _clearAppSettings();
+  }
+
+  /// Set AppSettings from login response
+  Future<void> _setAppSettingsFromLoginResponse(LoginResponseModel loginResponse) async {
+    final userDetails = loginResponse.payload.userDetails;
+
+    // Set user details
+    AppSettings.uid = userDetails.uid;
+    AppSettings.userName = userDetails.userName;
+    AppSettings.userEmail = userDetails.userEmail;
+
+    // Set client information
+    AppSettings.clientId = userDetails.clientId;
+    AppSettings.clientName = userDetails.clientName;
+    AppSettings.clientCode = userDetails.clientCode;
+
+    // Set user and client status
+    AppSettings.userType = userDetails.userType;
+    AppSettings.isUserActive = userDetails.isUserActive;
+    AppSettings.isClientActive = userDetails.isClientActive;
+
+    // Set database settings
+    AppSettings.dbName = userDetails.dbName;
+    AppSettings.isExternalDb = userDetails.isExternalDb;
+    AppSettings.dbParams = userDetails.dbParams;
+
+    // Set branch and business unit IDs
+    AppSettings.branchIds = userDetails.branchIds;
+    AppSettings.lastUsedBuId = userDetails.lastUsedBuId;
+    AppSettings.lastUsedBranchId = userDetails.lastUsedBranchId;
+    AppSettings.lastUsedFinYearId = userDetails.lastUsedFinYearId;
+
+    // Set business units
+    AppSettings.allBusinessUnits = loginResponse.payload.allBusinessUnits;
+    AppSettings.userBusinessUnits = loginResponse.payload.userBusinessUnits ?? [];
+
+    // Save AppSettings to secure storage
+    try {
+      final appSettingsMap = _appSettingsToMap();
+      await _tokenStorage.saveAppSettings(appSettingsMap);
+    } catch (e) {
+      print('Error saving AppSettings to storage: $e');
+    }
+  }
+
+  /// Clear all AppSettings
+  Future<void> _clearAppSettings() async {
+    // Clear user details
+    AppSettings.uid = null;
+    AppSettings.userName = null;
+    AppSettings.userEmail = null;
+
+    // Clear client information
+    AppSettings.clientId = null;
+    AppSettings.clientName = null;
+    AppSettings.clientCode = null;
+
+    // Clear user and client status
+    AppSettings.userType = null;
+    AppSettings.isUserActive = null;
+    AppSettings.isClientActive = null;
+
+    // Clear database settings
+    AppSettings.dbName = null;
+    AppSettings.isExternalDb = null;
+    AppSettings.dbParams = null;
+
+    // Clear branch and business unit IDs
+    AppSettings.branchIds = null;
+    AppSettings.lastUsedBuId = null;
+    AppSettings.lastUsedBranchId = null;
+    AppSettings.lastUsedFinYearId = null;
+
+    // Clear business units
+    AppSettings.allBusinessUnits = [];
+    AppSettings.userBusinessUnits = [];
+
+    // Delete AppSettings from secure storage
+    try {
+      await _tokenStorage.deleteAppSettings();
+    } catch (e) {
+      print('Error deleting AppSettings from storage: $e');
+    }
+  }
+
+  /// Convert AppSettings to Map for storage
+  Map<String, dynamic> _appSettingsToMap() {
+    return {
+      'uid': AppSettings.uid,
+      'userName': AppSettings.userName,
+      'userEmail': AppSettings.userEmail,
+      'clientId': AppSettings.clientId,
+      'clientName': AppSettings.clientName,
+      'clientCode': AppSettings.clientCode,
+      'userType': AppSettings.userType,
+      'isUserActive': AppSettings.isUserActive,
+      'isClientActive': AppSettings.isClientActive,
+      'dbName': AppSettings.dbName,
+      'isExternalDb': AppSettings.isExternalDb,
+      'dbParams': AppSettings.dbParams,
+      'branchIds': AppSettings.branchIds,
+      'lastUsedBuId': AppSettings.lastUsedBuId,
+      'lastUsedBranchId': AppSettings.lastUsedBranchId,
+      'lastUsedFinYearId': AppSettings.lastUsedFinYearId,
+      'allBusinessUnits': AppSettings.allBusinessUnits.map((bu) => bu.toJson()).toList(),
+      'userBusinessUnits': AppSettings.userBusinessUnits.map((bu) => bu.toJson()).toList(),
+    };
+  }
+
+  /// Load AppSettings from Map (retrieved from storage)
+  void _loadAppSettingsFromMap(Map<String, dynamic> data) {
+    // Load user details
+    AppSettings.uid = data['uid'] as String?;
+    AppSettings.userName = data['userName'] as String?;
+    AppSettings.userEmail = data['userEmail'] as String?;
+
+    // Load client information
+    AppSettings.clientId = data['clientId'] as int?;
+    AppSettings.clientName = data['clientName'] as String?;
+    AppSettings.clientCode = data['clientCode'] as String?;
+
+    // Load user and client status
+    AppSettings.userType = data['userType'] as String?;
+    AppSettings.isUserActive = data['isUserActive'] as bool?;
+    AppSettings.isClientActive = data['isClientActive'] as bool?;
+
+    // Load database settings
+    AppSettings.dbName = data['dbName'] as String?;
+    AppSettings.isExternalDb = data['isExternalDb'] as bool?;
+    AppSettings.dbParams = data['dbParams'] as String?;
+
+    // Load branch and business unit IDs
+    AppSettings.branchIds = data['branchIds'] as String?;
+    AppSettings.lastUsedBuId = data['lastUsedBuId'] as int?;
+    AppSettings.lastUsedBranchId = data['lastUsedBranchId'] as int?;
+    AppSettings.lastUsedFinYearId = data['lastUsedFinYearId'] as int?;
+
+    // Load business units from JSON
+    if (data['allBusinessUnits'] != null) {
+      AppSettings.allBusinessUnits = (data['allBusinessUnits'] as List<dynamic>)
+          .map((e) => BusinessUnitModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } else {
+      AppSettings.allBusinessUnits = [];
+    }
+
+    if (data['userBusinessUnits'] != null) {
+      AppSettings.userBusinessUnits = (data['userBusinessUnits'] as List<dynamic>)
+          .map((e) => BusinessUnitModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } else {
+      AppSettings.userBusinessUnits = [];
+    }
   }
 
   /// Fetch clients based on search criteria

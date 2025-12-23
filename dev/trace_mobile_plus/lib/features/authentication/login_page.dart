@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../config/routes.dart';
+import '../../core/routes.dart';
 import '../../services/auth_service.dart';
 import '../../models/client_model.dart';
 
