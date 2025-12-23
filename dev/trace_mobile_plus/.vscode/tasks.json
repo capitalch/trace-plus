@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "cleanup-before-launch",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "Stop-Process -Name msedge,dart,dartaotruntime -Force -ErrorAction SilentlyContinue; Write-Host 'Cleaned up processes for launch'"
+            ],
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

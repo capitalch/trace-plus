@@ -125,6 +125,11 @@ class DashboardPage extends StatelessWidget {
                     label: 'Transactions',
                     color: const Color(0xFFE17055),
                   ),
+                  _buildActionCard(
+                    icon: Icons.health_and_safety,
+                    label: 'Health',
+                    color: const Color(0xFF6C5CE7),
+                  ),
                 ],
               ),
             ],

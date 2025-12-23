@@ -3,7 +3,18 @@
     "allow": [
       "Bash(flutter analyze:*)",
       "Bash(if not exist \"plans\" mkdir plans)",
-      "Bash(flutter pub get:*)"
+      "Bash(flutter pub get:*)",
+      "Bash(flutter devices:*)",
+      "Bash(flutter run:*)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(tee:*)",
+      "Bash(powershell -Command \"Stop-Process -Name msedge,dart,dartaotruntime -Force -ErrorAction SilentlyContinue; Write-Host ''Processes stopped''\")",
+      "Bash(powershell -Command \"Stop-Process -Name msedge,dart,dartaotruntime -Force -ErrorAction SilentlyContinue; Write-Host ''All processes stopped''\")",
+      "Bash(if not exist \"lib\\\\models\" mkdir libmodels)",
+      "Bash(powershell -Command \"Get-Content ''C:\\\\projects\\\\trace-plus\\\\dev\\\\trace_mobile_plus\\\\lib\\\\features\\\\authentication\\\\login_page.dart'' | Measure-Object -Line | Select-Object -ExpandProperty Lines\")",
+      "Bash(powershell:*)"
     ]
   }
 }

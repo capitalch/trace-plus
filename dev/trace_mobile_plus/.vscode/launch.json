@@ -8,9 +8,10 @@
             "name": "trace_mobile_plus",
             "request": "launch",
             "type": "dart",
+            "flutterMode": "debug",
             "args": [
                 "-d",
-                "edge"
+                "chrome"
             ]
         },
         {
@@ -28,6 +29,7 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
+            "preLaunchTask": "cleanup-before-launch",
             "args": [
                 "-d",
                 "edge"
