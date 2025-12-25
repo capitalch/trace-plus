@@ -14,7 +14,9 @@
       "Bash(powershell -Command \"Stop-Process -Name msedge,dart,dartaotruntime -Force -ErrorAction SilentlyContinue; Write-Host ''All processes stopped''\")",
       "Bash(if not exist \"lib\\\\models\" mkdir libmodels)",
       "Bash(powershell -Command \"Get-Content ''C:\\\\projects\\\\trace-plus\\\\dev\\\\trace_mobile_plus\\\\lib\\\\features\\\\authentication\\\\login_page.dart'' | Measure-Object -Line | Select-Object -ExpandProperty Lines\")",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(cat:*)",
+      "Bash(tree:*)"
     ]
   }
 }

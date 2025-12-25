@@ -1,86 +1,228 @@
-# Plan: Move FinYear and Branch Methods to SecondaryAppBarWidget
+# Sales Page Implementation Plan
 
 ## Overview
-Move the three methods (`_incrementFinYear`, `_decrementFinYear`, `_showBranchSelector`) from `dashboard_page.dart` into `SecondaryAppBarWidget` to make the widget self-contained and reduce coupling with the dashboard page.
+Implement a comprehensive sales page for the Trace+ mobile application that displays sales data, allows filtering, and follows the established architectural patterns of the codebase.
 
-## Current State
-- `SecondaryAppBarWidget` is defined in `lib/features/dashboard/secondary_app_bar_widget.dart`
-- It currently accepts three callback parameters that call methods in `DashboardPage`:
-  - `onIncrementFinYear`: calls `_incrementFinYear(GlobalProvider)` from dashboard_page.dart:150
-  - `onDecrementFinYear`: calls `_decrementFinYear(GlobalProvider)` from dashboard_page.dart:172
-  - `onBranchSelectorTap`: calls `_showBranchSelector(BuildContext, GlobalProvider)` from dashboard_page.dart:194
-- These three methods are ~100 lines of code in total
-- Methods use:
-  - `GlobalProvider` for state access (already available via Consumer in widget)
-  - `BuildContext` for ScaffoldMessenger and showDialog (available in build method)
+---
 
-## Steps
+## Step 1: Create Data Models
+**Goal:** Define the data structures for sales-related information
 
-### Step 1: Move methods to SecondaryAppBarWidget
-- Open `lib/features/dashboard/secondary_app_bar_widget.dart`
-- Add three private methods to the `SecondaryAppBarWidget` class:
-  - `void _incrementFinYear(BuildContext context, GlobalProvider globalProvider)`
-  - `void _decrementFinYear(BuildContext context, GlobalProvider globalProvider)`
-  - `Future<void> _showBranchSelector(BuildContext context, GlobalProvider globalProvider)`
-- Copy the method implementations from `dashboard_page.dart`:
-  - `_incrementFinYear` (lines 150-170)
-  - `_decrementFinYear` (lines 172-192)
-  - `_showBranchSelector` (lines 194-250)
+### Tasks:
+1. Create `lib/models/sales_model.dart`
+   - Fields: saleId, saleNumber, saleDate, customerName, totalAmount, status, itemCount
+   - Implement `fromJson()` factory constructor
+   - Implement `toJson()` method
+   - Follow naming convention: end with "Model"
 
-### Step 2: Update SecondaryAppBarWidget to use internal methods
-- Remove the three callback parameters from the constructor:
-  - Remove `onIncrementFinYear`
-  - Remove `onDecrementFinYear`
-  - Remove `onBranchSelectorTap`
-- Update the widget's build method to call internal methods instead of callbacks:
-  - Replace `onDecrementFinYear` with `() => _decrementFinYear(context, globalProvider)`
-  - Replace `onIncrementFinYear` with `() => _incrementFinYear(context, globalProvider)`
-  - Replace `onBranchSelectorTap` with `() => _showBranchSelector(context, globalProvider)`
-- Ensure `context` and `globalProvider` from the Consumer are accessible to the button callbacks
+2. Create `lib/models/sales_summary_model.dart` (optional)
+   - Fields: totalSales, totalRevenue, salesCount, averageOrderValue
+   - For displaying summary/analytics cards
 
-### Step 3: Update dashboard_page.dart
-- Remove the callback parameters when instantiating `SecondaryAppBarWidget`:
-  - Change from:
-    ```dart
-    SecondaryAppBarWidget(
-      onIncrementFinYear: () => _incrementFinYear(...),
-      onDecrementFinYear: () => _decrementFinYear(...),
-      onBranchSelectorTap: () => _showBranchSelector(...),
-    )
-    ```
-  - To:
-    ```dart
-    const SecondaryAppBarWidget()
-    ```
-- Remove the three methods from `dashboard_page.dart`:
-  - Remove `_incrementFinYear` (lines 150-170)
-  - Remove `_decrementFinYear` (lines 172-192)
-  - Remove `_showBranchSelector` (lines 194-250)
+**Files to create:**
+- `lib/models/sales_model.dart`
+- `lib/models/sales_summary_model.dart` (optional)
 
-### Step 4: Verify the refactoring
-- Run `flutter analyze` to check for any errors
-- Test the app to ensure:
-  - Financial year increment works correctly
-  - Financial year decrement works correctly
-  - Boundary messages appear at first/last financial year
-  - Branch selector dialog opens
-  - Branch selection updates correctly
-  - All UI behavior remains unchanged
+---
 
-## Files to be Modified
-1. **Modified**: `lib/features/dashboard/secondary_app_bar_widget.dart` - Add three methods, remove callback parameters
-2. **Modified**: `lib/features/dashboard/dashboard_page.dart` - Remove three methods, simplify widget instantiation
+## Step 2: Add SQL ID Mapping
+**Goal:** Configure database query identifiers for sales data
 
-## Benefits
-- **Self-contained widget**: SecondaryAppBarWidget is now fully independent
-- **Better encapsulation**: Business logic for the app bar is contained within the widget
-- **Reduced coupling**: Dashboard page no longer needs to know about app bar implementation details
-- **Simplified dashboard**: ~100 lines of code removed from dashboard_page.dart
-- **Easier reusability**: Widget can be used in other pages without callback wiring
-- **Improved maintainability**: All app bar logic is in one place
+### Tasks:
+1. Update `lib/core/sql_ids_map.dart`
+   - Add constant: `static const String getSalesData = 'get_sales_data';`
+   - Add constant: `static const String getSalesSummary = 'get_sales_summary';` (optional)
 
-## Technical Notes
-- The widget will remain a StatelessWidget (no state management needed)
-- Methods will have access to BuildContext and GlobalProvider via the Consumer in build()
-- ScaffoldMessenger and showDialog will work correctly with the passed context
-- No changes to GlobalProvider or other services required
+**Files to modify:**
+- `lib/core/sql_ids_map.dart`
+
+---
+
+## Step 3: Create Sales Page Structure
+**Goal:** Build the main sales page following the StatefulWidget pattern
+
+### Tasks:
+1. Create directory: `lib/features/sales/`
+
+2. Create `lib/features/sales/sales_page.dart`
+   - Create StatefulWidget `SalesPage`
+   - Implement state class `_SalesPageState`
+   - Add `initState()` with `addPostFrameCallback()` for initial data loading
+   - Implement `_loadSalesData()` async method:
+     - Get selected business unit from GlobalProvider
+     - Use GraphQLService to execute query with SqlIdsMap.getSalesData
+     - Parse response using SalesModel.fromJson()
+     - Handle loading/error states
+     - Update UI with setState()
+   - Implement build method with:
+     - Scaffold
+     - AppBar with title "Sales"
+     - Body with loading indicator, error handling, and content
+   - Add pull-to-refresh functionality (RefreshIndicator)
+
+3. Add state variables:
+   - `List<SalesModel> _salesData = []`
+   - `bool _isLoading = false`
+   - `String? _errorMessage`
+
+**Files to create:**
+- `lib/features/sales/sales_page.dart`
+
+---
+
+## Step 4: Create Sales Content Widget
+**Goal:** Build reusable UI components for displaying sales data
+
+### Tasks:
+1. Create `lib/features/sales/sales_content_widget.dart`
+   - Create StatelessWidget `SalesContentWidget`
+   - Accept parameters: `List<SalesModel> salesData`
+   - Implement UI with:
+     - Summary cards at top (total sales, revenue, count)
+     - ListView/GridView of sales items
+     - Each item shows: sale number, date, customer, amount, status
+     - Use Card widgets with proper styling
+     - Add tap handlers for future detail view
+   - Follow color scheme from AppTheme
+   - Use icons for status indicators
+
+2. Create `lib/features/sales/sales_card_widget.dart`
+   - Create StatelessWidget for individual sale card
+   - Accept SalesModel parameter
+   - Display formatted data (currency, dates)
+   - Add status badge with color coding
+   - Add subtle animations on tap
+
+**Files to create:**
+- `lib/features/sales/sales_content_widget.dart`
+- `lib/features/sales/sales_card_widget.dart`
+
+---
+
+## Step 5: Add Route Configuration
+**Goal:** Configure navigation routing for the sales page
+
+### Tasks:
+1. Update `lib/core/routes.dart`
+   - Import sales_page.dart
+   - In `createRouter()` function, add new GoRoute:
+     ```dart
+     GoRoute(
+       path: Routes.sales,
+       pageBuilder: (context, state) => CustomTransitionPage(
+         key: state.pageKey,
+         child: const SalesPage(),
+         transitionsBuilder: (context, animation, secondaryAnimation, child) {
+           return FadeTransition(opacity: animation, child: child);
+         },
+       ),
+     ),
+     ```
+   - Note: Route constant `/sales` already exists in Routes class
+
+**Files to modify:**
+- `lib/core/routes.dart`
+
+---
+
+## Step 6: Wire Up Navigation from Dashboard
+**Goal:** Enable navigation to sales page from dashboard
+
+### Tasks:
+1. Update `lib/features/dashboard/dashboard_content_widget.dart`
+   - Import go_router: `import 'package:go_router/go_router.dart';`
+   - Import routes: `import '../../core/routes.dart';`
+   - Find the Sales action card in `_buildActionCard` (line ~86-90)
+   - Wrap the Container in GestureDetector or InkWell
+   - Add onTap handler: `onTap: () => context.go(Routes.sales)`
+   - Or modify `_buildActionCard` to accept onTap callback
+
+**Files to modify:**
+- `lib/features/dashboard/dashboard_content_widget.dart`
+
+---
+
+## Step 7: Test and Refinement
+**Goal:** Ensure the sales page works correctly
+
+### Tasks:
+1. Test navigation from dashboard to sales page
+2. Verify data loading with GraphQL service
+3. Test error handling scenarios
+4. Test pull-to-refresh functionality
+5. Verify UI responsiveness on different screen sizes
+6. Check color scheme consistency with app theme
+7. Test back navigation
+
+**Testing checklist:**
+- [ ] Navigation works from dashboard
+- [ ] Loading state displays correctly
+- [ ] Error states show appropriate messages
+- [ ] Sales data displays in cards
+- [ ] Pull-to-refresh works
+- [ ] Back navigation returns to dashboard
+- [ ] UI matches app theme and design patterns
+
+---
+
+## Additional Enhancements (Future)
+**Optional features to implement later:**
+
+1. **Filtering and Sorting**
+   - Add filter by date range
+   - Add filter by status
+   - Add sorting options (date, amount, customer)
+   - Create filter UI component
+
+2. **Search Functionality**
+   - Add search bar in AppBar
+   - Search by sale number, customer name
+   - Implement debounced search
+
+3. **Detail View**
+   - Create sales detail page
+   - Show line items, customer info, payment details
+   - Add edit/delete actions (if authorized)
+
+4. **State Management**
+   - Extend GlobalProvider with sales-specific state
+   - Cache sales data to reduce API calls
+   - Add selected filters to provider
+
+5. **Analytics**
+   - Add charts (bar, line, pie) using fl_chart package
+   - Show trends over time
+   - Add export functionality
+
+---
+
+## Files Summary
+
+### Files to Create:
+1. `lib/models/sales_model.dart`
+2. `lib/models/sales_summary_model.dart` (optional)
+3. `lib/features/sales/sales_page.dart`
+4. `lib/features/sales/sales_content_widget.dart`
+5. `lib/features/sales/sales_card_widget.dart`
+
+### Files to Modify:
+1. `lib/core/sql_ids_map.dart`
+2. `lib/core/routes.dart`
+3. `lib/features/dashboard/dashboard_content_widget.dart`
+
+---
+
+## Dependencies
+No new dependencies required. Using existing packages:
+- `go_router` for navigation
+- `provider` for state management (via GlobalProvider)
+- `graphql_flutter` for API calls
+- `flutter` Material widgets for UI
+
+---
+
+## Estimated Complexity
+- **Complexity Level:** Medium
+- **Core Implementation:** ~6 files
+- **Pattern Matching:** Follows existing dashboard/authentication patterns
+- **API Integration:** Uses established GraphQLService pattern

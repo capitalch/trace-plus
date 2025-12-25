@@ -1,14 +1,14 @@
 class UnitInfoModel {
-  final String pin;
-  final String email;
-  final String gstin;
-  final String state;
-  final String webSite;
-  final String address1;
-  final String unitName;
-  final String landPhone;
-  final String shortName;
-  final String mobileNumber;
+  final String? pin;
+  final String? email;
+  final String? gstin;
+  final String? state;
+  final String? webSite;
+  final String? address1;
+  final String? unitName;
+  final String? landPhone;
+  final String? shortName;
+  final String? mobileNumber;
 
   UnitInfoModel({
     required this.pin,

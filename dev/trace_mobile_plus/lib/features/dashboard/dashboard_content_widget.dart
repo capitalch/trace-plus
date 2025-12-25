@@ -17,10 +17,10 @@ class DashboardContentWidget extends StatelessWidget {
             padding: const EdgeInsets.all(24.0),
             child: Column(
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 // Welcome section
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [
@@ -28,12 +28,12 @@ class DashboardContentWidget extends StatelessWidget {
                         Color(0xFF2C5F8D),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -42,22 +42,22 @@ class DashboardContentWidget extends StatelessWidget {
                       const Icon(
                         Icons.check_circle,
                         color: Color(0xFF00B894),
-                        size: 64,
+                        size: 48,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       const Text(
                         'Welcome to Trace+',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
                         'Hello, $username!',
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           color: Color(0xFFB2BEC3),
                         ),
                       ),
@@ -65,7 +65,7 @@ class DashboardContentWidget extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                const SizedBox(height: 32),
 
                 // Quick action buttons
                 Wrap(
@@ -114,28 +114,28 @@ class DashboardContentWidget extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      width: 140,
-      padding: const EdgeInsets.all(16),
+      width: 120,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         children: [
-          Icon(icon, size: 40, color: color),
-          const SizedBox(height: 8),
+          Icon(icon, size: 32, color: color),
+          const SizedBox(height: 6),
           Text(
             label,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
               color: color,
             ),

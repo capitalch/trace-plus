@@ -50,24 +50,13 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void _extractAndSetUnitName(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
-    try {
-      final setting = result.allSettings.firstWhere(
-        (s) => s.key == '2',
-        orElse: () => throw Exception('Setting with key "2" not found'),
-      );
+    final setting = result.allSettings.firstWhere(
+      (s) => s['key'] == 'unitInfo',
+      orElse: () => <String, dynamic>{},
+    );
 
-      if (setting.jData == null) {
-        throw Exception('jData is null in setting with key "2"');
-      }
-
-      globalProvider.setUnitName(setting.jData!.unitName);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error extracting unit name: $e')),
-        );
-      }
-    }
+    final unitName = setting['jData']?['unitName'] as String? ?? 'Unit info not provided';
+    globalProvider.setUnitName(unitName);
   }
 
   void _selectBranch(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
@@ -85,8 +74,8 @@ class _DashboardPageState extends State<DashboardPage> {
       }
 
       selectedBranch ??= result.allBranches.firstWhere(
-        (branch) => branch.branchCode == "HD",
-        orElse: () => throw Exception('Branch with code "HD" not found'),
+        (branch) => branch.branchId == 1,
+        orElse: () => throw Exception('Branch with id 1 not found'),
       );
 
       globalProvider.setSelectedBranch(selectedBranch);
@@ -158,6 +147,9 @@ class _DashboardPageState extends State<DashboardPage> {
       return;
     }
 
+    // Store the current business unit to detect changes
+    final previousBU = globalProvider.selectedBusinessUnit;
+
     await showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -186,7 +178,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   selected: isSelected,
                   onTap: () {
                     globalProvider.setSelectedBusinessUnit(bu);
-                    Navigator.of(dialogContext).pop();
+                    Navigator.of(dialogContext).pop(true); // Return true to indicate selection
                   },
                 );
               },
@@ -194,13 +186,67 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(false), // Return false on cancel
               child: const Text('Cancel'),
             ),
           ],
         );
       },
     );
+
+    // Check if business unit actually changed
+    final newBU = globalProvider.selectedBusinessUnit;
+    if (newBU != null && previousBU?.buId != newBU.buId) {
+      // Business unit changed, reload data
+      await _reloadDataForBusinessUnit();
+    }
+  }
+
+  Future<void> _reloadDataForBusinessUnit() async {
+    if (!mounted) return;
+
+    final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+    final selectedBU = globalProvider.selectedBusinessUnit;
+
+    if (selectedBU == null) return;
+
+    // Show loading indicator
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Loading data for ${selectedBU.buName}...'),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+
+    try {
+      // Fetch data for the selected business unit
+      final result = await _loadAndsetSettingsFinYearsBranches();
+
+      if (result != null && mounted) {
+        // Process and update the data
+        _processSettingsData(result, globalProvider);
+
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Loaded data for ${selectedBU.buName}'),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Handle errors
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading data: $e'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   Future<BranchesFinYearsSettingsResponseModel?> _loadAndsetSettingsFinYearsBranches() async {
@@ -250,7 +296,7 @@ class _DashboardPageState extends State<DashboardPage> {
         }
 
         // Parse JSON string to Map
-        final Map<String, dynamic> jsonData = data[0]['jsonResult']; //jsonDecode
+        final Map<String, dynamic> jsonData = data?[0]?['jsonResult']; //jsonDecode
 
         // Convert to model
         final responseModel = BranchesFinYearsSettingsResponseModel.fromJson(jsonData);

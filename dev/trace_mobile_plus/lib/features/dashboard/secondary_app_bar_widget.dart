@@ -16,7 +16,7 @@ class SecondaryAppBarWidget extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFF2C5F8D),
+            color: Colors.grey[200],
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
@@ -34,7 +34,7 @@ class SecondaryAppBarWidget extends StatelessWidget {
                 child: Text(
                   unitName,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.black87,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -49,7 +49,7 @@ class SecondaryAppBarWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove, color: Colors.white, size: 20),
+                      icon: const Icon(Icons.remove, color: Colors.black87, size: 20),
                       onPressed: () => _decrementFinYear(context, globalProvider),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -59,14 +59,14 @@ class SecondaryAppBarWidget extends StatelessWidget {
                     Text(
                       'FY: $finYearId',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      icon: const Icon(Icons.add, color: Colors.white, size: 20),
+                      icon: const Icon(Icons.add, color: Colors.black87, size: 20),
                       onPressed: () => _incrementFinYear(context, globalProvider),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -84,7 +84,7 @@ class SecondaryAppBarWidget extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
@@ -94,13 +94,13 @@ class SecondaryAppBarWidget extends StatelessWidget {
                         Text(
                           branchCode,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Colors.black87,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(Icons.arrow_drop_down, color: Colors.white, size: 18),
+                        const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 18),
                       ],
                     ),
                   ),

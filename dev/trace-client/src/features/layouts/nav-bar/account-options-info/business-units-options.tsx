@@ -75,6 +75,7 @@ export function BusinessUnitsOptions() {
             });
             const res: any = await Utils.queryGraphQL(q, GraphQLQueriesMapNames.genericQuery);
             const result: any = res?.data?.genericQuery?.[0]?.jsonResult
+            // console.log(JSON.stringify(result))
             if (result) {
                 dispatch(setFinYearsBranchesAccSettings({ accSettings: result?.allSettings, finYears: result.allFinYears, branches: result.allBranches }))
                 dispatch(setCurrentDateFormat('DD/MM/YYYY'))
