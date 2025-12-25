@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'token_storage_service.dart';
+import '../core/app_settings.dart';
+import '../graphql/queries/generic_query.dart';
 
 class GraphQLService {
-  static const String _graphqlEndpoint = 'http://localhost:8000/graphql';
-
   final TokenStorageService _tokenStorage = TokenStorageService();
 
   // Singleton pattern
@@ -26,7 +27,7 @@ class GraphQLService {
 
   /// Create GraphQL client with authentication
   Future<GraphQLClient> _createClient() async {
-    final HttpLink httpLink = HttpLink(_graphqlEndpoint);
+    final HttpLink httpLink = HttpLink(AppSettings.graphQlUrl);
 
     // Create auth link that dynamically gets token
     final AuthLink authLink = AuthLink(
@@ -52,9 +53,43 @@ class GraphQLService {
     _clientNotifier?.value = newClient;
   }
 
+  /// Execute GenericQuery with authentication
+  Future<QueryResult> executeGenericQuery({
+    required String buCode,
+    Map<String, String?>? dbParams,
+    required String sqlId,
+    Map<String, dynamic>? sqlArgs,
+  }) async {
+    // Get dbName from AppSettings
+    final dbName = AppSettings.dbName;
+    if (dbName == null) {
+      throw Exception('Database name not available in AppSettings');
+    }
+
+    final client = await getClientNotifier();
+
+    // Create value object
+    final valueObject = {
+      'buCode': buCode,
+      'dbParams': dbParams,
+      'sqlId': sqlId,
+      'sqlArgs': sqlArgs ?? {},
+    };
+
+    // Convert to JSON string
+    final valueString = jsonEncode(valueObject);
+
+    final QueryOptions options = QueryOptions(
+      document: gql(genericQuery),
+      variables: {'dbName': dbName, 'value': valueString},
+    );
+
+    return await client.value.query(options);
+  }
+
   /// Create GraphQL client without authentication (for public queries like login)
   GraphQLClient getPublicClient() {
-    final HttpLink httpLink = HttpLink(_graphqlEndpoint);
+    final HttpLink httpLink = HttpLink(AppSettings.graphQlUrl);
 
     return GraphQLClient(
       cache: GraphQLCache(store: InMemoryStore()),
@@ -63,5 +98,5 @@ class GraphQLService {
   }
 
   /// Get the GraphQL endpoint
-  static String get graphqlEndpoint => _graphqlEndpoint;
+  static String get graphqlEndpoint => AppSettings.graphQlUrl;
 }

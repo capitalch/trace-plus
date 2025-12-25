@@ -1,14 +1,145 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:trace_mobile_plus/core/app_settings.dart';
 import '../../core/routes.dart';
 import '../../services/auth_service.dart';
+import '../../providers/global_provider.dart';
+import '../../services/graphql_service.dart';
+import '../../core/sql_ids_map.dart';
+import '../../models/branches_fin_years_settings_response_model.dart';
+import '../../models/branch_model.dart';
+import 'secondary_app_bar_widget.dart';
+import 'dashboard_content_widget.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadInitialData());
+  }
+
+  Future<void> _loadInitialData() async {
+    if (!mounted) return;
+
+    final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+    globalProvider.loadAvailableBusinessUnits();
+    globalProvider.selectBusinessUnit();
+
+    final result = await _loadAndsetSettingsFinYearsBranches();
+    if (result != null && mounted) {
+      _processSettingsData(result, globalProvider);
+    }
+  }
+
+  void _processSettingsData(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+    globalProvider.setAllBranches(result.allBranches);
+    globalProvider.setAllFinYears(result.allFinYears);
+
+    _extractAndSetUnitName(result, globalProvider);
+    _selectBranch(result, globalProvider);
+    _selectCurrentFinYear(result, globalProvider);
+  }
+
+  void _extractAndSetUnitName(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+    try {
+      final setting = result.allSettings.firstWhere(
+        (s) => s.key == '2',
+        orElse: () => throw Exception('Setting with key "2" not found'),
+      );
+
+      if (setting.jData == null) {
+        throw Exception('jData is null in setting with key "2"');
+      }
+
+      globalProvider.setUnitName(setting.jData!.unitName);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error extracting unit name: $e')),
+        );
+      }
+    }
+  }
+
+  void _selectBranch(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+    try {
+      BranchModel? selectedBranch;
+
+      if (AppSettings.lastUsedBranchId != null) {
+        try {
+          selectedBranch = result.allBranches.firstWhere(
+            (branch) => branch.branchId == AppSettings.lastUsedBranchId,
+          );
+        } catch (_) {
+          selectedBranch = null;
+        }
+      }
+
+      selectedBranch ??= result.allBranches.firstWhere(
+        (branch) => branch.branchCode == "HD",
+        orElse: () => throw Exception('Branch with code "HD" not found'),
+      );
+
+      globalProvider.setSelectedBranch(selectedBranch);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error selecting branch: $e')),
+        );
+      }
+    }
+  }
+
+  void _selectCurrentFinYear(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+    try {
+      final today = DateTime.now();
+
+      final currentFinYear = result.allFinYears.firstWhere(
+        (finYear) {
+          try {
+            final startDate = DateTime.parse(finYear.startDate);
+            final endDate = DateTime.parse(finYear.endDate);
+
+            return (today.isAfter(startDate) || today.isAtSameMomentAs(startDate)) &&
+                   (today.isBefore(endDate) || today.isAtSameMomentAs(endDate));
+          } catch (_) {
+            return false;
+          }
+        },
+        orElse: () => throw Exception('No financial year found for current date'),
+      );
+
+      globalProvider.setSelectedFinYear(currentFinYear);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error selecting financial year: $e')),
+        );
+      }
+    }
+  }
 
   Future<void> _handleLogout(BuildContext context) async {
     final authService = AuthService();
+
+    // Clear business units from GlobalProvider
+    // print('DashboardPage: Clearing business units on logout');
+    if (mounted) {
+      final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+      globalProvider.setAvailableBusinessUnits([]);
+      globalProvider.setSelectedBusinessUnit(null);
+      // print('DashboardPage: Business units cleared');
+    }
+
     await authService.logout();
 
     if (context.mounted) {
@@ -16,15 +147,159 @@ class DashboardPage extends StatelessWidget {
     }
   }
 
+  Future<void> _showBusinessUnitSelector(BuildContext context) async {
+    final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+    final availableUnits = globalProvider.availableBusinessUnits;
+
+    if (availableUnits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No business units available')),
+      );
+      return;
+    }
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Select Business Unit'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: availableUnits.length,
+              itemBuilder: (context, index) {
+                final bu = availableUnits[index];
+                final isSelected = bu.buId == globalProvider.selectedBusinessUnit?.buId;
+
+                return ListTile(
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  leading: Icon(
+                    isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                    color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+                  ),
+                  title: Text(bu.buName,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, fontSize: 16,
+                      )),
+                  selected: isSelected,
+                  onTap: () {
+                    globalProvider.setSelectedBusinessUnit(bu);
+                    Navigator.of(dialogContext).pop();
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<BranchesFinYearsSettingsResponseModel?> _loadAndsetSettingsFinYearsBranches() async {
+    final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+    final selectedBU = globalProvider.selectedBusinessUnit;
+
+    if (selectedBU == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a business unit first')),
+      );
+      return null;
+    }
+
+    if (AppSettings.dbParams == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Database parameters not available')),
+      );
+      return null;
+    }
+
+    try {
+      final graphQLService = GraphQLService();
+      final result = await graphQLService.executeGenericQuery(
+        buCode: selectedBU.buCode,
+        dbParams: AppSettings.dbParams!,
+        sqlId: SqlIdsMap.getSettingsFinYearsBranches,
+        sqlArgs: {}
+      );
+
+      if (result.hasException) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Query failed: ${result.exception.toString()}')),
+          );
+        }
+        return null;
+      } else {
+        // Parse the result
+        final data = result.data?['genericQuery'];
+        if (data == null) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('No data received from query')),
+            );
+          }
+          return null;
+        }
+
+        // Parse JSON string to Map
+        final Map<String, dynamic> jsonData = data[0]['jsonResult']; //jsonDecode
+
+        // Convert to model
+        final responseModel = BranchesFinYearsSettingsResponseModel.fromJson(jsonData);
+
+        return responseModel;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // final authService = AuthService();
-    // final userData = authService.userData;
     final username = AppSettings.userName ?? 'User';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Consumer<GlobalProvider>(
+              builder: (context, globalProvider, child) {
+                final selectedBU = globalProvider.selectedBusinessUnit;
+                return InkWell(
+                  onTap: () => _showBusinessUnitSelector(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.business, color: Colors.white, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        selectedBU?.buName ?? 'Select BU',
+                        style: const TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.arrow_drop_down, color: Colors.white, size: 18),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -33,145 +308,13 @@ class DashboardPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Welcome section
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFF1E3A5F),
-                      Color(0xFF2C5F8D),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.check_circle,
-                      color: Color(0xFF00B894),
-                      size: 64,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Welcome to Trace+',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Hello, $username!',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Color(0xFFB2BEC3),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 48),
-
-              // Feature cards placeholder
-              const Text(
-                'Dashboard features will be implemented in future steps',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF636E72),
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 32),
-
-              // Quick action buttons
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                alignment: WrapAlignment.center,
-                children: [
-                  _buildActionCard(
-                    icon: Icons.account_balance,
-                    label: 'Accounts',
-                    color: const Color(0xFF5B7EC4),
-                  ),
-                  _buildActionCard(
-                    icon: Icons.inventory,
-                    label: 'Products',
-                    color: const Color(0xFF00B894),
-                  ),
-                  _buildActionCard(
-                    icon: Icons.point_of_sale,
-                    label: 'Sales',
-                    color: const Color(0xFFD63031),
-                  ),
-                  _buildActionCard(
-                    icon: Icons.receipt_long,
-                    label: 'Transactions',
-                    color: const Color(0xFFE17055),
-                  ),
-                  _buildActionCard(
-                    icon: Icons.health_and_safety,
-                    label: 'Health',
-                    color: const Color(0xFF6C5CE7),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionCard({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      width: 140,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
+      body: Column(
         children: [
-          Icon(icon, size: 40, color: color),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-          ),
+          // Secondary AppBar
+          const SecondaryAppBarWidget(),
+
+          // Main content
+          DashboardContentWidget(username: username),
         ],
       ),
     );

@@ -7,7 +7,6 @@ import '../models/login_request_model.dart';
 import '../models/login_response_model.dart';
 import '../models/business_unit_model.dart';
 import '../core/app_settings.dart';
-// import '../core/app_constants.dart';
 
 class AuthService {
   // Singleton pattern
@@ -176,7 +175,7 @@ class AuthService {
     // Set database settings
     AppSettings.dbName = userDetails.dbName;
     AppSettings.isExternalDb = userDetails.isExternalDb;
-    AppSettings.dbParams = userDetails.dbParams;
+    AppSettings.dbParams = {'conn': userDetails.dbParams};
 
     // Set branch and business unit IDs
     AppSettings.branchIds = userDetails.branchIds;
@@ -281,7 +280,7 @@ class AuthService {
     // Load database settings
     AppSettings.dbName = data['dbName'] as String?;
     AppSettings.isExternalDb = data['isExternalDb'] as bool?;
-    AppSettings.dbParams = data['dbParams'] as String?;
+    AppSettings.dbParams = (data['dbParams'] as Map?)?.cast<String, String?>();
 
     // Load branch and business unit IDs
     AppSettings.branchIds = data['branchIds'] as String?;

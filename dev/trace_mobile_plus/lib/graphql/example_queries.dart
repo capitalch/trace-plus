@@ -1,8 +1,3 @@
-/// Example GraphQL queries and mutations for the Trace+ app
-///
-/// This file demonstrates how to use GraphQL with the configured client.
-/// Replace these examples with your actual GraphQL schema operations.
-
 // Example: Query to fetch user profile
 const String getUserProfileQuery = r'''
   query GetUserProfile {

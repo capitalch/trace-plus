@@ -3,7 +3,8 @@ import 'package:trace_mobile_plus/models/business_unit_model.dart';
 
 class AppSettings {
   static const localBaseUrl = 'http://localhost:8000';
-  static const productionUrl = 'https://pilot.cloudjiffy.net/graphql';
+  static const productionUrl = 'https://pilot.cloudjiffy.net';
+  static const String graphQlUrl = '$baseUrl/graphql/';
   static const bool isProduction = kReleaseMode;
   static const String baseUrl = isProduction ? productionUrl : localBaseUrl;
   static String? uid;
@@ -18,7 +19,7 @@ class AppSettings {
   static bool? isClientActive;
   static String? dbName;
   static bool? isExternalDb;
-  static String? dbParams;
+  static Map<String, String?>? dbParams;
   static String? branchIds;
   static int? lastUsedBuId;
   static int? lastUsedBranchId;
