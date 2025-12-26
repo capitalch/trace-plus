@@ -26,6 +26,31 @@ class _LoginPageState extends State<LoginPage> {
   ClientModel? _selectedClient;
   bool _isLoadingClients = false;
 
+  // Test network connectivity
+  Future<void> _testNetworkConnection() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      _showInfoMessage('Testing connection to server...');
+      final clients = await _authService.fetchClients('test');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        _showSuccessMessage('Connection successful! Server is reachable.');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        _showErrorMessage('Connection failed: ${e.toString().replaceAll('Exception: ', '')}');
+      }
+    }
+  }
+
   @override
   void dispose() {
     _clientController.dispose();
@@ -455,7 +480,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   // Welcome Back - Primary Heading
                   const Text(
-                    'Welcome Back',
+                    'Welcome',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -474,6 +499,58 @@ class _LoginPageState extends State<LoginPage> {
                       fontWeight: FontWeight.w500,
                       color: Color(0xFFE8EEF2),
                       letterSpacing: 0.3,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Debug info - Show current baseUrl (remove in production)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Debug Info:',
+                              style: TextStyle(
+                                color: Color(0xFFFFC107),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: _isLoading ? null : _testNetworkConnection,
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color(0xFF00B894),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                minimumSize: Size.zero,
+                              ),
+                              child: const Text(
+                                'Test Connection',
+                                style: TextStyle(fontSize: 11),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Server: ${AuthService.baseUrl}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
@@ -514,7 +591,22 @@ class _LoginPageState extends State<LoginPage> {
                                 setState(() {
                                   _isLoadingClients = false;
                                 });
-                                _showErrorMessage('Failed to fetch clients: ${e.toString()}');
+
+                                // Show user-friendly error messages
+                                String errorMessage = 'Failed to fetch clients';
+                                String errorStr = e.toString().toLowerCase();
+
+                                if (errorStr.contains('timeout')) {
+                                  errorMessage = 'Connection timeout. Check your internet connection.';
+                                } else if (errorStr.contains('socket') || errorStr.contains('network')) {
+                                  errorMessage = 'Network error. Cannot reach server.';
+                                } else if (errorStr.contains('host lookup')) {
+                                  errorMessage = 'Cannot connect to server. Check your connection.';
+                                } else {
+                                  errorMessage = 'Failed to fetch clients: ${e.toString().replaceAll('Exception: ', '')}';
+                                }
+
+                                _showErrorMessage(errorMessage);
                               }
                               return const Iterable<ClientModel>.empty();
                             }

@@ -11,7 +11,8 @@ import '../core/app_settings.dart';
 class AuthService {
   // Singleton pattern
   static final AuthService _instance = AuthService._internal();
-  static const String baseUrl = AppSettings.baseUrl;
+  // Make baseUrl dynamic so it always reads from AppSettings
+  static String get baseUrl => AppSettings.baseUrl;
   factory AuthService() => _instance;
   AuthService._internal();
 
@@ -154,7 +155,9 @@ class AuthService {
   }
 
   /// Set AppSettings from login response
-  Future<void> _setAppSettingsFromLoginResponse(LoginResponseModel loginResponse) async {
+  Future<void> _setAppSettingsFromLoginResponse(
+    LoginResponseModel loginResponse,
+  ) async {
     final userDetails = loginResponse.payload.userDetails;
 
     // Set user details
@@ -185,7 +188,8 @@ class AuthService {
 
     // Set business units
     AppSettings.allBusinessUnits = loginResponse.payload.allBusinessUnits;
-    AppSettings.userBusinessUnits = loginResponse.payload.userBusinessUnits ?? [];
+    AppSettings.userBusinessUnits =
+        loginResponse.payload.userBusinessUnits ?? [];
 
     // Save AppSettings to secure storage
     try {
@@ -255,8 +259,12 @@ class AuthService {
       'lastUsedBuId': AppSettings.lastUsedBuId,
       'lastUsedBranchId': AppSettings.lastUsedBranchId,
       'lastUsedFinYearId': AppSettings.lastUsedFinYearId,
-      'allBusinessUnits': AppSettings.allBusinessUnits.map((bu) => bu.toJson()).toList(),
-      'userBusinessUnits': AppSettings.userBusinessUnits.map((bu) => bu.toJson()).toList(),
+      'allBusinessUnits': AppSettings.allBusinessUnits
+          .map((bu) => bu.toJson())
+          .toList(),
+      'userBusinessUnits': AppSettings.userBusinessUnits
+          .map((bu) => bu.toJson())
+          .toList(),
     };
   }
 
@@ -298,9 +306,10 @@ class AuthService {
     }
 
     if (data['userBusinessUnits'] != null) {
-      AppSettings.userBusinessUnits = (data['userBusinessUnits'] as List<dynamic>)
-          .map((e) => BusinessUnitModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      AppSettings.userBusinessUnits =
+          (data['userBusinessUnits'] as List<dynamic>)
+              .map((e) => BusinessUnitModel.fromJson(e as Map<String, dynamic>))
+              .toList();
     } else {
       AppSettings.userBusinessUnits = [];
     }
@@ -310,30 +319,40 @@ class AuthService {
   Future<List<ClientModel>> fetchClients(String searchTerm) async {
     try {
       final url = Uri.parse('$baseUrl/api/login-clients');
-      final body = jsonEncode({
-        'criteria': searchTerm,
-      });
+      final body = jsonEncode({'criteria': searchTerm});
+
+      print('Fetching clients from: $url'); // Debug log
 
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: body,
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception('Connection timeout. Please check your network connection.');
+        },
       );
+
+      print('Response status: ${response.statusCode}'); // Debug log
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = jsonDecode(response.body);
-        return jsonList.map((json) => ClientModel.fromJson(json)).toList();
+        final clients = jsonList.map((json) => ClientModel.fromJson(json)).toList();
+        print('Found ${clients.length} clients'); // Debug log
+        return clients;
       } else if (response.statusCode == 404) {
         // No clients found
         return [];
       } else {
         // Handle other error status codes
-        throw Exception('Failed to fetch clients: ${response.statusCode}');
+        throw Exception('Server returned error ${response.statusCode}');
       }
     } catch (e) {
       // Handle network errors or parsing errors
       print('Error fetching clients: $e');
-      return [];
+      // Re-throw the error so it can be shown to the user
+      rethrow;
     }
   }
 }

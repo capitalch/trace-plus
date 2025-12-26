@@ -16,7 +16,8 @@
       "Bash(powershell -Command \"Get-Content ''C:\\\\projects\\\\trace-plus\\\\dev\\\\trace_mobile_plus\\\\lib\\\\features\\\\authentication\\\\login_page.dart'' | Measure-Object -Line | Select-Object -ExpandProperty Lines\")",
       "Bash(powershell:*)",
       "Bash(cat:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(flutter build:*)"
     ]
   }
 }
