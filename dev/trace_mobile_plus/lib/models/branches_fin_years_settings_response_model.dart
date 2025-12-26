@@ -22,8 +22,6 @@ class BranchesFinYearsSettingsResponseModel {
           .map((e) => FinYearModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       allSettings: (json['allSettings'] as List<dynamic>)
-          // .map((e) => SettingModel.fromJson(e as Map<String, dynamic>))
-          // .toList(),
     );
   }
 

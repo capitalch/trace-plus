@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/routes.dart';
 
 class DashboardContentWidget extends StatelessWidget {
   final String username;
@@ -74,26 +76,32 @@ class DashboardContentWidget extends StatelessWidget {
                   alignment: WrapAlignment.center,
                   children: [
                     _buildActionCard(
+                      context: context,
                       icon: Icons.account_balance,
                       label: 'Accounts',
                       color: const Color(0xFF5B7EC4),
                     ),
                     _buildActionCard(
+                      context: context,
                       icon: Icons.inventory,
                       label: 'Products',
                       color: const Color(0xFF00B894),
                     ),
                     _buildActionCard(
+                      context: context,
                       icon: Icons.point_of_sale,
                       label: 'Sales',
                       color: const Color(0xFFD63031),
+                      onTap: () => context.go(Routes.sales),
                     ),
                     _buildActionCard(
+                      context: context,
                       icon: Icons.receipt_long,
                       label: 'Transactions',
                       color: const Color(0xFFE17055),
                     ),
                     _buildActionCard(
+                      context: context,
                       icon: Icons.health_and_safety,
                       label: 'Health',
                       color: const Color(0xFF6C5CE7),
@@ -109,38 +117,43 @@ class DashboardContentWidget extends StatelessWidget {
   }
 
   Widget _buildActionCard({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required Color color,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      width: 120,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 32, color: color),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: color,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 120,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

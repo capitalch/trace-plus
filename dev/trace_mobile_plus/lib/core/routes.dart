@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../features/splash/splash_screen.dart';
 import '../features/authentication/login_page.dart';
 import '../features/dashboard/dashboard_page.dart';
+import '../features/sales/sales_page.dart';
 import '../services/auth_service.dart';
 
 /// Route paths as constants for type safety
@@ -126,6 +127,22 @@ GoRouter createRouter() {
                 scale: scaleAnimation,
                 child: child,
               ),
+            );
+          },
+        ),
+      ),
+
+      // Sales page route
+      GoRoute(
+        path: Routes.sales,
+        name: 'sales',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const SalesPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
             );
           },
         ),

@@ -5,6 +5,7 @@ import 'core/routes.dart';
 import 'theme/app_theme.dart';
 import 'services/graphql_service.dart';
 import 'providers/global_provider.dart';
+import 'providers/sales_provider.dart';
 
 void main() async {
   // Initialize GraphQL client storage
@@ -54,6 +55,7 @@ class TraceMobilePlusApp extends StatelessWidget {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => GlobalProvider()),
+            ChangeNotifierProvider(create: (_) => SalesProvider()),
           ],
           child: GraphQLProvider(
             client: clientNotifier,
