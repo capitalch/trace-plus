@@ -4,9 +4,11 @@ class SalesProvider extends ChangeNotifier {
   // Date fields - initialized to today's date
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
+  String _selectedPeriod = 'Today'; // Track the active period button
 
   DateTime get startDate => _startDate;
   DateTime get endDate => _endDate;
+  String get selectedPeriod => _selectedPeriod;
 
   // Constructor - initialize dates to today
   SalesProvider() {
@@ -19,6 +21,7 @@ class SalesProvider extends ChangeNotifier {
     final now = DateTime.now();
     _startDate = _getStartOfDay(now);
     _endDate = _getEndOfDay(now);
+    _selectedPeriod = 'Today';
     notifyListeners();
   }
 
@@ -27,6 +30,7 @@ class SalesProvider extends ChangeNotifier {
     final now = DateTime.now();
     _startDate = _getStartOfDay(now.subtract(Duration(days: days)));
     _endDate = _getEndOfDay(now);
+    _selectedPeriod = '(-$days) Day';
     notifyListeners();
   }
 
@@ -35,6 +39,7 @@ class SalesProvider extends ChangeNotifier {
     final now = DateTime.now();
     _startDate = _getStartOfMonth(now);
     _endDate = _getEndOfMonth(now);
+    _selectedPeriod = 'This Month';
     notifyListeners();
   }
 
@@ -45,6 +50,7 @@ class SalesProvider extends ChangeNotifier {
     final targetMonth = DateTime(now.year, now.month - monthsAgo, 1);
     _startDate = _getStartOfMonth(targetMonth);
     _endDate = _getEndOfMonth(targetMonth);
+    _selectedPeriod = monthsAgo == 1 ? 'Previous Month' : '(-$monthsAgo) Month';
     notifyListeners();
   }
 
@@ -53,6 +59,7 @@ class SalesProvider extends ChangeNotifier {
     final now = DateTime.now();
     _startDate = _getStartOfDay(DateTime(now.year, now.month - months, now.day));
     _endDate = _getEndOfDay(now);
+    _selectedPeriod = 'Last $months Months';
     notifyListeners();
   }
 

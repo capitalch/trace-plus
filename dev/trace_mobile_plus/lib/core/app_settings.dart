@@ -13,32 +13,32 @@ class AppSettings {
 
   static const bool isProduction = kReleaseMode;
 
-  static String baseUrl = productionUrl;
-  // static String get baseUrl {
-  //   if (isProduction) {
-  //     return productionUrl;
-  //   }
+  // static String baseUrl = productionUrl;
+  static String get baseUrl {
+    if (isProduction) {
+      return productionUrl;
+    }
 
-  //   // Development environment
-  //   if (kIsWeb) {
-  //     return webDevUrl;
-  //   }
+    // Development environment
+    if (kIsWeb) {
+      return webDevUrl;
+    }
 
-  //   // Mobile platforms
-  //   if (Platform.isAndroid) {
-  //     // Android emulator uses 10.0.2.2 to access host machine's localhost
-  //     // For physical devices, you need to use your computer's local network IP
-  //     return androidEmulatorUrl; // Change to physicalDeviceUrl for physical device
-  //   }
+    // Mobile platforms
+    if (Platform.isAndroid) {
+      // Android emulator uses 10.0.2.2 to access host machine's localhost
+      // For physical devices, you need to use your computer's local network IP
+      return androidEmulatorUrl; // Change to physicalDeviceUrl for physical device
+    }
 
-  //   if (Platform.isIOS) {
-  //     // iOS simulator can use localhost
-  //     // For physical devices, you need to use your computer's local network IP
-  //     return iosSimulatorUrl; // Change to physicalDeviceUrl for physical device
-  //   }
+    if (Platform.isIOS) {
+      // iOS simulator can use localhost
+      // For physical devices, you need to use your computer's local network IP
+      return iosSimulatorUrl; // Change to physicalDeviceUrl for physical device
+    }
 
-  //   return webDevUrl; // Fallback
-  // }
+    return webDevUrl; // Fallback
+  }
 
   static String get graphQlUrl => '$baseUrl/graphql/';
   static String? uid;

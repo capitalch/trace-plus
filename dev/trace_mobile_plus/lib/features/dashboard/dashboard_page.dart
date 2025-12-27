@@ -1,5 +1,6 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:trace_mobile_plus/core/app_settings.dart';
@@ -10,7 +11,7 @@ import '../../services/graphql_service.dart';
 import '../../core/sql_ids_map.dart';
 import '../../models/branches_fin_years_settings_response_model.dart';
 import '../../models/branch_model.dart';
-import 'secondary_app_bar_widget.dart';
+import 'dashboard_secondary_app_bar_widget.dart';
 import 'dashboard_content_widget.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -318,7 +319,15 @@ class _DashboardPageState extends State<DashboardPage> {
     final username = AppSettings.userName ?? 'User';
 
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        backgroundColor: const Color(0xFF1976D2),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Color.fromARGB(255, 90, 105, 128), // Darker blue for status bar
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        elevation: 4,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -331,11 +340,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.business, color: Colors.white, size: 20),
+                      const Icon(Icons.business, color: Colors.white, size: 16),
                       const SizedBox(width: 6),
                       Text(
                         selectedBU?.buName ?? 'Select BU',
-                        style: const TextStyle(color: Colors.white, fontSize: 20),
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       const SizedBox(width: 4),
                       const Icon(Icons.arrow_drop_down, color: Colors.white, size: 18),
@@ -357,8 +366,7 @@ class _DashboardPageState extends State<DashboardPage> {
       body: Column(
         children: [
           // Secondary AppBar
-          const SecondaryAppBarWidget(),
-
+          const DashboardSecondaryAppBarWidget(),
           // Main content
           DashboardContentWidget(username: username),
         ],

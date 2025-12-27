@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:trace_mobile_plus/core/routes.dart';
@@ -16,6 +17,15 @@ class SalesPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(Routes.dashboard),
         ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Color.fromARGB(255, 90, 105, 128), // Darker blue for status bar
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        elevation: 4  ,
+        titleSpacing: 0,
+        backgroundColor: Colors.teal[500],
+        actions: const [SizedBox(width: 16)],
         title: LayoutBuilder(
           builder: (context, constraints) {
             return Consumer<SalesProvider>(
@@ -23,9 +33,9 @@ class SalesPage extends StatelessWidget {
                 return Row(
                   children: [
                     const Text('Sales'),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 10),
                     SizedBox(
-                      width: constraints.maxWidth - 100, // Reserve space for "Sales" text and leading icon
+                      width: constraints.maxWidth - 60, // Reserve space for "Sales" text
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -33,63 +43,63 @@ class SalesPage extends StatelessWidget {
                             _buildPeriodButton(
                               context,
                               label: 'Today',
-                              icon: Icons.today,
+                              // icon: Icons.today,
                               onPressed: () => provider.setToday(),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
-                              label: '1 Day Ago',
-                              icon: Icons.calendar_today,
+                              label: '(-1) Day',
+                              // icon: Icons.calendar_today,
                               onPressed: () => provider.setDaysAgo(1),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
-                              label: '2 Days Ago',
-                              icon: Icons.calendar_today,
+                              label: '(-2) Day',
+                              // icon: Icons.calendar_today,
                               onPressed: () => provider.setDaysAgo(2),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
-                              label: '3 Days Ago',
-                              icon: Icons.calendar_today,
+                              label: '(-3) Day',
+                              // icon: Icons.calendar_today,
                               onPressed: () => provider.setDaysAgo(3),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: 'This Month',
-                              icon: Icons.calendar_month,
+                              // icon: Icons.calendar_month,
                               onPressed: () => provider.setThisMonth(),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
-                              label: 'Previous (-1) Month',
-                              icon: Icons.date_range,
+                              label: 'Previous Month',
+                              // icon: Icons.date_range,
                               onPressed: () => provider.setPreviousMonth(1),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: '(-2) Month',
-                              icon: Icons.date_range,
+                              // icon: Icons.date_range,
                               onPressed: () => provider.setPreviousMonth(2),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: '(-3) Month',
-                              icon: Icons.date_range,
+                              // icon: Icons.date_range,
                               onPressed: () => provider.setPreviousMonth(3),
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: 'Last 3 Months',
-                              icon: Icons.date_range,
+                              // icon: Icons.date_range,
                               onPressed: () => provider.setLastMonths(3),
                             ),
                           ],
@@ -502,21 +512,35 @@ class SalesPage extends StatelessWidget {
   Widget _buildPeriodButton(
     BuildContext context, {
     required String label,
-    required IconData icon,
+    // required IconData icon,
     required VoidCallback onPressed,
   }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 18),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        backgroundColor: const Color.fromARGB(255, 224, 221, 48),
-        foregroundColor: const Color.fromARGB(255, 230, 9, 82),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
+    return Consumer<SalesProvider>(
+      builder: (context, provider, _) {
+        final isActive = provider.selectedPeriod == label;
+
+        return TextButton(
+          onPressed: onPressed,
+          style: TextButton.styleFrom(
+            // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            backgroundColor: isActive
+                ? Colors.lightBlue[300]
+                : Colors.white.withValues(alpha: 0.9),
+            foregroundColor: isActive
+                ? Colors.white
+                : Colors.teal[700],
+            // shape: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.circular(8),
+            // ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        );
+      },
     );
   }
 }

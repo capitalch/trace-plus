@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/global_provider.dart';
 
-class SecondaryAppBarWidget extends StatelessWidget {
-  const SecondaryAppBarWidget({super.key});
+class DashboardSecondaryAppBarWidget extends StatelessWidget {
+  const DashboardSecondaryAppBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +14,20 @@ class SecondaryAppBarWidget extends StatelessWidget {
         final branchCode = globalProvider.selectedBranch?.branchCode ?? 'N/A';
 
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey[300]!,
+                width: 1.5,
+              ),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -29,77 +35,88 @@ class SecondaryAppBarWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Left: Unit Name
-              Expanded(
+              Flexible(
                 flex: 2,
                 child: Text(
                   unitName,
                   style: const TextStyle(
                     color: Colors.black87,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
 
+              const SizedBox(width: 4),
+
               // Middle: FinYear with +/- controls
-              Expanded(
+              Flexible(
                 flex: 2,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove, color: Colors.black87, size: 20),
+                      icon: const Icon(Icons.remove, color: Colors.black87, size: 18),
                       onPressed: () => _decrementFinYear(context, globalProvider),
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                       tooltip: 'Previous Financial Year',
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'FY: $finYearId',
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(width: 2),
+                    Flexible(
+                      child: Text(
+                        finYearId,
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 2),
                     IconButton(
-                      icon: const Icon(Icons.add, color: Colors.black87, size: 20),
+                      icon: const Icon(Icons.add, color: Colors.black87, size: 18),
                       onPressed: () => _incrementFinYear(context, globalProvider),
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                       tooltip: 'Next Financial Year',
                     ),
                   ],
                 ),
               ),
 
+              // const SizedBox(width: 2),
+
               // Right: Branch Code (clickable)
-              Expanded(
+              Flexible(
                 flex: 1,
                 child: InkWell(
                   onTap: () => _showBranchSelector(context, globalProvider),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    padding: const EdgeInsets.only(left: 4, right: 4, top: 6, bottom: 6),
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.grey[300]!, width: 1),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          branchCode,
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        Flexible(
+                          child: Text(
+                            branchCode,
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const SizedBox(width: 4),
                         const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 18),
                       ],
                     ),
