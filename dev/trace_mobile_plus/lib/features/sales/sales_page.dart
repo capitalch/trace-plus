@@ -756,7 +756,7 @@ class SalesPage extends StatelessWidget {
                 Icon(Icons.access_time, size: 17, color: Colors.blue[700]),
                 const SizedBox(width: 4),
                 Text(
-                  DateFormat('hh:mm a').format(sale.timestamp),
+                  DateFormat('hh:mm').format(sale.timestamp),
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey[600],
