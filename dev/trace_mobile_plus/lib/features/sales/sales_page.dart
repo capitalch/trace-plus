@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:trace_mobile_plus/core/routes.dart';
 import 'package:trace_mobile_plus/providers/sales_provider.dart';
+import 'package:trace_mobile_plus/providers/global_provider.dart';
+import 'package:trace_mobile_plus/models/sales_card_model.dart';
 
 class SalesPage extends StatelessWidget {
   const SalesPage({super.key});
@@ -18,11 +21,11 @@ class SalesPage extends StatelessWidget {
           onPressed: () => context.go(Routes.dashboard),
         ),
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Color.fromARGB(255, 90, 105, 128), // Darker blue for status bar
+          statusBarColor: Color.fromARGB(255, 90, 105, 128),
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
-        elevation: 4  ,
+        elevation: 0,
         titleSpacing: 0,
         backgroundColor: Colors.teal[500],
         actions: const [SizedBox(width: 16)],
@@ -35,7 +38,7 @@ class SalesPage extends StatelessWidget {
                     const Text('Sales'),
                     const SizedBox(width: 10),
                     SizedBox(
-                      width: constraints.maxWidth - 60, // Reserve space for "Sales" text
+                      width: constraints.maxWidth - 60,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -43,64 +46,127 @@ class SalesPage extends StatelessWidget {
                             _buildPeriodButton(
                               context,
                               label: 'Today',
-                              // icon: Icons.today,
-                              onPressed: () => provider.setToday(),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setToday();
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: '(-1) Day',
-                              // icon: Icons.calendar_today,
-                              onPressed: () => provider.setDaysAgo(1),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setDaysAgo(1);
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: '(-2) Day',
-                              // icon: Icons.calendar_today,
-                              onPressed: () => provider.setDaysAgo(2),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setDaysAgo(2);
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: '(-3) Day',
-                              // icon: Icons.calendar_today,
-                              onPressed: () => provider.setDaysAgo(3),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setDaysAgo(3);
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: 'This Month',
-                              // icon: Icons.calendar_month,
-                              onPressed: () => provider.setThisMonth(),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setThisMonth();
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: 'Previous Month',
-                              // icon: Icons.date_range,
-                              onPressed: () => provider.setPreviousMonth(1),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setPreviousMonth(1);
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: '(-2) Month',
-                              // icon: Icons.date_range,
-                              onPressed: () => provider.setPreviousMonth(2),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setPreviousMonth(2);
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: '(-3) Month',
-                              // icon: Icons.date_range,
-                              onPressed: () => provider.setPreviousMonth(3),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setPreviousMonth(3);
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
                               label: 'Last 3 Months',
-                              // icon: Icons.date_range,
-                              onPressed: () => provider.setLastMonths(3),
+                              onPressed: () {
+                                final globalProvider =
+                                    Provider.of<GlobalProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                provider.setLastMonths(3);
+                                provider.refreshSales(globalProvider);
+                              },
                             ),
                           ],
                         ),
@@ -112,400 +178,725 @@ class SalesPage extends StatelessWidget {
             );
           },
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(54),
+          child: _buildSecondaryAppBar(context),
+        ),
       ),
 
-      // Body with Content and Summary sections
+      // Body with sales data
       body: Consumer<SalesProvider>(
         builder: (context, provider, _) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Date Display Section
-                  _buildDateDisplaySection(provider),
+          // Trigger initial load if salesFuture is null (first time page loads)
+          if (provider.salesFuture == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final globalProvider = Provider.of<GlobalProvider>(
+                context,
+                listen: false,
+              );
+              provider.refreshSales(globalProvider);
+            });
+          }
 
-                  const SizedBox(height: 16),
+          return FutureBuilder<void>(
+            future: provider.salesFuture,
+            builder: (context, snapshot) {
+              // Show loading indicator
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                  // Content Section
-                  _buildContentSection(context),
+              // Show error message
+              if (snapshot.hasError || provider.errorMessage != null) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.red[300],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Error loading sales data',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          snapshot.error?.toString() ??
+                              provider.errorMessage ??
+                              '',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            final globalProvider = Provider.of<GlobalProvider>(
+                              context,
+                              listen: false,
+                            );
+                            provider.refreshSales(globalProvider);
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Retry'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
 
-                  const SizedBox(height: 24),
+              // Show empty state
+              if (provider.salesData.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.inbox_outlined,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No sales data found',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Try selecting a different date range',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-                  // Summary Section
-                  _buildSummarySection(context),
-                ],
-              ),
-            ),
+              // Show sales data
+              return RefreshIndicator(
+                onRefresh: () {
+                  final globalProvider = Provider.of<GlobalProvider>(
+                    context,
+                    listen: false,
+                  );
+                  return provider.fetchSalesData(globalProvider);
+                },
+                child: ListView(
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+                  children: [
+                    // Sales cards with separators
+                    ...provider.salesData.asMap().entries.expand((entry) {
+                      final index = entry.key;
+                      final sale = entry.value;
+                      return [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: _buildSalesCard(sale, index),
+                        ),
+                        if (index < provider.salesData.length - 1)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            child: Divider(
+                              color: Colors.grey[500],
+                              thickness: 2,
+                              height: 2,
+                            ),
+                          ),
+                      ];
+                    }),
+
+                    // Summary row at bottom
+                    _buildSummaryRow(context),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Widget _buildDateDisplaySection(SalesProvider provider) {
-    // Format dates for display
-    String formatDate(DateTime date) {
-      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-    }
+  Widget _buildSecondaryAppBar(BuildContext context) {
+    return Consumer<SalesProvider>(
+      builder: (context, provider, _) {
+        // Format dates for display
+        String formatDate(DateTime date) {
+          return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+        }
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF00B894),
-            Color(0xFF00CEC9),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(
-                Icons.date_range,
-                color: Colors.white,
-                size: 24,
-              ),
-              SizedBox(width: 12),
-              Text(
-                'Selected Date Range',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+        return Container(
+          height: 54,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Divider(color: Colors.white54),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Start Date',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      formatDate(provider.startDate),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.arrow_forward,
-                color: Colors.white70,
-                size: 20,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'End Date',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      formatDate(provider.endDate),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContentSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFD63031).withValues(alpha: 0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.point_of_sale,
-                color: const Color(0xFFD63031),
-                size: 28,
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                'Sales Content',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3436),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 16),
-
-          // Dummy content items
-          _buildDummyContentItem(
-            icon: Icons.shopping_cart,
-            title: 'Recent Sales',
-            subtitle: 'View your recent sales transactions',
-          ),
-          const SizedBox(height: 12),
-          _buildDummyContentItem(
-            icon: Icons.trending_up,
-            title: 'Sales Trends',
-            subtitle: 'Analyze sales performance over time',
-          ),
-          const SizedBox(height: 12),
-          _buildDummyContentItem(
-            icon: Icons.inventory_2,
-            title: 'Top Products',
-            subtitle: 'View best selling products',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSummarySection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF1E3A5F),
-            Color(0xFF2C5F8D),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(
-                Icons.summarize,
-                color: Colors.white,
-                size: 24,
-              ),
-              SizedBox(width: 12),
-              Text(
-                'Summary',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Summary cards in a row
-          Row(
-            children: [
-              Expanded(
-                child: _buildSummaryCard(
-                  label: 'Total Sales',
-                  value: '0',
-                  icon: Icons.attach_money,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildSummaryCard(
-                  label: 'Transactions',
-                  value: '0',
-                  icon: Icons.receipt,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildSummaryCard(
-                  label: 'Avg. Order',
-                  value: '0',
-                  icon: Icons.analytics,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildSummaryCard(
-                  label: 'Items Sold',
-                  value: '0',
-                  icon: Icons.shopping_bag,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDummyContentItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFD63031).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              color: const Color(0xFFD63031),
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2D3436),
+                // Period
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.teal[700],
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          provider.selectedPeriod,
+                          style: TextStyle(
+                            color: Colors.grey[800],
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF636E72),
+                // Start Date
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.event, color: Colors.grey[600], size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        formatDate(provider.startDate),
+                        style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+                // Arrow
+                Icon(Icons.arrow_forward, color: Colors.grey[600], size: 16),
+                // End Date
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.event, color: Colors.grey[600], size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        formatDate(provider.endDate),
+                        style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: Color(0xFFB2BEC3),
+        );
+      },
+    );
+  }
+
+  Widget _buildSummaryRow(BuildContext context) {
+    return Consumer<SalesProvider>(
+      builder: (context, provider, _) {
+        // Only show if there's data
+        if (provider.salesData.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final NumberFormat intFormatter = NumberFormat('#,##0');
+        final NumberFormat decimalFormatter = NumberFormat('#,##0.00');
+
+        return Container(
+          margin: const EdgeInsets.only(top:16, bottom:32,left: 16, right: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.indigo[500]!, Colors.purple[500]!],
+            ),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
+          child: Column(
+            children: [
+              // Header
+              const Text(
+                'Summary',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Summary values in a row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildSummaryItem(
+                    'Rows',
+                    intFormatter.format(provider.totalRows),
+                    Icons.format_list_numbered,
+                  ),
+                  _buildSummaryItem(
+                    'Qty',
+                    decimalFormatter.format(provider.totalQty.round()),
+                    Icons.inventory_2,
+                  ),
+                  _buildSummaryItem(
+                    'GP',
+                    intFormatter.format(provider.totalGP),
+                    Icons.trending_up,
+                  ),
+                  _buildSummaryItem(
+                    'Sale',
+                    decimalFormatter.format(provider.totalSale),
+                    Icons.payments,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSummaryItem(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.white70, size: 20),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11,
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSalesCard(SalesCardModel sale, int index) {
+    // final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
+    final NumberFormat currencyFormatter = NumberFormat('#,##0.00');
+    final NumberFormat intFormatter = NumberFormat('#,##0');
+
+    // Calculate age for color determination
+    final int? age = sale.lastPurchaseDate != null
+        ? sale.tranDate.difference(sale.lastPurchaseDate!).inDays
+        : null;
+    final Color cardColor = (age != null && age > 360)
+        ? Colors.pink[50]!
+        : Colors.white10;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      color: cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row: Index, Age, GP
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: sale.grossProfit < 0
+                    ? Colors.red[500]
+                    : Colors.lightGreen[100],
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: sale.grossProfit < 0
+                        ? Colors.red[900]!.withValues(alpha: 0.3)
+                        : Colors.green[700]!.withValues(alpha: 0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${sale.brandName} ${sale.catName} ${sale.label}',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: sale.grossProfit < 0 ? Colors.white : const Color(0xFF0984E3),
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Index
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '#${index + 1}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: sale.grossProfit < 0
+                                ? Colors.red[800]
+                                : Colors.green[800],
+                          ),
+                        ),
+                      ),
+                      // Age
+                      if (sale.lastPurchaseDate != null)
+                        Text(
+                          'AGE: ${sale.tranDate.difference(sale.lastPurchaseDate!).inDays}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: sale.grossProfit < 0
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
+                      // GP (Gross Profit)
+                      Text(
+                        'GP: ${intFormatter.format(sale.grossProfit)}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: sale.grossProfit < 0
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Product Info: BrandName, catName, label, info, code, and Stock
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Info (if available) - next line, trimmed, no left space
+                      if (sale.info != null &&
+                          sale.info!.trim().isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.info_outline, size: 17, color: Colors.purple[700]),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                sale.info!.trim(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[900],
+                                  height: 1.3,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      // Code, RefNo, and SaleType - next line
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(Icons.tag, size: 17, color: Colors.orange[700]),
+                          const SizedBox(width: 4),
+                          Text(
+                            sale.autoRefNo,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              height: 1.3,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Code: ${sale.productCode}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              height: 1.3,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: sale.saleType == 'Sale'
+                                  ? Colors.green[100]
+                                  : Colors.red[100],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              sale.saleType,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: sale.saleType == 'Sale'
+                                    ? Colors.green[800]
+                                    : Colors.red[800],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Stock on right side in a box
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    intFormatter.format(sale.stock),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Contact & Accounts (if available)
+            if (sale.contact != null && sale.contact!.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.person_outline, size: 17, color: Colors.teal[700]),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      sale.contact!,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[700],
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // Time and Accounts row
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(Icons.access_time, size: 17, color: Colors.blue[700]),
+                const SizedBox(width: 4),
+                Text(
+                  DateFormat('hh:mm a').format(sale.timestamp),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (sale.accounts != null && sale.accounts!.isNotEmpty) ...[
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.account_balance_wallet_outlined,
+                    size: 17,
+                    color: Colors.green[700],
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      sale.accounts!,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[700],
+                        height: 1.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+
+            // Line Remarks (if available)
+            if (sale.lineRemarks != null &&
+                sale.lineRemarks!.isNotEmpty &&
+                sale.lineRemarks!.toLowerCase() != 'null') ...[
+              const SizedBox(height: 10),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.note_outlined, size: 17, color: Colors.amber[700]),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      sale.lineRemarks!
+                          .replaceAll(
+                            RegExp(r'\bnull\b', caseSensitive: false),
+                            '',
+                          )
+                          .replaceAll(
+                            RegExp(r',\s*,+'),
+                            ',',
+                          ) // Remove multiple commas
+                          .replaceAll(
+                            RegExp(r'^,+|,+$'),
+                            '',
+                          ) // Remove leading/trailing commas
+                          .trim(),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[800],
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // Sales Details at bottom
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildDetailItem(
+                    'Price',
+                    currencyFormatter.format(sale.amount / sale.qty),
+                    Colors.tealAccent[700]!,
+                  ),
+                  _buildDetailItem(
+                    'Qty',
+                    intFormatter.format(sale.qty),
+                    Colors.purple[700]!,
+                  ),
+                  _buildDetailItem(
+                    'Amount',
+                    currencyFormatter.format(sale.amount),
+                    Colors.indigo[800]!,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSummaryCard({
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.2),
+  Widget _buildDetailItem(String label, String value, Color color) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey[800],
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            color: const Color(0xFF00B894),
-            size: 20,
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: color,
+            height: 1.2,
           ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFFB2BEC3),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -526,9 +917,7 @@ class SalesPage extends StatelessWidget {
             backgroundColor: isActive
                 ? Colors.lightBlue[300]
                 : Colors.white.withValues(alpha: 0.9),
-            foregroundColor: isActive
-                ? Colors.white
-                : Colors.teal[700],
+            foregroundColor: isActive ? Colors.white : Colors.teal[700],
             // shape: RoundedRectangleBorder(
             //   borderRadius: BorderRadius.circular(8),
             // ),

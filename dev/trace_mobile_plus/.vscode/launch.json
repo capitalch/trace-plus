@@ -11,7 +11,8 @@
             "flutterMode": "debug",
             "args": [
                 "-d",
-                "chrome"
+                "chrome",
+                "--debug"
             ]
         },
         {

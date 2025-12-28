@@ -509,7 +509,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
 
                     // Sign in to Trace+ - Secondary Heading
                     const Text(
@@ -546,63 +546,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-
-                    // Debug info - Show current baseUrl (remove in production)
-                    // Container(
-                    //   padding: const EdgeInsets.all(12),
-                    //   decoration: BoxDecoration(
-                    //     color: Colors.black.withValues(alpha: 0.3),
-                    //     borderRadius: BorderRadius.circular(8),
-                    //     border: Border.all(
-                    //       color: Colors.white.withValues(alpha: 0.2),
-                    //     ),
-                    //   ),
-                    //   child: Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-                    //       Row(
-                    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //         children: [
-                    //           const Text(
-                    //             'Debug Info:',
-                    //             style: TextStyle(
-                    //               color: Color(0xFFFFC107),
-                    //               fontSize: 12,
-                    //               fontWeight: FontWeight.bold,
-                    //             ),
-                    //           ),
-                    //           TextButton(
-                    //             onPressed: _isLoading
-                    //                 ? null
-                    //                 : _testNetworkConnection,
-                    //             style: TextButton.styleFrom(
-                    //               foregroundColor: const Color(0xFF00B894),
-                    //               padding: const EdgeInsets.symmetric(
-                    //                 horizontal: 8,
-                    //                 vertical: 4,
-                    //               ),
-                    //               minimumSize: Size.zero,
-                    //             ),
-                    //             child: const Text(
-                    //               'Test Connection',
-                    //               style: TextStyle(fontSize: 11),
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //       const SizedBox(height: 4),
-                    //       Text(
-                    //         'Server: ${AuthService.baseUrl}',
-                    //         style: const TextStyle(
-                    //           color: Colors.white,
-                    //           fontSize: 11,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
 
                     // Login form
                     Form(
@@ -1089,92 +1033,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Footer section
-                    Column(
-                      children: [
-                        // Version info
-                        const Text(
-                          'Version 1.0.0',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFFB2BEC3),
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // Terms & Privacy links
-                        Wrap(
-                          spacing: 16,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Navigate to Terms of Service
-                                _showInfoMessage('Terms of Service');
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: const Color(0xFFB2BEC3),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                              ),
-                              child: const Text(
-                                'Terms',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                            const Text(
-                              '•',
-                              style: TextStyle(
-                                color: Color(0xFFB2BEC3),
-                                fontSize: 12,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Navigate to Privacy Policy
-                                _showInfoMessage('Privacy Policy');
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: const Color(0xFFB2BEC3),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                              ),
-                              child: const Text(
-                                'Privacy',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        // Copyright
-                        const Text(
-                          '© 2025 Trace+ All rights reserved',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF636E72),
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),

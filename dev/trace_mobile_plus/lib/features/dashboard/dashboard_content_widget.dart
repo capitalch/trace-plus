@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../core/routes.dart';
+import '../../providers/sales_provider.dart';
+import '../../providers/global_provider.dart';
 
 class DashboardContentWidget extends StatelessWidget {
   final String username;
@@ -92,7 +95,17 @@ class DashboardContentWidget extends StatelessWidget {
                       icon: Icons.point_of_sale,
                       label: 'Sales',
                       color: const Color(0xFFD63031),
-                      onTap: () => context.go(Routes.sales),
+                      onTap: () {
+                        // Get providers (without listening to prevent dashboard rebuilds)
+                        final salesProvider = Provider.of<SalesProvider>(context, listen: false);
+                        final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+
+                        // Initialize to today and start fetching data
+                        salesProvider.initializeToday(globalProvider);
+
+                        // Navigate to sales page
+                        context.go(Routes.sales);
+                      },
                     ),
                     _buildActionCard(
                       context: context,

@@ -32,8 +32,10 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!mounted) return;
 
     final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
-    globalProvider.loadAvailableBusinessUnits();
-    globalProvider.selectBusinessUnit();
+    if (globalProvider.selectedBusinessUnit == null) {
+      globalProvider.loadAvailableBusinessUnits();
+      globalProvider.selectBusinessUnit();
+    }
 
     final result = await _loadAndsetSettingsFinYearsBranches();
     if (result != null && mounted) {
@@ -41,7 +43,10 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  void _processSettingsData(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+  void _processSettingsData(
+    BranchesFinYearsSettingsResponseModel result,
+    GlobalProvider globalProvider,
+  ) {
     globalProvider.setAllBranches(result.allBranches);
     globalProvider.setAllFinYears(result.allFinYears);
 
@@ -50,17 +55,24 @@ class _DashboardPageState extends State<DashboardPage> {
     _selectCurrentFinYear(result, globalProvider);
   }
 
-  void _extractAndSetUnitName(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+  void _extractAndSetUnitName(
+    BranchesFinYearsSettingsResponseModel result,
+    GlobalProvider globalProvider,
+  ) {
     final setting = result.allSettings.firstWhere(
       (s) => s['key'] == 'unitInfo',
       orElse: () => <String, dynamic>{},
     );
 
-    final unitName = setting['jData']?['unitName'] as String? ?? 'Unit info not provided';
+    final unitName =
+        setting['jData']?['unitName'] as String? ?? 'Unit info not provided';
     globalProvider.setUnitName(unitName);
   }
 
-  void _selectBranch(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+  void _selectBranch(
+    BranchesFinYearsSettingsResponseModel result,
+    GlobalProvider globalProvider,
+  ) {
     try {
       BranchModel? selectedBranch;
 
@@ -82,14 +94,17 @@ class _DashboardPageState extends State<DashboardPage> {
       globalProvider.setSelectedBranch(selectedBranch);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error selecting branch: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error selecting branch: $e')));
       }
     }
   }
 
-  void _selectCurrentFinYear(BranchesFinYearsSettingsResponseModel result, GlobalProvider globalProvider) {
+  void _selectCurrentFinYear(
+    BranchesFinYearsSettingsResponseModel result,
+    GlobalProvider globalProvider,
+  ) {
     try {
       final today = DateTime.now();
 
@@ -99,13 +114,15 @@ class _DashboardPageState extends State<DashboardPage> {
             final startDate = DateTime.parse(finYear.startDate);
             final endDate = DateTime.parse(finYear.endDate);
 
-            return (today.isAfter(startDate) || today.isAtSameMomentAs(startDate)) &&
-                   (today.isBefore(endDate) || today.isAtSameMomentAs(endDate));
+            return (today.isAfter(startDate) ||
+                    today.isAtSameMomentAs(startDate)) &&
+                (today.isBefore(endDate) || today.isAtSameMomentAs(endDate));
           } catch (_) {
             return false;
           }
         },
-        orElse: () => throw Exception('No financial year found for current date'),
+        orElse: () =>
+            throw Exception('No financial year found for current date'),
       );
 
       globalProvider.setSelectedFinYear(currentFinYear);
@@ -124,7 +141,10 @@ class _DashboardPageState extends State<DashboardPage> {
     // Clear business units from GlobalProvider
     // print('DashboardPage: Clearing business units on logout');
     if (mounted) {
-      final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+      final globalProvider = Provider.of<GlobalProvider>(
+        context,
+        listen: false,
+      );
       globalProvider.setAvailableBusinessUnits([]);
       globalProvider.setSelectedBusinessUnit(null);
       // print('DashboardPage: Business units cleared');
@@ -163,23 +183,35 @@ class _DashboardPageState extends State<DashboardPage> {
               itemCount: availableUnits.length,
               itemBuilder: (context, index) {
                 final bu = availableUnits[index];
-                final isSelected = bu.buId == globalProvider.selectedBusinessUnit?.buId;
+                final isSelected =
+                    bu.buId == globalProvider.selectedBusinessUnit?.buId;
 
                 return ListTile(
                   dense: true,
                   visualDensity: VisualDensity.compact,
                   leading: Icon(
-                    isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                    color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+                    isSelected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                    color: isSelected
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey,
                   ),
-                  title: Text(bu.buName,
-                      style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, fontSize: 16,
-                      )),
+                  title: Text(
+                    bu.buName,
+                    style: TextStyle(
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      fontSize: 16,
+                    ),
+                  ),
                   selected: isSelected,
                   onTap: () {
                     globalProvider.setSelectedBusinessUnit(bu);
-                    Navigator.of(dialogContext).pop(true); // Return true to indicate selection
+                    Navigator.of(
+                      dialogContext,
+                    ).pop(true); // Return true to indicate selection
                   },
                 );
               },
@@ -187,7 +219,9 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false), // Return false on cancel
+              onPressed: () => Navigator.of(
+                dialogContext,
+              ).pop(false), // Return false on cancel
               child: const Text('Cancel'),
             ),
           ],
@@ -250,7 +284,8 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Future<BranchesFinYearsSettingsResponseModel?> _loadAndsetSettingsFinYearsBranches() async {
+  Future<BranchesFinYearsSettingsResponseModel?>
+  _loadAndsetSettingsFinYearsBranches() async {
     final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
     final selectedBU = globalProvider.selectedBusinessUnit;
 
@@ -274,13 +309,15 @@ class _DashboardPageState extends State<DashboardPage> {
         buCode: selectedBU.buCode,
         dbParams: AppSettings.dbParams!,
         sqlId: SqlIdsMap.getSettingsFinYearsBranches,
-        sqlArgs: {}
+        sqlArgs: {},
       );
 
       if (result.hasException) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Query failed: ${result.exception.toString()}')),
+            SnackBar(
+              content: Text('Query failed: ${result.exception.toString()}'),
+            ),
           );
         }
         return null;
@@ -297,18 +334,21 @@ class _DashboardPageState extends State<DashboardPage> {
         }
 
         // Parse JSON string to Map
-        final Map<String, dynamic> jsonData = data?[0]?['jsonResult']; //jsonDecode
+        final Map<String, dynamic> jsonData =
+            data?[0]?['jsonResult']; //jsonDecode
 
         // Convert to model
-        final responseModel = BranchesFinYearsSettingsResponseModel.fromJson(jsonData);
+        final responseModel = BranchesFinYearsSettingsResponseModel.fromJson(
+          jsonData,
+        );
 
         return responseModel;
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
       return null;
     }
@@ -321,9 +361,14 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1976D2),
+        backgroundColor: Colors.teal[800],
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Color.fromARGB(255, 90, 105, 128), // Darker blue for status bar
+          statusBarColor: Color.fromARGB(
+            255,
+            90,
+            105,
+            128,
+          ), // Darker blue for status bar
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
@@ -344,10 +389,17 @@ class _DashboardPageState extends State<DashboardPage> {
                       const SizedBox(width: 6),
                       Text(
                         selectedBU?.buName ?? 'Select BU',
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(Icons.arrow_drop_down, color: Colors.white, size: 18),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ],
                   ),
                 );
