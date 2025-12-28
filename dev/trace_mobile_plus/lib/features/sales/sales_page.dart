@@ -438,8 +438,8 @@ class SalesPage extends StatelessWidget {
         final NumberFormat decimalFormatter = NumberFormat('#,##0.00');
 
         return Container(
-          margin: const EdgeInsets.only(top:16, bottom:32,left: 16, right: 16),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(top:16, bottom:40,left: 16, right: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.indigo[500]!, Colors.purple[500]!],
@@ -455,16 +455,6 @@ class SalesPage extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // Header
-              const Text(
-                'Summary',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 12),
               // Summary values in a row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -476,7 +466,7 @@ class SalesPage extends StatelessWidget {
                   ),
                   _buildSummaryItem(
                     'Qty',
-                    decimalFormatter.format(provider.totalQty.round()),
+                    intFormatter.format(provider.totalQty.round()),
                     Icons.inventory_2,
                   ),
                   _buildSummaryItem(
@@ -501,8 +491,6 @@ class SalesPage extends StatelessWidget {
   Widget _buildSummaryItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white70, size: 20),
-        const SizedBox(height: 4),
         Text(
           label,
           style: const TextStyle(
