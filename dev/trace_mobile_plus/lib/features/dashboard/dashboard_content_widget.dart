@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/routes.dart';
 import '../../providers/sales_provider.dart';
+import '../../providers/transactions_provider.dart';
 import '../../providers/global_provider.dart';
 
 class DashboardContentWidget extends StatelessWidget {
@@ -112,6 +113,17 @@ class DashboardContentWidget extends StatelessWidget {
                       icon: Icons.receipt_long,
                       label: 'Transactions',
                       color: const Color(0xFFE17055),
+                      onTap: () {
+                        // Get providers (without listening to prevent dashboard rebuilds)
+                        final transactionsProvider = Provider.of<TransactionsProvider>(context, listen: false);
+                        final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+
+                        // Initialize to today and start fetching data
+                        transactionsProvider.initializeToday(globalProvider);
+
+                        // Navigate to transactions page
+                        context.go(Routes.transactions);
+                      },
                     ),
                     _buildActionCard(
                       context: context,

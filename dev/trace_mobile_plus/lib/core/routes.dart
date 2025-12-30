@@ -4,6 +4,7 @@ import '../features/splash/splash_screen.dart';
 import '../features/authentication/login_page.dart';
 import '../features/dashboard/dashboard_page.dart';
 import '../features/sales/sales_page.dart';
+import '../features/transactions/transactions_page.dart';
 import '../services/auth_service.dart';
 
 /// Route paths as constants for type safety
@@ -139,6 +140,22 @@ GoRouter createRouter() {
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const SalesPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // Transactions page route
+      GoRoute(
+        path: Routes.transactions,
+        name: 'transactions',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const TransactionsPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
