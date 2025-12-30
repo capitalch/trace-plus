@@ -53,7 +53,7 @@ class SalesProvider extends ChangeNotifier {
     final now = DateTime.now();
     _startDate = _getStartOfDay(now.subtract(Duration(days: days)));
     _endDate = _startDate;
-    _selectedPeriod = '(-$days) Day';
+    _selectedPeriod = '(-$days) D';
   }
 
   // Method: Set dates to first and last day of current month

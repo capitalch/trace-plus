@@ -16,6 +16,8 @@ class SalesPage extends StatelessWidget {
     return Scaffold(
       // AppBar Section
       appBar: AppBar(
+        toolbarHeight: 54,
+        // automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(Routes.dashboard),
@@ -34,6 +36,7 @@ class SalesPage extends StatelessWidget {
             return Consumer<SalesProvider>(
               builder: (context, provider, _) {
                 return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text('Sales'),
                     const SizedBox(width: 10),
@@ -59,7 +62,7 @@ class SalesPage extends StatelessWidget {
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
-                              label: '(-1) Day',
+                              label: '(-1) D',
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
@@ -73,7 +76,7 @@ class SalesPage extends StatelessWidget {
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
-                              label: '(-2) Day',
+                              label: '(-2) D',
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
@@ -87,7 +90,7 @@ class SalesPage extends StatelessWidget {
                             const SizedBox(width: 8),
                             _buildPeriodButton(
                               context,
-                              label: '(-3) Day',
+                              label: '(-3) D',
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
@@ -179,7 +182,7 @@ class SalesPage extends StatelessWidget {
           },
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(54),
+          preferredSize: const Size.fromHeight(34),
           child: _buildSecondaryAppBar(context),
         ),
       ),
@@ -301,8 +304,11 @@ class SalesPage extends StatelessWidget {
                   return provider.fetchSalesData(globalProvider);
                 },
                 child: ListView(
-                  padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+                  padding: const EdgeInsets.only(top: 16.0, bottom: 64.0),
                   children: [
+                    // Summary row at top
+                    _buildSummaryRow(context),
+
                     // Sales cards with separators
                     ...provider.salesData.asMap().entries.expand((entry) {
                       final index = entry.key;
@@ -314,7 +320,10 @@ class SalesPage extends StatelessWidget {
                         ),
                         if (index < provider.salesData.length - 1)
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 4.0,
+                            ),
                             child: Divider(
                               color: Colors.grey[500],
                               thickness: 2,
@@ -323,9 +332,6 @@ class SalesPage extends StatelessWidget {
                           ),
                       ];
                     }),
-
-                    // Summary row at bottom
-                    _buildSummaryRow(context),
                   ],
                 ),
               );
@@ -345,7 +351,7 @@ class SalesPage extends StatelessWidget {
         }
 
         return Container(
-          height: 54,
+          height: 34,
           decoration: BoxDecoration(
             color: Colors.grey[300],
             boxShadow: [
@@ -438,8 +444,13 @@ class SalesPage extends StatelessWidget {
         final NumberFormat decimalFormatter = NumberFormat('#,##0.00');
 
         return Container(
-          margin: const EdgeInsets.only(top:16, bottom:40,left: 16, right: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          margin: const EdgeInsets.only(
+            top: 0,
+            bottom: 12,
+            left: 16,
+            right: 16,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.indigo[500]!, Colors.purple[500]!],
@@ -523,7 +534,7 @@ class SalesPage extends StatelessWidget {
         : null;
     final Color cardColor = (age != null && age > 360)
         ? Colors.pink[50]!
-        : Colors.white10;
+        : Colors.white;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -531,98 +542,69 @@ class SalesPage extends StatelessWidget {
       color: cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Row: Index, Age, GP
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: sale.grossProfit < 0
-                    ? Colors.red[500]
-                    : Colors.lightGreen[100],
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: sale.grossProfit < 0
-                        ? Colors.red[900]!.withValues(alpha: 0.3)
-                        : Colors.green[700]!.withValues(alpha: 0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+            // Index and Product Name
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start, 
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '#${index + 1}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800], 
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+                ),
+                SizedBox(width: 4),
+                Expanded(
+                  child: Text(
                     '${sale.brandName} ${sale.catName} ${sale.label}',
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: sale.grossProfit < 0 ? Colors.white : const Color(0xFF0984E3),
-                      height: 1.3,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black, backgroundColor: Colors.amber[50],
+                      // height: 1.3,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Index
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          '#${index + 1}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: sale.grossProfit < 0
-                                ? Colors.red[800]
-                                : Colors.green[800],
-                          ),
-                        ),
-                      ),
-                      // Age
-                      if (sale.lastPurchaseDate != null)
-                        Text(
-                          'AGE: ${sale.tranDate.difference(sale.lastPurchaseDate!).inDays}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: sale.grossProfit < 0
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        )
-                      else
-                        const SizedBox.shrink(),
-                      // GP (Gross Profit)
-                      Text(
-                        'GP: ${intFormatter.format(sale.grossProfit)}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: sale.grossProfit < 0
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
 
-            const SizedBox(height: 12),
-
+            const SizedBox(height: 6),
+            // Age and GP Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Age
+                if (sale.lastPurchaseDate != null)
+                  Text(
+                    'AGE: ${sale.tranDate.difference(sale.lastPurchaseDate!).inDays}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
+                // GP (Gross Profit)
+                Text(
+                  'GP: ${intFormatter.format(sale.grossProfit)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: sale.grossProfit < 0 ? Colors.red : Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
             // Product Info: BrandName, catName, label, info, code, and Stock
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -638,14 +620,18 @@ class SalesPage extends StatelessWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.info_outline, size: 17, color: Colors.purple[700]),
+                            Icon(
+                              Icons.info_outline,
+                              size: 17,
+                              color: Colors.purple[700],
+                            ),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 sale.info!.trim(),
                                 style: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[900],
+                                  color: Colors.black87,
                                   height: 1.3,
                                 ),
                               ),
@@ -750,7 +736,7 @@ class SalesPage extends StatelessWidget {
             ],
 
             // Time and Accounts row
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
             Row(
               children: [
                 Icon(Icons.access_time, size: 17, color: Colors.blue[700]),
@@ -826,34 +812,28 @@ class SalesPage extends StatelessWidget {
             ],
 
             // Sales Details at bottom
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildDetailItem(
-                    'Price',
-                    currencyFormatter.format(sale.amount / sale.qty),
-                    Colors.tealAccent[700]!,
-                  ),
-                  _buildDetailItem(
-                    'Qty',
-                    intFormatter.format(sale.qty),
-                    Colors.purple[700]!,
-                  ),
-                  _buildDetailItem(
-                    'Amount',
-                    currencyFormatter.format(sale.amount),
-                    Colors.indigo[800]!,
-                  ),
-                ],
-              ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildDetailItem(
+                  'Price',
+                  currencyFormatter.format(sale.amount / sale.qty),
+                  Colors.black,
+                ),
+                _buildDetailItem(
+                  'Qty',
+                  intFormatter.format(sale.qty),
+                  Colors.purple[700]!,
+                ),
+                _buildDetailItem(
+                  'Amount',
+                  currencyFormatter.format(sale.amount),
+                  Colors.black,
+                ),
+              ],
             ),
+            // ),
           ],
         ),
       ),
@@ -869,7 +849,7 @@ class SalesPage extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 11,
-            color: Colors.grey[800],
+            color: Colors.black,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
           ),
@@ -878,10 +858,10 @@ class SalesPage extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: color,
-            height: 1.2,
+            // height: 1.2,
           ),
         ),
       ],
@@ -901,18 +881,18 @@ class SalesPage extends StatelessWidget {
         return TextButton(
           onPressed: onPressed,
           style: TextButton.styleFrom(
-            // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            // minimumSize: const Size(0, 0),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             backgroundColor: isActive
                 ? Colors.lightBlue[300]
                 : Colors.white.withValues(alpha: 0.9),
             foregroundColor: isActive ? Colors.white : Colors.teal[700],
-            // shape: RoundedRectangleBorder(
-            //   borderRadius: BorderRadius.circular(8),
-            // ),
           ),
           child: Text(
             label,
             style: TextStyle(
+              fontSize: 12,
               fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
             ),
           ),

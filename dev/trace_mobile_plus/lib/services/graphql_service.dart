@@ -82,6 +82,7 @@ class GraphQLService {
     final QueryOptions options = QueryOptions(
       document: gql(genericQuery),
       variables: {'dbName': dbName, 'value': valueString},
+      fetchPolicy: FetchPolicy.noCache,
     );
 
     return await client.value.query(options);
