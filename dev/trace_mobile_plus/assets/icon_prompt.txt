@@ -1,0 +1,40 @@
+TRACE MOBILE PLUS - APP ICON DESIGN PROMPT
+===========================================
+
+For AI Image Generators (DALL-E, Midjourney, etc.):
+
+"Create a mobile app icon for a financial accounting application. Design a modern, minimalist icon featuring a stylized accounting ledger book in a 3/4 view, slightly open. The book should be deep indigo blue (#283593) with a gold spine showing 'T+' text. Add subtle digital elements like glowing lines or particles around the book in cyan color. The background should be a gradient from teal (#26A69A) to purple (#7E57C2). Include subtle Dr/Cr accounting columns visible on the open page. Flat design style, professional, modern, clean, suitable for mobile app icon, 1024x1024px, rounded corners."
+
+Alternative Short Prompt:
+"Professional accounting app icon, modern ledger book, teal-purple gradient background, gold accents, digital glow effect, flat design, 1024x1024px"
+
+Design Style Keywords:
+- Flat design
+- Material Design
+- Professional
+- Modern minimalist
+- Accounting/Finance theme
+- Corporate blue/teal/purple palette
+- Subtle depth
+- Clean lines
+
+Required Specifications:
+- Size: 1024x1024px (will be resized for different devices)
+- Format: PNG with transparency
+- Style: Flat with subtle shadows
+- Border radius: 12px on corners
+- Safe zone: Keep important elements 100px from edges
+
+Color Codes:
+- Background gradient: #26A69A → #7E57C2
+- Book cover: #283593 (deep indigo)
+- Book spine: #FFA726 (gold/amber)
+- Digital glow: #00BCD4 (cyan, 20% opacity)
+- Page lines: #ECEFF1 (light gray)
+- Text: #FFFFFF (white)
+
+Additional Notes:
+- Icon should be recognizable at small sizes (48px)
+- Avoid too much detail (will blur at small sizes)
+- Keep text minimal and readable
+- Ensure good contrast for visibility

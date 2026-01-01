@@ -1193,8 +1193,8 @@ class SqlAccounts:
                 AND "branchId" = (TABLE "branchId")
                 AND (
                     CASE 
-                        WHEN (TABLE "dateType") = 'transactionDate' THEN h."tranDate" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
-                        WHEN (TABLE "dateType") = 'entryDate' THEN h."timestamp" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+                        WHEN (TABLE "dateType") = 'tranDate' THEN h."tranDate"::date BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+                        WHEN (TABLE "dateType") = 'entryDate' THEN h."timestamp"::date BETWEEN (TABLE "startDate") AND (TABLE "endDate")
                         ELSE FALSE  -- Fallback case
                     END
                 )

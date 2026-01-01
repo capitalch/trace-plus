@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:trace_mobile_plus/core/routes.dart';
 import 'package:trace_mobile_plus/providers/transactions_provider.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
-import 'package:trace_mobile_plus/models/transaction_model.dart';
+import 'package:trace_mobile_plus/models/grouped_transaction_model.dart';
 
 class TransactionsPage extends StatelessWidget {
   const TransactionsPage({super.key});
@@ -51,9 +51,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setToday();
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -65,9 +65,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setDaysAgo(2);
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -79,9 +79,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setDaysAgo(3);
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -93,9 +93,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setThisWeek();
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -107,9 +107,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setWeeksAgo(2);
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -121,9 +121,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setWeeksAgo(3);
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -135,9 +135,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setThisMonth();
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -149,9 +149,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setMonthsAgo(2);
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -163,9 +163,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setMonthsAgo(3);
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -177,9 +177,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setMonthsAgo(6);
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -191,9 +191,9 @@ class TransactionsPage extends StatelessWidget {
                               onPressed: () {
                                 final globalProvider =
                                     Provider.of<GlobalProvider>(
-                                  context,
-                                  listen: false,
-                                );
+                                      context,
+                                      listen: false,
+                                    );
                                 provider.setThisYear();
                                 provider.refreshTransactions(globalProvider);
                               },
@@ -292,7 +292,7 @@ class TransactionsPage extends StatelessWidget {
               }
 
               // Show empty state
-              if (provider.transactionsData.isEmpty) {
+              if (provider.groupedTransactionsData.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -337,24 +337,17 @@ class TransactionsPage extends StatelessWidget {
                     _buildRowCountHeader(context),
 
                     // Transaction cards with separators
-                    ...provider.transactionsData.asMap().entries.expand((entry) {
+                    ...provider.groupedTransactionsData.asMap().entries.expand((
+                      entry,
+                    ) {
                       final index = entry.key;
                       final transaction = entry.value;
                       return [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: _buildTransactionCard(transaction, index),
-                        ),
-                        if (index < provider.transactionsData.length - 1)
+                        _buildGroupedTransactionCard(transaction, index),
+                        if (index < provider.groupedTransactionsData.length - 1)
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16.0,
-                              vertical: 4.0,
-                            ),
-                            child: Divider(
-                              color: Colors.grey[500],
-                              thickness: 2,
-                              height: 2,
                             ),
                           ),
                       ];
@@ -392,70 +385,70 @@ class TransactionsPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Period
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.teal[700],
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          provider.selectedPeriod,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 // Start Date
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.event, color: Colors.grey[600], size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        formatDate(provider.startDate),
-                        style: TextStyle(color: Colors.grey[800], fontSize: 13),
-                      ),
-                    ],
-                  ),
+                Text(
+                  formatDate(provider.startDate),
+                  style: TextStyle(color: Colors.grey[800], fontSize: 13),
                 ),
                 // Arrow
                 Icon(Icons.arrow_forward, color: Colors.grey[600], size: 16),
                 // End Date
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.event, color: Colors.grey[600], size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        formatDate(provider.endDate),
-                        style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                Text(
+                  formatDate(provider.endDate),
+                  style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                ),
+                const SizedBox(width: 8),
+                // Date Type Selection
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.teal[100],
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: Colors.teal[300]!),
+                  ),
+                  child: DropdownButton<String>(
+                    value: provider.dateType,
+                    underline: const SizedBox(),
+                    isDense: true,
+                    style: TextStyle(
+                      color: Colors.teal[700],
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    dropdownColor: Colors.teal[50],
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'entryDate',
+                        child: Text('Entry Date'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'tranDate',
+                        child: Text('Tran Date'),
                       ),
                     ],
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        provider.setDateType(newValue);
+                        final globalProvider = Provider.of<GlobalProvider>(
+                          context,
+                          listen: false,
+                        );
+                        provider.refreshTransactions(globalProvider);
+                      }
+                    },
                   ),
                 ),
+                const SizedBox(width: 8),
                 // Max Count
                 InkWell(
                   onTap: () => _showMaxCountDialog(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.indigo[100],
                       borderRadius: BorderRadius.circular(4),
@@ -464,10 +457,16 @@ class TransactionsPage extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.format_list_numbered, size: 14, color: Colors.indigo[700]),
+                        Icon(
+                          Icons.format_list_numbered,
+                          size: 14,
+                          color: Colors.indigo[700],
+                        ),
                         const SizedBox(width: 4),
                         Text(
-                          provider.maxCount > 0 ? provider.maxCount.toString() : 'All',
+                          provider.maxCount > 0
+                              ? provider.maxCount.toString()
+                              : 'All',
                           style: TextStyle(
                             color: Colors.indigo[700],
                             fontSize: 12,
@@ -490,6 +489,8 @@ class TransactionsPage extends StatelessWidget {
     return Consumer<TransactionsProvider>(
       builder: (context, provider, _) {
         final NumberFormat intFormatter = NumberFormat('#,##0');
+        final int transactionCount = provider.groupedTransactionsData.length;
+        final int lineCount = provider.transactionsData.length;
 
         return Container(
           margin: const EdgeInsets.only(
@@ -515,14 +516,10 @@ class TransactionsPage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.format_list_numbered,
-                color: Colors.white,
-                size: 20,
-              ),
+              const Icon(Icons.receipt_long, color: Colors.white, size: 20),
               const SizedBox(width: 8),
               Text(
-                'Rows: ${intFormatter.format(provider.totalRows)}',
+                '${intFormatter.format(transactionCount)} Transactions (${intFormatter.format(lineCount)} Lines)',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -536,7 +533,10 @@ class TransactionsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionCard(TransactionModel transaction, int index) {
+  Widget _buildGroupedTransactionCard(
+    GroupedTransactionModel transaction,
+    int index,
+  ) {
     final NumberFormat currencyFormatter = NumberFormat('#,##0.00');
     final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
     final DateFormat timeFormatter = DateFormat('hh:mm a');
@@ -548,25 +548,40 @@ class TransactionsPage extends StatelessWidget {
         cardGradient = [Colors.blue[50]!, Colors.blue[100]!];
         break;
       case 2: // Payment
-        cardGradient = [Colors.red[50]!, Colors.red[100]!];
+        cardGradient = [Colors.amber[50]!, Colors.amber[100]!];
         break;
       case 3: // Receipt
-        cardGradient = [Colors.green[50]!, Colors.green[100]!];
+        cardGradient = [Colors.teal[50]!, Colors.teal[100]!];
         break;
       case 4: // Sales
-        cardGradient = [Colors.teal[50]!, Colors.teal[100]!];
+        cardGradient = [Colors.green[50]!, Colors.green[100]!];
         break;
       case 5: // Purchase
         cardGradient = [Colors.purple[50]!, Colors.purple[100]!];
         break;
+      case 6: // Contra
+        cardGradient = [Colors.lime[50]!, Colors.lime[100]!];
+        break;
+      case 7: // Debit note
+        cardGradient = [Colors.orange[50]!, Colors.orange[100]!];
+        break;
+      case 8: // Credit note
+        cardGradient = [Colors.teal[50]!, Colors.teal[100]!];
+        break;
+      case 9: // Sales return
+        cardGradient = [Colors.red[50]!, Colors.red[100]!];
+        break;
+      case 10: // Purchase return
+        cardGradient = [Colors.lightBlue[50]!, Colors.lightBlue[100]!];
+        break;
       default:
-        cardGradient = [Colors.grey[50]!, Colors.grey[100]!];
+        cardGradient = [Colors.blue[50]!, Colors.blue[100]!];
     }
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shadowColor: Colors.black.withValues(alpha: 0.15),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -575,215 +590,405 @@ class TransactionsPage extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[500]!, width: 0.5),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Index, Transaction Type, and Date
+              // HEADER:Index, Date, RefNo,
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
+                  // Index
+                  Text(
+                    '#${index + 1}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[800],
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  // Date
+                  Text(
+                    dateFormatter.format(transaction.tranDate),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  // Ref No
+                  Text(
+                    transaction.autoRefNo,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              // WARNING: Only Debits or Only Credits
+              if (transaction.debitLines.isEmpty ||
+                  transaction.creditLines.isEmpty) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[50],
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.orange[300]!, width: 1.5),
+                  ),
+                  child: Row(
                     children: [
-                      Text(
-                        '#${index + 1}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[800],
-                        ),
+                      Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Colors.orange[800],
                       ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.indigo[700],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                      const SizedBox(width: 6),
+                      Expanded(
                         child: Text(
-                          transaction.tranTypeName,
-                          style: const TextStyle(
+                          transaction.debitLines.isEmpty
+                              ? 'Warning: Transaction has no debits'
+                              : 'Warning: Transaction has no credits',
+                          style: TextStyle(
                             fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.orange[900],
                           ),
                         ),
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 8),
+              ],
+
+              // DEBITS SECTION
+              if (transaction.debitLines.isNotEmpty) ...[
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green[300]!, width: .5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.green.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.arrow_upward,
+                            size: 16,
+                            color: Colors.green[800],
+                          ),
+                          // ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'DEBITS',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green[800],
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green[50],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            child: Text(
+                              '${transaction.debitLines.length}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[900],
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            currencyFormatter.format(transaction.totalDebit),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ...transaction.debitLines.map(
+                        (line) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(width: 4),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Icon(
+                                  Icons.circle,
+                                  size: 6,
+                                  color: Colors.green[600],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  line.accName,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey[800],
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                currencyFormatter.format(line.amount),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (transaction.debitLines.length > 5) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 12,
+                              color: Colors.green[600],
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Multiple entries (${transaction.debitLines.length} accounts)',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+
+              // CREDITS SECTION
+              if (transaction.creditLines.isNotEmpty) ...[
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red[400]!, width: .5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.red.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.arrow_downward,
+                            size: 16,
+                            color: Colors.red[800],
+                          ),
+                          // ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'CREDITS',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red[800],
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.red[50],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            child: Text(
+                              '${transaction.creditLines.length}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red[900],
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            currencyFormatter.format(transaction.totalCredit),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ...transaction.creditLines.map(
+                        (line) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(width: 4),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Icon(
+                                  Icons.circle,
+                                  size: 6,
+                                  color: Colors.red[600],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  line.accName,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey[800],
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                currencyFormatter.format(line.amount),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (transaction.creditLines.length > 5) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 12,
+                              color: Colors.red[600],
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Multiple entries (${transaction.creditLines.length} accounts)',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.red[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+
+              // FOOTER: time, Remarks, Tran type
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                   Text(
-                    dateFormatter.format(transaction.tranDate),
+                    timeFormatter.format(transaction.timestamp.toLocal()),
                     style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                      fontSize: 11,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // Account Name
-              Row(
-                children: [
-                  Icon(Icons.account_balance_wallet, size: 16, color: Colors.teal[700]),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      transaction.accName,
+                      transaction.remarks ?? '—',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        fontSize: 11,
+                        color: Colors.grey[700],
+                        fontStyle: transaction.remarks != null
+                            ? FontStyle.italic
+                            : FontStyle.normal,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // Debit and Credit amounts
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildAmountItem(
-                    'Debit',
-                    currencyFormatter.format(transaction.debit),
-                    transaction.debit > 0 ? Colors.red[700]! : Colors.grey[600]!,
-                  ),
+                  const SizedBox(width: 8),
                   Container(
-                    width: 2,
-                    height: 40,
-                    color: Colors.grey[400],
-                  ),
-                  _buildAmountItem(
-                    'Credit',
-                    currencyFormatter.format(transaction.credit),
-                    transaction.credit > 0 ? Colors.green[700]! : Colors.grey[600]!,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // Reference Numbers
-              Row(
-                children: [
-                  Icon(Icons.tag, size: 16, color: Colors.orange[700]),
-                  const SizedBox(width: 6),
-                  Expanded(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.teal[700],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     child: Text(
-                      'Ref: ${transaction.autoRefNo}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[700],
+                      transaction.tranTypeName,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-
-              // User Ref No (if available)
-              if (transaction.userRefNo != null && transaction.userRefNo!.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(Icons.bookmark_outline, size: 16, color: Colors.blue[700]),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        'User Ref: ${transaction.userRefNo}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[700],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-
-              // Instrument Number (if available)
-              if (transaction.instrNo != null && transaction.instrNo!.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(Icons.receipt_long, size: 16, color: Colors.purple[700]),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        'Instr: ${transaction.instrNo}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[700],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-
-              // Remarks (if available)
-              if (transaction.remarks != null && transaction.remarks!.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.comment_outlined, size: 16, color: Colors.amber[700]),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        transaction.remarks!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[800],
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-
-              // Line Remarks (if available)
-              if (transaction.lineRemarks != null && transaction.lineRemarks!.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.note_outlined, size: 16, color: Colors.pink[700]),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        transaction.lineRemarks!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-
-              // Timestamp
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.access_time, size: 16, color: Colors.blue[700]),
-                  const SizedBox(width: 6),
-                  Text(
-                    timeFormatter.format(transaction.timestamp.toLocal()),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -792,30 +997,6 @@ class TransactionsPage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildAmountItem(String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[700],
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
     );
   }
 
@@ -861,60 +1042,24 @@ class TransactionsPage extends StatelessWidget {
           builder: (context, setState) {
             return AlertDialog(
               title: const Text('Select Max Row Count'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RadioListTile<int>(
-                    title: const Text('1000'),
-                    value: 1000,
-                    groupValue: selectedCount,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCount = value!;
-                      });
-                    },
-                  ),
-                  RadioListTile<int>(
-                    title: const Text('2000'),
-                    value: 2000,
-                    groupValue: selectedCount,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCount = value!;
-                      });
-                    },
-                  ),
-                  RadioListTile<int>(
-                    title: const Text('3000'),
-                    value: 3000,
-                    groupValue: selectedCount,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCount = value!;
-                      });
-                    },
-                  ),
-                  RadioListTile<int>(
-                    title: const Text('5000'),
-                    value: 5000,
-                    groupValue: selectedCount,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCount = value!;
-                      });
-                    },
-                  ),
-                  RadioListTile<int>(
-                    title: const Text('All'),
-                    value: 0,
-                    groupValue: selectedCount,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCount = value!;
-                      });
-                    },
-                  ),
-                ],
+              content: RadioGroup<int>(
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      selectedCount = value;
+                    });
+                  }
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RadioListTile<int>(title: const Text('1000'), value: 1000),
+                    RadioListTile<int>(title: const Text('2000'), value: 2000),
+                    RadioListTile<int>(title: const Text('3000'), value: 3000),
+                    RadioListTile<int>(title: const Text('5000'), value: 5000),
+                    RadioListTile<int>(title: const Text('All'), value: 0),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:trace_mobile_plus/core/sql_ids_map.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
 import '../models/transaction_model.dart';
+import '../models/grouped_transaction_model.dart';
 import '../services/graphql_service.dart';
 import '../core/app_settings.dart';
 
@@ -14,9 +15,11 @@ class TransactionsProvider extends ChangeNotifier {
   DateTime _endDate = DateTime.now();
   String _selectedPeriod = 'Today'; // Track the active period button
   int _maxCount = 1000; // Default max count
+  String _dateType = 'entryDate'; // Default to entry date
 
   // Transactions data
   List<TransactionModel> _transactionsData = [];
+  List<GroupedTransactionModel> _groupedTransactionsData = [];
   bool _isLoading = false;
   String? _errorMessage;
   Future<void>? _transactionsFuture;
@@ -25,7 +28,9 @@ class TransactionsProvider extends ChangeNotifier {
   DateTime get endDate => _endDate;
   String get selectedPeriod => _selectedPeriod;
   int get maxCount => _maxCount;
+  String get dateType => _dateType;
   List<TransactionModel> get transactionsData => _transactionsData;
+  List<GroupedTransactionModel> get groupedTransactionsData => _groupedTransactionsData;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   Future<void>? get transactionsFuture => _transactionsFuture;
@@ -102,6 +107,12 @@ class TransactionsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Method: Set date type (tranDate or entryDate)
+  void setDateType(String type) {
+    _dateType = type;
+    notifyListeners();
+  }
+
   // Helper: Get start of day (00:00:00)
   DateTime _getStartOfDay(DateTime date) {
     return DateTime(date.year, date.month, date.day, 0, 0, 0);
@@ -146,6 +157,65 @@ class TransactionsProvider extends ChangeNotifier {
     return DateTime(date.year, 12, 31, 23, 59, 59);
   }
 
+  /// Group transactions by id
+  List<GroupedTransactionModel> _groupTransactionsById(List<TransactionModel> transactions) {
+    // Group transactions by id using a map
+    final Map<int, List<TransactionModel>> groupedMap = {};
+
+    for (var transaction in transactions) {
+      if (!groupedMap.containsKey(transaction.id)) {
+        groupedMap[transaction.id] = [];
+      }
+      groupedMap[transaction.id]!.add(transaction);
+    }
+
+    // Convert grouped map to list of GroupedTransactionModel
+    final List<GroupedTransactionModel> groupedList = [];
+
+    groupedMap.forEach((id, transactionList) {
+      if (transactionList.isEmpty) return;
+
+      // Use the first transaction for common header data
+      final firstTransaction = transactionList.first;
+
+      // Separate into debit and credit lines
+      final List<TransactionLineModel> debitLines = [];
+      final List<TransactionLineModel> creditLines = [];
+
+      for (var transaction in transactionList) {
+        if (transaction.debit > 0) {
+          debitLines.add(TransactionLineModel(
+            accName: transaction.accName,
+            amount: transaction.debit,
+            lineRemarks: transaction.lineRemarks,
+          ));
+        }
+        if (transaction.credit > 0) {
+          creditLines.add(TransactionLineModel(
+            accName: transaction.accName,
+            amount: transaction.credit,
+            lineRemarks: transaction.lineRemarks,
+          ));
+        }
+      }
+
+      // Create grouped transaction model
+      groupedList.add(GroupedTransactionModel(
+        id: id,
+        autoRefNo: firstTransaction.autoRefNo,
+        tranDate: firstTransaction.tranDate,
+        userRefNo: firstTransaction.userRefNo,
+        remarks: firstTransaction.remarks,
+        tranTypeId: firstTransaction.tranTypeId,
+        timestamp: firstTransaction.timestamp,
+        debitLines: debitLines,
+        creditLines: creditLines,
+      ));
+    });
+
+    return groupedList;
+  }
+
   /// Fetch transactions data from GraphQL
   Future<void> fetchTransactionsData(GlobalProvider globalProvider) async {
     _isLoading = true;
@@ -175,6 +245,8 @@ class TransactionsProvider extends ChangeNotifier {
         'branchId': branchId,
         'startDate': startDateStr,
         'tranTypeId': null, // null for all transaction types
+        'dateType': _dateType,
+        'dateFormat': 'dd/MM/yyyy',
       };
 
       // Add noOfRows only if maxCount is not 0 (0 means 'All')
@@ -213,12 +285,16 @@ class TransactionsProvider extends ChangeNotifier {
           .map((item) => TransactionModel.fromJson(item as Map<String, dynamic>))
           .toList();
 
+      // Group transactions by id
+      _groupedTransactionsData = _groupTransactionsById(_transactionsData);
+
       _isLoading = false;
       _errorMessage = null;
     } catch (e) {
       _isLoading = false;
       _errorMessage = e.toString().replaceAll('Exception: ', '');
       _transactionsData = [];
+      _groupedTransactionsData = [];
     }
 
     notifyListeners();

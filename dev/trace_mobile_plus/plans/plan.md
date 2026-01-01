@@ -1,222 +1,271 @@
-# Plan: Create Transactions Page Feature
+# Plan: Display Line Details (lineRefNo, instrNo, lineRemarks) for Debit/Credit Entries
 
-## Overview
-Create a new transactions page feature following the same pattern as sales_page. This will display all account transactions including sales, purchase, and vouchers with date range filtering and row count limiting.
+## Problem
+Currently, each debit and credit entry only displays the account name and amount. Additional line-level details (lineRefNo, instrNo, lineRemarks) are not shown, which limits the information available to users.
 
-## Implementation Steps
+## Goal
+Display lineRefNo, instrNo, and lineRemarks below each debit/credit entry row in a nicely formatted, smaller font when these values are present.
 
-### Step 1: Create Transaction Model
-**File:** `lib/models/transaction_model.dart`
+## Current State Analysis
 
-**Action:** Create TransactionModel class with required fields
-
-**Fields to include:**
-- `tranDate` (DateTime)
-- `autoRefNo` (String)
-- `userRefNo` (String?)
-- `remarks` (String?)
+### TransactionLineModel (lib/models/grouped_transaction_model.dart)
+Currently has:
 - `accName` (String)
-- `debit` (double)
-- `credit` (double)
-- `instrNo` (String?)
-- `lineRefNo` (String?)
+- `amount` (double)
 - `lineRemarks` (String?)
-- `timestamp` (DateTime)
-- `tranTypeId` (int)
 
-**Implementation:**
-- Create class with all fields
-- Add `fromJson` factory constructor to parse GraphQL response
-- Add getter for transaction type name based on tranTypeId mapping:
-  - 1: 'Journal', 2: 'Payment', 3: 'Receipt', 4: 'Sales', 5: 'Purchase'
-  - 6: 'Contra', 7: 'Debit note', 8: 'Credit note', 9: 'Sales return', 10: 'Purchase return'
+**Missing fields:**
+- `lineRefNo` (String?)
+- `instrNo` (String?)
 
-### Step 2: Add SQL ID to SqlIdsMap
-**File:** `lib/core/sql_ids_map.dart`
+### UI Display (lib/features/transactions/transactions_page.dart)
+- Lines ~746-780: Debits section - displays icon, accName, amount
+- Lines ~878-915: Credits section - displays icon, accName, amount
+- No additional line details are currently displayed
 
-**Action:** Add getAllTransactions constant
+## Solution Steps
 
-**Implementation:**
-- Add `static const String getAllTransactions = 'getAllTransactions';`
+### Step 1: Update TransactionLineModel to include missing fields
+**File:** `lib/models/grouped_transaction_model.dart`
 
-### Step 3: Create Transactions Provider
+**Actions:**
+1. Add `lineRefNo` field (String?, nullable)
+2. Add `instrNo` field (String?, nullable)
+3. Update constructor to accept these new fields
+4. Update `toString()` method to include new fields
+
+**Expected result:**
+```dart
+class TransactionLineModel {
+  final String accName;
+  final double amount;
+  final String? lineRemarks;
+  final String? lineRefNo;
+  final String? instrNo;
+
+  TransactionLineModel({
+    required this.accName,
+    required this.amount,
+    this.lineRemarks,
+    this.lineRefNo,
+    this.instrNo,
+  });
+}
+```
+
+---
+
+### Step 2: Update data fetching to populate new fields
 **File:** `lib/providers/transactions_provider.dart`
 
-**Action:** Create TransactionsProvider following SalesProvider pattern
+**Actions:**
+1. Locate where `TransactionLineModel` instances are created from API response
+2. Update the mapping to include `lineRefNo` and `instrNo` from the API data
+3. Ensure proper null handling for optional fields
 
-**Fields to include:**
-- `_startDate` and `_endDate` (DateTime)
-- `_selectedPeriod` (String) - tracks active button
-- `_maxCount` (int) - default 1000
-- `_transactionsData` (List<TransactionModel>)
-- `_isLoading` (bool)
-- `_errorMessage` (String?)
-- `_transactionsFuture` (Future<void>?)
-- `_graphqlService` (GraphQLService instance)
+**Notes:**
+- Check the API response structure to confirm field names
+- May need to update GraphQL query or SQL if fields are not currently fetched
 
-**Methods to implement:**
-- Getters for all private fields
-- `totalRows` getter - returns count of transactions
-- Date setting methods:
-  - `setToday()`
-  - `setDaysAgo(int days)` - for 2 Days, 3 Days buttons
-  - `setThisWeek()`
-  - `setWeeksAgo(int weeks)` - for 2 Weeks, 3 Weeks
-  - `setThisMonth()`
-  - `setMonthsAgo(int months)` - for 2, 3, 6 months
-  - `setThisYear()`
-- `setMaxCount(int count)` - sets the row limit
-- `fetchTransactionsData(GlobalProvider globalProvider)` - async method to fetch data
-- `refreshTransactions(GlobalProvider globalProvider)` - creates new future
-- `initializeToday(GlobalProvider globalProvider)` - sets today and fetches
-- Helper methods for date calculations (start/end of day, week, month, year)
+---
 
-**Query parameters:**
-- buCode, dbParams from GlobalProvider and AppSettings
-- sqlId: SqlIdsMap.getAllTransactions
-- sqlArgs: endDate, finYearId, branchId, startDate, tranTypeId (null for all), noOfRows (from maxCount or null for 'All')
-
-### Step 4: Register Provider in main.dart
-**File:** `lib/main.dart`
-
-**Action:** Add TransactionsProvider to MultiProvider
-
-**Implementation:**
-- Import TransactionsProvider
-- Add `ChangeNotifierProvider(create: (_) => TransactionsProvider())` to the providers list
-
-### Step 5: Create Transactions Folder Structure
-**Action:** Create folder and files in features
-
-**Create:**
-- `lib/features/transactions/` folder
-- `lib/features/transactions/transactions_page.dart`
-
-### Step 6: Add Route for Transactions Page
-**File:** `lib/core/routes.dart`
-
-**Action:** Add transactions route constant and route configuration
-
-**Implementation:**
-- Add `static const String transactions = '/transactions';` constant
-- Add route to GoRouter configuration
-
-### Step 7: Create Transactions Page UI
+### Step 3: Create helper widget for displaying line details
 **File:** `lib/features/transactions/transactions_page.dart`
 
-**Action:** Create TransactionsPage widget similar to SalesPage
+**Actions:**
+1. Create a helper method `_buildLineDetails()` that:
+   - Takes lineRefNo, instrNo, lineRemarks as parameters
+   - Returns a Widget (or null if no details present)
+   - Displays details in a compact, formatted manner
+2. Design:
+   - Smaller font size (10-11px)
+   - Grey color for subtle appearance
+   - Icons or labels for each field type
+   - Horizontal or vertical layout depending on content
 
-**AppBar Configuration:**
-- toolbarHeight: 54
-- Title: "Transactions" text
-- Period buttons (Today, 2 Days, 3 Days, This Week, 2 Weeks, 3 Weeks, This Month, 2 Months, 3 Months, 6 Months, This Year)
-- Horizontal scrollable row for buttons
-- Use same button styling as sales_page
+**Example layout:**
+```
+Account Name                     1,234.56
+  📄 Ref: ABC123 | 📝 Instr: CHECK001 | 💬 Note: Payment for invoice
+```
 
-**Secondary AppBar (bottom):**
-- Show selected period
-- Show start and end dates
-- Show "Max count: {value}" as clickable label
-- On click of max count, show dialog with options: 1000, 2000, 3000, 5000, All
-- preferredSize height: 34
+**Alternative compact layout:**
+```
+Account Name                     1,234.56
+  Ref: ABC123 • Instr: CHECK001
+  Remarks: Payment for invoice
+```
 
-**Body Structure:**
-- FutureBuilder with transactionsFuture
-- Loading state: CircularProgressIndicator
-- Error state: Error message with retry button
-- Empty state: "No transactions found" message
-- Success state: RefreshIndicator with ListView
-  - Show row count at top (e.g., "Rows: 1,234")
-  - Transaction cards with separators
-  - Use ListView for scrolling
+---
 
-**Transaction Card Design:**
-- Display transaction information in a nice card layout
-- Show: tranDate, autoRefNo, accName, debit/credit, transaction type
-- Color coding based on transaction type or debit/credit
-- Use Colors.teal, Colors.indigo, Colors.purple for gradients
-- Show userRefNo, remarks, instrNo if available
-- Use layoutBuilder if needed for responsive design
-- Include dividers between cards
+### Step 4: Integrate line details into Debits section
+**File:** `lib/features/transactions/transactions_page.dart`
+**Lines:** ~746-780
 
-### Step 8: Create Helper Method for Max Count Dialog
+**Actions:**
+1. Modify the debit line mapping (transaction.debitLines.map)
+2. Change from Row to Column for each line item
+3. Add the main Row (icon + accName + amount) as first child
+4. Add `_buildLineDetails()` as second child if details exist
+5. Adjust padding/spacing for visual hierarchy
+
+**Structure:**
+```dart
+...transaction.debitLines.map(
+  (line) => Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Existing Row with icon, accName, amount
+        Row(...),
+        // New: Line details
+        if (line.lineRefNo != null || line.instrNo != null || line.lineRemarks != null)
+          _buildLineDetails(
+            lineRefNo: line.lineRefNo,
+            instrNo: line.instrNo,
+            lineRemarks: line.lineRemarks,
+            color: Colors.green[700]!, // Match debit color
+          ),
+      ],
+    ),
+  ),
+)
+```
+
+---
+
+### Step 5: Integrate line details into Credits section
+**File:** `lib/features/transactions/transactions_page.dart`
+**Lines:** ~878-915
+
+**Actions:**
+1. Apply the same changes as Step 4 to the credits section
+2. Use red color scheme to match credit styling
+3. Ensure consistent formatting with debits section
+
+---
+
+### Step 6: Implement _buildLineDetails helper method
 **File:** `lib/features/transactions/transactions_page.dart`
 
-**Action:** Create method to show max count selection dialog
+**Implementation approach:**
+```dart
+Widget? _buildLineDetails({
+  String? lineRefNo,
+  String? instrNo,
+  String? lineRemarks,
+  required Color color,
+}) {
+  // Collect non-null details
+  final details = <String>[];
+  if (lineRefNo != null && lineRefNo.isNotEmpty) {
+    details.add('Ref: $lineRefNo');
+  }
+  if (instrNo != null && instrNo.isNotEmpty) {
+    details.add('Instr: $instrNo');
+  }
 
-**Implementation:**
-- Create `_showMaxCountDialog(BuildContext context)` method
-- Show AlertDialog with radio button options
-- Options: 1000, 2000, 3000, 5000, All (null for all)
-- On selection, call `provider.setMaxCount(selectedCount)` and refresh
-- Update the label to show selected count
+  // Return null if no details
+  if (details.isEmpty && (lineRemarks == null || lineRemarks.isEmpty)) {
+    return null;
+  }
 
-### Step 9: Connect Transactions Card in Dashboard
-**File:** `lib/features/dashboard/dashboard_content_widget.dart`
+  return Padding(
+    padding: const EdgeInsets.only(left: 18, top: 2, bottom: 2),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // First line: Ref and Instr (if present)
+        if (details.isNotEmpty)
+          Text(
+            details.join(' • '),
+            style: TextStyle(
+              fontSize: 10,
+              color: color.withOpacity(0.8),
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        // Second line: Remarks (if present)
+        if (lineRemarks != null && lineRemarks.isNotEmpty)
+          Text(
+            lineRemarks,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey[700],
+              fontStyle: FontStyle.italic,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+      ],
+    ),
+  );
+}
+```
 
-**Action:** Add onTap handler to Transactions card
+---
 
-**Implementation:**
-- Import TransactionsProvider and Routes
-- In the Transactions action card, add onTap callback
-- Get TransactionsProvider and GlobalProvider (listen: false)
-- Call `transactionsProvider.initializeToday(globalProvider)`
-- Navigate to Routes.transactions
+### Step 7: Test with various data scenarios
+**Test cases:**
+1. Line with all three fields populated
+2. Line with only lineRefNo
+3. Line with only instrNo
+4. Line with only lineRemarks
+5. Line with lineRefNo + instrNo
+6. Line with no additional details (should show no extra row)
+7. Line with long remarks text (test ellipsis)
+8. Transaction with mix of lines (some with details, some without)
 
-### Step 10: Style and Polish UI
-**Action:** Apply consistent styling and color scheme
+---
 
-**Implementation:**
-- Use same color palette as sales_page (teal, indigo, purple)
-- Ensure cards have proper elevation and shadows
-- Add proper spacing and padding
-- Make max count label visually distinct (maybe with icon)
-- Ensure responsive layout works well
-- Test with large datasets to ensure performance
+### Step 8: Adjust spacing and styling
+**Fine-tuning:**
+1. Verify the 18px left padding aligns details with accName
+2. Adjust font sizes if needed (10-11px range)
+3. Ensure color contrast is readable but subtle
+4. Check that details don't make cards too tall
+5. Verify on different screen sizes
 
-### Step 11: Test the Feature
-**Action:** Comprehensive testing
+---
 
-**Test Cases:**
-- [ ] Click Transactions card from dashboard - page loads
-- [ ] Default shows today's transactions with max count 1000
-- [ ] All period buttons work correctly (Today, 2 Days, 3 Days, etc.)
-- [ ] Active button highlights correctly
-- [ ] Max count selector shows dialog with options
-- [ ] Selecting different max counts updates data correctly
-- [ ] "All" option fetches all transactions (no limit)
-- [ ] Transaction cards display all fields correctly
-- [ ] Different transaction types show correctly
-- [ ] Debit/credit amounts formatted properly
-- [ ] Pull to refresh works
-- [ ] Error handling works (network errors, no data)
-- [ ] Back button navigates to dashboard
-- [ ] Large datasets scroll smoothly
-- [ ] Row count displays correctly at top
+## Design Mockup
 
-## Files to Create
-1. `lib/models/transaction_model.dart`
-2. `lib/providers/transactions_provider.dart`
-3. `lib/features/transactions/transactions_page.dart`
+### Before (Current):
+```
+• Account Name                    1,234.56
+• Another Account                 5,678.90
+```
+
+### After (With Details):
+```
+• Account Name                    1,234.56
+  Ref: INV-001 • Instr: CHECK-123
+  Remarks: Payment for services rendered
+
+• Another Account                 5,678.90
+```
 
 ## Files to Modify
-1. `lib/core/sql_ids_map.dart` - Add getAllTransactions
-2. `lib/main.dart` - Register TransactionsProvider
-3. `lib/core/routes.dart` - Add transactions route
-4. `lib/features/dashboard/dashboard_content_widget.dart` - Add onTap handler
+1. `lib/models/grouped_transaction_model.dart` - Add fields to TransactionLineModel
+2. `lib/providers/transactions_provider.dart` - Update data mapping
+3. `lib/features/transactions/transactions_page.dart` - UI updates for both sections
 
-## Key Differences from Sales Page
-1. Different date range options (weeks, year instead of individual days)
-2. Max count selector with clickable label
-3. Different model fields (debit/credit instead of sales amounts)
-4. Transaction type mapping and display
-5. No summary section - only row count at top
-6. May need performance optimization for large datasets
+## Backend Considerations
+- Verify that lineRefNo and instrNo are available in the API response
+- May need to update GraphQL query/SQL to fetch these fields
+- Check field names in database (line_ref_no, instr_no, line_remarks)
 
-## Notes
-- Follow naming convention: TransactionModel (not Transaction)
-- Reuse GraphQL service with FetchPolicy.noCache
-- Use NumberFormat for formatting debit/credit amounts
-- Consider using ListView.builder if performance issues with large data
-- Ensure proper error handling and loading states
-- Keep UI consistent with sales_page styling
+## Expected Benefits
+- Users can see complete line-level information
+- Better transparency for transaction details
+- Improved audit trail visibility
+- More professional appearance
+
+## Styling Guidelines
+- **Font size:** 10px (smaller than main text which is 13px)
+- **Color:** Semi-transparent version of section color (green for debits, red for credits)
+- **Remarks color:** Grey[700] for neutral appearance
+- **Spacing:** 2px top padding, 18px left indent (aligns with account name)
+- **Separator:** Use bullet point (•) between Ref and Instr
+- **Max lines:** 2 for remarks with ellipsis overflow

@@ -3,6 +3,7 @@ import '../models/business_unit_model.dart';
 import '../models/branch_model.dart';
 import '../models/fin_year_model.dart';
 import '../core/app_settings.dart';
+import '../services/token_storage_service.dart';
 
 class GlobalProvider extends ChangeNotifier {
   // Global state variables can be added here
@@ -32,6 +33,13 @@ class GlobalProvider extends ChangeNotifier {
 
   void setSelectedBusinessUnit(BusinessUnitModel? businessUnit) {
     _selectedBusinessUnit = businessUnit;
+
+    // Update AppSettings and persist to secure storage
+    if (businessUnit != null) {
+      AppSettings.lastUsedBuId = businessUnit.buId;
+      _persistLastUsedBuId();
+    }
+
     notifyListeners();
   }
 
@@ -128,6 +136,46 @@ class GlobalProvider extends ChangeNotifier {
   void updateSelectedBranch(BranchModel branch) {
     _selectedBranch = branch;
     notifyListeners();
+  }
+
+  /// Persist lastUsedBuId to secure storage
+  Future<void> _persistLastUsedBuId() async {
+    try {
+      final tokenStorage = TokenStorageService();
+      final appSettingsMap = _appSettingsToMap();
+      await tokenStorage.saveAppSettings(appSettingsMap);
+    } catch (e) {
+      // Log error but don't block user
+      print('Failed to persist lastUsedBuId to storage: $e');
+    }
+  }
+
+  /// Convert AppSettings to Map for storage
+  Map<String, dynamic> _appSettingsToMap() {
+    return {
+      'uid': AppSettings.uid,
+      'userName': AppSettings.userName,
+      'userEmail': AppSettings.userEmail,
+      'clientId': AppSettings.clientId,
+      'clientName': AppSettings.clientName,
+      'clientCode': AppSettings.clientCode,
+      'userType': AppSettings.userType,
+      'isUserActive': AppSettings.isUserActive,
+      'isClientActive': AppSettings.isClientActive,
+      'dbName': AppSettings.dbName,
+      'isExternalDb': AppSettings.isExternalDb,
+      'dbParams': AppSettings.dbParams,
+      'branchIds': AppSettings.branchIds,
+      'lastUsedBuId': AppSettings.lastUsedBuId,
+      'lastUsedBranchId': AppSettings.lastUsedBranchId,
+      'lastUsedFinYearId': AppSettings.lastUsedFinYearId,
+      'allBusinessUnits': AppSettings.allBusinessUnits
+          .map((bu) => bu.toJson())
+          .toList(),
+      'userBusinessUnits': AppSettings.userBusinessUnits
+          .map((bu) => bu.toJson())
+          .toList(),
+    };
   }
 
 }

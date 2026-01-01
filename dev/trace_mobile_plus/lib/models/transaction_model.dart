@@ -1,4 +1,5 @@
 class TransactionModel {
+  final int id;
   final DateTime tranDate;
   final String autoRefNo;
   final String? userRefNo;
@@ -13,6 +14,7 @@ class TransactionModel {
   final int tranTypeId;
 
   TransactionModel({
+    required this.id,
     required this.tranDate,
     required this.autoRefNo,
     this.userRefNo,
@@ -29,22 +31,23 @@ class TransactionModel {
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
-      tranDate: json['tran_date'] != null
-          ? DateTime.parse(json['tran_date'])
+      id: json['id'] ?? 0,
+      tranDate: json['tranDate'] != null
+          ? DateTime.parse(json['tranDate'])
           : DateTime.now(),
-      autoRefNo: json['auto_ref_no'] ?? '',
-      userRefNo: json['user_ref_no'],
+      autoRefNo: json['autoRefNo'] ?? '',
+      userRefNo: json['userRefNo'],
       remarks: json['remarks'],
-      accName: json['acc_name'] ?? '',
+      accName: json['accName'] ?? '',
       debit: (json['debit'] ?? 0).toDouble(),
       credit: (json['credit'] ?? 0).toDouble(),
-      instrNo: json['instr_no'],
-      lineRefNo: json['line_ref_no'],
-      lineRemarks: json['line_remarks'],
+      instrNo: json['instrNo'],
+      lineRefNo: json['lineRefNo'],
+      lineRemarks: json['lineRemarks'],
       timestamp: json['timestamp'] != null
           ? DateTime.parse(json['timestamp'])
           : DateTime.now(),
-      tranTypeId: json['tran_type_id'] ?? 0,
+      tranTypeId: json['tranTypeId'] ?? 0,
     );
   }
 
@@ -77,18 +80,19 @@ class TransactionModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'tran_date': tranDate.toIso8601String(),
-      'auto_ref_no': autoRefNo,
-      'user_ref_no': userRefNo,
+      'id': id,
+      'tranDate': tranDate.toIso8601String(),
+      'autoRefNo': autoRefNo,
+      'userRefNo': userRefNo,
       'remarks': remarks,
-      'acc_name': accName,
+      'accName': accName,
       'debit': debit,
       'credit': credit,
-      'instr_no': instrNo,
-      'line_ref_no': lineRefNo,
-      'line_remarks': lineRemarks,
+      'instrNo': instrNo,
+      'lineRefNo': lineRefNo,
+      'lineRemarks': lineRemarks,
       'timestamp': timestamp.toIso8601String(),
-      'tran_type_id': tranTypeId,
+      'tranTypeId': tranTypeId,
     };
   }
 }
