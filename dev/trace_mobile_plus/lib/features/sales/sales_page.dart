@@ -13,9 +13,16 @@ class SalesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // AppBar Section
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          context.go(Routes.dashboard);
+        }
+      },
+      child: Scaffold(
+        // AppBar Section
+        appBar: AppBar(
         toolbarHeight: 54,
         // automaticallyImplyLeading: false,
         leading: IconButton(
@@ -40,8 +47,7 @@ class SalesPage extends StatelessWidget {
                   children: [
                     const Text('Sales'),
                     const SizedBox(width: 10),
-                    SizedBox(
-                      width: constraints.maxWidth - 60,
+                    Expanded(
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -339,12 +345,13 @@ class SalesPage extends StatelessWidget {
           );
         },
       ),
+      ),
     );
   }
 
   Widget _buildSecondaryAppBar(BuildContext context) {
-    return Consumer<SalesProvider>(
-      builder: (context, provider, _) {
+    return Consumer2<SalesProvider, GlobalProvider>(
+      builder: (context, provider, globalProvider, _) {
         // Format dates for display
         String formatDate(DateTime date) {
           return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
@@ -365,63 +372,60 @@ class SalesPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 // Period
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: Colors.teal[700],
-                        size: 18,
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          provider.selectedPeriod,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
+                Text(
+                  provider.selectedPeriod,
+                  style: TextStyle(
+                    color: Colors.grey[800],
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
+                SizedBox(width: 8),
                 // Start Date
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.event, color: Colors.grey[600], size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        formatDate(provider.startDate),
-                        style: TextStyle(color: Colors.grey[800], fontSize: 13),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.event, color: Colors.grey[600], size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      formatDate(provider.startDate),
+                      style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                    ),
+                  ],
                 ),
+                SizedBox(width: 4),
                 // Arrow
                 Icon(Icons.arrow_forward, color: Colors.grey[600], size: 16),
+                SizedBox(width: 4),
                 // End Date
-                Expanded(
-                  flex: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.event, color: Colors.grey[600], size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        formatDate(provider.endDate),
-                        style: TextStyle(color: Colors.grey[800], fontSize: 13),
-                      ),
-                    ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.event, color: Colors.grey[600], size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      formatDate(provider.endDate),
+                      style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                    ),
+                  ],
+                ),
+                // ),
+                const SizedBox(width: 8),
+                // Unit Name
+                Flexible(
+                  child: Text(
+                    globalProvider.unitName ?? '',
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -548,7 +552,7 @@ class SalesPage extends StatelessWidget {
           children: [
             // Index and Product Name
             Row(
-              mainAxisAlignment: MainAxisAlignment.start, 
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -556,7 +560,7 @@ class SalesPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green[800], 
+                    color: Colors.green[800],
                   ),
                 ),
                 SizedBox(width: 4),
@@ -566,7 +570,8 @@ class SalesPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w900,
-                      color: Colors.black, backgroundColor: Colors.amber[50],
+                      color: Colors.black,
+                      backgroundColor: Colors.amber[50],
                       // height: 1.3,
                     ),
                     overflow: TextOverflow.ellipsis,

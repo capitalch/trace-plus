@@ -1,31 +1,18 @@
-# Plan: Display Line Details (lineRefNo, instrNo, lineRemarks) for Debit/Credit Entries
+# Plan: Include lineRemarks, lineRefNo, and instrNo in transactions_page
 
-## Problem
-Currently, each debit and credit entry only displays the account name and amount. Additional line-level details (lineRefNo, instrNo, lineRemarks) are not shown, which limits the information available to users.
+## Overview
+Add display of line-level details (lineRemarks, lineRefNo, instrNo) to the transactions_page.dart for each debit and credit line in transaction cards.
 
-## Goal
-Display lineRefNo, instrNo, and lineRemarks below each debit/credit entry row in a nicely formatted, smaller font when these values are present.
+## Current Status
+- ✅ lineRemarks field exists in TransactionLineModel
+- ❌ lineRefNo field does NOT exist in TransactionLineModel (needs to be added)
+- ❌ instrNo field does NOT exist in TransactionLineModel (needs to be added)
+- ❌ None of these fields are currently displayed in transactions_page.dart
+- Note: Do NOT modify sales_page.dart - only transactions_page.dart and supporting files
 
-## Current State Analysis
+## Steps
 
-### TransactionLineModel (lib/models/grouped_transaction_model.dart)
-Currently has:
-- `accName` (String)
-- `amount` (double)
-- `lineRemarks` (String?)
-
-**Missing fields:**
-- `lineRefNo` (String?)
-- `instrNo` (String?)
-
-### UI Display (lib/features/transactions/transactions_page.dart)
-- Lines ~746-780: Debits section - displays icon, accName, amount
-- Lines ~878-915: Credits section - displays icon, accName, amount
-- No additional line details are currently displayed
-
-## Solution Steps
-
-### Step 1: Update TransactionLineModel to include missing fields
+### Step 1: Add lineRefNo and instrNo fields to TransactionLineModel
 **File:** `lib/models/grouped_transaction_model.dart`
 
 **Actions:**
@@ -34,7 +21,22 @@ Currently has:
 3. Update constructor to accept these new fields
 4. Update `toString()` method to include new fields
 
-**Expected result:**
+**Current code:**
+```dart
+class TransactionLineModel {
+  final String accName;
+  final double amount;
+  final String? lineRemarks;
+
+  TransactionLineModel({
+    required this.accName,
+    required this.amount,
+    this.lineRemarks,
+  });
+}
+```
+
+**Updated code:**
 ```dart
 class TransactionLineModel {
   final String accName;
@@ -50,12 +52,17 @@ class TransactionLineModel {
     this.lineRefNo,
     this.instrNo,
   });
+
+  @override
+  String toString() {
+    return 'TransactionLineModel(accName: $accName, amount: $amount, lineRemarks: $lineRemarks, lineRefNo: $lineRefNo, instrNo: $instrNo)';
+  }
 }
 ```
 
 ---
 
-### Step 2: Update data fetching to populate new fields
+### Step 2: Update TransactionsProvider to populate new fields
 **File:** `lib/providers/transactions_provider.dart`
 
 **Actions:**
@@ -63,53 +70,43 @@ class TransactionLineModel {
 2. Update the mapping to include `lineRefNo` and `instrNo` from the API data
 3. Ensure proper null handling for optional fields
 
-**Notes:**
-- Check the API response structure to confirm field names
-- May need to update GraphQL query or SQL if fields are not currently fetched
+**Search for:**
+- Look for where `TransactionLineModel` is instantiated
+- Check the data mapping logic from API response
+- Verify field names match the API response (lineRefNo, instrNo, line_ref_no, instr_no, etc.)
 
----
-
-### Step 3: Create helper widget for displaying line details
-**File:** `lib/features/transactions/transactions_page.dart`
-
-**Actions:**
-1. Create a helper method `_buildLineDetails()` that:
-   - Takes lineRefNo, instrNo, lineRemarks as parameters
-   - Returns a Widget (or null if no details present)
-   - Displays details in a compact, formatted manner
-2. Design:
-   - Smaller font size (10-11px)
-   - Grey color for subtle appearance
-   - Icons or labels for each field type
-   - Horizontal or vertical layout depending on content
-
-**Example layout:**
-```
-Account Name                     1,234.56
-  📄 Ref: ABC123 | 📝 Instr: CHECK001 | 💬 Note: Payment for invoice
-```
-
-**Alternative compact layout:**
-```
-Account Name                     1,234.56
-  Ref: ABC123 • Instr: CHECK001
-  Remarks: Payment for invoice
+**Expected update:**
+```dart
+TransactionLineModel(
+  accName: data['accName'],
+  amount: data['amount'],
+  lineRemarks: data['lineRemarks'],
+  lineRefNo: data['lineRefNo'],    // Add this
+  instrNo: data['instrNo'],        // Add this
+)
 ```
 
 ---
 
-### Step 4: Integrate line details into Debits section
-**File:** `lib/features/transactions/transactions_page.dart`
-**Lines:** ~746-780
+### Step 3: Locate debit lines rendering section
+**File:** `lib/features/transactions/transactions_page.dart` (around lines 743-782)
 
 **Actions:**
-1. Modify the debit line mapping (transaction.debitLines.map)
-2. Change from Row to Column for each line item
-3. Add the main Row (icon + accName + amount) as first child
-4. Add `_buildLineDetails()` as second child if details exist
-5. Adjust padding/spacing for visual hierarchy
+1. Find the `_buildGroupedTransactionCard` method
+2. Locate the debit lines rendering: `transaction.debitLines.map()`
+3. Identify the current Row structure
 
-**Structure:**
+---
+
+### Step 4: Update debit lines to include line details
+**File:** `lib/features/transactions/transactions_page.dart` (around lines 743-782)
+
+**Actions:**
+1. Change the structure from a single Row to a Column
+2. Keep the existing Row as the first child (icon + accName + amount)
+3. Add conditional line details display as the second child
+
+**New structure:**
 ```dart
 ...transaction.debitLines.map(
   (line) => Padding(
@@ -118,14 +115,102 @@ Account Name                     1,234.56
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Existing Row with icon, accName, amount
-        Row(...),
-        // New: Line details
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(width: 4),
+            Padding(
+              padding: const EdgeInsets.only(top: 7),
+              child: Icon(
+                Icons.circle,
+                size: 6,
+                color: Colors.green[600],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                line.accName,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[800],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              currencyFormatter.format(line.amount),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[700],
+              ),
+            ),
+          ],
+        ),
+        // New: Line details (lineRefNo, instrNo, lineRemarks)
         if (line.lineRefNo != null || line.instrNo != null || line.lineRemarks != null)
-          _buildLineDetails(
-            lineRefNo: line.lineRefNo,
-            instrNo: line.instrNo,
-            lineRemarks: line.lineRemarks,
-            color: Colors.green[700]!, // Match debit color
+          Padding(
+            padding: const EdgeInsets.only(left: 18, top: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Line 1: lineRefNo and instrNo (if present)
+                if ((line.lineRefNo != null && line.lineRefNo!.isNotEmpty) ||
+                    (line.instrNo != null && line.instrNo!.isNotEmpty))
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 11, color: Colors.green[600]),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          [
+                            if (line.lineRefNo != null && line.lineRefNo!.isNotEmpty)
+                              'Ref: ${line.lineRefNo}',
+                            if (line.instrNo != null && line.instrNo!.isNotEmpty)
+                              'Instr: ${line.instrNo}',
+                          ].join(' • '),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[700],
+                            fontStyle: FontStyle.italic,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                // Line 2: lineRemarks (if present)
+                if (line.lineRemarks != null &&
+                    line.lineRemarks!.isNotEmpty &&
+                    line.lineRemarks!.toLowerCase() != 'null')
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: (line.lineRefNo != null || line.instrNo != null) ? 2 : 0,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.comment, size: 11, color: Colors.green[600]),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            line.lineRemarks!,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[700],
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
       ],
     ),
@@ -135,137 +220,265 @@ Account Name                     1,234.56
 
 ---
 
-### Step 5: Integrate line details into Credits section
-**File:** `lib/features/transactions/transactions_page.dart`
-**Lines:** ~878-915
+### Step 5: Update credit lines to include line details
+**File:** `lib/features/transactions/transactions_page.dart` (around lines 879-918)
 
 **Actions:**
-1. Apply the same changes as Step 4 to the credits section
-2. Use red color scheme to match credit styling
-3. Ensure consistent formatting with debits section
+1. Apply the same Column structure as debits
+2. Use red color scheme instead of green
+3. Ensure consistent formatting
 
----
-
-### Step 6: Implement _buildLineDetails helper method
-**File:** `lib/features/transactions/transactions_page.dart`
-
-**Implementation approach:**
+**New structure:**
 ```dart
-Widget? _buildLineDetails({
-  String? lineRefNo,
-  String? instrNo,
-  String? lineRemarks,
-  required Color color,
-}) {
-  // Collect non-null details
-  final details = <String>[];
-  if (lineRefNo != null && lineRefNo.isNotEmpty) {
-    details.add('Ref: $lineRefNo');
-  }
-  if (instrNo != null && instrNo.isNotEmpty) {
-    details.add('Instr: $instrNo');
-  }
-
-  // Return null if no details
-  if (details.isEmpty && (lineRemarks == null || lineRemarks.isEmpty)) {
-    return null;
-  }
-
-  return Padding(
-    padding: const EdgeInsets.only(left: 18, top: 2, bottom: 2),
+...transaction.creditLines.map(
+  (line) => Padding(
+    padding: const EdgeInsets.only(bottom: 6),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // First line: Ref and Instr (if present)
-        if (details.isNotEmpty)
-          Text(
-            details.join(' • '),
-            style: TextStyle(
-              fontSize: 10,
-              color: color.withOpacity(0.8),
-              fontStyle: FontStyle.italic,
+        // Existing Row with icon, accName, amount
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(width: 4),
+            Padding(
+              padding: const EdgeInsets.only(top: 7),
+              child: Icon(
+                Icons.circle,
+                size: 6,
+                color: Colors.red[600],
+              ),
             ),
-          ),
-        // Second line: Remarks (if present)
-        if (lineRemarks != null && lineRemarks.isNotEmpty)
-          Text(
-            lineRemarks,
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[700],
-              fontStyle: FontStyle.italic,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                line.accName,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[800],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+            const SizedBox(width: 8),
+            Text(
+              currencyFormatter.format(line.amount),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.red[700],
+              ),
+            ),
+          ],
+        ),
+        // New: Line details (lineRefNo, instrNo, lineRemarks)
+        if (line.lineRefNo != null || line.instrNo != null || line.lineRemarks != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 18, top: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Line 1: lineRefNo and instrNo (if present)
+                if ((line.lineRefNo != null && line.lineRefNo!.isNotEmpty) ||
+                    (line.instrNo != null && line.instrNo!.isNotEmpty))
+                  Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 11, color: Colors.red[600]),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          [
+                            if (line.lineRefNo != null && line.lineRefNo!.isNotEmpty)
+                              'Ref: ${line.lineRefNo}',
+                            if (line.instrNo != null && line.instrNo!.isNotEmpty)
+                              'Instr: ${line.instrNo}',
+                          ].join(' • '),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[700],
+                            fontStyle: FontStyle.italic,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                // Line 2: lineRemarks (if present)
+                if (line.lineRemarks != null &&
+                    line.lineRemarks!.isNotEmpty &&
+                    line.lineRemarks!.toLowerCase() != 'null')
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: (line.lineRefNo != null || line.instrNo != null) ? 2 : 0,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.comment, size: 11, color: Colors.red[600]),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            line.lineRemarks!,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[700],
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
       ],
     ),
-  );
-}
+  ),
+)
 ```
 
 ---
 
-### Step 7: Test with various data scenarios
-**Test cases:**
-1. Line with all three fields populated
-2. Line with only lineRefNo
-3. Line with only instrNo
-4. Line with only lineRemarks
-5. Line with lineRefNo + instrNo
-6. Line with no additional details (should show no extra row)
-7. Line with long remarks text (test ellipsis)
-8. Transaction with mix of lines (some with details, some without)
+### Step 6: Run flutter analyze
+**Command:** `flutter analyze lib/models/grouped_transaction_model.dart lib/providers/transactions_provider.dart lib/features/transactions/transactions_page.dart`
+
+**Actions:**
+1. Check for any linting errors
+2. Fix any type errors
+3. Verify proper null safety handling
 
 ---
 
-### Step 8: Adjust spacing and styling
-**Fine-tuning:**
-1. Verify the 18px left padding aligns details with accName
-2. Adjust font sizes if needed (10-11px range)
-3. Ensure color contrast is readable but subtle
-4. Check that details don't make cards too tall
-5. Verify on different screen sizes
+### Step 7: Test the implementation
+**Test scenarios:**
+1. Transaction with all three fields (lineRefNo, instrNo, lineRemarks)
+2. Transaction with only lineRefNo
+3. Transaction with only instrNo
+4. Transaction with only lineRemarks
+5. Transaction with lineRefNo + instrNo (no remarks)
+6. Transaction with no line details
+7. Transaction with null values
+8. Transaction with empty strings
+9. Transaction with lineRemarks = "null" (should be hidden)
+10. Long text in any field (verify ellipsis)
+11. Mixed lines (some with details, some without)
+
+**Testing steps:**
+1. Run: `flutter run`
+2. Navigate to transactions_page
+3. Verify all fields display correctly
+4. Check color coding (green for debits, red for credits)
+5. Verify text overflow handling
+6. Test on different screen sizes
 
 ---
 
-## Design Mockup
+## Design Specifications
 
-### Before (Current):
+### Display Conditions
+
+**lineRefNo and instrNo:**
+- Only show if not null AND not empty
+- Display on first line with bullet separator
+- Format: "Ref: ABC123 • Instr: CHECK001"
+
+**lineRemarks:**
+- Only show if ALL of the following are true:
+  - `line.lineRemarks != null`
+  - `line.lineRemarks!.isNotEmpty`
+  - `line.lineRemarks!.toLowerCase() != 'null'`
+- Display on second line (or first line if no ref/instr)
+
+### Styling for Debit Lines
+
+**lineRefNo + instrNo:**
+- **Icon:** Icons.info_outline
+- **Icon size:** 11px
+- **Icon color:** Colors.green[600]
+- **Font size:** 10px
+- **Text color:** Colors.grey[700]
+- **Font style:** FontStyle.italic
+- **Overflow:** TextOverflow.ellipsis
+
+**lineRemarks:**
+- **Icon:** Icons.comment
+- **Icon size:** 11px
+- **Icon color:** Colors.green[600]
+- **Font size:** 10px
+- **Text color:** Colors.grey[700]
+- **Font style:** FontStyle.italic
+- **Max lines:** 2
+- **Overflow:** TextOverflow.ellipsis
+
+### Styling for Credit Lines
+Same as debit lines, but use Colors.red[600] for icon colors instead of green.
+
+### Layout Spacing
+- **Left padding:** 18px (aligns with account name)
+- **Top padding (from main row):** 4px
+- **Spacing between ref/instr line and remarks line:** 2px
+- **Icon-to-text spacing:** 4px
+
+### Visual Layout Examples
+
+**Example 1: All three fields**
 ```
 • Account Name                    1,234.56
-• Another Account                 5,678.90
+  ℹ️ Ref: INV-001 • Instr: CHECK-123
+  💬 Payment for services rendered
 ```
 
-### After (With Details):
+**Example 2: Only lineRemarks**
 ```
 • Account Name                    1,234.56
-  Ref: INV-001 • Instr: CHECK-123
-  Remarks: Payment for services rendered
-
-• Another Account                 5,678.90
+  💬 Payment received
 ```
+
+**Example 3: Only lineRefNo and instrNo**
+```
+• Account Name                    1,234.56
+  ℹ️ Ref: INV-001 • Instr: CHECK-123
+```
+
+**Example 4: No details**
+```
+• Account Name                    1,234.56
+```
+
+---
 
 ## Files to Modify
-1. `lib/models/grouped_transaction_model.dart` - Add fields to TransactionLineModel
-2. `lib/providers/transactions_provider.dart` - Update data mapping
-3. `lib/features/transactions/transactions_page.dart` - UI updates for both sections
+
+1. ✅ `lib/models/grouped_transaction_model.dart` - Add lineRefNo and instrNo fields
+2. ✅ `lib/providers/transactions_provider.dart` - Update data mapping
+3. ✅ `lib/features/transactions/transactions_page.dart` - UI updates for both debit and credit sections
+
+## Files to Reference (No changes)
+None - only the above files need modification
+
+---
+
+## Important Notes
+- **Do NOT modify sales_page.dart** - only transactions_page.dart and supporting files
+- Need to verify API field names (might be snake_case like line_ref_no, instr_no)
+- Ensure data is being fetched from the API for all three fields
+- Handle null values gracefully
+
+---
 
 ## Backend Considerations
 - Verify that lineRefNo and instrNo are available in the API response
-- May need to update GraphQL query/SQL to fetch these fields
-- Check field names in database (line_ref_no, instr_no, line_remarks)
+- Check field naming convention in API (camelCase vs snake_case)
+- May need to update GraphQL query or SQL to fetch these fields if not already included
 
-## Expected Benefits
-- Users can see complete line-level information
-- Better transparency for transaction details
-- Improved audit trail visibility
-- More professional appearance
+---
 
-## Styling Guidelines
-- **Font size:** 10px (smaller than main text which is 13px)
-- **Color:** Semi-transparent version of section color (green for debits, red for credits)
-- **Remarks color:** Grey[700] for neutral appearance
-- **Spacing:** 2px top padding, 18px left indent (aligns with account name)
-- **Separator:** Use bullet point (•) between Ref and Instr
-- **Max lines:** 2 for remarks with ellipsis overflow
+## Expected Result
+After implementation, each debit and credit line in transaction cards on transactions_page will optionally display up to three pieces of additional information:
+1. Reference number and instrument number (on one line, separated by bullet)
+2. Line remarks (on separate line, allowing 2 lines of text)
+
+This provides complete line-level transparency for transaction audit trails.

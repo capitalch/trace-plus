@@ -13,9 +13,16 @@ class TransactionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // AppBar Section
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          context.go(Routes.dashboard);
+        }
+      },
+      child: Scaffold(
+        // AppBar Section
+        appBar: AppBar(
         toolbarHeight: 54,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -37,10 +44,9 @@ class TransactionsPage extends StatelessWidget {
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text('Transactions'),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      width: constraints.maxWidth - 130,
+                    const Text('Trans'),
+                    const SizedBox(width: 8),
+                    Expanded(
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -359,12 +365,13 @@ class TransactionsPage extends StatelessWidget {
           );
         },
       ),
+      ),
     );
   }
 
   Widget _buildSecondaryAppBar(BuildContext context) {
-    return Consumer<TransactionsProvider>(
-      builder: (context, provider, _) {
+    return Consumer2<TransactionsProvider, GlobalProvider>(
+      builder: (context, provider, globalProvider, _) {
         // Format dates for display
         String formatDate(DateTime date) {
           return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
@@ -475,6 +482,20 @@ class TransactionsPage extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                ),
+                const SizedBox(width: 8,),
+                // Unit Name
+                Flexible(
+                  child: Text(
+                    globalProvider.unitName ?? '',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -748,7 +769,7 @@ class TransactionsPage extends StatelessWidget {
                             children: [
                               const SizedBox(width: 4),
                               Padding(
-                                padding: const EdgeInsets.only(top: 5),
+                                padding: const EdgeInsets.only(top: 7),
                                 child: Icon(
                                   Icons.circle,
                                   size: 6,
@@ -884,7 +905,7 @@ class TransactionsPage extends StatelessWidget {
                             children: [
                               const SizedBox(width: 4),
                               Padding(
-                                padding: const EdgeInsets.only(top: 5),
+                                padding: const EdgeInsets.only(top: 7),
                                 child: Icon(
                                   Icons.circle,
                                   size: 6,
