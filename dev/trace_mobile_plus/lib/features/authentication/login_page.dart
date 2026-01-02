@@ -192,6 +192,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Detect keyboard visibility
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final isKeyboardVisible = keyboardHeight > 0;
+
     return Scaffold(
       body: GestureDetector(
         onTap: () {
@@ -207,19 +211,84 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           child: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo - Premium Financial Brand Design
-                    SizedBox(
-                      width: 240,
-                      height: 240,
-                      child: Stack(
+            child: ListView(
+              padding: EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: 24.0 + MediaQuery.of(context).viewInsets.bottom,
+              ),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              physics: const ClampingScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: isKeyboardVisible
+                      ? null
+                      : MediaQuery.of(context).size.height -
+                          MediaQuery.of(context).padding.top -
+                          MediaQuery.of(context).padding.bottom -
+                          48,
+                  child: Column(
+                    mainAxisAlignment: isKeyboardVisible
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
+                    children: [
+                    // Welcome - Primary Heading
+                    const Text(
+                      'Welcome',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // Sign in to Trace+ - Secondary Heading
+                    const Text(
+                      'Sign in to Trace+',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFFE8EEF2),
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Server: ${AuthService.baseUrl}',
+                          style: TextStyle(color: Colors.grey, fontSize: 11),
+                        ),
+                        TextButton(
+                          onPressed: _isLoading ? null : _testNetworkConnection,
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF00B894),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size.zero,
+                          ),
+                          child: const Text(
+                            'Test Connection',
+                            style: TextStyle(fontSize: 11),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: isKeyboardVisible ? 8 : 24),
+
+                    // Logo - Premium Financial Brand Design (hidden when keyboard visible)
+                    if (!isKeyboardVisible) ...[
+                      SizedBox(
+                        width: 240,
+                        height: 240,
+                        child: Stack(
                         children: [
                           // Outer glow effect
                           Container(
@@ -497,56 +566,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                    ),
-                    // Welcome - Primary Heading
-                    const Text(
-                      'Welcome',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
                       ),
-                    ),
-
-                    const SizedBox(height: 4),
-
-                    // Sign in to Trace+ - Secondary Heading
-                    const Text(
-                      'Sign in to Trace+',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFE8EEF2),
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Server: ${AuthService.baseUrl}',
-                          style: TextStyle(color: Colors.grey, fontSize: 11),
-                        ),
-                        TextButton(
-                          onPressed: _isLoading ? null : _testNetworkConnection,
-                          style: TextButton.styleFrom(
-                            foregroundColor: const Color(0xFF00B894),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            minimumSize: Size.zero,
-                          ),
-                          child: const Text(
-                            'Test Connection',
-                            style: TextStyle(fontSize: 11),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 32),
+                    ],
 
                     // Login form
                     Form(
@@ -732,14 +754,21 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                 },
                             optionsViewBuilder: (context, onSelected, options) {
+                              // Calculate available space above keyboard
+                              final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+                              final screenHeight = MediaQuery.of(context).size.height;
+                              final availableHeight = screenHeight - keyboardHeight - 300; // Reserve space for field and padding
+                              final dropdownMaxHeight = availableHeight.clamp(120.0, 200.0);
+
                               return Align(
                                 alignment: Alignment.topLeft,
                                 child: Material(
                                   elevation: 4.0,
                                   borderRadius: BorderRadius.circular(12),
                                   child: Container(
-                                    constraints: const BoxConstraints(
-                                      maxHeight: 200,
+                                    constraints: BoxConstraints(
+                                      maxHeight: dropdownMaxHeight,
+                                      maxWidth: MediaQuery.of(context).size.width - 48,
                                     ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFF2C5F8D),
@@ -800,7 +829,7 @@ class _LoginPageState extends State<LoginPage> {
                             },
                           ),
 
-                          const SizedBox(height: 20),
+                          SizedBox(height: isKeyboardVisible ? 12 : 20),
 
                           // Username field
                           TextFormField(
@@ -874,7 +903,7 @@ class _LoginPageState extends State<LoginPage> {
                             },
                           ),
 
-                          const SizedBox(height: 20),
+                          SizedBox(height: isKeyboardVisible ? 12 : 20),
 
                           // Password field
                           TextFormField(
@@ -965,7 +994,7 @@ class _LoginPageState extends State<LoginPage> {
                             },
                           ),
 
-                          const SizedBox(height: 32),
+                          SizedBox(height: isKeyboardVisible ? 16 : 32),
 
                           // Login button - Enhanced with animations
                           SizedBox(
@@ -1034,9 +1063,10 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),

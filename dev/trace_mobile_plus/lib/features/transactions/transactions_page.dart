@@ -389,10 +389,11 @@ class TransactionsPage extends StatelessWidget {
               ),
             ],
           ),
-          child: Padding(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Start Date
                 Text(
@@ -486,17 +487,15 @@ class TransactionsPage extends StatelessWidget {
                 ),
                 const SizedBox(width: 8,),
                 // Unit Name
-                Flexible(
-                  child: Text(
-                    globalProvider.unitName ?? '',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 11,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  globalProvider.unitName ?? '',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -600,6 +599,7 @@ class TransactionsPage extends StatelessWidget {
     }
 
     return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       elevation: 2,
       shadowColor: Colors.black.withValues(alpha: 0.15),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -764,39 +764,107 @@ class TransactionsPage extends StatelessWidget {
                       ...transaction.debitLines.map(
                         (line) => Padding(
                           padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(width: 4),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 7),
-                                child: Icon(
-                                  Icons.circle,
-                                  size: 6,
-                                  color: Colors.green[600],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  line.accName,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey[800],
+                              // Existing Row with icon, accName, amount
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(width: 4),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 7),
+                                    child: Icon(
+                                      Icons.circle,
+                                      size: 6,
+                                      color: Colors.green[600],
+                                    ),
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      line.accName,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[800],
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    currencyFormatter.format(line.amount),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.green[700],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                currencyFormatter.format(line.amount),
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[700],
+                              // New: Line details (lineRefNo, instrNo, lineRemarks)
+                              if (line.lineRefNo != null || line.instrNo != null || line.lineRemarks != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 18, top: 4),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // Line 1: lineRefNo and instrNo (if present)
+                                      if ((line.lineRefNo != null && line.lineRefNo!.isNotEmpty) ||
+                                          (line.instrNo != null && line.instrNo!.isNotEmpty))
+                                        Row(
+                                          children: [
+                                            Icon(Icons.info_outline, size: 11, color: Colors.green[600]),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(
+                                                [
+                                                  if (line.lineRefNo != null && line.lineRefNo!.isNotEmpty)
+                                                    'Ref: ${line.lineRefNo}',
+                                                  if (line.instrNo != null && line.instrNo!.isNotEmpty)
+                                                    'Instr: ${line.instrNo}',
+                                                ].join(' • '),
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey[700],
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      // Line 2: lineRemarks (if present)
+                                      if (line.lineRemarks != null &&
+                                          line.lineRemarks!.isNotEmpty &&
+                                          line.lineRemarks!.toLowerCase() != 'null')
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            top: (line.lineRefNo != null || line.instrNo != null) ? 2 : 0,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.comment, size: 11, color: Colors.green[600]),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  line.lineRemarks!,
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Colors.grey[700],
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -900,39 +968,107 @@ class TransactionsPage extends StatelessWidget {
                       ...transaction.creditLines.map(
                         (line) => Padding(
                           padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(width: 4),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 7),
-                                child: Icon(
-                                  Icons.circle,
-                                  size: 6,
-                                  color: Colors.red[600],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  line.accName,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey[800],
+                              // Existing Row with icon, accName, amount
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(width: 4),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 7),
+                                    child: Icon(
+                                      Icons.circle,
+                                      size: 6,
+                                      color: Colors.red[600],
+                                    ),
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      line.accName,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[800],
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    currencyFormatter.format(line.amount),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red[700],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                currencyFormatter.format(line.amount),
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red[700],
+                              // New: Line details (lineRefNo, instrNo, lineRemarks)
+                              if (line.lineRefNo != null || line.instrNo != null || line.lineRemarks != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 18, top: 4),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // Line 1: lineRefNo and instrNo (if present)
+                                      if ((line.lineRefNo != null && line.lineRefNo!.isNotEmpty) ||
+                                          (line.instrNo != null && line.instrNo!.isNotEmpty))
+                                        Row(
+                                          children: [
+                                            Icon(Icons.info_outline, size: 11, color: Colors.red[600]),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(
+                                                [
+                                                  if (line.lineRefNo != null && line.lineRefNo!.isNotEmpty)
+                                                    'Ref: ${line.lineRefNo}',
+                                                  if (line.instrNo != null && line.instrNo!.isNotEmpty)
+                                                    'Instr: ${line.instrNo}',
+                                                ].join(' • '),
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey[700],
+                                                  fontStyle: FontStyle.italic,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      // Line 2: lineRemarks (if present)
+                                      if (line.lineRemarks != null &&
+                                          line.lineRemarks!.isNotEmpty &&
+                                          line.lineRemarks!.toLowerCase() != 'null')
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            top: (line.lineRefNo != null || line.instrNo != null) ? 2 : 0,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.comment, size: 11, color: Colors.red[600]),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  line.lineRemarks!,
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Colors.grey[700],
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),

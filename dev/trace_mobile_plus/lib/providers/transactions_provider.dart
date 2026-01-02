@@ -188,6 +188,8 @@ class TransactionsProvider extends ChangeNotifier {
             accName: transaction.accName,
             amount: transaction.debit,
             lineRemarks: transaction.lineRemarks,
+            lineRefNo: transaction.lineRefNo,
+            instrNo: transaction.instrNo,
           ));
         }
         if (transaction.credit > 0) {
@@ -195,6 +197,8 @@ class TransactionsProvider extends ChangeNotifier {
             accName: transaction.accName,
             amount: transaction.credit,
             lineRemarks: transaction.lineRemarks,
+            lineRefNo: transaction.lineRefNo,
+            instrNo: transaction.instrNo,
           ));
         }
       }

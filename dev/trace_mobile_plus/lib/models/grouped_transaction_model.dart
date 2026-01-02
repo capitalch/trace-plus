@@ -2,16 +2,20 @@ class TransactionLineModel {
   final String accName;
   final double amount;
   final String? lineRemarks;
+  final String? lineRefNo;
+  final String? instrNo;
 
   TransactionLineModel({
     required this.accName,
     required this.amount,
     this.lineRemarks,
+    this.lineRefNo,
+    this.instrNo,
   });
 
   @override
   String toString() {
-    return 'TransactionLineModel(accName: $accName, amount: $amount, lineRemarks: $lineRemarks)';
+    return 'TransactionLineModel(accName: $accName, amount: $amount, lineRemarks: $lineRemarks, lineRefNo: $lineRefNo, instrNo: $instrNo)';
   }
 }
 

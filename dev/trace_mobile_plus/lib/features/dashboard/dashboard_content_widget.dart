@@ -5,6 +5,7 @@ import '../../core/routes.dart';
 import '../../providers/sales_provider.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/global_provider.dart';
+import '../../providers/business_health_provider.dart';
 
 class DashboardContentWidget extends StatelessWidget {
   final String username;
@@ -130,6 +131,17 @@ class DashboardContentWidget extends StatelessWidget {
                       icon: Icons.health_and_safety,
                       label: 'Health',
                       color: const Color(0xFF6C5CE7),
+                      onTap: () {
+                        // Get providers (without listening to prevent dashboard rebuilds)
+                        final businessHealthProvider = Provider.of<BusinessHealthProvider>(context, listen: false);
+                        final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+
+                        // Initialize and start fetching data
+                        businessHealthProvider.initialize(globalProvider);
+
+                        // Navigate to business health page
+                        context.go(Routes.businessHealth);
+                      },
                     ),
                   ],
                 ),
