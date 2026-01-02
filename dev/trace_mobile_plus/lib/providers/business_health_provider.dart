@@ -31,8 +31,13 @@ class BusinessHealthProvider extends ChangeNotifier {
       final buCode = globalProvider.selectedBusinessUnit?.buCode;
       final dbParams = AppSettings.dbParams;
 
-      if (branchId == null || finYearId == null || buCode == null || dbParams == null) {
-        throw Exception('Missing required parameters. Please ensure branch, financial year, and business unit are selected.');
+      if (branchId == null ||
+          finYearId == null ||
+          buCode == null ||
+          dbParams == null) {
+        throw Exception(
+          'Missing required parameters. Please ensure branch, financial year, and business unit are selected.',
+        );
       }
 
       // Execute GraphQL query
@@ -53,18 +58,16 @@ class BusinessHealthProvider extends ChangeNotifier {
       }
 
       // Parse the result
-      final data = result.data?['genericQuery'];
+      final data = result.data != null ? result.data!['genericQuery'][0] : null;
       if (data == null) {
         throw Exception('No data received from server');
       }
-
-      // Check if data is a Map with an error field
-      if (data is Map && data['error'] != null) {
-        throw Exception('Error at server: query string not found');
-      }
+      final jsonResult = data['jsonResult'];
 
       // Convert to business health model
-      _healthData = BusinessHealthModel.fromJson(data as Map<String, dynamic>);
+      _healthData = BusinessHealthModel.fromJson(
+        jsonResult as Map<String, dynamic>,
+      );
 
       _isLoading = false;
       _errorMessage = null;

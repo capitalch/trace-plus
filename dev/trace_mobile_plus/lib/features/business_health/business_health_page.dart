@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import 'package:trace_mobile_plus/core/routes.dart';
 import 'package:trace_mobile_plus/providers/business_health_provider.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
@@ -156,73 +155,87 @@ class BusinessHealthPage extends StatelessWidget {
                     children: [
                       _buildHealthMetric(
                         'Sundry Creditors',
+                        provider.healthData!.sundryCreditorsFormatted,
                         provider.healthData!.sundryCreditors,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Sundry Debtors',
+                        provider.healthData!.sundryDebtorsFormatted,
                         provider.healthData!.sundryDebtors,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Bank Accounts',
+                        provider.healthData!.bankAccountsFormatted,
                         provider.healthData!.bankAccounts,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Cash-in-Hand',
+                        provider.healthData!.cashInHandFormatted,
                         provider.healthData!.cashInHand,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Purchase Account',
+                        provider.healthData!.purchaseAccountFormatted,
                         provider.healthData!.purchaseAccount,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Sales Account',
+                        provider.healthData!.salesAccountFormatted,
                         provider.healthData!.salesAccount,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Opening Stock',
+                        provider.healthData!.openingStockFormatted,
                         provider.healthData!.openingStock,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Opening Stock (GST)',
+                        provider.healthData!.openingStockGstFormatted,
                         provider.healthData!.openingStockGst,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Closing Stock',
+                        provider.healthData!.closingStockFormatted,
                         provider.healthData!.closingStock,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Closing Stock (GST)',
+                        provider.healthData!.closingStockGstFormatted,
                         provider.healthData!.closingStockGst,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         '(a) Profit or loss as per balance sheet',
+                        provider.healthData!.profitLossFormatted,
                         provider.healthData!.profitLoss,
                         isHighlight: true,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         'Difference in Stock',
+                        provider.healthData!.differenceInStockFormatted,
                         provider.healthData!.differenceInStock,
                       ),
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
                       _buildHealthMetric(
                         '(b) Difference in stock (GST)',
+                        provider.healthData!.differenceInStockGstFormatted,
                         provider.healthData!.differenceInStockGst,
                         isHighlight: true,
                       ),
                       const SizedBox(height: 16),
                       _buildHealthMetric(
                         'Business Index (a + b)',
+                        provider.healthData!.businessIndexFormatted,
                         provider.healthData!.businessIndex,
                         isBusinessIndex: true,
                       ),
@@ -281,17 +294,17 @@ class BusinessHealthPage extends StatelessWidget {
 
   Widget _buildHealthMetric(
     String label,
-    double value, {
+    String formattedValue,
+    double rawValue, {
     bool isHighlight = false,
     bool isBusinessIndex = false,
   }) {
-    final NumberFormat formatter = NumberFormat('#,##0.00');
-    final bool isNegative = value < 0;
+    final bool isNegative = rawValue < 0;
 
     Color valueColor = Colors.black;
     if (isNegative) {
       valueColor = Colors.red[700]!;
-    } else if (value > 0) {
+    } else if (rawValue > 0) {
       valueColor = Colors.green[700]!;
     }
 
@@ -303,7 +316,7 @@ class BusinessHealthPage extends StatelessWidget {
               ? Colors.amber[50]
               : Colors.white,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -321,7 +334,7 @@ class BusinessHealthPage extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Text(
-              formatter.format(value),
+              formattedValue,
               style: TextStyle(
                 fontSize: isBusinessIndex ? 18 : 15,
                 fontWeight: FontWeight.bold,
