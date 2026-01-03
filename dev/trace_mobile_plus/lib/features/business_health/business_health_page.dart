@@ -151,7 +151,7 @@ class BusinessHealthPage extends StatelessWidget {
                     return provider.fetchHealthData(globalProvider);
                   },
                   child: ListView(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 42),
                     children: [
                       _buildHealthMetric(
                         'Sundry Creditors',
@@ -309,6 +309,7 @@ class BusinessHealthPage extends StatelessWidget {
     }
 
     return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
       elevation: isBusinessIndex ? 4 : 2,
       color: isBusinessIndex
           ? Colors.teal[50]
@@ -316,7 +317,7 @@ class BusinessHealthPage extends StatelessWidget {
               ? Colors.amber[50]
               : Colors.white,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

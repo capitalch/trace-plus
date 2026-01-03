@@ -6,6 +6,7 @@ import '../features/dashboard/dashboard_page.dart';
 import '../features/sales/sales_page.dart';
 import '../features/transactions/transactions_page.dart';
 import '../features/business_health/business_health_page.dart';
+import '../features/products/products_page.dart';
 import '../services/auth_service.dart';
 
 /// Route paths as constants for type safety
@@ -173,6 +174,22 @@ GoRouter createRouter() {
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,
           child: const BusinessHealthPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // Products page route
+      GoRoute(
+        path: Routes.products,
+        name: 'products',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ProductsPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,

@@ -8,6 +8,7 @@ import 'providers/global_provider.dart';
 import 'providers/sales_provider.dart';
 import 'providers/transactions_provider.dart';
 import 'providers/business_health_provider.dart';
+import 'providers/products_provider.dart';
 
 void main() async {
   // Initialize GraphQL client storage
@@ -60,6 +61,7 @@ class TraceMobilePlusApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => SalesProvider()),
             ChangeNotifierProvider(create: (_) => TransactionsProvider()),
             ChangeNotifierProvider(create: (_) => BusinessHealthProvider()),
+            ChangeNotifierProvider(create: (_) => ProductsProvider()),
           ],
           child: GraphQLProvider(
             client: clientNotifier,

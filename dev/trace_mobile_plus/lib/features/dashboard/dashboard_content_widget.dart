@@ -6,6 +6,7 @@ import '../../providers/sales_provider.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/global_provider.dart';
 import '../../providers/business_health_provider.dart';
+import '../../providers/products_provider.dart';
 
 class DashboardContentWidget extends StatelessWidget {
   final String username;
@@ -91,6 +92,17 @@ class DashboardContentWidget extends StatelessWidget {
                       icon: Icons.inventory,
                       label: 'Products',
                       color: const Color(0xFF00B894),
+                      onTap: () {
+                        // Get providers (without listening to prevent dashboard rebuilds)
+                        final productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+                        final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+
+                        // Initialize and start fetching data
+                        productsProvider.initialize(globalProvider);
+
+                        // Navigate to products page
+                        context.go(Routes.products);
+                      },
                     ),
                     _buildActionCard(
                       context: context,
