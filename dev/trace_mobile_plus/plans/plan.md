@@ -1,478 +1,383 @@
-# Plan: Redesign Product Card in Products Page
+# Plan: Add Filter Checkbox for Active Products (Default: ON)
 
-## Overview
-Redesign the product card UI in `products_page.dart` with a new 4-line layout and conditional styling based on product age.
+## Objective
+Add a checkbox in the AppBar to filter and show only products that have:
+- Closing balance (clos) ≠ 0, OR
+- Opening balance (op) ≠ 0, OR
+- Sale ≠ 0
 
-## Requirements Summary
-- **File to modify**: `lib/features/products/products_page.dart`
-- **Method to update**: `_buildProductCard`
-- **New Layout**: 4 distinct lines with specific information
-- **Conditional Styling**: Light pink background when age > 360 days
-- **Design Goal**: Clean, modern card layout
+**By default, only active products are shown** to help users focus on products with stock/activity.
+Users can toggle the filter off to see all products including inactive ones.
 
-## Current vs New Layout
+## Current State Analysis
 
-### Current Layout:
-- Product code chip + label
-- Category + Brand
-- Stock information (opening, closing, sales, age)
-- Pricing (sale price, purchase price)
-- HSN + GST rate
+### Current Filtering
+- Products are currently filtered by search query only
+- `filteredProducts` getter in ProductsProvider filters by search text
+- Hidden products are also filtered out
+- No filter for active/inactive products based on balances/sales
 
-### New Layout:
-- **Line 1**: Age, Sale, MaxRetailPrice
-- **Line 2**: BrandName + CatName + Label (concatenated) | Clos (in black rounded box)
-- **Line 3**: Info + HSN + GstRate (concatenated)
-- **Line 4**: LastPurchasePriceGst, SalePriceGst
+### ProductsModel Fields (from products_model.dart)
+- `clos` (double) - Closing balance
+- `op` (double) - Opening balance
+- `sale` (double) - Sale quantity
+- All three fields available for filtering
 
----
+## Proposed Solution
 
-## Step 1: Update _buildProductCard Method Structure
+### UI Changes
+**Location**: AppBar actions (next to restore button)
 
-**File**: `lib/features/products/products_page.dart`
+**Design**:
+- Checkbox with label "Active Only" or icon
+- Positioned in AppBar actions area
+- Shows count of active products when enabled
+- Toggles filter on/off
 
-**Current location**: Line ~213
+## Step 1: Add Filter State to ProductsProvider
 
-**Action**: Completely redesign the `_buildProductCard` method
+### File: `lib/providers/products_provider.dart`
 
-### Card Container Updates:
+**Actions**:
+- Add `_showActiveOnly` boolean flag (default: true)
+- Add getter `showActiveOnly`
+- Add method `toggleActiveOnlyFilter()` to toggle the flag
+- Update `filteredProducts` getter to apply active filter
+
+### State Management
 ```dart
-Widget _buildProductCard(ProductsModel product) {
-  // Determine background color based on age
-  final bool isOldStock = product.age > 360;
-  final Color cardColor = isOldStock ? Colors.pink[50]! : Colors.white;
+class ProductsProvider extends ChangeNotifier {
+  // ... existing code ...
 
-  return Card(
-    margin: const EdgeInsets.symmetric(vertical: 4),
-    elevation: 2,
-    color: cardColor,  // Dynamic background color
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildLine1(product),      // Age, Sale, MaxRetailPrice
-          const SizedBox(height: 8),
-          _buildLine2(product),      // Brand + Cat + Label | Clos
-          const SizedBox(height: 8),
-          _buildLine3(product),      // Info + HSN + GstRate
-          const SizedBox(height: 8),
-          _buildLine4(product),      // Purchase Price, Sale Price
-        ],
-      ),
-    ),
-  );
+  bool _showActiveOnly = true;
+
+  bool get showActiveOnly => _showActiveOnly;
+
+  void toggleActiveOnlyFilter() {
+    _showActiveOnly = !_showActiveOnly;
+    notifyListeners();
+  }
 }
 ```
 
----
-
-## Step 2: Implement Line 1 - Age, Sale, MaxRetailPrice
-
-**Purpose**: Show key metrics (Age, Sale quantity, MRP)
-
-**Design**:
-- Three items displayed horizontally
-- Each item in a chip/badge style
-- Age with icon
-- Sale quantity with icon
-- MRP with currency symbol
-
+### Updated filteredProducts Getter
 ```dart
-Widget _buildLine1(ProductsModel product) {
-  return Row(
-    children: [
-      // Age chip
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: product.age > 360 ? Colors.red[100] : Colors.grey[200],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.calendar_today,
-              size: 14,
-              color: product.age > 360 ? Colors.red[700] : Colors.grey[700],
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '${product.age}d',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: product.age > 360 ? Colors.red[700] : Colors.grey[700],
-              ),
-            ),
-          ],
-        ),
-      ),
-      const SizedBox(width: 8),
+List<ProductsModel> get filteredProducts {
+  // Start with all products or search-filtered products
+  List<ProductsModel> filtered;
 
-      // Sale quantity chip
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.blue[100],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.trending_up, size: 14, color: Colors.blue[700]),
-            const SizedBox(width: 4),
-            Text(
-              'Sold: ${product.sale.toStringAsFixed(0)}',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.blue[700],
-              ),
-            ),
-          ],
-        ),
-      ),
-      const SizedBox(width: 8),
+  if (_debouncedSearchQuery.isEmpty) {
+    filtered = _products;
+  } else {
+    final normalizedQuery = _normalizeSearchText(_debouncedSearchQuery);
+    if (normalizedQuery.isEmpty) {
+      filtered = _products;
+    } else {
+      filtered = _products.where((product) {
+        final searchableText = [
+          product.catName,
+          product.brandName,
+          product.label,
+          product.info,
+          product.productCode,
+        ].map((field) => _normalizeSearchText(field)).join(' ');
 
-      // MRP chip
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.green[100],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.currency_rupee, size: 14, color: Colors.green[700]),
-            const SizedBox(width: 2),
-            Text(
-              'MRP: ${product.maxRetailPrice.toStringAsFixed(0)}',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.green[700],
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-```
-
----
-
-## Step 3: Implement Line 2 - Brand + Category + Label | Closing Stock
-
-**Purpose**: Show product identity and current stock
-
-**Design**:
-- Left side: Concatenated text (brand + category + label)
-- Right side: Closing stock in black rounded box
-- Use Row with space between
-
-```dart
-Widget _buildLine2(ProductsModel product) {
-  // Concatenate brandName, catName, and label with spaces
-  final parts = <String>[];
-  if (product.brandName.isNotEmpty) parts.add(product.brandName);
-  if (product.catName.isNotEmpty) parts.add(product.catName);
-  if (product.label.isNotEmpty) parts.add(product.label);
-  final productInfo = parts.join(' ');
-
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      // Product info (brand + category + label)
-      Expanded(
-        child: Text(
-          productInfo,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      const SizedBox(width: 8),
-
-      // Closing stock in black rounded box
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          product.clos.toStringAsFixed(0),
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-```
-
----
-
-## Step 4: Implement Line 3 - Info + HSN + GstRate
-
-**Purpose**: Show additional product details
-
-**Design**:
-- Concatenated text with separators
-- Smaller, secondary text style
-- Show only non-empty values
-
-```dart
-Widget _buildLine3(ProductsModel product) {
-  // Build concatenated string with info, HSN, and GST rate
-  final parts = <String>[];
-
-  if (product.info.isNotEmpty) {
-    parts.add(product.info);
+        return searchableText.contains(normalizedQuery);
+      }).toList();
+    }
   }
 
-  if (product.hsn != 0) {
-    parts.add('HSN: ${product.hsn}');
+  // Apply active products filter
+  if (_showActiveOnly) {
+    filtered = filtered.where((product) {
+      return product.clos != 0 || product.op != 0 || product.sale != 0;
+    }).toList();
   }
 
-  if (product.gstRate > 0) {
-    parts.add('GST: ${product.gstRate.toStringAsFixed(1)}%');
-  }
+  // Filter out hidden products
+  filtered = filtered.where((product) {
+    return !_hiddenProductIds.contains(product.id);
+  }).toList();
 
-  final infoText = parts.join(' • ');
-
-  return Text(
-    infoText,
-    style: TextStyle(
-      fontSize: 12,
-      color: Colors.grey[700],
-      height: 1.3,
-    ),
-    maxLines: 2,
-    overflow: TextOverflow.ellipsis,
-  );
+  return filtered;
 }
 ```
 
----
+## Step 2: Add Checkbox to AppBar Actions
 
-## Step 5: Implement Line 4 - Purchase Price & Sale Price
+### File: `lib/features/products/products_page.dart`
 
-**Purpose**: Show pricing information
+**Actions**:
+- Add checkbox widget in AppBar actions
+- Position before restore button
+- Show checkbox with label or icon
+- Toggle filter when checkbox changed
 
-**Design**:
-- Two prices side by side
-- Purchase price on left (blue)
-- Sale price on right (green)
-- Clear labels above prices
+### Design Options
 
+#### Option A: Checkbox with Text Label
 ```dart
-Widget _buildLine4(ProductsModel product) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      // Purchase Price
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Purchase Price',
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 2),
-          Row(
-            children: [
-              Icon(Icons.currency_rupee, size: 14, color: Colors.blue[700]),
-              Text(
-                product.lastPurchasePriceGst.toStringAsFixed(2),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue[700],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-
-      // Sale Price
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            'Sale Price',
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[600],
-            ),
-          ),
-          const SizedBox(height: 2),
-          Row(
-            children: [
-              Icon(Icons.currency_rupee, size: 14, color: Colors.green[700]),
-              Text(
-                product.salePriceGst.toStringAsFixed(2),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green[700],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
-  );
-}
+Consumer<ProductsProvider>(
+  builder: (context, provider, _) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Checkbox(
+          value: provider.showActiveOnly,
+          onChanged: (value) {
+            provider.toggleActiveOnlyFilter();
+          },
+          activeColor: Colors.white,
+          checkColor: Colors.teal[500],
+          side: const BorderSide(color: Colors.white),
+        ),
+        Text(
+          'Active',
+          style: TextStyle(color: Colors.white, fontSize: 12),
+        ),
+      ],
+    );
+  },
+)
 ```
 
----
+#### Option B: Icon Toggle Button (Recommended)
+```dart
+Consumer<ProductsProvider>(
+  builder: (context, provider, _) {
+    return IconButton(
+      icon: Icon(
+        provider.showActiveOnly
+            ? Icons.toggle_on
+            : Icons.toggle_off,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        provider.toggleActiveOnlyFilter();
+      },
+      tooltip: provider.showActiveOnly
+          ? 'Showing active products only'
+          : 'Show all products',
+    );
+  },
+)
+```
 
-## Step 6: Remove Old Helper Methods
+#### Option C: Filter Icon with Badge (Most Compact)
+```dart
+Consumer<ProductsProvider>(
+  builder: (context, provider, _) {
+    return Stack(
+      children: [
+        IconButton(
+          icon: Icon(
+            Icons.filter_alt,
+            color: provider.showActiveOnly ? Colors.amber : Colors.white,
+          ),
+          onPressed: () {
+            provider.toggleActiveOnlyFilter();
+          },
+          tooltip: 'Filter active products',
+        ),
+        if (provider.showActiveOnly)
+          Positioned(
+            right: 8,
+            top: 8,
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: Colors.amber,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+      ],
+    );
+  },
+)
+```
 
-**Action**: Remove the old `_buildStockInfo` method if it's no longer used
+## Step 3: Update AppBar Actions Layout
 
-**File**: `lib/features/products/products_page.dart`
+### File: `lib/features/products/products_page.dart`
 
-**Method to remove**: `_buildStockInfo` (around line 398)
+**Current Actions**:
+```dart
+actions: [
+  Consumer<ProductsProvider>(...), // Restore button (when hidden > 0)
+],
+```
 
----
+**Updated Actions**:
+```dart
+actions: [
+  Consumer<ProductsProvider>(...), // Active filter toggle
+  Consumer<ProductsProvider>(...), // Restore button (when hidden > 0)
+],
+```
 
-## Step 7: Testing
+### Layout Structure
+```dart
+actions: [
+  // Active products filter toggle
+  Consumer<ProductsProvider>(
+    builder: (context, provider, _) {
+      return IconButton(
+        icon: Icon(
+          Icons.filter_alt,
+          color: provider.showActiveOnly ? Colors.amber : Colors.white,
+        ),
+        onPressed: () {
+          provider.toggleActiveOnlyFilter();
+        },
+        tooltip: provider.showActiveOnly
+            ? 'Showing active products only'
+            : 'Show all products',
+      );
+    },
+  ),
+  // Existing restore button
+  Consumer<ProductsProvider>(...),
+],
+```
 
-**Test Checklist**:
+## Step 4: Update Summary Display (Optional)
 
-1. **Visual Layout**:
-   - ✅ Line 1 shows Age, Sale, MaxRetailPrice in chips
-   - ✅ Line 2 shows concatenated brand/cat/label with clos in black box
-   - ✅ Line 3 shows info + HSN + GST concatenated
-   - ✅ Line 4 shows purchase and sale prices clearly
+### File: `lib/features/products/products_page.dart`
 
-2. **Conditional Styling**:
-   - ✅ Cards with age > 360 have light pink background
-   - ✅ Age chip shows red color when age > 360
-   - ✅ Cards with age ≤ 360 have white background
+**Enhancement**: Show filter status in summary
 
-3. **Data Display**:
-   - ✅ All fields display correctly
-   - ✅ Empty values handled gracefully
-   - ✅ Numbers formatted properly
-   - ✅ Text doesn't overflow
+**Current Summary**:
+- Shows: "Filtered: 1,234 / 5,678" or "Total: 5,678"
+- Icon changes: filter_list vs inventory_2
 
-4. **Responsiveness**:
-   - ✅ Layout works on different screen sizes
-   - ✅ Text wraps appropriately
-   - ✅ Chips don't overflow on small screens
+**Enhanced Summary**:
+- Consider showing active filter status
+- Could add additional icon or text indicator
+- Example: "Active: 1,234" or "Filtered (Active): 1,234 / 5,678"
 
-5. **Overall Design**:
-   - ✅ Card looks clean and modern
-   - ✅ Information hierarchy is clear
-   - ✅ Colors are visually appealing
-   - ✅ Spacing is consistent
+### Implementation (Optional)
+```dart
+// In _buildSearchAndSummaryRow
+final isFiltered = filteredCount != totalCount;
+final isActiveFilterOn = provider.showActiveOnly;
 
----
+Icon(
+  isActiveFilterOn
+      ? Icons.filter_alt
+      : (isFiltered ? Icons.filter_list : Icons.inventory_2),
+  color: Colors.teal[500],
+  size: 10,
+)
+```
 
-## Implementation Order
+## Step 5: Handle Edge Cases
 
-### Phase 1: Create Helper Methods
-1. Create `_buildLine1` method
-2. Create `_buildLine2` method
-3. Create `_buildLine3` method
-4. Create `_buildLine4` method
+### Considerations
 
-### Phase 2: Update Main Card Method
-5. Update `_buildProductCard` to use new helper methods
-6. Add conditional background color logic
-7. Remove old layout code
+1. **Filter with Search**:
+   - Active filter works alongside search
+   - Both filters applied: search THEN active filter
+   - Clear communication to user
 
-### Phase 3: Cleanup
-8. Remove unused `_buildStockInfo` method
-9. Test all scenarios
+2. **Filter with Hidden Products**:
+   - Active filter applied before hidden filter
+   - Hidden products still removed from results
+   - Both filters can coexist
 
-### Phase 4: Verification
-10. Run flutter analyze
-11. Visual testing with different data
-12. Test age > 360 condition
+3. **Empty Results**:
+   - All products filtered out by active filter
+   - Show appropriate message
+   - Suggest turning off filter
 
----
+4. **Filter State Persistence** (Optional):
+   - Could save filter state to SharedPreferences
+   - Restore on app restart
+   - User preference consideration
 
-## Files Summary
+5. **Performance**:
+   - Filter applied on already filtered list
+   - Should be fast even with 1000+ products
+   - No performance concerns
 
-### Files to Modify:
-1. `lib/features/products/products_page.dart` - Complete redesign of product card layout
+## Implementation Steps Summary
 
-### Files to Reference:
-1. Current `products_page.dart` - To understand existing structure
-2. `ProductsModel` - To verify all fields are available
+### Step 1: Update ProductsProvider
+- Add `_showActiveOnly` boolean state (default: `true` to show active products by default)
+- Add `showActiveOnly` getter
+- Add `toggleActiveOnlyFilter()` method
+- Update `filteredProducts` getter to apply active filter
 
----
+### Step 2: Add filter toggle to AppBar
+- Add IconButton or Checkbox in AppBar actions
+- Position before restore button
+- Use filter icon that changes color when active
+
+### Step 3: Test implementation
+- Test filter toggle on/off
+- Test with search combination
+- Test with hidden products
+- Test empty results state
+- Verify performance with large dataset
+
+### Step 4: Optional enhancements
+- Update summary icon when active filter on
+- Add tooltip/help text
+- Persist filter state (optional)
 
 ## Design Specifications
 
-### Colors:
-- **Card Background (age ≤ 360)**: White
-- **Card Background (age > 360)**: Light pink (`Colors.pink[50]`)
-- **Age Chip (normal)**: Grey background, grey text
-- **Age Chip (old)**: Red background, red text
-- **Sale Chip**: Blue background, blue text
-- **MRP Chip**: Green background, green text
-- **Closing Stock Box**: Black background, white text
-- **Purchase Price**: Blue
-- **Sale Price**: Green
+### Filter Toggle Button
+- **Icon**: Icons.filter_alt
+- **Color (inactive)**: Colors.white
+- **Color (active)**: Colors.amber
+- **Size**: Default IconButton size
+- **Tooltip (inactive)**: "Show all products"
+- **Tooltip (active)**: "Showing active products only"
 
-### Typography:
-- **Line 1 Chips**: 12px, bold
-- **Line 2 Product Info**: 14px, semi-bold
-- **Line 2 Closing Stock**: 13px, bold
-- **Line 3 Details**: 12px, regular
-- **Line 4 Labels**: 10px, regular
-- **Line 4 Prices**: 15px, bold
+### Filter Logic
+- **Active Product**: `product.clos != 0 OR product.op != 0 OR product.sale != 0`
+- **Filter Order**: Search → Active Filter → Hidden Products Filter
+- **Default State**: Filter ON (show active products only)
 
-### Spacing:
-- Card padding: 12px all around
-- Between lines: 8px
-- Chip padding: 10px horizontal, 6px vertical
-- Icon spacing: 4px from text
+## Files to Modify
 
----
+1. **`lib/providers/products_provider.dart`** - Add filter state and logic
+2. **`lib/features/products/products_page.dart`** - Add filter toggle UI
+
+## Testing Checklist
+
+- [ ] Filter toggle button appears in AppBar
+- [ ] Filter is ON by default (showing only active products on first load)
+- [ ] Clicking toggle activates/deactivates filter
+- [ ] Active filter shows only products with clos/op/sale ≠ 0
+- [ ] Filter works alongside search
+- [ ] Filter works with hidden products
+- [ ] Icon color changes when filter active
+- [ ] Tooltip shows correct message
+- [ ] Summary updates correctly
+- [ ] Empty state shows when all filtered
+- [ ] Performance acceptable with large dataset
+- [ ] Filter state toggles correctly
+- [ ] No crashes or errors
 
 ## Success Criteria
 
-1. ✅ Product cards display all information in 4 distinct lines
-2. ✅ Age > 360 triggers light pink background
-3. ✅ Closing stock appears in black rounded box
-4. ✅ All text concatenations work correctly
-5. ✅ Pricing displayed prominently with icons
-6. ✅ Clean, modern UI design
-7. ✅ No flutter analyze errors
-8. ✅ Responsive layout on all screen sizes
+1. ✅ Checkbox/toggle button added to AppBar
+2. ✅ Filter is ON by default (active products shown on page load)
+3. ✅ Filter shows only active products (clos/op/sale ≠ 0)
+4. ✅ Visual indicator when filter is active
+5. ✅ Works alongside search and hidden products filters
+6. ✅ Intuitive user experience
+7. ✅ Good performance
+8. ✅ Clear tooltip/help text
+9. ✅ No breaking changes to existing features
 
----
+## Optional Enhancements
 
-## Expected Result
-
-After implementation:
-- Product cards have a clean, 4-line layout
-- Old stock (age > 360) is visually highlighted with pink background
-- Key metrics (age, sales, MRP) are prominent at the top
-- Product information is concise and readable
-- Pricing is clear and well-formatted
-- Overall appearance is modern and professional
+1. **Persist filter state**: Save to SharedPreferences
+2. **Count indicator**: Show count of active vs total products
+3. **Advanced filters**: Add more filter options (by age, by stock level, etc.)
+4. **Filter chips**: Show active filters as removable chips
+5. **Quick filter menu**: Dropdown with multiple filter options

@@ -2,13 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:trace_mobile_plus/core/routes.dart';
 import 'package:trace_mobile_plus/providers/products_provider.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
 import 'package:trace_mobile_plus/models/products_model.dart';
 
-class ProductsPage extends StatelessWidget {
+class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
+
+  @override
+  State<ProductsPage> createState() => _ProductsPageState();
+}
+
+class _ProductsPageState extends State<ProductsPage> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Add listener to rebuild when text changes (for clear button visibility)
+    _searchController.addListener(() {
+      setState(() {});
+    });
+
+    // Load search history
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ProductsProvider>(context, listen: false);
+      provider.loadSearchHistory();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +50,7 @@ class ProductsPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 54,
+          toolbarHeight: 48,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.go(Routes.dashboard),
@@ -34,11 +63,157 @@ class ProductsPage extends StatelessWidget {
           elevation: 0,
           titleSpacing: 0,
           backgroundColor: Colors.teal[500],
-          actions: const [SizedBox(width: 16)],
-          title: const Text('Products'),
+          actions: [
+            // Active products filter toggle
+            Consumer<ProductsProvider>(
+              builder: (context, provider, _) {
+                return InkWell(
+                  onTap: () {
+                    provider.toggleActiveOnlyFilter();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.filter_alt,
+                          color: provider.showActiveOnly ? Colors.amber : Colors.white,
+                          size: 24,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          provider.showActiveOnly ? 'Active' : 'All',
+                          style: TextStyle(
+                            color: provider.showActiveOnly ? Colors.amber : Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // Restore hidden products button
+            Consumer<ProductsProvider>(
+              builder: (context, provider, _) {
+                if (provider.hiddenProductsCount == 0) {
+                  return const SizedBox(width: 16);
+                }
+                return Row(
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.restore, color: Colors.white),
+                          onPressed: () {
+                            provider.clearHiddenProducts();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('All products restored'),
+                                duration: Duration(seconds: 2),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          },
+                          tooltip: 'Restore all hidden products',
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              provider.clearHiddenProducts();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('All products restored'),
+                                  duration: Duration(seconds: 2),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.red[600],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 18,
+                                minHeight: 18,
+                              ),
+                              child: Text(
+                                '${provider.hiddenProductsCount}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                );
+              },
+            ),
+          ],
+          title: Consumer<GlobalProvider>(
+            builder: (context, globalProvider, _) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Products',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.inventory_2,
+                        size: 11,
+                        color: Colors.grey[300],
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          globalProvider.unitName ?? '',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[300],
+                            fontWeight: FontWeight.normal,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(34),
-            child: _buildSecondaryAppBar(context),
+            preferredSize: const Size.fromHeight(78),
+            child: Column(
+              children: [
+                _buildSearchAndSummaryRow(context),
+                _buildHistoryItemsRow(context),
+              ],
+            ),
           ),
         ),
         body: Consumer<ProductsProvider>(
@@ -117,7 +292,7 @@ class ProductsPage extends StatelessWidget {
                   );
                 }
 
-                // Show empty state
+                // Show empty state when no products at all
                 if (provider.products.isEmpty) {
                   return Center(
                     child: Column(
@@ -130,7 +305,7 @@ class ProductsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No products found',
+                          'No products available',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -143,23 +318,55 @@ class ProductsPage extends StatelessWidget {
                 }
 
                 // Show products list
-                return RefreshIndicator(
-                  onRefresh: () {
-                    final globalProvider = Provider.of<GlobalProvider>(
-                      context,
-                      listen: false,
-                    );
-                    return provider.fetchProductsData(globalProvider);
-                  },
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 42),
-                    itemCount: provider.products.length,
-                    itemBuilder: (context, index) {
-                      final product = provider.products[index];
-                      return _buildProductCard(product);
-                    },
-                  ),
-                );
+                final filteredProducts = provider.filteredProducts;
+
+                return filteredProducts.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search_off,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No products match your search',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Try a different search term',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () {
+                          final globalProvider = Provider.of<GlobalProvider>(
+                            context,
+                            listen: false,
+                          );
+                          return provider.fetchProductsData(globalProvider);
+                        },
+                        child: ListView.builder(
+                          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 42),
+                          itemCount: filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            final product = filteredProducts[index];
+                            return _buildProductCard(product, index + 1);
+                          },
+                        ),
+                      );
               },
             );
           },
@@ -168,69 +375,282 @@ class ProductsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSecondaryAppBar(BuildContext context) {
-    return Consumer<GlobalProvider>(
-      builder: (context, globalProvider, _) {
+  void _removeProduct(BuildContext context, ProductsModel product) {
+    final provider = Provider.of<ProductsProvider>(context, listen: false);
+
+    // Hide the product
+    provider.hideProduct(product.id);
+  }
+
+  Widget _buildSearchAndSummaryRow(BuildContext context) {
+    return Consumer<ProductsProvider>(
+      builder: (context, provider, _) {
+        final filteredCount = provider.filteredProducts.length;
+        final totalCount = provider.products.length;
+        final isFiltered = filteredCount != totalCount;
+        final NumberFormat numberFormat = NumberFormat('#,##0');
+
         return Container(
-          height: 34,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+          height: 46,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          color: Colors.grey[100],
+          child: Row(
+            children: [
+              // Search TextField
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) => provider.setSearchQuery(value),
+                  decoration: InputDecoration(
+                    hintText: 'Search products...',
+                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    prefixIcon: Icon(Icons.search, color: Colors.teal[700], size: 16),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 16),
+                            onPressed: () {
+                              _searchController.clear();
+                              provider.clearSearch();
+                            },
+                            color: Colors.grey[600],
+                            padding: EdgeInsets.zero,
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.teal[200]!),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.teal[200]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.teal[500]!, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    isDense: true,
+                  ),
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Inline Summary
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isFiltered ? Icons.filter_list : Icons.inventory_2,
+                    color: Colors.teal[500],
+                    size: 10,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    isFiltered
+                        ? '${numberFormat.format(filteredCount)} / ${numberFormat.format(totalCount)}'
+                        : numberFormat.format(totalCount),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal[800],
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(Icons.inventory_2, color: Colors.grey[600], size: 16),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    globalProvider.unitName ?? '',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildProductCard(ProductsModel product) {
+  Widget _buildHistoryItemsRow(BuildContext context) {
+    return Consumer<ProductsProvider>(
+      builder: (context, provider, _) {
+        if (provider.searchHistory.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          height: 28,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          color: Colors.grey[50],
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: provider.searchHistory.length,
+            itemBuilder: (context, index) {
+              final term = provider.searchHistory[index];
+              return Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: GestureDetector(
+                  onTap: () {
+                    _searchController.text = term;
+                    provider.setSearchQuery(term);
+                  },
+                  child: Chip(
+                    label: Text(
+                      term,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[900],
+                      ),
+                    ),
+                    deleteIcon: Icon(
+                      Icons.close,
+                      size: 14,
+                      color: Colors.grey[600],
+                    ),
+                    onDeleted: () {
+                      provider.removeFromSearchHistory(term);
+                    },
+                    backgroundColor: Colors.amber[50],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      side: BorderSide(color: Colors.amber[200]!, width: 0.5),
+                    ),
+                    padding: const EdgeInsets.only(left: 8, right: 0, top: 0, bottom: 0),
+                    labelPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductCard(ProductsModel product, int index) {
     // Determine background color based on age
     final bool isOldStock = product.age > 360;
     final Color cardColor = isOldStock ? Colors.pink[50]! : Colors.white;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      elevation: 2,
-      color: cardColor,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Dismissible(
+      key: Key('product_${product.id}'),
+      direction: DismissDirection.horizontal,
+      background: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red[400],
+          borderRadius: BorderRadius.circular(4),
+        ),
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 20),
+        child: Row(
           children: [
-            _buildLine1(product),
-            const SizedBox(height: 8),
-            _buildLine2(product),
-            const SizedBox(height: 8),
-            _buildLine3(product),
-            const SizedBox(height: 8),
-            _buildLine4(product),
+            const Icon(Icons.delete, color: Colors.white, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              'Remove',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+      secondaryBackground: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.red[400],
+          borderRadius: BorderRadius.circular(4),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              'Remove',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.delete, color: Colors.white, size: 24),
+          ],
+        ),
+      ),
+      onDismissed: (direction) {
+        _removeProduct(context, product);
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        elevation: 2,
+        color: cardColor,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLine1(product),
+                  const SizedBox(height: 4),
+                  _buildLine2(product),
+                  const SizedBox(height: 4),
+                  _buildLine3(product),
+                  const SizedBox(height: 4),
+                  _buildLine4(product),
+                ],
+              ),
+            ),
+            // Index badge in top-left corner
+            Positioned(
+              top: -2,
+              left: -2,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  '# $index',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            // Remove button in top-right corner
+            Positioned(
+              top: -2,
+              right: -2,
+              child: GestureDetector(
+                onTap: () {
+                  _removeProduct(context, product);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.red[600],
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(8),
+                      bottomLeft: Radius.circular(8),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    size: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -238,88 +658,90 @@ class ProductsPage extends StatelessWidget {
   }
 
   Widget _buildLine1(ProductsModel product) {
+    final NumberFormat numberFormat = NumberFormat('#,##0');
+
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Age chip
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: product.age > 360 ? Colors.red[100] : Colors.grey[200],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.calendar_today,
-                size: 14,
-                color: product.age > 360 ? Colors.red[700] : Colors.grey[700],
+        // Left side: Age and Sale chips
+        Row(
+          children: [
+            // Age chip
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: product.age > 360 ? Colors.red[100] : Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(width: 4),
-              Text(
-                '${product.age}d',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: product.age > 360 ? Colors.red[700] : Colors.grey[700],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-
-        // Sale quantity chip
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.blue[100],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.trending_up, size: 14, color: Colors.blue[700]),
-              const SizedBox(width: 4),
-              Text(
-                'Sold: ${product.sale.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blue[700],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-
-        // MRP chip
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.green[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.currency_rupee, size: 14, color: Colors.green[700]),
-                const SizedBox(width: 2),
-                Flexible(
-                  child: Text(
-                    'MRP: ${product.maxRetailPrice.toStringAsFixed(0)}',
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 14,
+                    color: product.age > 360 ? Colors.red[700] : Colors.grey[700],
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${product.age} d',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.green[700],
+                      color: product.age > 360 ? Colors.red[700] : Colors.grey[700],
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
+
+            // Sale quantity chip
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.blue[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.trending_up, size: 14, color: Colors.blue[700]),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Sold: ${numberFormat.format(product.sale)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blue[700],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+
+        // Right side: MRP chip
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.green[100],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.currency_rupee, size: 14, color: Colors.green[800]),
+              const SizedBox(width: 2),
+              Text(
+                'MRP: ${numberFormat.format(product.maxRetailPrice)}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.green[800],
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -327,6 +749,8 @@ class ProductsPage extends StatelessWidget {
   }
 
   Widget _buildLine2(ProductsModel product) {
+    final NumberFormat numberFormat = NumberFormat('#,##0');
+
     // Concatenate brandName, catName, and label with spaces
     final parts = <String>[];
     if (product.brandName.isNotEmpty) parts.add(product.brandName);
@@ -361,7 +785,7 @@ class ProductsPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
-            product.clos.toStringAsFixed(0),
+            numberFormat.format(product.clos),
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.bold,
@@ -404,6 +828,8 @@ class ProductsPage extends StatelessWidget {
   }
 
   Widget _buildLine4(ProductsModel product) {
+    final NumberFormat priceFormat = NumberFormat('#,##0.00');
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -412,7 +838,7 @@ class ProductsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Purchase Price',
+              'Purch Price (GST)',
               style: TextStyle(
                 fontSize: 10,
                 color: Colors.grey[600],
@@ -423,7 +849,7 @@ class ProductsPage extends StatelessWidget {
               children: [
                 Icon(Icons.currency_rupee, size: 14, color: Colors.blue[700]),
                 Text(
-                  product.lastPurchasePriceGst.toStringAsFixed(2),
+                  priceFormat.format(product.lastPurchasePriceGst),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -440,7 +866,7 @@ class ProductsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              'Sale Price',
+              'Sale Price (GST)',
               style: TextStyle(
                 fontSize: 10,
                 color: Colors.grey[600],
@@ -451,7 +877,7 @@ class ProductsPage extends StatelessWidget {
               children: [
                 Icon(Icons.currency_rupee, size: 14, color: Colors.green[700]),
                 Text(
-                  product.salePriceGst.toStringAsFixed(2),
+                  priceFormat.format(product.salePriceGst),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
