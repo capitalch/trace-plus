@@ -4,6 +4,8 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'token_storage_service.dart';
 import '../core/app_settings.dart';
 import '../graphql/queries/generic_query.dart';
+import '../graphql/queries/trial_balance.dart';
+import '../graphql/queries/balance_sheet_profit_loss.dart';
 
 class GraphQLService {
   final TokenStorageService _tokenStorage = TokenStorageService();
@@ -44,6 +46,10 @@ class GraphQLService {
     return GraphQLClient(
       cache: GraphQLCache(store: InMemoryStore()),
       link: link,
+      defaultPolicies: DefaultPolicies(
+        query: Policies(fetch: FetchPolicy.noCache),
+        mutate: Policies(fetch: FetchPolicy.noCache)
+      )
     );
   }
 
@@ -86,6 +92,84 @@ class GraphQLService {
     );
 
     return await client.value.query(options);
+  }
+
+  Future<QueryResult> executeTrialBalance({
+    required String buCode,
+    Map<String, String?>? dbParams,
+    required String sqlId,
+    Map<String, dynamic>? sqlArgs,
+  }) async {
+    // Get dbName from AppSettings
+    final dbName = AppSettings.dbName;
+    if (dbName == null) {
+      throw Exception('Database name not available in AppSettings');
+    }
+
+    final client = await getClientNotifier();
+
+    // Create value object
+    final valueObject = {
+      'buCode': buCode,
+      'dbParams': dbParams,
+      'sqlId': sqlId,
+      'sqlArgs': sqlArgs ?? {},
+    };
+
+    // Convert to JSON string
+    final valueString = jsonEncode(valueObject);
+
+    final QueryOptions options = QueryOptions(
+      document: gql(trialBalance),
+      variables: {'dbName': dbName, 'value': valueString},
+      fetchPolicy: FetchPolicy.noCache,
+    );
+
+    return await client.value.query(options).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Query timeout: The request took too long to complete');
+      },
+    );
+  }
+
+  Future<QueryResult> executeBalanceSheetProfitLoss({
+    required String buCode,
+    Map<String, String?>? dbParams,
+    required String sqlId,
+    Map<String, dynamic>? sqlArgs,
+  }) async {
+    // Get dbName from AppSettings
+    final dbName = AppSettings.dbName;
+    if (dbName == null) {
+      throw Exception('Database name not available in AppSettings');
+    }
+
+    final client = await getClientNotifier();
+
+    // Create value object
+    final valueObject = {
+      'buCode': buCode,
+      'dbParams': dbParams,
+      'sqlId': sqlId,
+      'sqlArgs': sqlArgs ?? {},
+    };
+
+    // Convert to JSON string
+    final valueString = jsonEncode(valueObject);
+
+    final QueryOptions options = QueryOptions(
+      document: gql(balanceSheetProfitLoss),
+      variables: {'dbName': dbName, 'value': valueString},
+      fetchPolicy: FetchPolicy.noCache,
+    );
+
+    return await client.value.query(options).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Query timeout: The request took too long to complete');
+      },
+    );
   }
 
   /// Create GraphQL client without authentication (for public queries like login)

@@ -86,6 +86,9 @@ class DashboardContentWidget extends StatelessWidget {
                       icon: Icons.account_balance,
                       label: 'Accounts',
                       color: const Color(0xFF5B7EC4),
+                      onTap: () {
+                        context.go(Routes.accountsOptions);
+                      },
                     ),
                     _buildActionCard(
                       context: context,

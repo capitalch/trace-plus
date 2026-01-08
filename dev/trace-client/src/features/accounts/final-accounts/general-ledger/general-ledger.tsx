@@ -352,6 +352,7 @@ export function GeneralLedger() {
             },
             sqlId: SqlIdsMap.getAccountLedger
         })
+        // console.log(res)
         const jsonResult = res?.[0]?.jsonResult
         const opBals: any[] = jsonResult?.opBalance || []
         const formattedOpBals: any[] = opBals.map((op: any) => ({

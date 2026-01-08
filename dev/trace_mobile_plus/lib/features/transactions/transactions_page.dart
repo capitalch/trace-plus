@@ -851,8 +851,8 @@ class TransactionsPage extends StatelessWidget {
                                                 child: Text(
                                                   line.lineRemarks!,
                                                   style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.grey[700],
+                                                    fontSize: 11,
+                                                    color: Colors.grey[800],
                                                     fontStyle: FontStyle.italic,
                                                   ),
                                                   maxLines: 2,
@@ -1030,8 +1030,8 @@ class TransactionsPage extends StatelessWidget {
                                                     'Instr: ${line.instrNo}',
                                                 ].join(' • '),
                                                 style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.grey[700],
+                                                  fontSize: 11,
+                                                  color: Colors.grey[800],
                                                   fontStyle: FontStyle.italic,
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
@@ -1055,8 +1055,8 @@ class TransactionsPage extends StatelessWidget {
                                                 child: Text(
                                                   line.lineRemarks!,
                                                   style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.grey[700],
+                                                    fontSize: 11,
+                                                    color: Colors.grey[800],
                                                     fontStyle: FontStyle.italic,
                                                   ),
                                                   maxLines: 2,

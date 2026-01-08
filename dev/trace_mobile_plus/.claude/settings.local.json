@@ -17,7 +17,8 @@
       "Bash(powershell:*)",
       "Bash(cat:*)",
       "Bash(tree:*)",
-      "Bash(flutter build:*)"
+      "Bash(flutter build:*)",
+      "Bash(echo:*)"
     ]
   }
 }

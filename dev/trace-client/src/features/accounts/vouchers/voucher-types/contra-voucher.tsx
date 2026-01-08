@@ -11,12 +11,6 @@ export function ContraVoucher({ instance }: ContraVoucherType) {
         watch,
     } = useFormContext<VoucherFormDataType>();
 
-    // const {
-    //     buCode
-    //     , dbName
-    //     , decodedDbParamsObject
-    // } = useUtilsInfo()
-
     return(<div className="flex flex-col mr-6 gap-4">
         <VoucherLineItemEntry
             accClassNames={['cash', 'bank', 'ecash', 'card']}

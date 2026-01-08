@@ -68,6 +68,9 @@ export function ProfitLoss() {
         return (ret)
     })
 
+    console.log(expensesData)
+    console.log(incomesData)
+
     useEffect(() => {
         const formattedDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')
         setAppliedDate(formattedDate)

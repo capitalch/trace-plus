@@ -2,6 +2,8 @@
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
+- delete nul
+del \\?\C:\projects\trace-plus\dev\trace_mobile_plus\nul
 
 ## Training
 - Purchase entry
@@ -10,20 +12,18 @@ valid gstin: 24AAACC1206D1ZM
 -  5 sales bills
 - In capichow check prices
 
-## mobile
-- Make it working
-			- Login
-	- Dashboard
-		- Company name
-		- Select from Bu's dropdown
-		- Fin year
-		- Branch change
-	- Sales
-	- Products
-	- Accounts
-														- Brush up
-														- Update to new libs
-		
+## Phase 2
+# Bugs
+	- In general ledger report when bu is changed, still the old records remain	
+	- Check why age of en-el25 on22-08-2025 sale showing 5702
+# Features
+	- Supplier name and its due in summary report of inventory
+	- CRM
+		- Flash message on whatsapp
+		- Record enquiry cust details on mobile in database
+	- Stock Tally in mobile
+	- Check and correct stock valuation and health report based on stock journal
+	- Disable a product
 
 
 ## General requirement
@@ -51,7 +51,7 @@ valid gstin: 24AAACC1206D1ZM
 														- Kamal
 															- All
 																- manager
-- Bugs
+										- Bugs
 												- Admin
 													- controls <-> roles
 														- Left side default is expanded tree. It should be collapsed
@@ -66,9 +66,6 @@ valid gstin: 24AAACC1206D1ZM
 													- Check the stock value. It should be same
 														- if reduced then check (5,11) in get_stock_summary_report; remove 11 and recheck
 														- When bu, finYearId or branch changes, behavior of existing screen to be checked
-- Checkup price - discount in all reports as actual price
-- Supplier name and its due in summary report of inventory
-- Check why age of en-el25 on22-08-2025 sale showing 5702
 														- UI
 														- VScroll bar issue in syncfusion grid
 														- Small screen whenn side menu appears then background invisible
@@ -102,7 +99,7 @@ valid gstin: 24AAACC1206D1ZM
 														- In all pages show main header -> page name
 														- Stock summary remove pagination
 
-## security
+								## security
 										- Change databaseTablesMap to tables schema type variables
 										- QA for vouchers
 											- Check: When voucher deleted the gst entry in ext table should also delete
@@ -114,7 +111,7 @@ valid gstin: 24AAACC1206D1ZM
 														- 2 or more new rows with data and newly created tranHeaderId
 													- ExtGstTranDetails
 														- new row with gst details
-## features
+								## features
 													- Remove inherited from feature
 
 									- Bugs
@@ -168,9 +165,6 @@ valid gstin: 24AAACC1206D1ZM
 													- When voucher is saved defaults to payment voucher
 													- Provide branch address
 													- Product query screen
-	- CRM
-		- Flash message on whatsapp
-		- Record enquiry cust details on mobile in database
 													- Fix
 														- Debit notes
 														- credit notes

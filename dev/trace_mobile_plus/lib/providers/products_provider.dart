@@ -20,6 +20,7 @@ class ProductsProvider extends ChangeNotifier {
   List<String> _searchHistory = [];
   Set<int> _hiddenProductIds = {};
   bool _showActiveOnly = true; // Show active products (clos/op/sale != 0) by default
+  bool _showJakarOnly = false; // Show Jakar products (age > 360) by default off
   static const String _searchHistoryKey = 'products_search_history';
   static const int _maxHistoryItems = 10;
 
@@ -32,6 +33,7 @@ class ProductsProvider extends ChangeNotifier {
   Set<int> get hiddenProductIds => _hiddenProductIds;
   int get hiddenProductsCount => _hiddenProductIds.length;
   bool get showActiveOnly => _showActiveOnly;
+  bool get showJakarOnly => _showJakarOnly;
 
   /// Helper to normalize text for search (remove special chars, lowercase, trim)
   String _normalizeSearchText(String text) {
@@ -75,12 +77,33 @@ class ProductsProvider extends ChangeNotifier {
       }).toList();
     }
 
+    // Apply Jakar filter (products with age > 360 days)
+    if (_showJakarOnly) {
+      filtered = filtered.where((product) {
+        return product.age > 360;
+      }).toList();
+    }
+
     // Filter out hidden products
     filtered = filtered.where((product) {
       return !_hiddenProductIds.contains(product.id);
     }).toList();
 
     return filtered;
+  }
+
+  /// Calculate total purchase price (excl. GST) for filtered products
+  double get totalPurchasePrice {
+    return filteredProducts.fold(0.0, (sum, product) {
+      return sum + (product.lastPurchasePrice * product.clos);
+    });
+  }
+
+  /// Calculate total purchase price (incl. GST) for filtered products
+  double get totalPurchasePriceGst {
+    return filteredProducts.fold(0.0, (sum, product) {
+      return sum + (product.lastPurchasePriceGst * product.clos);
+    });
   }
 
   /// Update search query with debouncing (1200ms delay)
@@ -177,6 +200,19 @@ class ProductsProvider extends ChangeNotifier {
   /// Toggle active products filter
   void toggleActiveOnlyFilter() {
     _showActiveOnly = !_showActiveOnly;
+    notifyListeners();
+  }
+
+  /// Toggle Jakar products filter (age > 360 days)
+  void toggleJakarFilter() {
+    _showJakarOnly = !_showJakarOnly;
+    notifyListeners();
+  }
+
+  /// Reset filters to default values
+  void resetFilters() {
+    _showActiveOnly = true; // Default: show active products
+    _showJakarOnly = false; // Default: Jakar filter off
     notifyListeners();
   }
 

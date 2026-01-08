@@ -69,6 +69,8 @@ export function BalanceSheet() {
         const ret: any = state.queryHelper[assetsInstance]?.data
         return (ret)
     })
+    console.log(liabsData)
+    console.log(assetsData)
 
     useEffect(() => {
         const formattedDate = format(currentFinYear?.endDate || '', 'yyyy-MM-dd')

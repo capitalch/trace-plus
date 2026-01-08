@@ -103,31 +103,6 @@ export function VoucherLineItemEntry({
      * @param entryName - Form field name for the entry ('debitEntries' or 'creditEntries')
      * @param entryIndex - Index of the entry in the array
      */
-    // const updateGstDeletionTracking = (
-    //     isGstCurrentlyEnabled: boolean,
-    //     gstId: number | undefined,
-    //     deletedGstIds: number[],
-    //     entryName: string,
-    //     entryIndex: number
-    // ) => {
-    //     // Early return: No GST record exists in database, nothing to track
-    //     if (!gstId) return;
-
-    //     const isIdMarkedForDeletion = deletedGstIds.includes(gstId);
-
-    //     if (isGstCurrentlyEnabled) {
-    //         // Turning GST OFF - mark the GST record for deletion
-    //         if (!isIdMarkedForDeletion) {
-    //             setValue(`${entryName}.${entryIndex}.deletedIds`, [...deletedGstIds, gstId], { shouldDirty: true });
-    //         }
-    //     } else {
-    //         // Turning GST ON - remove from deletion list (undo the deletion mark)
-    //         if (isIdMarkedForDeletion) {
-    //             const updatedDeletedIds = deletedGstIds.filter(id => id !== gstId);
-    //             setValue(`${entryName}.${entryIndex}.deletedIds`, updatedDeletedIds, { shouldDirty: true });
-    //         }
-    //     }
-    // };
 
     return (
         <AnimatePresence>

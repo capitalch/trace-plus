@@ -7,6 +7,11 @@ import '../features/sales/sales_page.dart';
 import '../features/transactions/transactions_page.dart';
 import '../features/business_health/business_health_page.dart';
 import '../features/products/products_page.dart';
+import '../features/accounts/accounts_options_page.dart';
+import '../features/accounts/trial_balance_page.dart';
+import '../features/accounts/balance_sheet_page.dart';
+import '../features/accounts/profit_loss_page.dart';
+import '../features/accounts/general_ledger_page.dart';
 import '../services/auth_service.dart';
 
 /// Route paths as constants for type safety
@@ -21,6 +26,13 @@ class Routes {
   static const String sales = '/sales';
   static const String transactions = '/transactions';
   static const String businessHealth = '/business-health';
+
+  // Accounts related routes
+  static const String accountsOptions = '/accounts-options';
+  static const String trialBalance = '/trial-balance';
+  static const String balanceSheet = '/balance-sheet';
+  static const String profitLoss = '/profit-loss';
+  static const String generalLedger = '/general-ledger';
 }
 
 /// Create and configure the GoRouter instance
@@ -199,13 +211,87 @@ GoRouter createRouter() {
         ),
       ),
 
+      // Accounts options page route
+      GoRoute(
+        path: Routes.accountsOptions,
+        name: 'accountsOptions',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const AccountsOptionsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // Trial Balance page route
+      GoRoute(
+        path: Routes.trialBalance,
+        name: 'trialBalance',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const TrialBalancePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // Balance Sheet page route
+      GoRoute(
+        path: Routes.balanceSheet,
+        name: 'balanceSheet',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const BalanceSheetPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // Profit & Loss page route
+      GoRoute(
+        path: Routes.profitLoss,
+        name: 'profitLoss',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ProfitLossPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // General Ledger page route
+      GoRoute(
+        path: Routes.generalLedger,
+        name: 'generalLedger',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const GeneralLedgerPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+
       // Additional routes will be added here as features are implemented
-      // Example:
-      // GoRoute(
-      //   path: Routes.accounts,
-      //   name: 'accounts',
-      //   builder: (context, state) => const AccountsPage(),
-      // ),
     ],
 
     // Error handling

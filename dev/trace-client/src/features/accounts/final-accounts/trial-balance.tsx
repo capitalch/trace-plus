@@ -22,9 +22,11 @@ export function TrialBalance() {
     const instance: string = DataInstancesMap.trialBalance
     const isAllBranches: boolean = useSelector((state: RootStateType) => selectCompSwitchStateFn(state, CompInstances.compSwitchTrialBalance), shallowEqual) || false
     const treeGridData = useSelector((state: RootStateType) => state.queryHelper[instance]?.data?.[0]?.jsonResult)
-    // if(treeGridData){
-    //     console.log(JSON.stringify(treeGridData))
-    // }
+    if(treeGridData){
+        // console.log(JSON.stringify(treeGridData))
+        // console.log(treeGridData)
+        console.dir(treeGridData, { depth: null });
+    }
     const {
         branchId
         , buCode
