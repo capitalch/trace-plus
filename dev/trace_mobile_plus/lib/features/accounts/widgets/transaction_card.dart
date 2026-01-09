@@ -150,7 +150,7 @@ class TransactionCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.normal,
-                  color: Colors.black54,
+                  color: Colors.black87,
                 ),
               ),
             ),

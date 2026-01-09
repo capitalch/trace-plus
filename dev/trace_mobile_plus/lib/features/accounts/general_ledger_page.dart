@@ -17,13 +17,21 @@ class GeneralLedgerPage extends StatefulWidget {
 }
 
 class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
+  bool _isModalShown = false;
+
   @override
   void initState() {
     super.initState();
     // Clear selection to start fresh every time
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
-      provider.clearSelection();
+      if (!_isModalShown) {
+        final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
+        provider.clearSelection();
+        _isModalShown = true;
+
+        // Auto-open account selection modal
+        _openAccountSelectionModal();
+      }
     });
   }
 
@@ -39,7 +47,12 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
           globalProvider: globalProvider,
         );
       },
-    );
+    ).then((_) {
+      // Reset flag when modal closes
+      setState(() {
+        _isModalShown = false;
+      });
+    });
   }
 
   Future<void> _onRefresh() async {

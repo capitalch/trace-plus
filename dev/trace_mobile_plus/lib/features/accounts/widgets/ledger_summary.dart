@@ -4,14 +4,13 @@ import 'package:trace_mobile_plus/models/ledger_summary_model.dart';
 class LedgerSummary extends StatelessWidget {
   final LedgerSummaryModel summary;
 
-  const LedgerSummary({
-    super.key,
-    required this.summary,
-  });
+  const LedgerSummary({super.key, required this.summary});
 
   String _formatAmount(double amount) {
     final absAmount = amount.abs();
-    return absAmount.toStringAsFixed(2).replaceAllMapped(
+    return absAmount
+        .toStringAsFixed(2)
+        .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]},',
         );
@@ -19,9 +18,9 @@ class LedgerSummary extends StatelessWidget {
 
   Color _getAmountColor(double amount) {
     if (amount > 0) {
-      return Colors.green[700]!;
+      return Colors.blue[700]!;
     } else if (amount < 0) {
-      return Colors.red[700]!;
+      return Colors.amber[700]!;
     }
     return Colors.black;
   }
@@ -31,9 +30,17 @@ class LedgerSummary extends StatelessWidget {
     required double amount,
     bool isBold = false,
     bool isLarge = false,
+    CrossAxisAlignment alignment = CrossAxisAlignment.start,
+    bool showDrCr = false,
+    Color? forceColor,
   }) {
+    String amountText = _formatAmount(amount);
+    if (showDrCr) {
+      amountText += amount >= 0 ? ' Dr' : ' Cr';
+    }
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: alignment,
       children: [
         Text(
           label,
@@ -45,11 +52,11 @@ class LedgerSummary extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          _formatAmount(amount),
+          amountText,
           style: TextStyle(
             fontSize: isLarge ? 18 : 16,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: _getAmountColor(amount),
+            color: forceColor ?? _getAmountColor(amount),
           ),
         ),
       ],
@@ -62,33 +69,40 @@ class LedgerSummary extends StatelessWidget {
       margin: const EdgeInsets.all(8.0),
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Summary',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
             // Grid of 3 items
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: _buildSummaryItem(
-                    label: 'Total Debit',
-                    amount: summary.debit,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildSummaryItem(
-                    label: 'Total Credit',
-                    amount: summary.credit,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _buildSummaryItem(
+                          label: 'Total Debit',
+                          amount: summary.debit,
+                          forceColor: Colors.blue[700],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildSummaryItem(
+                          label: 'Total Credit',
+                          amount: summary.credit,
+                          forceColor: Colors.amber[700],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -98,6 +112,8 @@ class LedgerSummary extends StatelessWidget {
                     amount: summary.closing,
                     isBold: true,
                     isLarge: true,
+                    alignment: CrossAxisAlignment.end,
+                    showDrCr: true,
                   ),
                 ),
               ],

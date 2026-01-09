@@ -33,7 +33,7 @@ class LedgerSummaryModel {
     }
 
     // Calculate closing balance: total credits - total debits
-    final closing = totalCredit - totalDebit;
+    final closing = totalDebit - totalCredit;
 
     return LedgerSummaryModel(
       debit: totalDebit,
@@ -53,9 +53,9 @@ class LedgerSummaryModel {
   // Helper method to get closing balance with Dr/Cr sign
   String getClosingBalanceWithSign() {
     if (closing > 0) {
-      return '${closing.toStringAsFixed(2)} Cr';
+      return '${closing.toStringAsFixed(2)} Dr';
     } else if (closing < 0) {
-      return '${closing.abs().toStringAsFixed(2)} Dr';
+      return '${closing.abs().toStringAsFixed(2)} Cr';
     }
     return '0.00';
   }
