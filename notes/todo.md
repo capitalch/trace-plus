@@ -14,7 +14,8 @@ del \\?\C:\projects\trace-plus\dev\trace_mobile_plus\nul
 
 ## Phase 2
 # Bugs
-	- In general ledger report when bu is changed, still the old records remain	
+	- In general ledger report when bu is changed, still the old records remain
+	- In general ledger if you drill down to debtor like Nav technology Pvt Ltd, the cust name is missing from sales data
 	- Check why age of en-el25 on22-08-2025 sale showing 5702
 # Features
 	- Supplier name and its due in summary report of inventory
@@ -25,7 +26,14 @@ del \\?\C:\projects\trace-plus\dev\trace_mobile_plus\nul
 	- Check and correct stock valuation and health report based on stock journal
 	- Disable a product
 
-
+## mobile
+- general ledger
+	- include all accounts for ledger
+	- page should not persist data
+	- Should be debits in black and credits in amber
+	- Summary correction
+	- Opening balance as first row
+	- Closing balance as last row
 ## General requirement
 - Making a product inactive and do filtration in inventory
 											- Setup access control

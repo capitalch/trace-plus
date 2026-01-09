@@ -13,7 +13,6 @@ class AccountLedgerTransactionModel {
   final String? remarks;
   final String branchName;
   final String? branchCode;
-  final int index;
   final int? tranTypeId;
 
   AccountLedgerTransactionModel({
@@ -31,7 +30,6 @@ class AccountLedgerTransactionModel {
     this.remarks,
     required this.branchName,
     this.branchCode,
-    required this.index,
     this.tranTypeId,
   });
 
@@ -51,7 +49,6 @@ class AccountLedgerTransactionModel {
       remarks: json['remarks'] as String?,
       branchName: json['branchName'] as String,
       branchCode: json['branchCode'] as String?,
-      index: json['index'] as int,
       tranTypeId: json['tranTypeId'] as int?,
     );
   }
@@ -72,7 +69,6 @@ class AccountLedgerTransactionModel {
       'remarks': remarks,
       'branchName': branchName,
       'branchCode': branchCode,
-      'index': index,
       'tranTypeId': tranTypeId,
     };
   }

@@ -75,29 +75,16 @@ class LedgerSummary extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Grid of 4 items (2x2)
+            // Grid of 3 items
             Row(
               children: [
-                Expanded(
-                  child: _buildSummaryItem(
-                    label: 'Opening Balance',
-                    amount: summary.opening,
-                  ),
-                ),
-                const SizedBox(width: 16),
                 Expanded(
                   child: _buildSummaryItem(
                     label: 'Total Debit',
                     amount: summary.debit,
                   ),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            Row(
-              children: [
+                const SizedBox(width: 16),
                 Expanded(
                   child: _buildSummaryItem(
                     label: 'Total Credit',

@@ -20,6 +20,11 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
   @override
   void initState() {
     super.initState();
+    // Clear selection to start fresh every time
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
+      provider.clearSelection();
+    });
   }
 
   void _openAccountSelectionModal() {
@@ -49,6 +54,60 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
     }
   }
 
+  Widget _buildSecondaryAppBar(BuildContext context) {
+    return Consumer2<GeneralLedgerProvider, GlobalProvider>(
+      builder: (context, provider, globalProvider, _) {
+        return Container(
+          height: 34,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // Account Name
+                Expanded(
+                  child: Text(
+                    provider.selectedAccountName ?? '',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Unit Name
+                Flexible(
+                  child: Text(
+                    globalProvider.unitName ?? '',
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -62,7 +121,7 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
         builder: (context, provider, child) {
           return Scaffold(
             appBar: AppBar(
-              toolbarHeight: provider.selectedAccountName != null ? 72 : 48,
+              toolbarHeight: 54,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => context.go(Routes.accountsOptions),
@@ -75,30 +134,13 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
               elevation: 0,
               titleSpacing: 0,
               backgroundColor: const Color(0xFF6C5CE7),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'General Ledger',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  if (provider.selectedAccountName != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        provider.selectedAccountName!,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.white70,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                ],
+              title: const Text(
+                'General Ledger',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               actions: [
                 IconButton(
@@ -107,6 +149,12 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
                   tooltip: 'Select Account',
                 ),
               ],
+              bottom: provider.selectedAccountName != null
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(34),
+                      child: _buildSecondaryAppBar(context),
+                    )
+                  : null,
             ),
             body: _buildBody(provider),
           );
@@ -225,7 +273,10 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
                     itemCount: provider.transactionsList.length,
                     itemBuilder: (context, index) {
                       final transaction = provider.transactionsList[index];
-                      return TransactionCard(transaction: transaction);
+                      return TransactionCard(
+                        transaction: transaction,
+                        index: index + 1,
+                      );
                     },
                   ),
           ),

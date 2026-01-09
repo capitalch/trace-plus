@@ -74,7 +74,7 @@ class GeneralLedgerProvider extends ChangeNotifier {
         dbParams: dbParams,
         sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
         sqlArgs: {
-          'accClassNames': 'debtor, creditor',
+          'accClassNames': 'debtor,creditor,capital,other,loan,iexp,purchase,dexp,dincome,iincome,sale,bank,cash,card,ecash',
         },
       );
 
@@ -165,13 +165,14 @@ class GeneralLedgerProvider extends ChangeNotifier {
       }
 
       // Parse nested jsonResult structure: [{ "jsonResult": {...} }]
-      final ledgerData = LedgerResponseModel.fromApiResponse(data);
+      final finYearStartDate = globalProvider.selectedFinYear?.startDate;
+      final ledgerData = LedgerResponseModel.fromApiResponse(data, finYearStartDate);
       if (ledgerData == null) {
         throw Exception('Invalid response format from server');
       }
 
       _ledgerResponse = ledgerData;
-      _transactionsList = ledgerData.transactions;
+      _transactionsList = ledgerData.transactions ?? [];
 
       // Calculate summary
       _summary = _calculateSummary(_transactionsList);

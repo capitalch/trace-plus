@@ -4,10 +4,12 @@ import 'package:trace_mobile_plus/models/account_ledger_transaction_model.dart';
 
 class TransactionCard extends StatelessWidget {
   final AccountLedgerTransactionModel transaction;
+  final int index;
 
   const TransactionCard({
     super.key,
     required this.transaction,
+    required this.index,
   });
 
   String _formatDate(String dateStr) {
@@ -30,9 +32,9 @@ class TransactionCard extends StatelessWidget {
 
   Color _getAmountColor() {
     if (transaction.debit > 0) {
-      return Colors.red[700]!;
+      return Colors.blue[800]!;
     } else if (transaction.credit > 0) {
-      return Colors.green[700]!;
+      return Colors.amber[700]!;
     }
     return Colors.black;
   }
@@ -48,84 +50,113 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Don't display opening balance row
-    if (transaction.isOpeningBalance) {
-      return const SizedBox.shrink();
-    }
-
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Line 1: Date, autoRefNo, userRefNo | Amount (right aligned)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
+      children: [
+        Card(
+          margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+          elevation: 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Left side: Date and reference numbers
-                Expanded(
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    children: [
-                      // Date
-                      Text(
-                        _formatDate(transaction.tranDate),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-
-                      // Reference details (autoRefNo, userRefNo)
-                      if (transaction.getLine1Details().isNotEmpty)
-                        Text(
-                          transaction.getLine1Details(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[700],
+                // Line 1: Date, autoRefNo, userRefNo | Amount (right aligned)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Left side: Date and reference numbers
+                    Expanded(
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 4, crossAxisAlignment:WrapCrossAlignment.center,
+                        children: [
+                          // Date
+                          Text(
+                            _formatDate(transaction.tranDate),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
+
+                          // Reference details (autoRefNo, userRefNo)
+                          if (transaction.getLine1Details().isNotEmpty)
+                            Text(
+                              transaction.getLine1Details(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    // Right side: Amount with Dr/Cr
+                    Text(
+                      _getAmountWithDrCr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: _getAmountColor(),
+                      ),
+                    ),
+                  ],
                 ),
 
-                const SizedBox(width: 8),
+                const SizedBox(height: 8),
 
-                // Right side: Amount with Dr/Cr
-                Text(
-                  _getAmountWithDrCr(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: _getAmountColor(),
+                // Line 2: otherAccounts, tranType, instrNo, lineRefNo, lineRemarks, remarks
+                // Max 3 lines with ellipsis
+                if (transaction.getLine2Details().isNotEmpty)
+                  Text(
+                    transaction.getLine2Details(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      height: 1.3,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
               ],
             ),
-
-            const SizedBox(height: 8),
-
-            // Line 2: otherAccounts, tranType, instrNo, lineRefNo, lineRemarks, remarks
-            // Max 3 lines with ellipsis
-            if (transaction.getLine2Details().isNotEmpty)
-              Text(
-                transaction.getLine2Details(),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                  height: 1.3,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-          ],
+          ),
         ),
-      ),
+        // Index chip positioned at top-left corner
+        Positioned(
+          top: -2,
+          left: -2,
+          child: Material(
+            elevation: 2,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(2),
+              bottomRight: Radius.circular(8),
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(2),
+                  bottomRight: Radius.circular(8),
+                ),
+              ),
+              child: Text(
+                '$index',
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

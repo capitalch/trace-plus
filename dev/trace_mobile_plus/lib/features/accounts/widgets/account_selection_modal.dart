@@ -58,8 +58,10 @@ class _AccountSelectionModalState extends State<AccountSelectionModal> {
     return ListenableBuilder(
       listenable: widget.provider,
       builder: (context, _) {
+        final accountCount = widget.provider.accountsList.length;
+
         return AlertDialog(
-          title: const Text('Select Account'),
+          title: Text('Select Account ($accountCount)'),
           content: SizedBox(
             width: double.maxFinite,
             height: MediaQuery.of(context).size.height * 0.6,
