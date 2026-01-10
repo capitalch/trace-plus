@@ -91,7 +91,12 @@ class GraphQLService {
       fetchPolicy: FetchPolicy.noCache,
     );
 
-    return await client.value.query(options);
+    return await client.value.query(options).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Query timeout: The request took too long to complete');
+      },
+    );
   }
 
   Future<QueryResult> executeTrialBalance({

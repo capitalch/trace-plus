@@ -37,8 +37,11 @@ class GeneralLedgerProvider extends ChangeNotifier {
       return _accountsList;
     }
     return _accountsList
-        .where((account) =>
-            account.accName.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .where(
+          (account) => account.accName.toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ),
+        )
         .toList();
   }
 
@@ -65,7 +68,8 @@ class GeneralLedgerProvider extends ChangeNotifier {
 
       if (buCode == null || dbParams == null) {
         throw Exception(
-            'Missing required parameters. Please ensure business unit is selected.');
+          'Missing required parameters. Please ensure business unit is selected.',
+        );
       }
 
       // Execute GraphQL query
@@ -74,7 +78,8 @@ class GeneralLedgerProvider extends ChangeNotifier {
         dbParams: dbParams,
         sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
         sqlArgs: {
-          'accClassNames': 'debtor,creditor,capital,other,loan,iexp,purchase,dexp,dincome,iincome,sale,bank,cash,card,ecash',
+          'accClassNames':
+              'debtor,creditor,capital,other,loan,iexp,purchase,dexp,dincome,iincome,sale,bank,cash,card,ecash',
         },
       );
 
@@ -117,7 +122,9 @@ class GeneralLedgerProvider extends ChangeNotifier {
 
   /// Fetch account ledger transactions
   Future<void> fetchAccountLedger(
-      int accId, GlobalProvider globalProvider) async {
+    int accId,
+    GlobalProvider globalProvider,
+  ) async {
     _isLoadingTransactions = true;
     _errorMessage = null;
     notifyListeners();
@@ -134,7 +141,8 @@ class GeneralLedgerProvider extends ChangeNotifier {
           buCode == null ||
           dbParams == null) {
         throw Exception(
-            'Missing required parameters. Please ensure branch, financial year, and business unit are selected.');
+          'Missing required parameters. Please ensure branch, financial year, and business unit are selected.',
+        );
       }
 
       // Execute GraphQL query
@@ -142,11 +150,7 @@ class GeneralLedgerProvider extends ChangeNotifier {
         buCode: buCode,
         dbParams: dbParams,
         sqlId: SqlIdsMap.getAccountLedger,
-        sqlArgs: {
-          'accId': accId,
-          'finYearId': finYearId,
-          'branchId': branchId,
-        },
+        sqlArgs: {'accId': accId, 'finYearId': finYearId, 'branchId': branchId},
       );
 
       if (result.hasException) {
@@ -166,7 +170,10 @@ class GeneralLedgerProvider extends ChangeNotifier {
 
       // Parse nested jsonResult structure: [{ "jsonResult": {...} }]
       final finYearStartDate = globalProvider.selectedFinYear?.startDate;
-      final ledgerData = LedgerResponseModel.fromApiResponse(data, finYearStartDate);
+      final ledgerData = LedgerResponseModel.fromApiResponse(
+        data,
+        finYearStartDate,
+      );
       if (ledgerData == null) {
         throw Exception('Invalid response format from server');
       }
@@ -192,7 +199,10 @@ class GeneralLedgerProvider extends ChangeNotifier {
 
   /// Select an account and fetch its ledger
   Future<void> selectAccount(
-      int id, String name, GlobalProvider globalProvider) async {
+    int id,
+    String name,
+    GlobalProvider globalProvider,
+  ) async {
     _selectedAccountId = id;
     _selectedAccountName = name;
     _transactionsList = [];
@@ -201,6 +211,20 @@ class GeneralLedgerProvider extends ChangeNotifier {
     notifyListeners();
 
     await fetchAccountLedger(id, globalProvider);
+  }
+
+  // To be removed
+  Future<void> selectFixedAccount(
+    GlobalProvider globalProvider,
+  ) async {
+    _selectedAccountId = 439;
+    _selectedAccountName = 'Advance against supply';
+    _transactionsList = [];
+    _ledgerResponse = null;
+    _summary = null;
+    notifyListeners();
+
+    await fetchAccountLedger(439, globalProvider);
   }
 
   /// Set search query for filtering accounts
@@ -217,7 +241,8 @@ class GeneralLedgerProvider extends ChangeNotifier {
 
   /// Calculate summary from transactions
   LedgerSummaryModel _calculateSummary(
-      List<AccountLedgerTransactionModel> transactions) {
+    List<AccountLedgerTransactionModel> transactions,
+  ) {
     return LedgerSummaryModel.fromTransactions(transactions);
   }
 

@@ -36,18 +36,18 @@ class AccountLedgerTransactionModel {
   factory AccountLedgerTransactionModel.fromJson(Map<String, dynamic> json) {
     return AccountLedgerTransactionModel(
       id: json['id'] as int?,
-      tranDate: json['tranDate'] as String,
+      tranDate: json['tranDate'] as String? ?? '',
       tranType: json['tranType'] as String?,
       autoRefNo: json['autoRefNo'] as String? ?? '',
       userRefNo: json['userRefNo'] as String?,
-      otherAccounts: json['otherAccounts'] as String,
+      otherAccounts: json['otherAccounts'] as String? ?? '',
       debit: (json['debit'] as num?)?.toDouble() ?? 0.0,
       credit: (json['credit'] as num?)?.toDouble() ?? 0.0,
       instrNo: json['instrNo'] as String?,
       lineRemarks: json['lineRemarks'] as String?,
       lineRefNo: json['lineRefNo'] as String?,
       remarks: json['remarks'] as String?,
-      branchName: json['branchName'] as String,
+      branchName: json['branchName'] as String? ?? '',
       branchCode: json['branchCode'] as String?,
       tranTypeId: json['tranTypeId'] as int?,
     );

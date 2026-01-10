@@ -1,14 +1,5 @@
-# instructions for implementing Opening Balance in General Ledger transactions
-- opBalance is part of jsonResult as in ledger.json file
-- Consider only debit and credit of opBalance
-- formattedOpBalance is {
-    debit,
-    credit,
-    "otherAccounts": "Opening balance:",
-    "tranDate": finYear?.startDate,
-    "autoRefNo": '',
-    "instrNo": ''
-}
-- inject formattedOpBalance at beginning of ledger transactions
-- create model for opBalance and do necessary changes so that opening balance appears at the begining of transactions
+# Strange situation
+- In general_ledger_page an account is selected in modal
+- When in web application with production url https://pilotcloudjiffy.net, ledger of selected accounts is properly displayed
+- When an apk is created and deployed in physical device everything is working. But when an account is selected for ledger output, the screen shows never ending busy indicator. No accounts ledger is visible. Only busy indicator for ever.
 

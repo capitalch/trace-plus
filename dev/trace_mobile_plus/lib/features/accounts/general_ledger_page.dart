@@ -55,6 +55,15 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
     });
   }
 
+  void _openFixedAccount(){
+    final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
+    final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
+
+    provider.selectFixedAccount(
+      globalProvider,
+    );
+  }
+
   Future<void> _onRefresh() async {
     final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
     final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
@@ -160,6 +169,13 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
                   icon: const Icon(Icons.account_balance_wallet),
                   onPressed: _openAccountSelectionModal,
                   tooltip: 'Select Account',
+                ),
+
+                // To be removed
+                IconButton(
+                  icon: const Icon(Icons.check_circle_outline),
+                  onPressed: _openFixedAccount,
+                  tooltip: 'Check',
                 ),
               ],
               bottom: provider.selectedAccountName != null

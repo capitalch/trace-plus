@@ -1,3 +1,10 @@
+## Debug mobile general ledger
+- general_ledger_page
+    - commented line 33 in initState()
+    - created a new check button in appBar
+    - accId: 439 for adv ag supply
+- general_ledger_provider
+    - remove selectFixedAccount method: line 217
 ## Logic for secured controls
     - Remove rank from RoleM
     - Add parentId in RoleM

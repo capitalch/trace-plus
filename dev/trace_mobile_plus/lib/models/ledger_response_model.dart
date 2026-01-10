@@ -16,8 +16,8 @@ class LedgerResponseModel {
 
   factory LedgerResponseModel.fromJson(Map<String, dynamic> json) {
     return LedgerResponseModel(
-      accName: json['accName'] as String,
-      accClass: json['accClass'] as String,
+      accName: json['accName'] as String? ?? '',
+      accClass: json['accClass'] as String? ?? '',
       opBalance: json['opBalance'] != null
           ? (json['opBalance'] as List<dynamic>)
               .map((e) => OpBalanceModel.fromJson(e as Map<String, dynamic>))
