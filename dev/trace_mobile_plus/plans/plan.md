@@ -1,185 +1,182 @@
-# Plan: Fix General Ledger Loading Issue in APK
+# Plan: Fix Modal Account Selection Synchronization Issue
 
 ## Problem Summary
-- Web application (https://pilot.cloudjiffy.net) displays account ledger correctly
-- APK on physical device shows endless busy indicator when account is selected
-- No ledger data is displayed in APK version
-- **CRITICAL INFO:** All other API calls work fine in mobile - ONLY general ledger display API fails
+Based on tran.md analysis:
+- In web application: Ledger of selected accounts displays properly when account is selected from modal
+- In APK on physical device: When account is selected from modal, screen shows never-ending busy indicator
+- **Test Finding**: When modal is bypassed (using direct button to show fixed account), ledger displays correctly
+- **Conclusion**: Opening a modal and selecting an account gives a synchronization issue that doesn't happen with direct button click
 
-## Key Insight
-Since all other API calls work in the APK, we can rule out:
-- ✓ Network/internet permissions (working)
-- ✓ SSL certificates (working)
-- ✓ Base URL configuration (working)
-- ✓ General HTTP client setup (working)
-- ✓ AndroidManifest.xml permissions (working)
+## Root Cause Analysis
+The issue is a race condition/context invalidation in the modal selection flow:
+1. In `_onAccountSelected()` (account_selection_modal.dart), the modal is closed BEFORE calling `selectAccount()`
+2. After `Navigator.of(context).pop()`, the modal context becomes invalid
+3. The `selectAccount()` async operation is then called with potentially invalid context/provider reference
+4. On Android devices, this prevents proper state propagation or causes the async operation to hang
+5. The busy indicator in `isLoadingTransactions` never gets reset to false
 
-**Focus Area:** Something specific to the general ledger API call or its response handling is failing
+## Implementation Plan
 
-## Investigation and Fix Plan
+### Step 1: Analyze Current Modal Selection Flow
+**Files to review:**
+- lib/features/accounts/widgets/account_selection_modal.dart (lines 41-54)
+- lib/providers/general_ledger_provider.dart (lines 201-214)
 
-### Step 1: Find and Review the General Ledger API Call
-- Locate GeneralLedgerProvider file
-- Find the specific method that fetches ledger data
-- Identify the exact API endpoint being called
-- Compare this API call with other working API calls to spot differences
+**Actions:**
+- Document the exact sequence: clearSearch() → pop() → selectAccount()
+- Identify why this order causes issues on mobile but not web
+- Confirm the context/provider reference validity issue
 
-### Step 2: Examine Error Handling in Ledger API Call
-**This is the most likely culprit** - Check for:
-- Missing try-catch block around the API call
-- Catch block that doesn't dismiss busy indicator
-- Silent error swallowing without logging
-- Finally block missing to ensure busy indicator is dismissed
-- Async/await issues causing unhandled exceptions
+### Step 2: Reorder Operations in Modal Selection
+**File:** lib/features/accounts/widgets/account_selection_modal.dart
 
-Example of what to look for:
+**Current problematic code (lines 41-54):**
 ```dart
-// BAD - busy indicator never dismissed on error
-Future<void> fetchLedger() async {
-  setBusy(true);
-  final response = await api.getLedger(); // If this throws, busy stays true
-  _ledgerData = response;
-  setBusy(false);
+void _onAccountSelected(AccountSelectionModel account) {
+  widget.provider.clearSearch();
+  Navigator.of(context).pop();
+  widget.provider.selectAccount(account.id, account.accName, widget.globalProvider);
 }
+```
 
-// GOOD - busy indicator always dismissed
-Future<void> fetchLedger() async {
-  try {
-    setBusy(true);
-    final response = await api.getLedger();
-    _ledgerData = response;
-  } catch (e) {
-    // Handle error
-  } finally {
-    setBusy(false); // Always runs
+**Fix:** Call `selectAccount()` BEFORE closing modal, not after
+- This ensures the operation happens while modal context is still valid
+- The async operation will start with proper context
+- State changes will propagate correctly
+
+### Step 3: Add Async/Await Handling
+**File:** lib/features/accounts/widgets/account_selection_modal.dart
+
+**Changes to make:**
+- Make `_onAccountSelected()` an async method
+- Add proper await for the selection operation
+- Add try-catch-finally error handling
+- Ensure modal closes only after operation starts successfully
+- Add mounted check before closing modal
+
+**Implementation approach:**
+- Change method signature to: `Future<void> _onAccountSelected(AccountSelectionModel account) async`
+- Use await to ensure proper execution order
+- Add `if (!mounted) return;` before Navigator.pop()
+
+### Step 4: Add Loading State During Selection
+**File:** lib/features/accounts/widgets/account_selection_modal.dart
+
+**Actions:**
+- Add `bool _isSelecting = false;` state variable in _AccountSelectionModalState
+- Set this to true when selection starts
+- Show loading indicator overlay in modal during selection
+- Disable all account tiles while `_isSelecting` is true
+- Prevent multiple simultaneous selections
+
+**Benefits:**
+- Visual feedback to user
+- Prevents race conditions from multiple taps
+- Clear indication that operation is in progress
+
+### Step 5: Improve Error Handling in Provider
+**File:** lib/providers/general_ledger_provider.dart
+
+**Review and enhance:**
+- Check `selectAccount()` method (lines 201-214)
+- Ensure `notifyListeners()` is called at appropriate points
+- Verify `_isLoadingTransactions` is always reset in finally block
+- Add error state handling if fetchAccountLedger fails
+- Consider adding a separate `_isSelecting` flag distinct from `_isLoadingTransactions`
+
+### Step 6: Alternative Approach - Modal Result Pattern
+**If Steps 2-5 don't resolve the issue completely:**
+
+**File:** lib/features/accounts/widgets/account_selection_modal.dart
+- Change modal to return AccountSelectionModel instead of calling selectAccount directly
+- Modify `_onAccountSelected()` to just pop with the account: `Navigator.of(context).pop(account);`
+
+**File:** lib/features/accounts/general_ledger_page.dart
+- Modify `_openAccountSelectionModal()` to handle returned value
+- Call `provider.selectAccount()` in the page context after modal closes
+- This keeps all provider operations in the parent page's stable context
+
+### Step 7: Update Modal Opening Logic
+**File:** lib/features/accounts/general_ledger_page.dart
+
+**If using alternative approach from Step 6:**
+- Modify `_openAccountSelectionModal()` (lines 38-56)
+- Add await to showDialog and capture result
+- Call selectAccount with the result if not null
+- Ensure proper async handling
+
+**Example structure:**
+```dart
+Future<void> _openAccountSelectionModal() async {
+  final result = await showDialog<AccountSelectionModel>(...);
+  if (result != null && mounted) {
+    await provider.selectAccount(result.id, result.accName, globalProvider);
   }
 }
 ```
 
-### Step 3: Check for Data Parsing Issues
-Since other APIs work, check if ledger response has unique characteristics:
-- Very large response payload (timeout during parsing)
-- Nested JSON structure that fails to parse on mobile
-- Date/datetime format that works in web but fails on mobile
-- Null values not handled properly
-- Response encoding issues (UTF-8, special characters)
+### Step 8: Add Debug Logging
+**Files:**
+- lib/features/accounts/widgets/account_selection_modal.dart
+- lib/providers/general_ledger_provider.dart
 
-### Step 4: Look for Platform-Specific Code
-Search for any platform checks in the ledger loading code:
-- `kIsWeb` conditional logic
-- `Platform.isAndroid` or `Platform.isIOS` checks
-- Different code paths for web vs mobile
-- Commented out code that might affect mobile
+**Add logging to track:**
+- When account selection starts
+- When modal closes
+- When selectAccount is called
+- When fetchAccountLedger starts/completes
+- When isLoadingTransactions changes state
 
-### Step 5: Review Timeout Settings for This Specific API
-Check if ledger API has:
-- Custom timeout that's too short for mobile network
-- Different timeout than other working APIs
-- Large data response that needs longer timeout
+**Purpose:** Help identify exact point of failure during testing
 
-### Step 6: Add Debug Logging to Ledger API Call
-Add comprehensive logging around the ledger API call:
-```dart
-Future<void> fetchLedger(String accountId) async {
-  print('DEBUG: Starting ledger fetch for account: $accountId');
-  try {
-    setBusy(true);
-    print('DEBUG: Busy indicator set to true');
-    print('DEBUG: Calling API endpoint...');
+### Step 9: Clean Up Debug Code
+**File:** lib/features/accounts/general_ledger_page.dart
 
-    final response = await api.getLedger(accountId);
+**Remove test code:**
+- Delete `_openFixedAccount()` method (lines 58-65)
+- Remove debug IconButton from appBar actions (lines 174-179)
+- Remove any debugging print statements added in Step 8
 
-    print('DEBUG: API call successful');
-    print('DEBUG: Response received: ${response?.toString()?.substring(0, 100)}');
+### Step 10: Testing and Verification
+**Test scenarios:**
+1. **Web Application Testing:**
+   - Select account from modal → verify ledger displays
+   - Cancel modal → verify no errors
+   - Select multiple different accounts → verify all work
 
-    _ledgerData = response;
-    print('DEBUG: Ledger data set');
-  } catch (e, stackTrace) {
-    print('ERROR: Ledger fetch failed: $e');
-    print('ERROR: Stack trace: $stackTrace');
-  } finally {
-    setBusy(false);
-    print('DEBUG: Busy indicator set to false');
-  }
-  notifyListeners();
-}
-```
+2. **APK on Physical Device Testing:**
+   - Build release/debug APK
+   - Install on physical Android device
+   - Select account from modal → verify no busy indicator hang
+   - Verify ledger displays correctly
+   - Test with slow network connection
+   - Test rapid account switching
+   - Test modal cancellation
+   - Monitor logs for any errors
 
-### Step 7: Compare with Working API Calls
-- Find another working API call in the codebase (e.g., account list fetch)
-- Compare the code structure with ledger API call
-- Identify any differences in:
-  - Error handling approach
-  - Response parsing
-  - State management
-  - Async patterns
+3. **Edge Cases:**
+   - Network error during selection
+   - Very large ledger data
+   - Rapid tapping on accounts
+   - Back button during loading
+   - App background/foreground during operation
 
-### Step 8: Check Response Handling and State Updates
-- Verify `notifyListeners()` or `setState()` is called after API response
-- Check if response data structure matches what the UI expects
-- Look for null safety issues when accessing response data
-- Ensure state variables are properly updated
+## Expected Outcome
+- Account selection from modal works correctly on physical devices
+- No never-ending busy indicator
+- Ledger displays immediately after account selection
+- Consistent behavior between web and mobile platforms
+- Proper error messages if selection fails
+- Clean, maintainable code without race conditions
 
-### Step 9: Implement Fix Based on Root Cause
-Most likely fixes:
-1. **Add proper try-catch-finally** - Ensure busy indicator is always dismissed
-2. **Fix data parsing** - Handle large or complex response structure
-3. **Increase timeout** - If response is slow on mobile network
-4. **Add null checks** - Handle missing or null response data
-5. **Fix state management** - Ensure UI updates when data arrives
+## Files to Modify (In Order)
+1. lib/features/accounts/widgets/account_selection_modal.dart (primary fix location)
+2. lib/providers/general_ledger_provider.dart (error handling improvements)
+3. lib/features/accounts/general_ledger_page.dart (cleanup and possible alternative approach)
 
-### Step 10: Test Fix
-- Build debug APK with added logging
-- Deploy to physical device
-- Monitor logs using `flutter logs` or `adb logcat -s flutter`
-- Select account and observe what happens
-- Verify busy indicator dismisses in all scenarios
+## Priority
+**HIGH** - Critical bug blocking core functionality on mobile devices
 
-## Most Likely Root Causes (Priority Order)
-
-### 1. Missing Error Handling (90% likelihood)
-The ledger API call throws an exception that isn't caught, leaving busy indicator spinning forever.
-
-**What to look for:**
-- No try-catch around API call
-- Catch block exists but doesn't dismiss busy indicator
-- Exception happens during JSON parsing, not API call itself
-
-### 2. Data Parsing Issue (70% likelihood)
-Response structure causes parsing to fail or hang on mobile.
-
-**What to look for:**
-- Large JSON response
-- Complex nested structure
-- DateTime parsing issues
-- Null values in response
-
-### 3. State Management Bug (50% likelihood)
-Provider/state not updating properly after API response.
-
-**What to look for:**
-- Missing `notifyListeners()` or `setState()`
-- State updated but UI not rebuilding
-- Conditional logic that skips state update on mobile
-
-### 4. Timeout or Performance Issue (30% likelihood)
-API call takes too long on mobile network.
-
-**What to look for:**
-- Custom short timeout
-- Large data payload
-- Multiple sequential API calls
-
-## Files to Investigate (Priority Order)
-
-1. **lib/providers/general_ledger_provider.dart** - Most likely location of the bug
-2. **lib/features/accounts/general_ledger_page.dart** - UI and busy indicator logic
-3. **lib/services/api/** - API call implementation
-4. **lib/models/** - Response model classes that might have parsing issues
-
-## Success Criteria
-
-- Ledger displays correctly in APK on physical device
-- Busy indicator dismisses in all scenarios (success, error, no network)
-- No regression in web application
-- Proper error messages shown to user when API fails
+## Recommended Approach
+Start with Steps 2-5 (reorder operations, add async/await, loading state, error handling).
+Only move to Step 6 (alternative modal result pattern) if the simpler fix doesn't resolve the issue.

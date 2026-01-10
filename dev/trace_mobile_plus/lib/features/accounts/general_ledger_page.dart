@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:trace_mobile_plus/features/accounts/widgets/account_selection_modal.dart';
 import 'package:trace_mobile_plus/features/accounts/widgets/ledger_summary.dart';
 import 'package:trace_mobile_plus/features/accounts/widgets/transaction_card.dart';
+import 'package:trace_mobile_plus/models/account_selection_model.dart';
 import 'package:trace_mobile_plus/providers/general_ledger_provider.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
 import '../../core/routes.dart';
@@ -35,11 +36,12 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
     });
   }
 
-  void _openAccountSelectionModal() {
+  Future<void> _openAccountSelectionModal() async {
+    print('DEBUG: Opening account selection modal');
     final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
     final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
 
-    showDialog(
+    final selectedAccount = await showDialog<AccountSelectionModel>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AccountSelectionModal(
@@ -47,21 +49,25 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
           globalProvider: globalProvider,
         );
       },
-    ).then((_) {
-      // Reset flag when modal closes
-      setState(() {
-        _isModalShown = false;
-      });
-    });
-  }
-
-  void _openFixedAccount(){
-    final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
-    final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
-
-    provider.selectFixedAccount(
-      globalProvider,
     );
+
+    print('DEBUG: Modal closed. Selected account: ${selectedAccount?.accName}');
+
+    // Reset flag when modal closes
+    setState(() {
+      _isModalShown = false;
+    });
+
+    // If an account was selected, fetch its ledger
+    if (selectedAccount != null && mounted) {
+      print('DEBUG: Calling selectAccount from parent context');
+      await provider.selectAccount(
+        selectedAccount.id,
+        selectedAccount.accName,
+        globalProvider,
+      );
+      print('DEBUG: selectAccount completed from parent context');
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -169,13 +175,6 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
                   icon: const Icon(Icons.account_balance_wallet),
                   onPressed: _openAccountSelectionModal,
                   tooltip: 'Select Account',
-                ),
-
-                // To be removed
-                IconButton(
-                  icon: const Icon(Icons.check_circle_outline),
-                  onPressed: _openFixedAccount,
-                  tooltip: 'Check',
                 ),
               ],
               bottom: provider.selectedAccountName != null

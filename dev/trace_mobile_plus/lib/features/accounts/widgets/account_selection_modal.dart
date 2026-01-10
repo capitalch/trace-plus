@@ -39,18 +39,14 @@ class _AccountSelectionModalState extends State<AccountSelectionModal> {
   }
 
   void _onAccountSelected(AccountSelectionModel account) {
+    print('DEBUG: Account selected in modal - id: ${account.id}, name: ${account.accName}');
+
     // Clear search before closing
     widget.provider.clearSearch();
 
-    // Close modal
-    Navigator.of(context).pop();
-
-    // Select account and fetch ledger
-    widget.provider.selectAccount(
-      account.id,
-      account.accName,
-      widget.globalProvider,
-    );
+    print('DEBUG: Closing modal and returning account to parent');
+    // Close modal and return selected account to parent
+    Navigator.of(context).pop(account);
   }
 
   @override

@@ -130,11 +130,15 @@ class GeneralLedgerProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      print('DEBUG: Starting ledger fetch for account: $accId');
+
       // Get required parameters from GlobalProvider and AppSettings
       final branchId = globalProvider.selectedBranch?.branchId;
       final finYearId = globalProvider.selectedFinYear?.finYearId;
       final buCode = globalProvider.selectedBusinessUnit?.buCode;
       final dbParams = AppSettings.dbParams;
+
+      print('DEBUG: Parameters - branchId: $branchId, finYearId: $finYearId, buCode: $buCode');
 
       if (branchId == null ||
           finYearId == null ||
@@ -145,6 +149,8 @@ class GeneralLedgerProvider extends ChangeNotifier {
         );
       }
 
+      print('DEBUG: Calling API...');
+
       // Execute GraphQL query
       final result = await _graphqlService.executeGenericQuery(
         buCode: buCode,
@@ -153,20 +159,27 @@ class GeneralLedgerProvider extends ChangeNotifier {
         sqlArgs: {'accId': accId, 'finYearId': finYearId, 'branchId': branchId},
       );
 
+      print('DEBUG: API call completed');
+
       if (result.hasException) {
+        print('ERROR: GraphQL exception: ${result.exception.toString()}');
         throw Exception(result.exception.toString());
       }
 
       // Parse the result
       final data = result.data?['genericQuery'];
       if (data == null) {
+        print('ERROR: No data received from server');
         throw Exception('No data received from server');
       }
 
       // Check if data is a Map with an error field
       if (data is Map && data['error'] != null) {
+        print('ERROR: Server error - query string not found');
         throw Exception('Error at server: query string not found');
       }
+
+      print('DEBUG: Parsing response data...');
 
       // Parse nested jsonResult structure: [{ "jsonResult": {...} }]
       final finYearStartDate = globalProvider.selectedFinYear?.startDate;
@@ -175,6 +188,7 @@ class GeneralLedgerProvider extends ChangeNotifier {
         finYearStartDate,
       );
       if (ledgerData == null) {
+        print('ERROR: Invalid response format from server');
         throw Exception('Invalid response format from server');
       }
 
@@ -184,17 +198,22 @@ class GeneralLedgerProvider extends ChangeNotifier {
       // Calculate summary
       _summary = _calculateSummary(_transactionsList);
 
-      _isLoadingTransactions = false;
+      print('DEBUG: Ledger data successfully loaded. Transactions: ${_transactionsList.length}');
+
       _errorMessage = null;
-    } catch (e) {
-      _isLoadingTransactions = false;
+    } catch (e, stackTrace) {
+      print('ERROR: Ledger fetch failed: $e');
+      print('ERROR: Stack trace: $stackTrace');
       _errorMessage = e.toString().replaceAll('Exception: ', '');
       _ledgerResponse = null;
       _transactionsList = [];
       _summary = null;
+    } finally {
+      // Always reset loading state
+      _isLoadingTransactions = false;
+      print('DEBUG: Loading state set to false');
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   /// Select an account and fetch its ledger
@@ -203,6 +222,7 @@ class GeneralLedgerProvider extends ChangeNotifier {
     String name,
     GlobalProvider globalProvider,
   ) async {
+    print('DEBUG: selectAccount called - id: $id, name: $name');
     _selectedAccountId = id;
     _selectedAccountName = name;
     _transactionsList = [];
@@ -210,21 +230,9 @@ class GeneralLedgerProvider extends ChangeNotifier {
     _summary = null;
     notifyListeners();
 
+    print('DEBUG: Calling fetchAccountLedger...');
     await fetchAccountLedger(id, globalProvider);
-  }
-
-  // To be removed
-  Future<void> selectFixedAccount(
-    GlobalProvider globalProvider,
-  ) async {
-    _selectedAccountId = 439;
-    _selectedAccountName = 'Advance against supply';
-    _transactionsList = [];
-    _ledgerResponse = null;
-    _summary = null;
-    notifyListeners();
-
-    await fetchAccountLedger(439, globalProvider);
+    print('DEBUG: selectAccount completed');
   }
 
   /// Set search query for filtering accounts
