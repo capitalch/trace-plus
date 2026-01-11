@@ -137,7 +137,7 @@ class TransactionCard extends StatelessWidget {
               bottomRight: Radius.circular(8),
             ),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
                 borderRadius: const BorderRadius.only(

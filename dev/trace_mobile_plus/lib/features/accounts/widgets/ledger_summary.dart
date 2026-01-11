@@ -54,7 +54,7 @@ class LedgerSummary extends StatelessWidget {
         Text(
           amountText,
           style: TextStyle(
-            fontSize: isLarge ? 18 : 16,
+            fontSize: isLarge ? 14 : 12,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
             color: forceColor ?? _getAmountColor(amount),
           ),
@@ -77,7 +77,7 @@ class LedgerSummary extends StatelessWidget {
               'Summary',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
             // Grid of 3 items
             Row(
@@ -89,15 +89,15 @@ class LedgerSummary extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _buildSummaryItem(
-                          label: 'Total Debit',
+                          label: 'Total Debits',
                           amount: summary.debit,
                           forceColor: Colors.blue[700],
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: _buildSummaryItem(
-                          label: 'Total Credit',
+                          label: 'Total Credits',
                           amount: summary.credit,
                           forceColor: Colors.amber[700],
                         ),
@@ -105,7 +105,6 @@ class LedgerSummary extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 16),
                 Expanded(
                   child: _buildSummaryItem(
                     label: 'Closing Balance',

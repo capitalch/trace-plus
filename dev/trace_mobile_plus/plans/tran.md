@@ -1,7 +1,9 @@
 # Fix the bug
-- In general_ledger_page an account is selected in modal window
-- When in web application, ledger of selected accounts is properly displayed
-- When an apk is created and deployed in physical device everything is working. But when an account is selected for ledger output, the screen shows never ending busy indicator. No accounts ledger is visible. Only busy indicator for ever.
-- For test purpose I commented the line 33 _openAccountSelectionModal() in general_ledger_page and created a new button in appBar to show a fixed account ledger. Clicking this new iconButton (check) shows the ledger for fixed account correctly
-- It appears that opening a modal and selecting an account from modal gives some sort of sync issue which does not happen when clicked the button directly to show the ledger
+- This bug only happens when apk is installed in physical device
+- This bug also does not occur when _openAccountSelectionModal(): line 34 is commented out in general_ledger_page. In this case automatic modal window is turned off and modal window appears on manual selection from button. On manual firing of modal window and then account selection this bug does not appear.
+- The bug is:
+    - In general_ledger_page an account is selected from modal window
+    - When an account is selected for ledger output, the screen shows never ending busy indicator. No accounts ledger is visible. Only busy indicator for ever.
+- can auto firing of modal window be done through some other mechanism other than writing _openAccountSelectionModal() in initState() method?
+
 

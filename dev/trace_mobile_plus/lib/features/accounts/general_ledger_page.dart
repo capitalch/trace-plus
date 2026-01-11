@@ -20,24 +20,31 @@ class GeneralLedgerPage extends StatefulWidget {
 class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
   bool _isModalShown = false;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
+
   @override
-  void initState() {
-    super.initState();
-    // Clear selection to start fresh every time
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_isModalShown) {
-        final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!_isModalShown && mounted) {
+        final provider = Provider.of<GeneralLedgerProvider>(
+          context,
+          listen: false,
+        );
         provider.clearSelection();
         _isModalShown = true;
 
-        // Auto-open account selection modal
-        _openAccountSelectionModal();
+        if (mounted) {
+          await _openAccountSelectionModal();
+        }
       }
     });
   }
 
   Future<void> _openAccountSelectionModal() async {
-    print('DEBUG: Opening account selection modal');
     final provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
     final globalProvider = Provider.of<GlobalProvider>(context, listen: false);
 
@@ -51,22 +58,18 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
       },
     );
 
-    print('DEBUG: Modal closed. Selected account: ${selectedAccount?.accName}');
-
-    // Reset flag when modal closes
-    setState(() {
-      _isModalShown = false;
-    });
-
     // If an account was selected, fetch its ledger
     if (selectedAccount != null && mounted) {
-      print('DEBUG: Calling selectAccount from parent context');
       await provider.selectAccount(
         selectedAccount.id,
         selectedAccount.accName,
         globalProvider,
       );
-      print('DEBUG: selectAccount completed from parent context');
+      if (mounted) {
+        setState(() {
+          _isModalShown = false;
+        });
+      }
     }
   }
 
@@ -83,8 +86,8 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
   }
 
   Widget _buildSecondaryAppBar(BuildContext context) {
-    return Consumer2<GeneralLedgerProvider, GlobalProvider>(
-      builder: (context, provider, globalProvider, _) {
+    return Consumer<GeneralLedgerProvider>(
+      builder: (context, provider, _) {
         return Container(
           height: 34,
           decoration: BoxDecoration(
@@ -111,20 +114,6 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // Unit Name
-                Flexible(
-                  child: Text(
-                    globalProvider.unitName ?? '',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -162,13 +151,39 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
               elevation: 0,
               titleSpacing: 0,
               backgroundColor: const Color(0xFF6C5CE7),
-              title: const Text(
-                'General Ledger',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              title: Consumer<GlobalProvider>(
+                builder: (context, globalProvider, _) {
+                  final unitname = globalProvider.unitName ?? '';
+                  final finYear = globalProvider.selectedFinYear?.finYearId ?? '';
+                  final branchCode = globalProvider.selectedBranch?.branchCode ?? '';
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'General Ledger',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$unitname | FY: $finYear | Branch: $branchCode',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        softWrap: true,
+                        maxLines: 3,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ],
+                  );
+                },
               ),
               actions: [
                 IconButton(
@@ -199,9 +214,7 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
 
     // Loading transactions
     if (provider.isLoadingTransactions) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     // Error state
@@ -226,10 +239,7 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
           const SizedBox(height: 16),
           Text(
             'Select an account to view ledger',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -249,19 +259,12 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              color: Colors.red,
-              size: 64,
-            ),
+            const Icon(Icons.error_outline, color: Colors.red, size: 64),
             const SizedBox(height: 16),
             Text(
               provider.errorMessage!,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-              ),
+              style: const TextStyle(color: Colors.red, fontSize: 16),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -281,7 +284,8 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
       child: Column(
         children: [
           // Summary widget
-          if (provider.summary != null) LedgerSummary(summary: provider.summary!),
+          if (provider.summary != null)
+            LedgerSummary(summary: provider.summary!),
 
           const Divider(height: 1),
 
@@ -291,10 +295,7 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
                 ? Center(
                     child: Text(
                       'No transactions found',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     ),
                   )
                 : ListView.builder(
