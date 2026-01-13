@@ -1193,8 +1193,8 @@ class SqlAccounts:
                 AND "branchId" = (TABLE "branchId")
                 AND (
                     CASE 
-                        WHEN (TABLE "dateType") = 'transactionDate' THEN h."tranDate" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
-                        WHEN (TABLE "dateType") = 'entryDate' THEN h."timestamp" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+                        WHEN (TABLE "dateType") = 'tranDate' THEN h."tranDate"::date BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+                        WHEN (TABLE "dateType") = 'entryDate' THEN h."timestamp"::date BETWEEN (TABLE "startDate") AND (TABLE "endDate")
                         ELSE FALSE  -- Fallback case
                     END
                 )
@@ -1621,6 +1621,161 @@ class SqlAccounts:
                 'tranH', (SELECT row_to_json(a) from cte1 a),
                 'branchTransfers', (SELECT json_agg(b) from cte2 b)
             ) as "jsonResult"
+    """
+
+    get_business_health = """
+        --with "branchId" as ( values (1)), "finYearId" as (values (2022)),
+        with "branchId" as (values (%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+        cte0 as( --base cte used many times in next
+            select "productId", "tranTypeId", "qty", "price", "tranDate", '' as "dc"
+                from "TranH" h
+                    join "TranD" d
+                        on h."id" = d."tranHeaderId"
+                    join "SalePurchaseDetails" s
+                        on d."id" = s."tranDetailsId"
+                where "branchId" = (table "branchId") and "finYearId" = (table "finYearId")
+            union all
+            select "productId", "tranTypeId", "qty", 0 as "price", "tranDate", "dc"
+            from "TranH" h
+                join "StockJournal" s
+                    on h."id" = s."tranHeaderId"
+            where "branchId" = (table "branchId") and "finYearId" = (table "finYearId")
+        ), cte1 as ( -- opening balance
+            select id, "productId", "qty", "openingPrice", "lastPurchaseDate"
+                from "ProductOpBal" p
+            where "branchId" = (table "branchId") and "finYearId" = (table "finYearId")
+        ), cte2 as ( -- create columns for sale, saleRet, purch... Actually creates columns from rows
+                select "productId","tranTypeId", 
+                    SUM(CASE WHEN "tranTypeId" = 4 THEN "qty" ELSE 0 END) as "sale"
+                    , SUM(CASE WHEN "tranTypeId" = 9 THEN "qty" ELSE 0 END) as "saleRet"
+                    , SUM(CASE WHEN "tranTypeId" = 5 THEN "qty" ELSE 0 END) as "purchase"
+                    , SUM(CASE WHEN "tranTypeId" = 10 THEN "qty" ELSE 0 END) as "purchaseRet"
+                    , SUM(CASE WHEN ("tranTypeId" = 11) and ("dc" = 'D') THEN "qty" ELSE 0 END) as "stockJournalDebits"
+                    , SUM(CASE WHEN ("tranTypeId" = 11) and ("dc" = 'C') THEN "qty" ELSE 0 END) as "stockJournalCredits"
+                    , MAX(CASE WHEN "tranTypeId" = 4 THEN "tranDate" END) as "lastSaleDate"
+                    , MAX(CASE WHEN "tranTypeId" = 5 THEN "tranDate" END) as "lastPurchaseDate"
+                    from cte0
+                group by "productId", "tranTypeId" order by "productId", "tranTypeId"
+        ), cte3 as ( -- sum columns group by productId
+                select "productId"
+                , coalesce(SUM("sale"),0) as "sale"
+                , coalesce(SUM("purchase"),0) as "purchase"
+                , coalesce(SUM("saleRet"),0) as "saleRet"
+                , coalesce(SUM("purchaseRet"),0) as "purchaseRet"
+                , coalesce(SUM("stockJournalDebits"),0) as "stockJournalDebits"
+                , coalesce(SUM("stockJournalCredits"),0) as "stockJournalCredits"
+                , MAX("lastSaleDate") as "lastSaleDate"
+                , MAX("lastPurchaseDate") as "lastPurchaseDate"
+                from cte2
+                    group by "productId"
+        ), cte4 as ( -- join opening balance (cte1) with latest result set
+                select coalesce(c1."productId",c3."productId")  as "productId"
+                , coalesce(c1.qty,0) as "op"
+                , coalesce("sale",0) as "sale"
+                , coalesce("purchase",0) as "purchase"
+                , coalesce("saleRet", 0) as "saleRet"
+                , coalesce("purchaseRet", 0) as "purchaseRet"
+                , coalesce("stockJournalDebits", 0) as "stockJournalDebits"
+                , coalesce("stockJournalCredits", 0) as "stockJournalCredits"
+                , coalesce(c3."lastPurchaseDate", c1."lastPurchaseDate") as "lastPurchaseDate"
+                , "openingPrice", "lastSaleDate"
+                    from cte1 c1
+                        full join cte3 c3
+                            on c1."productId" = c3."productId"
+        ), cte5 as ( -- get last purchase price for transacted products
+            select DISTINCT ON("productId") "productId", "price" as "lastPurchasePrice"
+                from cte0
+                    where "tranTypeId" = 5
+                        order by "productId", "tranDate" DESC
+        ), cte6 as (  -- combine last purchase price with latest result set and add clos column and filter on lastPurchaseDate(ageing)
+            select coalesce(c4."productId", c5."productId") as "productId"
+                , coalesce("lastPurchasePrice", "openingPrice") as "lastPurchasePrice","lastPurchaseDate"
+                , ("op" + "purchase" - "purchaseRet" - "sale" + "saleRet" + "stockJournalDebits" - "stockJournalCredits") as "clos", "sale", "op", "openingPrice"
+                from cte4 c4
+                    full join cte5 c5
+                        on c4."productId" = c5."productId"
+        ), cte7 as ( -- get openingValue, openingValueWithGst, closingValue, closingValueWithGst
+            select ROUND(SUM("op" * "openingPrice"),0) as "openingValue"
+            , ROUND(SUM("op" * "openingPrice" *(1 + "gstRate"/100)),0) as "openingValueWithGst"
+            , ROUND(SUM("clos" * "lastPurchasePrice"),0) as "closingValue"
+            , ROUND(SUM("clos" * "lastPurchasePrice" * (1+ "gstRate"/100)),0) as "closingValueWithGst"			
+            from cte6 c6 
+                join "ProductM" p
+                    on p."id" = c6."productId"
+        ), cte8 as ( -- get profitLoss from balance sheet (bs)
+            select round(SUM(CASE WHEN "dc" = 'D' then t."amount" else -t."amount" end),0) as "profitLoss"
+                from "AccM" a
+                    join "TranD" t
+                        on a."id" = t."accId"                                
+                    join "TranH" h
+                        on h."id" = t."tranHeaderId"				 				
+                where "branchId" = (table "branchId") and "finYearId" = (table "finYearId")
+                    and "accType" in ('A','L')
+        ), cte9 as ( -- find diff and diffGst for stock value
+            select round(("closingValue" - "openingValue"),0) as "diff"
+                , round(("closingValueWithGst" - "openingValueWithGst"),0) as "diffGst"
+                from cte7
+        ), cte10 as ( -- get trial balance
+                    with recursive cte as (
+                        select * from cte1
+                            union all
+                        select a."id", a."accName", a."accType", a."parentId", a."accLeaf", a."isPrimary"
+                        , c."opening"
+                        , c."sign"
+                        , c."opening_dc"
+                        , c."debit", c."credit"
+                            from cte c
+                                join "AccM" a
+                                    on c."parentId" = a."id"
+                        ),
+                        cte1 as (
+                            select a."id", "accName", "accType", "parentId", "accLeaf", a."isPrimary"
+                                , 0.00 as "opening"
+                                , 1 as "sign"
+                                , '' as "opening_dc"
+                                , CASE WHEN t."dc" = 'D' THEN t."amount" else 0.00 END as "debit"
+                                , CASE WHEN t."dc" = 'C' THEN t."amount" else 0.00 END as "credit"
+                            from "AccM" a
+                                join "TranD" t
+                                    on t."accId" = a."id"
+                                join "TranH" h
+                                    on h."id" = t."tranHeaderId"
+                                        where "branchId" = (table "branchId") and "finYearId" = (table "finYearId")
+                                union all
+                            select a."id", "accName", "accType", "parentId", "accLeaf", a."isPrimary"
+                                , "amount" as "opening"
+                                , CASE WHEN "dc" = 'D' THEN 1 ELSE -1 END as "sign"
+                                , "dc" as "opening_dc"
+                                , 0 as "debit"
+                                , 0 as "credit"
+                            from "AccM" a
+                                join "AccOpBal" b
+                                    on a."id" = b."accId"
+                                        where "branchId" = (table "branchId") and "finYearId" = (table "finYearId")
+                                            order by "accType", "accName"
+                            ),
+                        cte2 as (
+                            select "id", "accName", "accType", "parentId", "accLeaf", "isPrimary"
+                                , SUM("opening" * "sign") as "opening"
+                                , SUM("debit") as "debit"
+                                , SUM("credit") as "credit"
+                                from cte
+                                    group by "id", "accName", "accType", "parentId", "accLeaf", "isPrimary"
+                                        order by "accType", "accName"
+                            ) select 
+                                "id", "parentId"
+                                , "accName"
+                                , ROUND(("opening" + "debit" - "credit"),0) as "closing"
+                            from cte2 a
+                                where "isPrimary"
+                                    order by id
+            
+            ) select json_build_object(
+                'stockDiff', (select row_to_json(a) from cte9 a),
+                'profitLoss', (select "profitLoss" from cte8 b),
+                'openingClosingStock', (select row_to_json(c) from cte7 c),
+                'trialBalance', (select json_agg(row_to_json(d)) from cte10 d)
+                ) as "jsonResult"
     """
 
     get_contact_for_email = """
@@ -3992,3 +4147,524 @@ class SqlAccounts:
         end $$;
     """
         ).format(jData=sql.Literal(params["jData"]))
+
+
+    mobile_get_products_info = """
+    --with "branchId" as (values(1)), "finYearId" as (values (2022)),
+    with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
+                    /* ---------------------------------------------------------
+                cte0 : Base transaction data (used multiple times)
+                ----------------------------------------------------------*/
+                    cte0 AS (
+                        SELECT
+                            s."productId",
+                            h."tranTypeId",
+                            s."qty",
+                            s."price",
+                            h."tranDate",
+                            '' AS "dc"
+                        FROM "TranH" h
+                            JOIN "TranD" d
+                                ON h."id" = d."tranHeaderId"
+                            JOIN "SalePurchaseDetails" s
+                                ON d."id" = s."tranDetailsId"
+                        WHERE
+                            h."branchId" = (TABLE "branchId")
+                            AND h."finYearId" = (TABLE "finYearId")
+
+                        UNION ALL   -- required to retain duplicate rows
+
+                        SELECT
+                            s."productId",
+                            h."tranTypeId",
+                            s."qty",
+                            0 AS "price",
+                            h."tranDate",
+                            s."dc"
+                        FROM "TranH" h
+                            JOIN "StockJournal" s
+                                ON h."id" = s."tranHeaderId"
+                        WHERE
+                            h."branchId" = (TABLE "branchId")
+                            AND h."finYearId" = (TABLE "finYearId")
+                    ),
+
+                /* ---------------------------------------------------------
+                cte1 : Opening balances
+                ----------------------------------------------------------*/
+                    cte1 AS (
+                        SELECT
+                            p."id",
+                            p."productId",
+                            p."qty",
+                            p."openingPrice",
+                            p."lastPurchaseDate"
+                        FROM "ProductOpBal" p
+                        WHERE
+                            p."branchId" = (TABLE "branchId")
+                            AND p."finYearId" = (TABLE "finYearId")
+                    ),
+
+                /* ---------------------------------------------------------
+                cte2 : Pivot rows into sale / purchase columns
+                ----------------------------------------------------------*/
+                    cte2 AS (
+                        SELECT
+                            "productId",
+                            "tranTypeId",
+
+                            SUM(CASE WHEN "tranTypeId" = 4  THEN "qty" ELSE 0 END) AS "sale",
+                            SUM(CASE WHEN "tranTypeId" = 9  THEN "qty" ELSE 0 END) AS "saleRet",
+                            SUM(CASE WHEN "tranTypeId" = 5  THEN "qty" ELSE 0 END) AS "purchase",
+                            SUM(CASE WHEN "tranTypeId" = 10 THEN "qty" ELSE 0 END) AS "purchaseRet",
+
+                            SUM(CASE WHEN "tranTypeId" = 11 AND "dc" = 'D' THEN "qty" ELSE 0 END) AS "stockJournalDebits",
+                            SUM(CASE WHEN "tranTypeId" = 11 AND "dc" = 'C' THEN "qty" ELSE 0 END) AS "stockJournalCredits",
+
+                            MAX(CASE WHEN "tranTypeId" = 4 THEN "tranDate" END)            AS "lastSaleDate",
+                            MAX(CASE WHEN "tranTypeId" IN (5, 11) THEN "tranDate" END)     AS "lastPurchaseDate"
+                        FROM cte0
+                        GROUP BY
+                            "productId",
+                            "tranTypeId"
+                        ORDER BY
+                            "productId",
+                            "tranTypeId"
+                    ),
+
+                /* ---------------------------------------------------------
+                cte3 : Aggregate per product
+                ----------------------------------------------------------*/
+                    cte3 AS (
+                        SELECT
+                            "productId",
+
+                            COALESCE(SUM("sale"), 0)                 AS "sale",
+                            COALESCE(SUM("purchase"), 0)             AS "purchase",
+                            COALESCE(SUM("saleRet"), 0)              AS "saleRet",
+                            COALESCE(SUM("purchaseRet"), 0)          AS "purchaseRet",
+                            COALESCE(SUM("stockJournalDebits"), 0)   AS "stockJournalDebits",
+                            COALESCE(SUM("stockJournalCredits"), 0)  AS "stockJournalCredits",
+
+                            MAX("lastSaleDate")       AS "lastSaleDate",
+                            MAX("lastPurchaseDate")   AS "lastPurchaseDate"
+                        FROM cte2
+                        GROUP BY
+                            "productId"
+                    ),
+
+                /* ---------------------------------------------------------
+                cte4 : Merge opening balances with transaction summary
+                ----------------------------------------------------------*/
+                    cte4 AS (
+                        SELECT
+                            COALESCE(c1."productId", c3."productId") AS "productId",
+
+                            COALESCE(c1."qty", 0)                    AS "op",
+                            COALESCE(c3."sale", 0)                   AS "sale",
+                            COALESCE(c3."purchase", 0)               AS "purchase",
+                            COALESCE(c3."saleRet", 0)                AS "saleRet",
+                            COALESCE(c3."purchaseRet", 0)            AS "purchaseRet",
+                            COALESCE(c3."stockJournalDebits", 0)     AS "stockJournalDebits",
+                            COALESCE(c3."stockJournalCredits", 0)    AS "stockJournalCredits",
+
+                            COALESCE(c3."lastPurchaseDate", c1."lastPurchaseDate") AS "lastPurchaseDate",
+                            c1."openingPrice",
+                            c3."lastSaleDate"
+                        FROM cte1 c1
+                            FULL JOIN cte3 c3
+                                ON c1."productId" = c3."productId"
+                    ),
+
+                /* ---------------------------------------------------------
+                cte5 : Last purchase price
+                ----------------------------------------------------------*/
+                    cte5 AS (
+                        SELECT DISTINCT ON ("productId")
+                            "productId",
+                            "price" AS "lastPurchasePrice"
+                        FROM cte0
+                        WHERE "tranTypeId" IN (5, 11)
+                        ORDER BY
+                            "productId",
+                            "tranDate" DESC
+                    ),
+
+                /* ---------------------------------------------------------
+                cte6 : Compute closing stock
+                ----------------------------------------------------------*/
+                    cte6 AS (
+                        SELECT
+                            COALESCE(c4."productId", c5."productId") AS "productId",
+
+                            COALESCE(c5."lastPurchasePrice", c4."openingPrice") AS "lastPurchasePrice",
+                            c4."lastPurchaseDate",
+
+                            (
+                                "op"
+                                + "purchase"
+                                - "purchaseRet"
+                                - "sale"
+                                + "saleRet"
+                                + "stockJournalDebits"
+                                - "stockJournalCredits"
+                            ) AS "clos",
+
+                            "sale",
+                            "op",
+                            "openingPrice"
+                        FROM cte4 c4
+                            FULL JOIN cte5 c5
+                                ON c4."productId" = c5."productId"
+                    ),
+
+                /* ---------------------------------------------------------
+                cte7 : Join master tables and compute ageing
+                ----------------------------------------------------------*/
+                    cte7 AS (
+                        SELECT
+                            p."id",
+                            p."productCode",
+                            c."catName",
+                            b."brandName",
+                            p."label",
+
+                            COALESCE("clos"::numeric(10,2), 0) AS "clos",
+
+                            (COALESCE("lastPurchasePrice", 0) * (1 + p."gstRate" / 100)) AS "lastPurchasePriceGst",
+                            "lastPurchaseDate",
+
+                            DATE_PART('day', CURRENT_DATE::timestamp - "lastPurchaseDate"::timestamp) AS "age",
+
+                            p."catId",
+                            p."brandId",
+                            COALESCE(p."hsn", c."hsn") AS "hsn",
+                            p."info",
+                            p."unitId",
+                            p."upcCode",
+                            p."gstRate",
+
+                            p."salePrice",
+                            p."salePriceGst",
+                            p."maxRetailPrice",
+                            COALESCE("lastPurchasePrice", 0) AS "lastPurchasePrice",
+
+                            "sale",
+                            p."saleDiscount",
+                            COALESCE("op", 0) AS "op",
+
+                            COALESCE("openingPrice", 0) AS "openingPrice",
+                            (COALESCE("openingPrice", 0) * (1 + p."gstRate" / 100)) AS "openingPriceGst"
+                        FROM cte6 c6
+                            RIGHT JOIN "ProductM" p
+                                ON p."id" = c6."productId"
+                            JOIN "CategoryM" c
+                                ON c."id" = p."catId"
+                            JOIN "BrandM" b
+                                ON b."id" = p."brandId"
+                        WHERE p."isActive"
+                        ORDER BY
+                            b."brandName",
+                            c."catName",
+                            p."label",
+                            p."info"
+                    )
+
+                /* ---------------------------------------------------------
+                Final result
+                ----------------------------------------------------------*/
+                SELECT
+                    "id",
+                    "productCode",
+                    "catName",
+                    "brandName",
+                    "label",
+                    "clos",
+                    "lastPurchasePriceGst",
+                    CASE WHEN "clos" > 0 THEN "age" ELSE 0 END AS "age",
+                    "hsn",
+                    "info",
+                    "upcCode",
+                    "gstRate",
+                    "salePrice",
+                    "salePriceGst",
+                    "maxRetailPrice",
+                    "sale",
+                    "saleDiscount",
+                    "lastPurchasePrice",
+                    "op",
+                    "openingPrice",
+                    "openingPriceGst"
+                FROM cte7
+    """
+
+    mobile_get_sales_report = """
+        -- WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2025)), "tagId" AS (VALUES (0)), "startDate" AS (VALUES ('2025-12-25'::DATE)), "endDate" AS (VALUES ('2025-12-25'::DATE)),
+        WITH "branchId" AS (VALUES (%(branchId)s::INT)),  "finYearId" AS (VALUES (%(finYearId)s::INT)), "tagId" AS (VALUES (%(tagId)s::INT)), "startDate" AS (VALUES (%(startDate)s::DATE)), "endDate" AS (VALUES (%(endDate)s::DATE)),
+
+            -- Recursive category hierarchy filter (leaf nodes only)
+            category_hierarchy AS (
+                WITH RECURSIVE rec AS (
+                    SELECT id, "parentId", "isLeaf", "catName" 
+                    FROM "CategoryM" 
+                    WHERE ("tagId" = (TABLE "tagId")) OR ((TABLE "tagId") = 0)
+                    
+                    UNION 
+                    
+                    SELECT c.id, c."parentId", c."isLeaf", c."catName" 
+                    FROM "CategoryM" c 
+                    INNER JOIN rec ON rec.id = c."parentId"
+                )
+                SELECT * FROM rec WHERE "isLeaf"
+            ),
+
+            -- Base transaction data: Sales, Purchases, and Returns (tranTypeId: 4, 5, 9, 10)
+            base_transactions AS (
+                SELECT 
+                    h.id,
+                    h.remarks AS "commonRemarks", 
+                    CONCAT_WS(', ', d.remarks, s."jData"->'remarks', s."jData"->'serialNumbers') AS "lineRemarks",
+                    h."tranDate", 
+                    s."productId", 
+                    h."tranTypeId", 
+                    s.qty, 
+                    (s.price - s.discount) AS price, 
+                    s.cgst, 
+                    s.sgst,
+                    s.igst, 
+                    s.amount, 
+                    s."gstRate", 
+                    s.id AS "salePurchaseDetailsId", 
+                    h."autoRefNo", 
+                    h."timestamp",
+                    CONCAT_WS(' ', c."contactName", c."mobileNumber", c."address1", c."address2") AS contact,
+                    '' AS dc
+                FROM "TranH" h 
+                INNER JOIN "TranD" d ON h.id = d."tranHeaderId" 
+                INNER JOIN "AccM" a ON a.id = d."accId" 
+                INNER JOIN "SalePurchaseDetails" s ON d.id = s."tranDetailsId" 
+                LEFT JOIN "Contacts" c ON c.id = h."contactsId"
+                WHERE h."branchId" = (TABLE "branchId") 
+                    AND h."finYearId" = (TABLE "finYearId") 
+                    AND h."tranDate" <= (TABLE "endDate") 
+                    AND h."tranTypeId" IN (4, 5, 9, 10)
+                
+                UNION ALL
+                
+                -- Stock Journal transactions (tranTypeId: 11)
+                SELECT 
+                    h.id,
+                    h.remarks AS "commonRemarks", 
+                    s."lineRemarks",
+                    h."tranDate", 
+                    s."productId", 
+                    h."tranTypeId", 
+                    s.qty, 
+                    s.price, 
+                    0 AS cgst, 
+                    0 AS sgst, 
+                    0 AS igst, 
+                    0 AS amount, 
+                    0 AS "gstRate", 
+                    s.id AS "salePurchaseDetailsId", 
+                    h."autoRefNo", 
+                    h."timestamp",
+                    '' AS contact,
+                    s.dc
+                FROM "TranH" h 
+                INNER JOIN "StockJournal" s ON h.id = s."tranHeaderId"
+                WHERE h."branchId" = (TABLE "branchId") 
+                    AND h."finYearId" = (TABLE "finYearId")
+            ),
+
+            -- Account names aggregation (excluding 'sale' class for tranTypeId 4, 5)
+            account_names AS (
+                SELECT 
+                    h.id, 
+                    STRING_AGG(a."accName", ', ') AS accounts
+                FROM "TranH" h 
+                INNER JOIN "TranD" d ON h.id = d."tranHeaderId" 
+                INNER JOIN "AccM" a ON a.id = d."accId" 
+                INNER JOIN "AccClassM" c ON c.id = a."classId"
+                WHERE h."tranTypeId" IN (4, 5) 
+                    AND c."accClass" <> 'sale' 
+                    AND h."branchId" = (TABLE "branchId") 
+                    AND h."finYearId" = (TABLE "finYearId")
+                GROUP BY h.id
+            ),
+
+            -- Product opening balances
+            product_opening_balances AS (
+                SELECT 
+                    "productId",
+                    qty, 
+                    "openingPrice", 
+                    "lastPurchaseDate"
+                FROM "ProductOpBal"
+                WHERE "branchId" = (TABLE "branchId") 
+                    AND "finYearId" = (TABLE "finYearId")
+            ),
+
+            -- Last purchase price and date computation (for sales only)
+            sales_with_purchase_info AS (
+                SELECT 
+                    bt.*,
+                    an.accounts,
+                    -- Last purchase price
+                    (
+                        SELECT DISTINCT ON ("productId") COALESCE(price, 0) AS price
+                        FROM base_transactions
+                        WHERE "tranTypeId" IN (5, 11) 
+                            AND "tranDate" <= bt."tranDate" 
+                            AND "productId" = bt."productId" 
+                            AND price <> 0 
+                            AND price IS NOT NULL
+                        ORDER BY "productId", "tranDate" DESC, "salePurchaseDetailsId" DESC
+                    ) AS "lastPurchasePrice",
+                    -- Last purchase date
+                    (
+                        SELECT DISTINCT ON ("productId") "tranDate"
+                        FROM base_transactions
+                        WHERE "tranTypeId" IN (5, 11) 
+                            AND "tranDate" <= bt."tranDate" 
+                            AND "productId" = bt."productId"
+                        ORDER BY "productId", "tranDate" DESC, "salePurchaseDetailsId" DESC
+                    ) AS "lastPurchaseDate"
+                FROM base_transactions bt
+                LEFT JOIN account_names an ON bt.id = an.id
+                WHERE bt."tranTypeId" IN (4, 9)
+            ),
+
+            -- Fill missing purchase info from opening balances
+            sales_with_complete_info AS (
+                SELECT 
+                    s."tranDate", 
+                    s."productId", 
+                    s.qty, 
+                    s.price, 
+                    s."timestamp", 
+                    s.accounts,
+                    s.contact,
+                    s."commonRemarks",
+                    s."lineRemarks",
+                    COALESCE(s."lastPurchasePrice", pob."openingPrice", 0) AS "lastPurchasePrice",
+                    COALESCE(s."lastPurchaseDate", pob."lastPurchaseDate") AS "lastPurchaseDate",
+                    s.qty * s.price AS "aggrSale",
+                    s.cgst, 
+                    s.sgst, 
+                    s.igst,
+                    s.amount, 
+                    s."gstRate", 
+                    s."tranTypeId",
+                    s."salePurchaseDetailsId", 
+                    s."autoRefNo"
+                FROM sales_with_purchase_info s
+                LEFT JOIN product_opening_balances pob ON s."productId" = pob."productId"
+            ),
+
+            -- Compute gross profit
+            sales_with_profit AS (
+                SELECT 
+                    *,
+                    qty * (price - "lastPurchasePrice") AS "grossProfit"
+                FROM sales_with_complete_info
+            ),
+
+            -- Adjust signs for sales returns (negate returns)
+            normalized_sales AS (
+                SELECT 
+                    "tranDate", 
+                    "productId", 
+                    price, 
+                    "lastPurchasePrice", 
+                    "gstRate",
+                    "tranTypeId",
+                    "salePurchaseDetailsId", 
+                    "autoRefNo",
+                    contact,
+                    "commonRemarks",
+                    "lineRemarks",
+                    CASE WHEN "tranTypeId" = 4 THEN qty ELSE -qty END AS qty,
+                    CASE WHEN "tranTypeId" = 4 THEN "aggrSale" ELSE -"aggrSale" END AS "aggrSale",
+                    CASE WHEN "tranTypeId" = 4 THEN cgst ELSE -cgst END AS cgst,
+                    CASE WHEN "tranTypeId" = 4 THEN sgst ELSE -sgst END AS sgst,
+                    CASE WHEN "tranTypeId" = 4 THEN igst ELSE -igst END AS igst,
+                    CASE WHEN "tranTypeId" = 4 THEN amount ELSE -amount END AS amount,
+                    CASE WHEN "tranTypeId" = 4 THEN 'Sale' ELSE 'Return' END AS "saleType",
+                    CASE WHEN "tranTypeId" = 4 THEN "grossProfit" ELSE -"grossProfit" END AS "grossProfit",
+                    "lastPurchaseDate", 
+                    "timestamp", 
+                    accounts
+                FROM sales_with_profit
+            ),
+
+            -- Stock movement aggregation by product and transaction type
+            stock_movements_by_type AS (
+                SELECT 
+                    "productId",
+                    "tranTypeId",
+                    SUM(CASE WHEN "tranTypeId" = 4 THEN qty ELSE 0 END) AS sale,
+                    SUM(CASE WHEN "tranTypeId" = 9 THEN qty ELSE 0 END) AS "saleRet",
+                    SUM(CASE WHEN "tranTypeId" = 5 THEN qty ELSE 0 END) AS purchase,
+                    SUM(CASE WHEN "tranTypeId" = 10 THEN qty ELSE 0 END) AS "purchaseRet",
+                    SUM(CASE WHEN "tranTypeId" = 11 AND dc = 'D' THEN qty ELSE 0 END) AS "stockJournalDebits",
+                    SUM(CASE WHEN "tranTypeId" = 11 AND dc = 'C' THEN qty ELSE 0 END) AS "stockJournalCredits"
+                FROM base_transactions
+                GROUP BY "productId", "tranTypeId"
+            ),
+
+            -- Consolidate stock movements per product
+            stock_movements_consolidated AS (
+                SELECT 
+                    "productId",
+                    SUM(sale) AS sale,
+                    SUM("saleRet") AS "saleRet",
+                    SUM(purchase) AS purchase,
+                    SUM("purchaseRet") AS "purchaseRet",
+                    SUM("stockJournalDebits") AS "stockJournalDebits",
+                    SUM("stockJournalCredits") AS "stockJournalCredits"
+                FROM stock_movements_by_type
+                GROUP BY "productId"
+            ),
+
+            -- Calculate closing stock (opening + purchases - sales +/- adjustments)
+            stock_positions AS (
+                SELECT 
+                    sm."productId",
+                    COALESCE(pob.qty, 0) AS op,
+                    sm.sale,
+                    sm.purchase,
+                    sm."saleRet",
+                    sm."purchaseRet",
+                    sm."stockJournalDebits",
+                    sm."stockJournalCredits",
+                    (
+                        COALESCE(pob.qty, 0) + 
+                        sm.purchase - 
+                        sm.sale - 
+                        sm."purchaseRet" + 
+                        sm."saleRet" + 
+                        sm."stockJournalDebits" - 
+                        sm."stockJournalCredits"
+                    ) AS stock
+                FROM stock_movements_consolidated sm
+                LEFT JOIN product_opening_balances pob ON pob."productId" = sm."productId"
+            )
+
+            -- Final result with product details
+            SELECT 
+                ns.*,
+                p."productCode", 
+                ch."catName", 
+                b."brandName", 
+                p.label, 
+                sp.stock, 
+                p.info
+            FROM normalized_sales ns
+            INNER JOIN "ProductM" p ON p.id = ns."productId"
+            INNER JOIN category_hierarchy ch ON ch.id = p."catId"
+            INNER JOIN "BrandM" b ON b.id = p."brandId"
+            INNER JOIN stock_positions sp ON ns."productId" = sp."productId"
+            WHERE ns."tranDate" BETWEEN (TABLE "startDate") AND (TABLE "endDate")
+            ORDER BY ns."tranDate", ns."salePurchaseDetailsId"
+    """

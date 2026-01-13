@@ -232,7 +232,7 @@ export const ReportAllTransactionsFilter: React.FC = () => {
                 <div className="mt-2 p-2 bg-white rounded-lg shadow-md">
                     <label className="block font-medium text-gray-700 text-sm">Date Type</label>
                     <div className="flex mt-1 gap-2">
-                        {["transactionDate", "entryDate"].map((type) => (
+                        {["tranDate", "entryDate"].map((type) => (
                             <label key={type} className="flex items-center cursor-pointer gap-1">
                                 <input
                                     type="radio"

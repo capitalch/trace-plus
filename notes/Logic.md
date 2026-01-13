@@ -3,6 +3,7 @@
     - commented line 33 in initState()
     - created a new check button in appBar
     - accId: 439 for adv ag supply
+    - remove _openFixedAccount
 - general_ledger_provider
     - remove selectFixedAccount method: line 217
 ## Logic for secured controls

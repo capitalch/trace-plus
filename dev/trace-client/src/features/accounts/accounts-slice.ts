@@ -5,7 +5,7 @@ import { BrandType, CategoryType, TagType } from "./inventory/shared-definitions
 const initialState: AccountsInitialStateType = {
   accSettingsChanged: 0,
   allTransactionsFilter: {
-    dateType: "transactionDate",
+    dateType: "tranDate",
     endDate: "",
     startDate: "",
     selectedQuickDate: "fiscalYear",
@@ -242,7 +242,7 @@ export type AccountsInitialStateType = {
 
 export type AllTransactionsFilterType = {
   transactionType: string;
-  dateType: "transactionDate" | "entryDate";
+  dateType: "tranDate" | "entryDate";
   startDate: string;
   endDate: string;
   selectedQuickDate: string;

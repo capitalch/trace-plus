@@ -188,7 +188,7 @@ class GeneralLedgerProvider extends ChangeNotifier {
         finYearStartDate,
       );
       if (ledgerData == null) {
-        print('ERROR: Invalid response format from server');
+        // print('ERROR: Invalid response format from server');
         throw Exception('Invalid response format from server');
       }
 
@@ -198,12 +198,12 @@ class GeneralLedgerProvider extends ChangeNotifier {
       // Calculate summary
       _summary = _calculateSummary(_transactionsList);
 
-      print('DEBUG: Ledger data successfully loaded. Transactions: ${_transactionsList.length}');
+      // print('DEBUG: Ledger data successfully loaded. Transactions: ${_transactionsList.length}');
 
       _errorMessage = null;
-    } catch (e, stackTrace) {
-      print('ERROR: Ledger fetch failed: $e');
-      print('ERROR: Stack trace: $stackTrace');
+    } catch (e) {
+      // print('ERROR: Ledger fetch failed: $e');
+      // print('ERROR: Stack trace: $stackTrace');
       _errorMessage = e.toString().replaceAll('Exception: ', '');
       _ledgerResponse = null;
       _transactionsList = [];
@@ -211,7 +211,7 @@ class GeneralLedgerProvider extends ChangeNotifier {
     } finally {
       // Always reset loading state
       _isLoadingTransactions = false;
-      print('DEBUG: Loading state set to false');
+      // print('DEBUG: Loading state set to false');
       notifyListeners();
     }
   }
@@ -267,6 +267,19 @@ class GeneralLedgerProvider extends ChangeNotifier {
     _transactionsList = [];
     _ledgerResponse = null;
     _summary = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  /// Clear all data including accounts list
+  void clearAllData() {
+    _accountsList = [];
+    _selectedAccountId = null;
+    _selectedAccountName = null;
+    _transactionsList = [];
+    _ledgerResponse = null;
+    _summary = null;
+    _searchQuery = '';
     _errorMessage = null;
     notifyListeners();
   }

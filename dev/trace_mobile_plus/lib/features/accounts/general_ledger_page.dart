@@ -19,22 +19,18 @@ class GeneralLedgerPage extends StatefulWidget {
 
 class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
   bool _isModalShown = false;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
+  GeneralLedgerProvider? _provider;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    // Store provider reference for use in dispose
+    _provider = Provider.of<GeneralLedgerProvider>(context, listen: false);
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!_isModalShown && mounted) {
-        final provider = Provider.of<GeneralLedgerProvider>(
-          context,
-          listen: false,
-        );
-        provider.clearSelection();
+        _provider?.clearSelection();
         _isModalShown = true;
 
         if (mounted) {
@@ -42,6 +38,13 @@ class _GeneralLedgerPageState extends State<GeneralLedgerPage> {
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // Use stored provider reference instead of context
+    _provider?.clearAllData();
+    super.dispose();
   }
 
   Future<void> _openAccountSelectionModal() async {

@@ -3,7 +3,12 @@ import 'package:provider/provider.dart';
 import '../../providers/global_provider.dart';
 
 class DashboardSecondaryAppBarWidget extends StatelessWidget {
-  const DashboardSecondaryAppBarWidget({super.key});
+  final VoidCallback? onUnitNameTap;
+
+  const DashboardSecondaryAppBarWidget({
+    super.key,
+    this.onUnitNameTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,17 +39,37 @@ class DashboardSecondaryAppBarWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Left: Unit Name
+              // Left: Unit Name (clickable)
               Flexible(
                 flex: 2,
-                child: Text(
-                  unitName,
-                  style: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                child: InkWell(
+                  onTap: onUnitNameTap,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.grey[300]!, width: 1),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            unitName,
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 18),
+                      ],
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
 

@@ -286,7 +286,7 @@ export function ReportAllTransactions() {
         const startDate:string = state.accounts.allTransactionsFilter.startDate //|| currentFinYear.startDate;
         const endDate:string = state.accounts.allTransactionsFilter.endDate //|| currentFinYear.endDate;
         const tranTypeId: number | null = state.accounts.allTransactionsFilter.transactionType ? transactionTypes[state.accounts.allTransactionsFilter.transactionType]?.value : null;
-        const dateType: string = state.accounts.allTransactionsFilter.dateType //|| 'entryDate'; // entryDate or transactionDate
+        const dateType: string = state.accounts.allTransactionsFilter.dateType //|| 'entryDate'; // entryDate or tranDate
         dispatch(showCompAppLoader({
             isVisible: true,
             instance: CompInstances.compAppLoader

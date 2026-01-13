@@ -418,7 +418,9 @@ class _DashboardPageState extends State<DashboardPage> {
       body: Column(
         children: [
           // Secondary AppBar
-          const DashboardSecondaryAppBarWidget(),
+          DashboardSecondaryAppBarWidget(
+            onUnitNameTap: () => _showBusinessUnitSelector(context),
+          ),
           // Main content
           DashboardContentWidget(username: username),
         ],

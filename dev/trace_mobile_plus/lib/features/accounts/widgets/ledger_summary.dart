@@ -3,7 +3,6 @@ import 'package:trace_mobile_plus/models/ledger_summary_model.dart';
 
 class LedgerSummary extends StatelessWidget {
   final LedgerSummaryModel summary;
-
   const LedgerSummary({super.key, required this.summary});
 
   String _formatAmount(double amount) {
@@ -41,6 +40,7 @@ class LedgerSummary extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: alignment,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
@@ -51,12 +51,20 @@ class LedgerSummary extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          amountText,
-          style: TextStyle(
-            fontSize: isLarge ? 14 : 12,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: forceColor ?? _getAmountColor(amount),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: alignment == CrossAxisAlignment.end
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: Text(
+            amountText,
+            style: TextStyle(
+              fontSize: isLarge ? 14 : 12,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+              color: forceColor ?? _getAmountColor(amount),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.visible,
           ),
         ),
       ],
@@ -81,23 +89,24 @@ class LedgerSummary extends StatelessWidget {
 
             // Grid of 3 items
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(
+                Flexible(
+                  fit: FlexFit.loose,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(
+                      Flexible(
                         child: _buildSummaryItem(
-                          label: 'Total Debits',
+                          label: 'Tot Debits',
                           amount: summary.debit,
                           forceColor: Colors.blue[700],
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Expanded(
+                      Flexible(
                         child: _buildSummaryItem(
-                          label: 'Total Credits',
+                          label: 'Tot Credits',
                           amount: summary.credit,
                           forceColor: Colors.amber[700],
                         ),
@@ -105,6 +114,7 @@ class LedgerSummary extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(width: 16),
                 Expanded(
                   child: _buildSummaryItem(
                     label: 'Closing Balance',
