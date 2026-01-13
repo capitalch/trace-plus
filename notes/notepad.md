@@ -656,3 +656,334 @@ cte7 AS (
 SELECT * FROM cte7;
 -- WHERE "branchTransferDebits" <> 0 OR "branchTransferCredits" <> 0
     '''
+
+# Business health report
+-- ============================================================================
+-- STOCK REGISTER & TRIAL BALANCE REPORT
+-- ============================================================================
+-- Purpose: Generates comprehensive stock movement report with opening/closing 
+--          balances, profit/loss, and trial balance for a specific branch 
+--          and financial year
+-- Parameters: branchId (int), finYearId (int)
+-- ============================================================================
+
+-- Input Parameters
+WITH "branchId" AS (VALUES (1)), 
+     "finYearId" AS (VALUES (2025)),
+-- Uncomment for parameterized execution:
+-- WITH "branchId" AS (VALUES (%(branchId)s::int)), 
+--      "finYearId" AS (VALUES (%(finYearId)s::int)),
+
+-- ============================================================================
+-- CTE 0: BASE TRANSACTION DATA
+-- ============================================================================
+-- Combines sales/purchase transactions with stock journal entries
+-- Includes: productId, tranTypeId, qty, price, tranDate, dc (debit/credit)
+-- ============================================================================
+cte0 AS (
+    -- Sales and Purchase Transactions
+    SELECT 
+        "productId", 
+        "tranTypeId", 
+        "qty", 
+        "price", 
+        "tranDate", 
+        '' AS "dc"
+    FROM "TranH" h
+    JOIN "TranD" d ON h."id" = d."tranHeaderId"
+    JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+    WHERE "branchId" = (TABLE "branchId") 
+      AND "finYearId" = (TABLE "finYearId")
+    
+    UNION ALL
+    
+    -- Stock Journal Entries (Adjustments)
+    SELECT 
+        "productId", 
+        "tranTypeId", 
+        "qty", 
+        0 AS "price", 
+        "tranDate", 
+        "dc"
+    FROM "TranH" h
+    JOIN "StockJournal" s ON h."id" = s."tranHeaderId"
+    WHERE "branchId" = (TABLE "branchId") 
+      AND "finYearId" = (TABLE "finYearId")
+),
+
+-- ============================================================================
+-- CTE 1: OPENING BALANCE
+-- ============================================================================
+-- Retrieves product opening balances for the financial year
+-- ============================================================================
+cte1 AS (
+    SELECT 
+        id, 
+        "productId", 
+        "qty", 
+        "openingPrice", 
+        "lastPurchaseDate"
+    FROM "ProductOpBal" p
+    WHERE "branchId" = (TABLE "branchId") 
+      AND "finYearId" = (TABLE "finYearId")
+),
+
+-- ============================================================================
+-- CTE 2: TRANSACTION TYPE BREAKDOWN
+-- ============================================================================
+-- Pivots transaction types into separate columns
+-- Transaction Types:
+--   4  = Sale
+--   9  = Sale Return
+--   5  = Purchase
+--   10 = Purchase Return
+--   11 = Stock Journal (with D/C indicator)
+-- ============================================================================
+cte2 AS (
+    SELECT 
+        "productId",
+        "tranTypeId",
+        SUM(CASE WHEN "tranTypeId" = 4 THEN "qty" ELSE 0 END) AS "sale",
+        SUM(CASE WHEN "tranTypeId" = 9 THEN "qty" ELSE 0 END) AS "saleRet",
+        SUM(CASE WHEN "tranTypeId" = 5 THEN "qty" ELSE 0 END) AS "purchase",
+        SUM(CASE WHEN "tranTypeId" = 10 THEN "qty" ELSE 0 END) AS "purchaseRet",
+        SUM(CASE WHEN ("tranTypeId" = 11) AND ("dc" = 'D') THEN "qty" ELSE 0 END) AS "stockJournalDebits",
+        SUM(CASE WHEN ("tranTypeId" = 11) AND ("dc" = 'C') THEN "qty" ELSE 0 END) AS "stockJournalCredits",
+        MAX(CASE WHEN "tranTypeId" = 4 THEN "tranDate" END) AS "lastSaleDate",
+        MAX(CASE WHEN "tranTypeId" = 5 THEN "tranDate" END) AS "lastPurchaseDate"
+    FROM cte0
+    GROUP BY "productId", "tranTypeId" 
+    ORDER BY "productId", "tranTypeId"
+),
+
+-- ============================================================================
+-- CTE 3: AGGREGATE BY PRODUCT
+-- ============================================================================
+-- Consolidates all transaction types per product
+-- ============================================================================
+cte3 AS (
+    SELECT 
+        "productId",
+        COALESCE(SUM("sale"), 0) AS "sale",
+        COALESCE(SUM("purchase"), 0) AS "purchase",
+        COALESCE(SUM("saleRet"), 0) AS "saleRet",
+        COALESCE(SUM("purchaseRet"), 0) AS "purchaseRet",
+        COALESCE(SUM("stockJournalDebits"), 0) AS "stockJournalDebits",
+        COALESCE(SUM("stockJournalCredits"), 0) AS "stockJournalCredits",
+        MAX("lastSaleDate") AS "lastSaleDate",
+        MAX("lastPurchaseDate") AS "lastPurchaseDate"
+    FROM cte2
+    GROUP BY "productId"
+),
+
+-- ============================================================================
+-- CTE 4: COMBINE OPENING + TRANSACTIONS
+-- ============================================================================
+-- Full outer join to include products with only opening balance or only 
+-- transactions
+-- ============================================================================
+cte4 AS (
+    SELECT 
+        COALESCE(c1."productId", c3."productId") AS "productId",
+        COALESCE(c1.qty, 0) AS "op",
+        COALESCE("sale", 0) AS "sale",
+        COALESCE("purchase", 0) AS "purchase",
+        COALESCE("saleRet", 0) AS "saleRet",
+        COALESCE("purchaseRet", 0) AS "purchaseRet",
+        COALESCE("stockJournalDebits", 0) AS "stockJournalDebits",
+        COALESCE("stockJournalCredits", 0) AS "stockJournalCredits",
+        COALESCE(c3."lastPurchaseDate", c1."lastPurchaseDate") AS "lastPurchaseDate",
+        "openingPrice", 
+        "lastSaleDate"
+    FROM cte1 c1
+    FULL JOIN cte3 c3 ON c1."productId" = c3."productId"
+),
+
+-- ============================================================================
+-- CTE 5: LAST PURCHASE PRICE
+-- ============================================================================
+-- Gets the most recent purchase price for each product
+-- Uses DISTINCT ON for latest transaction per product
+-- ============================================================================
+cte5 AS (
+    SELECT DISTINCT ON("productId") 
+        "productId", 
+        "price" AS "lastPurchasePrice"
+    FROM cte0
+    WHERE "tranTypeId" = 5
+    ORDER BY "productId", "tranDate" DESC
+),
+
+-- ============================================================================
+-- CTE 6: CLOSING STOCK CALCULATION
+-- ============================================================================
+-- Formula: Closing = Opening + Purchase - PurchaseRet - Sale + SaleRet 
+--                    + StockJournalDebits - StockJournalCredits
+-- Uses last purchase price or opening price for valuation
+-- ============================================================================
+cte6 AS (
+    SELECT 
+        COALESCE(c4."productId", c5."productId") AS "productId",
+        COALESCE("lastPurchasePrice", "openingPrice") AS "lastPurchasePrice",
+        "lastPurchaseDate",
+        ("op" + "purchase" - "purchaseRet" - "sale" + "saleRet" + 
+         "stockJournalDebits" - "stockJournalCredits") AS "clos",
+        "sale", 
+        "op", 
+        "openingPrice"
+    FROM cte4 c4
+    FULL JOIN cte5 c5 ON c4."productId" = c5."productId"
+),
+
+-- ============================================================================
+-- CTE 7: STOCK VALUATION
+-- ============================================================================
+-- Calculates opening and closing stock values (with and without GST)
+-- ============================================================================
+cte7 AS (
+    SELECT 
+        ROUND(SUM("op" * "openingPrice"), 0) AS "openingValue",
+        ROUND(SUM("op" * "openingPrice" * (1 + "gstRate" / 100)), 0) AS "openingValueWithGst",
+        ROUND(SUM("clos" * "lastPurchasePrice"), 0) AS "closingValue",
+        ROUND(SUM("clos" * "lastPurchasePrice" * (1 + "gstRate" / 100)), 0) AS "closingValueWithGst"
+    FROM cte6 c6 
+    JOIN "ProductM" p ON p."id" = c6."productId"
+),
+
+-- ============================================================================
+-- CTE 8: PROFIT/LOSS FROM BALANCE SHEET
+-- ============================================================================
+-- Calculates profit/loss from Asset and Liability accounts only
+-- ============================================================================
+cte8 AS (
+    SELECT 
+        ROUND(SUM(CASE WHEN "dc" = 'D' THEN t."amount" ELSE -t."amount" END), 0) AS "profitLoss"
+    FROM "AccM" a
+    JOIN "TranD" t ON a."id" = t."accId"
+    JOIN "TranH" h ON h."id" = t."tranHeaderId"
+    WHERE "branchId" = (TABLE "branchId") 
+      AND "finYearId" = (TABLE "finYearId")
+      AND "accType" IN ('A', 'L')
+),
+
+-- ============================================================================
+-- CTE 9: STOCK VALUE DIFFERENCE
+-- ============================================================================
+-- Calculates the difference between closing and opening stock values
+-- ============================================================================
+cte9 AS (
+    SELECT 
+        ROUND(("closingValue" - "openingValue"), 0) AS "diff",
+        ROUND(("closingValueWithGst" - "openingValueWithGst"), 0) AS "diffGst"
+    FROM cte7
+),
+
+-- ============================================================================
+-- CTE 10: TRIAL BALANCE
+-- ============================================================================
+-- Generates hierarchical trial balance using recursive CTE
+-- Includes opening balances and transaction movements
+-- ============================================================================
+cte10 AS (
+    WITH RECURSIVE cte AS (
+        -- Base case: start with leaf accounts
+        SELECT * FROM cte1
+        
+        UNION ALL
+        
+        -- Recursive case: traverse up the account hierarchy
+        SELECT 
+            a."id", 
+            a."accName", 
+            a."accType", 
+            a."parentId", 
+            a."accLeaf", 
+            a."isPrimary",
+            c."opening",
+            c."sign",
+            c."opening_dc",
+            c."debit", 
+            c."credit"
+        FROM cte c
+        JOIN "AccM" a ON c."parentId" = a."id"
+    ),
+    -- Anchor: Get all transactions for the period
+    cte1 AS (
+        -- Transaction movements
+        SELECT 
+            a."id", 
+            "accName", 
+            "accType", 
+            "parentId", 
+            "accLeaf", 
+            a."isPrimary",
+            0.00 AS "opening",
+            1 AS "sign",
+            '' AS "opening_dc",
+            CASE WHEN t."dc" = 'D' THEN t."amount" ELSE 0.00 END AS "debit",
+            CASE WHEN t."dc" = 'C' THEN t."amount" ELSE 0.00 END AS "credit"
+        FROM "AccM" a
+        JOIN "TranD" t ON t."accId" = a."id"
+        JOIN "TranH" h ON h."id" = t."tranHeaderId"
+        WHERE "branchId" = (TABLE "branchId") 
+          AND "finYearId" = (TABLE "finYearId")
+        
+        UNION ALL
+        
+        -- Opening balances
+        SELECT 
+            a."id", 
+            "accName", 
+            "accType", 
+            "parentId", 
+            "accLeaf", 
+            a."isPrimary",
+            "amount" AS "opening",
+            CASE WHEN "dc" = 'D' THEN 1 ELSE -1 END AS "sign",
+            "dc" AS "opening_dc",
+            0 AS "debit",
+            0 AS "credit"
+        FROM "AccM" a
+        JOIN "AccOpBal" b ON a."id" = b."accId"
+        WHERE "branchId" = (TABLE "branchId") 
+          AND "finYearId" = (TABLE "finYearId")
+        ORDER BY "accType", "accName"
+    ),
+    -- Aggregate all movements by account
+    cte2 AS (
+        SELECT 
+            "id", 
+            "accName", 
+            "accType", 
+            "parentId", 
+            "accLeaf", 
+            "isPrimary",
+            SUM("opening" * "sign") AS "opening",
+            SUM("debit") AS "debit",
+            SUM("credit") AS "credit"
+        FROM cte
+        GROUP BY "id", "accName", "accType", "parentId", "accLeaf", "isPrimary"
+        ORDER BY "accType", "accName"
+    )
+    -- Calculate closing balances for primary accounts only
+    SELECT 
+        "id", 
+        "parentId",
+        "accName",
+        ROUND(("opening" + "debit" - "credit"), 0) AS "closing"
+    FROM cte2 a
+    WHERE "isPrimary"
+    ORDER BY id
+)
+
+-- ============================================================================
+-- FINAL OUTPUT: JSON RESULT
+-- ============================================================================
+-- Combines all report components into a single JSON object
+-- ============================================================================
+SELECT json_build_object(
+    'stockDiff', (SELECT row_to_json(a) FROM cte9 a),
+    'profitLoss', (SELECT "profitLoss" FROM cte8 b),
+    'openingClosingStock', (SELECT row_to_json(c) FROM cte7 c),
+    'trialBalance', (SELECT json_agg(row_to_json(d)) FROM cte10 d)
+) AS "jsonResult";
