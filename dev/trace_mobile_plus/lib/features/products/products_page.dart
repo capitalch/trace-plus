@@ -1107,7 +1107,7 @@ class _ProductsPageState extends State<ProductsPage> {
       maxLines: 4,
       overflow: TextOverflow.ellipsis,
       text: TextSpan(
-        style: TextStyle(fontSize: 13, color: Colors.black, height: 1.4),
+        style: TextStyle(fontSize: 12, color: Colors.grey[800], height: 1.3),
         children: [
           // Basic Price in bold
           const TextSpan(
@@ -1116,7 +1116,7 @@ class _ProductsPageState extends State<ProductsPage> {
           ),
           TextSpan(
             text: '₹${priceFormat.format(product.lastPurchasePrice)}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black),
           ),
 
           // Add info if available

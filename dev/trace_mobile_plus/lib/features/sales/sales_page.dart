@@ -778,43 +778,46 @@ class SalesPage extends StatelessWidget {
               ],
             ),
 
-            // Line Remarks (if available)
-            if (sale.lineRemarks != null &&
-                sale.lineRemarks!.isNotEmpty &&
-                sale.lineRemarks!.toLowerCase() != 'null') ...[
-              const SizedBox(height: 10),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.note_outlined, size: 17, color: Colors.amber[700]),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      sale.lineRemarks!
-                          .replaceAll(
-                            RegExp(r'\bnull\b', caseSensitive: false),
-                            '',
-                          )
-                          .replaceAll(
-                            RegExp(r',\s*,+'),
-                            ',',
-                          ) // Remove multiple commas
-                          .replaceAll(
-                            RegExp(r'^,+|,+$'),
-                            '',
-                          ) // Remove leading/trailing commas
-                          .trim(),
+            // Line Remarks with Basic Price at beginning
+            const SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.note_outlined, size: 17, color: Colors.amber[700]),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: RichText(
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey[800],
                         height: 1.4,
                       ),
+                      children: [
+                        // Basic Price in bold
+                        const TextSpan(
+                          text: 'Basic Price: ',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                          text: '₹${currencyFormatter.format(sale.lastPurchasePrice)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+                        ),
+                        // Add remarks if available
+                        if (sale.lineRemarks != null &&
+                            sale.lineRemarks!.isNotEmpty &&
+                            sale.lineRemarks!.toLowerCase() != 'null')
+                          TextSpan(
+                            text: ' • ${sale.lineRemarks!.replaceAll(RegExp(r'\bnull\b', caseSensitive: false), '').replaceAll(RegExp(r',\s*,+'), ',').replaceAll(RegExp(r'^,+|,+$'), '').trim()}',
+                          ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
 
             // Sales Details at bottom
             const SizedBox(height: 4),
