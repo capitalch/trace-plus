@@ -1101,28 +1101,37 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   Widget _buildLine3(ProductsModel product) {
-    // Build concatenated string with info, HSN, and GST rate
-    final parts = <String>[];
+    final NumberFormat priceFormat = NumberFormat('#,##0.00');
 
-    if (product.info.isNotEmpty) {
-      parts.add(product.info);
-    }
-
-    if (product.hsn != 0) {
-      parts.add('HSN: ${product.hsn}');
-    }
-
-    if (product.gstRate > 0) {
-      parts.add('GST: ${product.gstRate.toStringAsFixed(1)}%');
-    }
-
-    final infoText = parts.join(' • ');
-
-    return Text(
-      infoText,
-      style: TextStyle(fontSize: 12, color: Colors.grey[800], height: 1.3),
-      maxLines: 2,
+    return RichText(
+      maxLines: 4,
       overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        style: TextStyle(fontSize: 13, color: Colors.black, height: 1.4),
+        children: [
+          // Basic Price in bold
+          const TextSpan(
+            text: 'Basic Price: ',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextSpan(
+            text: '₹${priceFormat.format(product.lastPurchasePrice)}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+
+          // Add info if available
+          if (product.info.isNotEmpty)
+            TextSpan(text: ' • ${product.info}'),
+
+          // Add HSN if available
+          if (product.hsn != 0)
+            TextSpan(text: ' • HSN: ${product.hsn}'),
+
+          // Add GST rate if available
+          if (product.gstRate > 0)
+            TextSpan(text: ' • GST: ${product.gstRate.toStringAsFixed(1)}%'),
+        ],
+      ),
     );
   }
 

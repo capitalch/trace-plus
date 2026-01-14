@@ -1,7 +1,16 @@
-- Gemini cli
-	- Gemini CLI commands: /memory, /stats, /tools, /mcp
-	- apikey: AIzaSyAQEPgbJyZnZPFnZmV0vLxEgdVSBwxvv2g
-- Git
+## flutter versionising
+- dart pub add --dev cider
+
+# Increment build number
+cider bump build
+dart run cider bump major //2.0.0+1
+dart run cider bump minor //1.1.0+1
+dart run cider bump patch //1.0.1+1
+dart run cider bump build //1.0.0+2
+
+
+
+# Git
 git branch              # List branches
 git checkout -b new     # Create/switch to branch
 git merge branchname    # Merge branch into current

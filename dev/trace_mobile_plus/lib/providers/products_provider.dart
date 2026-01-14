@@ -18,7 +18,7 @@ class ProductsProvider extends ChangeNotifier {
   String _debouncedSearchQuery = '';
   Timer? _debounceTimer;
   List<String> _searchHistory = [];
-  Set<int> _hiddenProductIds = {};
+  final Set<int> _hiddenProductIds = {};
   bool _showActiveOnly = true; // Show active products (clos/op/sale != 0) by default
   bool _showJakarOnly = false; // Show Jakar products (age > 360) by default off
   static const String _searchHistoryKey = 'products_search_history';

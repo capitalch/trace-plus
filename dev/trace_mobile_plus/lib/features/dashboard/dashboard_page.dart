@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:trace_mobile_plus/core/app_settings.dart';
 import '../../core/routes.dart';
 import '../../services/auth_service.dart';
@@ -22,10 +23,20 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  String _version = '';
+
   @override
   void initState() {
     super.initState();
+    _loadVersion();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadInitialData());
+  }
+
+  Future<void> _loadVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = 'v${packageInfo.version}';
+    });
   }
 
   Future<void> _loadInitialData() async {
@@ -377,6 +388,16 @@ class _DashboardPageState extends State<DashboardPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (_version.isNotEmpty)
+              Text(
+                _version,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: 9,
+                  height: 1.0,
+                ),
+              ),
+            if (_version.isNotEmpty) const SizedBox(height: 2),
             Consumer<GlobalProvider>(
               builder: (context, globalProvider, child) {
                 final selectedBU = globalProvider.selectedBusinessUnit;
