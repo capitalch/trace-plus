@@ -4382,7 +4382,7 @@ class SqlAccounts:
     """
 
     mobile_get_sales_report = """
-        -- WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2025)), "tagId" AS (VALUES (0)), "startDate" AS (VALUES ('2025-12-25'::DATE)), "endDate" AS (VALUES ('2025-12-25'::DATE)),
+       --WITH "branchId" AS (VALUES (1)), "finYearId" AS (VALUES (2025)), "tagId" AS (VALUES (0)), "startDate" AS (VALUES ('2026-01-14'::DATE)), "endDate" AS (VALUES ('2026-01-14'::DATE)),
         WITH "branchId" AS (VALUES (%(branchId)s::INT)),  "finYearId" AS (VALUES (%(finYearId)s::INT)), "tagId" AS (VALUES (%(tagId)s::INT)), "startDate" AS (VALUES (%(startDate)s::DATE)), "endDate" AS (VALUES (%(endDate)s::DATE)),
 
             -- Recursive category hierarchy filter (leaf nodes only)
@@ -4497,13 +4497,24 @@ class SqlAccounts:
                     (
                         SELECT DISTINCT ON ("productId") COALESCE(price, 0) AS price
                         FROM base_transactions
-                        WHERE "tranTypeId" IN (5, 11) 
+                        WHERE "tranTypeId" = 5 
                             AND "tranDate" <= bt."tranDate" 
                             AND "productId" = bt."productId" 
                             AND price <> 0 
                             AND price IS NOT NULL
                         ORDER BY "productId", "tranDate" DESC, "salePurchaseDetailsId" DESC
                     ) AS "lastPurchasePrice",
+					-- Last Journal Price
+					(
+                        SELECT DISTINCT ON ("productId") COALESCE(price, 0) AS price
+                        FROM base_transactions
+                        WHERE "tranTypeId" = 11
+                            AND "tranDate" <= bt."tranDate" 
+                            AND "productId" = bt."productId" 
+                            AND price <> 0 
+                            AND price IS NOT NULL
+                        ORDER BY "productId", "tranDate" DESC, "salePurchaseDetailsId" DESC
+                    ) AS "lastJournalPrice",
                     -- Last purchase date
                     (
                         SELECT DISTINCT ON ("productId") "tranDate"
@@ -4530,7 +4541,13 @@ class SqlAccounts:
                     s.contact,
                     s."commonRemarks",
                     s."lineRemarks",
-                    COALESCE(s."lastPurchasePrice", pob."openingPrice", 0) AS "lastPurchasePrice",
+					CASE
+			            WHEN COALESCE(s."lastPurchasePrice", 0) > 0 THEN s."lastPurchasePrice"
+			            WHEN COALESCE(pob."openingPrice", 0) > 0 THEN pob."openingPrice"
+			            WHEN COALESCE(s."lastJournalPrice", 0) > 0 THEN s."lastJournalPrice"
+			            ELSE s."price"
+			        END AS "lastPurchasePrice",
+                    -- COALESCE(s."lastPurchasePrice", pob."openingPrice", 0) AS "lastPurchasePrice",
                     COALESCE(s."lastPurchaseDate", pob."lastPurchaseDate") AS "lastPurchaseDate",
                     s.qty * s.price AS "aggrSale",
                     s.cgst, 
