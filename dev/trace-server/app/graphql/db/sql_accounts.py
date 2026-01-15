@@ -4542,9 +4542,9 @@ class SqlAccounts:
                     s."commonRemarks",
                     s."lineRemarks",
 					CASE
+                        WHEN COALESCE(s."lastJournalPrice", 0) > 0 THEN s."lastJournalPrice"
 			            WHEN COALESCE(s."lastPurchasePrice", 0) > 0 THEN s."lastPurchasePrice"
-			            WHEN COALESCE(pob."openingPrice", 0) > 0 THEN pob."openingPrice"
-			            WHEN COALESCE(s."lastJournalPrice", 0) > 0 THEN s."lastJournalPrice"
+			            WHEN COALESCE(pob."openingPrice", 0) > 0 THEN pob."openingPrice"			            
 			            ELSE s."price"
 			        END AS "lastPurchasePrice",
                     -- COALESCE(s."lastPurchasePrice", pob."openingPrice", 0) AS "lastPurchasePrice",

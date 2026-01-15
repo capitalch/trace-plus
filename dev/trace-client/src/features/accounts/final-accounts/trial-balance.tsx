@@ -25,7 +25,7 @@ export function TrialBalance() {
     if(treeGridData){
         // console.log(JSON.stringify(treeGridData))
         // console.log(treeGridData)
-        console.dir(treeGridData, { depth: null });
+        // console.dir(treeGridData, { depth: null });
     }
     const {
         branchId

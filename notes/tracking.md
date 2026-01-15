@@ -13,11 +13,15 @@
 
 																		- July 2025
 																			- sales / purchases		: 30-07-2025
-- Bug fixes etc.
-	- QA and release		: 30-08-2025
+																	- Bug fixes etc.
+																		- QA and release		: 30-08-2025
 
 
 ## History
+# 14-01-2026
+	- Started bug fix and upgrade in Trace+
+# 14-01-2026
+	- New Mobile App completed
 # 21-12-2025
 	- Working on mobile app
 # 07-12-2025
