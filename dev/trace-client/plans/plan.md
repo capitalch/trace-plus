@@ -1,47 +1,63 @@
-# Plan: Create and Switch to New Git Branch
+# Plan: Merge to Main Branch and Switch
 
 ## Objective
-Create a new git branch named `ncu-modify` and switch to it.
+Merge the `ncu-modify` branch into `main` and switch to `main`.
 
 ## Current State
-- Currently on branch: `main`
-- Working directory is clean (no uncommitted changes)
+- Current branch: `ncu-modify`
+- Uncommitted changes: `../../notes/notepad.md` (modified, not staged)
 
 ## Implementation Steps
 
-### Step 1: Create New Branch and Switch
-Execute the following git command:
+### Step 1: Handle Uncommitted Changes
+Either commit or stash the changes in `notepad.md` before proceeding:
 ```bash
-git checkout -b ncu-modify
+git stash
+```
+Or discard if not needed:
+```bash
+git restore ../../notes/notepad.md
 ```
 
-This single command will:
-1. Create a new branch named `ncu-modify` based on the current `main` branch
-2. Immediately switch to the newly created branch
-
-### Alternative Approach (Two Commands)
-If preferred, this can also be done in two separate steps:
+### Step 2: Switch to Main Branch
 ```bash
-git branch ncu-modify
-git checkout ncu-modify
+git checkout main
 ```
 
-### Step 2: Verify Branch Creation
-After switching, verify the branch was created and is active:
+### Step 3: Pull Latest Changes from Remote
 ```bash
-git branch
+git pull origin main
 ```
 
-Expected output will show `ncu-modify` with an asterisk (*) indicating it's the current branch.
+### Step 4: Merge ncu-modify into Main
+```bash
+git merge ncu-modify
+```
+
+### Step 5: Push Merged Changes to Remote
+```bash
+git push origin main
+```
+
+### Step 6: Clean Up (Optional)
+Delete the `ncu-modify` branch locally and remotely if no longer needed:
+```bash
+git branch -d ncu-modify
+git push origin --delete ncu-modify
+```
 
 ## Summary
 
-| Action | Command | Result |
-|--------|---------|--------|
-| Create and switch | `git checkout -b ncu-modify` | New branch created from main, now active |
-| Verify | `git branch` | Confirm ncu-modify is current branch |
+| Step | Command | Purpose |
+|------|---------|---------|
+| 1 | `git stash` | Save uncommitted changes |
+| 2 | `git checkout main` | Switch to main branch |
+| 3 | `git pull origin main` | Get latest remote changes |
+| 4 | `git merge ncu-modify` | Merge feature branch |
+| 5 | `git push origin main` | Push to remote |
+| 6 | `git branch -d ncu-modify` | Delete local branch |
 
 ## Notes
-- The branch will be created locally only
-- To push to remote later: `git push -u origin ncu-modify`
-- The branch is created from the current HEAD of `main` branch
+- Resolve any merge conflicts if they arise during step 4
+- If stashed changes are needed later: `git stash pop`
+- Step 6 is optional - keep the branch if you may need it again
