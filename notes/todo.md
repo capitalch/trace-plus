@@ -14,7 +14,7 @@ del \\?\C:\projects\trace-plus\dev\trace_mobile_plus\nul
 
 ## Phase 2
 # Bugs
-	- In general ledger report when bu is changed, still the old records remain
+														- In general ledger report when bu is changed, still the old records remain
 	- In general ledger if you drill down to debtor like Nav technology Pvt Ltd, the cust name is missing from sales data
 	- Check why age of en-el25 on22-08-2025 sale showing 5702
 	- Check how long the token is valid. After token becomes invalid, goto login page
