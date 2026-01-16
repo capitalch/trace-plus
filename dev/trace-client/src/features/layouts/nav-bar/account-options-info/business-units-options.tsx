@@ -53,13 +53,7 @@ export function BusinessUnitsOptions() {
         const userDetails: UserDetailsType = loginInfo.userDetails || {}
         const dbName: string = userDetails.dbName || ''
         const dbParamsObject = userDetails.decodedDbParamsObject
-        // const isExternalDb: boolean = userDetails.isExternalDb || false
-        // const dbParams: string | undefined = userDetails?.dbParams
-        // let dbParamsObject: any
-        // if (isExternalDb && dbParams) {
-        //     dbParamsObject = await Utils.decodeExtDbParams(dbParams)
-        //     dispatch(setDecodedDbParamsObject(dbParamsObject))
-        // }
+        
         // If there is no current business unit then show message and logout
         if (!loginInfo?.currentBusinessUnit?.buCode) {
             Utils.showFailureAlertMessage({ title: Messages.messFailure, message: Messages.messNoBusinessUnitsDefined })

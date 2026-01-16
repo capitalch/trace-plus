@@ -3,12 +3,11 @@
 
 # Increment build number
 cider bump build
+say: orig ver is 1.0.0+1
 dart run cider bump major //2.0.0+1
 dart run cider bump minor //1.1.0+1
 dart run cider bump patch //1.0.1+1
 dart run cider bump build //1.0.0+2
-
-
 
 # Git
 git branch              # List branches

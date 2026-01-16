@@ -278,10 +278,41 @@ class _ProductsPageState extends State<ProductsPage> {
             // Active products filter toggle
             Consumer<ProductsProvider>(
               builder: (context, provider, _) {
-                return InkWell(
-                  onTap: () {
-                    provider.toggleActiveOnlyFilter();
+                return PopupMenuButton<bool>(
+                  onSelected: (value) {
+                    if (value != provider.showActiveOnly) {
+                      provider.toggleActiveOnlyFilter();
+                    }
                   },
+                  offset: const Offset(0, 40),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: false,
+                      child: Row(
+                        children: [
+                          Icon(Icons.inventory_2,
+                              color: !provider.showActiveOnly
+                                  ? Colors.amber
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          const Text('All Products'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: true,
+                      child: Row(
+                        children: [
+                          Icon(Icons.filter_alt,
+                              color: provider.showActiveOnly
+                                  ? Colors.amber
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          const Text('Active Only'),
+                        ],
+                      ),
+                    ),
+                  ],
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Column(
@@ -314,28 +345,61 @@ class _ProductsPageState extends State<ProductsPage> {
             // Jakar products filter toggle (age > 360 days)
             Consumer<ProductsProvider>(
               builder: (context, provider, _) {
-                return InkWell(
-                  onTap: () {
-                    provider.toggleJakarFilter();
+                return PopupMenuButton<bool>(
+                  onSelected: (value) {
+                    if (value != provider.showJakarOnly) {
+                      provider.toggleJakarFilter();
+                    }
                   },
+                  offset: const Offset(0, 40),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: false,
+                      child: Row(
+                        children: [
+                          Icon(Icons.hourglass_empty,
+                              color: !provider.showJakarOnly
+                                  ? Colors.amber
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          const Text('All Products'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: true,
+                      child: Row(
+                        children: [
+                          Icon(Icons.hourglass_full,
+                              color: provider.showJakarOnly
+                                  ? Colors.amber
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          const Text('Jakar Only (>360d)'),
+                        ],
+                      ),
+                    ),
+                  ],
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.hourglass_empty,
+                          provider.showJakarOnly
+                              ? Icons.hourglass_full
+                              : Icons.hourglass_empty,
                           color: provider.showJakarOnly
-                              ? Colors.red
+                              ? Colors.amber
                               : Colors.white,
                           size: 24,
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Jakar',
+                          provider.showJakarOnly ? 'Jakar' : 'All',
                           style: TextStyle(
                             color: provider.showJakarOnly
-                                ? Colors.red
+                                ? Colors.amber
                                 : Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -622,7 +686,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                 left: 16,
                                 right: 16,
                                 top: 8,
-                                bottom: _isSummaryExpanded ? 80 : 60,
+                                bottom: _isSummaryExpanded ? 120 : 60,
                               ),
                               itemCount: filteredProducts.length,
                               itemBuilder: (context, index) {
@@ -1130,6 +1194,10 @@ class _ProductsPageState extends State<ProductsPage> {
           // Add GST rate if available
           if (product.gstRate > 0)
             TextSpan(text: ' • GST: ${product.gstRate.toStringAsFixed(1)}%'),
+
+          // Add product code if available
+          if (product.productCode.isNotEmpty)
+            TextSpan(text: ' • Pr Code: ${product.productCode}'),
         ],
       ),
     );

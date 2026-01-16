@@ -11,6 +11,7 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconRefresh } from "../../icons/icon-refresh";
 import { selectCompSwitchStateFn } from "../comp-slice";
 import { IconCross } from "../../icons/icon-cross";
+import { BusinessUnitType, currentBusinessUnitSelectorFn } from "../../../features/login/login-slice";
 
 export function AccountPickerTree({
     className,
@@ -21,6 +22,7 @@ export function AccountPickerTree({
     const dropDownTreeRef = useRef<DropDownTreeComponent | null>(null);
     const [accountOptions, setAccountOptions] = useState<AccountOptionType[]>([])
     const [accountBalance, setAccountBalance] = useState<number>(0);
+    
     const isAllBranches: boolean =
         useSelector(
             (state: RootStateType) => selectCompSwitchStateFn(state, instance),
@@ -44,9 +46,12 @@ export function AccountPickerTree({
         hasChildren: "hasChild",
     };
 
+    const currentBusinessUnitSelector: BusinessUnitType = useSelector(currentBusinessUnitSelectorFn, shallowEqual) || {}
+    
     useEffect(() => {
+        handleClear()
         loadAccountOptions()
-    }, [])
+    }, [currentBusinessUnitSelector])
 
     // Programmatically select account when Redux state changes (e.g., from navigation)
     useEffect(() => {

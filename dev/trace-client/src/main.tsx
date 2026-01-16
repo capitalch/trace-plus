@@ -9,7 +9,8 @@ import { getApolloClient } from './app/graphql/apollo-client.ts'
 
 const apolloClient = getApolloClient()
 // registerLicense('Ngo9BigBOggjHTQxAR8/V1JEaF5cXmRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXhfcnRcQ2JYUEZwWUBWYEk=') // v30.x.x
-registerLicense('Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXZednRdRGJYWUR+WUFWYEg=') // v31.x.x
+// registerLicense('Ngo9BigBOggjHTQxAR8/V1JFaF5cXGRCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXZednRdRGJYWUR+WUFWYEg=') // v31.x.x
+registerLicense('Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX5fdXVXQ2RfVk1/V0VWYEs=') // v32.x.x
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
   <Provider store={store}>

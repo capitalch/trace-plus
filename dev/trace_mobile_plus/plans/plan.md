@@ -1,243 +1,97 @@
-# Plan: Make Unit Name Clickable to Show Business Unit Selector
+# Plan: Add Product Code to Line 3 of Product Card
 
-## Problem Statement
-In the dashboard page, the business unit selector modal can be opened by clicking the business unit name in the AppBar. However, the unit name displayed in the secondary app bar is just a label and cannot be clicked. Users want to click the unit name to open the same business unit selector modal.
+## Current Behavior
+Line 3 (`_buildLine3`) displays:
+- Basic Price: ₹X,XXX.XX
+- Info (if available)
+- HSN (if available)
+- GST rate (if available)
 
-## Solution Approach
+## Required Change
+Add `Pr Code: {productCode}` to line 3.
 
-Pass the existing `_showBusinessUnitSelector` method from DashboardPage as a callback to DashboardSecondaryAppBarWidget. This avoids code duplication and reuses the existing logic.
+## Confirmed
+- `ProductsModel` has `productCode` field (String) - verified in `lib/models/products_model.dart:3`
 
-## Current State
+---
 
-### DashboardPage (`lib/features/dashboard/dashboard_page.dart`)
-- **Line 160-238**: `_showBusinessUnitSelector()` method shows modal to select business unit
-- **Line 383-405**: Business unit name in AppBar is clickable via InkWell
-- **Line 421**: DashboardSecondaryAppBarWidget is instantiated (no parameters passed)
+## Step 1: Add Product Code to _buildLine3
+**File:** `lib/features/products/products_page.dart`
+**Location:** Lines 1175-1197 (inside the `children` array of RichText)
 
-### DashboardSecondaryAppBarWidget (`lib/features/dashboard/dashboard_secondary_app_bar_widget.dart`)
-- **Line 5-6**: Constructor with no parameters
-- **Line 38-49**: Unit name is displayed as a simple Text widget (NOT clickable)
-- **Line 94-125**: Branch code IS clickable with InkWell (good example to follow)
+Add a new TextSpan for product code after the GST rate.
 
-## Implementation Plan
-
-### Step 1: Add Callback Parameter to DashboardSecondaryAppBarWidget
-
-**File**: `lib/features/dashboard/dashboard_secondary_app_bar_widget.dart`
-
-**Current constructor** (lines 5-6):
+**Current code (end of children array):**
 ```dart
-class DashboardSecondaryAppBarWidget extends StatelessWidget {
-  const DashboardSecondaryAppBarWidget({super.key});
-```
-
-**New constructor**:
-```dart
-class DashboardSecondaryAppBarWidget extends StatelessWidget {
-  final VoidCallback? onUnitNameTap;
-
-  const DashboardSecondaryAppBarWidget({
-    super.key,
-    this.onUnitNameTap,
-  });
-```
-
-**Purpose**: Add optional callback parameter that will be called when unit name is tapped
-
-**Lines to modify**: Lines 5-6
-
-### Step 2: Make Unit Name Clickable with InkWell
-
-**File**: `lib/features/dashboard/dashboard_secondary_app_bar_widget.dart`
-
-**Current implementation** (lines 38-49):
-```dart
-// Left: Unit Name
-Flexible(
-  flex: 2,
-  child: Text(
-    unitName,
-    style: const TextStyle(
-      color: Colors.black87,
-      fontSize: 13,
-      fontWeight: FontWeight.w500,
-    ),
-    overflow: TextOverflow.ellipsis,
+children: [
+  // Basic Price in bold
+  const TextSpan(
+    text: 'Basic Price: ',
+    style: TextStyle(fontWeight: FontWeight.bold),
   ),
-),
-```
-
-**New implementation**:
-```dart
-// Left: Unit Name (clickable)
-Flexible(
-  flex: 2,
-  child: InkWell(
-    onTap: onUnitNameTap,
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey[300]!, width: 1),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              unitName,
-              style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 4),
-          const Icon(Icons.arrow_drop_down, color: Colors.black87, size: 18),
-        ],
-      ),
-    ),
+  TextSpan(
+    text: '₹${priceFormat.format(product.lastPurchasePrice)}',
+    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black),
   ),
-),
+
+  // Add info if available
+  if (product.info.isNotEmpty)
+    TextSpan(text: ' • ${product.info}'),
+
+  // Add HSN if available
+  if (product.hsn != 0)
+    TextSpan(text: ' • HSN: ${product.hsn}'),
+
+  // Add GST rate if available
+  if (product.gstRate > 0)
+    TextSpan(text: ' • GST: ${product.gstRate.toStringAsFixed(1)}%'),
+],
 ```
 
-**Purpose**:
-- Wrap unit name with InkWell to make it clickable
-- Add visual styling to match branch code (grey background, border, dropdown icon)
-- Call the callback when tapped
-
-**Visual changes**:
-- Light grey background
-- Rounded border
-- Dropdown arrow icon to indicate clickability
-- Padding for better touch target
-
-**Lines to modify**: Lines 38-49
-
-### Step 3: Pass Callback from DashboardPage
-
-**File**: `lib/features/dashboard/dashboard_page.dart`
-
-**Current usage** (line 421):
+**New code:**
 ```dart
-const DashboardSecondaryAppBarWidget(),
+children: [
+  // Basic Price in bold
+  const TextSpan(
+    text: 'Basic Price: ',
+    style: TextStyle(fontWeight: FontWeight.bold),
+  ),
+  TextSpan(
+    text: '₹${priceFormat.format(product.lastPurchasePrice)}',
+    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black),
+  ),
+
+  // Add info if available
+  if (product.info.isNotEmpty)
+    TextSpan(text: ' • ${product.info}'),
+
+  // Add HSN if available
+  if (product.hsn != 0)
+    TextSpan(text: ' • HSN: ${product.hsn}'),
+
+  // Add GST rate if available
+  if (product.gstRate > 0)
+    TextSpan(text: ' • GST: ${product.gstRate.toStringAsFixed(1)}%'),
+
+  // Add product code if available
+  if (product.productCode.isNotEmpty)
+    TextSpan(text: ' • Pr Code: ${product.productCode}'),
+],
 ```
 
-**New usage**:
-```dart
-DashboardSecondaryAppBarWidget(
-  onUnitNameTap: () => _showBusinessUnitSelector(context),
-),
-```
+---
 
-**Purpose**: Pass the existing `_showBusinessUnitSelector` method as a callback
+## Summary
 
-**Lines to modify**: Line 421
-
-## Implementation Steps Summary
-
-1. ✅ **Step 1**: Add `onUnitNameTap` callback parameter to DashboardSecondaryAppBarWidget constructor
-2. ✅ **Step 2**: Wrap unit name with InkWell and add visual styling
-3. ✅ **Step 3**: Pass `_showBusinessUnitSelector` as callback from DashboardPage
+| Before | After |
+|--------|-------|
+| Basic Price • Info • HSN • GST | Basic Price • Info • HSN • GST • Pr Code |
 
 ## Files to Modify
+- `lib/features/products/products_page.dart` (line ~1196, inside `_buildLine3`)
 
-1. **lib/features/dashboard/dashboard_secondary_app_bar_widget.dart**
-   - Add callback parameter to constructor (lines 5-6)
-   - Make unit name clickable with InkWell (lines 38-49)
-
-2. **lib/features/dashboard/dashboard_page.dart**
-   - Pass callback when instantiating widget (line 421)
-
-## Visual Changes
-
-### Before:
-```
-[Unit Name]  |  [- FinYear +]  |  [Branch Code ▼]
-Plain text     Clickable          Clickable
-```
-
-### After:
-```
-[Unit Name ▼]  |  [- FinYear +]  |  [Branch Code ▼]
-Clickable         Clickable          Clickable
-```
-
-All three sections will have consistent visual styling with grey background, border, and dropdown indicators.
-
-## Testing Scenarios
-
-### Test 1: Click Unit Name in Secondary AppBar
-1. Open dashboard
-2. Click on the unit name in the secondary app bar
-3. **Expected**: Business unit selector modal opens
-4. Select a different business unit
-5. **Expected**: Unit name updates and modal closes
-
-### Test 2: Click Business Unit in Main AppBar
-1. Open dashboard
-2. Click business unit name in main AppBar
-3. **Expected**: Same modal opens as clicking secondary app bar unit name
-4. Both trigger the same `_showBusinessUnitSelector` method
-
-### Test 3: Visual Consistency
-1. Open dashboard
-2. **Expected**: Unit name has same visual style as branch code (grey background, border, dropdown icon)
-3. Tap on unit name
-4. **Expected**: Visual feedback (ripple effect)
-
-### Test 4: Existing Functionality Still Works
-1. Click branch code
-2. **Expected**: Branch selector opens as before
-3. Click +/- for financial year
-4. **Expected**: Financial year changes as before
-
-### Test 5: Long Unit Names
-1. Test with a very long unit name
-2. **Expected**: Text truncates with ellipsis
-3. Layout doesn't break
-4. Still clickable
-
-## Advantages
-
-✅ **No code duplication**: Reuses existing `_showBusinessUnitSelector` method
-✅ **Consistent behavior**: Both locations trigger the same modal logic
-✅ **Visual consistency**: Unit name styled like other clickable elements
-✅ **Clear affordance**: Dropdown icon indicates clickability
-✅ **Minimal changes**: Only 3 small modifications
-✅ **Clean separation**: Widget receives behavior from parent
-
-## Success Criteria
-
-✅ Unit name in secondary app bar is clickable
-✅ Clicking unit name opens business unit selector modal
-✅ Same modal/logic used as main AppBar business unit selector
-✅ Visual styling matches branch code styling
-✅ Dropdown icon indicates clickability
-✅ Existing functionality unchanged
-✅ Works with long unit names (ellipsis)
-✅ Touch feedback (ripple effect) on tap
-
-## Risk Assessment
-
-**Low Risk**:
-- Changes are isolated and simple
-- Reuses existing tested modal logic
-- No code duplication
-- No breaking changes
-- Easy to test
-
-## Implementation Status
-
-⏳ **Ready to implement**
-
-## Next Steps
-
-1. Implement Step 1: Add callback parameter to constructor
-2. Implement Step 2: Make unit name clickable with InkWell styling
-3. Implement Step 3: Pass callback from DashboardPage
-4. Test all scenarios
-5. Verify visual consistency
+## Testing
+1. Open Products page
+2. View a product card with a product code
+3. Line 3 should show: `Basic Price: ₹X,XXX.XX • Info • HSN: XXXX • GST: X.X% • Pr Code: ABC123`
+4. If product code is empty, it should not appear

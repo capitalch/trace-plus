@@ -35,8 +35,8 @@ export function GeneralLedger() {
     const toShowBalance: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxBalanceLedger), shallowEqual)
     const toShowReverse: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxReverseLedger), shallowEqual)
     const toShowSummaryRow: boolean = useSelector((state: RootStateType) => selectCompCheckBoxStateFn(state, CompInstances.compCheckBoxSummaryLedger), shallowEqual)
-    const selectedAccountPickerAccId = useSelector((state: RootStateType) => state.accountPickerTree[instance]?.id, shallowEqual)
-
+    const selectedAccountPickerAccId = useSelector((state: RootStateType) => state.accountPickerTree[instance]?.id, shallowEqual)    
+    
     const currentDateFormat = Utils.getCurrentDateFormat().replace("DD", "dd").replace("YYYY", "yyyy")
     const meta = useRef<{ accName: string, transactions: AccTranType[], transactionsCopy: AccTranType[], accClass: string }>({
         accName: '',
@@ -69,7 +69,7 @@ export function GeneralLedger() {
                 gridRef.current.dataSource = []
             }
         }
-    }, [selectedAccountPickerAccId, isAllBranches, currentFinYear?.finYearId, branchId, instance, context])
+    }, [selectedAccountPickerAccId, isAllBranches, currentFinYear?.finYearId, branchId, instance, context, ])
 
     // Handle navigation state - select account if accountId passed from trial-balance
     useEffect(() => {
