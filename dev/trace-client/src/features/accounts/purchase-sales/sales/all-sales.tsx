@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
-import { ContactsType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
+import { ContactsType, ExtBusinessContactsAccMType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
@@ -313,6 +313,27 @@ export function AllSales() {
 
     // === FORM POPULATION FUNCTIONS ===
 
+    function getAddressFromBusinessContacts(businessContacts: ExtBusinessContactsAccMType): string {
+        if (!businessContacts?.jAddress) return ''
+        const addresses = businessContacts.jAddress as any
+        if (Array.isArray(addresses) && addresses.length > 0) {
+            const addr = addresses[0]
+            return [addr.address1, addr.address2, addr.city, addr.state, addr.pin, addr.country]
+                .filter(Boolean).join(', ')
+        }
+        return ''
+    }
+
+    function getContactDisplayDataFromBusinessContacts(businessContacts: ExtBusinessContactsAccMType): ContactDisplayDataType {
+        return {
+            name: businessContacts.contactName || '',
+            mobile: businessContacts.mobileNumber || '',
+            email: businessContacts.email || '',
+            address: getAddressFromBusinessContacts(businessContacts),
+            gstin: businessContacts.gstin || ''
+        }
+    }
+
     async function populateFormOverId(id: any) {
         const salesEditData: SalePurchaseEditDataType | null = await getSalesEditDataOnId(id)
         if (!salesEditData) {
@@ -323,9 +344,24 @@ export function AllSales() {
         const tranH: TranHType = salesEditData.tranH
         const shippingInfo: ShippingInfoType | null = tranH?.jData?.shipTo ? tranH.jData.shipTo as any : null
         const billTo: ContactsType | null = salesEditData.billTo
+        const businessContacts: ExtBusinessContactsAccMType | null = salesEditData.businessContacts || null
         const tranD: TranDExtraType[] = salesEditData.tranD
         const extGsTranD: ExtGstTranDType = salesEditData.extGstTranD
         const salePurchaseDetails: SalePurchaseDetailsWithExtraType[] = salesEditData.salePurchaseDetails
+
+        // Get contactDisplayData from billTo or fallback to businessContacts
+        let contactDisplayData: ContactDisplayDataType | null = null
+        if (billTo) {
+            contactDisplayData = {
+                name: billTo.contactName || '',
+                mobile: billTo.mobileNumber || '',
+                email: billTo.email || '',
+                address: [billTo.address1, billTo.address2, billTo.city, billTo.state, billTo.pin, billTo.country].filter(Boolean).join(', '),
+                gstin: billTo.gstin || ''
+            }
+        } else if (businessContacts) {
+            contactDisplayData = getContactDisplayDataFromBusinessContacts(businessContacts)
+        }
 
         const totalInvoiceAmount = new Decimal(tranD.find((item) => item.dc === "C")?.amount || 0)
         const totalDebitAmount = tranD.filter((item) => item.dc === "D").reduce((sum, item) => sum.add(new Decimal(item.amount || 0)), new Decimal(0))
@@ -339,6 +375,9 @@ export function AllSales() {
             salesType = 'institution'
         }
 
+        // Get gstin from contactDisplayData (which may come from businessContacts)
+        const hasCustomerGstin = Boolean(contactDisplayData?.gstin)
+
         reset({
             id: tranH.id,
             autoRefNo: tranH.autoRefNo,
@@ -349,7 +388,8 @@ export function AllSales() {
             isGstInvoice: Boolean(extGsTranD?.id),
             creditAccId: tranD.find((item) => item.dc === "C")?.accId,
             debitAccounts: tranD.filter((item) => item.dc === "D"),
-            gstin: extGsTranD?.gstin,
+            gstin: extGsTranD?.gstin || contactDisplayData?.gstin || null,
+            hasCustomerGstin: hasCustomerGstin,
             isIgst: extGsTranD?.igst ? true : false,
 
             totalCgst: new Decimal(extGsTranD?.cgst),
@@ -380,9 +420,13 @@ export function AllSales() {
                 subTotal: ((item.price || 0) - (item.discount || 0)) * (item.qty || 0)
             })),
             contactsData: billTo,
+            contactDisplayData: contactDisplayData,
             shippingInfo: shippingInfo,
             salesType: salesType,
         })
+
+        // Clear saved form data to prevent the savedFormData effect from overwriting our values
+        dispatch(clearSalesFormData())
     }
 
     // === UTILITY FUNCTIONS ===

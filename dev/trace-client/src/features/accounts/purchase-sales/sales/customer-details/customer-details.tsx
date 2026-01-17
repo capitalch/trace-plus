@@ -47,6 +47,7 @@ const CustomerDetails: React.FC = () => {
     const contactsData = watch('contactsData');
     useEffect(() => {
         // Copies contactsData to contactDisplayData for display
+        // When contactsData is null (e.g., fallback to businessContacts), contactDisplayData is set directly in populateFormOverId
         if (contactsData) {
             const displayData = formatContactDisplay(contactsData);
             setValue('contactDisplayData', displayData, { shouldDirty: true });
@@ -219,7 +220,7 @@ const CustomerDetails: React.FC = () => {
                         <div className="text-gray-600">
                             <div className="line-clamp-2">
                                 <span className="font-medium">Address: </span>
-                                <span className="break-words">{watch('contactDisplayData.address')}</span>
+                                <span className="wrap-break-word">{watch('contactDisplayData.address')}</span>
                             </div>
                         </div>
                         <div className="pt-1 text-gray-600 text-xs border-t">
@@ -242,7 +243,7 @@ const CustomerDetails: React.FC = () => {
                             )}
                             title={isInstitutionMode ? "Cannot edit in Institution mode" : "New / Edit customer"}
                         >
-                            <Edit size={14} className="flex-shrink-0" />
+                            <Edit size={14} className="shrink-0" />
                             <span>New / Edit</span>
                         </button>
                         {/* Clear */}
@@ -258,7 +259,7 @@ const CustomerDetails: React.FC = () => {
                             )}
                             title={isInstitutionMode ? "Cannot clear in Institution mode" : "Clear customer"}
                         >
-                            <Trash2 size={14} className="flex-shrink-0" />
+                            <Trash2 size={14} className="shrink-0" />
                             <span>Clear</span>
                         </button>
                     </div>
@@ -326,7 +327,9 @@ const CustomerDetails: React.FC = () => {
 
     function validateContactsData(): string | undefined {
         const contactsData = getValues('contactsData');
-        if (!contactsData) {
+        const contactDisplayData = getValues('contactDisplayData');
+        // Valid if contactsData exists OR contactDisplayData has a name (from businessContacts fallback)
+        if (!contactsData && !contactDisplayData?.name) {
             return "Customer Details are required";
         }
         return;
