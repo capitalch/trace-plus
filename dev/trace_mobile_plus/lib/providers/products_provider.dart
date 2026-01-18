@@ -19,7 +19,7 @@ class ProductsProvider extends ChangeNotifier {
   Timer? _debounceTimer;
   List<String> _searchHistory = [];
   final Set<int> _hiddenProductIds = {};
-  bool _showActiveOnly = true; // Show active products (clos/op/sale != 0) by default
+  bool _showCurrentOnly = true; // Show current products (clos/op/sale != 0) by default
   bool _showJakarOnly = false; // Show Jakar products (age > 360) by default off
   static const String _searchHistoryKey = 'products_search_history';
   static const int _maxHistoryItems = 10;
@@ -32,7 +32,7 @@ class ProductsProvider extends ChangeNotifier {
   List<String> get searchHistory => _searchHistory;
   Set<int> get hiddenProductIds => _hiddenProductIds;
   int get hiddenProductsCount => _hiddenProductIds.length;
-  bool get showActiveOnly => _showActiveOnly;
+  bool get showCurrentOnly => _showCurrentOnly;
   bool get showJakarOnly => _showJakarOnly;
 
   /// Helper to normalize text for search (remove special chars, lowercase, trim)
@@ -70,8 +70,8 @@ class ProductsProvider extends ChangeNotifier {
       }
     }
 
-    // Apply active products filter
-    if (_showActiveOnly) {
+    // Apply current products filter
+    if (_showCurrentOnly) {
       filtered = filtered.where((product) {
         return product.clos != 0 || product.op != 0 || product.sale != 0;
       }).toList();
@@ -197,9 +197,9 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle active products filter
-  void toggleActiveOnlyFilter() {
-    _showActiveOnly = !_showActiveOnly;
+  /// Toggle current products filter
+  void toggleCurrentOnlyFilter() {
+    _showCurrentOnly = !_showCurrentOnly;
     notifyListeners();
   }
 
@@ -211,7 +211,7 @@ class ProductsProvider extends ChangeNotifier {
 
   /// Reset filters to default values
   void resetFilters() {
-    _showActiveOnly = true; // Default: show active products
+    _showCurrentOnly = true; // Default: show current products
     _showJakarOnly = false; // Default: Jakar filter off
     notifyListeners();
   }

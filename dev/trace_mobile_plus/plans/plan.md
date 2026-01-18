@@ -1,97 +1,58 @@
-# Plan: Add Product Code to Line 3 of Product Card
+# Plan: Convert 'active' to 'isCurrent' (Products Only)
 
-## Current Behavior
-Line 3 (`_buildLine3`) displays:
-- Basic Price: ₹X,XXX.XX
-- Info (if available)
-- HSN (if available)
-- GST rate (if available)
-
-## Required Change
-Add `Pr Code: {productCode}` to line 3.
-
-## Confirmed
-- `ProductsModel` has `productCode` field (String) - verified in `lib/models/products_model.dart:3`
+## Overview
+Convert all occurrences of 'active' terminology to 'isCurrent' in the products feature only.
 
 ---
 
-## Step 1: Add Product Code to _buildLine3
+## Step 1: Update Products Provider
+**File:** `lib/providers/products_provider.dart`
+
+| Line | Current | Change To |
+|------|---------|-----------|
+| 22 | `bool _showActiveOnly = true;` | `bool _showCurrentOnly = true;` |
+| 22 | Comment: "Show active products" | Comment: "Show current products" |
+| 35 | `bool get showActiveOnly => _showActiveOnly;` | `bool get showCurrentOnly => _showCurrentOnly;` |
+| 73 | Comment: "Apply active products filter" | Comment: "Apply current products filter" |
+| 74 | `if (_showActiveOnly)` | `if (_showCurrentOnly)` |
+| 200 | Comment: "Toggle active products filter" | Comment: "Toggle current products filter" |
+| 201 | `void toggleActiveOnlyFilter()` | `void toggleCurrentOnlyFilter()` |
+| 202 | `_showActiveOnly = !_showActiveOnly;` | `_showCurrentOnly = !_showCurrentOnly;` |
+| 214 | `_showActiveOnly = true;` | `_showCurrentOnly = true;` |
+| 214 | Comment: "Default: show active products" | Comment: "Default: show current products" |
+
+---
+
+## Step 2: Update Products Page UI
 **File:** `lib/features/products/products_page.dart`
-**Location:** Lines 1175-1197 (inside the `children` array of RichText)
 
-Add a new TextSpan for product code after the GST rate.
-
-**Current code (end of children array):**
-```dart
-children: [
-  // Basic Price in bold
-  const TextSpan(
-    text: 'Basic Price: ',
-    style: TextStyle(fontWeight: FontWeight.bold),
-  ),
-  TextSpan(
-    text: '₹${priceFormat.format(product.lastPurchasePrice)}',
-    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black),
-  ),
-
-  // Add info if available
-  if (product.info.isNotEmpty)
-    TextSpan(text: ' • ${product.info}'),
-
-  // Add HSN if available
-  if (product.hsn != 0)
-    TextSpan(text: ' • HSN: ${product.hsn}'),
-
-  // Add GST rate if available
-  if (product.gstRate > 0)
-    TextSpan(text: ' • GST: ${product.gstRate.toStringAsFixed(1)}%'),
-],
-```
-
-**New code:**
-```dart
-children: [
-  // Basic Price in bold
-  const TextSpan(
-    text: 'Basic Price: ',
-    style: TextStyle(fontWeight: FontWeight.bold),
-  ),
-  TextSpan(
-    text: '₹${priceFormat.format(product.lastPurchasePrice)}',
-    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5, color: Colors.black),
-  ),
-
-  // Add info if available
-  if (product.info.isNotEmpty)
-    TextSpan(text: ' • ${product.info}'),
-
-  // Add HSN if available
-  if (product.hsn != 0)
-    TextSpan(text: ' • HSN: ${product.hsn}'),
-
-  // Add GST rate if available
-  if (product.gstRate > 0)
-    TextSpan(text: ' • GST: ${product.gstRate.toStringAsFixed(1)}%'),
-
-  // Add product code if available
-  if (product.productCode.isNotEmpty)
-    TextSpan(text: ' • Pr Code: ${product.productCode}'),
-],
-```
+| Line | Current | Change To |
+|------|---------|-----------|
+| 278 | Comment: "Active products filter toggle" | Comment: "Current products filter toggle" |
+| 283 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
+| 284 | `provider.toggleActiveOnlyFilter()` | `provider.toggleCurrentOnlyFilter()` |
+| 294 | `!provider.showActiveOnly` | `!provider.showCurrentOnly` |
+| 307 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
+| 311 | `'Active Only'` | `'Current Only'` |
+| 323 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
+| 330 | `provider.showActiveOnly ? 'Active' : 'All'` | `provider.showCurrentOnly ? 'Current' : 'All'` |
+| 332 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
 
 ---
 
-## Summary
+## Files Summary
 
-| Before | After |
-|--------|-------|
-| Basic Price • Info • HSN • GST | Basic Price • Info • HSN • GST • Pr Code |
+| # | File | Changes |
+|---|------|---------|
+| 1 | `lib/providers/products_provider.dart` | 9 changes |
+| 2 | `lib/features/products/products_page.dart` | 9 changes |
 
-## Files to Modify
-- `lib/features/products/products_page.dart` (line ~1196, inside `_buildLine3`)
+**Total: 18 changes across 2 files**
+
+---
 
 ## Testing
+
 1. Open Products page
-2. View a product card with a product code
-3. Line 3 should show: `Basic Price: ₹X,XXX.XX • Info • HSN: XXXX • GST: X.X% • Pr Code: ABC123`
-4. If product code is empty, it should not appear
+2. Toggle the filter switch between "Current" and "All"
+3. Verify filtering works correctly (Current shows products with stock/activity, All shows everything)

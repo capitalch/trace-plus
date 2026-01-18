@@ -68,7 +68,6 @@ const SalesReturnHeaderSection: React.FC = () => {
         }
     }, [isGstInvoice, setValue, getValues, defaultGstRate]);
 
-    // const contactsData = watch('contactsData');
     useEffect(() => {
         // Copies contactsData to contactDisplayData for display
         const contactsData: ContactsType | null = getValues('contactsData');
@@ -85,7 +84,7 @@ const SalesReturnHeaderSection: React.FC = () => {
                 {/* Header Section */}
                 <div className="flex items-center justify-between mb-6 flex-wrap">
                     <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
+                        <div className="p-2 bg-green-100 rounded-lg shrink-0">
                             <FileText className="w-5 h-5 text-green-600" />
                         </div>
                         <h2 className="font-semibold text-gray-900 text-lg">Sales Return Details</h2>

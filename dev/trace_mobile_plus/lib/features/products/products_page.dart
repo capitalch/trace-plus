@@ -275,13 +275,13 @@ class _ProductsPageState extends State<ProductsPage> {
           titleSpacing: 0,
           backgroundColor: Colors.teal[500],
           actions: [
-            // Active products filter toggle
+            // Current products filter toggle
             Consumer<ProductsProvider>(
               builder: (context, provider, _) {
                 return PopupMenuButton<bool>(
                   onSelected: (value) {
-                    if (value != provider.showActiveOnly) {
-                      provider.toggleActiveOnlyFilter();
+                    if (value != provider.showCurrentOnly) {
+                      provider.toggleCurrentOnlyFilter();
                     }
                   },
                   offset: const Offset(0, 40),
@@ -291,7 +291,7 @@ class _ProductsPageState extends State<ProductsPage> {
                       child: Row(
                         children: [
                           Icon(Icons.inventory_2,
-                              color: !provider.showActiveOnly
+                              color: !provider.showCurrentOnly
                                   ? Colors.amber
                                   : Colors.grey),
                           const SizedBox(width: 8),
@@ -304,11 +304,11 @@ class _ProductsPageState extends State<ProductsPage> {
                       child: Row(
                         children: [
                           Icon(Icons.filter_alt,
-                              color: provider.showActiveOnly
+                              color: provider.showCurrentOnly
                                   ? Colors.amber
                                   : Colors.grey),
                           const SizedBox(width: 8),
-                          const Text('Active Only'),
+                          const Text('Current Only'),
                         ],
                       ),
                     ),
@@ -320,16 +320,16 @@ class _ProductsPageState extends State<ProductsPage> {
                       children: [
                         Icon(
                           Icons.filter_alt,
-                          color: provider.showActiveOnly
+                          color: provider.showCurrentOnly
                               ? Colors.amber
                               : Colors.white,
                           size: 24,
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          provider.showActiveOnly ? 'Active' : 'All',
+                          provider.showCurrentOnly ? 'Current' : 'All',
                           style: TextStyle(
-                            color: provider.showActiveOnly
+                            color: provider.showCurrentOnly
                                 ? Colors.amber
                                 : Colors.white,
                             fontSize: 10,

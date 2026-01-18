@@ -94,6 +94,21 @@ export function ProductMaster() {
             { field: 'catName', headerText: 'Cat', type: 'string', width: 80 },
             { field: 'brandName', headerText: 'Brand', type: 'string', width: 80 },
             { field: 'label', headerText: 'Label', type: 'string', width: 150 },
+            {
+                field: 'isActive',
+                headerText: 'Active',
+                type: 'boolean',
+                width: 80,
+                template: (props: any) => (
+                    <input
+                        type='checkbox'
+                        checked={props.isActive}
+                        aria-label="Toggle active status"
+                        className="cursor-pointer w-4 h-4 accent-blue-600"
+                        onChange={() => handleActiveStatusToggle(props.id, props.isActive, props.label)}
+                    />
+                )
+            },
             { field: 'hsn', headerText: 'HSN', type: 'string', width: 80 },
             { field: 'maxRetailPrice', headerText: 'MRP', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
             { field: 'salePrice', headerText: 'Sal Price', type: 'number', width: 110, format: 'N2', textAlign: 'Right' },
@@ -106,7 +121,6 @@ export function ProductMaster() {
             { field: 'info', headerText: 'Details', type: 'string', width: 250 },
             { field: 'id', headerText: 'ID', type: 'number', width: 80, format: 'N0', textAlign: 'Right', isPrimaryKey: true, },
             { field: 'upcCode', headerText: 'UPC', type: 'string', width: 90 },
-            { field: 'isActive', headerText: 'Active', type: 'boolean', width: 80, template: (props: any) => <input type='checkbox' checked={props.isActive} aria-label="isActive" readOnly /> }
         ]);
     }
 
@@ -141,5 +155,75 @@ export function ProductMaster() {
             title: 'Edit Product',
             width: '700px'
         }));
+    }
+
+    async function handleActiveStatusToggle(productId: number, currentIsActive: boolean, productLabel: string) {
+        if (currentIsActive) {
+            // Product is currently active, user wants to deactivate
+            // First check stock
+            const stockRes: any = await Utils.doGenericQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.getStockOnId,
+                sqlArgs: { productId: productId }
+            });
+
+            const stock = stockRes?.[0]?.qty || 0;
+
+            if (stock !== 0) {
+                // Stock exists, cannot deactivate
+                Utils.showAlertMessage(
+                    'Cannot Deactivate',
+                    `Product "${productLabel}" has stock of ${stock} considering all branches. Please clear stock before deactivating.`
+                );
+                return;
+            }
+
+            // Stock is 0, show confirmation to deactivate
+            Utils.showConfirmDialog(
+                'Deactivate Product',
+                `Are you sure you want to deactivate "${productLabel}"?`,
+                async () => {
+                    await updateActiveStatus(productId, false);
+                }
+            );
+        } else {
+            // Product is inactive, user wants to activate
+            Utils.showConfirmDialog(
+                'Activate Product',
+                `Are you sure you want to activate "${productLabel}"?`,
+                async () => {
+                    await updateActiveStatus(productId, true);
+                }
+            );
+        }
+    }
+
+    async function updateActiveStatus(productId: number, isActive: boolean) {
+        try {
+            await Utils.doGenericUpdateQuery({
+                buCode: buCode || '',
+                dbName: dbName || '',
+                dbParams: decodedDbParamsObject,
+                sqlId: SqlIdsMap.updateProductActiveStatus,
+                sqlArgs: {
+                    productId: productId,
+                    isActive: isActive
+                }
+            });
+
+            Utils.showSaveMessage();
+
+            // Refresh the grid
+            const loadData = context.CompSyncFusionGrid[instance].loadData;
+            if (loadData) await loadData();
+
+            // Clear product search cache
+            dispatch(clearCache());
+        } catch (e: any) {
+            console.error(e);
+            Utils.showErrorMessage(e);
+        }
     }
 }
