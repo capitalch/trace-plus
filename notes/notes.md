@@ -14,6 +14,25 @@ git branch              # List branches
 git checkout -b new     # Create/switch to branch
 git merge branchname    # Merge branch into current
 
+## merge
+# 1. Switch to main branch
+git checkout main
+
+# 2. Pull latest changes from remote
+git pull origin main
+
+# 3. Merge your feature branch into main
+git merge upgrade-syncfusion
+
+# 4. Push the merged changes to remote
+git push origin main
+
+# 5. Delete local branch
+git branch -d upgrade-syncfusion
+
+# 6. Delete remote branch
+git push origin --delete upgrade-syncfusion
+
 - Screen sizes
 sm: 640px and up
 md: 768px and up
