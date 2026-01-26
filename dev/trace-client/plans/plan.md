@@ -1,43 +1,58 @@
-# Plan: Fix useFormContext not returning custom methods (resetAll)
+# Plan: Why `extendedMethods` Stopped Working in Newer react-hook-form Versions
 
-## Root Cause Found
+## The Problem
 
-**Version Mismatch:**
-- `package.json` declares: `"react-hook-form": "^7.66.1"`
-- Actually installed: `7.71.1`
+The pattern of spreading custom methods into `FormProvider` works in **v7.66.0** but breaks in **v7.71.x+**:
 
-The `^` prefix allows npm to install newer minor versions. Even when you restored the old `package.json`, the `package-lock.json` still had the newer version cached.
-
-**Breaking Change:** `react-hook-form` version 7.71.x likely changed how `FormProvider` handles spread properties, no longer passing custom methods through the context.
+```tsx
+// This worked in v7.66.0, breaks in v7.71.x+
+const extendedMethods = { ...methods, resetAll, getVoucherDetailsOnId };
+<FormProvider {...extendedMethods}>
+```
 
 ---
 
-## Solution Options
+## Step 1: Why It Broke
 
-### Option A: Downgrade to exact working version (Quick Fix)
+**Root Cause:** React Hook Form v7.71.x introduced stricter TypeScript typing and internal changes to `FormProvider`.
 
-**Step 1:** Pin the exact version in `package.json`
+In newer versions, `FormProvider` likely does one of these:
+1. **Filters props** - Only passes known `UseFormReturn` properties to context
+2. **Uses explicit property list** - Destructures only standard form methods
+3. **TypeScript strict mode** - Rejects extra properties at compile time
+
+**Before (v7.66.0):**
+```tsx
+// FormProvider simply spread all props to context
+<FormProviderContext.Provider value={props}>
+```
+
+**After (v7.71.x):**
+```tsx
+// FormProvider only passes known form methods
+<FormProviderContext.Provider value={{
+    register, handleSubmit, watch, reset, // ... only standard methods
+}}>
+```
+
+This is technically a **breaking change** but the maintainers consider spreading custom methods an "undocumented hack" rather than supported behavior.
+
+---
+
+## Step 2: Workaround Options
+
+### Option A: Pin to v7.66.0 (Current Solution)
 ```json
 "react-hook-form": "7.66.0"
 ```
-(Remove the `^` to prevent auto-updates)
-
-**Step 2:** Clean install
-```bash
-rm -rf node_modules
-rm package-lock.json
-npm install
-```
-
-**Step 3:** Test if resetAll works again
+**Pros:** Quick, no code changes needed
+**Cons:** Miss security updates and new features
 
 ---
 
-### Option B: Create separate context for custom methods (Proper Fix)
+### Option B: Create Separate React Context (Recommended)
 
-This is the recommended long-term solution that won't break with future updates.
-
-**Step 1:** Create `src/features/accounts/vouchers/voucher-context.tsx`
+**Step 1:** Create `src/features/accounts/vouchers/voucher-extended-methods-context.tsx`
 
 ```tsx
 import { createContext, useContext, ReactNode } from 'react';
@@ -76,57 +91,87 @@ export function useVoucherExtendedMethods(): VoucherExtendedMethodsType {
 **Step 2:** Update `all-vouchers.tsx`
 
 ```tsx
-import { VoucherExtendedMethodsProvider } from '../voucher-context';
+import { VoucherExtendedMethodsProvider } from '../voucher-extended-methods-context';
 
-// In the return statement:
-return (
-    <VoucherExtendedMethodsProvider methods={{ resetAll, getVoucherDetailsOnId, populateFormFromId }}>
-        <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
-                <CompAccountsContainer className="relative">
-                    <AllVouchersContent instance={instance} />
-                </CompAccountsContainer>
-            </form>
-        </FormProvider>
-    </VoucherExtendedMethodsProvider>
-)
+// Change from:
+<FormProvider {...extendedMethods}>
+
+// To:
+<VoucherExtendedMethodsProvider methods={{ resetAll, getVoucherDetailsOnId, populateFormFromId }}>
+    <FormProvider {...methods}>
+        {/* children */}
+    </FormProvider>
+</VoucherExtendedMethodsProvider>
 ```
 
-**Step 3:** Update `voucher-status-bar.tsx`
+**Step 3:** Update child components
 
 ```tsx
-import { useVoucherExtendedMethods } from '../voucher-context';
-
-// Replace:
+// Change from:
 const { resetAll } = useFormContext() as any;
-const frm = useFormContext() as any;
 
-// With:
+// To:
+import { useVoucherExtendedMethods } from '../voucher-extended-methods-context';
 const { resetAll } = useVoucherExtendedMethods();
 ```
 
-**Step 4:** Update `form-action-buttons.tsx`
-
-```tsx
-import { useVoucherExtendedMethods } from '../voucher-context';
-
-// Replace:
-const { resetAll }: any = useFormContext();
-
-// With:
-const { resetAll } = useVoucherExtendedMethods();
-```
-
-**Step 5:** Update all other components using custom methods from useFormContext
-- Search for `resetAll.*useFormContext` pattern
-- Replace with `useVoucherExtendedMethods()` hook
+**Pros:** Future-proof, proper React pattern, full TypeScript support
+**Cons:** Requires code changes in multiple files
 
 ---
 
-## Recommended Approach
+### Option C: Wrap FormProvider with Custom Provider
 
-1. **Try Option A first** - Quick to test if downgrade fixes the issue
-2. **If confirmed working, implement Option B** - Future-proof solution
+Create a wrapper that combines both contexts:
+
+```tsx
+import { FormProvider, UseFormReturn } from 'react-hook-form';
+import { createContext, useContext, ReactNode } from 'react';
+
+type ExtendedMethods = {
+    resetAll: () => void;
+    getVoucherDetailsOnId: (id: number | undefined) => Promise<any>;
+    populateFormFromId: (id: number) => Promise<void>;
+};
+
+const ExtendedMethodsContext = createContext<ExtendedMethods | null>(null);
+
+export function ExtendedFormProvider({
+    children,
+    methods,
+    extendedMethods
+}: {
+    children: ReactNode;
+    methods: UseFormReturn<any>;
+    extendedMethods: ExtendedMethods;
+}) {
+    return (
+        <ExtendedMethodsContext.Provider value={extendedMethods}>
+            <FormProvider {...methods}>
+                {children}
+            </FormProvider>
+        </ExtendedMethodsContext.Provider>
+    );
+}
+
+export function useExtendedMethods() {
+    const ctx = useContext(ExtendedMethodsContext);
+    if (!ctx) throw new Error('Must be used within ExtendedFormProvider');
+    return ctx;
+}
+```
+
+---
+
+## Step 3: Recommended Approach
+
+| Option | Effort | Future-Proof | Recommendation |
+|--------|--------|--------------|----------------|
+| A: Pin version | Low | No | Short-term only |
+| B: Separate context | Medium | Yes | **Recommended** |
+| C: Wrapper provider | Medium | Yes | Also good |
+
+**Recommendation:** Use **Option B** for long-term maintainability. It's the proper React pattern and won't break with future updates.
 
 ---
 
@@ -134,16 +179,8 @@ const { resetAll } = useVoucherExtendedMethods();
 
 | File | Action |
 |------|--------|
-| `src/features/accounts/vouchers/voucher-context.tsx` | CREATE - New context file |
-| `src/features/accounts/vouchers/all-vouchers/all-vouchers.tsx` | UPDATE - Wrap with new provider |
-| `src/features/accounts/vouchers/voucher-controls/voucher-status-bar.tsx` | UPDATE - Use new hook |
-| `src/features/accounts/vouchers/voucher-controls/form-action-buttons.tsx` | UPDATE - Use new hook |
-
----
-
-## Testing
-
-- [ ] Click voucher type buttons (Payment/Receipt/Contra/Journal) - form should reset
-- [ ] Click Reset button - form should reset
-- [ ] No console errors
-- [ ] TypeScript compiles without errors
+| `src/features/accounts/vouchers/voucher-extended-methods-context.tsx` | CREATE |
+| `src/features/accounts/vouchers/all-vouchers/all-vouchers.tsx` | UPDATE |
+| `src/features/accounts/vouchers/voucher-controls/voucher-status-bar.tsx` | UPDATE |
+| `src/features/accounts/vouchers/voucher-controls/form-action-buttons.tsx` | UPDATE |
+| Any other file using `resetAll` from `useFormContext` | UPDATE |

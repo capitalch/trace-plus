@@ -24,10 +24,8 @@ import { useVoucherPermissions } from "../../../../utils/permissions/permissions
 
 export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) {
     const dispatch: AppDispatchType = useDispatch()
-    const { watch, setValue, /*context*/ } = useFormContext<VoucherFormDataType>() as any;
+    const { watch, setValue } = useFormContext<VoucherFormDataType>() as any;
     const { resetAll } = useFormContext() as any;
-    // const { resetAll } = context;
-    const frm = useFormContext() as any;
     const isPreviewOpen = useSelector((state: RootStateType) => state.vouchers.isPreviewOpen);
     const voucherIdToPreview = useSelector((state: RootStateType) => state.vouchers.voucherIdToPreview);
     const voucherType = watch("voucherType");
@@ -116,7 +114,7 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
 
     function handleVoucherTypeChange(newType: string) {
         // if (resetAll) {
-            resetAll();
+        resetAll();
         // }
         setValue('voucherType', newType as any);
     }

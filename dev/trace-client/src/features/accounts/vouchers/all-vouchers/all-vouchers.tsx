@@ -153,7 +153,6 @@ export function AllVouchers() {
 
     return (
         <FormProvider {...extendedMethods}>
-            {/* <FormProvider {...methods}> */}
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className="relative">
                     {/* ✅ Render child component inside FormProvider */}

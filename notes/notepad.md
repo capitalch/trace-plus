@@ -10,6 +10,17 @@
 "@syncfusion/ej2-react-splitbuttons": "^31.2.12",
 "@syncfusion/ej2-react-treegrid": "^31.2.12",
 
+# latest
+"@syncfusion/ej2-base": "^32.1.23",
+"@syncfusion/ej2-pdf-export": "^32.1.19",
+"@syncfusion/ej2-react-buttons": "^32.1.23",
+"@syncfusion/ej2-react-dropdowns": "^32.1.23",
+"@syncfusion/ej2-react-grids": "^32.1.23",
+"@syncfusion/ej2-react-inputs": "^32.1.22",
+"@syncfusion/ej2-react-popups": "^32.1.19",
+"@syncfusion/ej2-react-splitbuttons": "^32.1.22",
+"@syncfusion/ej2-react-treegrid": "^32.1.22",
+
 # ncu suggested
 @syncfusion/ej2-base                ^31.2.12  →  ^32.1.23
 @syncfusion/ej2-pdf-export          ^31.2.12  →  ^32.1.19
