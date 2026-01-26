@@ -104,7 +104,8 @@ export function AllVouchers() {
     const methods = useForm<VoucherFormDataType>({
         mode: "onTouched",
         criteriaMode: "all",
-        defaultValues: savedFormData ?? getDefaultVoucherFormValues()
+        defaultValues: savedFormData ?? getDefaultVoucherFormValues(),
+        // context: { resetAll: resetAll}
     });
 
     const { getValues, setValue, reset, watch } = methods;
@@ -152,6 +153,7 @@ export function AllVouchers() {
 
     return (
         <FormProvider {...extendedMethods}>
+            {/* <FormProvider {...methods}> */}
             <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
                 <CompAccountsContainer className="relative">
                     {/* ✅ Render child component inside FormProvider */}

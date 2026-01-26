@@ -3206,6 +3206,71 @@ class SqlAccounts:
 	) as "jsonResult" 
     """
 
+    get_stock_on_id = """
+            -- Stock quantity for specific product in current financial year
+            --WITH "productId" AS (VALUES (173)),
+               WITH "productId" AS (VALUES (%(productId)s::int)),
+                
+            "finYearId" AS (
+                SELECT 
+                    CASE 
+                        WHEN EXTRACT(MONTH FROM CURRENT_DATE) >= 4 
+                        THEN EXTRACT(YEAR FROM CURRENT_DATE)
+                        ELSE EXTRACT(YEAR FROM CURRENT_DATE) - 1
+                    END::INTEGER AS "year"
+            ),
+
+            stock AS (
+                -- Sales & Purchase transactions (4=Sale, 5=Purchase, 9=SaleRet, 10=PurchRet)
+                SELECT 
+                    s."productId",
+                    SUM(
+                        CASE 
+                            WHEN h."tranTypeId" IN (4, 10) THEN -s."qty"
+                            WHEN h."tranTypeId" IN (5, 9) THEN s."qty"
+                        END
+                    ) AS "qty"
+                FROM "TranH" h 
+                JOIN "TranD" d ON h."id" = d."tranHeaderId"
+                JOIN "SalePurchaseDetails" s ON d."id" = s."tranDetailsId"
+                WHERE h."tranTypeId" IN (4, 5, 9, 10) 
+                AND h."finYearId" = (TABLE "finYearId")
+                AND s."productId" = (TABLE "productId")
+                GROUP BY s."productId"
+                
+                UNION ALL
+                
+                -- Opening balance
+                SELECT 
+                    "productId", 
+                    "qty"
+                FROM "ProductOpBal" 
+                WHERE "finYearId" = (TABLE "finYearId")
+                AND "productId" = (TABLE "productId")
+                
+                UNION ALL
+                
+                -- Stock journal (11=StockJournal, D=increase, C=decrease)
+                SELECT 
+                    j."productId",
+                    SUM(
+                        CASE 
+                            WHEN j."dc" = 'D' THEN j."qty"
+                            ELSE -j."qty"
+                        END
+                    ) AS "qty"
+                FROM "TranH" h 
+                JOIN "StockJournal" j ON h."id" = j."tranHeaderId"
+                WHERE h."tranTypeId" = 11 
+                AND h."finYearId" = (TABLE "finYearId")
+                AND j."productId" = (TABLE "productId")
+                GROUP BY j."productId"
+            )
+
+            SELECT COALESCE(SUM("qty"), 0) AS "qty"
+            FROM stock;
+    """
+
     get_stock_journal_on_tran_header_id = """
         with "id" as (values(%(id)s::int)),
 	    --with "id" as (values(10834)),
@@ -3971,6 +4036,12 @@ class SqlAccounts:
                 and "accId" = %(accId)s
     """
 
+    update_product_active_status = """
+        update "ProductM"
+            set "isActive" = %(isActive)s
+                where "id" = %(productId)s
+    """
+
     def update_accounts_master(params):
         return sql.SQL(
             """
@@ -4074,7 +4145,6 @@ class SqlAccounts:
             WHERE NOT EXISTS (SELECT 1 FROM updated);
     """
 
-    # Assisted by AI
     def upsert_transfer_closing_balance(params):
         return sql.SQL(
             """

@@ -1,207 +1,149 @@
-# Plan: Toggle Product Active Status in Product Master Grid
+# Plan: Fix useFormContext not returning custom methods (resetAll)
 
-## Problem Statement
-Create a feature to toggle product active status directly from the product master grid checkbox, with the following business rules:
-- If product is active and stock is 0, allow deactivation with confirmation
-- If product is active and stock > 0, do NOT allow deactivation (show alert)
-- If product is inactive, allow activation with confirmation
+## Root Cause Found
+
+**Version Mismatch:**
+- `package.json` declares: `"react-hook-form": "^7.66.1"`
+- Actually installed: `7.71.1`
+
+The `^` prefix allows npm to install newer minor versions. Even when you restored the old `package.json`, the `package-lock.json` still had the newer version cached.
+
+**Breaking Change:** `react-hook-form` version 7.71.x likely changed how `FormProvider` handles spread properties, no longer passing custom methods through the context.
 
 ---
 
-## Current State Analysis
+## Solution Options
 
-### File: `src/features/accounts/inventory/product-master/product-master.tsx`
+### Option A: Downgrade to exact working version (Quick Fix)
 
-**Line 97 - Current Active Column:**
-```typescript
-{ field: 'isActive', headerText: 'Active', type: 'boolean', width: 80,
-  template: (props: any) => <input type='checkbox' checked={props.isActive} aria-label="isActive" readOnly /> }
+**Step 1:** Pin the exact version in `package.json`
+```json
+"react-hook-form": "7.66.0"
 ```
-The checkbox is currently `readOnly` and cannot be toggled.
+(Remove the `^` to prevent auto-updates)
 
-### Available SQL IDs (from `sql-ids-map.ts`):
-- `getStockOnId` (Line 105): Gets current stock for a productId
-- `updateProductActiveStatus` (Line 114): Updates active status with productId and isActive
+**Step 2:** Clean install
+```bash
+rm -rf node_modules
+rm package-lock.json
+npm install
+```
 
-### Utility Functions Available:
-- `Utils.showConfirmDialog(title, message, onConfirm)` - Shows confirmation dialog
-- `Utils.showAlertMessage(title, message)` - Shows alert message
-- `Utils.doGenericQuery({buCode, dbName, dbParams, sqlId, sqlArgs})` - Executes SQL query
+**Step 3:** Test if resetAll works again
 
 ---
 
-## Implementation Steps
+### Option B: Create separate context for custom methods (Proper Fix)
 
-### Step 1: Create the Active Status Toggle Handler
-**Location:** `src/features/accounts/inventory/product-master/product-master.tsx`
+This is the recommended long-term solution that won't break with future updates.
 
-Add a new async function `handleActiveStatusToggle`:
+**Step 1:** Create `src/features/accounts/vouchers/voucher-context.tsx`
 
-```typescript
-async function handleActiveStatusToggle(productId: number, currentIsActive: boolean, productLabel: string) {
-    if (currentIsActive) {
-        // Product is currently active, user wants to deactivate
-        // First check stock
-        const stockRes: any = await Utils.doGenericQuery({
-            buCode: buCode || '',
-            dbName: dbName || '',
-            dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.getStockOnId,
-            sqlArgs: { productId: productId }
-        });
+```tsx
+import { createContext, useContext, ReactNode } from 'react';
 
-        const stock = stockRes?.[0]?.stock || 0;
+export type VoucherExtendedMethodsType = {
+    resetAll: () => void;
+    getVoucherDetailsOnId: (id: number | undefined) => Promise<any>;
+    populateFormFromId: (id: number) => Promise<void>;
+};
 
-        if (stock > 0) {
-            // Stock exists, cannot deactivate
-            Utils.showAlertMessage(
-                'Cannot Deactivate',
-                `Product "${productLabel}" has stock of ${stock}. Please clear stock before deactivating.`
-            );
-            return;
-        }
+const VoucherExtendedMethodsContext = createContext<VoucherExtendedMethodsType | null>(null);
 
-        // Stock is 0, show confirmation to deactivate
-        Utils.showConfirmDialog(
-            'Deactivate Product',
-            `Are you sure you want to deactivate "${productLabel}"?`,
-            async () => {
-                await updateActiveStatus(productId, false);
-            }
-        );
-    } else {
-        // Product is inactive, user wants to activate
-        Utils.showConfirmDialog(
-            'Activate Product',
-            `Are you sure you want to activate "${productLabel}"?`,
-            async () => {
-                await updateActiveStatus(productId, true);
-            }
-        );
+export function VoucherExtendedMethodsProvider({
+    children,
+    methods
+}: {
+    children: ReactNode;
+    methods: VoucherExtendedMethodsType;
+}) {
+    return (
+        <VoucherExtendedMethodsContext.Provider value={methods}>
+            {children}
+        </VoucherExtendedMethodsContext.Provider>
+    );
+}
+
+export function useVoucherExtendedMethods(): VoucherExtendedMethodsType {
+    const context = useContext(VoucherExtendedMethodsContext);
+    if (!context) {
+        throw new Error('useVoucherExtendedMethods must be used within VoucherExtendedMethodsProvider');
     }
+    return context;
 }
 ```
 
-### Step 2: Create the Update Active Status Function
-**Location:** `src/features/accounts/inventory/product-master/product-master.tsx`
+**Step 2:** Update `all-vouchers.tsx`
 
-Add function to call the server update:
+```tsx
+import { VoucherExtendedMethodsProvider } from '../voucher-context';
 
-```typescript
-async function updateActiveStatus(productId: number, isActive: boolean) {
-    try {
-        await Utils.doGenericQuery({
-            buCode: buCode || '',
-            dbName: dbName || '',
-            dbParams: decodedDbParamsObject,
-            sqlId: SqlIdsMap.updateProductActiveStatus,
-            sqlArgs: {
-                productId: productId,
-                isActive: isActive
-            }
-        });
-
-        Utils.showSaveMessage();
-
-        // Refresh the grid
-        const loadData = context.CompSyncFusionGrid[instance].loadData;
-        if (loadData) await loadData();
-
-        // Clear product search cache
-        dispatch(clearCache());
-    } catch (e: any) {
-        console.error(e);
-        Utils.showErrorMessage(e);
-    }
-}
+// In the return statement:
+return (
+    <VoucherExtendedMethodsProvider methods={{ resetAll, getVoucherDetailsOnId, populateFormFromId }}>
+        <FormProvider {...methods}>
+            <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
+                <CompAccountsContainer className="relative">
+                    <AllVouchersContent instance={instance} />
+                </CompAccountsContainer>
+            </form>
+        </FormProvider>
+    </VoucherExtendedMethodsProvider>
+)
 ```
 
-### Step 3: Update the Active Column Template
-**Location:** `src/features/accounts/inventory/product-master/product-master.tsx` (Line 97)
+**Step 3:** Update `voucher-status-bar.tsx`
 
-Change the template from readOnly checkbox to clickable:
+```tsx
+import { useVoucherExtendedMethods } from '../voucher-context';
 
-```typescript
-{
-    field: 'isActive',
-    headerText: 'Active',
-    type: 'boolean',
-    width: 80,
-    template: (props: any) => (
-        <input
-            type='checkbox'
-            checked={props.isActive}
-            aria-label="Toggle active status"
-            className="cursor-pointer w-4 h-4 accent-blue-600"
-            onChange={() => handleActiveStatusToggle(props.id, props.isActive, props.label)}
-        />
-    )
-}
+// Replace:
+const { resetAll } = useFormContext() as any;
+const frm = useFormContext() as any;
+
+// With:
+const { resetAll } = useVoucherExtendedMethods();
 ```
 
-### Step 4: Verify SQL IDs are in the Map
-**Location:** `src/app/maps/sql-ids-map.ts`
+**Step 4:** Update `form-action-buttons.tsx`
 
-Confirm these entries exist (already verified):
-- Line 105: `getStockOnId: "get_stock_on_id"`
-- Line 114: `updateProductActiveStatus: "update_product_active_status"`
+```tsx
+import { useVoucherExtendedMethods } from '../voucher-context';
 
----
+// Replace:
+const { resetAll }: any = useFormContext();
 
-## Complete Code Changes
+// With:
+const { resetAll } = useVoucherExtendedMethods();
+```
 
-### File: `src/features/accounts/inventory/product-master/product-master.tsx`
-
-**Changes Summary:**
-1. Update line 97 - Change Active column template to be clickable
-2. Add `handleActiveStatusToggle` function (after line 111)
-3. Add `updateActiveStatus` function (after handleActiveStatusToggle)
+**Step 5:** Update all other components using custom methods from useFormContext
+- Search for `resetAll.*useFormContext` pattern
+- Replace with `useVoucherExtendedMethods()` hook
 
 ---
 
-## Testing Checklist
+## Recommended Approach
 
-- [ ] Click Active checkbox on a product with stock > 0
-  - Should show alert "Cannot Deactivate" with stock amount
-  - Checkbox should remain checked
-- [ ] Click Active checkbox on an active product with stock = 0
-  - Should show confirmation "Deactivate Product?"
-  - On confirm: checkbox unchecks, grid refreshes
-  - On cancel: no change
-- [ ] Click Active checkbox on an inactive product
-  - Should show confirmation "Activate Product?"
-  - On confirm: checkbox checks, grid refreshes
-  - On cancel: no change
-- [ ] Verify grid refreshes after status change
-- [ ] Verify product search cache is cleared after status change
-- [ ] No console errors during any operation
+1. **Try Option A first** - Quick to test if downgrade fixes the issue
+2. **If confirmed working, implement Option B** - Future-proof solution
 
 ---
 
-## Success Criteria
+## Files to Modify (Option B)
 
-1. Active column checkbox is clickable (not readOnly)
-2. Deactivation blocked if stock > 0 with clear error message
-3. Deactivation allowed if stock = 0 with confirmation
-4. Activation allowed with confirmation
-5. Grid refreshes after status change
-6. Product cache cleared to reflect changes in other components
-7. No regression in existing product master functionality
-
----
-
-## Files to Modify
-
-| File | Changes |
-|------|---------|
-| `src/features/accounts/inventory/product-master/product-master.tsx` | Update Active column template, add toggle handlers |
+| File | Action |
+|------|--------|
+| `src/features/accounts/vouchers/voucher-context.tsx` | CREATE - New context file |
+| `src/features/accounts/vouchers/all-vouchers/all-vouchers.tsx` | UPDATE - Wrap with new provider |
+| `src/features/accounts/vouchers/voucher-controls/voucher-status-bar.tsx` | UPDATE - Use new hook |
+| `src/features/accounts/vouchers/voucher-controls/form-action-buttons.tsx` | UPDATE - Use new hook |
 
 ---
 
-## Notes
+## Testing
 
-- The SQL IDs `getStockOnId` and `updateProductActiveStatus` are already defined
-- Server-side implementation is already complete per the instructions
-- Follow existing patterns in the file (handleOnDelete, handleOnEdit) for consistency
-- Use `Utils.showConfirmDialog` for confirmations (not delete confirm)
-- Use `Utils.showAlertMessage` for blocking alerts
+- [ ] Click voucher type buttons (Payment/Receipt/Contra/Journal) - form should reset
+- [ ] Click Reset button - form should reset
+- [ ] No console errors
+- [ ] TypeScript compiles without errors

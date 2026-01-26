@@ -24,10 +24,12 @@ import { useVoucherPermissions } from "../../../../utils/permissions/permissions
 
 export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) {
     const dispatch: AppDispatchType = useDispatch()
-    const { watch, setValue } = useFormContext<VoucherFormDataType>();
+    const { watch, setValue, /*context*/ } = useFormContext<VoucherFormDataType>() as any;
+    const { resetAll } = useFormContext() as any;
+    // const { resetAll } = context;
+    const frm = useFormContext() as any;
     const isPreviewOpen = useSelector((state: RootStateType) => state.vouchers.isPreviewOpen);
     const voucherIdToPreview = useSelector((state: RootStateType) => state.vouchers.voucherIdToPreview);
-    const { resetAll }: any = useFormContext()
     const voucherType = watch("voucherType");
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.allVouchers]?.activeTabIndex)
 
@@ -38,7 +40,7 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
         canSelectContra: 'vouchers.contra.select',
         canSelectJournal: 'vouchers.journal.select'
     })
-    const {canPreview} = useVoucherPermissions()
+    const { canPreview } = useVoucherPermissions()
 
     const {
         currentDateFormat,
@@ -113,13 +115,15 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
     }, [voucherType, setValue])
 
     function handleVoucherTypeChange(newType: string) {
-        resetAll();
+        // if (resetAll) {
+            resetAll();
+        // }
         setValue('voucherType', newType as any);
     }
 
     // Helper function to check if user can select a voucher type
     function canSelectVoucherType(type: string): boolean {
-        switch(type) {
+        switch (type) {
             case 'Payment': return voucherTypePermissions.canSelectPayment
             case 'Receipt': return voucherTypePermissions.canSelectReceipt
             case 'Contra': return voucherTypePermissions.canSelectContra
