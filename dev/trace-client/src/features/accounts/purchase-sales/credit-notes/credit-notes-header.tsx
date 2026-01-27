@@ -18,6 +18,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { Utils } from "../../../../utils/utils";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 import { useCreditNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { useCreditNotesContext } from "./credit-notes-context";
 
 export function CreditNotesHeader() {
     const activeTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[DataInstancesMap.creditNotes]?.activeTabIndex)
@@ -42,7 +43,7 @@ export function CreditNotesHeader() {
     const canSubmit = isEditMode ? canEdit : canCreate
 
     const isGstApplicable = watch('isGstApplicable')
-    const { computeGst, resetAll }: any = useFormContext<DebitCreditNoteFormDataType>();
+    const { computeGst, resetAll } = useCreditNotesContext();
     const errorClass = 'border-red-500 bg-red-50';
     const inputClassLeft = "border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium text-sm w-full rounded-md px-3 transition-all duration-200 mt-1";
 

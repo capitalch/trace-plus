@@ -11,6 +11,7 @@ import { PurchaseTotalsPanel } from "./purchase-totals-panel";
 import { Utils } from "../../../../../utils/utils";
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
+import { usePurchasesContext } from "../purchases-context";
 
 export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderType) {
     const instance = DataInstancesMap.allPurchases;
@@ -23,7 +24,7 @@ export function PurchaseCommonSubHeader({ className }: PurchaseCommonSubHeaderTy
         trigger,
         formState: { errors }
     } = useFormContext<PurchaseFormDataType>();
-    const { checkPurchaseInvoiceExists }: any = useFormContext<PurchaseFormDataType>()
+    const { checkPurchaseInvoiceExists } = usePurchasesContext()
     const isGstInvoice = watch("isGstInvoice");
     return (
         <div className={clsx(className, "flex gap-6 flex-wrap items-start")}>

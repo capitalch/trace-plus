@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import { DataInstancesMap } from "../../../../../app/maps/data-instances-map";
 import { generatePurchaseReturnInvoicePDF } from "./purchase-return-invoice-jspdf";
 import { usePurchaseReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { usePurchaseReturnsContext } from "../purchase-returns-context";
 
 export function AllPurchaseReturnsView({ className }: { className?: string }) {
     const dispatch: AppDispatchType = useDispatch()
@@ -41,9 +42,8 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
     const {
         reset,
         setValue,
-        populateFormFromId,
-        getPurchaseReturnEditDataOnId
-    } = useFormContext<PurchaseFormDataType>() as any;
+    } = useFormContext<PurchaseFormDataType>();
+    const { populateFormFromId, getPurchaseReturnEditDataOnId } = usePurchaseReturnsContext();
 
     const loadData = useCallback(async () => {
         try {

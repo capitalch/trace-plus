@@ -22,6 +22,7 @@ import { WidgetFormErrorMessage } from '../../../../../controls/widgets/widget-f
 import ItemsAndServicesSummary from './items-and-services-summary';
 import Decimal from 'decimal.js';
 import { ShoppingBag } from 'lucide-react';
+import { useSalesContext } from '../sales-context';
 
 const ItemsAndServices: React.FC = () => {
 
@@ -38,7 +39,7 @@ const ItemsAndServices: React.FC = () => {
         formState: { errors },
     } = useFormContext<SalesFormDataType>();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { getDefaultSalesLineItem }: any = useFormContext<SalesFormDataType>()
+    const { getDefaultSalesLineItem } = useSalesContext()
     const { fields, remove, insert, append } = useFieldArray({
         control,
         name: 'salesLineItems'

@@ -24,6 +24,7 @@ import { useEffect } from "react";
 import { generatePurchaseReturnInvoicePDF } from "../all-purchase-returns/purchase-return-invoice-jspdf";
 import { triggerPurchaseReturn } from "../purchase-return-slice";
 import { usePurchaseReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { usePurchaseReturnsContext } from "../purchase-returns-context";
 
 export function PurchaseReturnHeader() {
     const dispatch:AppDispatchType = useDispatch()
@@ -40,7 +41,7 @@ export function PurchaseReturnHeader() {
         formState: { errors, isSubmitting, isDirty, isValid},
         trigger
     } = useFormContext<PurchaseFormDataType>();
-    const { resetAll }: any = useFormContext();
+    const { resetAll } = usePurchaseReturnsContext();
 
     // ✅ Get permissions
     const { canCreate, canEdit, canPreview } = usePurchaseReturnPermissions()

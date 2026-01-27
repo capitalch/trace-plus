@@ -14,12 +14,13 @@ import { generateSalesReturnInvoicePDF } from '../all-sales-return-invoice-jspdf
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
 import { useSalesReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { useSalesReturnContext } from "../sales-return-context";
 
 const SalesReturnStatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
     const lastSalesReturnEditData = useSelector((state: RootStateType) => state.salesReturn.lastSalesReturnEditData);
     const { getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesReturnFormDataType>();
-    const { populateFormOverId, resetAll }: any = useFormContext<SalesReturnFormDataType>();
+    const { populateFormOverId, resetAll } = useSalesReturnContext();
     const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo();
 
     // ✅ Get sales return permissions

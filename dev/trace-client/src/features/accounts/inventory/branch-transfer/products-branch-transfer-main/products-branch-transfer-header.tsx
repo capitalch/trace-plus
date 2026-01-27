@@ -17,6 +17,7 @@ import { BranchTransferType } from "./products-branch-transfer-main";
 import _ from "lodash";
 import { Utils } from "../../../../../utils/utils";
 import { useBranchTransferPermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { useBranchTransferContext } from "../branch-transfer-context";
 
 export function ProductsBranchTransferHeader() {
   const { branchId } = useUtilsInfo();
@@ -35,7 +36,7 @@ export function ProductsBranchTransferHeader() {
     formState: { errors, isSubmitting, isDirty },
 
   } = useFormContext<BranchTransferType>();
-  const { xReset }: any = useFormContext(); // normal reset does not work. xReset is custom reset method defined in .._branch_transfer_main.tsx
+  const { xReset } = useBranchTransferContext();
 
   return (
     <div className="flex flex-wrap items-center align-middle gap-2">

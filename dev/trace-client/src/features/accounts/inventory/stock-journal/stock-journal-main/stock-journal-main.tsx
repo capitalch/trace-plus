@@ -16,6 +16,7 @@ import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-typ
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { StockJournalCrown } from "../stock-journal-crown";
 import Decimal from "decimal.js";
+import { StockJournalProvider } from "../stock-journal-context";
 
 export function StockJournalMain({ instance }: { instance: string }) {
   const dispatch: AppDispatchType = useDispatch();
@@ -32,7 +33,6 @@ export function StockJournalMain({ instance }: { instance: string }) {
   });
 
   const { reset } = methods;
-  const extendedMethods = { ...methods, xReset };
 
   useEffect(() => {
     if (selectedTranHeaderId) {
@@ -51,18 +51,20 @@ export function StockJournalMain({ instance }: { instance: string }) {
     },[buCode, finYearId, branchId]);
 
   return (
-    <div className="relative h-[calc(100vh-240px)] mt-8">
-      <FormProvider {...extendedMethods}>
-        <form
-          className="flex flex-col mr-6 min-w-340 gap-4"
-          onSubmit={methods.handleSubmit(onSubmit)}
-        >
-          <StockJournalCrown className="absolute -top-5.5 right-6" />
-          <StockJournalHeader instance={instance} />
-          <StockJournalTabs instance={instance} />
-        </form>
-      </FormProvider>
-    </div>
+    <StockJournalProvider methods={{ xReset }}>
+      <div className="relative h-[calc(100vh-240px)] mt-8">
+        <FormProvider {...methods}>
+          <form
+            className="flex flex-col mr-6 min-w-340 gap-4"
+            onSubmit={methods.handleSubmit(onSubmit)}
+          >
+            <StockJournalCrown className="absolute -top-5.5 right-6" />
+            <StockJournalHeader instance={instance} />
+            <StockJournalTabs instance={instance} />
+          </form>
+        </FormProvider>
+      </div>
+    </StockJournalProvider>
   );
 
   async function loadStockJournalOnTranHeaderId() {

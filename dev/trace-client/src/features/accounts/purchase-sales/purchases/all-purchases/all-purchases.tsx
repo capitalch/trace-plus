@@ -21,6 +21,7 @@ import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { useLocation } from "react-router-dom";
 import { usePurchasePermissions } from "../../../../../utils/permissions/permissions-hooks";
 import { businessContextToggleSelectorFn } from "../../../../layouts/layouts-slice";
+import { PurchasesProvider } from "../purchases-context";
 
 /**
  * Child component that renders purchase tabs and content.
@@ -101,7 +102,6 @@ export function AllPurchases() {
         });
     const { clearErrors, setError, getValues, setValue, reset, watch, setFocus } = methods;
     const { getTranHData } = useAllPurchasesSubmit(methods)
-    const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, checkPurchaseInvoiceExists, populateFormFromId, getPurchaseEditDataOnId }
     const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
 
     useEffect(() => {
@@ -145,12 +145,14 @@ export function AllPurchases() {
     }, [toggleBusinessContextState]);
 
     return (
-        <FormProvider {...extendedMethods}>
-            <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                {/* ✅ Render child component inside FormProvider */}
-                <AllPurchasesContent instance={instance} />
-            </form>
-        </FormProvider>
+        <PurchasesProvider methods={{ resetAll, getDefaultPurchaseLineItem, checkPurchaseInvoiceExists, populateFormFromId, getPurchaseEditDataOnId }}>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
+                    {/* ✅ Render child component inside FormProvider */}
+                    <AllPurchasesContent instance={instance} />
+                </form>
+            </FormProvider>
+        </PurchasesProvider>
     );
 
     async function checkPurchaseInvoiceExists() {

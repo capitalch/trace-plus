@@ -22,6 +22,8 @@ import { ProductInfoType } from "../../../../../controls/components/product-sele
 import { WidgetFormErrorMessage } from "../../../../../controls/widgets/widget-form-error-message";
 import { AnimatePresence, motion } from "framer-motion";
 import { ControlledNumericInput } from "../../../../../controls/components/controlled-numeric-input";
+import { usePurchasesContextOptional } from "../purchases-context";
+import { usePurchaseReturnsContextOptional } from "../../purchase-returns/purchase-returns-context";
 
 export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     // Hooks setup
@@ -37,7 +39,11 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
         trigger,
         formState: { errors },
     } = useFormContext<PurchaseFormDataType>();
-    const { getDefaultPurchaseLineItem }: any = useFormContext()
+
+    // Support both Purchases and PurchaseReturns contexts
+    const purchasesContext = usePurchasesContextOptional();
+    const purchaseReturnsContext = usePurchaseReturnsContextOptional();
+    const getDefaultPurchaseLineItem = purchasesContext?.getDefaultPurchaseLineItem || purchaseReturnsContext?.getDefaultPurchaseLineItem;
     const { fields, remove, insert, append } = useFieldArray({ control, name: 'purchaseLineItems' });
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500'

@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import { ControlledNumericInput } from '../../../../../controls/components/controlled-numeric-input';
 import Decimal from 'decimal.js';
 import { Utils } from '../../../../../utils/utils';
+import { useSalesReturnContext } from '../sales-return-context';
 
 const SalesReturnAccountingDetails: React.FC = () => {
     const instance = DataInstancesMap.allSalesReturn;
@@ -21,7 +22,7 @@ const SalesReturnAccountingDetails: React.FC = () => {
         watch,
         formState: { errors },
     } = useFormContext<SalesReturnFormDataType>();
-    const { getDefaultCreditAccount }: any = useFormContext<SalesReturnFormDataType>();
+    const { getDefaultCreditAccount } = useSalesReturnContext();
 
     const totalInvoiceAmount = watch('totalInvoiceAmount')
 

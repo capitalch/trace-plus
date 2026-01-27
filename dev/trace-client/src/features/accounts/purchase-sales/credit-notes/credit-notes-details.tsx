@@ -8,6 +8,7 @@ import { WidgetAstrix } from "../../../../controls/widgets/widget-astrix";
 import { useEffect } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
+import { useCreditNotesContext } from "./credit-notes-context";
 
 export function CreditNotesDetails() {
     const { isValidGstin, isValidHsn } = useValidators();
@@ -19,7 +20,7 @@ export function CreditNotesDetails() {
         trigger,
         formState: { errors }
     } = useFormContext<DebitCreditNoteFormDataType>();
-    const { computeGst }: any = useFormContext<DebitCreditNoteFormDataType>()
+    const { computeGst } = useCreditNotesContext()
     const errorClass = 'bg-red-100 border-red-500 border-2';
     const isGstApplicable = watch('isGstApplicable')
     const isIgst = watch('isIgst');

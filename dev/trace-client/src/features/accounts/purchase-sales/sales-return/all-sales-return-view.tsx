@@ -12,10 +12,10 @@ import { ArrowLeft } from "lucide-react";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
-import { useFormContext } from "react-hook-form";
 import { SalesReturnFormDataType } from "./all-sales-return";
 import { generateSalesReturnInvoicePDF } from "./all-sales-return-invoice-jspdf";
 import { useSalesReturnPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { useSalesReturnContext } from "./sales-return-context";
 
 interface AllSalesReturnViewProps {
   className?: string;
@@ -40,7 +40,7 @@ export function AllSalesReturnView({ className, onBack }: AllSalesReturnViewProp
     branchAddress,
     branchGstin
   } = useUtilsInfo();
-  const { populateFormOverId, getSalesReturnEditDataOnId }:any = useFormContext<SalesReturnFormDataType>();
+  const { populateFormOverId, getSalesReturnEditDataOnId } = useSalesReturnContext();
 
   const loadData = useCallback(async () => {
     try {

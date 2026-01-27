@@ -20,6 +20,7 @@ import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useLocation } from "react-router-dom";
 import { useScrollToTop } from "../../../../utils/use-scroll-to-top-hook";
+import { SalesProvider } from "./sales-context";
 
 export function AllSales() {
     const instance = DataInstancesMap.allSales
@@ -48,7 +49,6 @@ export function AllSales() {
     }, [getValues])
 
     const { getTranHData } = useAllSalesSubmit(methods);
-    const extendedMethods = { ...methods, getDefaultSalesLineItem, getDefaultDebitAccount, resetAll, getDebitCreditDifference, populateFormOverId, getSalesEditDataOnId }
 
     // Utility function to generate sales title
     const getSalesTitle = (isViewMode: boolean): string => {
@@ -120,17 +120,19 @@ export function AllSales() {
     };
 
     return (
-        <FormProvider {...extendedMethods}>
-            <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer>
-                    {isViewMode ? (
-                        <AllSalesView onBack={handleBackToForm} />
-                    ) : (
-                        <AllSalesForm />
-                    )}
-                </CompAccountsContainer>
-            </form>
-        </FormProvider>
+        <SalesProvider methods={{ resetAll, getDefaultSalesLineItem, getDefaultDebitAccount, getDebitCreditDifference, populateFormOverId, getSalesEditDataOnId }}>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
+                    <CompAccountsContainer>
+                        {isViewMode ? (
+                            <AllSalesView onBack={handleBackToForm} />
+                        ) : (
+                            <AllSalesForm />
+                        )}
+                    </CompAccountsContainer>
+                </form>
+            </FormProvider>
+        </SalesProvider>
     );
 
     // === MAIN FORM ACTION FUNCTIONS ===

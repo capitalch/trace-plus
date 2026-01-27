@@ -22,6 +22,7 @@ import { WidgetFormErrorMessage } from '../../../../../controls/widgets/widget-f
 import SalesReturnItemsSummary from './sales-return-items-summary';
 import Decimal from 'decimal.js';
 import { ShoppingBag } from 'lucide-react';
+import { useSalesReturnContext } from '../sales-return-context';
 
 const SalesReturnItemsAndServices: React.FC = () => {
 
@@ -38,7 +39,7 @@ const SalesReturnItemsAndServices: React.FC = () => {
         formState: { errors },
     } = useFormContext<SalesReturnFormDataType>();
     const [currentRowIndex, setCurrentRowIndex] = useState<number>(0);
-    const { getDefaultSalesReturnLineItem }: any = useFormContext<SalesReturnFormDataType>()
+    const { getDefaultSalesReturnLineItem } = useSalesReturnContext()
     const { fields, remove, insert, append } = useFieldArray({
         control,
         name: 'salesReturnLineItems'

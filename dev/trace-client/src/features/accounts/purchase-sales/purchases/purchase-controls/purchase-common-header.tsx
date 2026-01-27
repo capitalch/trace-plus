@@ -18,6 +18,7 @@ import { generatePurchaseInvoicePDF } from "../all-purchases/purchase-invoice-js
 import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
 import { usePurchasePermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { usePurchasesContext } from "../purchases-context";
 
 export function PurchaseCommonHeader() {
     const isInvoiceExists = useSelector((state: RootStateType) => state.purchase.isInvoiceExists)
@@ -34,7 +35,7 @@ export function PurchaseCommonHeader() {
         register,
         formState: { errors, isSubmitting, isDirty, isValid }
     } = useFormContext<PurchaseFormDataType>();
-    const { resetAll, checkPurchaseInvoiceExists }: any = useFormContext();
+    const { resetAll, checkPurchaseInvoiceExists } = usePurchasesContext();
 
     // ✅ Get permissions
     const { canCreate, canEdit, canPreview } = usePurchasePermissions()

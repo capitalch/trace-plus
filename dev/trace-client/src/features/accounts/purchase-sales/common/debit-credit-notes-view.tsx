@@ -1,7 +1,6 @@
 import { RootStateType } from "../../../../app/store";
 import { useCallback, useEffect, useState } from "react";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
-import { useFormContext } from "react-hook-form";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
@@ -16,6 +15,8 @@ import { generateDebitCreditNotePDF } from "./debit-credit-note-jspdf";
 import { DebitCreditNoteFormDataType } from "../debit-notes/debit-notes";
 import { useDebitNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
 import { useCreditNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { useDebitNotesContextOptional } from "../debit-notes/debit-notes-context";
+import { useCreditNotesContextOptional } from "../credit-notes/credit-notes-context";
 
 export function DebitCreditNotesView({ className, tranTypeId, instance }: { className?: string; tranTypeId: number; instance: string }) {
     // ✅ Determine which permissions to use based on tranTypeId
@@ -41,7 +42,12 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
         finYearId,
     } = useUtilsInfo();
 
-    const { populateFormFromId }: any = useFormContext<DebitCreditNoteFormDataType>();
+    // Use appropriate context based on note type
+    const debitNotesContext = useDebitNotesContextOptional();
+    const creditNotesContext = useCreditNotesContextOptional();
+    const populateFormFromId = isDebitNote
+        ? debitNotesContext?.populateFormFromId
+        : creditNotesContext?.populateFormFromId;
 
     const loadData = useCallback(async () => {
         try {
@@ -339,7 +345,7 @@ export function DebitCreditNotesView({ className, tranTypeId, instance }: { clas
     }
 
     async function handleOnEdit(data: any) {
-        populateFormFromId(data.id)
+        populateFormFromId?.(data.id)
     }
 
     async function handleOnPreview(data: DebitCreditNoteFormDataType) {

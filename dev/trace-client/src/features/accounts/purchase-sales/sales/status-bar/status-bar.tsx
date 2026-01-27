@@ -15,12 +15,13 @@ import { useUtilsInfo } from "../../../../../utils/utils-info-hook";
 import { WidgetModeIndicatorBadge } from "../../../../../controls/widgets/widget-mode-indicator-badge";
 import { useSalesPermissions } from "../../../../../utils/permissions/permissions-hooks";
 import { PDFViewerModal } from "../pdf-viewer-modal";
+import { useSalesContext } from "../sales-context";
 
 const StatusBar: React.FC = () => {
     const dispatch: AppDispatchType = useDispatch();
     const lastSalesEditData = useSelector((state: RootStateType) => state.sales.lastSalesEditData);
     const { control, getValues, formState: { errors, isSubmitting, isDirty, isValid } } = useFormContext<SalesFormDataType>();
-    const { getDebitCreditDifference, populateFormOverId, resetAll }: any = useFormContext<SalesFormDataType>();
+    const { getDebitCreditDifference, populateFormOverId, resetAll } = useSalesContext();
     const { branchId, branchName, branchAddress, branchGstin, currentDateFormat } = useUtilsInfo();
 
     const [pdfModalOpen, setPdfModalOpen] = useState(false);

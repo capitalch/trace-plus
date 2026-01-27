@@ -16,6 +16,7 @@ import { Utils } from '../../../../../utils/utils';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import { ContactsType, ExtBusinessContactsAccMType, TranDExtraType } from '../../../../../utils/global-types-interfaces-enums';
 import { useUtilsInfo } from '../../../../../utils/utils-info-hook';
+import { useSalesContext } from '../sales-context';
 
 type SalesType = 'retail' | 'bill' | 'institution';
 
@@ -29,8 +30,7 @@ const PaymentDetails: React.FC = () => {
         trigger,
         watch,
         formState: { errors }, } = useFormContext<SalesFormDataType>();
-    const { getDefaultDebitAccount }: any = useFormContext<SalesFormDataType>();
-    const { getDebitCreditDifference }: any = useFormContext<SalesFormDataType>();
+    const { getDefaultDebitAccount, getDebitCreditDifference } = useSalesContext();
     const { buCode, dbName, decodedDbParamsObject } = useUtilsInfo();
     const { fields, remove, append } = useFieldArray({
         control,

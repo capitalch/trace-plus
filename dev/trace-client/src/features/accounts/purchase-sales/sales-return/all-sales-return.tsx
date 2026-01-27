@@ -21,6 +21,7 @@ import { ContactDisplayDataType } from "../sales/all-sales";
 import { Messages } from "../../../../utils/messages";
 import { useLocation } from "react-router-dom";
 import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
+import { SalesReturnProvider } from "./sales-return-context";
 
 export function AllSalesReturn() {
     const instance = DataInstancesMap.allSalesReturn
@@ -42,7 +43,6 @@ export function AllSalesReturn() {
     const { clearErrors, getValues, reset, setValue } = methods;
 
     const { getTranHData } = useAllSalesReturnSubmit(methods);
-    const extendedMethods = { ...methods, getDefaultSalesReturnLineItem, getDefaultCreditAccount, resetAll, populateFormOverId, getSalesReturnEditDataOnId, }
 
     // Utility function to generate sales return title
     const getSalesReturnTitle = (isViewMode: boolean): string => {
@@ -110,17 +110,19 @@ export function AllSalesReturn() {
     };
 
     return (
-        <FormProvider {...extendedMethods}>
-            <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                <CompAccountsContainer>
-                    {isViewMode ? (
-                        <AllSalesReturnView onBack={handleBackToForm} />
-                    ) : (
-                        <AllSalesReturnForm />
-                    )}
-                </CompAccountsContainer>
-            </form>
-        </FormProvider>
+        <SalesReturnProvider methods={{ resetAll, getDefaultSalesReturnLineItem, getDefaultCreditAccount, populateFormOverId, getSalesReturnEditDataOnId }}>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
+                    <CompAccountsContainer>
+                        {isViewMode ? (
+                            <AllSalesReturnView onBack={handleBackToForm} />
+                        ) : (
+                            <AllSalesReturnForm />
+                        )}
+                    </CompAccountsContainer>
+                </form>
+            </FormProvider>
+        </SalesReturnProvider>
     );
 
     // === MAIN FORM ACTION FUNCTIONS ===

@@ -22,6 +22,7 @@ import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { VoucherEditDataType } from "./all-vouchers-view";
 import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
 import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
+import { VouchersProvider } from "../vouchers-context";
 
 /**
  * Child component that renders voucher tabs and content.
@@ -105,11 +106,10 @@ export function AllVouchers() {
         mode: "onTouched",
         criteriaMode: "all",
         defaultValues: savedFormData ?? getDefaultVoucherFormValues(),
-        // context: { resetAll: resetAll}
     });
 
     const { getValues, setValue, reset, watch } = methods;
-    const extendedMethods = { ...methods, resetAll, getVoucherDetailsOnId, populateFormFromId };
+    const extendedMethods = { resetAll, getVoucherDetailsOnId, populateFormFromId };
 
     useEffect(() => {
         if (savedFormData) {
@@ -152,14 +152,16 @@ export function AllVouchers() {
     }, [location.state?.id, location.state?.returnPath]);
 
     return (
-        <FormProvider {...extendedMethods}>
-            <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
-                <CompAccountsContainer className="relative">
-                    {/* ✅ Render child component inside FormProvider */}
-                    <AllVouchersContent instance={instance} />
-                </CompAccountsContainer>
-            </form>
-        </FormProvider>
+        <VouchersProvider methods={extendedMethods}>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(finalizeAndSubmitVoucher)} className="flex flex-col">
+                    <CompAccountsContainer className="relative">
+                        {/* ✅ Render child component inside FormProvider */}
+                        <AllVouchersContent instance={instance} />
+                    </CompAccountsContainer>
+                </form>
+            </FormProvider>
+        </VouchersProvider>
     )
 
     function getDefaultVoucherFormValues(): VoucherFormDataType {

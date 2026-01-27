@@ -14,6 +14,7 @@ import { SqlIdsMap } from '../../../../../app/maps/sql-ids-map';
 import { DataInstancesMap } from '../../../../../app/maps/data-instances-map';
 import { ContactDisplayDataType, ShippingInfoType } from '../../sales/all-sales';
 import Decimal from 'decimal.js';
+import { useSalesReturnContext } from '../sales-return-context';
 
 const SalesReturnHeaderSection: React.FC = () => {
     const instance = DataInstancesMap.allSalesReturn
@@ -30,7 +31,7 @@ const SalesReturnHeaderSection: React.FC = () => {
         reset,
         formState: { errors, }
     } = useFormContext<SalesReturnFormDataType>();
-    const { getDefaultCreditAccount, resetAll } = useFormContext<SalesReturnFormDataType>() as any;
+    const { getDefaultCreditAccount, resetAll } = useSalesReturnContext();
     const isGstInvoice = watch('isGstInvoice');
     const hasCustomerGstin = watch('hasCustomerGstin');
 

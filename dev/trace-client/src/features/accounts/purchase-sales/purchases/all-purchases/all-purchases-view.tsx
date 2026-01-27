@@ -19,6 +19,7 @@ import { setActiveTabIndex } from "../../../../../controls/redux-components/comp
 import { generatePurchaseInvoicePDF } from "./purchase-invoice-jspdf";
 import { setInvoicExists } from "../purchase-slice";
 import { usePurchasePermissions } from "../../../../../utils/permissions/permissions-hooks";
+import { usePurchasesContext } from "../purchases-context";
 
 export function AllPurchasesView({ className }: { className?: string }) {
   const dispatch: AppDispatchType = useDispatch()
@@ -42,9 +43,8 @@ export function AllPurchasesView({ className }: { className?: string }) {
   const {
     reset,
     setValue,
-    populateFormFromId,
-    getPurchaseEditDataOnId
-  } = useFormContext<PurchaseFormDataType>() as any;
+  } = useFormContext<PurchaseFormDataType>();
+  const { populateFormFromId, getPurchaseEditDataOnId } = usePurchasesContext();
 
   const loadData = useCallback(async () => {
     try {

@@ -21,11 +21,13 @@ import { CompTabHeaders, CompTabsType } from "../../../../controls/redux-compone
 import { WidgetModeIndicatorBadge } from "../../../../controls/widgets/widget-mode-indicator-badge";
 import { useUserHasMultiplePermissions } from "../../../../utils/permissions/permissions-hooks";
 import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { useVouchersContext } from "../vouchers-context";
 
 export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) {
     const dispatch: AppDispatchType = useDispatch()
     const { watch, setValue } = useFormContext<VoucherFormDataType>() as any;
-    const { resetAll } = useFormContext() as any;
+    // const { resetAll } = useFormContext() as any;
+    const { resetAll } = useVouchersContext();
     const isPreviewOpen = useSelector((state: RootStateType) => state.vouchers.isPreviewOpen);
     const voucherIdToPreview = useSelector((state: RootStateType) => state.vouchers.voucherIdToPreview);
     const voucherType = watch("voucherType");
@@ -113,9 +115,7 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
     }, [voucherType, setValue])
 
     function handleVoucherTypeChange(newType: string) {
-        // if (resetAll) {
         resetAll();
-        // }
         setValue('voucherType', newType as any);
     }
 

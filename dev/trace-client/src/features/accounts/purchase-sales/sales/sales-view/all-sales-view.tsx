@@ -14,9 +14,9 @@ import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { SalesFormDataType,} from "../all-sales";
 import { ArrowLeft } from "lucide-react";
 import { generateSalesInvoicePDF } from "../all-sales-invoice-jspdf";
-import { useFormContext } from "react-hook-form";
 import { useSalesPermissions } from "../../../../../utils/permissions/permissions-hooks";
 import { PDFViewerModal } from "../pdf-viewer-modal";
+import { useSalesContext } from "../sales-context";
 
 interface AllSalesViewProps {
   className?: string;
@@ -43,7 +43,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
     branchAddress,
     branchGstin
   } = useUtilsInfo();
-  const { populateFormOverId, getSalesEditDataOnId }:any = useFormContext<SalesFormDataType>();
+  const { populateFormOverId, getSalesEditDataOnId } = useSalesContext();
 
   const loadData = useCallback(async () => {
     try {

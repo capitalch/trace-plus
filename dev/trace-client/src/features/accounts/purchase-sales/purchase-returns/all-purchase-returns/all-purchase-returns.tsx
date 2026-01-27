@@ -22,6 +22,7 @@ import { Messages } from "../../../../../utils/messages";
 import { useLocation } from "react-router-dom";
 import { usePurchaseReturnPermissions } from "../../../../../utils/permissions/permissions-hooks";
 import { businessContextToggleSelectorFn } from "../../../../layouts/layouts-slice";
+import { PurchaseReturnsProvider } from "../purchase-returns-context";
 
 /**
  * Child component that renders purchase return tabs and content.
@@ -102,7 +103,6 @@ export function AllPurchaseReturns() {
         });
     const { clearErrors, getValues, setValue, reset, watch, } = methods;
     const { getTranHData } = useAllPurchasesSubmit(methods, Utils.getTranTypeId('PurchaseReturn'))
-    const extendedMethods = { ...methods, resetAll, getDefaultPurchaseLineItem, populateFormFromId, getPurchaseReturnEditDataOnId }
     const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
 
     useEffect(() => {
@@ -146,12 +146,14 @@ export function AllPurchaseReturns() {
     }, [toggleBusinessContextState]);
 
     return (
-        <FormProvider {...extendedMethods}>
-            <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                {/* ✅ Render child component inside FormProvider */}
-                <AllPurchaseReturnsContent instance={instance} />
-            </form>
-        </FormProvider>
+        <PurchaseReturnsProvider methods={{ resetAll, getDefaultPurchaseLineItem, populateFormFromId, getPurchaseReturnEditDataOnId }}>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
+                    {/* ✅ Render child component inside FormProvider */}
+                    <AllPurchaseReturnsContent instance={instance} />
+                </form>
+            </FormProvider>
+        </PurchaseReturnsProvider>
     );
 
     async function finalizeAndSubmit() {

@@ -14,6 +14,7 @@ import { setActiveTabIndex } from "../../../../../controls/redux-components/comp
 import { TranHeaderType, XDataObjectType } from "../../../../../utils/global-types-interfaces-enums";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { ProductLineItem } from "../../shared-definitions";
+import { BranchTransferProvider } from "../branch-transfer-context";
 
 export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   const {
@@ -54,8 +55,6 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   });
   const { reset } = methods;
 
-  const extendedMethods = { ...methods, xReset };
-
   useEffect(() => {
     if (selectedTranHeaderId) {
       loadProductOnTranHeaderId();
@@ -81,17 +80,19 @@ export function ProductsBranchTransferMain({ instance }: { instance: string }) {
   }, [buCode, finYearId, branchId]);
 
   return (
-    <div className="h-[calc(100vh-240px)]">
-      <FormProvider {...extendedMethods}>
-        <form
-          className="flex flex-col mr-6 min-w-340 gap-6"
-          onSubmit={methods.handleSubmit(onSubmit)}
-        >
-          <ProductsBranchTransferHeader />
-          <ProductsBranchTransferLineItems instance={instance} />
-        </form>
-      </FormProvider>
-    </div>
+    <BranchTransferProvider methods={{ xReset }}>
+      <div className="h-[calc(100vh-240px)]">
+        <FormProvider {...methods}>
+          <form
+            className="flex flex-col mr-6 min-w-340 gap-6"
+            onSubmit={methods.handleSubmit(onSubmit)}
+          >
+            <ProductsBranchTransferHeader />
+            <ProductsBranchTransferLineItems instance={instance} />
+          </form>
+        </FormProvider>
+      </div>
+    </BranchTransferProvider>
   );
 
   async function loadProductOnTranHeaderId() {

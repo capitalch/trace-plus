@@ -22,6 +22,7 @@ import { DebitCreditNotesView } from "../common/debit-credit-notes-view";
 import { useLocation } from "react-router-dom";
 import { useDebitNotesPermissions } from "../../../../utils/permissions/permissions-hooks";
 import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
+import { DebitNotesProvider } from "./debit-notes-context";
 
 
 /**
@@ -103,8 +104,6 @@ export function DebitNotes() {
     const { getTranHData } = useDebitCreditNotesSubmit(methods)
     const selectedTabIndex = useSelector((state: RootStateType) => state.reduxComp.compTabs[instance]?.activeTabIndex ?? 0);
 
-    const extendedMethods = { ...methods, resetAll, finalizeAndSubmit, computeGst, populateFormFromId, getDebitNoteEditDataOnId }
-
     useEffect(() => {
         if (savedFormData) {
             reset(_.cloneDeep(savedFormData),);
@@ -146,12 +145,14 @@ export function DebitNotes() {
     }, [toggleBusinessContextState]);
 
     return (
-        <FormProvider {...extendedMethods}>
-            <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
-                {/* ✅ Render child component inside FormProvider */}
-                <DebitNotesContent instance={instance} />
-            </form>
-        </FormProvider>
+        <DebitNotesProvider methods={{ resetAll, computeGst, populateFormFromId, getDebitNoteEditDataOnId }}>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(finalizeAndSubmit)} className="flex flex-col mr-6">
+                    {/* ✅ Render child component inside FormProvider */}
+                    <DebitNotesContent instance={instance} />
+                </form>
+            </FormProvider>
+        </DebitNotesProvider>
     );
 
     function computeGst() {

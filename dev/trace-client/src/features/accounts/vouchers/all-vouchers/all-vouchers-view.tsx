@@ -17,6 +17,7 @@ import { ExtGstTranDType, VourcherType } from "../../../../utils/global-types-in
 import { Messages } from "../../../../utils/messages";
 import { triggerVoucherPreview } from "../voucher-slice";
 import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
+import { useVouchersContext } from "../vouchers-context";
 
 export function AllVouchersView({ className, instance }: AllVouchersViewType) {
     const dispatch: AppDispatchType = useDispatch()
@@ -34,8 +35,8 @@ export function AllVouchersView({ className, instance }: AllVouchersViewType) {
         reset,
         watch,
     } = useFormContext<VoucherFormDataType>();
-    const { getVoucherDetailsOnId, populateFormFromId }: any = useFormContext<VoucherFormDataType>();
-
+    // const { getVoucherDetailsOnId, populateFormFromId }: any = useFormContext<VoucherFormDataType>();
+const { getVoucherDetailsOnId, populateFormFromId }: any = useVouchersContext();
     const voucherType = watch('voucherType')
     const tranTypeId = Utils.getTranTypeId(voucherType);
     const { canEdit, canDelete, canPreview, canExport } = useVoucherPermissions();

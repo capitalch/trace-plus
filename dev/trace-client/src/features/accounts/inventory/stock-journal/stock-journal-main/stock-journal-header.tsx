@@ -1,5 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { StockJournalType } from "./stock-journal-main";
+import { useStockJournalContext } from "../stock-journal-context";
 import { FormField } from "../../../../../controls/widgets/form-field";
 import clsx from "clsx";
 import { inputFormFieldStyles } from "../../../../../controls/widgets/input-form-field-styles";
@@ -21,7 +22,7 @@ export function StockJournalHeader({ instance }: { instance: string }) {
     register,
     formState: { errors, isSubmitting, isDirty }
   } = useFormContext<StockJournalType>();
-  const { xReset }: any = useFormContext(); // normal reset does not work. xReset is custom reset method defined in .._stock_journal_main.tsx
+  const { xReset } = useStockJournalContext();
 
   return (
     <div className="flex flex-wrap gap-2">
