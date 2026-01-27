@@ -12,7 +12,6 @@ import { ArrowLeft } from "lucide-react";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
 import { Messages } from "../../../../utils/messages";
 import { AllTables } from "../../../../app/maps/database-tables-map";
-import { SalesReturnFormDataType } from "./all-sales-return";
 import { generateSalesReturnInvoicePDF } from "./all-sales-return-invoice-jspdf";
 import { useSalesReturnPermissions } from "../../../../utils/permissions/permissions-hooks";
 import { useSalesReturnContext } from "./sales-return-context";

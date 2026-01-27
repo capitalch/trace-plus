@@ -11,7 +11,7 @@ import { SqlIdsMap } from "../../../../../app/maps/sql-ids-map";
 import { Messages } from "../../../../../utils/messages";
 import { AllTables } from "../../../../../app/maps/database-tables-map";
 import { RowDataBoundEventArgs } from "@syncfusion/ej2-react-grids";
-import { SalesFormDataType,} from "../all-sales";
+// import { SalesFormDataType,} from "../all-sales";
 import { ArrowLeft } from "lucide-react";
 import { generateSalesInvoicePDF } from "../all-sales-invoice-jspdf";
 import { useSalesPermissions } from "../../../../../utils/permissions/permissions-hooks";

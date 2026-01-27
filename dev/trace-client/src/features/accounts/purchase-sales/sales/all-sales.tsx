@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import _ from 'lodash'
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
-import { ContactsType, ExtBusinessContactsAccMType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranDType, TranHType } from "../../../../utils/global-types-interfaces-enums";
+import { ContactsType, ExtBusinessContactsAccMType, ExtGstTranDType, SalePurchaseDetailsWithExtraType, SalePurchaseEditDataType, TranDExtraType, TranHType } from "../../../../utils/global-types-interfaces-enums";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { AllSalesForm } from "./all-sales-form";
@@ -240,7 +240,7 @@ export function AllSales() {
         };
     }
 
-    function getDefaultDebitAccount(): TranDType {
+    function getDefaultDebitAccount(): TranDExtraType {
         return ({
             id: undefined,
             accId: null,
@@ -250,7 +250,10 @@ export function AllSales() {
             instrNo: null,
             lineRefNo: null,
             remarks: null,
-
+            isParentAutoSubledger: null,
+            accClass: '',
+            accName: '',
+            accCode: 0,
         })
     }
 

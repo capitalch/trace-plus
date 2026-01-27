@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import { SalesLineItemType } from "./all-sales";
-import { SalePurchaseEditDataType, TranDType } from "../../../../utils/global-types-interfaces-enums";
+import { SalePurchaseEditDataType, TranDExtraType } from "../../../../utils/global-types-interfaces-enums";
 
 const SalesContext = createContext<SalesContextMethodsType | null>(null);
 
@@ -30,7 +30,7 @@ export function SalesProvider({children, methods}: {children: React.ReactNode; m
 export type SalesContextMethodsType = {
     resetAll: () => void;
     getDefaultSalesLineItem: () => SalesLineItemType;
-    getDefaultDebitAccount: () => TranDType;
+    getDefaultDebitAccount: () => TranDExtraType;
     getDebitCreditDifference: () => number;
     populateFormOverId: (id: number) => Promise<void>;
     getSalesEditDataOnId: (id: number | undefined) => Promise<SalePurchaseEditDataType | null>;

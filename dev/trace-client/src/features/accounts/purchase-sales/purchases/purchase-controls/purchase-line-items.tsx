@@ -43,7 +43,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     // Support both Purchases and PurchaseReturns contexts
     const purchasesContext = usePurchasesContextOptional();
     const purchaseReturnsContext = usePurchaseReturnsContextOptional();
-    const getDefaultPurchaseLineItem = purchasesContext?.getDefaultPurchaseLineItem || purchaseReturnsContext?.getDefaultPurchaseLineItem;
+    const getDefaultPurchaseLineItem = (purchasesContext?.getDefaultPurchaseLineItem || purchaseReturnsContext?.getDefaultPurchaseLineItem)!;
     const { fields, remove, insert, append } = useFieldArray({ control, name: 'purchaseLineItems' });
     const isGstInvoice = watch("isGstInvoice");
     const errorClass = 'bg-red-200 border-red-500'
