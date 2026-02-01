@@ -13,6 +13,7 @@ import '../features/accounts/balance_sheet_page.dart';
 import '../features/accounts/profit_loss_page.dart';
 import '../features/accounts/general_ledger_page.dart';
 import '../services/auth_service.dart';
+import '../services/navigation_service.dart';
 
 /// Route paths as constants for type safety
 class Routes {
@@ -37,7 +38,10 @@ class Routes {
 
 /// Create and configure the GoRouter instance
 GoRouter createRouter() {
-  return GoRouter(
+  final navigationService = NavigationService();
+
+  final router = GoRouter(
+    navigatorKey: navigationService.navigatorKey,
     initialLocation: Routes.splash,
     debugLogDiagnostics: true,
 
@@ -316,4 +320,7 @@ GoRouter createRouter() {
       ),
     ),
   );
+
+  navigationService.setRouter(router);
+  return router;
 }

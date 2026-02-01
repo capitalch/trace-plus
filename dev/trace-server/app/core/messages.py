@@ -3,7 +3,7 @@ from app.config import Config
 
 class Messages:
     err_access_token_missing = "Access token is missing in the request to server"
-    err_access_token_signature_expired = "Access token signature is expired"
+    err_access_token_signature_expired = "Unauthorized. Access token signature is expired"
     err_access_token_signature_invalid = "Access token signature is invalid"
     err_access_token_invalid = "Access token is invalid"
     err_access_token_unknown_error = (

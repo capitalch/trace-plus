@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/routes.dart';
 import '../../services/auth_service.dart';
 import '../../models/client_model.dart';
+import '../../providers/session_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,6 +26,24 @@ class _LoginPageState extends State<LoginPage> {
   // Client selection state
   ClientModel? _selectedClient;
   bool _isLoadingClients = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check for session expired message after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkSessionExpiredMessage();
+    });
+  }
+
+  void _checkSessionExpiredMessage() {
+    final sessionProvider = SessionProvider();
+    if (sessionProvider.hasSessionExpiredMessage) {
+      final message = sessionProvider.sessionExpiredMessage!;
+      sessionProvider.clearSessionExpiredMessage();
+      _showInfoMessage(message);
+    }
+  }
 
   // Test network connectivity
   Future<void> _testNetworkConnection() async {

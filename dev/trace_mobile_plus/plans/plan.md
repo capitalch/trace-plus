@@ -1,58 +1,152 @@
-# Plan: Convert 'active' to 'isCurrent' (Products Only)
+# Plan: Handle Expired Token and Redirect to Login
 
-## Overview
-Convert all occurrences of 'active' terminology to 'isCurrent' in the products feature only.
-
----
-
-## Step 1: Update Products Provider
-**File:** `lib/providers/products_provider.dart`
-
-| Line | Current | Change To |
-|------|---------|-----------|
-| 22 | `bool _showActiveOnly = true;` | `bool _showCurrentOnly = true;` |
-| 22 | Comment: "Show active products" | Comment: "Show current products" |
-| 35 | `bool get showActiveOnly => _showActiveOnly;` | `bool get showCurrentOnly => _showCurrentOnly;` |
-| 73 | Comment: "Apply active products filter" | Comment: "Apply current products filter" |
-| 74 | `if (_showActiveOnly)` | `if (_showCurrentOnly)` |
-| 200 | Comment: "Toggle active products filter" | Comment: "Toggle current products filter" |
-| 201 | `void toggleActiveOnlyFilter()` | `void toggleCurrentOnlyFilter()` |
-| 202 | `_showActiveOnly = !_showActiveOnly;` | `_showCurrentOnly = !_showCurrentOnly;` |
-| 214 | `_showActiveOnly = true;` | `_showCurrentOnly = true;` |
-| 214 | Comment: "Default: show active products" | Comment: "Default: show current products" |
+## Objective
+When a query fails because of an expired token, redirect the user to the login page with a proper message.
 
 ---
 
-## Step 2: Update Products Page UI
-**File:** `lib/features/products/products_page.dart`
+## Step 1: Create a Token Expiration Exception Class
 
-| Line | Current | Change To |
-|------|---------|-----------|
-| 278 | Comment: "Active products filter toggle" | Comment: "Current products filter toggle" |
-| 283 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
-| 284 | `provider.toggleActiveOnlyFilter()` | `provider.toggleCurrentOnlyFilter()` |
-| 294 | `!provider.showActiveOnly` | `!provider.showCurrentOnly` |
-| 307 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
-| 311 | `'Active Only'` | `'Current Only'` |
-| 323 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
-| 330 | `provider.showActiveOnly ? 'Active' : 'All'` | `provider.showCurrentOnly ? 'Current' : 'All'` |
-| 332 | `provider.showActiveOnly` | `provider.showCurrentOnly` |
+**File:** `lib/core/exceptions/token_expired_exception.dart` (new file)
+
+Create a custom exception class to identify token expiration errors:
+- Create `TokenExpiredException` class that extends `Exception`
+- Include a user-friendly message property
 
 ---
 
-## Files Summary
+## Step 2: Update GraphQL Service to Detect Token Expiration
 
-| # | File | Changes |
-|---|------|---------|
-| 1 | `lib/providers/products_provider.dart` | 9 changes |
-| 2 | `lib/features/products/products_page.dart` | 9 changes |
+**File:** `lib/services/graphql_service.dart`
 
-**Total: 18 changes across 2 files**
+Modify the GraphQL service to detect token expiration:
+- Check for 401 status codes or token-related error messages in query results
+- When token expiration is detected, throw `TokenExpiredException`
+- Common indicators: HTTP 401, "token expired", "unauthorized", "jwt expired" error messages
 
 ---
 
-## Testing
+## Step 3: Create a Global Navigation Service
 
-1. Open Products page
-2. Toggle the filter switch between "Current" and "All"
-3. Verify filtering works correctly (Current shows products with stock/activity, All shows everything)
+**File:** `lib/services/navigation_service.dart` (new file)
+
+Create a navigation service to handle global navigation:
+- Use a GlobalKey<NavigatorState> to enable navigation from anywhere in the app
+- Add method `navigateToLoginWithMessage(String message)` for redirecting with a message
+- This allows services and providers to trigger navigation without BuildContext
+
+---
+
+## Step 4: Update Routes Configuration
+
+**File:** `lib/core/routes.dart`
+
+Update the router configuration:
+- Use the navigation key from NavigationService
+- Ensure the router can be accessed globally for token expiration redirects
+
+---
+
+## Step 5: Update Main Entry Point
+
+**File:** `lib/main.dart`
+
+Configure the app to use the navigation service:
+- Initialize NavigationService
+- Pass the navigator key to GoRouter
+
+---
+
+## Step 6: Create Session Expired Message Provider
+
+**File:** `lib/providers/session_provider.dart` (new file)
+
+Create a provider to manage session expiration state:
+- Store session expiration message
+- Clear message after it's shown
+- Use this to pass the message from GraphQL service to login page
+
+---
+
+## Step 7: Update Auth Service for Token Expiration Handling
+
+**File:** `lib/services/auth_service.dart`
+
+Add method to handle token expiration:
+- Add `handleTokenExpired()` method that:
+  - Clears stored token
+  - Clears auth state
+  - Sets session expiration message
+  - Triggers navigation to login page
+
+---
+
+## Step 8: Update All Providers to Handle Token Expiration
+
+**Files:**
+- `lib/providers/sales_provider.dart`
+- `lib/providers/transactions_provider.dart`
+- `lib/providers/trial_balance_provider.dart`
+- `lib/providers/balance_sheet_provider.dart`
+- `lib/providers/profit_loss_provider.dart`
+- `lib/providers/general_ledger_provider.dart`
+- `lib/providers/products_provider.dart`
+- `lib/providers/business_health_provider.dart`
+- `lib/providers/global_provider.dart`
+
+For each provider:
+- Catch `TokenExpiredException` in data fetching methods
+- Call `AuthService.handleTokenExpired()` when caught
+- Do not set local error message (navigation will handle it)
+
+---
+
+## Step 9: Update Login Page to Show Session Expired Message
+
+**File:** `lib/features/authentication/login_page.dart`
+
+Update login page to:
+- Check for session expiration message on init
+- Display the message using SnackBar or banner
+- Clear the message after displaying
+
+---
+
+## Step 10: Add Provider to App's Provider Tree
+
+**File:** `lib/main.dart`
+
+Register the SessionProvider in the MultiProvider:
+- Add SessionProvider to the provider list
+- Ensure it's accessible throughout the app
+
+---
+
+## Summary of Changes
+
+| Step | File | Type | Description |
+|------|------|------|-------------|
+| 1 | `lib/core/exceptions/token_expired_exception.dart` | New | Custom exception for token expiration |
+| 2 | `lib/services/graphql_service.dart` | Modify | Detect and throw token expiration errors |
+| 3 | `lib/services/navigation_service.dart` | New | Global navigation service |
+| 4 | `lib/core/routes.dart` | Modify | Use navigation service key |
+| 5 | `lib/main.dart` | Modify | Initialize navigation service |
+| 6 | `lib/providers/session_provider.dart` | New | Session state management |
+| 7 | `lib/services/auth_service.dart` | Modify | Add token expiration handler |
+| 8 | Multiple providers | Modify | Catch and handle token expiration |
+| 9 | `lib/features/authentication/login_page.dart` | Modify | Show expiration message |
+| 10 | `lib/main.dart` | Modify | Register SessionProvider |
+
+---
+
+## Expected Behavior After Implementation
+
+1. User is logged in and using the app
+2. Token expires on the server side
+3. User makes any query (e.g., fetches sales data)
+4. GraphQL service detects 401/token expired error
+5. AuthService clears all stored credentials
+6. SessionProvider stores the expiration message
+7. App navigates to login page
+8. Login page displays: "Your session has expired. Please login again."
+9. User logs in again and continues using the app

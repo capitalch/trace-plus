@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'token_storage_service.dart';
 import '../core/app_settings.dart';
+import '../core/exceptions/token_expired_exception.dart';
 import '../graphql/queries/generic_query.dart';
 import '../graphql/queries/trial_balance.dart';
 import '../graphql/queries/balance_sheet_profit_loss.dart';
@@ -59,6 +60,25 @@ class GraphQLService {
     _clientNotifier?.value = newClient;
   }
 
+  /// Check if the query result indicates a token expiration error
+  void _checkTokenExpiration(QueryResult result) {
+    if (result.hasException) {
+      final exception = result.exception;
+      if (exception != null) {
+        final errorString = exception.toString().toLowerCase();
+        if (errorString.contains('401') ||
+            errorString.contains('unauthorized') ||
+            errorString.contains('token expired') ||
+            errorString.contains('jwt expired') ||
+            errorString.contains('invalid token') ||
+            errorString.contains('token is invalid') ||
+            errorString.contains('authentication failed')) {
+          throw TokenExpiredException();
+        }
+      }
+    }
+  }
+
   /// Execute GenericQuery with authentication
   Future<QueryResult> executeGenericQuery({
     required String buCode,
@@ -91,12 +111,15 @@ class GraphQLService {
       fetchPolicy: FetchPolicy.noCache,
     );
 
-    return await client.value.query(options).timeout(
+    final result = await client.value.query(options).timeout(
       const Duration(seconds: 30),
       onTimeout: () {
         throw Exception('Query timeout: The request took too long to complete');
       },
     );
+
+    _checkTokenExpiration(result);
+    return result;
   }
 
   Future<QueryResult> executeTrialBalance({
@@ -130,12 +153,15 @@ class GraphQLService {
       fetchPolicy: FetchPolicy.noCache,
     );
 
-    return await client.value.query(options).timeout(
+    final result = await client.value.query(options).timeout(
       const Duration(seconds: 30),
       onTimeout: () {
         throw Exception('Query timeout: The request took too long to complete');
       },
     );
+
+    _checkTokenExpiration(result);
+    return result;
   }
 
   Future<QueryResult> executeBalanceSheetProfitLoss({
@@ -169,12 +195,15 @@ class GraphQLService {
       fetchPolicy: FetchPolicy.noCache,
     );
 
-    return await client.value.query(options).timeout(
+    final result = await client.value.query(options).timeout(
       const Duration(seconds: 30),
       onTimeout: () {
         throw Exception('Query timeout: The request took too long to complete');
       },
     );
+
+    _checkTokenExpiration(result);
+    return result;
   }
 
   /// Create GraphQL client without authentication (for public queries like login)

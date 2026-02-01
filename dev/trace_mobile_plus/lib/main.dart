@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'core/routes.dart';
 import 'theme/app_theme.dart';
 import 'services/graphql_service.dart';
+import 'services/navigation_service.dart';
 import 'providers/global_provider.dart';
+import 'providers/session_provider.dart';
 import 'providers/sales_provider.dart';
 import 'providers/transactions_provider.dart';
 import 'providers/business_health_provider.dart';
@@ -62,6 +64,7 @@ class TraceMobilePlusApp extends StatelessWidget {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => GlobalProvider()),
+            ChangeNotifierProvider(create: (_) => SessionProvider()),
             ChangeNotifierProvider(create: (_) => SalesProvider()),
             ChangeNotifierProvider(create: (_) => TransactionsProvider()),
             ChangeNotifierProvider(create: (_) => BusinessHealthProvider()),

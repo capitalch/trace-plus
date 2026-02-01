@@ -1,6 +1,7 @@
-# UI enhancement
-- In dashboard_page when business unit is clicked, a modal is shown to select from the available business units.
-- At present the unitName is a label
-- I want unitName to be clickable such that when it is clicked, the same modal to select a business unit appears
+# Instructions
+- When a query is made to the server token is passed with query
+- If the token is expired, the query fails with an error message
+- Requirement
+    - When query fails because of expired token the control should redirect to login page with proper message to user
 
 

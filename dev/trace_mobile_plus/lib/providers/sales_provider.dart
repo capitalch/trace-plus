@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:trace_mobile_plus/core/sql_ids_map.dart';
+import 'package:trace_mobile_plus/core/exceptions/token_expired_exception.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
 import '../models/sales_card_model.dart';
 import '../services/graphql_service.dart';
+import '../services/auth_service.dart';
 import '../core/app_settings.dart';
 
 class SalesProvider extends ChangeNotifier {
@@ -169,6 +171,11 @@ class SalesProvider extends ChangeNotifier {
 
       _isLoading = false;
       _errorMessage = null;
+    } on TokenExpiredException {
+      _isLoading = false;
+      _salesData = [];
+      await AuthService().handleTokenExpired();
+      return;
     } catch (e) {
       _isLoading = false;
       _errorMessage = e.toString().replaceAll('Exception: ', '');

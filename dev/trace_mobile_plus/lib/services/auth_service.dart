@@ -2,11 +2,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'token_storage_service.dart';
 import 'graphql_service.dart';
+import 'navigation_service.dart';
 import '../models/client_model.dart';
 import '../models/login_request_model.dart';
 import '../models/login_response_model.dart';
 import '../models/business_unit_model.dart';
 import '../core/app_settings.dart';
+import '../providers/session_provider.dart';
 
 class AuthService {
   // Singleton pattern
@@ -142,6 +144,33 @@ class AuthService {
 
     // Refresh GraphQL client to remove token from headers
     await _graphqlService.refreshClient();
+  }
+
+  /// Handle token expiration - clears auth and redirects to login
+  Future<void> handleTokenExpired([String? message]) async {
+    // Clear auth state
+    _isLoggedIn = false;
+    _accessToken = null;
+    _userData = null;
+
+    // Clear token from secure storage
+    await _tokenStorage.deleteToken();
+
+    // Clear AppSettings
+    await _clearAppSettings();
+
+    // Refresh GraphQL client to remove token from headers
+    await _graphqlService.refreshClient();
+
+    // Set session expired message
+    final sessionProvider = SessionProvider();
+    sessionProvider.setSessionExpiredMessage(
+      message ?? 'Your session has expired. Please login again.',
+    );
+
+    // Navigate to login page
+    final navigationService = NavigationService();
+    navigationService.navigateToLogin();
   }
 
   /// Clear all auth data

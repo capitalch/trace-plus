@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:trace_mobile_plus/core/sql_ids_map.dart';
+import 'package:trace_mobile_plus/core/exceptions/token_expired_exception.dart';
 import 'package:trace_mobile_plus/models/account_ledger_transaction_model.dart';
 import 'package:trace_mobile_plus/models/account_selection_model.dart';
 import 'package:trace_mobile_plus/models/ledger_response_model.dart';
 import 'package:trace_mobile_plus/models/ledger_summary_model.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
 import '../services/graphql_service.dart';
+import '../services/auth_service.dart';
 import '../core/app_settings.dart';
 
 class GeneralLedgerProvider extends ChangeNotifier {
@@ -111,6 +113,11 @@ class GeneralLedgerProvider extends ChangeNotifier {
 
       _isLoadingAccounts = false;
       _errorMessage = null;
+    } on TokenExpiredException {
+      _isLoadingAccounts = false;
+      _accountsList = [];
+      await AuthService().handleTokenExpired();
+      return;
     } catch (e) {
       _isLoadingAccounts = false;
       _errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -201,6 +208,15 @@ class GeneralLedgerProvider extends ChangeNotifier {
       // print('DEBUG: Ledger data successfully loaded. Transactions: ${_transactionsList.length}');
 
       _errorMessage = null;
+    } on TokenExpiredException {
+      _errorMessage = null;
+      _ledgerResponse = null;
+      _transactionsList = [];
+      _summary = null;
+      _isLoadingTransactions = false;
+      notifyListeners();
+      await AuthService().handleTokenExpired();
+      return;
     } catch (e) {
       // print('ERROR: Ledger fetch failed: $e');
       // print('ERROR: Stack trace: $stackTrace');

@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trace_mobile_plus/core/sql_ids_map.dart';
+import 'package:trace_mobile_plus/core/exceptions/token_expired_exception.dart';
 import 'package:trace_mobile_plus/providers/global_provider.dart';
 import 'package:trace_mobile_plus/models/products_model.dart';
 import 'package:trace_mobile_plus/services/graphql_service.dart';
+import 'package:trace_mobile_plus/services/auth_service.dart';
 import 'package:trace_mobile_plus/core/app_settings.dart';
 
 class ProductsProvider extends ChangeNotifier {
@@ -273,6 +275,11 @@ class ProductsProvider extends ChangeNotifier {
 
       _isLoading = false;
       _errorMessage = null;
+    } on TokenExpiredException {
+      _isLoading = false;
+      _products = [];
+      await AuthService().handleTokenExpired();
+      return;
     } catch (e) {
       _isLoading = false;
       _errorMessage = e.toString().replaceAll('Exception: ', '');
