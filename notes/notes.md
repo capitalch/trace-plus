@@ -1,3 +1,6 @@
+## delete nul file
+del \\?\C:\Users\Sushant\Desktop\nul
+
 ## flutter versionising
 - dart pub add --dev cider
 

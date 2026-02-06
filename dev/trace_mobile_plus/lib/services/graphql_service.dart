@@ -62,6 +62,17 @@ class GraphQLService {
 
   /// Check if the query result indicates a token expiration error
   void _checkTokenExpiration(QueryResult result) {
+    // Check structured error in response data
+    if (result.data != null) {
+      final dataString = result.data.toString().toLowerCase();
+      if (dataString.contains('e1011') ||
+          dataString.contains('e1012') ||
+          dataString.contains('e1013')) {
+        throw TokenExpiredException();
+      }
+    }
+
+    // Check exception-based errors
     if (result.hasException) {
       final exception = result.exception;
       if (exception != null) {
@@ -72,7 +83,12 @@ class GraphQLService {
             errorString.contains('jwt expired') ||
             errorString.contains('invalid token') ||
             errorString.contains('token is invalid') ||
-            errorString.contains('authentication failed')) {
+            errorString.contains('authentication failed') ||
+            errorString.contains('e1011') ||
+            errorString.contains('e1012') ||
+            errorString.contains('e1013') ||
+            errorString.contains('signature is expired') ||
+            errorString.contains('signature expired')) {
           throw TokenExpiredException();
         }
       }

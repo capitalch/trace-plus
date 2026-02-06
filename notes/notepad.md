@@ -82,39 +82,35 @@
   },
 
 ## ncu suggested one
-                                     @apollo/client                         ^4.0.9  →    ^4.0.13
-                                     @react-pdf/renderer                    ^4.3.1  →     ^4.3.2
-                                     @reduxjs/toolkit                      ^2.10.1  →    ^2.11.2
-                                     @tailwindcss/forms                    ^0.5.10  →    ^0.5.11 !
-                                     @tailwindcss/postcss                  ^4.1.17  →    ^4.1.18
-                                     @types/lodash                        ^4.17.20  →   ^4.17.23
-                                     @types/react                          ^19.2.6  →    ^19.2.8
-                                     @typescript-eslint/eslint-plugin      ^8.47.0  →    ^8.53.0
-                                     @typescript-eslint/parser             ^8.47.0  →    ^8.53.0
-                                     autoprefixer                         ^10.4.22  →   ^10.4.23
-                                     eslint-plugin-react-refresh           ^0.4.24  →    ^0.4.26 !
-                                     framer-motion                       ^12.23.24  →   ^12.26.2
-                                     jspdf                                  ^3.0.4  →     ^4.0.0 !
-                                     jspdf-autotable                        ^5.0.2  →     ^5.0.7
-                                     lucide-react                         ^0.554.0  →   ^0.562.0 !
-                                     npm                                   ^11.6.3  →    ^11.7.0
-                                     npm-check-updates                     ^19.1.2  →    ^19.3.1
-                                     qs                                    ^6.14.0  →    ^6.14.1
-                                     react                                 ^19.2.0  →    ^19.2.3
-                                     react-dom                             ^19.2.0  →    ^19.2.3
-                                     react-router-dom                       ^7.9.6  →    ^7.12.0
-                                     sweetalert2                          ^11.26.3  →  ^11.26.17
-                                     tailwindcss                           ^4.1.17  →    ^4.1.18
-                                     vite                                   ^7.2.4  →     ^7.3.1
-                                     react-hook-form                       ^7.66.1  →    ^7.71.1 !
-
-@syncfusion/ej2-base                 ^31.2.12  →   ^32.1.23
- @syncfusion/ej2-pdf-export           ^31.2.12  →   ^32.1.19
- @syncfusion/ej2-react-buttons        ^31.2.12  →   ^32.1.23
- @syncfusion/ej2-react-dropdowns      ^31.2.12  →   ^32.1.23
- @syncfusion/ej2-react-grids          ^31.2.12  →   ^32.1.23
- @syncfusion/ej2-react-inputs         ^31.2.12  →   ^32.1.22
- @syncfusion/ej2-react-popups         ^31.2.12  →   ^32.1.19
- @syncfusion/ej2-react-splitbuttons   ^31.2.12  →   ^32.1.22
- @syncfusion/ej2-react-treegrid       ^31.2.12  →   ^32.1.22
+ @apollo/client                        ^4.0.9  →     ^4.1.2
+ @react-pdf/renderer                   ^4.3.1  →     ^4.3.2
+ @reduxjs/toolkit                     ^2.10.1  →    ^2.11.2
+ 
+ @syncfusion/ej2-base                ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-pdf-export          ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-react-buttons       ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-react-dropdowns     ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-react-grids         ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-react-inputs        ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-react-popups        ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-react-splitbuttons  ^31.2.12  →   ^32.1.24
+ @syncfusion/ej2-react-treegrid      ^31.2.12  →   ^32.1.24
+ 
+ @types/lodash                       ^4.17.20  →   ^4.17.23
+ @types/react                         ^19.2.8  →    ^19.2.9
+ @typescript-eslint/eslint-plugin     ^8.53.0  →    ^8.53.1
+ @typescript-eslint/parser            ^8.53.0  →    ^8.53.1
+ axios                                ^1.13.2  →    ^1.13.3
+ jspdf                                 ^3.0.4  →     ^4.0.0
+ jspdf-autotable                       ^5.0.2  →     ^5.0.7
+ lodash                              ^4.17.21  →   ^4.17.23
+ npm                                  ^11.7.0  →    ^11.8.0
+ npm-check-updates                    ^19.1.2  →    ^19.3.1
+ qs                                   ^6.14.0  →    ^6.14.1
+ react                                ^19.2.0  →    ^19.2.3
+ react-dom                            ^19.2.0  →    ^19.2.3
+ react-hook-form                       7.66.0  →     7.71.1
+ react-router-dom                      ^7.9.6  →    ^7.13.0
+ sweetalert2                         ^11.26.3  →  ^11.26.17
+ terser                               ^5.45.0  →    ^5.46.0
 

@@ -1,152 +1,103 @@
-# Plan: Handle Expired Token and Redirect to Login
+# Plan: Fix login redirect when error_code e1011 (Access token signature expired) occurs
 
-## Objective
-When a query fails because of an expired token, redirect the user to the login page with a proper message.
+## Problem
+When the server returns `error_code: e1011` with message "Unauthorized. Access token signature is expired", the app does **not** redirect to the login screen. The user remains stuck on the current screen with an error message instead of being taken back to login.
 
----
+## Root Cause
+The `_checkTokenExpiration()` method in `lib/services/graphql_service.dart` (lines 64-80) uses string pattern matching on the exception's `toString()` output to detect token expiration. It checks for:
+- `"401"`, `"unauthorized"`, `"token expired"`, `"jwt expired"`, `"invalid token"`, `"token is invalid"`, `"authentication failed"`
 
-## Step 1: Create a Token Expiration Exception Class
+However, the server error message is **"Unauthorized. Access token signature is expired"**. While `"unauthorized"` is present, the GraphQL exception may not always include the HTTP status text verbatim. More importantly, the error code `e1011` is not checked at all. The server also returns structured error data with `error_code` fields that are never inspected.
 
-**File:** `lib/core/exceptions/token_expired_exception.dart` (new file)
-
-Create a custom exception class to identify token expiration errors:
-- Create `TokenExpiredException` class that extends `Exception`
-- Include a user-friendly message property
-
----
-
-## Step 2: Update GraphQL Service to Detect Token Expiration
-
-**File:** `lib/services/graphql_service.dart`
-
-Modify the GraphQL service to detect token expiration:
-- Check for 401 status codes or token-related error messages in query results
-- When token expiration is detected, throw `TokenExpiredException`
-- Common indicators: HTTP 401, "token expired", "unauthorized", "jwt expired" error messages
+The safest fix is to add explicit checks for:
+1. The error codes (`e1011`, `e1012`, `e1013`) used by the server for all token-related errors
+2. The actual error message patterns (`"signature is expired"`, `"signature expired"`)
+3. Structured error responses in `result.data` (not just `result.exception`)
 
 ---
 
-## Step 3: Create a Global Navigation Service
+## Step 1: Update `_checkTokenExpiration` in `graphql_service.dart` to detect e1011 and related errors
 
-**File:** `lib/services/navigation_service.dart` (new file)
+**File:** `lib/services/graphql_service.dart` (lines 64-80)
 
-Create a navigation service to handle global navigation:
-- Use a GlobalKey<NavigatorState> to enable navigation from anywhere in the app
-- Add method `navigateToLoginWithMessage(String message)` for redirecting with a message
-- This allows services and providers to trigger navigation without BuildContext
+Add the following checks to the existing condition:
 
----
+**In the exception string matching, add:**
+- `'e1011'` — error code for expired token signature
+- `'e1012'` — error code for invalid token signature
+- `'e1013'` — error code for invalid token
+- `'signature is expired'` — matches server message "Access token signature is expired"
+- `'signature expired'` — matches customErrorCodes message "Access token signature expired"
 
-## Step 4: Update Routes Configuration
+**Also add a check on `result.data`** to catch structured error responses where the server returns error info inside the response data rather than as a GraphQL exception:
 
-**File:** `lib/core/routes.dart`
+```dart
+void _checkTokenExpiration(QueryResult result) {
+  // Check structured error in response data
+  if (result.data != null) {
+    final dataString = result.data.toString().toLowerCase();
+    if (dataString.contains('e1011') ||
+        dataString.contains('e1012') ||
+        dataString.contains('e1013')) {
+      throw TokenExpiredException();
+    }
+  }
 
-Update the router configuration:
-- Use the navigation key from NavigationService
-- Ensure the router can be accessed globally for token expiration redirects
-
----
-
-## Step 5: Update Main Entry Point
-
-**File:** `lib/main.dart`
-
-Configure the app to use the navigation service:
-- Initialize NavigationService
-- Pass the navigator key to GoRouter
-
----
-
-## Step 6: Create Session Expired Message Provider
-
-**File:** `lib/providers/session_provider.dart` (new file)
-
-Create a provider to manage session expiration state:
-- Store session expiration message
-- Clear message after it's shown
-- Use this to pass the message from GraphQL service to login page
-
----
-
-## Step 7: Update Auth Service for Token Expiration Handling
-
-**File:** `lib/services/auth_service.dart`
-
-Add method to handle token expiration:
-- Add `handleTokenExpired()` method that:
-  - Clears stored token
-  - Clears auth state
-  - Sets session expiration message
-  - Triggers navigation to login page
+  // Check exception-based errors
+  if (result.hasException) {
+    final exception = result.exception;
+    if (exception != null) {
+      final errorString = exception.toString().toLowerCase();
+      if (errorString.contains('401') ||
+          errorString.contains('unauthorized') ||
+          errorString.contains('token expired') ||
+          errorString.contains('jwt expired') ||
+          errorString.contains('invalid token') ||
+          errorString.contains('token is invalid') ||
+          errorString.contains('authentication failed') ||
+          errorString.contains('e1011') ||
+          errorString.contains('e1012') ||
+          errorString.contains('e1013') ||
+          errorString.contains('signature is expired') ||
+          errorString.contains('signature expired')) {
+        throw TokenExpiredException();
+      }
+    }
+  }
+}
+```
 
 ---
 
-## Step 8: Update All Providers to Handle Token Expiration
+## Step 2: Verify existing chain works end-to-end (no code changes, just verification)
 
-**Files:**
-- `lib/providers/sales_provider.dart`
-- `lib/providers/transactions_provider.dart`
-- `lib/providers/trial_balance_provider.dart`
-- `lib/providers/balance_sheet_provider.dart`
-- `lib/providers/profit_loss_provider.dart`
-- `lib/providers/general_ledger_provider.dart`
-- `lib/providers/products_provider.dart`
-- `lib/providers/business_health_provider.dart`
-- `lib/providers/global_provider.dart`
+Confirm these already-implemented components are correctly wired:
 
-For each provider:
-- Catch `TokenExpiredException` in data fetching methods
-- Call `AuthService.handleTokenExpired()` when caught
-- Do not set local error message (navigation will handle it)
+1. **`TokenExpiredException`** is thrown → `lib/core/exceptions/token_expired_exception.dart`
+2. **All providers** catch `TokenExpiredException` and call `AuthService().handleTokenExpired()`:
+   - `SalesProvider`, `TransactionsProvider`, `TrialBalanceProvider`
+   - `BalanceSheetProvider`, `ProfitLossProvider`, `GeneralLedgerProvider`
+   - `BusinessHealthProvider`, `ProductsProvider`
+3. **`AuthService.handleTokenExpired()`** clears auth state → sets session message → navigates to login → `lib/services/auth_service.dart` (lines 150-174)
+4. **`NavigationService.navigateToLogin()`** calls `_router?.go('/login')` → `lib/services/navigation_service.dart` (line 18)
+5. **Login page** reads and displays session expired message → `lib/features/authentication/login_page.dart` (lines 39-46)
 
 ---
 
-## Step 9: Update Login Page to Show Session Expired Message
+## Step 3: Test the fix
 
-**File:** `lib/features/authentication/login_page.dart`
-
-Update login page to:
-- Check for session expiration message on init
-- Display the message using SnackBar or banner
-- Clear the message after displaying
-
----
-
-## Step 10: Add Provider to App's Provider Tree
-
-**File:** `lib/main.dart`
-
-Register the SessionProvider in the MultiProvider:
-- Add SessionProvider to the provider list
-- Ensure it's accessible throughout the app
+1. Login to the app and navigate to any data screen (e.g., Trial Balance, Sales)
+2. Wait for the access token to expire on the server side (or manually invalidate it)
+3. Trigger any data fetch action
+4. **Expected:** App redirects to login screen with message "Your session has expired. Please login again."
+5. **Previous behavior:** Error message displayed on-screen, user stuck on current page
 
 ---
 
 ## Summary of Changes
 
-| Step | File | Type | Description |
-|------|------|------|-------------|
-| 1 | `lib/core/exceptions/token_expired_exception.dart` | New | Custom exception for token expiration |
-| 2 | `lib/services/graphql_service.dart` | Modify | Detect and throw token expiration errors |
-| 3 | `lib/services/navigation_service.dart` | New | Global navigation service |
-| 4 | `lib/core/routes.dart` | Modify | Use navigation service key |
-| 5 | `lib/main.dart` | Modify | Initialize navigation service |
-| 6 | `lib/providers/session_provider.dart` | New | Session state management |
-| 7 | `lib/services/auth_service.dart` | Modify | Add token expiration handler |
-| 8 | Multiple providers | Modify | Catch and handle token expiration |
-| 9 | `lib/features/authentication/login_page.dart` | Modify | Show expiration message |
-| 10 | `lib/main.dart` | Modify | Register SessionProvider |
+| File | Change |
+|------|--------|
+| `lib/services/graphql_service.dart` | Add `e1011`, `e1012`, `e1013`, `signature is expired`, `signature expired` to `_checkTokenExpiration()`. Add structured response data check for error codes. |
 
----
-
-## Expected Behavior After Implementation
-
-1. User is logged in and using the app
-2. Token expires on the server side
-3. User makes any query (e.g., fetches sales data)
-4. GraphQL service detects 401/token expired error
-5. AuthService clears all stored credentials
-6. SessionProvider stores the expiration message
-7. App navigates to login page
-8. Login page displays: "Your session has expired. Please login again."
-9. User logs in again and continues using the app
+**Only one file needs modification.** The rest of the chain (exception → providers → auth service → navigation → login page) is already correctly implemented.
