@@ -1,4 +1,10 @@
-
+# Phase 3
+- Bugs
+	- sale bil when changed bu, still old footprint
+	- BS, PL show zero balance if there are already transactions. Presently all zero balance not show.
+	- PS, PL expand all then undo, removes the amount
+	- optionL gst: when you change end Date, it resets to start date of fin year in start date
+	- Check: New product entry, not immediately visible
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd
 valid gstin: 24AAACC1206D1ZM
@@ -12,9 +18,9 @@ del \\?\C:\projects\trace-plus\dev\trace_mobile_plus\nul
 -  5 sales bills
 - In capichow check prices
 
-## Phase 2
-# Bugs
-- Libs upgrade
+								## Phase 2
+								# Bugs
+								- Libs upgrade
 								- resolve
 									- purchase return
 									- stock journal
