@@ -1,20 +1,23 @@
 ## Deployment effort in April 2026
 
-# stage1: Successfully installed ubuntu jammy-20260322, version 22.04. Other ubuntu latest versions had error
-
-# stage2: debian bookworm20260316
-
-# stage: started with python:3.14.3-slim-bookworm
+# 1 stage: started with python:3.14.3-slim-bookworm
 	- this is selected by selecting docker image of python, then at top dropdown select 3.14.3-slim-bookworm. This is debian
 	apt update
 	apt install nginx
-	sudo systemctl enable nginx
-	sudo systemctl start nginx
-
-	- create a new file as /etc/nginx/conf.d/trace-server.conf as
-	server {
+	
+# 2 Remove old apache index file. otherwise apache site will appear
+  rm /usr/share/nginx/html/index.html
+  
+# 3 Remove the default site. Otherwise nginx default screen will come up instead of application screen
+  rm /etc/nginx/sites-enabled/default
+  
+# 4 Disable Nginx Autostart: do this
+  sudo systemctl disable nginx
+  
+# 5 create a new file as /etc/nginx/conf.d/trace-server.conf as
+    server {
     listen 80;
-    server_name TraceServer;
+    server_name _;
 
     # Serve React static files
     root /usr/share/nginx/html/dist;
@@ -42,33 +45,33 @@
     }
 }
 
-	- check configuration file syntax
-	  sudo nginx -t
-
+# 6 check configuration file syntax
+  sudo nginx -t
+  
+# 7 install code and libraaries
 	pip install --upgrade pip
 	pip install pydantic fastapi uvicorn[standard] typing ariadne bcrypt pyjwt[crypto] psycopg[binary,pool] python-multipart fpdf xlsxwriter fastapi_mail pandas cryptography
 
-	- copy TraceServer folder as it is with config.py in it unaltered copy to final folder
-	- npm run build for react trace-client app. Copy the dist folder to final folder
-	- zip TraceServer and dist folder as say final.zip: final.zip: TraceServer and dist folders : I used winrar library for zip
+	- copy TraceServer folder as it is containing config.py to final folder in local machine
+	- npm run build for react trace-client app. Copy the dist folder to final folder in local machine
+	- zip final folder as say final.zip: final.zip
 	- upload in folder /usr/share/nginx/html
+	
 	cd /usr/share/nginx/html
 	unzip final.zip
-# Disable Nginx Autostart : do this
-	sudo systemctl disable nginx
-- create a startup.sh file as /usr/share/nginx/html/startup.sh
-- set the APP_ENV as production or staging. APP_ENV is read by TraceServer and basedon that correct DB is connected through IP address of DB
-- Create a new startup.sh file with following content. Don't upload the startup.sh file
 
-#!/bin/bash
-sudo nginx &
-export APP_ENV=production
-cd /usr/share/nginx/html/trace-server && uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+# 8 create a startup.sh file as /usr/share/nginx/html/startup.sh
+    #!/bin/bash
+    sudo nginx &
+    export APP_ENV=production
+    cd /usr/share/nginx/html/trace-server && uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+
+# 9 At command entry point of cloudjiffy write this line
+  /usr/share/nginx/html/startup.sh
+# Completed. Restart the server:: success
 
 
-
-# Testing the docker env in kubuntu:
-
+## Testing the docker env in kubuntu:
 docker run -it --name fastapi -p 8080:80 debian:bookworm-20260316 bash
     Explain:-it
     This is actually two flags combined:
