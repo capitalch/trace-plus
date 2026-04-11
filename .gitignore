@@ -16,7 +16,6 @@ eggs/
 .eggs/
 # lib/
 lib64/
-parts/
 sdist/
 var/
 wheels/
@@ -109,6 +108,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+**/.env*
 
 # Spyder project settings
 .spyderproject
@@ -129,6 +129,9 @@ dmypy.json
 .pyre/
 *.ppk/
 
+# VSCode
+**/settings.json
+settings.json
 # others
 config*.*
 __pycache*/
@@ -140,3 +143,5 @@ keys/
 *.jks
 *.log
 node_modules
+.vscode/settings.json
+**/config.*
