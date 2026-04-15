@@ -21,6 +21,7 @@ ACCESS_TOKEN_SECRET_KEY = Config.ACCESS_TOKEN_SECRET_KEY
 def create_access_token(subject: dict) -> str:
     expiresDelta = datetime.now(timezone.utc) + timedelta(
         hours=int(ACCESS_TOKEN_EXPIRE_HOURS)
+        # seconds=int(Config.ACCESS_TOKEN_EXPIRE_SECONDS_TEST)
     )
     toEncode = {"exp": expiresDelta, "sub": json.dumps(subject)}
     encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)

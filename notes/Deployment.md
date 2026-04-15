@@ -70,6 +70,17 @@
   /usr/share/nginx/html/startup.sh
 # Completed. Restart the server:: success
 
+# Automate the deployment process in linux
+- Local machine
+    - deploy.sh file in final folder
+    ./deploy.sh
+- Cloudjiffy Server
+    - a file named as extract having linux scripts is created at /usr/local/bin with (execute permissions: cd /usr/local/bin chmod +x extract)
+    - you need to upload final.zip in folder /usr/share/nginx/html
+    - type extract in any terminal
+    - restart server
+
+
 
 ## Testing the docker env in kubuntu:
 docker run -it --name fastapi -p 8080:80 debian:bookworm-20260316 bash
