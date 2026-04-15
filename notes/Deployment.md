@@ -80,6 +80,12 @@
     - type extract in any terminal
     - restart server
 
+# Deployment full automation
+- I was able to create full-deploy.sh which creates the final.zip from scratch, upload final.zip in cloudjiffy and extract it over there and reboot the server. All worked well.
+- For that I created public key which is machine dependent and independent of cloudjiffy environment. It is same for serviceplus, flask, stage and pilot. I registered the piblic key with cloudjiffy.
+- Every environment has its own remote user. For each env copy its user in full-deploy.sh. Other items are all same.
+- Full-deploy.sh makes use of the environment user to deploy in that environment
+- full-deploy.sh works 100%. Linus reboot takes some time, so wait for maybe 1 min max for browsing.
 
 
 ## Testing the docker env in kubuntu:
