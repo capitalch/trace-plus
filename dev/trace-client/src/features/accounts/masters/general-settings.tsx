@@ -4,7 +4,8 @@ import { setCompAccountsContainerMainTitle } from "../../../controls/redux-compo
 import { useUtilsInfo } from "../../../utils/utils-info-hook";
 import { DataInstancesMap } from "../../../app/maps/data-instances-map";
 import { AppDispatchType } from "../../../app/store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { businessContextToggleSelectorFn } from "../../layouts/layouts-slice";
 import { WidgetAstrix } from "../../../controls/widgets/widget-astrix";
 import { Messages } from "../../../utils/messages";
 import { WidgetFormErrorMessage } from "../../../controls/widgets/widget-form-error-message";
@@ -23,6 +24,7 @@ export function GeneralSettings() {
     const dispatch: AppDispatchType = useDispatch()
     const instance: string = DataInstancesMap.generalSettings
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
+    const businessContextToggle = useSelector(businessContextToggleSelectorFn)
     const generalSettings: GeneralSettingsType = Utils.getGeneralSettings() || {}
     const { canEdit } = useGeneralSettingsPermissions()
 
@@ -30,6 +32,7 @@ export function GeneralSettings() {
         register,
         handleSubmit,
         setValue,
+        reset,
         formState: { errors, isDirty, isSubmitting },
         watch
     } = useForm<GeneralSettingsType>({
@@ -43,6 +46,10 @@ export function GeneralSettings() {
             maxGstRate: generalSettings?.maxGstRate || 28,
         },
     });
+
+    useEffect(() => {
+        reset()
+    }, [businessContextToggle])
 
     // Set main title for General Settings
     useEffect(() => {

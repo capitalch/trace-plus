@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CompAccountsContainer } from "../../../../controls/redux-components/comp-accounts-container";
 import { setCompAccountsContainerMainTitle } from "../../../../controls/redux-components/comp-slice";
 import { useValidators } from "../../../../utils/validators-hook";
@@ -16,6 +16,7 @@ import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { AppDispatchType } from "../../../../app/store";
 import { changeAccSettings } from "../../accounts-slice";
+import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
 import Select from "react-select";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useCompanyInfoPermissions } from "../../../../utils/permissions/permissions-hooks";
@@ -27,6 +28,7 @@ export function CompanyInfo() {
     const { buCode, dbName, decodedDbParamsObject, } = useUtilsInfo()
     const unitInfo: UnitInfoType = Utils.getUnitInfo() || {}
     const { canEdit } = useCompanyInfoPermissions()
+    const businessContextToggle = useSelector(businessContextToggleSelectorFn)
 
     const {
         checkAddress
@@ -67,6 +69,10 @@ export function CompanyInfo() {
     useEffect(() => {
         loadIndiaStates()
     }, [])
+
+    useEffect(() => {
+        reset()
+    }, [businessContextToggle])
 
     // Set main title for Company Info
     useEffect(() => {

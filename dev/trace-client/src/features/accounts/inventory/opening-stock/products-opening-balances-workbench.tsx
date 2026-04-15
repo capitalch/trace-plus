@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
+import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { useForm } from "react-hook-form";
 import { CompReactSelect } from "../../../../controls/components/comp-react-select";
@@ -24,6 +25,7 @@ import { format, isBefore, parseISO } from "date-fns";
 export function ProductsOpeningBalancesWorkBench() {
     const dispatch: AppDispatchType = useDispatch();
     const { branchId, buCode, context, currentDateFormat, currentFinYear, dbName, finYearId, decodedDbParamsObject } = useUtilsInfo();
+    const businessContextToggle = useSelector(businessContextToggleSelectorFn);
     const productOpeningBalanceEdit: ProductOpeningBalanceEditType = useSelector((state: RootStateType) => state.accounts.productOpeningBalanceEdit)
     const leafCategoriesWithParent = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.leafCategoriesWithParent]?.data)
     const brandsOnCatId = useSelector((state: RootStateType) => state.queryHelper[DataInstancesMap.brandsOnCatId]?.data)
@@ -109,6 +111,10 @@ export function ProductsOpeningBalancesWorkBench() {
         }
         fetchLabels()
     }, [catId, brandId])
+
+    useEffect(() => {
+        handleResetAll()
+    }, [businessContextToggle])
 
     if (loading) {
         return (<WidgetLoadingIndicator />)

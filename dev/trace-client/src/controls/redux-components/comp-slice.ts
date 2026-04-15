@@ -93,10 +93,9 @@ const compSlice = createSlice({
       action: PayloadAction<{ instance: string; startDate: string }>
     ) => {
       const instance: string = action.payload.instance;
-      state.compDateRange[instance] = {
-        startDate: "",
-        endDate: "",
-      };
+      if (!state.compDateRange[instance]) {
+        state.compDateRange[instance] = { startDate: "", endDate: "" };
+      }
       state.compDateRange[instance].startDate = action.payload.startDate;
     },
 
@@ -105,10 +104,9 @@ const compSlice = createSlice({
       action: PayloadAction<{ instance: string; endDate: string }>
     ) => {
       const instance: string = action.payload.instance;
-      state.compDateRange[instance] = {
-        startDate: "",
-        endDate: "",
-      };
+      if (!state.compDateRange[instance]) {
+        state.compDateRange[instance] = { startDate: "", endDate: "" };
+      }
       state.compDateRange[instance].endDate = action.payload.endDate;
     },
 

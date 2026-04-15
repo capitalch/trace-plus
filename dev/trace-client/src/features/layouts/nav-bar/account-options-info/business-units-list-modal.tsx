@@ -9,7 +9,6 @@ import { GraphQLQueriesMap, GraphQLQueriesMapNames } from '../../../../app/maps/
 import { GLOBAL_SECURITY_DATABASE_NAME } from '../../../../app/global-constants';
 import { Messages } from '../../../../utils/messages';
 import { AllTables} from '../../../../app/maps/database-tables-map';
-import { toggleBusinessContext } from '../../layouts-slice';
 
 export function BusinessUnitsListModal() {
     const currentBusinessUnitsSelector: BusinessUnitType[] = useSelector(userBusinessUnitsSelectorFn) || []
@@ -41,7 +40,7 @@ export function BusinessUnitsListModal() {
         dispatch(setCurrentBusinessUnit(selectedBu))
         if (currentBusinessUnitSelector.buId !== selectedBuId) {
             saveLastUsedBuId(selectedBuId)
-            dispatch(toggleBusinessContext()) // inform other modules about business context change
+            // toggleBusinessContext is dispatched by business-units-options.tsx after new BU's accSettings are loaded
         }
     }
 

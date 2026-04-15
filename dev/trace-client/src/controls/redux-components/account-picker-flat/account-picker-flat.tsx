@@ -9,6 +9,7 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn } from '../comp-slice';
 import useDeepCompareEffect from 'use-deep-compare-effect';
+import { businessContextToggleSelectorFn } from '../../../features/layouts/layouts-slice';
 
 export function AccountPickerFlat({
     accClassNames = null,
@@ -34,6 +35,7 @@ export function AccountPickerFlat({
             (state: RootStateType) => selectCompSwitchStateFn(state, instance),
             shallowEqual
         ) || false;
+    const businessContextToggle = useSelector(businessContextToggleSelectorFn)
 
     const {
         branchId,
@@ -51,6 +53,12 @@ export function AccountPickerFlat({
             loadLocalData()
         }
     }, [accountOptions, accClassNames, sqlId])
+
+    useEffect(() => {
+        setOptions([])
+        setAccountBalance(0)
+        handleOnClickRefresh()
+    }, [businessContextToggle])
 
     useEffect(() => {
         if (value === null) {

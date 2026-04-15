@@ -10,6 +10,7 @@ import { GraphQLQueriesMap, GraphQLQueriesMapNames } from "../../../../app/maps/
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
 import { UserTypesEnum } from "../../../../utils/global-types-interfaces-enums"
 import { useMediaQuery } from "react-responsive"
+import { toggleBusinessContext } from "../../layouts-slice"
 
 export function BusinessUnitsOptions() {
     const dispatch: AppDispatchType = useDispatch()
@@ -73,6 +74,7 @@ export function BusinessUnitsOptions() {
             if (result) {
                 dispatch(setFinYearsBranchesAccSettings({ accSettings: result?.allSettings, finYears: result.allFinYears, branches: result.allBranches }))
                 dispatch(setCurrentDateFormat('DD/MM/YYYY'))
+                dispatch(toggleBusinessContext()) // inform other modules after new BU's accSettings are loaded
             }
             // clean up content area and reset side menu by deselecting any menu item
             // Navigate({ to: '/', replace: true })

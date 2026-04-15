@@ -1,9 +1,9 @@
 # Phase 3
 - Bugs
-	- sale bil when changed bu, still old footprint
-	- BS, PL show zero balance if there are already transactions. Presently all zero balance not show.
-	- PS, PL expand all then undo, removes the amount
-	- optionL gst: when you change end Date, it resets to start date of fin year in start date
+									- sale bil when changed bu, still old footprint
+									- BS, PL show zero balance if there are already transactions. Presently all zero balance not show.
+									- BS, PL expand all then undo, removes the amount
+									- optionL gst: when you change end Date, it resets to start date of fin year in start date
 	- Check: New product entry, not immediately visible
 ## cloudjiffy
 entry point: /usr/lib/systemd/systemd

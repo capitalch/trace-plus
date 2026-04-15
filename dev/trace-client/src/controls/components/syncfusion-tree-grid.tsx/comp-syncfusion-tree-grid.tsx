@@ -53,6 +53,12 @@ export function CompSyncfusionTreeGrid({
     const gridRef: any = useRef({})
     const isCollapsedRedux: boolean = !(useSelector((state: RootStateType) => selectCompSwitchStateFn(state, instance), shallowEqual) || false)
 
+    useEffect(() => {
+        if (context.CompSyncFusionTreeGrid[instance]) {
+            context.CompSyncFusionTreeGrid[instance].expandedKeys = new Set()
+        }
+    }, [isCollapsedRedux])
+
     useEffect(() => { // make them available globally
         if (!context.CompSyncFusionTreeGrid[instance]) {
             context.CompSyncFusionTreeGrid[instance] = {
@@ -104,6 +110,7 @@ export function CompSyncfusionTreeGrid({
         //The div container is important. The minWidth works with style only
         <div className="mt-2" style={{ minWidth: `${minWidth}` }} id="grid2">
             <TreeGridComponent
+                key={String(isCollapsedRedux)}
                 actionBegin={actionBegin}
                 actionComplete={actionComplete}
                 allowPdfExport={true}

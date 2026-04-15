@@ -1422,7 +1422,7 @@ class SqlAccounts:
                 ARRAY_AGG(child."accId" ORDER BY child."accName") AS "children"
             FROM cte2 c
             LEFT JOIN cte2 child ON child."parentId" = c."accId"
-            where (c.closing != 0)
+            where (c.closing != 0 OR c.opening != 0 OR c.debit != 0 OR c.credit != 0)
             GROUP BY 
                 c."accId", 
                 c."accName",
