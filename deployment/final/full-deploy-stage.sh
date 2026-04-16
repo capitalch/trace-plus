@@ -53,7 +53,7 @@ scp -P $PORT "$ZIP_FILE" $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/
 
 echo "🚀 Executing remote extraction..."
 # Connect and run the extract command
-ssh -tt -p $PORT $REMOTE_USER@$REMOTE_HOST << EOF
+ssh -p $PORT $REMOTE_USER@$REMOTE_HOST << EOF
   # Run your custom extract script
   extract
   echo "✅ Remote extraction complete!"
