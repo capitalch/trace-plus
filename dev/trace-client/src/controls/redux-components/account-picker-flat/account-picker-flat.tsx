@@ -8,7 +8,6 @@ import { IconRefresh } from '../../icons/icon-refresh';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn } from '../comp-slice';
-import useDeepCompareEffect from 'use-deep-compare-effect';
 import { businessContextToggleSelectorFn } from '../../../features/layouts/layouts-slice';
 
 export function AccountPickerFlat({

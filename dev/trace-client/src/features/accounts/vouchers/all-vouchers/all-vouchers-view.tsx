@@ -4,7 +4,7 @@ import { useUtilsInfo } from "../../../../utils/utils-info-hook";
 import { CompSyncFusionGrid, SyncFusionGridAggregateType, SyncFusionGridColumnType } from "../../../../controls/components/syncfusion-grid/comp-syncfusion-grid";
 import clsx from "clsx";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Utils } from "../../../../utils/utils";
 import { format } from "date-fns";
 import { useDispatch } from "react-redux";
@@ -41,14 +41,14 @@ const { getVoucherDetailsOnId, populateFormFromId }: any = useVouchersContext();
     const tranTypeId = Utils.getTranTypeId(voucherType);
     const { canEdit, canDelete, canPreview, canExport } = useVoucherPermissions();
 
-    const loadData = useCallback(async () => {
+    async function loadData() {
         try {
             const state: RootStateType = Utils.getReduxState();
             const isAllBranchesState = state.reduxComp.compSwitch[instance];
             const buCode = state.login.currentBusinessUnit?.buCode;
             const finYearId = state.login.currentFinYear?.finYearId;
 
-            const rowsData: RowDataType[] = await Utils.doGenericQuery({
+            const rows: RowDataType[] = await Utils.doGenericQuery({
                 buCode: buCode || "",
                 dbName: dbName || "",
                 dbParams: decodedDbParamsObject,
@@ -64,23 +64,23 @@ const { getVoucherDetailsOnId, populateFormFromId }: any = useVouchersContext();
             });
             let currentId: number | null | undefined = null;
             let currentColor = false;
-
-            rowsData.forEach((row: RowDataType) => {
+            rows.forEach((row: RowDataType) => {
                 if (row.id !== currentId) {
                     currentId = row.id;
-                    currentColor = !currentColor; // toggle color when id changes
+                    currentColor = !currentColor;
                 }
                 row.bColor = currentColor;
             });
-            setRowsData(rowsData);
+            setRowsData(rows);
         } catch (e: any) {
             console.error(e);
         }
-    }, [decodedDbParamsObject, dbName, instance, tranTypeId]);
+    }
 
     useEffect(() => {
         loadData();
-    }, [loadData, finYearId, buCode, branchId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finYearId, buCode, branchId, tranTypeId]);
 
     return (
         <div className={clsx("flex flex-col w-full", className)}>

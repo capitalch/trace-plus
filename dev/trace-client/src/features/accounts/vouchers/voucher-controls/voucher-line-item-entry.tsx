@@ -11,7 +11,7 @@ import clsx from "clsx";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import { IconCross } from "../../../../controls/icons/icon-cross";
 import { GstInLinePanel } from "./gst-inline-panel";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { Utils } from "../../../../utils/utils";
 import Decimal from "decimal.js";
@@ -49,11 +49,6 @@ export function VoucherLineItemEntry({
 
     const { fields, append, remove, insert } = useFieldArray({ control, name: lineItemEntryName });
 
-    // Memoize the GST applicable states to avoid complex expressions in dependency array
-    const gstApplicableStates = useMemo(() => {
-        return fields.map((_, i) => watch(`${lineItemEntryName}.${i}.isGstApplicableForEntry`)).join(',');
-    }, [fields, lineItemEntryName, watch]);
-
     useEffect(() => {
         onChangeAmount?.(0, 0);
     }, [onChangeAmount])
@@ -68,16 +63,13 @@ export function VoucherLineItemEntry({
     useEffect(() => {
         fields.forEach((_, index) => {
             const isRowGstApplicable = watch(`${lineItemEntryName}.${index}.isGstApplicableForEntry`);
-
             if (!isRowGstApplicable) {
-                // Clear GST data for this specific row
                 setValue(`${lineItemEntryName}.${index}.gst.rate`, 0, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.hsn`, null, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.gstin`, null, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.igst`, 0, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.cgst`, 0, { shouldDirty: true });
                 setValue(`${lineItemEntryName}.${index}.gst.sgst`, 0, { shouldDirty: true });
-
                 clearErrors([
                     `${lineItemEntryName}.${index}.gst.rate`,
                     `${lineItemEntryName}.${index}.gst.hsn`,
@@ -85,7 +77,8 @@ export function VoucherLineItemEntry({
                 ]);
             }
         });
-    }, [gstApplicableStates, lineItemEntryName, setValue, fields, clearErrors, watch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fields, lineItemEntryName, setValue, clearErrors]);
 
     /**
      * Updates the deletedIds array when GST checkbox is toggled.

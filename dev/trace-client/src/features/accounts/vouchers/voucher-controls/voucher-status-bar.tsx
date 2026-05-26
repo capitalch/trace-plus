@@ -5,7 +5,7 @@ import { VoucherFormDataType } from "../all-vouchers/all-vouchers";
 import { DataInstancesMap } from "../../../../app/maps/data-instances-map";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatchType, RootStateType } from "../../../../app/store";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { IconPreview1 } from "../../../../controls/icons/icon-preview1";
 import { useUtilsInfo } from "../../../../utils/utils-info-hook";
@@ -78,33 +78,26 @@ export function VoucherStatusBar({ className, tabsInfo }: VoucherStatusBarType) 
         tranD: VoucherTranDetailsType[];
     } | null>(null);
 
-    const getVoucherDetails = useCallback(async (id: number | undefined) => {
-        const result: any = await Utils.doGenericQuery({
-            buCode: buCode || "",
-            dbName: dbName || "",
-            dbParams: decodedDbParamsObject,
-            instance: DataInstancesMap.allVouchers,
-            sqlId: SqlIdsMap.getVoucherDetailsOnId,
-            sqlArgs: {
-                id: id,
-            },
-        });
-
-        const data = result?.[0]?.jsonResult;
-        const tranType = Utils.getTranTypeName(data?.tranHeader?.tranTypeId || 2);
-
-        setPreviewData({
-            tranH: { ...data.tranHeader, tranType },
-            tranD: data.tranDetails || [],
-        });
-    }, [buCode, dbName, decodedDbParamsObject, setPreviewData]);
-
     useEffect(() => {
-        if (!voucherIdToPreview) return;
-        if (!isPreviewOpen) return;
-        getVoucherDetails(voucherIdToPreview)
-
-    }, [voucherIdToPreview, isPreviewOpen, getVoucherDetails]);
+        if (!voucherIdToPreview || !isPreviewOpen) return;
+        async function fetchPreview() {
+            const result: any = await Utils.doGenericQuery({
+                buCode: buCode || "",
+                dbName: dbName || "",
+                dbParams: decodedDbParamsObject,
+                instance: DataInstancesMap.allVouchers,
+                sqlId: SqlIdsMap.getVoucherDetailsOnId,
+                sqlArgs: { id: voucherIdToPreview },
+            });
+            const data = result?.[0]?.jsonResult;
+            const tranType = Utils.getTranTypeName(data?.tranHeader?.tranTypeId || 2);
+            setPreviewData({
+                tranH: { ...data.tranHeader, tranType },
+                tranD: data.tranDetails || [],
+            });
+        }
+        fetchPreview();
+    }, [voucherIdToPreview, isPreviewOpen, buCode, dbName, decodedDbParamsObject]);
 
     useEffect(() => {
         if (voucherType === 'Contra') {

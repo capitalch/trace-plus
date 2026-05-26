@@ -3,7 +3,7 @@ import { FormField } from "../../../../controls/widgets/form-field";
 import { inputFormFieldStyles } from "../../../../controls/widgets/input-form-field-styles";
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { Messages } from "../../../../utils/messages";
 import Decimal from "decimal.js";
 import { Utils } from "../../../../utils/utils";
@@ -32,39 +32,24 @@ export function GstInLinePanel({
     const gstRate = watch(`${lineItemEntryName}.${index}.gst.rate`)
     const isIgst = watch(`${lineItemEntryName}.${index}.gst.isIgst`)
 
-    const calculateGst = useCallback(
-        ({ amount, rate, isIgst, index }: { amount: number, rate: number, isIgst: boolean, index: number }) => {
-            if (!amount || !rate) return;
-
-            const amt = new Decimal(amount);
-            const rat = new Decimal(rate);
-
-            const divisor = new Decimal(1).plus(rat.div(100));
-            const taxableAmount = amt.div(divisor);
-            const gst = taxableAmount.mul(rat.div(100)).toDecimalPlaces(2);
-            const gstHalf = gst.div(2).toDecimalPlaces(2);
-
-            if (isIgst) {
-                setValue(`${lineItemEntryName}.${index}.gst.igst`, gst.toNumber(), { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.gst.cgst`, 0, { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.gst.sgst`, 0, { shouldDirty: true });
-            } else {
-                setValue(`${lineItemEntryName}.${index}.gst.igst`, 0, { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.gst.cgst`, gstHalf.toNumber(), { shouldDirty: true });
-                setValue(`${lineItemEntryName}.${index}.gst.sgst`, gstHalf.toNumber(), { shouldDirty: true });
-            }
-        },
-        [setValue, lineItemEntryName] // dependencies
-    );
-
     useEffect(() => {
-        calculateGst({
-            amount: amount,
-            rate: gstRate || 0,
-            isIgst: isIgst || false,
-            index: index
-        })
-    }, [amount, gstRate, isIgst, index, calculateGst])
+        if (!amount || !gstRate) return;
+        const amt = new Decimal(amount);
+        const rat = new Decimal(gstRate);
+        const divisor = new Decimal(1).plus(rat.div(100));
+        const taxableAmount = amt.div(divisor);
+        const gst = taxableAmount.mul(rat.div(100)).toDecimalPlaces(2);
+        const gstHalf = gst.div(2).toDecimalPlaces(2);
+        if (isIgst) {
+            setValue(`${lineItemEntryName}.${index}.gst.igst`, gst.toNumber(), { shouldDirty: true });
+            setValue(`${lineItemEntryName}.${index}.gst.cgst`, 0, { shouldDirty: true });
+            setValue(`${lineItemEntryName}.${index}.gst.sgst`, 0, { shouldDirty: true });
+        } else {
+            setValue(`${lineItemEntryName}.${index}.gst.igst`, 0, { shouldDirty: true });
+            setValue(`${lineItemEntryName}.${index}.gst.cgst`, gstHalf.toNumber(), { shouldDirty: true });
+            setValue(`${lineItemEntryName}.${index}.gst.sgst`, gstHalf.toNumber(), { shouldDirty: true });
+        }
+    }, [amount, gstRate, isIgst, index, lineItemEntryName, setValue])
 
     useEffect(() => {
         const currentRate = watch(`${lineItemEntryName}.${index}.gst.rate`);
