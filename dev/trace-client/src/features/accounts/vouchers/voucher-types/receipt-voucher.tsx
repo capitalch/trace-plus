@@ -68,7 +68,7 @@ export function ReceiptVoucher({ instance }: ReceiptVoucherType) {
                     accClassNames: ['debtor', 'creditor', 'other', 'dexp', 'iexp', 'loan', 'capital', 'iincome', 'dincome']?.join(',') || null
                 }
             })
-
+            // setCreditAccountOptions((prevOptions: AccountOptionType[]) => [...prevOptions, ...res])
             setCreditAccountOptions(res)
         } catch (error) {
             console.error(error)

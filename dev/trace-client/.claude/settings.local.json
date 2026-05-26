@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm run lint:*)",
       "Bash(npm run build:*)",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(grep -E \"\\\\.\\(sql|py\\)$\")"
     ],
     "deny": [],
     "ask": []

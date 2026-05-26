@@ -29,7 +29,7 @@ export function AccountPickerFlat({
     const selectRef: any = useRef<Select>(null);
     const [options, setOptions] = useState<AccountOptionType[]>([])
     const [accountBalance, setAccountBalance] = useState<number>(0)
-
+    const isInitialMount = useRef(true);
     const isAllBranches: boolean =
         useSelector(
             (state: RootStateType) => selectCompSwitchStateFn(state, instance),
@@ -46,8 +46,16 @@ export function AccountPickerFlat({
         , decodedDbParamsObject
     } = useUtilsInfo()
 
-    useDeepCompareEffect(() => {
-        if (accountOptions) {
+    // useDeepCompareEffect(() => {
+    //     if (accountOptions && accountOptions.length > 0) {
+    //         setOptions(accountOptions)
+    //     } else {
+    //         loadLocalData()
+    //     }
+    // }, [accountOptions, accClassNames, sqlId])
+
+    useEffect(() => {
+        if (accountOptions && accountOptions.length > 0) {
             setOptions(accountOptions)
         } else {
             loadLocalData()
@@ -55,6 +63,10 @@ export function AccountPickerFlat({
     }, [accountOptions, accClassNames, sqlId])
 
     useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return; // skip on first mount
+        }
         setOptions([])
         setAccountBalance(0)
         handleOnClickRefresh()
@@ -192,7 +204,7 @@ export function AccountPickerFlat({
                     accClassNames: accClassNames?.join(',') || null
                 }
             })
-            // console.log(res)
+            console.log(res)
             setOptions(res || [])
         } catch (error) {
             console.error(error)
