@@ -1,3 +1,21 @@
+# Optimize functioning of vouchers
+- Analyse thoroughly the vouchers folder
+- For large no of accounts say for around 1500, the loading of VoucherLineItemEntry becomes very slow.
+- When adding a new row, sometimes DB query is executed multiple times.
+- Overall response is very slow
+- Need a complete plan to improve vouchers
+- Check client and server side codes to suggest a robust plan. Write your plan to plans/plan.md file
+# New vouchers implementation
+- Existing "All Vouchers" menu item is not working fine. There are severe performance issues.
+- Create a new menu item "Voucher Entries" in the item "Vouchers". Create a new folder features/accounts/voucher-entries and place all new implementations in the voucher-entries
+- The idea is to create a high performant voucher entry system parallel to existing "All Vouchers"
+- Requirements
+  - Implement Payment, receip, contra and Journal vouchers
+  - Provide the existing functionalities
+  - implement Reset, submit for new /Edit and view mode having edit, pdf preview, delete and copy
+  - Provide PDF, excel and csv download as at present and search and refresh
+  - In view mode show pagination
+  - Need to be a good UI
 ## Ncu upgrade to latest versions
 # orig working syncfusion
 "@syncfusion/ej2-base": "^31.2.12",
