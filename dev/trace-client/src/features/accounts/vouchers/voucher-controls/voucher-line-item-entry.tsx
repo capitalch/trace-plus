@@ -4,7 +4,7 @@ import { IconPlus } from "../../../../controls/icons/icon-plus";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { Messages } from "../../../../utils/messages";
 import { IconClear } from "../../../../controls/icons/icon-clear";
-import { AccClassName, AccountOptionType, AccountPickerFlat } from "../../../../controls/redux-components/account-picker-flat/account-picker-flat";
+import { AccountOptionType, AccountPickerFlat } from "../../../../controls/redux-components/account-picker-flat/account-picker-flat";
 import { FormField } from "../../../../controls/widgets/form-field";
 import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
@@ -20,7 +20,6 @@ import { VourcherType } from "../../../../utils/global-types-interfaces-enums";
 
 export function VoucherLineItemEntry({
     accountOptions,
-    accClassNames,
     allowAddRemove = false,
     amount,
     dc,
@@ -236,7 +235,6 @@ export function VoucherLineItemEntry({
                             >
                                 <AccountPickerFlat
                                     accountOptions={accountOptions}
-                                    accClassNames={accClassNames}
                                     instance={`${instance}-${dc}-${index}`}
                                     {...register(`${lineItemEntryName}.${index}.accId`, {
                                         required: Messages.errRequired,
@@ -441,7 +439,6 @@ export function VoucherLineItemEntry({
 }
 
 type VoucherLineItemEntryType = {
-    accClassNames?: AccClassName[]
     accountOptions?: AccountOptionType[]
     allowAddRemove: boolean
     amount?: number
@@ -455,6 +452,5 @@ type VoucherLineItemEntryType = {
     toShowInstrNo: boolean;
     toShowSummary?: boolean;
     tranTypeName: 'Debit' | 'Credit'
-    tranDetailsId?: number
     voucherType?: VourcherType
 }

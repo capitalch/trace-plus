@@ -8,7 +8,7 @@ import { IconRefresh } from '../../icons/icon-refresh';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootStateType } from '../../../app/store';
 import { selectCompSwitchStateFn } from '../comp-slice';
-import { businessContextToggleSelectorFn } from '../../../features/layouts/layouts-slice';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 
 export function AccountPickerFlat({
     accClassNames = null,
@@ -28,13 +28,11 @@ export function AccountPickerFlat({
     const selectRef: any = useRef<Select>(null);
     const [options, setOptions] = useState<AccountOptionType[]>([])
     const [accountBalance, setAccountBalance] = useState<number>(0)
-    const isInitialMount = useRef(true);
     const isAllBranches: boolean =
         useSelector(
             (state: RootStateType) => selectCompSwitchStateFn(state, instance),
             shallowEqual
         ) || false;
-    const businessContextToggle = useSelector(businessContextToggleSelectorFn)
 
     const {
         branchId,
@@ -45,31 +43,17 @@ export function AccountPickerFlat({
         , decodedDbParamsObject
     } = useUtilsInfo()
 
-    // useDeepCompareEffect(() => {
-    //     if (accountOptions && accountOptions.length > 0) {
-    //         setOptions(accountOptions)
-    //     } else {
-    //         loadLocalData()
-    //     }
-    // }, [accountOptions, accClassNames, sqlId])
-
-    useEffect(() => {
-        if (accountOptions && accountOptions.length > 0) {
+    // When accountOptions is explicitly provided (even if empty), use it directly —
+    // this covers the Redux-cache path (vouchers) where the parent owns the data.
+    // When accountOptions is undefined, fall back to loadLocalData() —
+    // this covers non-voucher callers (purchases, sales, etc.) that pass accClassNames/sqlId.
+    useDeepCompareEffect(() => {
+        if (accountOptions !== undefined) {
             setOptions(accountOptions)
         } else {
             loadLocalData()
         }
     }, [accountOptions, accClassNames, sqlId])
-
-    useEffect(() => {
-        if (isInitialMount.current) {
-            isInitialMount.current = false;
-            return; // skip on first mount
-        }
-        setOptions([])
-        setAccountBalance(0)
-        handleOnClickRefresh()
-    }, [businessContextToggle])
 
     useEffect(() => {
         if (value === null) {

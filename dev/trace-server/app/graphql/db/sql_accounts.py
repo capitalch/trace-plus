@@ -2288,42 +2288,28 @@ class SqlAccounts:
     """
 
     get_leaf_subledger_accounts_on_class = """
-        with "accClassNames" as (values (%(accClassNames)s::text)),
-            --WITH "accClassNames" AS (VALUES ('sale,purchase,debtor,cash'::text)),
-            cte1 AS (
-                SELECT
-                    a.id,
-                    a."accName",
-                    a."parentId",
-                    CASE WHEN a."accLeaf" = 'Y' or a."accLeaf" = 'L' THEN false
-                        WHEN a."accLeaf" = 'S' THEN true
-                    END AS "isSubledger",
-                    a."accLeaf",
-                    Case when a."accLeaf" = 'L' then true else false end as "isDisabled"
-                FROM "AccM" a
-                JOIN "AccClassM" c ON c.id = a."classId"
-                WHERE a."accLeaf" IN ('S','L','Y')
-                AND (
-                    (TABLE "accClassNames") IS NULL
-                    OR c."accClass" = ANY(string_to_array((TABLE "accClassNames"), ','))
-                )
+         with "accClassNames" as (values (%(accClassNames)s::text))
+                -- 'debtor,creditor,dexp,iexp,other,purchase,loan,capital'
+            --WITH "accClassNames" AS (VALUES ('debtor,creditor,dexp,iexp,other,purchase,loan,capital'::text))
+            SELECT
+                a.id,
+                a."accName",
+                CASE WHEN a."accLeaf" = 'S' THEN true ELSE false END AS "isSubledger",
+                a."accLeaf",
+                p."accName" AS "accParent",
+                CASE WHEN a."accLeaf" = 'L' THEN true ELSE false END AS "isDisabled"
+            FROM "AccM" a
+            JOIN "AccM" p  ON p.id = a."parentId"
+            JOIN "AccClassM" c ON c.id = a."classId"
+            WHERE a."accLeaf" IN ('S', 'L', 'Y')
+            AND (
+                (table "accClassNames") IS NULL
+                OR c."accClass" = ANY(string_to_array((table "accClassNames"), ','))
             )
-            SELECT c.id,
-                c."accName",
-                c."isSubledger",
-                c."accLeaf",
-                p."accName" as "accParent",
-                c."isDisabled"
-            FROM cte1 c
-                join "AccM" p on p.id = c."parentId"
-                
             ORDER BY
-                -- group rows by the immediate parent’s id
-                CASE WHEN c."accLeaf" = 'L' THEN c.id ELSE c."parentId" END,
-                -- within each group, put the parent row first
-                CASE WHEN c."accLeaf" = 'L' THEN 0 ELSE 1 END,
-                -- finally, order children by name (or id if you prefer strict sequence)
-                c."accName"
+                CASE WHEN a."accLeaf" = 'L' THEN a.id ELSE a."parentId" END,
+                CASE WHEN a."accLeaf" = 'L' THEN 0 ELSE 1 END,
+                a."accName"
     """
 
     get_product_categories = """

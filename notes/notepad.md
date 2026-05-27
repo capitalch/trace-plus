@@ -1,10 +1,19 @@
-# Optimize functioning of vouchers
-- Analyse thoroughly the vouchers folder
-- For large no of accounts say for around 1500, the loading of VoucherLineItemEntry becomes very slow.
-- When adding a new row, sometimes DB query is executed multiple times.
-- Overall response is very slow
-- Need a complete plan to improve vouchers
-- Check client and server side codes to suggest a robust plan. Write your plan to plans/plan.md file
+# Optimize functioning of account-picker-flat
+- Analyse thoroughly the vouchers folder and account-picker-flat
+- account-picker-flat is only used in vouchers
+- This control is not very effecient, especially when there is a large list of nested accounts
+- Every time a new instance is drawn, there is a query to db which takes time. Drawing of list in the UI os equally time taking
+- When a business unit (bu) is changed then refresh of accounts for the new bu is required. Otherwise when branch or fin year changes, there is no need to refresh the accounts list
+- I suggest a change:
+  - We store the already retrieved list of accounts  in proper format for different vouchers payment, receipt, contra and journal in some global state like GlobalContext or redux
+  - The retrieve method is also available in globalContext
+  - When voucher page loads first, then all accounts for different AccountPickerFlat instances are retrieved together in parallel and stored in globalContext or redux
+  - When there is new instance of AccountPickerFlat is created, it sets the retrieved data to its list. No need to fetch from db
+  - When refresh button of control is clicked then force fetch from db is initiated and new data is binded to control
+  - AccountPickerFlat controls properties also need to be changed accordingly
+- Check client and server side codes to validate /modify my suggestion. Write your plan to plans/plan.md file
+# modifications in plan
+- businessContextToggle fires even when finyear or branch changed. We don't want to fetch accounts in this case
 # New vouchers implementation
 - Existing "All Vouchers" menu item is not working fine. There are severe performance issues.
 - Create a new menu item "Voucher Entries" in the item "Vouchers". Create a new folder features/accounts/voucher-entries and place all new implementations in the voucher-entries

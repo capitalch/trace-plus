@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+import { AccountsCacheKeyType } from "./voucher-slice";
 
 const VouchersContext = createContext<VouchersContextMethodsType | null>(null);
 
@@ -23,4 +24,5 @@ export type VouchersContextMethodsType = {
     resetAll: () => void;
     getVoucherDetailsOnId: (id: number | undefined) => Promise<any>;
     populateFormFromId: (id: number) => Promise<void>;
+    refreshAccountsCache: (key: AccountsCacheKeyType) => Promise<void>;
 };

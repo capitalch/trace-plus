@@ -16,13 +16,16 @@ import { setActiveTabIndex, setCompAccountsContainerMainTitle } from "../../../.
 import { useEffect, useRef } from "react";
 import { Messages } from "../../../../utils/messages";
 import _ from "lodash";
-import { clearVoucherFormData, saveVoucherFormData } from "../voucher-slice";
+import { clearVoucherFormData, saveVoucherFormData, selectAccountsCacheIsLoaded } from "../voucher-slice";
+import { WidgetLoadingIndicator } from "../../../../controls/widgets/widget-loading-indicator";
 import { useLocation } from "react-router-dom";
 import { SqlIdsMap } from "../../../../app/maps/sql-ids-map";
 import { VoucherEditDataType } from "./all-vouchers-view";
 import { useVoucherPermissions } from "../../../../utils/permissions/permissions-hooks";
 import { businessContextToggleSelectorFn } from "../../../layouts/layouts-slice";
 import { VouchersProvider } from "../vouchers-context";
+import { useVoucherAccountsCache } from "../use-voucher-accounts-cache";
+import { clearAccountsCache } from "../voucher-slice";
 
 /**
  * Child component that renders voucher tabs and content.
@@ -35,6 +38,7 @@ function AllVouchersContent({ instance }: { instance: string }) {
     const activeTabIndex = useSelector((state: RootStateType) =>
         state.reduxComp.compTabs[instance]?.activeTabIndex || 0
     )
+    const isAccountsCacheLoaded = useSelector(selectAccountsCacheIsLoaded)
 
     // ✅ Now inside FormProvider - hook can access form context
     const { canView } = useVoucherPermissions()
@@ -78,9 +82,12 @@ function AllVouchersContent({ instance }: { instance: string }) {
                 <VoucherStatusBar tabsInfo={tabsInfo} />
             </div>
 
-            {/* Tab Content */}
+            {/* Tab Content — show spinner on New/Edit tab while accounts cache loads */}
             <div className="mt-4">
-                {tabsInfo[activeTabIndex]?.content}
+                {activeTabIndex === 0 && !isAccountsCacheLoaded
+                    ? <WidgetLoadingIndicator />
+                    : tabsInfo[activeTabIndex]?.content
+                }
             </div>
         </>
     )
@@ -101,6 +108,7 @@ export function AllVouchers() {
         totalCredits: 0
     })
     const { branchId, buCode, dbName, finYearId, hasGstin, decodedDbParamsObject } = useUtilsInfo();
+    const { loadAllAccountsCache, refreshCacheKey } = useVoucherAccountsCache();
 
     const methods = useForm<VoucherFormDataType>({
         mode: "onTouched",
@@ -109,7 +117,7 @@ export function AllVouchers() {
     });
 
     const { getValues, setValue, reset, watch } = methods;
-    const extendedMethods = { resetAll, getVoucherDetailsOnId, populateFormFromId };
+    const extendedMethods = { resetAll, getVoucherDetailsOnId, populateFormFromId, refreshAccountsCache: refreshCacheKey };
 
     useEffect(() => {
         if (savedFormData) {
@@ -150,6 +158,15 @@ export function AllVouchers() {
             populateFormFromId(location.state.id)
         }
     }, [location.state?.id, location.state?.returnPath]);
+
+    // Load accounts cache on mount and whenever the business unit changes.
+    // Watching buCode directly (not businessContextToggle) ensures we only
+    // re-fetch when the BU changes — not on branch or finYear changes.
+    useEffect(() => {
+        dispatch(clearAccountsCache())
+        loadAllAccountsCache()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [buCode]);
 
     return (
         <VouchersProvider methods={extendedMethods}>

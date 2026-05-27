@@ -1,38 +1,28 @@
-import { useEffect, useState } from "react"
-import { SqlIdsMap } from "../../../../app/maps/sql-ids-map"
-import { AccountOptionType } from "../../../../controls/redux-components/account-picker-flat/account-picker-flat"
-import { Utils } from "../../../../utils/utils"
-import { useUtilsInfo } from "../../../../utils/utils-info-hook"
+import { useState } from "react"
+import { useSelector } from "react-redux"
 import { VoucherLineItemEntry } from "../voucher-controls/voucher-line-item-entry"
 import { useFormContext } from "react-hook-form"
 import Decimal from "decimal.js"
 import { VoucherFormDataType } from "../all-vouchers/all-vouchers"
+import { useVouchersContext } from "../vouchers-context"
+import { selectAccountsCache } from "../voucher-slice"
 
 export function PaymentVoucher({ instance }: PaymentVoucherType) {
-    const [debitAccountOptions, setDebitAccountOptions] = useState<AccountOptionType[]>([])
     const [debitTotal, setDebitTotal] = useState<number>(0)
-    const {
-        watch,
-    } = useFormContext<VoucherFormDataType>();
-    const {
-        buCode
-        , dbName
-        , decodedDbParamsObject
-    } = useUtilsInfo()
-
-    useEffect(() => {
-        loadDebitAccountOptions()
-    }, [])
+    const { watch } = useFormContext<VoucherFormDataType>();
+    const { refreshAccountsCache } = useVouchersContext()
+    const { cashBankAccounts, paymentDebitAccounts } = useSelector(selectAccountsCache)
 
     return (<div className="flex flex-col mr-6 gap-4">
         <VoucherLineItemEntry
-            accClassNames={['cash', 'bank', 'ecash', 'card']}
+            accountOptions={cashBankAccounts}
             allowAddRemove={false}
             amount={debitTotal}
             dc='C'
             instance={instance}
             isAmountFieldDisabled={true}
             lineItemEntryName="creditEntries"
+            loadData={() => refreshAccountsCache('cashBankAccounts')}
             title="Credit Entries ( from Cash / Bank)"
             toShowInstrNo={true}
             tranTypeName="Credit"
@@ -40,13 +30,13 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
         />
 
         <VoucherLineItemEntry
-            accountOptions={debitAccountOptions}
+            accountOptions={paymentDebitAccounts}
             allowAddRemove={true}
             dc='D'
             instance={instance}
             isAmountFieldDisabled={false}
             lineItemEntryName="debitEntries"
-            loadData={loadDebitAccountOptions}
+            loadData={() => refreshAccountsCache('paymentDebitAccounts')}
             onChangeAmount={onChangeDebitAmount}
             title="Debit Entries"
             toShowInstrNo={false}
@@ -55,25 +45,6 @@ export function PaymentVoucher({ instance }: PaymentVoucherType) {
             voucherType="Payment"
         />
     </div>)
-
-    async function loadDebitAccountOptions() {
-        try {
-            const res: AccountOptionType[] = await Utils.doGenericQuery({
-                buCode: buCode || '',
-                dbName: dbName || '',
-                dbParams: decodedDbParamsObject || {},
-                instance: instance,
-                sqlId: SqlIdsMap.getLeafSubledgerAccountsOnClass,
-                sqlArgs: {
-                    accClassNames: ['debtor', 'creditor', 'dexp', 'iexp', 'other', 'purchase', 'loan', 'capital']?.join(',') || null
-                }
-            })
-
-            setDebitAccountOptions(res)
-        } catch (error) {
-            console.error(error)
-        }
-    }
 
     function onChangeDebitAmount() {
         const debitAmounts = watch("debitEntries")?.map(e => e.amount) || [];
