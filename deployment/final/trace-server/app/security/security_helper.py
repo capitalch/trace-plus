@@ -302,7 +302,7 @@ def get_reset_link(request: Request, clientId, email: str):
     jwtToken = base64.b64encode(jwtToken.encode("utf-8")).decode(
         "utf-8"
     )  # convert to base64, otherwise email is treated as spam
-    resetLink = f"{baseUrl}reset-password/{jwtToken}"
+    resetLink = f"{baseUrl}api/reset-password/{jwtToken}"
     return resetLink
 
 

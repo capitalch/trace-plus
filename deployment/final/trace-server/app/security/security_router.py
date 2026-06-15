@@ -55,7 +55,7 @@ async def resolve_forgot_password(request: Request):
     return await forgot_password_helper(request)
 
 
-@securityRouter.get("/reset-password/{token}")
+@securityRouter.get("/api/reset-password/{token}")
 async def resolve_reset_password(token: str):
     return await reset_password_helper(token)
 
