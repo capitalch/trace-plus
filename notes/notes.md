@@ -1,3 +1,5 @@
+## demo accounts
+cap..@..com, s...3
 ## delete nul file
 del \\?\C:\Users\Sushant\Desktop\nul
 
