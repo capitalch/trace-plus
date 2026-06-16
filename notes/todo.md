@@ -1,5 +1,6 @@
 # Phase 3
 - Bugs
+	- In Accounts master, edit does not work
 									- sale bil when changed bu, still old footprint
 									- BS, PL show zero balance if there are already transactions. Presently all zero balance not show.
 									- BS, PL expand all then undo, removes the amount

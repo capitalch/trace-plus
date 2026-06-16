@@ -229,6 +229,12 @@ export function AccountsMaster() {
                 template: autoSubledgerTemplate,
                 width: 100,
             },
+            {
+                field: 'id',
+                headerText: 'ID',
+                width: 80,
+                textAlign: 'Right',
+            },
         ])
     }
 
