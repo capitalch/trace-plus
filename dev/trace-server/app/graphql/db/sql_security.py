@@ -276,6 +276,13 @@ class SqlSecurity:
                     where "id" = (table "id")
     """
 
+    get_client_dbname_dbparams_on_client_code = """
+        SELECT "dbName", "dbParams"
+        FROM "ClientM"
+        WHERE lower("clientCode") = lower(%(clientCode)s)
+        LIMIT 1
+    """
+
     get_clients_on_criteria = """
         with "criteria" as (values(%(criteria)s::text))
         --with "criteria" as (values('cap'::text))

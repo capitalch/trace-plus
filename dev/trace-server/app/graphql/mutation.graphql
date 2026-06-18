@@ -8,4 +8,5 @@ type Mutation {
   updateClient(value: Generic): Generic
   updateUser(value: Generic): Generic
   validateDebitCreditAndUpdate(dbName: String, value: Generic): Generic
+  accountsPosting(value: Generic): Generic
 }

@@ -5,7 +5,7 @@ from fastapi import Response, status
 from fastapi.responses import FileResponse
 from io import BytesIO
 from typing import Literal, List
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 from app.config import Config
 from app.core.dependencies import AppHttpException
 from app.security.security_utils import (
@@ -487,6 +487,48 @@ async def validate_debit_credit_and_update_helper(info, dbName: str, value: str)
         # At client check data for error attribut and take action accordingly
         return create_graphql_exception(e)
     return data
+
+
+async def accounts_posting_helper(info, value: str):
+    try:
+        value_str  = unquote(value)
+        value_dict = json.loads(value_str)
+
+        client_code = value_dict.get("clientCode", "")
+        bu_code     = value_dict.get("buCode", "")
+        data        = value_dict.get("data", {})
+
+        if not client_code or not bu_code or not data:
+            raise AppHttpException(
+                message="Error",
+                detail="clientCode, buCode and data are required",
+                error_code="e1031",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        rows = await exec_sql(
+            dbName=Config.DB_NAME,
+            sql=SqlSecurity.get_client_dbname_dbparams_on_client_code,
+            sqlArgs={"clientCode": client_code},
+        )
+        if not rows:
+            raise AppHttpException(
+                message="Error",
+                detail=f"Client '{client_code}' not found in ClientM",
+                error_code="e1032",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+        db_name   = rows[0]["dbName"]
+        db_params = rows[0]["dbParams"]  # already encrypted string stored in ClientM
+
+        data["dbParams"] = {"conn": db_params}
+        data["buCode"]   = bu_code
+
+        encoded_value = quote(json.dumps(data))
+        return await validate_debit_credit_and_update_helper(info, db_name, encoded_value)
+
+    except Exception as e:
+        return create_graphql_exception(e)
 
 
 def validate_each_tran_entry(data: dict) -> bool:

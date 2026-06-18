@@ -23,6 +23,7 @@ from app.graphql.graphql_helper import (
     update_client_helper,
     update_user_helper,
     validate_debit_credit_and_update_helper,
+    accounts_posting_helper,
 )
 
 type_defs = load_schema_from_path(".")
@@ -107,6 +108,12 @@ async def update_user(_, info, value=""):
 @mutation.field("validateDebitCreditAndUpdate")
 async def validate_debit_credit_and_update(_, info, dbName="", value=""):
     return await validate_debit_credit_and_update_helper(info, dbName, value)
+
+
+@mutation.field("accountsPosting")
+async def accounts_posting(_, info, value=""):
+    return await accounts_posting_helper(info, value)
+
 
 @query.field("hello")
 async def hello(_, info):
