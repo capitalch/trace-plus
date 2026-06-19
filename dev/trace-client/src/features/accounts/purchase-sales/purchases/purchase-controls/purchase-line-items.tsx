@@ -74,7 +74,7 @@ export function PurchaseLineItems({ title }: PurchaseLineItemsProps) {
     const setLineItem = useCallback((product: ProductInfoType, index: number) => {
         setValue(`purchaseLineItems.${index}.productId`, product.productId, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
-        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
+        setValue(`purchaseLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}`, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
         setValue(`purchaseLineItems.${index}.price`, product.lastPurchasePrice, { shouldDirty: true });

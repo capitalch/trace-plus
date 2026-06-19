@@ -163,34 +163,37 @@ async def exec_sql_object(
 
 
 async def handle_auto_ref_no(sqlObject, acur):
-    xData = sqlObject.get("xData", {})
-    if not xData:  # Check if xData is None or empty
+    x_data_raw = sqlObject.get("xData", {})
+    if not x_data_raw:
         return
-    if (
-        ("id" not in xData or not xData["id"]) and
-        ("finYearId" in xData) and
-        ("branchId" in xData) and
-        ("tranTypeId" in xData)
-    ):
-        finYearId = xData["finYearId"]
-        branchId = xData["branchId"]
-        tranTypeId = xData["tranTypeId"]
-        # Fetch tranTypeCode and branchCode
-        await acur.execute(SqlAccounts.get_branch_code_tran_code, {"branchId": branchId, "tranTypeId": tranTypeId})
-        codes = await acur.fetchone()
-        branchCode = codes.get("branchCode", "")
-        tranCode = codes.get("tranCode", "")
-        # Fetch lastNo from TranCounter; Add a row if not there
-        await acur.execute(SqlAccounts.get_last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
-        no = await acur.fetchone()
-        lastNo = no.get("lastNo", 0)
-        if lastNo == 0:
-            lastNo = 1
-        autoRefNo = f'{branchCode}/{tranCode}/{lastNo}/{finYearId}'
-        # Replace autoRefNo in xData
-        xData["autoRefNo"] = autoRefNo
-        # Update TranCounter
-        await acur.execute(SqlAccounts.increment_last_no, {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
+    items = x_data_raw if isinstance(x_data_raw, list) else [x_data_raw]
+    for xData in items:
+        if (
+            ("id" not in xData or not xData["id"]) and
+            ("finYearId"  in xData) and
+            ("branchId"   in xData) and
+            ("tranTypeId" in xData)
+        ):
+            finYearId  = xData["finYearId"]
+            branchId   = xData["branchId"]
+            tranTypeId = xData["tranTypeId"]
+            # Fetch tranTypeCode and branchCode
+            await acur.execute(SqlAccounts.get_branch_code_tran_code,
+                               {"branchId": branchId, "tranTypeId": tranTypeId})
+            codes      = await acur.fetchone()
+            branchCode = codes.get("branchCode", "")
+            tranCode   = codes.get("tranCode", "")
+            # Fetch lastNo from TranCounter; add a row if not there
+            await acur.execute(SqlAccounts.get_last_no,
+                               {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
+            no     = await acur.fetchone()
+            lastNo = no.get("lastNo", 0)
+            if lastNo == 0:
+                lastNo = 1
+            xData["autoRefNo"] = f'{branchCode}/{tranCode}/{lastNo}/{finYearId}'
+            # Update TranCounter
+            await acur.execute(SqlAccounts.increment_last_no,
+                               {"finYearId": finYearId, "branchId": branchId, "tranTypeId": tranTypeId})
 
 # create new autoSubledger account and inject its id in sqlObject
 

@@ -533,18 +533,20 @@ async def accounts_posting_helper(info, value: str):
 
 def validate_each_tran_entry(data: dict) -> bool:
     try:
-        x_details = data["xData"]["xDetails"]
-        for detail_group in x_details:
-            entries = detail_group.get("xData", [])
-            debit_total = sum(Decimal(str(x.get("amount", 0)))
-                              for x in entries if x.get("dc") == "D")
-            credit_total = sum(Decimal(str(x.get("amount", 0)))
-                               for x in entries if x.get("dc") == "C")
-
-            if debit_total != credit_total:
-                print(
-                    f"Mismatch found: Debit={debit_total}, Credit={credit_total}")
-                return False
+        x_data = data["xData"]
+        tran_entries = x_data if isinstance(x_data, list) else [x_data]
+        for tran_entry in tran_entries:
+            x_details = tran_entry["xDetails"]
+            for detail_group in x_details:
+                entries = detail_group.get("xData", [])
+                debit_total = sum(Decimal(str(x.get("amount", 0)))
+                                  for x in entries if x.get("dc") == "D")
+                credit_total = sum(Decimal(str(x.get("amount", 0)))
+                                   for x in entries if x.get("dc") == "C")
+                if debit_total != credit_total:
+                    print(
+                        f"Mismatch found: Debit={debit_total}, Credit={credit_total}")
+                    return False
         return True
     except (KeyError, IndexError, TypeError) as e:
         print(f"Validation error: {e}")

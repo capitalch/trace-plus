@@ -232,7 +232,7 @@ export function generatePurchaseInvoicePDF(
             ...salePurchaseDetails.map((item, i) => [
                 `${i + 1}`,
                 item.productCode || '000',
-                item.label + (item.serialNumbers ? '\nS/N: ' + item.serialNumbers : ''),
+                item.label + (item.serialNumbers ? '\nS/N: ' + item.serialNumbers : '') + (item.remarks ? '\n' + item.remarks : ''),
                 item.hsn,
                 { content: (item.qty || 0).toString(), styles: { halign: 'right' as const } },
                 { content: formatNumber(item.price || 0), styles: { halign: 'right' as const } },
