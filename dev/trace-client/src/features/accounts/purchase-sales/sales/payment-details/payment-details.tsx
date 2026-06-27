@@ -97,9 +97,9 @@ const PaymentDetails: React.FC = () => {
         }
     }, [totalInvoiceAmount, debitAccounts?.length, setValue, getValues])
 
-    // Auto-populate customer details when institution account is selected
+    // Auto-populate customer details when institution account is selected (new sales only)
     useEffect(() => {
-        if (salesType === 'institution' && firstAccId) {
+        if (salesType === 'institution' && firstAccId && !isEditMode) {
             fetchAndPopulateContact(firstAccId as number);
         }
     }, [salesType, firstAccId]);
