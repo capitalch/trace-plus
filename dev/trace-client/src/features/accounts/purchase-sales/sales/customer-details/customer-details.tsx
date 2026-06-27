@@ -213,9 +213,15 @@ const CustomerDetails: React.FC = () => {
                             <span className="font-medium">Phone: </span>
                             {watch('contactDisplayData.mobile')}
                         </div>
-                        <div className="text-gray-600">
-                            <span className="font-medium">Email: </span>
-                            <span>{watch('contactDisplayData.email')}</span>
+                        <div className="text-gray-600 flex justify-between">
+                            <div>
+                                <span className="font-medium">Email: </span>
+                                <span>{watch('contactDisplayData.email')}</span>
+                            </div>
+                            <div>
+                                <span className="font-medium">ID: </span>
+                                <span>{watch('contactDisplayData.id') || ''}</span>
+                            </div>
                         </div>
                         <div className="text-gray-600">
                             <div className="line-clamp-2">
