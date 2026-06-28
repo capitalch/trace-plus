@@ -1,40 +1,72 @@
-# Plan: Customer Details GSTIN priority in edit mode — ExtGstTranD → Contacts → BusinessContacts
+# Plan: Fix bill-sale (Auto Subledger) save error — `autoSubledgerDetails` is null
 
 ## Context
-When editing a sale invoice, the "GSTIN No" field in Customer Details must be populated using
-this priority:
-1. **ExtGstTranD** (`extGstTranD.gstin`)
-2. **Contacts** (`billTo.gstin`)
-3. **BusinessContacts** (`businessContacts.gstin` / `ExtBusinessContactsAccM`)
-…falling back to `null` only if all three are empty.
+Saving a Sales invoice with **Payment Details → Auto Subledger (Bill Sale)** fails with a
+client-side error. Root cause is server-side in `handle_auto_subledger`
+(`trace-server/app/graphql/db/psycopg_async_helper.py`):
 
-Current behavior gap: `populateFormOverId` seeds `gstin` from `extGstTranD || contactDisplay`,
-but the `contactsData` effect in `customer-details.tsx` then overrides it — using `billTo.gstin`
-if present, else **nulling** the field. This both ignores the intended ExtGstTranD-first order
-and drops the BusinessContacts fallback. Both the seed and the effect must honor the full
-3-level chain on edit-load, while keeping the existing "take the selected contact's GSTIN"
-behavior when the user actively changes the customer.
+- Line 250 runs `SqlAccounts.get_auto_subledger_details`; lines 260-262 read its `jsonResult`.
+- `jsonResult.get("autoSubledgerDetails", {})` returns **`None`** (the `{}` default only applies
+  when the key is *absent*; here the key is present with JSON `null`), so line 264
+  `autoSubledgerDetails.get("lastNo", 0)` raises `'NoneType' object has no attribute 'get'`.
+  The exception is caught upstream and surfaced to the client as a generic error.
 
-## Save flow (NO change)
-Save always writes the form `gstin` to **`ExtGstTranD.gstin`** (`all-sales-submit-hook.ts:88`),
-updating the existing `extGstTranD.id` row. Contacts table is untouched. Same as today.
+Why `autoSubledgerDetails` is null: in `get_auto_subledger_details` (`sql_accounts.py:1291`),
+the `inserting` data-modifying CTE inserts a starter `AutoSubledgerCounter` row (`lastNo=1`) when
+none exists, but the `autoSubledgerDetails` subquery reads the **base** `AutoSubledgerCounter`
+table. Per PostgreSQL MVCC, a data-modifying CTE's inserted rows are **not visible** to other
+table references in the same statement. So on the **first** bill sale for a given
+finYear/branch/parent-account, the subquery returns no row → `row_to_json` → `NULL`.
+(Subsequent sales work because the row already exists.)
 
-## Step 1 — `customer-details.tsx` (the `contactsData` effect)
-Distinguish edit-load of the saved contact from a live customer change, then apply the chain:
-- `const editData = getValues('salesEditData')`
-- `const isEditLoadContact = Boolean(editData?.billTo) && contactsData.id === editData?.billTo?.id`
-- if `isEditLoadContact`: `editData?.extGstTranD?.gstin || contactsData.gstin || editData?.businessContacts?.gstin || null`
-- else (live selection / new sale): `contactsData.gstin || null` (unchanged)
-- `setValue('gstin', value)` + `setValue('hasCustomerGstin', Boolean(value))`
+The codebase already solves this correctly in `get_last_no` (`sql_accounts.py:2048`) by
+`UNION ALL`-ing the `inserted` CTE with the base table. We mirror that here.
 
-## Step 2 — `all-sales.tsx` `populateFormOverId`
-- `gstin: extGsTranD?.gstin || billTo?.gstin || businessContacts?.gstin || null`
-- `hasCustomerGstin: Boolean(extGsTranD?.gstin || billTo?.gstin || businessContacts?.gstin)`
+## Changes (all in trace-server)
+
+### Step 1 — `sql_accounts.py` `get_auto_subledger_details` (~lines 1291-1334) — primary fix
+Make the just-inserted counter row visible to the JSON build:
+- Change `inserting ... RETURNING id` → `RETURNING "lastNo", "accId"`.
+- Add a `counter` CTE that unions the inserted row with the existing row:
+  ```sql
+  , counter AS (
+      SELECT "lastNo", "accId" FROM inserting
+      UNION ALL
+      SELECT d."lastNo", d."accId" FROM "AutoSubledgerCounter" d
+      WHERE d."finYearId" = (TABLE "finYearId")
+        AND d."branchId"  = (TABLE "branchId")
+        AND d."accId"     = (TABLE "accId")
+  )
+  ```
+- Point the `autoSubledgerDetails` subquery at `counter` instead of the base table:
+  ```sql
+  SELECT row_to_json(t) FROM (
+      SELECT cnt."lastNo", a."accType", a."classId", c."accClass"
+      FROM counter cnt
+      JOIN "AccM" a ON a."id" = cnt."accId"
+      JOIN "AccClassM" c ON c."id" = a."classId"
+      LIMIT 1
+  ) t
+  ```
+- Leave `branchCode` and `contactNameMobile` sub-selects as-is.
+
+### Step 2 — `psycopg_async_helper.py` `handle_auto_subledger` (~lines 260-271) — hardening
+Guard against JSON `null` so a null field can never re-introduce the `None.get` crash (this also
+covers the analogous `contactNameMobile` path at lines 269-270):
+- `autoSubledgerDetails = jsonResult.get("autoSubledgerDetails") or {}`
+- `contactNameMobile = jsonResult.get("contactNameMobile") or {}`
+Note: this alone is NOT sufficient (empty dict → `accType`/`classId` None → `insert_account`
+would fail on NOT NULL columns); Step 1 is the real fix. Keep both.
+
+### Note on deployment copy
+A mirror exists at `deployment/final/trace-server/app/graphql/db/sql_accounts.py`. The running
+dev server is `dev/trace-server`; apply changes there. Mirror to deployment only if the user
+deploys from that copy (confirm separately — not changing it by default).
 
 ## Verification
-- ExtGstTranD has GSTIN → shows ExtGstTranD GSTIN (even if Contacts differ).
-- ExtGstTranD blank, Contacts has GSTIN → shows Contacts GSTIN.
-- ExtGstTranD & Contacts blank, BusinessContacts has GSTIN → shows BusinessContacts.
-- All three blank → field blank, toggle off.
-- New sale: selecting a customer shows that customer's GSTIN (unchanged).
-- Save → `ExtGstTranD.gstin` persists the displayed value; Contacts row unchanged.
+- New bill sale for a finYear/branch/parent-account with **no** prior `AutoSubledgerCounter`
+  row → save succeeds, a new subledger `AccM` row is created with
+  `accCode = {accId}/{branchCode}/1/{finYearId}`, and `AutoSubledgerCounter.lastNo` becomes 2.
+- A **second** bill sale on the same parent → `accCode .../2/...`, counter → 3 (numbering
+  continues; no regression on the previously-working path).
+- Confirm no `'NoneType' object has no attribute 'get'` in `dev/trace-server/logs`.
