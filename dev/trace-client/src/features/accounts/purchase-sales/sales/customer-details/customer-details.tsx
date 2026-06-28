@@ -51,19 +51,22 @@ const CustomerDetails: React.FC = () => {
         if (contactsData) {
             const displayData = formatContactDisplay(contactsData);
             setValue('contactDisplayData', displayData, { shouldDirty: true });
-            if (contactsData.gstin) {
-                setValue('hasCustomerGstin', true, { shouldDirty: true });
-                setValue('gstin', contactsData.gstin, { shouldDirty: true });
-            } else {
-                // Clear GSTIN when new customer has no GSTIN
-                setValue('hasCustomerGstin', false, { shouldDirty: true });
-                setValue('gstin', null, { shouldDirty: true });
-            }
+
+            // On edit-load of the saved contact, GSTIN priority is ExtGstTranD -> Contacts -> BusinessContacts.
+            // For a live customer change (or new sale) take the selected contact's GSTIN as before.
+            const editData = getValues('salesEditData');
+            const isEditLoadContact = Boolean(editData?.billTo) && contactsData.id === editData?.billTo?.id;
+            const gstinValue = isEditLoadContact
+                ? (editData?.extGstTranD?.gstin || contactsData.gstin || editData?.businessContacts?.gstin || null)
+                : (contactsData.gstin || null);
+
+            setValue('hasCustomerGstin', Boolean(gstinValue), { shouldDirty: true });
+            setValue('gstin', gstinValue, { shouldDirty: true });
             trigger('contactDisplayData');
         }
         // Trigger validation for contactsData whenever it changes
         trigger('contactsData');
-    }, [contactsData, setValue, trigger]);
+    }, [contactsData, setValue, trigger, getValues]);
 
     return (
         <div className="relative px-4 py-4 bg-white border-blue-400 border-l-4 rounded-lg shadow-sm">

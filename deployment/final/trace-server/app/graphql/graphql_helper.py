@@ -5,7 +5,7 @@ from fastapi import Response, status
 from fastapi.responses import FileResponse
 from io import BytesIO
 from typing import Literal, List
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 from app.config import Config
 from app.core.dependencies import AppHttpException
 from app.security.security_utils import (
@@ -489,20 +489,64 @@ async def validate_debit_credit_and_update_helper(info, dbName: str, value: str)
     return data
 
 
+async def accounts_posting_helper(info, value: str):
+    try:
+        value_str  = unquote(value)
+        value_dict = json.loads(value_str)
+
+        client_code = value_dict.get("clientCode", "")
+        bu_code     = value_dict.get("buCode", "")
+        data        = value_dict.get("data", {})
+
+        if not client_code or not bu_code or not data:
+            raise AppHttpException(
+                message="Error",
+                detail="clientCode, buCode and data are required",
+                error_code="e1031",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        rows = await exec_sql(
+            dbName=Config.DB_NAME,
+            sql=SqlSecurity.get_client_dbname_dbparams_on_client_code,
+            sqlArgs={"clientCode": client_code},
+        )
+        if not rows:
+            raise AppHttpException(
+                message="Error",
+                detail=f"Client '{client_code}' not found in ClientM",
+                error_code="e1032",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+        db_name   = rows[0]["dbName"]
+        db_params = rows[0]["dbParams"]  # already encrypted string stored in ClientM
+
+        data["dbParams"] = {"conn": db_params}
+        data["buCode"]   = bu_code
+
+        encoded_value = quote(json.dumps(data))
+        return await validate_debit_credit_and_update_helper(info, db_name, encoded_value)
+
+    except Exception as e:
+        return create_graphql_exception(e)
+
+
 def validate_each_tran_entry(data: dict) -> bool:
     try:
-        x_details = data["xData"]["xDetails"]
-        for detail_group in x_details:
-            entries = detail_group.get("xData", [])
-            debit_total = sum(Decimal(str(x.get("amount", 0)))
-                              for x in entries if x.get("dc") == "D")
-            credit_total = sum(Decimal(str(x.get("amount", 0)))
-                               for x in entries if x.get("dc") == "C")
-
-            if debit_total != credit_total:
-                print(
-                    f"Mismatch found: Debit={debit_total}, Credit={credit_total}")
-                return False
+        x_data = data["xData"]
+        tran_entries = x_data if isinstance(x_data, list) else [x_data]
+        for tran_entry in tran_entries:
+            x_details = tran_entry["xDetails"]
+            for detail_group in x_details:
+                entries = detail_group.get("xData", [])
+                debit_total = sum(Decimal(str(x.get("amount", 0)))
+                                  for x in entries if x.get("dc") == "D")
+                credit_total = sum(Decimal(str(x.get("amount", 0)))
+                                   for x in entries if x.get("dc") == "C")
+                if debit_total != credit_total:
+                    print(
+                        f"Mismatch found: Debit={debit_total}, Credit={credit_total}")
+                    return False
         return True
     except (KeyError, IndexError, TypeError) as e:
         print(f"Validation error: {e}")

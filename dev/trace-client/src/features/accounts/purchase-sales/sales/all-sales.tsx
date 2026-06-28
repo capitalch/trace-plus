@@ -380,8 +380,9 @@ export function AllSales() {
             salesType = 'institution'
         }
 
-        // Get gstin from contactDisplayData (which may come from businessContacts)
-        const hasCustomerGstin = Boolean(contactDisplayData?.gstin)
+        // GSTIN priority on edit-load: ExtGstTranD -> Contacts (billTo) -> BusinessContacts
+        const editGstin = extGsTranD?.gstin || billTo?.gstin || businessContacts?.gstin || null
+        const hasCustomerGstin = Boolean(editGstin)
 
         reset({
             id: tranH.id,
@@ -393,7 +394,7 @@ export function AllSales() {
             isGstInvoice: Boolean(extGsTranD?.id),
             creditAccId: tranD.find((item) => item.dc === "C")?.accId,
             debitAccounts: tranD.filter((item) => item.dc === "D"),
-            gstin: extGsTranD?.gstin || contactDisplayData?.gstin || null,
+            gstin: editGstin,
             hasCustomerGstin: hasCustomerGstin,
             isIgst: extGsTranD?.igst ? true : false,
 
