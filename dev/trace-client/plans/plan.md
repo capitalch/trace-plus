@@ -58,11 +58,6 @@ covers the analogous `contactNameMobile` path at lines 269-270):
 Note: this alone is NOT sufficient (empty dict → `accType`/`classId` None → `insert_account`
 would fail on NOT NULL columns); Step 1 is the real fix. Keep both.
 
-### Note on deployment copy
-A mirror exists at `deployment/final/trace-server/app/graphql/db/sql_accounts.py`. The running
-dev server is `dev/trace-server`; apply changes there. Mirror to deployment only if the user
-deploys from that copy (confirm separately — not changing it by default).
-
 ## Verification
 - New bill sale for a finYear/branch/parent-account with **no** prior `AutoSubledgerCounter`
   row → save succeeds, a new subledger `AccM` row is created with

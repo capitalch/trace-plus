@@ -1302,7 +1302,18 @@ class SqlAccounts:
                 AND d."branchId" = (TABLE "branchId")
                 AND d."accId" = (TABLE "accId")
             )
-            RETURNING id
+            RETURNING "lastNo", "accId"
+        )
+        -- union the just-inserted row with the existing row so the new row is visible
+        -- in the same statement (PostgreSQL MVCC: data-modifying CTE rows are not visible
+        -- to other table references in the same query)
+        , counter AS (
+            SELECT "lastNo", "accId" FROM inserting
+            UNION ALL
+            SELECT d."lastNo", d."accId" FROM "AutoSubledgerCounter" d
+            WHERE d."finYearId" = (TABLE "finYearId")
+              AND d."branchId"  = (TABLE "branchId")
+              AND d."accId"     = (TABLE "accId")
         )
 
         SELECT json_build_object(
@@ -1312,13 +1323,11 @@ class SqlAccounts:
             (
                 SELECT row_to_json(t)
                 FROM (
-                SELECT d."lastNo", a."accType", a."classId", c."accClass"
-                FROM "AutoSubledgerCounter" d
-                JOIN "AccM" a ON a."id" = d."accId"
+                SELECT cnt."lastNo", a."accType", a."classId", c."accClass"
+                FROM counter cnt
+                JOIN "AccM" a ON a."id" = cnt."accId"
                 JOIN "AccClassM" c ON c."id" = a."classId"
-                WHERE d."finYearId" = (TABLE "finYearId")
-                    AND d."branchId" = (TABLE "branchId")
-                    AND d."accId" = (TABLE "accId")
+                LIMIT 1
                 ) t
             ),
             'contactNameMobile',

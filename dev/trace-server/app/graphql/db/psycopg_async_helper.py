@@ -259,14 +259,14 @@ async def handle_auto_subledger(sqlObject, acur):
 
     jsonResult = details.get("jsonResult", {})
     branchCode = jsonResult.get("branchCode", "")
-    autoSubledgerDetails = jsonResult.get("autoSubledgerDetails", {})
+    autoSubledgerDetails = jsonResult.get("autoSubledgerDetails") or {}
 
     lastNo = autoSubledgerDetails.get("lastNo", 0)
     accType = autoSubledgerDetails.get("accType")
     classId = autoSubledgerDetails.get("classId")
 
     # Handle contact name and mobile with null safety
-    contactNameMobile = jsonResult.get("contactNameMobile", {})
+    contactNameMobile = jsonResult.get("contactNameMobile") or {}
     contactName = contactNameMobile.get("contactName") or ""
     mobileNumber = contactNameMobile.get("mobileNumber") or ""
     nameWithMobile = f"{contactName}:{mobileNumber}"
