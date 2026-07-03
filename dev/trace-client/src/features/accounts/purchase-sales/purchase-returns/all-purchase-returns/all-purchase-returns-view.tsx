@@ -353,7 +353,7 @@ export function AllPurchaseReturnsView({ className }: { className?: string }) {
                 productId: item.productId,
                 productCode: item.productCode,
                 upcCode: item.upcCode || null,
-                productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+                productDetails: `${item.brandName} ${item.catName} ${item.label}`,
                 hsn: item.hsn.toString(),
                 qty: 1,
                 gstRate: item.gstRate,

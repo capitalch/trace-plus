@@ -509,7 +509,7 @@ const SalesReturnItemsAndServices: React.FC = () => {
     function setLineItem(product: ProductInfoType & { calculatedSalePriceGst: number }, index: number) {
         setValue(`salesReturnLineItems.${index}.productId`, product.productId, { shouldDirty: true });
         setValue(`salesReturnLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
-        setValue(`salesReturnLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
+        setValue(`salesReturnLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}`, { shouldDirty: true });
         setValue(`salesReturnLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
         setValue(`salesReturnLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
         setValue(`salesReturnLineItems.${index}.priceGst`, product.calculatedSalePriceGst, { shouldDirty: true });

@@ -568,7 +568,7 @@ const ItemsAndServices: React.FC = () => {
 
         setValue(`salesLineItems.${index}.productId`, product.productId, { shouldDirty: true });
         setValue(`salesLineItems.${index}.productCode`, product.productCode, { shouldDirty: true, shouldValidate: true });
-        setValue(`salesLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}}`, { shouldDirty: true });
+        setValue(`salesLineItems.${index}.productDetails`, `${product.brandName} ${product.catName} ${product.label}`, { shouldDirty: true });
         setValue(`salesLineItems.${index}.hsn`, product.hsn ? product.hsn.toString() : '', { shouldDirty: true });
         setValue(`salesLineItems.${index}.gstRate`, product.gstRate, { shouldDirty: true });
         setValue(`salesLineItems.${index}.priceGst`, product.calculatedSalePriceGst, { shouldDirty: true });

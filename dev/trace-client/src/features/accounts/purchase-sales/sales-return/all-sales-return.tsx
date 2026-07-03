@@ -310,7 +310,7 @@ export function AllSalesReturn() {
                 productId: item.productId,
                 productCode: item.productCode,
                 upcCode: item.upcCode || null,
-                productDetails: `${item.brandName} ${item.catName} ${item.label}}`,
+                productDetails: `${item.brandName} ${item.catName} ${item.label}`,
                 hsn: item.hsn.toString(),
                 qty: item.qty,
                 gstRate: item.gstRate,
