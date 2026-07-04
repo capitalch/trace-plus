@@ -12,6 +12,7 @@ from app.core.messages import Messages
 from app.security.security_router import securityRouter
 from app.graphql.graphql_router import GraphQLApp
 from app.security.security_utils import validate_token
+from app.internal.internal_router import router as internal_router
 import logging
 
 app = FastAPI()
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 
 app.include_router(securityRouter)
+app.include_router(internal_router)
 # Uncatched exceptions will come here
 app.middleware("http")(exceptions_middleware)
 
