@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from app.config import Config
 from app.graphql.graphql_helper import accounts_posting_helper
@@ -13,6 +14,7 @@ def _verify_service_key(x_service_key: str = Header(..., alias="X-Service-Key"))
 @router.post("/accounts-posting")
 async def accounts_posting_internal(request: Request, _: str = Depends(_verify_service_key)):
     body = await request.json()
+    logging.info(f"Trace Plus: Accounts posting internal request")
     result = await accounts_posting_helper(None, body.get("value", ""))
     if isinstance(result, dict) and result.get("error"):
         detail = result["error"].get("content", {}).get("detail", "Accounts posting failed")
