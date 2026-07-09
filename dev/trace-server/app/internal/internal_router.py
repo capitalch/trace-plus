@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from app.config import Config
 from app.graphql.graphql_helper import accounts_posting_helper
 
-router = APIRouter(prefix="/internal", tags=["internal"])
+router = APIRouter(prefix="/api/internal", tags=["internal"])
 
 
 def _verify_service_key(x_service_key: str = Header(..., alias="X-Service-Key")):

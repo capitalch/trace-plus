@@ -257,6 +257,7 @@ async def decode_ext_db_params_helper(info, value):
 async def generic_query_helper(info, dbName: str, value: str):
     data = {}
     try:
+        # logging.info(f"Generic Query Helper called")
         valueString = unquote(value)
         valueDict = json.loads(valueString)
         dbParams = valueDict.get("dbParams", None)
