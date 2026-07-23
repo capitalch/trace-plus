@@ -724,11 +724,13 @@ class SqlAccounts:
     """
 
     get_all_products_info_for_product_select = """
-            --with "branchId" as (values(1)), "finYearId" as (values (2024)),
+            --with "branchId" as (values(1)), "finYearId" as (values (2026)),
             with "branchId" as (values(%(branchId)s::int)), "finYearId" as (values (%(finYearId)s::int)),
             cte0 AS (  
                 --Base CTE used many times in next  
                 SELECT   
+                    h."id" AS "tranId",                 -- CHANGED: tiebreaker for cte5
+                    d."id" AS "tranDetailsId",          -- CHANGED: tiebreaker for cte5
                     "productId",   
                     "tranTypeId",   
                     "qty",   
@@ -745,12 +747,14 @@ class SqlAccounts:
                 UNION ALL  
                 
                 SELECT   
+                    h."id" AS "tranId",                 -- CHANGED
+                    s."id" AS "tranDetailsId",          -- CHANGED
                     s."productId",   
                     "tranTypeId",   
                     s."qty",   
                     0 AS "price",   
                     h."tranDate",   
-                    'D' AS "dc"  
+                    'D' AS "dc"   -- replace with s."dc" if StockJournal stores debit/credit
                 FROM "TranH" h  
                 JOIN "StockJournal" s ON h."id" = s."tranHeaderId"  
                 WHERE   
@@ -820,16 +824,23 @@ class SqlAccounts:
             ),   
             cte5 AS (   
                 -- Get last purchase price for transacted products  
+                -- CHANGED: purchases only (tranTypeId 5). Stock journal rows carry a
+                -- hardcoded price of 0 and must not win the ROW_NUMBER.
+                -- CHANGED: zero/null prices excluded, deterministic tiebreaker added.
                 SELECT   
                     "productId",   
-                    "price" AS "lastPurchasePrice"  
+                    "lastPurchasePrice"  
                 FROM (  
                     SELECT   
                         "productId",   
-                        "price",   
-                        ROW_NUMBER() OVER (PARTITION BY "productId" ORDER BY "tranDate" DESC) AS rn  
+                        "price" AS "lastPurchasePrice",   
+                        ROW_NUMBER() OVER (
+                            PARTITION BY "productId" 
+                            ORDER BY "tranDate" DESC, "tranId" DESC, "tranDetailsId" DESC
+                        ) AS rn  
                     FROM cte0  
-                    WHERE "tranTypeId" IN (5, 11)  
+                    WHERE "tranTypeId" = 5  
+                      AND COALESCE("price", 0) <> 0  
                 ) AS t  
                 WHERE rn = 1  
             ),   
@@ -837,11 +848,9 @@ class SqlAccounts:
                 -- Combine last purchase price with latest result set  
                 SELECT   
                     COALESCE(c4."productId", c5."productId") AS "productId",  
-                    CASE 
-				        WHEN c5."lastPurchasePrice" IS NULL OR c5."lastPurchasePrice" = 0 
-				        THEN c4."openingPrice"
-				        ELSE c5."lastPurchasePrice"
-				    END AS "lastPurchasePrice",   
+                    -- CHANGED: cte5 now returns NULL only when there is genuinely no
+                    -- purchase, so a plain COALESCE onto openingPrice is enough.
+                    COALESCE(c5."lastPurchasePrice", c4."openingPrice") AS "lastPurchasePrice",   
                     c4."lastPurchaseDate",  
                     (COALESCE(c4."op", 0) + COALESCE(c4."purchase", 0) - COALESCE(c4."purchaseRet", 0) - COALESCE(c4."sale", 0) + COALESCE(c4."saleRet", 0) + COALESCE(c4."stockJournalDebits", 0) - COALESCE(c4."stockJournalCredits", 0)) AS "clos",  
                     COALESCE(c4."sale", 0) AS "sale",  
