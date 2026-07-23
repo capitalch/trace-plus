@@ -754,7 +754,7 @@ class SqlAccounts:
                     s."qty",   
                     0 AS "price",   
                     h."tranDate",   
-                    'D' AS "dc"   -- replace with s."dc" if StockJournal stores debit/credit
+                    s."dc"
                 FROM "TranH" h  
                 JOIN "StockJournal" s ON h."id" = s."tranHeaderId"  
                 WHERE   

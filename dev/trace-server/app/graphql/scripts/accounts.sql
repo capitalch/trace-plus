@@ -160,7 +160,7 @@ CREATE FUNCTION public.get_stock_on_date(branchid integer, finyearid integer, "o
 					on d."id" = s."tranDetailsId"
 			where ("branchId" = branchId) and ("finYearId" =finYearId) and ("tranDate" <= "onDate")
 				union all --necessary otherwise rows with same values are removed
-		select "productId", "tranTypeId", "qty", 0 as "price", "tranDate", "dc"
+		select "productId", "tranTypeId", "qty", COALESCE(s."price", 0) as "price", "tranDate", "dc"
 			from "TranH" h
 				join "StockJournal" s
 					on h."id" = s."tranHeaderId"
