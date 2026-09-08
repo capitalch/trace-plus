@@ -29,7 +29,7 @@ export function AccountsEditModal({
     const { checkNoSpaceOrSpecialChar, checkNoSpecialChar } = useValidators()
     const { buCode, context, dbName, decodedDbParamsObject } = useUtilsInfo()
     const parentOptions: ParentOptionsType[] = useSelector((state: RootStateType) => state.queryHelper[instance]?.data)
-    const [selectedParent, setSelectedParent] = useState<AccountsEditModalType | null>(null)
+    const [selectedParent, setSelectedParent] = useState<ParentOptionsType | null>(null)
     const {
         register,
         handleSubmit,
@@ -126,8 +126,8 @@ export function AccountsEditModal({
 
     </form>)
 
-    function handleOnChangeParentId(selectedObject: AccountsEditModalType) {
-        setValue('parentAccount', selectedObject.accId, { shouldDirty: true })
+    function handleOnChangeParentId(selectedObject: ParentOptionsType | null) {
+        setValue('parentAccount', selectedObject?.accId as number, { shouldDirty: true })
         setSelectedParent(selectedObject)
     }
 
@@ -159,7 +159,7 @@ export function AccountsEditModal({
                     accLeaf: newAccLeaf,
                     accName: data.accountName,
                     accId: accId,
-                    parentId: selectedParent?.accId,
+                    parentId: selectedParent?.accId ?? parentId,
                     hasParentChanged: Boolean(dirtyFields.parentAccount)
                 }
             })

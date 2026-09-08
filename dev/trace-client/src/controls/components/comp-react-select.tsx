@@ -60,15 +60,22 @@ export function CompReactSelect({
   );
 
   function selectItem() {
+    if (!selectRef.current) {
+      return;
+    }
+    if (_.isEmpty(options)) {
+      return; // Options not loaded yet. Nothing to match against and nothing to clear
+    }
     const selectedOption: any = options.find(
       (option: any) => option[optionValueName] === selectedValue
     );
-    if (selectRef.current) {
-      if (selectedOption) {
-        selectRef.current.setValue(selectedOption);
-      } else {
-        selectRef.current.clearValue();
+    if (selectedOption) {
+      const currentOption: any = selectRef.current.getValue()?.[0];
+      if (currentOption?.[optionValueName] !== selectedValue) {
+        selectRef.current.setValue(selectedOption); // Fires onChange only on a real change
       }
+    } else if (selectRef.current.hasValue()) {
+      selectRef.current.clearValue(); // Clear the stale displayed value
     }
   }
 }

@@ -46,28 +46,18 @@ export function GeneralLedger() {
     })
     const {
         branchId
-        , buCode
         , context
         , currentFinYear
         , dbName
         , decodedDbParamsObject
         , decFormatter
-        , finYearId
     } = useUtilsInfo()
 
     useEffect(() => {
         if (selectedAccountPickerAccId) {
             loadData()
         } else {
-            meta.current.accName = ''
-            meta.current.transactions = []
-            meta.current.transactionsCopy = []
-            setRefresh({})
-            // Reset data
-            const gridRef: any = context.CompSyncFusionGrid[instance]?.gridRef
-            if (gridRef?.current) {
-                gridRef.current.dataSource = []
-            }
+            clearLedger()
         }
     }, [selectedAccountPickerAccId, isAllBranches, currentFinYear?.finYearId, branchId, instance, context, ])
 
@@ -166,6 +156,18 @@ export function GeneralLedger() {
             {isVisibleAppLoader && <CompAppLoader />}
         </CompAccountsContainer>
     )
+
+    function clearLedger() {
+        meta.current.accName = ''
+        meta.current.transactions = []
+        meta.current.transactionsCopy = []
+        setRefresh({})
+        // Reset data
+        const gridRef: any = context.CompSyncFusionGrid[instance]?.gridRef
+        if (gridRef?.current) {
+            gridRef.current.dataSource = []
+        }
+    }
 
     function calculateClosing() {
         const ret = meta.current.transactionsCopy.reduce((sum: Decimal, current: AccTranType) => (sum.plus(current.debit || 0).minus(current.credit || 0)), new Decimal(0))
@@ -334,21 +336,25 @@ export function GeneralLedger() {
     }
 
     async function loadData() {
-        const hasAllBranches: boolean = Utils.getReduxState().reduxComp.compSwitch[instance] || false
-        if (!selectedAccountPickerAccId) {
-            meta.current.transactions = []
-            meta.current.transactionsCopy = []
+        // The toolbar Refresh button invokes the loadData registered in GlobalContext at mount time.
+        // So all values must be read fresh from the store here, never from the render closure
+        const state: RootStateType = Utils.getReduxState()
+        const hasAllBranches: boolean = state.reduxComp.compSwitch[instance] || false
+        const accId = state.accountPickerTree[instance]?.id
+        const freshFinYear = state.login.currentFinYear
+        if (!accId) {
+            clearLedger()
             return
         }
         const res: any = await Utils.doGenericQuery({
-            buCode: buCode || '',
+            buCode: state.login.currentBusinessUnit?.buCode || '',
             dbName: dbName || '',
             dbParams: decodedDbParamsObject || {},
             instance: instance,
             sqlArgs: {
-                accId: selectedAccountPickerAccId,
-                finYearId: finYearId,
-                branchId: hasAllBranches ? null : branchId
+                accId: accId,
+                finYearId: freshFinYear?.finYearId,
+                branchId: hasAllBranches ? null : state.login.currentBranch?.branchId
             },
             sqlId: SqlIdsMap.getAccountLedger
         })
@@ -358,7 +364,7 @@ export function GeneralLedger() {
         const formattedOpBals: any[] = opBals.map((op: any) => ({
             ...op,
             "otherAccounts": "Opening balance:",
-            "tranDate": currentFinYear?.startDate,
+            "tranDate": freshFinYear?.startDate,
             "autoRefNo": '',
             "instrNo": ''
         }))
