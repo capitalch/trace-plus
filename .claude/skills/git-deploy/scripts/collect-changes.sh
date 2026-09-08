@@ -14,14 +14,12 @@ fail() {
     exit 1
 }
 
-# --- guard: this must be the trace-plus repo -------------------------------
+# --- guard: only ever deploy the repo this skill lives in ------------------
+# scripts/ -> git-deploy/ -> skills/ -> .claude/ -> repo root
+OWNER=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd) || fail "cannot resolve the skill's own location"
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || fail "not inside a git repository"
-[ "$(basename "$ROOT")" = "trace-plus" ] || fail "repo root is $ROOT — expected a folder named trace-plus"
+[ "$ROOT" = "$OWNER" ] || fail "this skill belongs to $OWNER but the working directory is in $ROOT"
 ORIGIN=$(git -C "$ROOT" remote get-url origin 2>/dev/null) || fail "no 'origin' remote configured"
-case "$ORIGIN" in
-    *capitalch/trace-plus*) ;;
-    *) fail "origin is $ORIGIN — expected capitalch/trace-plus" ;;
-esac
 cd "$ROOT"
 
 # --- header ----------------------------------------------------------------
@@ -33,6 +31,7 @@ else
     UPSTREAM="(none — first push will need -u)"
     AHEAD_BEHIND="(unknown)"
 fi
+echo "REPO=$(basename "$ROOT")"
 echo "ROOT=$ROOT"
 echo "BRANCH=$BRANCH"
 echo "UPSTREAM=$UPSTREAM"
@@ -50,16 +49,24 @@ fi
 # wholly-untracked directory to "dir/", which would hide a secret sitting inside it,
 # so the candidate list is built from name-only listings instead.
 SECRET_RE='(^|/)\.env|(^|/)config\.[^/]+$|\.(pem|key|p12|pfx)$|(^|/)id_rsa'
-CANDIDATES=$( {
-    git diff --name-only HEAD
-    git diff --cached --name-only
-    git ls-files --others --exclude-standard
-} | sort -u)
-SUSPECT=$(printf '%s\n' "$CANDIDATES" | grep -E "$SECRET_RE" || true)
-if [ -n "$SUSPECT" ]; then
-    echo "SECRET_SUSPECT: $(printf '%s' "$SUSPECT" | tr '\n' ' ')"
+
+# A NEW secret-shaped file is a possible fresh leak — refuse.
+NEW_SUSPECT=$(git ls-files --others --exclude-standard | grep -E "$SECRET_RE" || true)
+if [ -n "$NEW_SUSPECT" ]; then
+    echo "SECRET_SUSPECT: $(printf '%s' "$NEW_SUSPECT" | tr '\n' ' ')"
     echo "Refusing to collect. Add these to .gitignore or confirm they are safe."
     exit 2
+fi
+
+# An ALREADY-TRACKED one is in the repo's history whatever happens now, so blocking
+# every deploy would help nobody. Name it, never read it, and let the model mention it.
+TRACKED_SUSPECT=$( {
+    git diff --name-only HEAD
+    git diff --cached --name-only
+} | sort -u | grep -E "$SECRET_RE" || true)
+if [ -n "$TRACKED_SUSPECT" ]; then
+    echo "SECRET_TRACKED: $(printf '%s' "$TRACKED_SUSPECT" | tr '\n' ' ')"
+    echo "(already in the repo, changed in this upload — contents not read)"
 fi
 
 # --- status and stat -------------------------------------------------------

@@ -23,13 +23,11 @@ MSG_FILE=$(readlink -f "$MSG_FILE")
 BODY_FILE=$(readlink -f "$BODY_FILE")
 
 # --- guard: same check as collect-changes.sh -------------------------------
+# scripts/ -> git-deploy/ -> skills/ -> .claude/ -> repo root
+OWNER=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd) || fail "cannot resolve the skill's own location"
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || fail "not inside a git repository"
-[ "$(basename "$ROOT")" = "trace-plus" ] || fail "repo root is $ROOT — expected a folder named trace-plus"
+[ "$ROOT" = "$OWNER" ] || fail "this skill belongs to $OWNER but the working directory is in $ROOT"
 ORIGIN=$(git -C "$ROOT" remote get-url origin 2>/dev/null) || fail "no 'origin' remote configured"
-case "$ORIGIN" in
-    *capitalch/trace-plus*) ;;
-    *) fail "origin is $ORIGIN — expected capitalch/trace-plus" ;;
-esac
 cd "$ROOT"
 
 # --- nothing to do? checked BEFORE the log file is touched -----------------
@@ -113,4 +111,9 @@ if ! "${PUSH_CMD[@]}"; then
 fi
 
 echo "DEPLOYED sha=$SHA base=$BASE branch=$BR files=$FILES"
-echo "URL=https://github.com/capitalch/trace-plus/commit/$SHA"
+# git@host:owner/repo.git and https://host/owner/repo.git both -> https://host/owner/repo
+WEB=$(printf '%s' "$ORIGIN" | sed -e 's|^git@\([^:]*\):|https://\1/|' -e 's|\.git$||')
+case "$WEB" in
+    https://*) echo "URL=$WEB/commit/$SHA" ;;
+    *) echo "URL=(origin $ORIGIN is not an http remote — sha $SHA)" ;;
+esac

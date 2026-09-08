@@ -1,6 +1,6 @@
 ---
 name: git-deploy
-description: ROOTCOPY. Upload the whole trace-plus repo to GitHub in one commit with an auto-written commit message describing what this upload contains, plus a dated entry in notes/deploy-log.md. Use when asked to deploy, upload trace-plus to git, push my changes, or commit and push. Accepts a free-text hint, or --dry-run to preview without committing.
+description: Upload the whole trace-plus repo to GitHub in one commit with an auto-written commit message describing what this upload contains, plus a dated entry in notes/deploy-log.md. Use when asked to deploy, upload trace-plus to git, push my changes, or commit and push. Accepts a free-text hint, or --dry-run to preview without committing.
 ---
 
 # git-deploy
@@ -23,6 +23,10 @@ Read-only. Handle its outcomes before going further:
 - **`SECRET_SUSPECT: <paths>`** (exit 2) — stop. Show the paths, say they look like
   secrets, and ask whether to add them to `.gitignore` or proceed anyway. Never
   work around the guard on your own.
+- **`SECRET_TRACKED: <paths>`** — these are already in the repo and changed in this
+  upload. Not a blocker and not an error. Their contents were never read, so describe
+  them only as "updated, contents not read" — never guess at what changed inside them,
+  and mention them in the commit message so the change is not silent.
 - **`ERROR:`** (exit 1) — the guard says this is not the trace-plus repo. Report and stop.
 - **`DIFF_TRUNCATED`** — the diff was capped. Describe the capped part from `=== STAT ===`
   rather than guessing at contents you were not shown.

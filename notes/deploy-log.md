@@ -3,6 +3,15 @@
 Entries are written by `/git-deploy`, newest first. Each entry describes one commit;
 `Base:` is the commit it was built on, so `git diff <base>..` shows exactly that upload.
 
+## 2026-09-08 15:15 (main)
+git-deploy: make the skill repo-agnostic and soften the secret guard
+- collect-changes.sh: block only new secret-shaped files; an already-tracked one now warns via SECRET_TRACKED instead of aborting every deploy
+- collect-changes.sh, finish-deploy.sh: guard on the skill's own location rather than a hardcoded repo name, so it refuses to run against a different repo
+- finish-deploy.sh: derive the commit URL from the origin remote
+- collect-changes.sh: report REPO= in the header block
+- SKILL.md: document the SECRET_TRACKED outcome and how to describe unread files
+Files: 3 changed (+35 / -21) — Base: 71b3f500
+
 ## 2026-09-08 15:06 (main)
 General ledger: refresh from live store; fix picker and parent edit
 
