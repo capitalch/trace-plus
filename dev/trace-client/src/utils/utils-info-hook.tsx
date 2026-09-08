@@ -31,9 +31,11 @@ export function useUtilsInfo() {
     const generalSettings: GeneralSettingsType = Utils.getGeneralSettings()
     const defaultGstRate = generalSettings?.defaultGstRate || 0
     const maxGstRate = generalSettings?.maxGstRate || 30
+    const auditLockDate = generalSettings?.auditLockDate || null
      const clientId = userDetails?.clientId || 0
     return ({
-        branchId
+        auditLockDate
+        , branchId
         , branchCode
         , branchName
         , branchAddress    // New: Full address object

@@ -1,9 +1,9 @@
-import { isWithinInterval, parseISO } from "date-fns";
+import { format, isAfter, isWithinInterval, parseISO } from "date-fns";
 import { Messages } from "./messages";
 import { useUtilsInfo } from "./utils-info-hook";
 
 function useValidators() {
-  const { currentFinYear } = useUtilsInfo();
+  const { auditLockDate, currentDateFormat, currentFinYear } = useUtilsInfo();
   function checkAddress(input: string | undefined) {
     let error = undefined;
     if (input) {
@@ -29,6 +29,17 @@ function useValidators() {
     });
     if (!isBetween) {
       error = Messages.errInvalidDate;
+      return error;
+    }
+    // Audit lock: the lock date itself is inside the closed period
+    if (auditLockDate) {
+      const lockDate = parseISO(auditLockDate);
+      if (!isAfter(dateToCheck, lockDate)) {
+        error = `${Messages.errDateOnOrBeforeAuditLock} ${format(
+          lockDate,
+          currentDateFormat
+        )}`;
+      }
     }
     return error;
   }

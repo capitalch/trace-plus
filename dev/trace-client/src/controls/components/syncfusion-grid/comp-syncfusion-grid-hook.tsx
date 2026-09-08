@@ -12,6 +12,9 @@ import {
 import { useQueryHelper } from "../../../app/graphql/query-helper-hook";
 import { useSelector } from "react-redux";
 import { RootStateType } from "../../../app/store";
+import { Utils } from "../../../utils/utils";
+import { Messages } from "../../../utils/messages";
+import { format } from "date-fns";
 
 export function useCompSyncFusionGrid({
   aggregates,
@@ -272,6 +275,11 @@ export function useCompSyncFusionGrid({
     const rowData = args.rowData;
     const id = args.rowData.id;
     const buttonClass = args.commandColumn?.buttonOption?.cssClass;
+    const isEditOrDelete = buttonClass?.includes('e-grid-edit') || buttonClass?.includes('e-grid-delete');
+    if (isEditOrDelete && isAuditLocked(rowData?.tranDate)) {
+      Utils.showAlertMessage('Audit locked', Messages.messAuditLocked);
+      return
+    }
     if (buttonClass?.includes('e-grid-edit')) {
       onEdit?.(rowData);
       return
@@ -296,6 +304,19 @@ export function useCompSyncFusionGrid({
       onCopy?.(rowData);
       return;
     }
+  }
+
+  // Audit lock: a transaction dated on or before the lock date is in a closed period.
+  // Rows without a tranDate (master grids) are never locked.
+  function isAuditLocked(tranDate: any) {
+    const auditLockDate: string | null = Utils.getGeneralSettings()?.auditLockDate || null;
+    if (!auditLockDate || !tranDate) {
+      return (false);
+    }
+    const isoTranDate: string = (tranDate instanceof Date)
+      ? format(tranDate, 'yyyy-MM-dd')
+      : String(tranDate).substring(0, 10);
+    return (isoTranDate <= auditLockDate);
   }
 
   function indexColumnTemplate(props: any) {

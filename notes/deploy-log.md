@@ -3,6 +3,17 @@
 Entries are written by `/git-deploy`, newest first. Each entry describes one commit;
 `Base:` is the commit it was built on, so `git diff <base>..` shows exactly that upload.
 
+## 2026-09-08 20:01 (main)
+Masters: enforce Audit Lock Date across transactions
+
+- validators-hook: checkAllowedDate now rejects a transaction date on or before the audit lock date, after the existing financial-year range check. All nine transaction entry forms already register this validator on tranDate, so vouchers, purchases, purchase returns, sales, sales returns, debit and credit notes, stock journal and branch transfer are covered with no per-module edits
+- Syncfusion grid control: the shared row-action handler now refuses edit and delete on a transaction dated inside the closed period. Preview, zoom-in and copy are deliberately untouched, and rows carrying no tranDate (master grids) are never locked
+- utils-info-hook: useUtilsInfo exposes auditLockDate from general settings, alongside the existing defaultGstRate and maxGstRate
+- messages: added errDateOnOrBeforeAuditLock for the form validator and messAuditLocked for the grid refusal dialog
+- Scope: enforcement is client-side only. The Audit Lock Date was previously stored but read by nothing; a matching check in generic_update_helper is still needed to make the lock authoritative
+
+Files: 4 changed (+40 / -3) — Base: 3a850f64
+
 ## 2026-09-08 19:36 (main)
 Sales: show line-item remarks in invoice PDF items column
 

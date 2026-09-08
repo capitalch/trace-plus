@@ -28,6 +28,7 @@ const Messages = {
   errDateBeyondRange: 'Date beyond valid range',
   errDateFieldRequired: 'Date field is required',
   errDateOfBirthInFuture: 'Date of birth cannot be in the future',
+  errDateOnOrBeforeAuditLock: 'Books are closed for audit up to',
   errDebitCreditMismatch: 'Total debits do not match total credits or value is 0',
   errDeletingRecord: 'Could not delete the record',
   errEmailAlreadyExists: 'This email is already registered to another contact',
@@ -92,6 +93,8 @@ const Messages = {
   errUpcCodeExists: 'UpcCode for the product already exists',
   errUnknown: 'An unknown error occurred in the operation',
 
+  messAuditLocked:
+    'This transaction falls in a period that is closed for audit. It cannot be edited or deleted',
   messAutoLinkBuiltinRoles: 'Add controls from built-in roles',
   messBranchSuccessfullySelected: 'The branch was successfully selected',
   messBusinessUsersUnlinkSuccess:
