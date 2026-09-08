@@ -3,6 +3,17 @@
 Entries are written by `/git-deploy`, newest first. Each entry describes one commit;
 `Base:` is the commit it was built on, so `git diff <base>..` shows exactly that upload.
 
+## 2026-09-08 19:36 (main)
+Sales: show line-item remarks in invoice PDF items column
+
+- all-sales-invoice-jspdf.tsx: line-item remarks are now concatenated into the Items column, after the product name and before HSN and serial numbers; rows with no remarks render exactly as before
+- all-sales-return-invoice-jspdf.tsx: same addition, keeping the sales return invoice consistent with the sales invoice
+- Dropped the stale all-sales-invoice-jspdf.tsx.backup copy of the generator
+- Removed the sales folder claude.md instructions file
+- all-sales-view.tsx: BACK button icon uses the current Tailwind shrink-0 utility instead of flex-shrink-0
+
+Files: 5 changed (+3 / -527) — Base: 66d3b6ca
+
 ## 2026-09-08 15:15 (main)
 git-deploy: make the skill repo-agnostic and soften the secret guard
 - collect-changes.sh: block only new secret-shaped files; an already-tracked one now warns via SECRET_TRACKED instead of aborting every deploy

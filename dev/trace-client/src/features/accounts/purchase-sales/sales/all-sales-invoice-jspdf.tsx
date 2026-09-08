@@ -352,7 +352,7 @@ export function generateSalesInvoicePDF(
     body: [
       ...salePurchaseDetails.map((item, i) => [
         `${i + 1}`,
-        `${item.brandName || ''} ${item.catName || ''} ${item.label || ''}${item.hsn ? `, HSN ${item.hsn}` : ''}${item.serialNumbers ? `, Sl nos: ${item.serialNumbers}` : ''}`,
+        `${item.brandName || ''} ${item.catName || ''} ${item.label || ''}${item.remarks ? `, Remarks: ${item.remarks}` : ''}${item.hsn ? `, HSN ${item.hsn}` : ''}${item.serialNumbers ? `, Sl nos: ${item.serialNumbers}` : ''}`,
         { content: (item.qty || 0).toString(), styles: { halign: 'right' as const } },
         { content: formatNumber(item.price || 0), styles: { halign: 'right' as const } },
         { content: formatNumber(item.discount || 0), styles: { halign: 'right' as const } },

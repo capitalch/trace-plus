@@ -103,7 +103,7 @@ export function AllSalesView({ className, onBack }: AllSalesViewProps) {
               onClick={onBack}
               className="flex items-center justify-center px-4 py-2 font-medium text-sm text-white whitespace-nowrap bg-blue-500 rounded-md shadow-sm transition-colors hover:bg-blue-600 space-x-2"
             >
-              <ArrowLeft size={16} className="flex-shrink-0" />
+              <ArrowLeft size={16} className="shrink-0" />
               <span>BACK</span>
             </button>
           </div>
