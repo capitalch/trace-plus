@@ -1,6 +1,12 @@
 # Phase 3
+							- .env file instead of .config
+								- Testing
+									- DB: login + voucher entry
+									- Email
+									- Transfer from service+
+								- Deployment done
 - Bugs
-	- In Accounts master, edit does not work
+									- In Accounts master, edit does not work
 									- sale bil when changed bu, still old footprint
 									- BS, PL show zero balance if there are already transactions. Presently all zero balance not show.
 									- BS, PL expand all then undo, removes the amount

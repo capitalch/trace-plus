@@ -3,7 +3,7 @@ from fastapi import status
 from psycopg import OperationalError, AsyncConnection
 from psycopg.conninfo import make_conninfo
 from psycopg.rows import dict_row
-from app.config import Config
+from app.config import settings
 from typing import Any
 from types import FunctionType
 from app.core.utils import get_env
@@ -14,19 +14,19 @@ from app.core.messages import Messages, customErrorCodes
 import json
 
 dbParams: dict = {
-    "user": Config.DB_USER,
-    "password": Config.DB_PASSWORD,
-    "ipAddress": Config.DB_IP_ADDRESS,
-    "internalPort": Config.DB_INTERNAL_PORT,
-    "port": Config.DB_PORT,
-    "host": Config.DB_HOST,
+    "user": settings.db_user,
+    "password": settings.db_password.get_secret_value(),
+    "ipAddress": settings.db_ip_address,
+    "internalPort": settings.db_internal_port,
+    "port": settings.db_port,
+    "host": settings.db_host,
 }
 
 
 def get_conn_info(
-    dbName: str = Config.DB_NAME, db_params: dict[str, str] = dbParams
+    dbName: str = settings.db_name, db_params: dict[str, str] = dbParams
 ) -> str:
-    dbName = Config.DB_NAME if dbName is None else dbName
+    dbName = settings.db_name if dbName is None else dbName
     db_params = dbParams.copy() if db_params is None else db_params.copy()
     conn = db_params.get('conn', None)
     if (conn):
@@ -50,7 +50,7 @@ def get_conn_info(
 
 
 async def exec_sql(
-    dbName: str = Config.DB_NAME,
+    dbName: str = settings.db_name,
     db_params: dict[str, str] = dbParams,
     schema: str = "public",
     sql: str = None,
@@ -100,7 +100,7 @@ async def do_process(
 
 
 async def exec_sql_dml(
-    dbName: str = Config.DB_NAME,
+    dbName: str = settings.db_name,
     db_params: dict[str, str] = dbParams,
     schema: str = "public",
     sql: str = "",
@@ -136,7 +136,7 @@ async def process_details(sqlObject: Any, acur: Any, fkeyValue=None):
 
 
 async def exec_sql_object(
-    dbName: str = Config.DB_NAME,
+    dbName: str = settings.db_name,
     db_params: dict[str, str] = dbParams,
     schema: str = "public",
     execSqlObject: Any = process_details,

@@ -1,4 +1,4 @@
-from app.config import Config
+from app.config import settings
 
 
 class Messages:
@@ -52,9 +52,8 @@ class customErrorCodes:
     e1001 = "API end point not found. The end point queried by the client is not found in the server code"
     e1002 = "An error was raised while running the server code"
     e1003 = "Either username or password was found missing"
-    e1004 = "Super admin configuration details are missing. Please check the Config.py file at server"
     e1004 = "Either username or the password is invalid. JWT verification failed for provided username and password. Could not generate access token"
-    e1005 = "Database connection error at server. Check the connection params of database in Config file"
+    e1005 = "Database connection error at server. Check the DB_* keys in the server .env file"
     e1006 = "Sql execution error. Maybe badly formed SQL query"
     e1007 = "Invalid user name or email"
     e1008 = "User is not active"
@@ -87,6 +86,7 @@ class customErrorCodes:
     e1035 = "Missing xDetails data"
     e1036 = "AutoSubledger account not found in details"
     e1037 = "AutoSubledger details not found"
+    e1038 = "Super admin configuration is missing or invalid at the server. Check the SUPER_ADMIN_* keys in the server .env file"
 
 
 
@@ -100,11 +100,11 @@ class EmailMessages:
     email_subject_change_pwd = "change of pwd"
 
     email_subject_reset_password_success = (
-        f"{Config.PACKAGE_NAME}: Reset of password is done successfully"
+        f"{settings.package_name}: Reset of password is done successfully"
     )
 
     email_subject_forgot_password_reset_link = (
-        f"Reset password link for forgot passwordk for {Config.PACKAGE_NAME} "
+        f"Reset password link for forgot passwordk for {settings.package_name} "
     )
 
     def email_subject_new_user(userType):
@@ -120,11 +120,11 @@ class EmailMessages:
             <body>
             <h1>Reset password link</h1>
             <p>Dear Sir / Madam,</p>
-            <p>Here is the reset password link for your account in {Config.PACKAGE_NAME}. Click this link to reset your password. Alternatively you can paste this link in ynour browser and browse</p>
+            <p>Here is the reset password link for your account in {settings.package_name}. Click this link to reset your password. Alternatively you can paste this link in ynour browser and browse</p>
             <p>This link is valid for one hour. Click this link to securely reset your password</p>
             <p>{resetPasswordLink}</p>
             <p>Thank you,</p>
-            <p>{Config.PACKAGE_NAME}</p>
+            <p>{settings.package_name}</p>
             </body>
             </html>
         """
@@ -139,13 +139,13 @@ class EmailMessages:
             <body>
             <h1>Reset of the password is successfully done</h1>
             <p>Dear Sir / Madam,</p>
-            <p>Reset of password for your account in {Config.PACKAGE_NAME} is successfully done.
+            <p>Reset of password for your account in {settings.package_name} is successfully done.
             <p><b>Email: {email}</b></p>
             <p><b>Client name: {clientName}</b></p>
             <p><b>New password: {pwd}</b></p>
             <p>You must change your password to human readable format as early as possible</p>
             <p>Thank you,</p>
-            <p>{Config.PACKAGE_NAME}</p>
+            <p>{settings.package_name}</p>
             </body>
             </html>
         """

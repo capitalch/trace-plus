@@ -1,9 +1,0 @@
-{
-    "python.languageServer": "Pylance",
-    "editor.quickSuggestions": {
-        "other": true,
-        "comments": false,
-        "strings": true
-    },
-    "python-envs.pythonProjects": []
-}

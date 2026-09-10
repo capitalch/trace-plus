@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 from io import BytesIO
 from typing import Literal, List
 from urllib.parse import unquote, quote
-from app.config import Config
+from app.config import settings
 from app.core.dependencies import AppHttpException
 from app.security.security_utils import (
     getRandomUserId,
@@ -20,7 +20,7 @@ from .db.psycopg_async_helper import exec_sql, exec_sql_dml, exec_sql_object
 from .db.sql_security import SqlSecurity
 from .db.sql_accounts import SqlAccounts
 from app.core.utils import decrypt, encrypt, getSqlQueryObject, is_not_none_or_empty
-from app.config import Config
+from app.config import settings
 from app.graphql.handlers.create_bu import create_bu
 from app.graphql.handlers.import_secured_controls import import_secured_controls
 from decimal import Decimal
@@ -163,7 +163,7 @@ async def change_pwd_helper(info, value):
                 email = valueDict.get("email", None)
                 userName = valueDict.get("userName", None)
                 await send_mail_for_change_pwd(
-                    companyName=Config.PACKAGE_NAME,
+                    companyName=settings.package_name,
                     email=email,
                     pwd=pwd,
                     userName=userName,
@@ -215,7 +215,7 @@ async def change_uid_helper(info, value):
             uid = valueDict.get("uid", None)
             userName = valueDict.get("userName", None)
             await send_mail_for_change_uid(
-                companyName=Config.PACKAGE_NAME, email=email, uid=uid, userName=userName
+                companyName=settings.package_name, email=email, uid=uid, userName=userName
             )
         else:
             raise AppHttpException(
@@ -508,7 +508,7 @@ async def accounts_posting_helper(info, value: str):
             )
 
         rows = await exec_sql(
-            dbName=Config.DB_NAME,
+            dbName=settings.db_name,
             sql=SqlSecurity.get_client_dbname_dbparams_on_client_code,
             sqlArgs={"clientCode": client_code},
         )
@@ -605,7 +605,7 @@ def create_graphql_exception(e: Exception):
 async def send_mail_for_change_pwd(
     companyName: str, email: str, pwd: str, userName: str
 ):
-    subject = Config.PACKAGE_NAME + " " + EmailMessages.email_subject_change_pwd
+    subject = settings.package_name + " " + EmailMessages.email_subject_change_pwd
     body = EmailMessages.email_body_change_pwd(userName, companyName, pwd)
     recipients = [email]
     try:
@@ -622,7 +622,7 @@ async def send_mail_for_change_pwd(
 async def send_mail_for_change_uid(
     companyName: str, email: str, uid: str, userName: str
 ):
-    subject = Config.PACKAGE_NAME + " " + EmailMessages.email_subject_change_uid
+    subject = settings.package_name + " " + EmailMessages.email_subject_change_uid
     body = EmailMessages.email_body_change_uid(userName, companyName, uid)
     recipients = [email]
     try:
@@ -640,21 +640,21 @@ async def send_mail_for_update_user(isUpdate: bool, xData: any, pwd: str, client
     uid = xData.get("uid", None)
     email = xData.get("userEmail", None)
     userName = xData.get("userName", "user")
-    companyName = Config.PACKAGE_NAME + " team."
+    companyName = settings.package_name + " team."
     roleId = xData.get("roleId", None)
     userType = "Admin user" if roleId is None else "Business user"
     # clientCode = xData.get("clientCode", None)
     # clientName = xData.get("clientName", None)
     if isUpdate:
         subject = (
-            Config.PACKAGE_NAME + " " + EmailMessages.email_subject_update_user
+            settings.package_name + " " + EmailMessages.email_subject_update_user
         )  # Note that this not a function
         body = EmailMessages.email_body_update_user(
             userName=userName, companyName=companyName, clientCode=clientCode, clientName=clientName
         )
     else:
         subject = (
-            Config.PACKAGE_NAME
+            settings.package_name
             + " "
             + EmailMessages.email_subject_new_user(userType=userType)
         )

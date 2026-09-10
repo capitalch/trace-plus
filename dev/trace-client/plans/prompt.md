@@ -1,5 +1,3 @@
-# Exploration Sales : Payment Details section : Auto Subledger (Bill Sale) option : Payment methods
-- What is the logic for populating the Payment Account for the first row and then subsequent rows?
-- What accounts are visible in drop down of Payment Account
-- How I can add additional accounts in the drop down like "others" class of account. To do so which files need chages?
-- Give your findings in plan.md. Dont implement anything.
+# management of config and env files in the project
+- I want trace-plus server to manage .env, .env.example files and related configs in the same manner the same is managed in service-plus server.
+- Explore and create a robust detailed ->plan-env plan.

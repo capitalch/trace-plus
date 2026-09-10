@@ -1,4 +1,10 @@
-config.py
+# Secrets live in .env — never read these.
 .env
 **/.env*
+
+# app/config.py is no longer excluded: since the settings migration it holds only the
+# schema (field names, types, development-safe defaults) and no secret values.
+# Other config.* files elsewhere may still hold secrets, so they stay excluded.
+config.py
 **/config.*
+!app/config.py

@@ -8,7 +8,7 @@ from app.core.dependencies import (
     SuperAdminUserClass,
 )
 from app.core.messages import Messages
-from app.config import Config
+from app.config import settings
 from app.security.security_utils import (
     create_access_token,
     create_jwt_token,
@@ -138,7 +138,7 @@ async def reset_password_helper(token: str):
         # decode token for base64
         tkn = base64.b64decode(token)
         result = jwt.decode(
-            tkn, Config.ACCESS_TOKEN_SECRET_KEY, algorithms=Config.ALGORITHM
+            tkn, settings.access_token_secret_key.get_secret_value(), algorithms=settings.algorithm
         )
         data = result.get("data", None)  # data has clientID and email
         clientId = data.get("clientId", None)
@@ -329,14 +329,14 @@ def get_super_admin_bundle(uidOrEmail: str, password: str):
 
 def get_super_admin_details_from_config():
     try:
-        superAdminUserName = Config.SUPER_ADMIN_UID
-        superAdminEmail = Config.SUPER_ADMIN_EMAIL
-        superAdminMobile = Config.SUPER_ADMIN_MOBILE_NO
-        superAdminHash = Config.SUPER_ADMIN_HASH
+        superAdminUserName = settings.super_admin_uid
+        superAdminEmail = settings.super_admin_email
+        superAdminMobile = settings.super_admin_mobile_no
+        superAdminHash = settings.super_admin_hash.get_secret_value()
         return superAdminUserName, superAdminEmail, superAdminMobile, superAdminHash
     except Exception:
         raise AppHttpException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            error_code="e1004",
+            error_code="e1038",
             message=Messages.err_internal_server_error,
         )

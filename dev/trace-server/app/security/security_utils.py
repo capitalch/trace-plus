@@ -2,7 +2,7 @@ import bcrypt, jwt, logging, random, json, string
 # import jwt
 # import logging
 from fastapi import Request, status
-from app.config import Config
+from app.config import settings
 from app.core.messages import Messages
 from app.core.dependencies import AppHttpException
 from datetime import datetime, timedelta, timezone
@@ -14,14 +14,14 @@ from jwt.exceptions import (
 # import random, json, string
 # import string
 
-ACCESS_TOKEN_EXPIRE_HOURS = Config.ACCESS_TOKEN_EXPIRE_HOURS
-ALGORITHM = Config.ALGORITHM
-ACCESS_TOKEN_SECRET_KEY = Config.ACCESS_TOKEN_SECRET_KEY
+ACCESS_TOKEN_EXPIRE_HOURS = settings.access_token_expire_hours
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_SECRET_KEY = settings.access_token_secret_key.get_secret_value()
 
 def create_access_token(subject: dict) -> str:
     expiresDelta = datetime.now(timezone.utc) + timedelta(
         hours=int(ACCESS_TOKEN_EXPIRE_HOURS)
-        # seconds=int(Config.ACCESS_TOKEN_EXPIRE_SECONDS_TEST)
+        # seconds=int(settings.access_token_expire_seconds_test)
     )
     toEncode = {"exp": expiresDelta, "sub": json.dumps(subject)}
     encodedJwt = jwt.encode(toEncode, ACCESS_TOKEN_SECRET_KEY, ALGORITHM)

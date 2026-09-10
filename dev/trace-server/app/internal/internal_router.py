@@ -1,13 +1,20 @@
+import hmac
 import logging
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
-from app.config import Config
+from app.config import settings
 from app.graphql.graphql_helper import accounts_posting_helper
 
 router = APIRouter(prefix="/api/internal", tags=["internal"])
 
 
 def _verify_service_key(x_service_key: str = Header(..., alias="X-Service-Key")):
-    if x_service_key != Config.SERVICE_PLUS_API_KEY:
+    # compare_digest, not `!=`: a plain comparison returns as soon as two bytes differ, so
+    # response timing leaks how many leading characters of the key were guessed correctly —
+    # enough to recover a pre-shared key byte by byte. Compared as bytes because the str
+    # form of compare_digest rejects non-ASCII input, which would turn a malformed header
+    # into a 500 instead of a clean 401.
+    expected = settings.service_plus_api_key.get_secret_value()
+    if not hmac.compare_digest(x_service_key.encode("utf-8"), expected.encode("utf-8")):
         raise HTTPException(status_code=401, detail="Invalid service key")
 
 

@@ -109,6 +109,8 @@ ENV/
 env.bak/
 venv.bak/
 **/.env*
+# ...but the template carries no real values and must be committed
+!dev/trace-server/.env.example
 
 # Spyder project settings
 .spyderproject
@@ -145,3 +147,9 @@ keys/
 node_modules
 .vscode/settings.json
 **/config.*
+# ...but trace-server's config.py is the secret-free settings model; secrets live in .env
+!dev/trace-server/app/config.py
+
+# Deployment artifacts: the deploy script copies dist/ and the whole server tree in
+# here and zips it, so every run would otherwise produce a large, meaningless diff.
+deployment/

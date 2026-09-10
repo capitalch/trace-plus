@@ -3,6 +3,31 @@
 Entries are written by `/git-deploy`, newest first. Each entry describes one commit;
 `Base:` is the commit it was built on, so `git diff <base>..` shows exactly that upload.
 
+## 2026-09-10 17:43 (main)
+trace-server: move config to .env via pydantic-settings
+
+- config: replace the hardcoded `Config` class with a typed pydantic-settings
+  `Settings` model. Secrets are `SecretStr` and carry no default, so the server
+  refuses to start rather than come up healthy on a placeholder; a validator
+  rejects a `.env` copied from the template but never filled in.
+- .env.example + scripts: add the generated template plus `gen_env_example.py`
+  and `check_settings.py`, both derived from the model so template and checks
+  cannot drift from the schema. Neither file holds a secret — every key that
+  needs one reads `changeme`, and no `SecretStr` field has a default.
+- consumers: migrate all 44 call sites across 8 files from `Config.X` to
+  `settings.x`, reading each secret deliberately through `.get_secret_value()`.
+- internal_router: compare the pre-shared service key with `hmac.compare_digest`.
+  The previous `!=` returned on the first differing byte, leaking through response
+  timing how much of the key a caller had guessed.
+- messages: drop the dead duplicate `e1004` (the second definition silently shadowed
+  the first), add `e1038` for missing super-admin config, and repoint `e1005` at the
+  new `.env` keys instead of the retired Config file.
+- repo hygiene: ignore `.env` while explicitly un-ignoring `.env.example` and
+  `app/config.py`; move `requirements.txt` under `dev/trace-server/`; drop the
+  checked-in `deployment/final/` copy (~294k lines, mostly `postal_data.json`).
+
+Files: 55 changed (+259 / -294066) — Base: 2f4886e0
+
 ## 2026-09-08 20:01 (main)
 Masters: enforce Audit Lock Date across transactions
 

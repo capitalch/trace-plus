@@ -1,0 +1,13 @@
+ariadne>=1.0,<1.1
+bcrypt>=5.0,<5.1
+cryptography>=46.0,<46.1
+fastapi>=0.135,<0.136
+fastapi-mail>=1.6,<1.7
+fpdf>=1.7,<1.8
+pandas>=3.0,<3.1
+psycopg[binary]>=3.3,<3.4
+pydantic[email]>=2.12,<2.13
+pydantic-settings>=2.13,<2.14
+PyJWT>=2.12,<2.13
+uvicorn[standard]>=0.42,<0.43
+XlsxWriter>=3.2,<3.3

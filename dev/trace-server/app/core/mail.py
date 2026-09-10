@@ -1,13 +1,13 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from app.config import Config
+from app.config import settings
 
-usr = Config.MAIL_USER_NAME
+usr = settings.mail_user_name
 mail_conf = ConnectionConfig(
-    MAIL_USERNAME=Config.MAIL_USER_NAME,
-    MAIL_PASSWORD=Config.MAIL_PASSWORD,
-    MAIL_FROM=Config.MAIL_FROM,
-    MAIL_PORT=Config.MAIL_PORT,
-    MAIL_SERVER=Config.MAIL_SERVER,
+    MAIL_USERNAME=settings.mail_user_name,
+    MAIL_PASSWORD=settings.mail_password.get_secret_value(),
+    MAIL_FROM=settings.mail_from,
+    MAIL_PORT=settings.mail_port,
+    MAIL_SERVER=settings.mail_server,
 
     MAIL_STARTTLS=False,
     MAIL_SSL_TLS=False,
