@@ -1,4 +1,14 @@
-# Phase 3
+# Phase 4
+- Enhancements and bug fix
+	- Overall speed up
+	- Utilty to migrate sql in all databases
+	- Auto backup everyday, on cloud in a separate environment
+	- For branches different users could be assigned
+	- Streamline User management and db and schema creation
+	- Bug
+		- General ledger: when accounting year is changed and ledger has no transactions to show, then old transactions for the previous accounting period still shows
+		
+						# Phase 3
 							- .env file instead of .config
 								- Testing
 									- DB: login + voucher entry
